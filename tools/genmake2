@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.39 2003/11/14 19:01:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.40 2003/11/14 21:20:35 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1578,6 +1578,10 @@ ftl_taf_output.f: ftl_input_code.f
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.f
 	cat ftl_input_code_ftl.f | sed -f adjoint_sed > ftl_taf_output.f
 
+ftltafonly:
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.f
+	cat ftl_input_code_ftl.f | sed -f adjoint_sed > ftl_taf_output.f
+
 ftl_taf: ftl_taf_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS) 
 
@@ -1590,21 +1594,11 @@ ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
 
 
 # ... SVD ...
-svd: svd_taf
-svd_taf_f: svd_taf_output.f
+svdtaf: ad_taf_output.f ftl_taf_output.f
+svdall: svd_taf
 
-svd_input_code.f: \$(SRCFILES)
-	cmp svd_config.template AD_CONFIG.h || cat svd_config.template > AD_CONFIG.h
-	@make \$(F77FILES)
-	@make \$(AD_FLOW_FILES)
-	cat \$(AD_FLOW_FILES) \$(AD_FILES) > svd_input_code.f
-
-svd_taf_output.f: svd_input_code.f
-	\$(TAF) \$(SVD_TAF_FLAGS) \$(TAF_EXTRA) svd_input_code.f
-	cat svd_input_code_ad.f | sed -f adjoint_sed > svd_taf_output.f
-
-svd_taf: svd_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_SVD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) svd_taf_output.o \$(LIBS) 
+svd_taf: ad_taf_output.o ftl_taf_output.o \$(OBJFILES)
+	\$(LINK) -o mitgcmuv_svd \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o ftl_taf_output.o \$(LIBS)
 
 
 #=========================================
