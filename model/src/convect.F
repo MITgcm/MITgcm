@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.3 1998/04/24 03:26:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE CONVECT( bi, bj, iMin, iMax, jMin, jMax, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CONVECT                                       |
-C     | o Does vertical mizing of unstable water column          |
+C     | o Does vertical mixing of unstable water column          |
 C     |==========================================================|
 C     |                                                          |
 C     \==========================================================/
