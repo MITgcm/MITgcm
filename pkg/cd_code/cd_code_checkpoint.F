@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.2 2003/12/14 23:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.3 2004/07/06 18:33:47 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -17,18 +17,14 @@ C     myThid -  Number of this instance of INI_UVEL
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_CD_CODE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
-      INTEGER bi, bj
-      INTEGER  I,  J, K
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
       INTEGER prec
 CEOP
-
-#ifdef ALLOW_CD_CODE
 
 C--   Suffix for pickup files
       IF (pickupSuff.EQ.' ') THEN
@@ -47,7 +43,11 @@ C--   Suffix for pickup files
       CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
       CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
       CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
-      CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
+      IF ( usePickupBeforeC54 ) THEN
+        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
+      ELSE
+        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,4*Nr+1,myThid)
+      ENDIF
       
       _END_MASTER( myThid )
       _BARRIER
@@ -82,14 +82,14 @@ C     myThid -  Number of this instance of INI_UVEL
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_CD_CODE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(10) suff
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(10) suff
 CEOP
-
-#ifdef ALLOW_CD_CODE
 
         IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
@@ -100,13 +100,7 @@ CEOP
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
-C- jmc: guCD & gvCD no longer exist. 
-C   write some stuff to maintain the same pickup size
-c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
-c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,4*Nr+1,
      &                     myIter,myThid)
 
 #endif /*  ALLOW_CD_CODE  */

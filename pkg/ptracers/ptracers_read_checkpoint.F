@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.4 2003/06/25 23:47:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.5 2004/07/06 18:33:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,7 +24,7 @@ C  myIter               :: time-step number
 C  suff                 :: filename suffix
 C  myThid               :: thread number
       INTEGER myIter
-      CHARACTER*(10) suff
+c     CHARACTER*(10) suff
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -45,7 +45,7 @@ CEOP
       WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
       prec = precFloat64
 
-C Write fields as consecutive records
+C Read fields as consecutive records
       DO iTracer=1,PTRACERS_num
        iRec = iTracer
        CALL MDSREADFIELD(fn,prec,'RL',Nr,
@@ -53,19 +53,29 @@ C Write fields as consecutive records
        _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
       ENDDO
 
-C Write historical tendancies as consecutive records
-      DO iTracer=1,PTRACERS_num
-       iRec = iTracer + PTRACERS_num
-       CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &      gPtr(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
-       _EXCH_XYZ_R8(gPtr(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-      ENDDO
-      DO iTracer=1,PTRACERS_num
-       iRec = iTracer + PTRACERS_num*2
-       CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &      gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
-       _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-      ENDDO
+      IF ( usePickupBeforeC54 ) THEN
+C Read historical tendancies as consecutive records
+       DO iTracer=1,PTRACERS_num
+        iRec = iTracer + PTRACERS_num
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &       gPtr(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+        _EXCH_XYZ_R8(gPtr(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+       ENDDO
+       DO iTracer=1,PTRACERS_num
+        iRec = iTracer + PTRACERS_num*2
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &       gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+        _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+       ENDDO
+      ELSE
+C Read tendancies as consecutive records (needed for AB)
+       DO iTracer=1,PTRACERS_num
+        iRec = iTracer + PTRACERS_num
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &       gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+        _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_PTRACERS */
 
