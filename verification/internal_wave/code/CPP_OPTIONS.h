@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/CPP_OPTIONS.h,v 1.3 2001/02/20 14:48:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/CPP_OPTIONS.h,v 1.4 2001/03/06 16:19:16 jmc Exp $
 C $Name:  $
 C
 
@@ -32,7 +32,7 @@ C o Include/exclude code for open-boundary conditions
 #define  ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
-#define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#define  ALLOW_TIMEAVE
 
 C o Include/exclude zonal FFT filter code
 #undef  ALLOW_ZONAL_FILT

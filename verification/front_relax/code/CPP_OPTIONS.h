@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/CPP_OPTIONS.h,v 1.5 2001/02/20 14:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/CPP_OPTIONS.h,v 1.6 2001/03/06 16:19:00 jmc Exp $
 C $Name:  $
 C
 
@@ -32,7 +32,7 @@ C o Include/exclude code for open-boundary conditions
 #undef   ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
-#undef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#undef  ALLOW_TIMEAVE
 
 C o Include/exclude zonal FFT filter code
 #undef  ALLOW_ZONAL_FILT
