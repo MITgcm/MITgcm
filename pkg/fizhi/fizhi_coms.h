@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_coms.h,v 1.4 2004/06/16 19:22:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_coms.h,v 1.5 2004/10/07 00:06:09 molod Exp $
 C $Name:  $
 
 
 C The physics state uses the dynamics dimensions in the horizontal
 C     and the land dimensions in the horizontal for turbulence variables
 c
-c Physics State Common - State variables on physics grid
+c Fizhi State Common - State variables on physics grid
 c ----------------------------------------------------------------------
       common /physics_state/ uphy,vphy,thphy,sphy,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
@@ -19,7 +19,7 @@ c ----------------------------------------------------------------------
       _RL xlmt(nchp,Nrphys,Nsx,Nsy), khmt(nchp,Nrphys,Nsx,Nsy) 
       _RL tke(nchp,Nrphys,Nsx,Nsy)
 
-c Physics Tendency Common - Changes in state variables due to physics
+c Fizhi Tendency Common - Changes in state variables due to physics
 c ----------------------------------------------------------------------
       common /physics_tendency/ duphy,dvphy,dthphy,dsphy
 
@@ -28,7 +28,7 @@ c ----------------------------------------------------------------------
       _RL dthphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
       _RL dsphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
 
-c Physics Exports Common - Physics variables on other grids for export
+c Fizhi Exports Common - Physics variables on other grids for export
 c ----------------------------------------------------------------------
       common /physics_exports/ guphy,gvphy,gthphy,gsphy
 
@@ -36,3 +36,27 @@ c ----------------------------------------------------------------------
       _RL gvphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,Nsx,Nsy)
       _RL gthphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,Nsx,Nsy)
       _RL gsphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,Nsx,Nsy)
+
+c Fizhi Saver Common - Internal fizhi variables to be written on pickup
+c ----------------------------------------------------------------------
+      common /physics_saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz,
+     .                       cldtot_sw,cldras_sw,cldlsp_sw,swlz,
+     .                       qliqavesw,qliqavelw,fccavesw,fccavelw,
+     .                       iras,nlwcld,nlwlz,nswcld,nswlz,
+     .                       imstturbsw,imstturblw
+
+      _RL cldtot_lw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL cldras_lw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL cldlsp_lw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL lwlz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL cldtot_sw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL cldras_sw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL cldlsp_sw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL swlz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL qliqavesw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL qliqavelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL fccavesw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL fccavelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      integer iras,nlwcld,nlwlz,nswcld,nswlz
+      integer imstturbsw,imstturblw
+

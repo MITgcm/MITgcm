@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.19 2004/09/30 19:45:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.20 2004/10/07 00:06:09 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -186,7 +186,8 @@ C Threshold for Cloud Liquid Water Memory
 
 c Determine Total number of Random Clouds to Check
 c ---------------------------------------------
-      ncrnd = (lm-nltop+1)/2
+C     ncrnd = (lm-nltop+1)/2
+      ncrnd = 0
 
       if(first .and. myid.eq.1 .and. bi.eq.1 ) then
        print *

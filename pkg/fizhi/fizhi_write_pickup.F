@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.4 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.5 2004/10/07 00:06:09 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -45,8 +45,21 @@ C     lgf     :: flag to write "global" files
       INTEGER prec, iChar, lChar
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
+      _RL temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      integer i,j,k,bi,bj
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      do bj = 1,Nsy
+      do bi = 1,Nsx
+      do k = 1,Nrphys
+      do j = 1-OLy,sNy+OLy
+      do i = 1-OLx,sNx+OLx
+       temp(i,j,k,bi,bj) = 0.
+      enddo
+      enddo
+      enddo
+      enddo
+      enddo
 
       lChar = 0
       DO iChar = 1,len(suff)
@@ -61,6 +74,36 @@ C--   Write fields as consecutive records
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,vphy,2,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,thphy,3,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,sphy,4,myIter,myThid)
+
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_lw,5,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_lw,6,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_lw,7,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_sw,8,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_sw,9,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_sw,10,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavelw,11,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavesw,12,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavelw,13,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavesw,14,myIter,
+     .                                                          myThid)
+
+      temp(1,1,1,1,1) = float(iras)
+      temp(2,1,1,1,1) = float(nlwcld)
+      temp(3,1,1,1,1) = float(nlwlz)
+      temp(4,1,1,1,1) = float(nswcld)
+      temp(5,1,1,1,1) = float(nswlz)
+      temp(6,1,1,1,1) = float(imstturbsw)
+      temp(7,1,1,1,1) = float(imstturblw)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,temp,15,myIter,myThid)
 
       RETURN
       END
