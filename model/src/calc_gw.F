@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.14 2004/05/19 08:42:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.15 2004/05/25 07:48:22 mlosch Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -57,16 +57,14 @@ C     flx_Dn       :: Temp. used for fVol vertical terms.
 C     I,J,K - Loop counters
       INTEGER i,j,k, kP1, kUp
       _RL  wOverride
-      _RS  hFacROpen
-      _RS  hFacRClosed
+      _RS  hFacWtmp
+      _RS  hFacStmp
       _RL ab15,ab05
       _RL slipSideFac
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
 
       _RL  Half
-      _RL  One
       PARAMETER(Half=0.5D0)
-      PARAMETER(One=0.5D0)
 CEOP
 
 ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
@@ -82,11 +80,12 @@ C     Adams-Bashforth timestepping weights
 
 C     Lateral friction (no-slip, free slip, or half slip):
       IF ( no_slip_sides ) THEN
-        slipSideFac = -One
+        slipSideFac = -1. _d 0
       ELSE
-        slipSideFac =  One 
+        slipSideFac =  1. _d 0 
       ENDIF
-C-    half slip was used before ; keep it for now.
+CML   half slip was used before ; keep it for now, but half slip is
+CML   not used anywhere in the code as far as I can see
 C        slipSideFac = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -127,33 +126,49 @@ C Sweep down column
 C Flux on Southern face
          DO J=jMin,jMax+1
           DO I=iMin,iMax
+C     First compute the fraction of open water for the w-control volume
+C     at the southern face
+           hFacStmp=max(hFacS(I,J,K-1,bi,bj)-Half,0)
+     &         +    min(hFacS(I,J,K  ,bi,bj),Half)
            tmp_VbarZ=Half*(
      &          _hFacS(I,J,K-1,bi,bj)*vVel( I ,J,K-1,bi,bj)
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
            Flx_NS(I,J,bi,bj)=
      &     tmp_VbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I,J-1,K,bi,bj))
      &    -viscAh*_recip_dyC(I,J,bi,bj)  
-     &      *(1. _d 0 + slipSideFac*
-     &         (maskS(I,J,K-1,bi,bj)*maskS(I,J,K,bi,bj)-2. _d 0))
-     &        *(max(hFacS(I,J,K-1,bi,bj)-Half,0) 
-     &         +min(hFacS(I,J,K,bi,bj),Half))
-     &                   *(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
+     &       *(hFacStmp*(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
+     &        +(1. _d 0 - hFacStmp)*(1. _d 0 - slipSideFac)
+     &         *wVel(I,J,K,bi,bj))
+C     The last term is the weighted average of the viscous stress at the open
+C     fraction of the w control volume and at the closed fraction of the
+C     the control volume. A more compact but less intelligible version
+C     of the last three lines is:
+CML     &       *( (1 _d 0 - slipSideFac*(1 _d 0 - hFacStmp))
+CML     &       *wVel(I,J,K,bi,bi) + hFacStmp*wVel(I,J-1,K,bi,bj) )
           ENDDO
          ENDDO
 C Flux on Western face
          DO J=jMin,jMax
           DO I=iMin,iMax+1
-           tmp_UbarZ=Half*(
+C     First compute the fraction of open water for the w-control volume
+C     at the western face
+           hFacWtmp=max(hFacW(I,J,K-1,bi,bj)-Half,0)
+     &         +    min(hFacW(I,J,K  ,bi,bj),Half)
+                 tmp_UbarZ=Half*(
      &         _hFacW(I,J,K-1,bi,bj)*uVel( I ,J,K-1,bi,bj)
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
            Flx_EW(I,J,bi,bj)=
      &     tmp_UbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I-1,J,K,bi,bj))
      &    -viscAh*_recip_dxC(I,J,bi,bj)
-     &      *(1. _d 0 + slipSideFac*
-     &         (maskW(I,J,K-1,bi,bj)*maskW(I,J,K,bi,bj)-1. _d 0))
-     &        *(max(hFacW(I,J,K-1,bi,bj)-Half,0) 
-     &         +min(hFacW(I,J,K,bi,bj),Half))
-     &                   *(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
+     &      *(hFacWtmp*(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
+     &       +(1 _d 0 - hFacWtmp)*(1 _d 0 - slipSideFac)
+     &        *wVel(I,J,K,bi,bj) )
+C     The last term is the weighted average of the viscous stress at the open
+C     fraction of the w control volume and at the closed fraction of the
+C     the control volume. A more compact but less intelligible version
+C     of the last three lines is:
+CML     &       *( (1 _d 0 - slipSideFac*(1 _d 0 - hFacWtmp))
+CML     &       *wVel(I,J,K,bi,bi) + hFacWtmp*wVel(I-1,J,K,bi,bj) )
           ENDDO
          ENDDO
 C Flux on Lower face
