@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.27 1998/08/24 02:25:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.28 1998/09/05 17:52:13 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -147,43 +147,43 @@ C     ab05, ab15 - Adams-Bashforth time-stepping weights.
 C     Initialise intermediate terms
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
-        aF(i,j)   = 0.*1. _d 37
-        vF(i,j)   = 0.*1. _d 37
-        v4F(i,j)  = 0.*1. _d 37
-        cF(i,j)   = 0.*1. _d 37
-        mT(i,j)   = 0.*1. _d 37
-        pF(i,j)   = 0.*1. _d 37
-        fZon(i,j) = 0.*1. _d 37
-        fMer(i,j) = 0.*1. _d 37
+        aF(i,j)   = 0.*1.D37
+        vF(i,j)   = 0.*1.D37
+        v4F(i,j)  = 0.*1.D37
+        cF(i,j)   = 0.*1.D37
+        mT(i,j)   = 0.*1.D37
+        pF(i,j)   = 0.*1.D37
+        fZon(i,j) = 0.*1.D37
+        fMer(i,j) = 0.*1.D37
        ENDDO
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac     = afFacMom 
-      AhDudxFac    = vfFacMom
-      A4DuxxdxFac  = vfFacMom
-      vDudyFac     = afFacMom
-      AhDudyFac    = vfFacMom
-      A4DuyydyFac  = vfFacMom
-      rVelDudrFac  = afFacMom
-      ArDudrFac    = vfFacMom
-      mTFacU       = mtFacMom
-      fuFac        = cfFacMom
-      phxFac       = pfFacMom
-      uForcFac     = foFacMom
+      uDudxFac     = afFacMom*1.D0
+      AhDudxFac    = vfFacMom*1.D0
+      A4DuxxdxFac  = vfFacMom*1.D0
+      vDudyFac     = afFacMom*1.D0
+      AhDudyFac    = vfFacMom*1.D0
+      A4DuyydyFac  = vfFacMom*1.D0
+      rVelDudrFac  = afFacMom*1.D0
+      ArDudrFac    = vfFacMom*1.D0
+      mTFacU       = mtFacMom*1.D0
+      fuFac        = cfFacMom*1.D0
+      phxFac       = pfFacMom*1.D0
+      uForcFac     = foFacMom*1.D0
 C     o V momentum equation
-      uDvdxFac     = afFacMom 
-      AhDvdxFac    = vfFacMom
-      A4DvxxdxFac  = vfFacMom
-      vDvdyFac     = afFacMom
-      AhDvdyFac    = vfFacMom
-      A4DvyydyFac  = vfFacMom
-      rVelDvdrFac  = afFacMom
-      ArDvdrFac    = vfFacMom
-      mTFacV       = mtFacMom
-      fvFac        = cfFacMom
-      phyFac       = pfFacMom
-      vForcFac     = foFacMom
+      uDvdxFac     = afFacMom*1.D0
+      AhDvdxFac    = vfFacMom*1.D0
+      A4DvxxdxFac  = vfFacMom*1.D0
+      vDvdyFac     = afFacMom*1.D0
+      AhDvdyFac    = vfFacMom*1.D0
+      A4DvyydyFac  = vfFacMom*1.D0
+      rVelDvdrFac  = afFacMom*1.D0
+      ArDvdrFac    = vfFacMom*1.D0
+      mTFacV       = mtFacMom*1.D0
+      fvFac        = cfFacMom*1.D0
+      phyFac       = pfFacMom*1.D0
+      vForcFac     = foFacMom*1.D0
 
 C--   Adams-Bashforth weighting factors
       ab15   =  1.5 _d 0 + abEps
@@ -204,6 +204,7 @@ C     Mean flow component of zonal flux
        ENDDO
       ENDDO
 C     Eddy component of zonal flux
+#ifdef 0
 C     o Biharmonic terms
       DO j=jMin,jMax
        DO i=1-2, sNx+2
@@ -227,6 +228,7 @@ C     o Biharmonic terms
      &    *(vF(i+1,j)-vF(i,j))*_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
+#endif
 C     o Laplacian terms
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -258,6 +260,7 @@ C       Note!!!! omitted.
       ENDDO
 C     Eddy component of meridional flux
 C     o Biharmonic term
+#ifdef 0
       DO j=1-2,sNy+2
        DO i=iMin,iMax
         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
@@ -308,6 +311,7 @@ C     o Biharmonic term
 #endif
        ENDDO
       ENDDO
+#endif
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -398,7 +402,7 @@ C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = - _recip_dxC(i,j,bi,bj)
-     &   *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))/rhoConst
+     &   *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))*recip_rhoConst
        ENDDO
       ENDDO
 
@@ -481,6 +485,7 @@ C       Note!!!! omitted.
       ENDDO
 C     Eddy component of zonal flux
 C     o Biharmonic term
+#ifdef 0
       DO j=jMin,jMax
        DO i=1-2, sNx+2
          hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
@@ -531,6 +536,7 @@ C     o Biharmonic term
 #endif
        ENDDO
       ENDDO
+#endif
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -571,6 +577,7 @@ C     Mean flow component of meridional flux
       ENDDO
 C     Eddy component of meridional flux
 C     o Biharmonic term
+#ifdef 0
       DO j=1-2, sNy+2
        DO i=iMin,iMax
         v4F(i,j) =
@@ -593,6 +600,7 @@ C     o Biharmonic term
      &   *( vF(i,j+1) - vF(i,j) )*_recip_dyC(i,j,bi,bj)
        ENDDO
       ENDDO
+#endif
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -670,7 +678,7 @@ C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
         pF(i,j) = -recip_dyC(i,j,bi,bj)
-     &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))/rhoConst
+     &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))*recip_rhoConst
        ENDDO
       ENDDO
 
@@ -693,7 +701,7 @@ C--   Forcing term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) 
-     &    + foFacMom*fv(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
+     &    + vForcFac*fv(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -800,7 +808,7 @@ C     Calculate coriolis force on U
        DO i=iMin,iMax
         guCD(i,j,k,bi,bj) = 
      &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i-1,j,bi,bj)  )
-     &   *vVelD(i,j,k,bi,bj)
+     &   *vVelD(i,j,k,bi,bj)*fuFac
        ENDDO
       ENDDO
 #else
@@ -874,7 +882,7 @@ C     Calculate coriolis force on V
        DO i=iMin,iMax
         gvCD(i,j,k,bi,bj) =
      &    -0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i,j-1,bi,bj)  )
-     &   *uVelD(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &   *uVelD(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)*fvFac
        ENDDO
       ENDDO
 CcnhDebugStarts

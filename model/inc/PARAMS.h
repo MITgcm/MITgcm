@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.27 1998/08/24 02:25:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.28 1998/09/05 17:52:13 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -26,6 +26,17 @@ C                dumping model state.
       PARAMETER ( precFloat32 = 0 )
       INTEGER precFloat64
       PARAMETER ( precFloat64 = 1 )
+C     UNSET_xxx - Used to indicate variables that have not been given a value
+      Real*8 UNSET_FLOAT8
+      PARAMETER ( UNSET_FLOAT8 = 1.234567D5 )
+      Real*4 UNSET_FLOAT4
+      PARAMETER ( UNSET_FLOAT4 = 1.234567E5 )
+      _RL    UNSET_RL    
+      PARAMETER ( UNSET_RL     = 1.234567D5 )
+      _RS    UNSET_RS     
+      PARAMETER ( UNSET_RS     = 1.234567E5 )
+      INTEGER UNSET_I
+      PARAMETER ( UNSET_I      = 123456789  )
 
 C     Checkpoint data
       INTEGER maxNoChkptLev
@@ -249,6 +260,7 @@ C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
 C     hFacMin      - Minimum fraction size of a cell (affects hFacC etc...)
 C     hFacMinDz    - Minimum dimesional size of a cell (affects hFacC etc..., m)
+C     hFacMinDp    - Minimum dimesional size of a cell (affects hFacC etc..., Pa)
 C     hFacMinDr    - Minimum dimesional size of a cell (affects hFacC etc..., units of r)
 C     tauCD        - CD scheme coupling timescale ( 1/s )
 C     rCD          - CD scheme normalised coupling parameter ( 0-1 )
@@ -298,7 +310,7 @@ C                           number times externForcingPeriod)
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & externForcingCycle, externForcingPeriod,
-     & viscAp, diffKpT, diffKpS, hFacMinDr,
+     & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
      & theta_S, specVol_S
 
       _RL cg2dTargetResidual
@@ -321,6 +333,7 @@ C                           number times externForcingPeriod)
       _RL freeSurfFac
       _RL hFacMin
       _RL hFacMinDz
+      _RL hFacMinDp
       _RL hFacMinDr
       _RL beta
       _RL viscAh

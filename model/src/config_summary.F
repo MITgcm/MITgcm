@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.15 1998/08/24 02:25:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.16 1998/09/05 17:52:13 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -66,8 +66,16 @@ C     == Local variables ==
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
       CALL WRITE_1D_R8( viscA4, 1, INDEX_NONE,'viscAh =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
-      CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
-     &'   /* Vertical eddy viscosity ( m^2/s ) */')
+      IF ( viscAz .NE. UNSET_RL ) THEN
+       CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
+     & '   /* Vertical eddy viscosity ( m^2/s ) */')
+      ENDIF
+      IF ( viscAp .NE. UNSET_RL ) THEN
+       CALL WRITE_1D_R8( viscAp, 1, INDEX_NONE,'viscAp =',
+     & '   /* Vertical eddy viscosity ( Pa^2/s ) */')
+      ENDIF
+      CALL WRITE_1D_R8( viscAr, 1, INDEX_NONE,'viscAr =',
+     &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
       CALL WRITE_1D_R8( diffKhT, 1, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_1D_R8( diffKzT, 1, INDEX_NONE,'diffKzT =',
@@ -84,6 +92,14 @@ C     == Local variables ==
      &'   /* Linear EOS thermal expansion coefficient ( 1/degree ) */')
       CALL WRITE_1D_R8( sBeta, 1, INDEX_NONE,'sBeta =',
      &'   /* Linear EOS haline contraction coefficient ( 1/ppt ) */')
+      IF ( eosType .EQ. 'POLY3' ) THEN
+        WRITE(msgBuf,'(A)') '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
+        DO K = 1, Nr
+         WRITE(msgBuf,'(I3,13F8.3)')
+     &   K,eosRefT(K),eosRefS(K),eosSig0(K), (eosC(I,K),I=1,9)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+        ENDDO
+      ENDIF
       CALL WRITE_1D_R8( rhonil,1, INDEX_NONE,'rhonil =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_1D_R8( gravity,1, INDEX_NONE,'gravity =',

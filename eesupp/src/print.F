@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.10 1998/07/15 22:16:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.11 1998/09/05 17:52:13 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -564,7 +564,7 @@ C--   Calculate field range
         DO K=kMin, kMax, kStr
          DO J=jMin, jMax, jStr
           DO I=iMin, iMax, iStr
-           IF ( fld(I,J,K,bi,bj) .NE. 0. ) THEN
+           IF (printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0.) THEN
             IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
      &       fMin = fld(I,J,K,bi,bj)
             IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
@@ -601,8 +601,13 @@ C--   Write field title and statistics
      & '// CMAX = ', fMax
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      WRITE(msgBuf,'(A,1PE30.15)')
-     & '// CINT = ', fRange/FLOAT(lChlist-1)
+      IF ( validRange ) THEN
+       WRITE(msgBuf,'(A,1PE30.15)')
+     &  '// CINT = ', fRange/FLOAT(lChlist-1)
+      ELSE
+       WRITE(msgBuf,'(A,1PE30.15)')
+     &  '// CINT = ', 0.
+      ENDIF
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       WRITE(msgBuf,'(A,1024A1)')
@@ -730,7 +735,7 @@ C      X across, Z down slice
        pltStep = sNy
        pltLab  = 'J ='
       ENDIF
-      IF ( validRange ) THEN
+C     IF ( validRange ) THEN
 C      Header
 C      Data
        DO bk=pltBlo, pltBhi, pltBstr
@@ -792,9 +797,13 @@ C      Data
              ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
               val = fld(K,I,J,bk,bi)
              ENDIF
-             IDX = NINT( 
+             IF ( validRange ) THEN
+              IDX = NINT( 
      &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
      &             )+1
+             ELSE
+              IDX = 1
+             ENDIF
              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
      &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
              IF ( val .EQ. 0. ) THEN
@@ -810,7 +819,7 @@ C      Data
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
+C     ENDIF
 C--   Write delimiter
       msgBuf = '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
@@ -958,12 +967,12 @@ C--   Calculate field range
         DO K=kMin, kMax, kStr
          DO J=jMin, jMax, jStr
           DO I=iMin, iMax, iStr
-C          IF ( fld(I,J,K,bi,bj) .NE. 0. ) THEN
+           IF ( printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0. ) THEN
             IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
      &       fMin = fld(I,J,K,bi,bj)
             IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
      &       fMax = fld(I,J,K,bi,bj)
-C          ENDIF
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -995,8 +1004,13 @@ C--   Write field title and statistics
      & '// CMAX = ', fMax
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      WRITE(msgBuf,'(A,1PE30.15)')
+      IF ( validRange ) THEN
+       WRITE(msgBuf,'(A,1PE30.15)')
      & '// CINT = ', fRange/FLOAT(lChlist-1)
+      ELSE
+       WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CINT = ', 0.
+      ENDIF
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       WRITE(msgBuf,'(A,1024A1)')
@@ -1124,7 +1138,7 @@ C      X across, Z down slice
        pltStep = sNy
        pltLab  = 'J ='
       ENDIF
-      IF ( validRange ) THEN
+C     IF ( validRange ) THEN
 C      Header
 C      Data
        DO bk=pltBlo, pltBhi, pltBstr
@@ -1184,9 +1198,13 @@ C      Data
              ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
               val = fld(K,I,J,bk,bi)
              ENDIF
-             IDX = NINT( 
-     &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
-     &             )+1
+             IF ( validRange ) THEN
+              IDX = NINT( 
+     &               FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
+     &              )+1
+             ELSE
+              IDX = 1
+             ENDIF
              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
      &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
              IF ( val .EQ. 0. ) THEN
@@ -1201,7 +1219,7 @@ C      Data
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
+C     ENDIF
 C--   Write delimiter
       msgBuf = '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.7 1998/07/15 22:05:44 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.8 1998/09/05 17:52:12 cnh Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -98,8 +98,8 @@ C     it alone execute the BEGIN_MASTER..., END_MASTER.. sections.
 #define _END_MASTER(a)    ENDIF
 
 C--   Control MPI based parallel processing
-#define ALLOW_USE_MPI
-#define ALWAYS_USE_MPI
+#undef  ALLOW_USE_MPI
+#undef  ALWAYS_USE_MPI
  
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
@@ -119,7 +119,7 @@ C     can use 4-byte precision, reducing memory utilisation and
 C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
-#undef  REAL4_IS_SLOW
+#define REAL4_IS_SLOW
  
 #ifdef REAL4_IS_SLOW
 #define real Real*8
@@ -171,9 +171,11 @@ C     unless .Dnn is specified. CRAY vector machines use 16-byte
 C     precision when they see .Dnn which runs very slowly!
 #ifdef REAL_D0_IS_16BYTES
 #define _d
+#define _F64( a ) a
 #endif
 #ifndef REAL_D0_IS_16BYTES
 #define _d D
+#define _F64( a ) DFLOAT( a )
 #endif
 
 #endif /* _CPP_EEOPTIONS_H_ */

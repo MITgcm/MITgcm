@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.4 1998/08/19 13:57:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.5 1998/09/05 17:52:13 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -42,6 +42,9 @@ C--   For now these options are fixed as the code does
 C     not fully support features for overlapping communication
 C     and computation.
       usingSyncMessages          = .TRUE.
+
+C--   Text map plots of fields ignore exact zero values
+      printMapIncludesZeros = .FALSE.
 
 C--   The remaining parameters here are set to default values.
 C--   and then any different values are read from an input
