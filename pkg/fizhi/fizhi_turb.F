@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.28 2004/12/14 19:56:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.29 2005/02/22 22:16:52 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -150,9 +150,8 @@ C Set fmu and ed to zero for no background diffusion
       _RL  fcctmp(im,jm,nlay)
       _RL tmpdiag(im,jm)
       _RL   thtgz(im*jm)
-      _RL tempor1(im,jm,nlay),tempor2(im,jm,nlay),tempor3(im,jm,nlay)
-      _RL tempor4(im,jm,nlay)
-      _RL tempsfc1(im,jm),tempsfc2(im,jm),tempsfc3(im,jm)
+      logical  diagnostics_is_on
+      external diagnostics_is_on
 
       integer nland
       _RL alwcoeff(nchp),blwcoeff(nchp)
@@ -332,13 +331,14 @@ c **********************************************************************
           endif
       endif
 
-      if(itground.gt.0) then
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,itground,bi,bj) = qdiag(i,j,itground,bi,bj) + tgz(i,j)
-      enddo
-      enddo
-      endif
+      call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
+c     if(itground.gt.0) then
+c     do j =1,jm
+c     do i =1,im
+c     qdiag(i,j,itground,bi,bj) = qdiag(i,j,itground,bi,bj) + tgz(i,j)
+c     enddo
+c     enddo
+c     endif
 
 c **********************************************************************
 c                            Initialization
@@ -767,20 +767,20 @@ c     enddo
 c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
 c    1                   qdiag(1,1,isnowfall,bi,bj),ijall,1,nn,.false.)
 c     endif
-c     if(iraincon.gt.0) then
-c     do i = 1,istrip
-c     tmpstrip(i) = raincon(i)*86400   
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,iraincon,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(irainlsp.gt.0) then
-c     do i = 1,istrip
-c     tmpstrip(i) = rainls(i)*86400   
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,irainlsp,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('RAINCON ',myid) ) then
+      do i = 1,istrip
+      tmpstrip(i) = raincon(i)*86400   
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'RAINCON ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('RAINLSP ',myid) ) then
+      do i = 1,istrip
+      tmpstrip(i) = rainls(i)*86400   
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'RAINLSP ', 1, 1, bi, bj, myid)
+      endif
 c     if(igreen.gt.0) then
 c     call paste2grd(grnstrip,igrd,chfrstr,istrip,nchp,
 c    1                    qdiag(1,1,igreen,bi,bj),ijall,1,nn,.false.)
@@ -789,10 +789,10 @@ c     if(ilai.gt.0) then
 c     call paste2grd(laistrip,igrd,chfrstr,istrip,nchp,
 c    1                    qdiag(1,1,ilai,bi,bj),ijall,1,nn,.false.)
 c     endif
-c     if(ipardr.gt.0) then
-c     call paste2grd(pardr,igrd,chfrstr,istrip,nchp,
-c    1                 qdiag(1,1,ipardr,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('PARDR   ',myid) ) then
+      call diag_vegtile_fill (pardr,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'PARDR   ', 1, 1, bi, bj, myid)
+      endif
 c     if(ipardf.gt.0) then
 c     call paste2grd(pardf,igrd,chfrstr,istrip,nchp,
 c    1                 qdiag(1,1,ipardf,bi,bj),ijall,1,nn,.false.)
@@ -869,12 +869,6 @@ c     print *,' field: capacity ',capacity
 c     print *,' field: snowdepth ',snowdepth
       endif
 
-      if(isdiag1.gt.0) then
-      call paste2grd(tc,igrd,chfrstr,istrip,nchp,
-     1                    tempsfc1,ijall,1,nn,.false.)
-      endif
-
-
        call tile (
      I   nland, timstp, types, rainls, raincon,  newsnow,  wspeed,
      I   eturb,  dedqa,  dedtc,  hsturb, dhsdqa, dhsdtc,
@@ -888,12 +882,6 @@ c     print *,' field: snowdepth ',snowdepth
      O   hlwup, gdrain, runsrf, fwsoil,
      O   strdg1, strdg2, strdg3, strdg4,
      O   strdg5, strdg6, strdg7, strdg8, strdg9)
-      endif
-
-
-      if(isdiag2.gt.0) then
-      call paste2grd(tc,igrd,chfrstr,istrip,nchp,
-     1                    tempsfc2,ijall,1,nn,.false.)
       endif
 
       if(2.eq.1)then
@@ -1196,6 +1184,18 @@ c     enddo
 c     call paste2grd(stqflux,igrd,chfrstr,istrip,nchp,
 c    1                   qdiag(1,1,itqflux,bi,bj),ijall,nlay,nn,.false.)
 c     endif
+      if(diagnostics_is_on('RI      ',myid) ) then
+      call diag_vegtile_fill (sri,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'RI      ', 0, nlay, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('KH      ',myid) ) then
+      call diag_vegtile_fill (skh,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'KH      ', 0, nlay, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('KM      ',myid) ) then
+      call diag_vegtile_fill (skm,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'KM      ', 0, nlay, bi, bj, myid)
+      endif
 c     if(iri.gt.0) call paste2grd(sri,igrd,chfrstr,istrip,nchp,
 c    1                       qdiag(1,1,iri,bi,bj),ijall,nlay,nn,.false.)
 c     if(ikh.gt.0) call paste2grd(skh,igrd,chfrstr,istrip,nchp,
@@ -1499,24 +1499,6 @@ c *********************************************************************
        endif
 
       enddo
-
-       if(isdiag1.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,isdiag1,bi,bj) =  qdiag(i,j,isdiag1,bi,bj)
-     .                      + tempsfc1(i,j)
-       enddo
-       enddo
-       endif
-
-       if(isdiag2.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,isdiag2,bi,bj) =  qdiag(i,j,isdiag2,bi,bj)
-     .                      + tempsfc2(i,j)
-       enddo
-       enddo
-       endif
 
 c pi-weight the theta and moisture tendencies
 c -------------------------------------------
