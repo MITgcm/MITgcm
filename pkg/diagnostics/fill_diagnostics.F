@@ -18,8 +18,8 @@ C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
 C                      AND that we have been sent a local array
-C     bi ......... X-direction process(or) number - used for bibjflg=0
-C     bj ......... Y-direction process(or) number - used for bibjflg=0
+C     bi ......... X-direction process(or) number - used for bibjflg=1
+C     bj ......... Y-direction process(or) number - used for bibjflg=1
 C     array ...... Field to increment diagnostics array
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
@@ -79,8 +79,9 @@ C   Check to see if we need to do a bi-bj loop here
        else
         do j = 1,sNy
         do i = 1,sNx
-         qdiag(i,j,ipointer+levflg-1,bi,bj) = 
-     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j,nlevs,bi,bj)
+         qdiag(i,j,ipointer+levflg-1,bihere,bjhere) = 
+     .  qdiag(i,j,ipointer+levflg-1,bihere,bjhere) + 
+     .                       array(i,j,nlevs,bihere,bjhere)
         enddo
         enddo
        endif

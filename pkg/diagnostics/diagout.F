@@ -19,7 +19,7 @@ C***********************************************************************
 #include "fizhi_SIZE.h"
 #else
        integer Nrphys
-       parameter (Nrphys=1)
+       parameter (Nrphys=0)
 #endif
 
 #include "diagnostics_SIZE.h"
@@ -48,7 +48,7 @@ C***********************************************************************
       glf = .FALSE.
       WRITE(suff,'(I10.10)') myIter
       pref = fnames(listnum)
-      WRITE( fn, '(A,A)' ) pref(1:8),'.',suff(1:10)
+      WRITE( fn, '(A,A,A)' ) pref(1:8),'.',suff(1:10)
 
       do n=1,nfields(listnum)
        do m=1,ndiagt
@@ -98,8 +98,9 @@ c --------------------------------------
 
           endif
          endif
+         call mdswritefield_new(fn,64,glf,'RL',Nr+Nrphys,kdiag(m),qtmp1,
+     .                                                  n,myIter,myThid)
         endif
-       call mdswritefield(fn,64,glf,'RL',kdiag(m),qtmp1,n,myIter,myThid)
        enddo
       enddo
 

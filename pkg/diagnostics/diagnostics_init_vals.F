@@ -42,7 +42,7 @@ C ***********************************************************************
 #include "fizhi_SIZE.h"
 #else
        integer Nrphys
-       parameter (Nrphys=1)
+       parameter (Nrphys=0)
 #endif
 
 #include "diagnostics_SIZE.h"
