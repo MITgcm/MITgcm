@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.6 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.7 2001/02/07 16:57:46 adcroft Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -99,11 +99,11 @@ C       - creates relatively few files but these files can become huge
         CALL WRITE_REC_XYZ_RL( 'T', theta,iRec,myIter,myThid)
         CALL WRITE_REC_XYZ_RL( 'S',  salt,iRec,myIter,myThid)
         CALL WRITE_REC_XY_RL ('PS',cg2d_x,iRec,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'W',wVel,iRec,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
          CALL WRITE_REC_XYZ_RL( 'PNH',cg3d_x,iRec,myIter,myThid)
         ENDIF
-        CALL WRITE_REC_XYZ_RL( 'W',wVel,iRec,myIter,myThid)
 #endif /* ALLOW_NONHYDROSTATIC */
 #else
 C       Write each snap-shot as a new file (original and default method)
@@ -115,11 +115,11 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'T.',suff,theta,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'S.',suff,salt,myIter,myThid)
         CALL WRITE_FLD_XY_RL( 'PS.',suff,cg2d_x,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
          CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,cg3d_x,myIter,myThid)
         ENDIF
-        CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
 #endif /* ALLOW_NONHYDROSTATIC */
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
