@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.24 2000/06/09 02:45:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.25 2000/06/21 19:15:33 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -6,7 +6,7 @@ CStartOfInterFace
       SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
-     I           K13,K23,KappaRT,KapGM,
+     I           KappaRT,
      U           af,df,fZon,fMer,fVerT,
      I           myCurrentTime, myThid )
 C     /==========================================================\
@@ -43,9 +43,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#ifdef ALLOW_KPP
-#include "KPPMIX.h"
-#endif
+c #include "GM_ARRAYS.h"
 
 
 C     == Routine arguments ==
@@ -77,10 +75,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k,kUp,kDown,kM1
@@ -97,12 +92,6 @@ C     I, J, K - Loop counters
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_KPP
-      _RS hbl  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
-      _RS frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
-      _RS negone				! used as argument to SWFRAC
-      integer jwtype 				! index for Jerlov water type
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverT is set in this subroutine
@@ -169,10 +158,16 @@ C     o Advective component of zonal flux
 C     o Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i-1,j)))*
-     &            xA(i,j)*dTdx(i,j)
+        df(i,j) = -diffKhT*xA(i,j)*dTdx(i,j)
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_XTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     xA,theta,
+     U     df,
+     I     myThid)
+#endif
 C     o Add the bi-harmonic contribution
       IF (diffK4T .NE. 0.) THEN
        DO j=jMin,jMax
@@ -206,10 +201,16 @@ C     o Advective component of meridional flux
 C     o Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i,j-1)))*
-     &            yA(i,j)*dTdy(i,j)
+        df(i,j) = -diffKhT*yA(i,j)*dTdy(i,j)
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_YTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     yA,theta,
+     U     df,
+     I     myThid)
+#endif
 C     o Add the bi-harmonic contribution
       IF (diffK4T .NE. 0.) THEN
        DO j=jMin,jMax
@@ -285,19 +286,17 @@ C     (this plays the role of the free-surface correction)
 C     o Diffusive component of vertical flux
 C     Note: For K=1 then KM1=1 and this gives a dT/dr = 0 upper
 C           boundary condition.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        df(i,j) = _rA(i,j,bi,bj)*(
-     &   -KapGM(i,j)*K13(i,j,k)*dTdx(i,j)
-     &   -KapGM(i,j)*K23(i,j,k)*dTdy(i,j)
-     &   )
-       ENDDO
-      ENDDO
-      IF (.NOT.implicitDiffusion) THEN
+      IF (implicitDiffusion) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         df(i,j) = df(i,j) + _rA(i,j,bi,bj)*(
-     &    -KappaRT(i,j,k)*recip_drC(k)
+         df(i,j) = 0.
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = - _rA(i,j,bi,bj)*(
+     &    KappaRT(i,j,k)*recip_drC(k)
      &    *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))*rkFac
      &    )
         ENDDO
@@ -305,52 +304,21 @@ C           boundary condition.
       ENDIF
 #endif /* INCLUDE_T_DIFFUSION_CODE */
 
-#ifdef ALLOW_KPP
-      IF (usingKPPmixing) THEN
-C--   Compute fraction of solar short-wave flux penetrating to
-C     the bottom of the mixing layer
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         hbl(i,j) = KPPhbl(i,j,bi,bj)
-        ENDDO
-       ENDDO
-       j=(sNx+2*OLx)*(sNy+2*OLy)
-       jwtype = 3
-       negone = -1.
-       CALL SWFRAC(
-     I     j, negone, hbl, jwtype,
-     O     frac )
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_RTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     maskUp,theta,
+     U     df,
+     I     myThid)
+#endif
 
-C     Add non local transport coefficient (ghat term) to right-hand-side
-C     The nonlocal transport term is noNrero only for scalars in unstable
-C     (convective) forcing conditions.
-C     Note: -[Qnet * delZ(1) + Qsw * (1-frac) / KPPhbl] * 4000 * rho
-C     is the total heat flux
-C     penetrating the mixed layer from the surface in (deg C / s)
-       IF ( TOP_LAYER ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          df(i,j) = df(i,j) + _rA(i,j,bi,bj) *
-     &           ( Qnet(i,j,bi,bj) * delZ(1) +
-     &           Qsw(i,j,bi,bj) * (1.-frac(i,j))
-     &           / KPPhbl(i,j,bi,bj) ) *
-     &           ( KappaRT(i,j,k) * KPPghat(i,j,k,  bi,bj) )
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          df(i,j) = df(i,j) + _rA(i,j,bi,bj) *
-     &           ( Qnet(i,j,bi,bj) * delZ(1) +
-     &           Qsw(i,j,bi,bj)  * (1.-frac(i,j))
-     &           / KPPhbl(i,j,bi,bj) ) *
-     &           ( KappaRT(i,j,k)   * KPPghat(i,j,k,  bi,bj)
-     &           - KappaRT(i,j,k-1) * KPPghat(i,j,k-1,bi,bj) )
-         ENDDO
-        ENDDO
-       ENDIF
-      ENDIF
-#endif /* ALLOW_KPP */
+#ifdef ALLOW_KPP
+C--   Add non local KPP transport term (ghat) to diffusive T flux.
+      IF (use_KPPmixing) CALL KPP_TRANSPORT_T(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     I     maskC,KappaRT,
+     U     df )
+#endif
 
 C     o Net vertical flux
       DO j=jMin,jMax

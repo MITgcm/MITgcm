@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.20 2000/06/09 14:26:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.21 2000/06/21 19:15:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -6,7 +6,7 @@ CStartOfInterFace
       SUBROUTINE CALC_GS( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
-     I           K13,K23,KappaRS,KapGM,
+     I           KappaRS,
      U           af,df,fZon,fMer,fVerS,
      I           myCurrentTime, myThid )
 C     /==========================================================\
@@ -43,9 +43,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#ifdef ALLOW_KPP
-#include "KPPMIX.h"
-#endif
 
 C     == Routine arguments ==
 C     fZon    - Work array for flux of temperature in the east-west 
@@ -76,10 +73,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k,kUp,kDown,kM1
@@ -159,10 +153,16 @@ C     Advective component of zonal flux
 C     o Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = -(diffKhS+0.5*(KapGM(i,j)+KapGM(i-1,j)))*
-     &            xA(i,j)*dSdx(i,j)
+        df(i,j) = -diffKhS*xA(i,j)*dSdx(i,j)
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_XTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     xA,salt,
+     U     df,
+     I     myThid)
+#endif
 C     o Add the bi-harmonic contribution
       IF (diffK4S .NE. 0.) THEN
        DO j=jMin,jMax
@@ -191,10 +191,16 @@ C       Advective component of meridional flux
 C     Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = -(diffKhS+0.5*(KapGM(i,j)+KapGM(i,j-1)))*
-     &            yA(i,j)*dSdy(i,j)
+        df(i,j) = -diffKhS*yA(i,j)*dSdy(i,j)
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_YTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     yA,salt,
+     U     df,
+     I     myThid)
+#endif
 C     o Add the bi-harmonic contribution
       IF (diffK4S .NE. 0.) THEN
        DO j=jMin,jMax
@@ -212,44 +218,6 @@ C     Net meridional flux
        ENDDO
       ENDDO
 
-C--   Interpolate terms for Redi/GM scheme
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dSdx(i,j) = 0.5*( 
-     &   +0.5*(_maskW(i+1,j,k,bi,bj)
-     &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (salt(i+1,j,k,bi,bj)-salt(i,j,k,bi,bj))
-     &        +_maskW(i,j,k,bi,bj)
-     &         *_recip_dxC(i,j,bi,bj)*
-     &           (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj)))
-     &   +0.5*(_maskW(i+1,j,km1,bi,bj)
-     &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (salt(i+1,j,km1,bi,bj)-salt(i,j,km1,bi,bj))
-     &        +_maskW(i,j,km1,bi,bj)
-     &         *_recip_dxC(i,j,bi,bj)*
-     &           (salt(i,j,km1,bi,bj)-salt(i-1,j,km1,bi,bj)))
-     &       )
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dSdy(i,j) = 0.5*(
-     &   +0.5*(_maskS(i,j,k,bi,bj)
-     &         *_recip_dyC(i,j,bi,bj)*
-     &           (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
-     &        +_maskS(i,j+1,k,bi,bj)
-     &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (salt(i,j+1,k,bi,bj)-salt(i,j,k,bi,bj)))
-     &   +0.5*(_maskS(i,j,km1,bi,bj)
-     &         *_recip_dyC(i,j,bi,bj)*
-     &           (salt(i,j,km1,bi,bj)-salt(i,j-1,km1,bi,bj))
-     &        +_maskS(i,j+1,km1,bi,bj)
-     &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (salt(i,j+1,km1,bi,bj)-salt(i,j,km1,bi,bj)))
-     &       )
-       ENDDO
-      ENDDO
-
 C--   Vertical flux (fVerS) above
 C     Advective component of vertical flux
 C     Note: For K=1 then KM1=1 this gives a barZ(T) = T
@@ -260,52 +228,41 @@ C     (this plays the role of the free-surface correction)
      &   rTrans(i,j)*(salt(i,j,k,bi,bj)+salt(i,j,kM1,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Diffusive component of vertical flux
-C     Note: For K=1 then KM1=1 this gives a dS/dz = 0 upper
+C     o Diffusive component of vertical flux
+C     Note: For K=1 then KM1=1 and this gives a dS/dr = 0 upper
 C           boundary condition.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        df(i,j) = _rA(i,j,bi,bj)*(
-     &   -KapGM(i,j)*K13(i,j,k)*dSdx(i,j)
-     &   -KapGM(i,j)*K23(i,j,k)*dSdy(i,j)
-     &   )
-       ENDDO
-      ENDDO
-      IF (.NOT.implicitDiffusion) THEN
+      IF (implicitDiffusion) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         df(i,j) = df(i,j) + _rA(i,j,bi,bj)*(
-     &    -KappaRS(i,j,k)*recip_drC(k)
+         df(i,j) = 0.
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = - _rA(i,j,bi,bj)*(
+     &    KappaRS(i,j,k)*recip_drC(k)
      &    *(salt(i,j,kM1,bi,bj)-salt(i,j,k,bi,bj))*rkFac
      &    )
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_GMREDI
+      IF (use_GMRedi) CALL GMREDI_RTRANSPORT(
+     I     iMin,iMax,jMin,jMax,bi,bj,K,
+     I     maskUp,salt,
+     U     df,
+     I     myThid)
+#endif
+
 #ifdef ALLOW_KPP
-      IF (usingKPPmixing) THEN
-C--   Add non local transport coefficient (ghat term) to right-hand-side
-C     The nonlocal transport term is noNrero only for scalars in unstable
-C     (convective) forcing conditions.
-       IF ( TOP_LAYER ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
-     &              EmPmR(i,j,bi,bj) * delZ(1) *
-     &              ( KappaRS(i,j,k)   * KPPghat(i,j,k,bi,bj)   )
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
-     &              EmPmR(i,j,bi,bj) * delZ(1) *
-     &              ( KappaRS(i,j,k)   * KPPghat(i,j,k,bi,bj)
-     &              - KappaRS(i,j,k-1) * KPPghat(i,j,k-1,bi,bj) )
-         ENDDO
-        ENDDO
-       ENDIF
-      ENDIF
-#endif /* ALLOW_KPP */
+C--   Add non-local KPP transport term (ghat) to diffusive salt flux.
+      IF (use_KPPmixing) CALL KPP_TRANSPORT_S(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     I     maskC,KappaRS,
+     U     df )
+#endif
 
 C     Net vertical flux
       DO j=jMin,jMax
