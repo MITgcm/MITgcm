@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.331 2004/07/18 01:57:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.332 2004/07/18 14:20:17 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint54c_post
 o replace surfaceTendency U,V,S,T,Tice,Ptr by surfaceForcing U,V,S,T,Tice,Ptr
   this affects (truncation error) output.txt of test-exp:
    global_ocean_ebm,_pressure,.cs32x15(&.thsice), lab_sea & natl_box
