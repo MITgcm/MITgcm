@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.64 2001/03/06 16:59:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.65 2001/03/08 20:25:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,10 +67,9 @@ C                                      variable.
 C     rhoK, rhoKM1   - Density at current level, and level above 
 C     phiHyd         - Hydrostatic part of the potential phiHydi.
 C                      In z coords phiHydiHyd is the hydrostatic 
-C                      pressure anomaly
+C                      Potential (=pressure/rho0) anomaly
 C                      In p coords phiHydiHyd is the geopotential 
-C                      surface height 
-C                      anomaly.
+C                      surface height anomaly.
 C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
 C     phiSurfY             or geopotentiel (atmos) in X and Y direction
 C     KappaRT,       - Total diffusion in vertical for T and S.
@@ -532,17 +531,14 @@ C--     Start computation of dynamics
         jMin = 1-OLy+2
         jMax = sNy+OLy-1
 
-C--     Explicit part of the Surface Pressure Gradient (add in TIMESTEP)
+C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)
 C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
         IF (implicSurfPress.NE.1.) THEN
-          DO j=jMin,jMax
-            DO i=iMin,iMax 
-              phiSurfX(i,j) = _recip_dxC(i,j,bi,bj)*gBaro
-     &           *(etaN(i,j,bi,bj)-etaN(i-1,j,bi,bj)) 
-              phiSurfY(i,j) = _recip_dyC(i,j,bi,bj)*gBaro 
-     &           *(etaN(i,j,bi,bj)-etaN(i,j-1,bi,bj)) 
-            ENDDO
-          ENDDO
+          CALL CALC_GRAD_PHI_SURF(
+     I         bi,bj,iMin,iMax,jMin,jMax,
+     I         etaN,
+     O         phiSurfX,phiSurfY,
+     I         myThid )                         
         ENDIF
 
 C--     Start of dynamics loop
