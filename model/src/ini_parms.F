@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.40 1999/03/12 16:41:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.41 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -58,6 +58,7 @@ C     dependency.
       _RL diffKrSDefault
       _RL hFacMinDrDefault
       _RL delRDefault(Nr)
+      _RS rkFacDefault
 C     zCoordInputData - These are used to select between different coordinate systems.
 C     pCoordInputData   The vertical coordinate system in the rest of the model is 
 C     rCoordInputData   written in terms of r. In the model "data" file input data can
@@ -94,9 +95,9 @@ C--   Continuous equation parameters
      & tempStepping, saltStepping, momStepping, implicitDiffusion,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
-     & rhoConst, buoyancyRelation,
+     & rhoConst, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & openBoundaries
+     & openBoundaries, nonHydrostatic
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -120,8 +121,9 @@ C--   Gridding parameters
 C--   Input files
       NAMELIST /PARM05/
      & bathyFile, hydrogThetaFile, hydrogSaltFile, 
-     & zonalWindFile, meridWindFile, thetaClimFile,
-     & saltClimFile
+     & zonalWindFile, meridWindFile,
+     & thetaClimFile, saltClimFile,
+     & surfQfile, EmPmRfile
 
 C--   Open Boundaries
       NAMELIST /PARM06/
@@ -133,7 +135,7 @@ C
 C     Defaults values for input parameters
       CALL SET_DEFAULTS(
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
-     O   hFacMinDrDefault, delRdefault,
+     O   hFacMinDrDefault, delRdefault, rkFacDefault,
      I   myThid )
 
 C--   Initialise "which vertical coordinate system used" flags.
@@ -220,7 +222,7 @@ C--   Set default "physical" parameters
       hFacMinDr           = UNSET_RL
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
-      READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -357,7 +359,7 @@ C--   z,p,r coord input switching.
       ENDIF
 
 C--   Elliptic solver parameters
-      READ(UNIT=iUnit,NML=PARM02,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -377,7 +379,7 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parameters
       rCD               = -1.D0
-      READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM03) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -455,13 +457,29 @@ C     o Salinity climatology relaxation time scale
        doSaltClimRelax     = .TRUE.
        lambdaSaltClimRelax = 1./tauSaltClimRelax
       ENDIF
-C     o Time step count
-      IF ( endTime .NE. 0 ) THEN
-       IF ( deltaTClock .NE. 0 ) nTimeSteps = 
-     &  INT((endTime-startTime)/deltaTClock)
+
+C     o Start time
+      IF ( nIter0 .NE. 0 .AND. startTime .EQ. 0. )
+     &   startTime = deltaTClock*float(nIter0)
+C     o nIter0
+      IF ( nIter0 .EQ. 0 .AND. startTime .NE. 0. )
+     &   nIter0 = INT( startTime/deltaTClock )
+C     o End Time
+      IF ( nTimeSteps .NE. 0 .AND. endTime .EQ. 0. )
+     &   endTime = startTime + deltaTClock*float(nTimeSteps)
+C     o nTimeSteps
+      IF ( nTimeSteps .EQ. 0 .AND. endTime .NE. 0. )
+     &   nTimeSteps = INT((endTime-startTime)/deltaTClock)
+C     o Consistent?
+      IF ( endTime-startTime .NE. deltaTClock*float(nTimeSteps) ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: both endTime and nTimeSteps have been set'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: but are inconsistent'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-C     o Finish time
-      IF ( endTime .EQ. 0. ) endTime = FLOAT(nTimeSteps)*deltaTClock
 
 C     o If taveFreq is finite, then we must make sure the diagnostics
 C       code is being compiled
@@ -483,7 +501,7 @@ C       code is being compiled
  
 C--   Grid parameters
 C     In cartesian coords distances are in metres
-      rkFac = UNSET_I
+      rkFac = UNSET_RS
       DO K =1,Nr
        delZ(K) = UNSET_RL
        delP(K) = UNSET_RL
@@ -493,7 +511,7 @@ C     In spherical polar distances are in degrees
       recip_rSphere  = 1.D0/rSphere
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
-      READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM04) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -579,6 +597,12 @@ C--   p, z, r coord parameters
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delZ(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delP(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delRDefault(K)
+       IF ( delR(K) .EQ. 0. ) THEN
+         WRITE(msgBuf,'(A,I4)')
+     &  'S/R INI_PARMS: No value for delZ/delP/delR at K = ',K
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
       ENDDO
 C     Check for multiple coordinate systems
       CoordsSet = 0
@@ -593,14 +617,7 @@ C     Check for multiple coordinate systems
       ENDIF
 
 C--   Input files
-      bathyFile       = ' '
-      hydrogSaltFile  = ' '
-      hydrogThetaFile = ' '
-      zonalWindFile   = ' '
-      meridWindFile   = ' '
-      thetaClimFile   = ' '
-      saltClimFile    = ' '
-      READ(UNIT=iUnit,NML=PARM05,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN    
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -627,18 +644,19 @@ C     rkFac = -1 applies when K and the coordinate are in the same sense.
 C     horiVertRatio is a parameter that maps horizontal units to vertical units.
 C     It is used in certain special cases where lateral and vertical terms are
 C     being combined and a single frame of reference is needed.
-      IF ( zCoordInputData .AND. rkFac .EQ. UNSET_I ) THEN 
+      IF ( zCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN 
        rkFac       = 1.D0
        horiVertRatio = 1.D0
       ENDIF
-      IF ( pCoordInputData .AND. rkFac .EQ. UNSET_I ) THEN
+      IF ( pCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN
        rkFac = -1.D0
        horiVertRatio = Gravity * rhoConst
       ENDIF
-      IF ( rCoordInputData .AND. rkFac .EQ. UNSET_I ) THEN
+      IF ( rCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN
        rkFac =  1.D0
        horiVertRatio = 1.D0
       ENDIF
+      IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
       recip_rkFac = 1.D0 / rkFac
       recip_horiVertRatio = 1./horiVertRatio
       IF ( zCoordInputData ) usingZCoords = .TRUE.

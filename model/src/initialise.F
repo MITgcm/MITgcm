@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.9 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.10 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -76,8 +76,13 @@ C--   Initialise time-stepping (predictor variables are carried in G)
 C--   Set coriolis operators
       CALL INI_CORI( myThid )
 
-C--   Set laplace operators for use in conjugate gradient solver.
+C--   Set laplace operators for use in 2D conjugate gradient solver.
       CALL INI_CG2D( myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Set laplace operators for use in 3D conjugate gradient solver.
+      CALL INI_CG3D( myThid )
+#endif
 
 C--   Custom routine to set forcing fields
       CALL INI_FORCING( myThid )

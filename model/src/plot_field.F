@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.9 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.10 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -249,7 +249,7 @@ C      jStart   =  sNy
 C      jEnd     =  1
        jStride  = -1
        kStart   =  1
-       kEnd     =  fldNz
+C      kEnd     =  fldNz
        kEnd     =  1
        kStride  =  1
        biStart  =  1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.10 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.11 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -27,6 +27,9 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "GW.h"
+#endif
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -64,6 +67,17 @@ C                         into fluxUD.
 
       TOP_LAYER = K .EQ. 1
 
+C--   Calculate mask for tracer cells  (0 => land, 1 => water)
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        maskC(i,j) = 1.
+        IF (_hFacC(i,j,k,bi,bj).eq.0.) maskC(i,j)=0.
+        maskUp(i,j) = 1.
+        IF (_hFacC(i,j,k,bi,bj).eq.0. .OR. TOP_LAYER ) 
+     &    maskUp(i,j)=0.
+       ENDDO
+      ENDDO
+
 C--   Calculate tracer cell face open areas
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -85,14 +99,22 @@ C--   tracer cell faces.
 
 C--   Calculate vertical "volume transport" through
 C--   tracer cell face *above* this level.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        rTrans(i,j) = 
-     &   uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*recip_rkFac
-     &  +vTrans(i,j)*recip_rkFac-vTrans(i,j+1)*recip_rkFac
-     &  +rTrans(i,j)
+      IF (TOP_LAYER .AND. rigidLid) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         rTrans(i,j) = 0.
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         rTrans(i,j) = 
+     &    uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*recip_rkFac
+     &   +vTrans(i,j)*recip_rkFac-vTrans(i,j+1)*recip_rkFac
+     &   +rTrans(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Vertical velocity at upper face
       DO j=jMin,jMax
@@ -101,16 +123,16 @@ C--   Vertical velocity at upper face
        ENDDO
       ENDDO
 
-C--    Calculate mask for tracer cells  (0 => land, 1 => water)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        maskC(i,j) = 1.
-        if (_hFacC(i,j,k,bi,bj).eq.0.) maskC(i,j)=0.
-        maskUp(i,j) = 1.
-        if (_hFacC(i,j,k,bi,bj).eq.0. .or. TOP_LAYER ) 
-     &   maskUp(i,j)=0.
-       ENDDO
-      ENDDO
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Vertical velocity at upper face
+C     IF ( nonHydrostatic ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          wVel(i,j,k,bi,bj)=rVel(i,j,kUp)
+         ENDDO
+        ENDDO
+C     ENDIF
+#endif
 
       RETURN
       END

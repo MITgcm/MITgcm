@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.15 1998/12/15 00:20:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.16 1999/03/22 15:54:04 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -32,6 +32,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "GW.h"
+#endif
 
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
@@ -98,7 +101,13 @@ C       Raw fields
         CALL READ_FLD_XYZ_RL(  'guCD.', suff,     guCD, myIter, myThid)
         CALL READ_FLD_XYZ_RL(  'gvCD.', suff,     gvCD, myIter, myThid)
 #endif
-
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+         CALL READ_FLD_XYZ_RL(   'wVel.',suff,      wVel, myIter, myThid)
+         CALL READ_FLD_XYZ_RL(     'gW.',suff,        gW, myIter, myThid)
+         CALL READ_FLD_XYZ_RL(  'gWNm1.',suff,     gWNm1, myIter, myThid)
+        ENDIF
+#endif
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
 
@@ -121,7 +130,7 @@ C--     Check for IO errors
      &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
-C       Resotre default IO precision
+C       Reset default IO precision
         readBinaryPrec = oldPrec
 
        _END_MASTER( myThid )
@@ -149,6 +158,13 @@ C--    Fill in edge regions
       _EXCH_XYZ_R8( vNM1,     myThid )
       _EXCH_XYZ_R8( guCD,     myThid )
       _EXCH_XYZ_R8( gvCD,     myThid )
+#endif
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+         _EXCH_XYZ_R8(wVel  , myThid )
+         _EXCH_XYZ_R8(gW    , myThid )
+         _EXCH_XYZ_R8(gWNM1 , myThid )
+        ENDIF
 #endif
 
       RETURN
@@ -1364,6 +1380,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "GW.h"
+#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -1393,6 +1412,7 @@ C                      be written.
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL permCheckPoint  
+      INTEGER oldPrec
 
       permCheckPoint = .FALSE.
       permCheckPoint=
@@ -1432,8 +1452,8 @@ C--     Set IO "context" for writing state
         CALL DFILE_SET_RW
         CALL DFILE_SET_CONT_ON_ERROR
 C       Force 64-bit IO
+        oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
-
 
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
@@ -1476,7 +1496,19 @@ C       Raw fields
         CALL WRITE_FLD_XYZ_RL(  'guCD.', suff,     guCD, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'gvCD.', suff,     gvCD, myIter, myThid)
 #endif
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+         CALL WRITE_FLD_XYZ_RL
+     &    (   'wVel.',suff,      wVel, myIter, myThid)
+         CALL WRITE_FLD_XYZ_RL
+     &    (     'gW.',suff,        gW, myIter, myThid)
+         CALL WRITE_FLD_XYZ_RL
+     &    (  'gWNm1.',suff,     gWNm1, myIter, myThid)
+        ENDIF
+#endif
 
+C--     Reset binary precision
+        writeBinaryPrec = oldPrec
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
@@ -1529,6 +1561,10 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "CG3D.h"
+#include "GW.h"
+#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -1556,8 +1592,8 @@ C     msgBuf - Error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF ( 
-     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
-     &    myCurrentTime-deltaTClock)
+     &  ( DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
+     &    myCurrentTime-deltaTClock) .AND. myCurrentTime.NE.startTime )
      &  .OR. forceOutput
      & ) THEN
 
@@ -1582,7 +1618,7 @@ C       Raw fields
         CALL WRITE_FLD_XYZ_RL(  'V.',suff,      vVel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'T.',suff,      theta, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'S.',suff,      salt, myIter, myThid)
-        CALL WRITE_FLD_XY_RL (  'H.',suff,    cg2d_x, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'PS.',suff,    cg2d_x, myIter, myThid)
 C       Hmmm.... what to do atbout these huh
 C       need to calculate them but remember we are already within a 
 C       _MASTER section. So we can not use multithreaded code.
@@ -1592,6 +1628,12 @@ C       CALL WRITE_FLD_XYZ_RL(   'W.',suff,   arr3d  , myIter, myThid)
 C       CALL WRITE_FLD_XYZ_RL( 'RHO.',suff,   arr3d  , myIter, myThid)
 C       CALL WRITE_FLD_XYZ_RL('RHOP.',suff,   arr3d  , myIter, myThid)
 C       CALL WRITE_FLD_XYZ_RL(  'PH.',suff,   arr3d  , myIter, myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+        IF (nonHydroStatic) THEN
+         CALL WRITE_FLD_XYZ_RL('PNH.',suff,    cg3d_x, myIter, myThid)
+        ENDIF
+        CALL WRITE_FLD_XYZ_RL(  'W.',suff,      wVel, myIter, myThid)
+#endif
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)

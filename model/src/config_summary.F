@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.19 1998/12/09 16:11:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.20 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -71,8 +71,10 @@ C     == Local variables ==
      &'   /* Reference salinity profile ( ppt ) */')
       CALL WRITE_1D_R8( viscAh, 1, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_1D_R8( viscA4, 1, INDEX_NONE,'viscAh =',
+      CALL WRITE_1D_R8( viscA4, 1, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
+      CALL WRITE_1D_L( no_slip_sides,1, INDEX_NONE,
+     & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       IF ( viscAz .NE. UNSET_RL ) THEN
        CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
      & '   /* Vertical eddy viscosity ( m^2/s ) */')
@@ -85,16 +87,20 @@ C     == Local variables ==
      &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
       CALL WRITE_1D_R8( diffKhT, 1, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffKzT, 1, INDEX_NONE,'diffKzT =',
-     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_1D_R8( diffK4T, 1, INDEX_NONE,'diffK4T =',
      &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
+      CALL WRITE_1D_R8( diffKzT, 1, INDEX_NONE,'diffKzT =',
+     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKrT, 1, INDEX_NONE,'diffKrT =',
+     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_1D_R8( diffKhS, 1, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffKzS, 1, INDEX_NONE,'diffKzS =',
-     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_1D_R8( diffK4S, 1, INDEX_NONE,'diffK4S =',
      &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
+      CALL WRITE_1D_R8( diffKzS, 1, INDEX_NONE,'diffKzS =',
+     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKrS, 1, INDEX_NONE,'diffKrS =',
+     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_1D_R8( tAlpha,1, INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/degree ) */')
       CALL WRITE_1D_R8( sBeta, 1, INDEX_NONE,'sBeta =',
@@ -110,6 +116,8 @@ C     == Local variables ==
         ENDDO
       ENDIF
       CALL WRITE_1D_R8( rhonil,1, INDEX_NONE,'rhonil =',
+     &'   /* Reference density ( kg/m^3 ) */')
+      CALL WRITE_1D_R8( rhoConst,1, INDEX_NONE,'rhoConst =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_1D_R8( gravity,1, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')
@@ -142,6 +150,10 @@ C     == Local variables ==
      & '  /* Momentum pressure term on/off flag */')
       CALL WRITE_1D_L( tempStepping,1, INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
+      CALL WRITE_1D_L( openBoundaries,1, INDEX_NONE,
+     & 'openBoundaries =', '  /* OpenBoundaries on/off flag */')
+      CALL WRITE_1D_L( nonHydrostatic,1, INDEX_NONE,
+     & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
      &'   /* Max. slope allowed in GM/Redi tensor */')
       CALL WRITE_1D_R8( GMLength,1, INDEX_NONE,'GMLength =',
@@ -185,11 +197,11 @@ C     == Local variables ==
      &'   /* Base timestep number  */')
       CALL WRITE_1D_I( nTimeSteps,1, INDEX_NONE,'nTimeSteps =',
      &'   /* Number of timesteps */')
-      CALL WRITE_1D_R8( deltaTmom,1, INDEX_NONE,'deltatTmom =',
+      CALL WRITE_1D_R8( deltaTmom,1, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
-      CALL WRITE_1D_R8( deltaTtracer,1, INDEX_NONE,'deltatTtracer =',
+      CALL WRITE_1D_R8( deltaTtracer,1, INDEX_NONE,'deltaTtracer =',
      &'   /* Tracer equation timestep ( s ) */')
-      CALL WRITE_1D_R8( deltaTClock ,1, INDEX_NONE,'deltatTClock  =',
+      CALL WRITE_1D_R8( deltaTClock ,1, INDEX_NONE,'deltaTClock  =',
      &'   /* Model clock timestep ( s ) */')
       CALL WRITE_1D_R8( cAdjFreq,1, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.36 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.37 1999/03/22 15:54:03 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -55,12 +55,15 @@ C     thetaClimFile   - File containing theta climataology used
 C                       in relaxation term -lambda(theta-theta*)
 C     saltClimFile    - File containing salt climataology used
 C                       in relaxation term -lambda(salt-salt*)
+C     surfQfile       - File containing surface heat flux
+C     EmPmRfile       - File containing surface fresh water flux
 C     buoyancyRelation - Flag used to indicate which relation to use to
 C                        get buoyancy.
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
-     &                saltClimFile, buoyancyRelation
+     &                saltClimFile, buoyancyRelation,
+     &                EmPmRfile,surfQfile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -69,6 +72,8 @@ C                        get buoyancy.
       CHARACTER*(MAX_LEN_FNAM) meridWindFile
       CHARACTER*(MAX_LEN_FNAM) thetaClimFile
       CHARACTER*(MAX_LEN_FNAM) saltClimFile
+      CHARACTER*(MAX_LEN_FNAM) surfQfile
+      CHARACTER*(MAX_LEN_FNAM) EmPmRfile
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
@@ -165,6 +170,7 @@ C                        coords.
 C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
 C     openBoundaries - Using open-boundaries
+C     nonHydrostatic - Using non-hydrostatic terms
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & no_slip_sides,no_slip_bottom,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
@@ -176,7 +182,7 @@ C     openBoundaries - Using open-boundaries
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion, doThetaClimRelax, doSaltClimRelax,
      & periodicExternalForcing, usingPCoords, usingZCoords,
-     & openBoundaries
+     & openBoundaries, nonHydrostatic
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -209,6 +215,7 @@ C     openBoundaries - Using open-boundaries
       LOGICAL usingPCoords
       LOGICAL usingZCoords
       LOGICAL openBoundaries
+      LOGICAL nonHydrostatic
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

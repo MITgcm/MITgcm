@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.18 1998/12/09 16:11:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.19 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -198,7 +198,7 @@ C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       err    = errBuf(1,1)
       
       _BEGIN_MASTER( myThid )
-      write(0,'(A,1PE30.14)') 'cg2d: Sum(rhs) = ',sumRHS
+      write(0,'(A,1PE30.14)') ' cg2d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
 
       actualIts      = 0
@@ -396,5 +396,5 @@ C     err    = errBuf(1,1)
 C     write(0,*) 'cg2d: Ax - b = ',SQRT(err)
 CcnhDebugEnds
 
-
+      RETURN
       END

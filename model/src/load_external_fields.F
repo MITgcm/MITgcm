@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.11 1998/12/15 00:20:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.12 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -131,26 +131,28 @@ C     === Local variables ===
 C     msgBuf - Error message buffer
       CHARACTER*(MAX_LEN_FNAM) msgBuf
 
-      IF ( thetaClimFile .EQ. ' ' ) THEN
-C--    Check that relaxation term is off
-C      IF ( doThetaClimRelax ) THEN
-C       WRITE(msgBuf,'(A)')  'S/R LOAD_THETA_CLIMATOLOGY'
-C       CALL PRINT_ERROR( msgBuf, 1 )
-C       WRITE(msgBuf,'(A)')  'No theta climatology for relaxation specified.'
-C       CALL PRINT_ERROR( msgBuf, 1 )
-C       STOP 'ABNORMAL END: S/R LOAD_THETA_CLIMATOLOGY'
-C      ENDIF
-      ELSE
+      IF ( thetaClimFile .NE. ' ' ) THEN
 C--    Load value from file
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
        _END_MASTER(   myThid )
       ENDIF
-
       _EXCH_XY_R4( SST, myThid )
 C
       IF ( thetaClimFile .NE. ' ' ) THEN
        CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )
+      ENDIF
+
+      IF ( surfQfile .NE. ' ' ) THEN
+C--    Load value from file
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XY_RS( surfQfile, ' ', Qnet, 0, myThid )
+       _END_MASTER(   myThid )
+      ENDIF
+      _EXCH_XY_R4( Qnet, myThid )
+C
+      IF ( surfQfile .NE. ' ' ) THEN
+       CALL PLOT_FIELD_XYRS( Qnet, 'Surface Heat Flux' , 1, myThid )
       ENDIF
 
 C
@@ -209,7 +211,7 @@ C          tauX  = -tauMax*cos(2. _d 0*PI*distY)
        _END_MASTER(myThid)
       ENDIF
 
-      IF (.NOT. meridWindFile .EQ. ' ' ) THEN
+      IF (meridWindFile .NE. ' ' ) THEN
        _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
        _END_MASTER(myThid)
@@ -521,7 +523,8 @@ C      Convert Qnetdot into the increment to Qnet per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           Qnetdot(i,j,bi,bj)=Qnetdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           Qnetdot(i,j,bi,bj)=Qnetdot(i,j,bi,bj)*deltaTclock
+     &           /externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -547,7 +550,8 @@ C      Set EmPmRdot to the total change over the period
           DO i=1,sNx
 Cfix       EmPmRdot(i,j,bi,bj) = EmPmRdot(i,j,bi,bj)-EmPmR(i,j,bi,bj)
 C sign change is becuase data is infact P-E not E-P
-           EmPmR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)/(3153600000.*delZ(1))*35.
+           EmPmR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)/(3153600000.*delZ(1))*
+     &           35.
            EmPmRdot(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -572,7 +576,8 @@ C      Convert EmPmRdot into the increment to EmPmR per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           EmPmRdot(i,j,bi,bj)=EmPmRdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           EmPmRdot(i,j,bi,bj)=EmPmRdot(i,j,bi,bj)*deltaTclock/
+     &           externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO

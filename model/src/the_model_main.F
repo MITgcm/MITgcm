@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.25 1999/03/12 16:44:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.26 1999/03/22 15:54:05 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -85,8 +85,9 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
 #include "DYNVARS.h"
+#include "CG2D.h"
+#include "CG3D.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -103,6 +104,7 @@ C     myCurrentTime - Time counter for this thread
 C     I             - Loop counter
       INTEGER I, myCurrentIter
       REAL    myCurrentTime
+      CHARACTER*(30) suff
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL',myThid)
@@ -151,6 +153,15 @@ C--    Step forward fields and calculate time tendency terms
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
        CALL TIMER_STOP ('DYNAMICS           [MAIN LOOP]',myThid)
 
+#ifdef ALLOW_NONHYDROSTATIC
+C--    Step forward W field in N-H algorithm
+       IF ( nonHydrostatic ) THEN
+        CALL TIMER_START('CALC_GW            [MAIN LOOP]',myThid)
+        CALL CALC_GW( myThid)
+        CALL TIMER_STOP ('CALC_GW            [MAIN LOOP]',myThid)
+       ENDIF
+#endif
+
 C--    Do time averages
 #ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
        CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
@@ -169,6 +180,14 @@ C      By convention this is taken to be the model "state".
        CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
        CALL DO_THE_MODEL_IO( myCurrentTime, myCurrentIter, myThid )
        CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
+
+Caja
+       WRITE(suff,'(I10.10)') myCurrentIter
+       CALL WRITE_FLD_XY_RL('B2d.',suff,cg2d_b,
+     &            myCurrentIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('B3d.',suff,cg3d_b,
+     &            myCurrentIter,myThid)
+Caja
 
 C--    Solve elliptic equation(s).
 C      Two-dimensional only for conventional hydrostatic or 
@@ -224,6 +243,15 @@ C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
       CALL TIMER_START('DYNAMICS            [SPIN-DOWN]',myThid)
       CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('DYNAMICS            [SPIN-DOWN]',myThid)
+
+#ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
+C--    Step forward W field in N-H algorithm
+       CALL TIMER_START('CALC_GW            [SPIN-DOWN]',myThid)
+       CALL CALC_GW( myThid)
+       CALL TIMER_STOP ('CALC_GW            [SPIN-DOWN]',myThid)
+      ENDIF
+#endif
 
 C--   Do time averages
 #ifdef ALLOW_DIAGNOSTICS

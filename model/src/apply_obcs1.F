@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.1 1998/12/08 19:44:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.2 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,8 +33,8 @@ C Northern boundary
      &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
         theta(I,OB_Jn(I,bi,bj),K,bi,bj)=OBNt(I,K,bi,bj)
      &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
-c       vVel(I,OB_Jn(I,bi,bj)+1,K,bi,bj)=OBNv(I,K,bi,bj)
-c    &                              *_maskS(I,OB_Jn(I,bi,bj)+1,K,bi,bj)
+        vVel(I,OB_Jn(I,bi,bj)+1,K,bi,bj)=OBNv(I,K,bi,bj)
+     &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
        ENDIF
 C Southern boundary
        IF (OB_Js(I,bi,bj).NE.0) THEN
@@ -44,8 +44,8 @@ C Southern boundary
      &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
         theta(I,OB_Js(I,bi,bj),K,bi,bj)=OBSt(I,K,bi,bj)
      &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-c       vVel(I,OB_Js(I,bi,bj),K,bi,bj)=OBSv(I,K,bi,bj)
-c    &                              *_maskS(I,OB_Js(I,bi,bj),K,bi,bj)
+        vVel(I,OB_Js(I,bi,bj),K,bi,bj)=OBSv(I,K,bi,bj)
+     &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
        ENDIF
       ENDDO
 
@@ -59,8 +59,8 @@ C Eastern boundary
      &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
         theta(OB_Ie(J,bi,bj),J,K,bi,bj)=OBEt(J,K,bi,bj)
      &                              *_maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
-c       uVel(OB_Ie(J,bi,bj)+1,J,K,bi,bj)=OBEu(J,K,bi,bj)
-c    &                              *_maskW(OB_Ie(J,bi,bj)+1,J,K,bi,bj)
+        uVel(OB_Ie(J,bi,bj)+1,J,K,bi,bj)=OBEu(J,K,bi,bj)
+     &                              *_maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
        ENDIF
 C Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
@@ -70,8 +70,8 @@ C Western boundary
      &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
         theta(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWt(J,K,bi,bj)
      &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
-c       uVel(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWu(J,K,bi,bj)
-c    &                              *_maskW(OB_Iw(J,bi,bj),J,K,bi,bj)
+        uVel(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWu(J,K,bi,bj)
+     &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
        ENDIF
       ENDDO
 

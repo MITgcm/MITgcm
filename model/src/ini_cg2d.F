@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.23 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.24 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -126,8 +126,8 @@ CcnhDebugEnds
       _EXCH_XY_R4(aW2d, myThid)
       _EXCH_XY_R4(aS2d, myThid)
 CcnhDebugStarts
-      CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initialise preconditioner
@@ -151,7 +151,7 @@ C           defaults to 0.51 but can be set at runtime.
           pC(I,J,bi,bj) = 1. _d 0
           aC = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
-     &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
+     &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
      &    +freeSurfFac*myNorm* horiVertRatio*
      &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
@@ -196,9 +196,9 @@ C--   Update overlap regions
       _EXCH_XY_R4(pW, myThid)
       _EXCH_XY_R4(pS, myThid)
 CcnhDebugStarts
-      CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
-      CALL PLOT_FIELD_XYRS( pS, 'pS   INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( pS, 'pS   INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C--   Set default values for initial guess and RHS

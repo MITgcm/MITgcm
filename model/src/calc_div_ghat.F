@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.7 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.8 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -22,6 +22,9 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CG2D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "CG3D.h"
+#endif
 
 C     == Routine arguments ==
 C     pH - Hydrostatic pressure
@@ -69,10 +72,20 @@ C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
       ENDDO
       DO j=1,sNy
        DO i=1,sNx
-        cg2d_b(i,j,bi,bj) =  cg2d_b(i,j,bi,bj) +
+        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
      &   pf(i+1,j)-pf(i,j)
        ENDDO
       ENDDO
+
+#ifdef ALLOW_NONHYDROSTATIC
+      IF (nonHydrostatic) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         cg3d_b(i,j,k,bi,bj) = pf(i+1,j)-pf(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -82,11 +95,21 @@ C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
 
       DO j=1,sNy
        DO i=1,sNx
-        cg2d_b(i,j,bi,bj)   =  cg2d_b(i,j,bi,bj) +
+        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
      &   pf(i,j+1)-pf(i,j)
        ENDDO
       ENDDO
 
+#ifdef ALLOW_NONHYDROSTATIC
+      IF (nonHydrostatic) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
+     &    pf(i,j+1)-pf(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.14 1998/12/10 00:16:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.15 1999/03/22 15:54:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -32,6 +32,10 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I, J, K
+#ifdef ALLOW_NONHYDROSTATIC
+      INTEGER Km1
+      _RL hFacUpper,hFacLower
+#endif
 
 C     Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -74,7 +78,8 @@ C           Base of domain is below bottom of this cell
            ELSE
 C           Base of domain is in this cell
 C           Set hFac to the fraction of the cell that is open.
-            hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
+            hFacC(I,J,K,bi,bj) =
+     &       (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
            ENDIF
 C Impose minimum fraction
            IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
@@ -185,6 +190,36 @@ C     Calculate recipricols grid lengths
       _EXCH_XY_R4(recip_dxV, myThid )
       _EXCH_XY_R4(recip_dyU, myThid )
 
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Calculate the reciprocal hfac distance/volume for W cells
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nr
+         Km1=max(K-1,1)
+         hFacUpper=drF(Km1)/(drF(Km1)+drF(K))
+         IF (Km1.EQ.K) hFacUpper=0.
+         hFacLower=drF(K)/(drF(Km1)+drF(K))
+         DO J=1,sNy
+          DO I=1,sNx
+           IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
+            IF (hFacC(I,J,K,bi,bj).LE.0.5) THEN
+            recip_hFacU(I,J,K,bi,bj)=
+     &         hFacUpper+hFacLower*hFacC(I,J,K,bi,bj)
+            ELSE
+             recip_hFacU(I,J,K,bi,bj)=1.
+            ENDIF
+           ELSE
+            recip_hFacU(I,J,K,bi,bj)=0.
+           ENDIF
+           IF (recip_hFacU(I,J,K,bi,bj).NE.0.)
+     &      recip_hFacU(I,J,K,bi,bj)=1./recip_hFacU(I,J,K,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _EXCH_XY_R4(recip_hFacU, myThid )
+#endif
 C
       RETURN
       END

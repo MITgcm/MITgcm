@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.1 1998/12/08 19:44:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.2 1999/03/22 15:54:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,7 +33,7 @@ C Northern boundary
         gUnm1(I,OB_Jn(I,bi,bj),K,bi,bj)=OBNu(I,K,bi,bj)
      &                              *_maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
         gVnm1(I,OB_Jn(I,bi,bj)+1,K,bi,bj)=OBNv(I,K,bi,bj)
-     &                              *_maskS(I,OB_Jn(I,bi,bj)+1,K,bi,bj)
+     &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
        ENDIF
 C Southern boundary
        IF (OB_Js(I,bi,bj).NE.0) THEN
@@ -43,7 +43,7 @@ C Southern boundary
         gUnm1(I,OB_Js(I,bi,bj),K,bi,bj)=OBSu(I,K,bi,bj)
      &                              *_maskW(I,OB_Js(I,bi,bj),K,bi,bj)
         gVnm1(I,OB_Js(I,bi,bj),K,bi,bj)=OBSv(I,K,bi,bj)
-     &                              *_maskS(I,OB_Js(I,bi,bj),K,bi,bj)
+     &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
        ENDIF
       ENDDO
 
@@ -59,7 +59,7 @@ C Eastern boundary
         gVnm1(OB_Ie(J,bi,bj),J,K,bi,bj)=OBEv(J,K,bi,bj)
      &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
         gUnm1(OB_Ie(J,bi,bj)+1,J,K,bi,bj)=OBEu(J,K,bi,bj)
-     &                              *_maskW(OB_Ie(J,bi,bj)+1,J,K,bi,bj)
+     &                              *_maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
        ENDIF
 C Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
@@ -69,7 +69,7 @@ C Western boundary
         gVnm1(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWv(J,K,bi,bj)
      &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
         gUnm1(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWu(J,K,bi,bj)
-     &                              *_maskW(OB_Iw(J,bi,bj),J,K,bi,bj)
+     &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
        ENDIF
       ENDDO
 
