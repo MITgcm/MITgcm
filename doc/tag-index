@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.116 2003/01/10 23:41:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.117 2003/01/12 21:47:59 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o gmredi: fix few bugs and restore parameter values (e.g., Small_Number=1.D-12)
+  and scheme (e.g., Large_SlopeSqr=1.D+48) of checkpoint47f_post
 
 checkpoint48
 This will be a good checkpoint to plug into the ecco-branch.
