@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.10 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.11 2003/02/11 03:03:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -120,12 +120,6 @@ C--   Check dependances between packages
 
 C--   Call fixed data initialization phase of packages
       CALL PACKAGES_INIT_FIXED( myThid )
-
-#ifdef ALLOW_ZONAL_FILT
-C--   Latitude circle filter initialisation
-      CALL ZONAL_FILT_INIT(myThid)
-      _BARRIER
-#endif
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
       CALL INI_CG2D( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.5 2002/06/15 03:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.6 2003/02/11 03:03:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,6 +23,8 @@ C       |
 C       |-- OBCS_INIT_FIXED
 C       |
 C       |-- FLT_INIT
+C       |
+C       |-- ZONAL_FILT_INIT
 
 C     !USES:
       IMPLICIT NONE
@@ -48,8 +50,15 @@ C--   Initialize fixed arrays for OBCS
 #endif
 #ifdef ALLOW_FLT
 C--   Initialise Float positions
-      IF (useFLT) then
+      IF (useFLT) THEN
        CALL FLT_INIT(nIter0,startTime,myThid )
+      _BARRIER
+      ENDIF
+#endif
+#ifdef ALLOW_ZONAL_FILT
+C--   Latitude circle filter initialisation
+      IF (useZONAL_FILT) THEN
+       CALL ZONAL_FILT_INIT(myThid)
       _BARRIER
       ENDIF
 #endif
