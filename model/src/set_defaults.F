@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.50 2003/07/08 15:00:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.51 2003/08/01 01:45:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -177,6 +177,7 @@ C--   Atmospheric physical parameters (e.g.: EOS)
       atm_Cp = 1004. _d 0
       atm_Rd = UNSET_RL
       atm_kappa = 2. _d 0 / 7. _d 0
+      atm_Rq = 0. _d 0
       integr_GeoPot = 2
       selectFindRoSurf = 0
 

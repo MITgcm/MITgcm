@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.41 2003/04/17 13:16:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.42 2003/08/01 01:45:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -145,6 +145,8 @@ CEOP
      & '  /* specific heat (Cp) of dry air ( J/kg/K ) */')
       CALL WRITE_0D_R8( atm_kappa, INDEX_NONE, 'atm_kappa =',
      & '  /* kappa (=Rd/Cp ) of dry air */')
+       CALL WRITE_0D_R8( atm_Rq, INDEX_NONE, 'atm_Rq =',
+     &  ' /* water vap. specific vol. anomaly relative to dry air */')
       CALL WRITE_0D_R8( atm_Po, INDEX_NONE, 'atm_Po =',
      & '  /* standard reference pressure ( Pa ) */')
       CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
