@@ -400,7 +400,8 @@ do
  && makedependmodel $dir/input && makedepend=Y \
  && makemodel $dir/input && make=Y \
  && runmodel $dir/input mitgcmuv && run=Y \
- && results=`testoutput $dir`
+ && results=`testoutput $dir` \
+ && makeclean $dir/input
  echo
  formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
  echo
