@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.7 2003/03/06 00:47:33 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.8 2003/05/23 18:37:31 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -97,12 +97,17 @@ c     Surface flux data.
      &         swfluxfile,         lwfluxfile, apressurefile,
      &         swdownfile,         lwdownfile,
      &          exf_iprec,         exf_yftype,
-     &     exf_inscal_hfl,     exf_inscal_ust, exf_inscal_vst,
-     &     exf_inscal_swf,     exf_inscal_sst, exf_inscal_sss,
-     &     exf_inscal_sfl,  exf_inscal_runoff,exf_inscal_apressure,
-     &    exf_outscal_hfl,    exf_outscal_ust,exf_outscal_vst,
-     &    exf_outscal_swf,    exf_outscal_sst,exf_outscal_sss,
-     &    exf_outscal_sfl,  exf_outscal_apressure,
+     &   exf_inscal_hflux,   exf_inscal_sflux,
+     & exf_inscal_ustress, exf_inscal_vstress,
+     &   exf_inscal_uwind,   exf_inscal_vwind,
+     &    exf_inscal_evap,   exf_inscal_atemp, exf_inscal_aqh,
+     &     exf_inscal_sst,     exf_inscal_sss,
+     &  exf_inscal_swflux,  exf_inscal_lwflux, exf_inscal_precip,
+     &  exf_inscal_runoff,               exf_inscal_apressure,
+     &  exf_inscal_swdown,  exf_inscal_lwdown,
+     &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
+     & exf_outscal_swflux,    exf_outscal_sst,exf_outscal_sss,
+     &  exf_outscal_sflux,  exf_outscal_apressure,
      &         hfluxconst,
      &         atempconst,
      &         aqhconst,
@@ -271,26 +276,35 @@ c     Initialise file type and field precision
       exf_yftype      = 'RL'
 
 c     Input scaling factors.
-      exf_inscal_hfl       =  1. _d 0
-      exf_inscal_ust       =  1. _d 0
-      exf_inscal_vst       =  1. _d 0
-      exf_inscal_swf       =  1. _d 0
+      exf_inscal_hflux     =  1. _d 0
+      exf_inscal_sflux     =  1. _d 0
+      exf_inscal_ustress   =  1. _d 0
+      exf_inscal_vstress   =  1. _d 0
+      exf_inscal_uwind     =  1. _d 0
+      exf_inscal_vwind     =  1. _d 0
+      exf_inscal_swflux    =  1. _d 0
+      exf_inscal_lwflux    =  1. _d 0
+      exf_inscal_precip    =  1. _d 0
       exf_inscal_sst       =  1. _d 0
       exf_inscal_sss       =  1. _d 0
+      exf_inscal_atemp     =  1. _d 0
+      exf_inscal_aqh       =  1. _d 0
+      exf_inscal_evap      =  1. _d 0
       exf_inscal_apressure =  1. _d 0
-      exf_inscal_sfl       =  1. _d 0
 cds   convert runoff from m/yr to m/s and change sign.
       exf_inscal_runoff    = -1.0/(86400.*365.0)
+      exf_inscal_swdown    =  1. _d 0
+      exf_inscal_lwdown    =  1. _d 0
 
 c     Output scaling factors.
-      exf_outscal_hfl      =  1. _d 0
-      exf_outscal_ust      =  1. _d 0
-      exf_outscal_vst      =  1. _d 0
-      exf_outscal_swf      =  1. _d 0
+      exf_outscal_hflux    =  1. _d 0
+      exf_outscal_sflux    =  1. _d 0
+      exf_outscal_ustress  =  1. _d 0
+      exf_outscal_vstress  =  1. _d 0
+      exf_outscal_swflux   =  1. _d 0
       exf_outscal_sst      =  1. _d 0
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
-      exf_outscal_sfl      =  1. _d 0
 c
       EXFwindOnBgrid = .FALSE.
 

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.5 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.6 2003/05/23 18:37:31 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -106,7 +106,7 @@ c     == end of interface ==
           do j = jmin,jmax
             do i = imin,imax
 c            Heat flux.
-             qnet(i,j,bi,bj) = exf_outscal_hfl*hflux(i,j,bi,bj)
+             qnet(i,j,bi,bj) = exf_outscal_hflux*hflux(i,j,bi,bj)
             enddo
           enddo
 
@@ -114,7 +114,7 @@ c            Heat flux.
           do j = jmin,jmax
             do i = imin,imax
 c            Salt flux.
-             empmr(i,j,bi,bj)= exf_outscal_sfl*sflux(i,j,bi,bj)
+             empmr(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
             enddo
           enddo
 
@@ -141,7 +141,7 @@ CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
           enddo
           do j = jmin,jmax
             do i = imin,imax
-             fu(i,j,bi,bj)   = exf_outscal_ust*ustress(i,j,bi,bj)
+             fu(i,j,bi,bj)   = exf_outscal_ustress*ustress(i,j,bi,bj)
             enddo
           enddo
 
@@ -168,7 +168,7 @@ CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
           enddo
           do j = jmin,jmax
             do i = imin,imax
-             fv(i,j,bi,bj)   = exf_outscal_vst*vstress(i,j,bi,bj)
+             fv(i,j,bi,bj)   = exf_outscal_vstress*vstress(i,j,bi,bj)
             enddo
           enddo
 
@@ -176,7 +176,7 @@ CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 c             Short wave radiative flux.
           do j = jmin,jmax
             do i = imin,imax
-             qsw(i,j,bi,bj)  = exf_outscal_swf*swflux(i,j,bi,bj)
+             qsw(i,j,bi,bj)  = exf_outscal_swflux*swflux(i,j,bi,bj)
             enddo
           enddo
 #endif

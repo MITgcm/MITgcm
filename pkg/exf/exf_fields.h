@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.5 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.6 2003/05/23 18:37:31 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -147,6 +147,12 @@ c
       common /exf_stress_r/ ustress, vstress
       _RL ustress   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL vstress   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_ustress_r/ ustress0, ustress1
+      _RL ustress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL ustress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_vstress_r/ vstress0, vstress1
+      _RL vstress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vstress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_ATM_WIND
       common /exf_atm_wind_r/ uwind, vwind
@@ -158,18 +164,17 @@ c
       common /exfl_vwind_r/ vwind0, vwind1
       _RL vwind0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL vwind1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#else
-      common /exfl_ustress_r/ ustress0, ustress1
-      _RL ustress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL ustress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /exfl_vstress_r/ vstress0, vstress1
-      _RL vstress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL vstress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
       common /exf_hsflux_r/ hflux, sflux
       _RL hflux     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL sflux     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_hflux_r/ hflux0, hflux1
+      _RL hflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL hflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_sflux_r/ sflux0, sflux1
+      _RL sflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL sflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
       common /exf_evap/ evap
@@ -194,13 +199,6 @@ c
       common /exfl_precip_r/ precip0, precip1
       _RL precip0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL precip1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#else
-      common /exfl_hflux_r/ hflux0, hflux1
-      _RL hflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /exfl_sflux_r/ sflux0, sflux1
-      _RL sflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL sflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
@@ -211,7 +209,7 @@ c
       _RL swflux1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-#ifdef EXF_READ_EVAP
+#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
       common /exfl_evap_r/ evap0, evap1
       _RL evap0     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL evap1     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

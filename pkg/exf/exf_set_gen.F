@@ -1,18 +1,24 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_evap( mycurrenttime, mycurrentiter, mythid )
+      subroutine exf_set_gen( 
+     &     genfile, genstartdate, genperiod, exf_inscal_gen,
+     &     genfld, gen0, gen1, genmask, 
+     &     mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_set_evap
+c     SUBROUTINE exf_set_gen
 c     ==================================================================
 c
-c     o set external forcing evap
+c     o set external forcing gen
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+c     changed: heimbach@mit.edu 10-Jan-2002
+c              mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+c              heimbach@mit.edu: totally re-organized exf_set_... 
+c              replaced all routines by one generic routine
 
 c     ==================================================================
-c     SUBROUTINE exf_set_evap
+c     SUBROUTINE exf_set_gen
 c     ==================================================================
 
       implicit none
@@ -25,15 +31,21 @@ c     == global variables ==
 
 #include "exf_param.h"
 #include "exf_constants.h"
-#include "exf_fields.h"
 
 c     == routine arguments ==
 
+      integer genstartdate(4)
+      _RL     genperiod
+      _RL     exf_inscal_gen
+      _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      character*1 genmask
+      character*(128) genfile
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
-#ifdef EXF_READ_EVAP
 c     == local variables ==
 
       logical first, changed
@@ -45,37 +57,39 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      if ( evapfile .NE. ' ' ) then
+      if ( genfile .NE. ' ' ) then
 
-c     get record numbers and interpolation factor for evap
+c     get record numbers and interpolation factor for gen
          call exf_GetFFieldRec(
-     I        evapstartdate, evapperiod
+     I        genstartdate, genperiod
      O        , fac, first, changed
      O        , count0, count1
      I        , mycurrenttime, mycurrentiter, mythid
      &        )
 
          if ( first ) then
-            call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
-     &           , evap1, count0, mythid
+            call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
+     &           , gen1, count0, mythid
      &           )
+
             if (exf_yftype .eq. 'RL') then
-               call exf_filter_rl( evap1, evapmask, mythid )
+               call exf_filter_rl( gen1, genmask, mythid )
             else
-               call exf_filter_rs( evap1, evapmask, mythid )
+               call exf_filter_rs( gen1, genmask, mythid )
             end if
          endif
 
          if (( first ) .or. ( changed )) then
-            call exf_SwapFFields( evap0, evap1, mythid )
-
-            call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
-     &           , evap1, count1, mythid
+            call exf_SwapFFields( gen0, gen1, mythid )
+            
+            call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
+     &           , gen1, count1, mythid
      &           )
+
             if (exf_yftype .eq. 'RL') then
-               call exf_filter_rl( evap1, evapmask, mythid )
+               call exf_filter_rl( gen1, genmask, mythid )
             else
-               call exf_filter_rs( evap1, evapmask, mythid )
+               call exf_filter_rs( gen1, genmask, mythid )
             end if
          endif
 
@@ -87,8 +101,9 @@ c     Loop over tiles.
 
 c     Interpolate linearly onto the current time.
 
-                     evap(i,j,bi,bj) = fac * evap0(i,j,bi,bj) +
-     &                    (exf_one - fac) * evap1(i,j,bi,bj)
+                     genfld(i,j,bi,bj) = exf_inscal_gen * (
+     &                                fac * gen0(i,j,bi,bj) +
+     &                    (exf_one - fac) * gen1(i,j,bi,bj) )
 
                   enddo
                enddo
@@ -97,26 +112,26 @@ c     Interpolate linearly onto the current time.
 
       endif
 
-#endif /* EXF_READ_EVAP */
-
       end
 
 
 
-      subroutine exf_init_evap( mythid )
+      subroutine exf_init_gen ( 
+     &     genconst, genfld, gen0, gen1, mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_init_evap
+c     SUBROUTINE exf_init_gen
 c     ==================================================================
 c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+c              heimbach@mit.edu: totally re-organized exf_set_... 
+c              replaced all routines by one generic routine
 c
 c     ==================================================================
-c     SUBROUTINE exf_init_evap
+c     SUBROUTINE exf_init_gen
 c     ==================================================================
 
       implicit none
@@ -127,13 +142,15 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "exf_param.h"
-#include "exf_fields.h"
 
 c     == routine arguments ==
 
+      _RL genconst
+      _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer mythid
 
-#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
 c     == local variables ==
 
       integer bi, bj
@@ -145,16 +162,12 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              evap(i,j,bi,bj)  = evapconst
-#ifdef EXF_READ_EVAP
-              evap0(i,j,bi,bj) = 0. _d 0
-              evap1(i,j,bi,bj) = 0. _d 0
-#endif
+              genfld(i,j,bi,bj)  = genconst
+              gen0(i,j,bi,bj)    = 0. _d 0
+              gen1(i,j,bi,bj)    = 0. _d 0
             enddo
           enddo
         enddo
       enddo
-
-#endif /* ALLOW_ATM_TEMP or EXF_READ_EVAP */
 
       end

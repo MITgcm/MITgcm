@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.6 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.7 2003/05/23 18:37:31 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -49,6 +49,9 @@ c  |          * ctrl_getobcss
 c  |          * ctrl_getobcsw
 c  |          * ctrl_getobcse
 c  |
+c  |-- exf_bulkformulae
+c  |   If ALLOW_BULKFORMULAE, compute fluxes via bulkformulae
+c  |
 c  |-- exf_getsurfacefluxes
 c  |   If forcing and control is flux, then the
 c  |   control vector anomalies are read here
@@ -93,6 +96,15 @@ C     \ev
 C     !USES:
       implicit none
 
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+#include "exf_param.h"
+#include "exf_fields.h"
+#include "exf_constants.h"
+
 c     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -104,6 +116,9 @@ c     == routine arguments ==
 C     !LOCAL VARIABLES:
 c     == local variables ==
 
+      integer bi,bj
+      integer i,j,k
+
 c     == end of interface ==
 CEOP
 
@@ -112,6 +127,39 @@ c     Get values of climatological fields.
 
 c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
+
+c     Compute bulk formulae
+#ifdef ALLOW_BULKFORMULAE
+      call exf_bulkformulae( mytime, myiter, mythid )
+#endif
+
+c     Apply runoff, masks and exchanges
+      do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+          k = 1
+          do j = 1,sny
+            do i = 1,snx
+#ifdef ALLOW_RUNOFF
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
+#endif
+
+              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+
+c     Update the tile edges.
+      _EXCH_XY_R8(hflux,   mythid)
+      _EXCH_XY_R8(sflux,   mythid)
+       CALL EXCH_UV_XY_RL(ustress, vstress, .TRUE., myThid)
+#ifdef SHORTWAVE_HEATING
+      _EXCH_XY_R8(swflux, mythid)
+#endif
+#ifdef ATMOSPHERIC_LOADING
+      _EXCH_XY_R8(apressure, mythid)
+#endif
 
 c     Get values of the surface flux anomalies.
       call exf_getsurfacefluxes( mytime, myiter, mythid )

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.7 2003/03/06 00:47:33 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.8 2003/05/23 18:37:31 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -309,42 +309,61 @@ c     file precision and field type
 
 c     input and output scaling factors
 
-      _RL     exf_inscal_hfl
-      _RL     exf_inscal_ust
-      _RL     exf_inscal_vst
-      _RL     exf_inscal_swf
+      _RL     exf_inscal_hflux
+      _RL     exf_inscal_sflux
+      _RL     exf_inscal_ustress
+      _RL     exf_inscal_vstress
+      _RL     exf_inscal_uwind
+      _RL     exf_inscal_vwind
+      _RL     exf_inscal_swflux
+      _RL     exf_inscal_lwflux
+      _RL     exf_inscal_precip
       _RL     exf_inscal_sst
       _RL     exf_inscal_sss
+      _RL     exf_inscal_atemp
+      _RL     exf_inscal_aqh
+      _RL     exf_inscal_evap
       _RL     exf_inscal_apressure
-      _RL     exf_inscal_sfl
       _RL     exf_inscal_runoff
-      _RL     exf_outscal_hfl
-      _RL     exf_outscal_ust
-      _RL     exf_outscal_vst
-      _RL     exf_outscal_swf
+      _RL     exf_inscal_swdown
+      _RL     exf_inscal_lwdown
+
+      _RL     exf_outscal_hflux
+      _RL     exf_outscal_sflux
+      _RL     exf_outscal_ustress
+      _RL     exf_outscal_vstress
+      _RL     exf_outscal_swflux
       _RL     exf_outscal_sst
       _RL     exf_outscal_sss
       _RL     exf_outscal_apressure
-      _RL     exf_outscal_sfl
 
       common /exf_param_scal/
-     &                      exf_inscal_hfl
-     &                    , exf_inscal_ust
-     &                    , exf_inscal_vst
-     &                    , exf_inscal_swf
+     &                      exf_inscal_hflux
+     &                    , exf_inscal_sflux
+     &                    , exf_inscal_ustress
+     &                    , exf_inscal_vstress
+     &                    , exf_inscal_uwind
+     &                    , exf_inscal_vwind
+     &                    , exf_inscal_swflux
+     &                    , exf_inscal_lwflux
+     &                    , exf_inscal_precip
      &                    , exf_inscal_sst
      &                    , exf_inscal_sss
+     &                    , exf_inscal_atemp
+     &                    , exf_inscal_aqh
+     &                    , exf_inscal_evap
      &                    , exf_inscal_apressure
-     &                    , exf_inscal_sfl
      &                    , exf_inscal_runoff
-     &                    , exf_outscal_hfl
-     &                    , exf_outscal_ust
-     &                    , exf_outscal_vst
-     &                    , exf_outscal_swf
+     &                    , exf_inscal_swdown
+     &                    , exf_inscal_lwdown
+     &                    , exf_outscal_hflux
+     &                    , exf_outscal_sflux
+     &                    , exf_outscal_ustress
+     &                    , exf_outscal_vstress
+     &                    , exf_outscal_swflux
      &                    , exf_outscal_sst
      &                    , exf_outscal_sss
      &                    , exf_outscal_apressure
-     &                    , exf_outscal_sfl
 
 c     EXFwindOnBgrid - By default wind files, uwind and vwind,
 c     are defined on Southwest C-grid U and V points.

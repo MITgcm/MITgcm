@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.6 2003/03/06 00:47:33 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.7 2003/05/23 18:37:31 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -28,6 +28,8 @@ c     == global variables ==
 #include "SIZE.h"
 #include "cal.h"
 #include "exf.h"
+#include "exf_param.h"
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
@@ -37,43 +39,73 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      call exf_init_ustress  ( mythid )
-      call exf_init_vstress  ( mythid )
+cgen      call exf_init_ustress  ( mythid )
+cgen      call exf_init_vstress  ( mythid )
+      call exf_init_gen (
+     &     ustressconst, ustress, ustress0, ustress1, mythid )
+      call exf_init_gen (
+     &     vstressconst, vstress, vstress0, vstress1, mythid )
 
 #ifdef ALLOW_ATM_WIND 
-      call exf_init_uwind    ( mythid )
-      call exf_init_vwind    ( mythid )
+cgen      call exf_init_uwind    ( mythid )
+cgen      call exf_init_vwind    ( mythid )
+      call exf_init_gen (
+     &     uwindconst, uwind, uwind0, uwind1, mythid )
+      call exf_init_gen (
+     &     vwindconst, vwind, vwind0, vwind1, mythid )
 #endif
 
-      call exf_init_hflux    ( mythid )
-      call exf_init_sflux    ( mythid )
+cgen      call exf_init_hflux    ( mythid )
+cgen      call exf_init_sflux    ( mythid )
+      call exf_init_gen (
+     &     hfluxconst, hflux, hflux0, hflux1, mythid )
+      call exf_init_gen (
+     &     sfluxconst, sflux, sflux0, sflux1, mythid )
 
 #ifdef ALLOW_ATM_TEMP
-      call exf_init_atemp    ( mythid )
-      call exf_init_aqh      ( mythid )
-      call exf_init_lwflux   ( mythid )
-      call exf_init_precip   ( mythid )
+cgen      call exf_init_atemp    ( mythid )
+cgen      call exf_init_aqh      ( mythid )
+cgen      call exf_init_lwflux   ( mythid )
+cgen      call exf_init_precip   ( mythid )
+      call exf_init_gen (
+     &     atempconst, atemp, atemp0, atemp1, mythid )
+      call exf_init_gen (
+     &     aqhconst, aqh, aqh0, aqh1, mythid )
+      call exf_init_gen (
+     &     lwfluxconst, lwflux, lwflux0, lwflux1, mythid )
+      call exf_init_gen (
+     &     precipconst, precip, precip0, precip1, mythid )
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      call exf_init_swflux   ( mythid )
+cgen      call exf_init_swflux   ( mythid )
+      call exf_init_gen (
+     &     swfluxconst, swflux, swflux0, swflux1, mythid )
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-      call exf_init_evap     ( mythid )
+cgen      call exf_init_evap     ( mythid )
+      call exf_init_gen (
+     &     evapconst, evap, evap0, evap1, mythid )
+#endif
+
+#ifdef ALLOW_DOWNWARD_RADIATION
+cgen      call exf_init_swdown   ( mythid )
+cgen      call exf_init_lwdown   ( mythid )
+      call exf_init_gen (
+     &     swdownconst, swdown, swdown0, swdown1, mythid )
+      call exf_init_gen (
+     &     lwdownconst, lwdown, lwdown0, lwdown1, mythid )
+#endif
+
+#ifdef ATMOSPHERIC_LOADING
+cgen      call exf_init_apressure( mythid )
+      call exf_init_gen (
+     &     apressureconst, apressure, apressure0, apressure1, mythid )
 #endif
 
 #if (defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE))
       call exf_init_runoff   ( mythid )
-#endif
-
-#ifdef ALLOW_DOWNWARD_RADIATION
-      call exf_init_swdown   ( mythid )
-      call exf_init_lwdown   ( mythid )
-#endif
-
-#ifdef ATMOSPHERIC_LOADING
-      call exf_init_apressure( mythid )
 #endif
 
 c     Initialize climatological fields
