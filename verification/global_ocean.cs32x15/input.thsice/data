@@ -20,20 +20,19 @@
  rhonil=1035.,
  rhoConstFresh=1000.,
  eosType='JMD95Z',
-#staggerTimeStep=.TRUE.,
+ staggerTimeStep=.TRUE.,
  vectorInvariantMomentum=.TRUE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
-#select_rStar=2,
-#nonlinFreeSurf=4,
+ select_rStar=2,
+ nonlinFreeSurf=4,
  hFacInf=0.2,
  hFacSup=2.0,
-#useRealFreshWaterFlux=.TRUE.,
-#allowFreezing=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
  hFacMin=.1,
  hFacMinDr=20.,
  readBinaryPrec=64,
- usePickupBeforeC54=.TRUE.,
+#writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -45,7 +44,7 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=72000,
+ nIter0=36000,
  nTimeSteps=20,
  deltaTmom   =1200.,
  deltaTtracer=86400.,
@@ -53,9 +52,9 @@
  deltaTClock =86400.,
  abEps = 0.1,
  forcing_In_AB=.FALSE.,
- pChkptFreq  =31104000., 
- taveFreq    =31104000., 
- dumpFreq    =31104000., 
+ pChkptFreq  =31104000.,
+ taveFreq    =31104000.,
+ dumpFreq    =31104000.,
  monitorFreq =2592000.,
 #tave_lastIter=0.,
  periodicExternalForcing=.TRUE.,
@@ -88,6 +87,4 @@
  meridWindFile  ='trenberth_tauy.bin',
  thetaClimFile  ='lev_surfT_cs_12m.bin',
  saltClimFile   ='lev_surfS_cs_12m.bin',
-#surfQFile      ='shiQnet_cs32.bin',
-#EmPmRFile      ='shiEmPR_cs32.bin',
  &

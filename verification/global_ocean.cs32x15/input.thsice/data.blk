@@ -6,7 +6,8 @@
  &
 
  &BULKF_PARM01
- RainFile=       'ncep_precip_cs.bin',
+#RainFile=       'ncep_precip_cs.bin',
+ RainFile=       'ncep_pr_scal_cs.bin',
  SolarFile=      'ncep_downsolar_cs.bin',
  AirTempFile=    'ncep_tair_cs.bin',
  AirhumidityFile='ncep_qair_cs.bin',
