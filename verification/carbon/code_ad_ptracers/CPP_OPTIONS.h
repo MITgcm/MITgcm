@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.5 2003/11/04 21:04:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.6 2003/11/04 21:39:42 edhill Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -24,10 +24,6 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 
 C o Allow nonHydrostatic code
 #undef  ALLOW_NONHYDROSTATIC
-
-C o Use "natural" boundary conditions for salinity
-C   instead of the "virtual salt flux"
-#undef  USE_NATURAL_BCS
 
 C o Exact volume conservation
 #define EXACT_CONSERV

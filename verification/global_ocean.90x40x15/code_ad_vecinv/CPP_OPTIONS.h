@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.9 2003/11/04 21:04:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.10 2003/11/04 21:39:42 edhill Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -26,10 +26,6 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 
 C o Allow nonHydrostatic code
 #undef  ALLOW_NONHYDROSTATIC
-
-C o Use "natural" boundary conditions for salinity
-C   instead of the "virtual salt flux"
-#undef  USE_NATURAL_BCS
 
 C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
