@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.27 2000/06/09 03:13:39 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.28 2000/06/21 20:11:54 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint29
+ o packaged KPP and GM/Redi
 
 checkpoint28
  o Corrected initialization of hFacMin for difference vertical coordinates
