@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.1 2004/03/02 18:25:59 edhill Exp $
+#  $Name:  $
+#
+
+
+FC=g77
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='/usr/bin/cpp -P'
+NOOPTFLAGS='-O0'
+MAKEDEPEND='mkdep -f depend.out'
+
+# netcdf
+# LIBS="-lnetcdf"
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0'
+fi
+
+
+
