@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.2 2004/03/11 15:36:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.3 2004/05/06 15:19:20 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -143,7 +143,7 @@ C-    Split Ocean and Sea-Ice surf. temp. ; remove ice-fraction < 1 %
          DO J=1,NGP
           sti1(J,myThid) = sst1(J,myThid) 
           IF ( oice1(J) .GT. 1. _d -2 ) THEN
-            sst1(J,myThid) = MAX(sst1(J,myThid),tFreez);
+            sst1(J,myThid) = MAX(sst1(J,myThid),tFreez)
             sti1(J,myThid) = sst1(J,myThid) 
      &                     +(sti1(J,myThid)-sst1(J,myThid))/oice1(J)
           ELSE

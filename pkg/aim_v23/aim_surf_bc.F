@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.5 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.6 2004/05/06 15:19:19 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -133,7 +133,7 @@ c        oceTfreez = tFreeze - 1.9 _d 0
          DO J=1,NGP
           sti1(J,myThid) = sst1(J,myThid) 
           IF ( oice1(J) .GT. 1. _d -2 ) THEN
-            sst1(J,myThid) = MAX(sst1(J,myThid),oceTfreez);
+            sst1(J,myThid) = MAX(sst1(J,myThid),oceTfreez)
             sti1(J,myThid) = sst1(J,myThid) 
      &                     +(sti1(J,myThid)-sst1(J,myThid))/oice1(J)
           ELSE
