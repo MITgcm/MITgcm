@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.111 2004/11/13 03:23:28 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.112 2004/12/10 13:07:47 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1101,7 +1101,7 @@ fi
 
 #  Find the MITgcm ${ROOTDIR}
 if test "x${ROOTDIR}" = x ; then
-    tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
+    tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
 	ROOTDIR=".."
     else
@@ -1388,7 +1388,7 @@ if test "x${PLATFORM}" = x ; then
 fi
 
 if test "x${EXEDIR}" = x ; then
-    tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
+    tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../exe -a $ROOTDIR = .. ; then
 	EXEDIR=../exe
     else
