@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.8 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.9 2001/06/04 19:46:22 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,6 +74,24 @@ C     and general post-analysis)
       CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
       CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
       CALL WRITE_FLD_XY_RS( 'AC',' ',rA,0,myThid)
+
+C--   Print out statistics of each horizontal grid array (helps when debugging)
+      CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
+      CALL MON_PRINTSTATS_RS(1,XG,'XG',myThid)
+      CALL MON_PRINTSTATS_RS(1,DXC,'DXC',myThid)
+      CALL MON_PRINTSTATS_RS(1,DXF,'DXF',myThid)
+      CALL MON_PRINTSTATS_RS(1,DXG,'DXG',myThid)
+      CALL MON_PRINTSTATS_RS(1,DXV,'DXV',myThid)
+      CALL MON_PRINTSTATS_RS(1,YC,'YC',myThid)
+      CALL MON_PRINTSTATS_RS(1,YG,'YG',myThid)
+      CALL MON_PRINTSTATS_RS(1,DYC,'DYC',myThid)
+      CALL MON_PRINTSTATS_RS(1,DYF,'DYF',myThid)
+      CALL MON_PRINTSTATS_RS(1,DYG,'DYG',myThid)
+      CALL MON_PRINTSTATS_RS(1,DYU,'DYU',myThid)
+      CALL MON_PRINTSTATS_RS(1,RA,'RA',myThid)
+      CALL MON_PRINTSTATS_RS(1,RAW,'RAW',myThid)
+      CALL MON_PRINTSTATS_RS(1,RAS,'RAS',myThid)
+      CALL MON_PRINTSTATS_RS(1,RAZ,'RAZ',myThid)
 
       RETURN
       END
