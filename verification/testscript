@@ -138,9 +138,28 @@ genmakemodel()
  )
 }
 
-makeclean()
+makecleancompile()
 {
-# makedependmodel directory
+# makecleancompile directory
+ ( cd $1;
+   if [ $force -gt 0 ]; then
+    rm -f output.txt
+    printf 'make clean ... ' 2>&1
+    make CLEAN >> make.log 2>&1
+    if [ $? -ne 0 ]; then
+      tail make.log
+      echo makecleancompile: make clean failed 1>&2
+      return 1
+    else
+      echo succesful 1>&2
+    fi
+   fi
+ )
+}
+
+makecleanupafter()
+{
+# makeupafter directory
  ( cd $1;
    if [ $clean -gt 0 ]; then
     rm -f output.txt
@@ -148,7 +167,7 @@ makeclean()
     make CLEAN >> make.log 2>&1
     if [ $? -ne 0 ]; then
       tail make.log
-      echo makeclean: make clean failed 1>&2
+      echo makeupafter: make clean failed 1>&2
       return 1
     else
       echo succesful 1>&2
@@ -293,7 +312,8 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -quiet     Reduce the amount of output
  -verbose   Produce copious amounts of output
  -debug     Produce even more output which will mean nothing to most
- -clean     Do "make CLEAN" before compiling. This forces a complete rebuild.
+ -force     Do "make CLEAN" before compiling. This forces a complete rebuild.
+ -clean     Do "make CLEAN" after compiling and testing.
  -longtest  Compare numeric output for mean and s.d. of variables.
  -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
 
@@ -322,6 +342,7 @@ fi
 debug=0
 verbose=1
 quick=0
+force=0
 clean=0
 ieee=1
 longtest=0
@@ -334,6 +355,7 @@ do
    -quick) quick=1;;
    -verbose) verbose=2;;
    -debug) debug=1;;
+   -force) force=1;;
    -clean) clean=1;;
    -noieee) ieee=0;;
    -longtest) longtest=1;;
@@ -344,9 +366,9 @@ do
  esac
 done
 
-if [ $clean -gt 0 -a $quick -gt 0 ]; then
- echo You specified -quick and -clean together which conflict.
- echo Please specify either -quick or -clean or neither but not both.
+if [ $force -gt 0 -a $quick -gt 0 ]; then
+ echo You specified -quick and -force together which conflict.
+ echo Please specify either -quick or -force or neither but not both.
  exit 1
 fi
 
@@ -396,12 +418,12 @@ do
   results='-- -- -- -- -- -- -- -- --'
  fi
  genmakemodel $dir/input && genmake=Y \
- && makeclean $dir/input \
+ && makecleancompile $dir/input \
  && makedependmodel $dir/input && makedepend=Y \
  && makemodel $dir/input && make=Y \
  && runmodel $dir/input mitgcmuv && run=Y \
  && results=`testoutput $dir` \
- && makeclean $dir/input
+ && makecleanupafter $dir/input
  echo
  formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
  echo
