@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.12 2004/10/19 17:40:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.13 2004/10/20 14:16:23 edhill Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -175,7 +175,8 @@ C--   Apply OBCS values to initial conditions for consistancy
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
+      IF (debugMode) 
+     &     CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
 #endif
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -191,7 +192,8 @@ C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boudnary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
+      IF (debugMode) 
+     &       CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        _EXCH_XYZ_R8( theta, myThid )
