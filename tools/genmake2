@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.30 2003/11/11 21:11:06 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.31 2003/11/12 21:14:57 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -264,24 +264,81 @@ usage()  {
     exit 1
 }
 
-#eh3 # This is the generic configuration.
-#eh3 set LN         = ( 'ln -s' )
-#eh3 set CPP        = ( '/lib/cpp -P' )
-#eh3 set S64        = ( '$(TOOLSDIR)/set64bitConst.sh' )
-#eh3 set KPP        = (  )
-#eh3 set FC         = ( 'f77' )
-#eh3 set LINK       = $FC
-#eh3 set MAKEDEPEND = ( 'makedepend' )
-#eh3 set INCLUDES   = ( -I. )
-#eh3 set FFLAGS     = (  )
-#eh3 set FOPTIM     = (  )
-#eh3 set CFLAGS     = (  )
-#eh3 set KFLAGS1    = (  )
-#eh3 set KFLAGS2    = (  )
-#eh3 set LIBS       = (  )
-#eh3 set KPPFILES   = (  )
-#eh3 if (! $?NOOPTFILES ) set NOOPTFILES = (  )
-#eh3 if (! $?NOOPTFLAGS ) set NOOPTFLAGS = (  )
+#  Build a CPP macro to automate calling C routines from FORTRAN
+get_fortran_c_namemangling()  {
+    default_nm="#define FC_NAMEMANGLE(X) X ## _"
+    
+    cat > genmake_test.c <<EOF
+void tcall( char * string ) { tsub( string ); }
+EOF
+    $MAKE genmake_test.o > genmake_test.log 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	cat genmake_test.log >> genmake_errors
+	FC_NAMEMANGLE=$default_nm
+	echo
+	echo "WARNING: C test compile fails -- please see \"genmake_errors\""
+	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	return 1
+    fi
+    c_tcall=`nm genmake_test.o | grep tcall | cut -d ' ' -f 3`
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	FC_NAMEMANGLE=$default_nm
+	echo
+	echo "WARNING: The \"nm\" command failed."
+	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	return 1
+    fi
+    cat > genmake_tcomp.f <<EOF
+      subroutine tcall( string )
+      character*(*) string
+      call tsub( string )
+      end
+EOF
+    $FC $FFLAGS $DEFINES -c genmake_tcomp.f > genmake_tcomp.log 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	cat genmake_tcomp.log >> genmake_errors
+	FC_NAMEMANGLE=$default_nm
+	echo
+	echo "WARNING: FORTRAN test compile fails -- please see \"genmake_errors\""
+	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	return 1
+    fi
+    f_tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	FC_NAMEMANGLE=$default_nm
+	echo
+	echo "WARNING: The \"nm\" command failed."
+	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	return 1
+    fi
+
+    c_a=`echo $c_tcall | sed -e 's|tcall|Y Y|' | cut -d ' ' -f 1 | sed -e 's|Y||'`
+    f_a=`echo $f_tcall | sed -e 's|tcall|Y Y|' | cut -d ' ' -f 1 | sed -e 's|Y||'`
+    c_b=`echo $c_tcall | sed -e 's|tcall|Y Y|' | cut -d ' ' -f 2 | sed -e 's|Y||'`
+    f_b=`echo $f_tcall | sed -e 's|tcall|Y Y|' | cut -d ' ' -f 2 | sed -e 's|Y||'`
+
+    nmangle="X"
+    if test "x$c_a" != "x$f_a" ; then
+	comm="echo x$f_a | sed -e 's|x$c_a||'"
+	a=`eval $comm`
+	nmangle="$a ## $nmangle"
+    fi
+    if test "x$c_b" != "x$f_b" ; then
+	comm="echo x$f_b | sed -e 's|x$c_b||'"
+	b=`eval $comm`
+	nmangle="$nmangle ## $b"
+    fi
+
+    FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmangle"
+}
 
 #  Set defaults here
 COMMANDL="$0 $@"
@@ -292,7 +349,8 @@ S64=
 KPP=
 FC=
 LINK=
-DEFINES="-DWORDLENGTH=4"
+# DEFINES="-DWORDLENGTH=4"
+DEFINES=
 PACKAGES=
 ENABLE=
 DISABLE=
@@ -712,46 +770,18 @@ else
 fi
 rm -f genmake_tcomp*
 
-echo -n "  The name mangling convention for $FC is...  "
+echo "  The name mangling convention for $FC is...  "
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 if test "x$FC_NAMEMANGLE" = x ; then
-    FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _" 
+    get_fortran_c_namemangling
 fi
-cat > genmake_tcomp.f <<EOF
-      subroutine tcall( string )
-      character*(*) string
-      call tsub( string )
-      end
-EOF
-$FC $FFLAGS $DEFINES -c genmake_tcomp.f > genmake_tcomp.log 2>&1
-RETVAL=$?
-if test "x$RETVAL" != x0 ; then
-    cat genmake_tcomp.log >> genmake_errors
-    echo
-    echo "WARNING: test compile fails -- please see \"genmake_errors\""
-    echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-    echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-else
-    tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
-    RETVAL=$?
-    if test "x$RETVAL" != x0 ; then
-	echo
-	echo "WARNING: The \"nm\" command failed."
-	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-    else
-	t0=`echo $tcall | sed -e 's|_tcall|_ ## X|g'`
-	nmres=`echo $t0 | sed -e 's|tcall_|X ## _|g'`
-	FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmres"
-	echo "'$FC_NAMEMANGLE'"
-    fi
-fi
+echo "    '$FC_NAMEMANGLE'"
 echo "$FC_NAMEMANGLE" > FC_NAMEMANGLE.h.template
 cmp FC_NAMEMANGLE.h FC_NAMEMANGLE.h.template > /dev/null 2>&1
 RETVAL=$?
 if test "x$RETVAL" != x0 ; then
     mv -f FC_NAMEMANGLE.h.template FC_NAMEMANGLE.h
 fi
-rm -f genmake_tcomp*
 
 
 printf "\n===  Setting defaults  ===\n"
