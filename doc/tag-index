@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.234 2004/01/03 01:03:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.235 2004/01/07 22:26:05 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52e_post
 o first attempt to solve vertical advection (momemtum & T,S) Implicitly
   for now, only implemented with Lax-Wendroff (tracer) and VectInv (mom)
+o step.1 : rewrite (as in MultiDimAdvec) explicit tracer stepping (gad_calc_rhs.F)
+  to work with implicit vertical advection and AB ;
+o Implic. vert. advect. implemented with flux-limiter, c2, u3 and c4 scheme.
+o update output (gad_calc_rhs.F changes affect truncation error) of exp:
+ front_relax, global_ocean .cs32x15 & _pressure, internal_wave, lab_sea, natl_box
 checkpoint52e_pre
 
 o fix bug in impldiff when Nr=1 or Nr=2.
