@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.13 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.14 2001/07/13 20:14:08 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,6 +30,10 @@ CEndOfInterface
 
 C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
+
+#ifdef ALLOW_TAMC_CHECKPOINTING
+       nIter0 = INT( startTime/deltaTClock )
+#endif
 
       _BARRIER
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]

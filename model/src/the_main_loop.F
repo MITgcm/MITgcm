@@ -1,8 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.12 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.13 2001/07/13 20:14:08 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
-#undef ALLOW_ZONAL_FILT
-#undef ALLOW_SHAP_FILT
 
       subroutine the_main_loop( mytime, myiter, mythid )
 
@@ -80,6 +78,7 @@ CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev3 = USER
 #ifdef ALLOW_TAMC_CHECKPOINTING
+       nIter0 = INT( startTime/deltaTClock )
        ikey_dynamics = 1
 #endif
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
@@ -162,6 +161,7 @@ CADJ STORE vnm1      = tapelev3, key = ilev_3
 #ifdef ALLOW_COST_TRACER
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
+cphCADJ STORE objf_tracer = tapelev3, key = ilev_3
 #endif
 
 c--     Initialise storage for the middle loop.
@@ -189,6 +189,7 @@ CADJ STORE vnm1      = tapelev2, key = ilev_2
 #ifdef ALLOW_COST_TRACER
 CADJ STORE tr1       = tapelev2, key = ilev_2
 CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
+cphCADJ STORE objf_tracer = tapelev2, key = ilev_2
 #endif
 
 c--       Initialize storage for the innermost loop.
@@ -249,142 +250,22 @@ c--   NOT enabled.
 
 c--     >>> Loop body start <<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
-c--     Set the model iteration counter and the model time.
-        myiter = nIter0 + (iloop-1)
-        mytime = startTime + float(iloop-1)*deltaTclock
-
-c       Include call to a dummy routine. Its adjoint will be 
-c       called at the proper place in the adjoint code.
-c       The adjoint routine will print out adjoint values 
-c       if requested. The location of the call is important, 
-c       it has to be after the adjoint of the exchanges 
-c       (DO_GTERM_BLOCKING_EXCHANGES).
-        call dummy_in_stepping( myTime, myIter, myThid )
-#endif
-
-c--     Load forcing/external data fields.
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-c       NOTE, that although the exf package is part of the
-c       distribution, it is not currently maintained, i.e.
-c       exf is disabled by default in genmake.
-        call exf_getforcing( mytime, myiter, mythid )
-#else
-        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
-        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
-        CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
-#endif
-
 #ifdef ALLOW_TAMC_CHECKPOINTING
-              ikey_dynamics = ilev_1
+        ikey_dynamics = ilev_1
 #endif
-c--     Step forward fields and calculate time tendency terms.
-        CALL TIMER_START('DYNAMICS            [THE_MAIN_LOOP]',mythid)
-        CALL DYNAMICS( myTime, myIter, myThid )
-        CALL TIMER_STOP ('DYNAMICS            [THE_MAIN_LOOP]',mythid)
-
-#ifndef ALLOW_AUTODIFF_TAMC
-
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Step forward W field in N-H algorithm
-        IF ( nonHydrostatic ) THEN
-          CALL TIMER_START('CALC_GW          [THE_MAIN_LOOP]',myThid)
-          CALL CALC_GW(myThid)
-          CALL TIMER_STOP ('CALC_GW          [THE_MAIN_LOOP]',myThid)
-        ENDIF
-#endif
-
-#ifdef ALLOW_SHAP_FILT
-C--   Step forward all tiles, filter and exchange.
-      CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-      CALL SHAP_FILT_APPLY( 
-     I                     gUnm1, gVnm1, gTnm1, gSnm1,
-     I                     myTime, myIter, myThid )
-      IF (implicDiv2Dflow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-         CALL SHAP_FILT_UV( uVel, vVel, myTime, myThid )
-      ENDIF
-      CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-#endif
-
-#ifdef ALLOW_ZONAL_FILT
-      IF (zonal_filt_lat.LT.90.) THEN 
-        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-        CALL ZONAL_FILT_APPLY(
-     U           gUnm1, gVnm1, gTnm1, gSnm1,
-     I           myThid )
-        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-      ENDIF
-#endif
-
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--   Solve elliptic equation(s).
-C     Two-dimensional only for conventional hydrostatic or 
-C     three-dimensional for non-hydrostatic and/or IGW scheme.
-      CALL TIMER_START('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
-      CALL SOLVE_FOR_PRESSURE( myThid )
-      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
-
-C--   Correct divergence in flow field and cycle time-stepping
-C     arrays (for all fields) ; update time-counter
-      myIter = nIter0 + iLoop
-      myTime = startTime + deltaTClock * float(iLoop)
-      CALL TIMER_START('THE_CORRECTION_STEP [THE_MAIN_LOOP]',myThid)
-      CALL THE_CORRECTION_STEP(myTime, myIter, myThid)
-      CALL TIMER_STOP ('THE_CORRECTION_STEP [THE_MAIN_LOOP]',myThid)
-
-C--   Do "blocking" sends and receives for tendency "overlap" terms
-c     CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
-c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
-c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
-
-C--   Do "blocking" sends and receives for field "overlap" terms
-      CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
-      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
-      CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
+        CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
+        CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
+        CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
 
 #ifdef ALLOW_COST
-C--   compare model with data and compute cost function
-C--   this is done after exchanges to allow interpolation
-      CALL TIMER_START('COST_TILE           [THE_MAIN_LOOP]',myThid)
-      CALL COST_TILE  ( myThid )
-      CALL TIMER_STOP ('COST_TILE           [THE_MAIN_LOOP]',myThid)
+C--     compare model with data and compute cost function
+C--     this is done after exchanges to allow interpolation
+        CALL TIMER_START('COST_TILE           [THE_MAIN_LOOP]',myThid)
+        CALL COST_TILE  ( myThid )
+        CALL TIMER_STOP ('COST_TILE           [THE_MAIN_LOOP]',myThid)
 #endif
 
-#ifndef EXCLUDE_MONITOR
-C--   Check status of solution (statistics, cfl, etc...)
-      CALL MONITOR( myIter, myTime, myThid )
-#endif /* EXCLUDE_MONITOR */
-
-#ifndef ALLOW_AUTODIFF_TAMC
-C--   Do IO if needed.
-      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
-
-C--   Save state for restarts
-C     Note:    (jmc: is it still the case after ckp35 ?)
-C     =====
-C     Because of the ordering of the timestepping code and
-C     tendency term code at end of loop model arrays hold
-C     U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
-C     at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
-C     gu at "time-level" N-1/2) and etaN at "time-level" N+1/2.
-C      where N = I+timeLevBase-1
-C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
-C     etaN.0000000001 in the indexing scheme used for the model 
-C     "state" files. This example is referred to as a checkpoint 
-C     at time level 1 
-      CALL TIMER_START('WRITE_CHECKPOINT    [THE_MAIN_LOOP]',myThid)
-      CALL WRITE_CHECKPOINT(
-     &        .FALSE., myTime, myIter, myThid )
-      CALL TIMER_STOP ('WRITE_CHECKPOINT    [THE_MAIN_LOOP]',myThid)
-
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-c--           >>> Loop body end <<<
+c--     >>> Loop body end <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
@@ -411,7 +292,5 @@ c--   Sum all cost function contributions.
 
       _BARRIER
       CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
-
-
 
       END
