@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.450 2005/02/10 16:45:53 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.451 2005/02/11 20:41:30 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57d_post
+o pkg/thsice used in the ocean: fix tile Pb related to sIceLoad forcing
 o modify verification/ideal_2D_oce so that it tests the creation of mnc 
   output from the diagnostics package
 o temporary fix in EXCH2_UV: add a 3rd call to fix the 24.tiles CS-grid set-up
