@@ -181,14 +181,15 @@ c                  function contributions.
       _RL  objf_t_misfit (nsx,nsy)
       _RL  objf_eflux (nsx,nsy)
 
-#ifdef ALLOW_COST_VECTOR
-      common /cost_array/
-     &                objf_vector
-      _RL  objf_vector (snx,nsx,nsy)
+#ifdef ALLOW_COST_STATE_FINAL
+      common /cost_state_final_r/
+     &                objf_state_final
+      _RL  objf_state_final (snx,sny,nsx,nsy)
+cph      _RL  objf_state_final (snx,sny,nr,nsx,nsy,2)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
-      common /cost_array/
+      common /cost_vector_r/
      &                objf_vector
       _RL  objf_vector (snx,nsx,nsy)
 #endif

@@ -26,13 +26,6 @@ c                       south (s), and western (w) mask, resp. .
       integer     ctrlprec
       parameter ( ctrlprec = 64 )
 
-      character*2 yadprefix
-#ifdef ALLOW_TANGENTLINEAR_RUN
-      parameter ( yadprefix = 'g_')
-#else
-      parameter ( yadprefix = 'ad')
-#endif
-
       common /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
@@ -100,7 +93,9 @@ c                       south (s), and western (w) mask, resp. .
 
       common /controlvars_c/
      &                       ncvargrd
+     &                     , yadprefix
       character*(1) ncvargrd(maxcvars)
+      character*(2) yadprefix
 
 c     Control variables:
 c     ==================

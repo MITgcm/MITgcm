@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.2 2002/07/13 03:01:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.3 2003/10/02 21:34:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,12 +54,23 @@ c     == end of interface ==
 
       adfc = 1.0
       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       do bi = itlo,ithi
 #ifdef ALLOW_COST_VECTOR
+        do i=1,sNx
+         objf_vector(i,bi,bj) = 0. _d 0
+         adobjf_vector(i,bi,bj) = 1. _d 0
+        end do
+#endif
+#ifdef ALLOW_COST_STATE_FINAL
+c        do k=1,nr
+         do j=1,sNy
           do i=1,sNx
-            objf_vector(i,bi,bj) = 0. _d 0
-            adobjf_vector(i,bi,bj) = 1. _d 0
+           objf_state_final(i,j,bi,bj) = 0. _d 0
+cph No init. of cost_state_final here,
+cph because we need it in ADM*TLM
           end do
+         end do
+c        end do
 #endif
         enddo
       enddo

@@ -49,8 +49,15 @@ c     ==================================================================
       _RL  adobjf_ctds (nsx,nsy)
       _RL  adobjf_ctdt (nsx,nsy)
 
+#ifdef ALLOW_COST_STATE_FINAL
+      common /adcost_state_final_r/
+     &                adobjf_state_final
+      _RL  adobjf_state_final (snx,sny,nsx,nsy)
+cph      _RL  adobjf_state_final (snx,sny,nr,nsx,nsy,2)
+#endif
+
 #ifdef ALLOW_COST_VECTOR
-      common /adcost_array/
+      common /adcost_vector_r/
      &                  adobjf_vector
       _RL  adobjf_vector(snx,nsx,nsy)
 #endif

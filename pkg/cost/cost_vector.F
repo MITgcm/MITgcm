@@ -76,6 +76,11 @@ C     &             * 0.5*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))
          end if
         end do
 
+        do i = 1,sNx
+           print*,' --> objf_vector(i,bi,bj)  = ',
+     &          objf_vector(i,bi,bj)
+        end do
+
        END DO
       END DO
 
