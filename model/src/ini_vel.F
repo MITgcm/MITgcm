@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.5 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.6 2002/10/07 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *=================================================================
 C     | SUBROUTINE INI_VEL
-C     | o Initialize 3D flow field (either to zero or from input files)
+C     | o Initialize flow field (either to zero or from input files)
 C     *=================================================================
 C     \ev
 
@@ -26,7 +26,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid -  Number of this instance of INI_VEL 
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -49,7 +49,6 @@ C
           DO i=1-Olx,sNx+Olx
            uVel(i,j,k,bi,bj)=0. _d 0
            vVel(i,j,k,bi,bj)=0. _d 0
-           wVel(i,j,k,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -73,7 +72,6 @@ c      _EXCH_XYZ_R8(vVel  , myThid )
 
 c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-       _EXCH_XYZ_R8(wVel,myThid)
 c     ENDIF
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -85,10 +83,6 @@ c     ENDIF
            vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
           ENDDO
          ENDDO
-         CALL INTEGRATE_FOR_W(
-     I                        bi, bj, k, uVel, vVel,
-     O                        wVel,
-     I                        myThid )
         ENDDO
        ENDDO
       ENDDO

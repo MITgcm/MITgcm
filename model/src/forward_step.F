@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.34 2002/07/13 04:59:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.35 2002/10/07 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,14 +99,7 @@ C       (DO_GTERM_BLOCKING_EXCHANGES).
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
 C--   Update etaH(n+1) :
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-           CALL CALC_EXACT_ETA( .FALSE., bi,bj, uVel,vVel,
-     I                          myTime, myIter, myThid )
-         ENDDO
-        ENDDO
-        IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
-     &     _EXCH_XY_R8(etaH, myThid )
+         CALL UPDATE_ETAH( myTime, myIter, myThid )
       ENDIF
 #endif /* EXACT_CONSERV */ 
 
@@ -139,6 +132,11 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_START('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
+
+C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
+        CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
+        CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
+        CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
 
 #ifdef ALLOW_SHAP_FILT
        IF (useSHAP_FILT .AND. 

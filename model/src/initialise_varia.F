@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.25 2002/05/30 02:29:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.26 2002/10/07 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,9 +52,11 @@ C       |-- UPDATE_SURF_DR
 C       |
 C       |-- UPDATE_CG2D
 C       |
-C       |-- STATE_SUMMARY
+C       |-- INTEGR_CONTINUITY
 C       |
 C       |-- TIMEAVE_STATVARS
+C       |
+C       |-- STATE_SUMMARY
 
 C     !USES:
       IMPLICIT NONE
@@ -164,19 +166,29 @@ C-    update also CG2D matrix (and preconditioner)
       ENDIF
 #endif
 
-C--   Finally summarise the model state
-      CALL STATE_SUMMARY( myThid )
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
+C--   Integrate continuity vertically for vertical velocity
+        CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
+     I                          startTime, nIter0, myThid )
+ 
 #ifdef ALLOW_TIMEAVE
 C--   initialise time-average arrays with initial state values
-      IF (taveFreq.GT.0.) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF (taveFreq.GT.0.) THEN
            CALL TIMEAVE_STATVARS(startTime, nIter0, bi, bj, myThid)
-         ENDDO
-        ENDDO
-      ENDIF
+        ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+C--   end bi,bj loop.
+       ENDDO
+      ENDDO
+
+C--   Fill in overlap regions for wVel :
+      _EXCH_XYZ_R8(wVel,myThid) 
+
+C--   Finally summarise the model state
+      CALL STATE_SUMMARY( myThid )
 
       RETURN
       END

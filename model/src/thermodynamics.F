@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.26 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.27 2002/10/07 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -288,17 +288,17 @@ CADJ STORE rhok  (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Integrate continuity vertically for vertical velocity
-          CALL INTEGRATE_FOR_W(
-     I                         bi, bj, k, uVel, vVel,
-     O                         wVel,
-     I                         myThid )
+c         CALL INTEGRATE_FOR_W(
+c    I                         bi, bj, k, uVel, vVel,
+c    O                         wVel,
+c    I                         myThid )
 
 #ifdef    ALLOW_OBCS
 #ifdef    ALLOW_NONHYDROSTATIC
 C--       Apply OBC to W if in N-H mode
-          IF (useOBCS.AND.nonHydrostatic) THEN
-            CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
-          ENDIF
+c         IF (useOBCS.AND.nonHydrostatic) THEN
+c           CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
+c         ENDIF
 #endif    /* ALLOW_NONHYDROSTATIC */
 #endif    /* ALLOW_OBCS */
 
@@ -689,20 +689,20 @@ Ccs-
       ENDDO
 
 #ifdef ALLOW_AIM
-      IF ( useAIM ) THEN
-       CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
-      ENDIF
+c     IF ( useAIM ) THEN
+c      CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
+c     ENDIF
 #endif /* ALLOW_AIM */
-      IF ( staggerTimeStep ) THEN
-       IF ( useAIM .OR. useCubedSphereExchange ) THEN 
-         IF (tempStepping) _EXCH_XYZ_R8(gT,myThid)
-         IF (saltStepping) _EXCH_XYZ_R8(gS,myThid)
-       ELSEIF ( useGMRedi .AND. Oly.LT.4 ) THEN
-c        .AND. GM_AdvForm .AND. .NOT.GM_AdvSeparate ) THEN
-         IF (tempMultiDimAdvec) _EXCH_XYZ_R8(gT,myThid)
-         IF (saltMultiDimAdvec) _EXCH_XYZ_R8(gS,myThid)
-       ENDIF  
-      ENDIF  
+c     IF ( staggerTimeStep ) THEN
+c      IF ( useAIM .OR. useCubedSphereExchange ) THEN 
+c        IF (tempStepping) _EXCH_XYZ_R8(gT,myThid)
+c        IF (saltStepping) _EXCH_XYZ_R8(gS,myThid)
+c      ELSEIF ( useGMRedi .AND. Oly.LT.4 ) THEN
+cc       .AND. GM_AdvForm .AND. .NOT.GM_AdvSeparate ) THEN
+c        IF (tempMultiDimAdvec) _EXCH_XYZ_R8(gT,myThid)
+c        IF (saltMultiDimAdvec) _EXCH_XYZ_R8(gS,myThid)
+c      ENDIF  
+c     ENDIF  
 
 #ifndef DISABLE_DEBUGMODE
       If (debugMode) THEN

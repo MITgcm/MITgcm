@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.7 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.8 2002/10/07 16:24:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_COMMON_FACTORS                            
+C     | SUBROUTINE INTEGRATE_FOR_W                            
 C     | o Integrate for vertical velocity.
 C     *==========================================================*
 C     \ev
@@ -46,8 +46,8 @@ CEOP
 
 C--   Calculate velocity field "volume transports" through
 C     tracer cell faces.
-      DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+      DO j=1,sNy+1
+        DO i=1,sNx+1
           uTrans(i,j) = uFld(i,j,k,bi,bj)*
      &     _dyG(i,j,bi,bj)
      &     *drF(k)*_hFacW(i,j,k,bi,bj)
@@ -62,14 +62,14 @@ C     between tracer cell k-1 & k
       IF (rigidLid) THEN
 C-  o Rigid-Lid case: zero at lower and upper boundaries
         IF (k.eq.1) THEN
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1,sNy
+           DO i=1,sNx
              wFld(i,j,k,bi,bj) = 0.
            ENDDO
           ENDDO
         ELSEIF (k.eq.Nr) THEN
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1,sNy
+           DO i=1,sNx
              wFld(i,j,k,bi,bj) = 
      &                -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
@@ -78,8 +78,8 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
            ENDDO
           ENDDO
         ELSE
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1,sNy
+           DO i=1,sNx
              wFld(i,j,k,bi,bj) = 
      &        ( wFld(i,j,k+1,bi,bj)
      &                -( uTrans(i+1,j)-uTrans(i,j)
@@ -90,11 +90,11 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
           ENDDO
         ENDIF
       ELSE
-C-  o Linear Free Surface case: 
+C-  o Free Surface case: 
 C      non zero at surface ; zero under-ground and at r_lower boundary
         IF (k.eq.Nr) THEN
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1,sNy
+           DO i=1,sNx
              wFld(i,j,k,bi,bj) = 
      &                -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
@@ -103,8 +103,8 @@ C      non zero at surface ; zero under-ground and at r_lower boundary
            ENDDO
           ENDDO
         ELSE
-          DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx-1
+          DO j=1,sNy
+           DO i=1,sNx
              wFld(i,j,k,bi,bj) = 
      &        ( wFld(i,j,k+1,bi,bj)
      &                -( uTrans(i+1,j)-uTrans(i,j)
@@ -114,7 +114,7 @@ C      non zero at surface ; zero under-ground and at r_lower boundary
            ENDDO
           ENDDO
         ENDIF
-C-  endif - rigid-lid / linear Free-Surf.
+C-  endif - rigid-lid / Free-Surf.
       ENDIF
 
       RETURN
