@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.2 2004/01/06 23:19:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.3 2004/01/07 19:50:52 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -15,14 +15,20 @@ C     Arguments
       INTEGER  myThid, status
       character*(*) msg
 
+C     Functions
+      integer ILNBLNK
+
 C     Locals
+      integer lenm
       character*(MAX_LEN_MBUF) msgbuf
 
       IF ( status .NE. NF_NOERR ) THEN
         write(msgbuf,'(2a)') 'NetCDF ERROR: ', NF_STRERROR(status)
-        CALL print_error( msgbuf, mythid )
+        lenm = ILNBLNK(msgbuf)
+        CALL print_error(msgbuf(1:lenm), mythid)
         write(msgbuf,'(2a)') 'MNC ERROR: ', msg
-        CALL print_error( msgbuf, mythid )
+        lenm = ILNBLNK(msgbuf)
+        CALL print_error(msgbuf(1:lenm), mythid)
         stop 'ABNORMAL END: package MNC'
       ENDIF
       RETURN
@@ -115,6 +121,60 @@ C     If this is code is reached, we have exceeded the array size
       stop 'ABNORMAL END: S/R MNC_GET_NEXT_EMPTY_IND'
 
  10   CONTINUE
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_GET_FVINDS( 
+     I     myThid, 
+     I     fname, 
+     I     vname, 
+     O     indf, 
+     O     ind_fv_ids )
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+
+C     Arguments
+      INTEGER  myThid, fid, indf, ind_fv_ids
+      character*(*) fname
+      character*(*) vname
+
+C     Functions
+      integer ILNBLNK
+
+C     Locals
+      integer i,j,k, n, nv, lenf,lenv
+
+C     Strip trailing spaces
+      lenf = ILNBLNK(fname)
+      lenv = ILNBLNK(vname)
+
+C     Check that the file exists
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      IF (indf .LT. 1) THEN
+        ind_fv_ids = -1
+        RETURN
+      ENDIF
+      fid = mnc_f_info(indf,2)
+
+C     Find the vID
+      nv = mnc_fv_ids(indf,1)
+      DO i = 1,nv
+        k = 2 + (i - 1)*3
+        j = mnc_fv_ids(indf,k)
+        n = ILNBLNK(mnc_v_names(j))
+        IF ((n .EQ. lenv) 
+     &       .AND. (mnc_v_names(j)(1:n) .EQ. vname(1:n))) THEN
+          ind_fv_ids = k
+          GOTO 10
+        ENDIF
+      ENDDO
+      ind_fv_ids = -1
+ 10   CONTINUE
+
       RETURN
       END
 

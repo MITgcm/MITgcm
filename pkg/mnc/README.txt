@@ -54,12 +54,14 @@ using a simple interface such as:
   MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, units, fillval )
   MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units, fillval )
   MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units, fillval )
-  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, name, atname, sval )
-  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, name, atname, ival )
-  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, name, atname, dval )
-  MNC_VAR_WRITE(	 myThid, fname, vname, var )
+  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, sval )
+  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, atname, ival )
+  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, atname, dval )
+  MNC_VAR_WRITE_DBL(	 myThid, fname, vname, var )
+  MNC_VAR_WRITE_REAL(	 myThid, fname, vname, var )
+  MNC_VAR_WRITE_INT(	 myThid, fname, vname, var )
   ...
-  MNC_VAR_READ(          myThid, vname, var )
+  MNC_VAR_READ(          myThid, fname, vname, var )
 
   MNC_FILE_CLOSE(	 myThid, fname )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.3 2004/01/07 07:29:13 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.4 2004/01/07 19:50:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -29,7 +29,7 @@ C     Functions
 
 C     Local Variables
       integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
-      integer vid, nv
+      integer vid, nv, ind_g_finfo
       character*(MAX_LEN_MBUF) msgbuf
       integer rids(10), ids(10)
       integer lenf,leng,lenv
@@ -63,6 +63,7 @@ C     Get the grid information
         n = ILNBLNK(mnc_g_names(k))
         IF ((leng .EQ. n) 
      &       .AND. (mnc_g_names(k)(1:n) .EQ. gname(1:n))) THEN
+          ind_g_finfo = j
           is = mnc_f_info(indf,(j+1))
           ie = mnc_f_info(indf,(j+2))
           nd = 0
@@ -92,8 +93,10 @@ C     Success, so save the variable info
       nv = mnc_fv_ids(indf,1)
       i = 2 + nv*2
       j = i + 1
+      k = i + 2
       mnc_fv_ids(indf,i) = indv
       mnc_fv_ids(indf,j) = vid
+      mnc_fv_ids(indf,k) = ind_g_finfo
       mnc_fv_ids(indf,1) = nv + 1
 
       RETURN
@@ -124,7 +127,7 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,k, n, nv, indf, fid,vid, err
+      integer i,j,k, n, nv, indf,ind_fv_ids, fid,vid, err
       character*(MAX_LEN_MBUF) msgbuf
       integer lenf,lenv,lenat,lens
 
@@ -134,39 +137,97 @@ C     Strip trailing spaces
       lenat = ILNBLNK(atname)
       lens = ILNBLNK(sval)
 
-C     Check that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
-      IF (indf .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:lenf), 
-     &       ''' must be opened first'
+      CALL MNC_GET_FVINDS(myThid, fname, vname, indf, ind_fv_ids)
+      IF ((indf .LT. 1).OR.(ind_fv_ids .LT. 1)) THEN
+        write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
+     &       ''' is not open or does not contain variable ''', 
+     &       vname(1:lenv), ''''
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_VAR_ADD_ATTR_STR'
       ENDIF
       fid = mnc_f_info(indf,2)
-
-C     Find the vID
-      nv = mnc_fv_ids(indf,1)
-      DO i = 1,nv
-        k = 2*i
-        j = mnc_fv_ids(indf,k)
-        n = ILNBLNK(mnc_v_names(j))
-        IF ((n .EQ. lenv) 
-     &       .AND. (mnc_v_names(j)(1:n) .EQ. vname(1:n))) THEN
-          k = k + 1
-          vid = mnc_fv_ids(indf,k)
-          GOTO 10
-        ENDIF
-      ENDDO
-      write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
-     &     ''' does not contain variable ''', vname(1:lenv), ''''
-      CALL print_error(msgbuf, mythid)
-      stop 'ABNORMAL END: S/R MNC_VAR_ADD_ATTR_STR'
- 10   CONTINUE
+      vid = mnc_fv_ids(indf,(ind_fv_ids+1))
 
 C     Set the attribute
       CALL MNC_FILE_REDEF(myThid, fname)
       err = NF_PUT_ATT_TEXT(fid, vid, atname, lens, sval)
       write(msgbuf,'(5a)') 'adding attribute ''', atname(1:lenat),
+     &     ''' to file ''', fname(1:lenf), ''''
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_VAR_WRITE_DBL( 
+     I     myThid, 
+     I     fname, 
+     I     vname, 
+     I     var )
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+      character*(*) vname
+      _RL var(*)
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer i,j,k, n, indf,ind_fv_ids, fid,vid,did, ig, err, ds,de
+      character*(MAX_LEN_MBUF) msgbuf
+      integer lenf,lenv, lend
+      integer vstart(100), vcount(100)
+      integer rvstart(100), rvcount(100)
+
+C     Strip trailing spaces
+      lenf = ILNBLNK(fname)
+      lenv = ILNBLNK(vname)
+
+      CALL MNC_GET_FVINDS(myThid, fname, vname, indf, ind_fv_ids)
+      IF ((indf .LT. 1).OR.(ind_fv_ids .LT. 1)) THEN
+        write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
+     &       ''' is not open or does not contain variable ''', 
+     &       vname(1:lenv), ''''
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_VAR_ADD_ATTR_STR'
+      ENDIF
+      fid = mnc_f_info(indf,2)
+      vid = mnc_fv_ids(indf,(ind_fv_ids+1))
+
+C     Get the lengths from the dim IDs
+      ig = mnc_fv_ids(indf,(ind_fv_ids+2))
+      ds = mnc_f_info(indf,ig+1)
+      de = mnc_f_info(indf,ig+2)
+      k = 0
+      DO i = ds,de
+        k = k + 1
+        vstart(k) = 1
+        vcount(k) = mnc_d_size( mnc_fd_ind(indf,i) )
+      ENDDO
+
+C     Check for the unlimited dimension
+      j = mnc_d_size( mnc_fd_ind(indf,de) )
+      IF (j .LT. 1) THEN
+        did = mnc_fg_ids(indf,de)
+        err = NF_INQ_DIMLEN(fid, did, lend)
+        write(msgbuf,'(a)') 'reading current length of unlimited dim'
+        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        IF (lend .LT. 1)  lend = lend + 1
+        vstart(k) = lend
+        vcount(k) = 1
+      ENDIF
+
+      CALL MNC_FILE_ENDDEF(myThid, fname)
+      err = NF_PUT_VARA_DOUBLE(fid, vid, vstart, vcount, var)
+      write(msgbuf,'(5a)') 'writing variable ''', vname(1:lenv),
      &     ''' to file ''', fname(1:lenf), ''''
       CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
