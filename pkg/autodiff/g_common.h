@@ -33,15 +33,12 @@ C--   heimbach@mit.edu 11-Jan-2001
       common /g_dynvars_cd/ 
      &                      g_uveld, g_vveld,
      &                      g_etanm1, 
-     &                      g_unm1, g_vnm1, 
-     &                      g_gucd, g_gvcd
+     &                      g_unm1, g_vnm1
       _RL g_uveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_etanm1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_unm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL g_gvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
       common /g_ffields/

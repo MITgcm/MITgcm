@@ -33,15 +33,12 @@ C--   heimbach@mit.edu 11-Jan-2001
       common /addynvars_cd/ 
      &                      aduveld, advveld,
      &                       adetanm1, 
-     &                      adunm1, advnm1, 
-     &                      adgucd, adgvcd
+     &                      adunm1, advnm1
       _RL aduveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adetanm1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
       common /adffields/
