@@ -1,7 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.398 2004/12/01 23:11:21 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.399 2004/12/03 01:09:51 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint56c_post
+o OBCS as control variables
+  - update ctrl_ad_diff.list, obcs_ad_diff.list
+  - remove balance of obcs controls from default
+  - fix index bug nobcs in ctrl_init
+  - fix dummy fields filen in ctrl_pack
+  - add dummy weights for obcs
+o lsopt: comment out fort.94 output
+o optim: 
+  - remove unnecessary header files
+  - adjusted namelists
+  - add xerbla.F to Makefile
+o exf: 
+  - multiple modifications of exf_check_range
+  - unit change in exf_init_runoff from [m/year] to [m/s]
+o mdsio:
+  - i/o-vector change debugLevel from debLevA to debLevB
 
 checkpoint56b_post
 o collect all ptracers output in an new routine (PTRACERS_OUTPUT) that
