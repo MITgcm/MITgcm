@@ -5,6 +5,8 @@
  sRef=10.,10.,10.,10.,
  viscAz=1.E-2,
  viscAh=4.E2,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
  diffKhT=4.E2,
  diffKzT=1.E-2,
  beta=1.E-11,
