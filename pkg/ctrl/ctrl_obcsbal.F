@@ -48,6 +48,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
 c     == local variables ==
 
       integer bi,bj
@@ -182,6 +183,8 @@ c--   Do the global summation.
 cgg    End of the obcsnfirst, obcsnchanged loop. 
 
 #endif
+
+#endif /* BALANCE_CONTROL_VOLFLUX_GLOBAL */
 
       return
       end

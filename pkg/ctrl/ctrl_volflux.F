@@ -50,6 +50,8 @@ c     == routine arguments ==
       _RL sumarea
       integer mythid
 
+
+#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
 c     == local variables ==
 
       integer bi,bj
@@ -393,6 +395,8 @@ cgg -- Positive is flux in.
 #endif
 
 #endif
+
+#endif /* BALANCE_CONTROL_VOLFLUX_GLOBAL */
 
       return
       end

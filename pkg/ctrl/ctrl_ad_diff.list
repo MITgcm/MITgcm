@@ -5,3 +5,11 @@ ctrl_map_ini.f
 ctrl_map_ini_ecco.f	
 ctrl_map_forcing.f
 ctrl_smooth.f
+ctrl_getobcse.f
+ctrl_getobcsn.f
+ctrl_getobcss.f
+ctrl_getobcsw.f
+ctrl_obcsbal.f
+ctrl_init_obcs_variables.f
+ctrl_getrec.f
+ctrl_volflux.f

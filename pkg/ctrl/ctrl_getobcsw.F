@@ -125,6 +125,8 @@ c--   Get the counters, flags, and the interpolation factor.
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsw_dummy )
 
+#ifdef ALLOW_CTRL_OBCS_BALANCE
+
           if ( optimcycle .gt. 0) then           
             if (iobcs .eq. 3) then
 cgg         Special attention is needed for the normal velocity.
@@ -197,6 +199,8 @@ cgg    Compute the baroclinic velocity at level 1. Should balance flux.
               enddo
             endif
           endif
+
+#endif /* ALLOW_CTRL_OBCS_BALANCE */
 
           do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -242,6 +246,8 @@ cgg     match up. I will blame Fortran for the ugliness.
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsw_dummy )
 
+#ifdef ALLOW_CTRL_OBCS_BALANCE
+
           if ( optimcycle .gt. 0) then           
             if (iobcs .eq. 3) then
 cgg         Special attention is needed for the normal velocity.
@@ -314,6 +320,8 @@ cgg    Compute the baroclinic velocity at level 1. Should balance flux.
               enddo
             endif
           endif
+
+#endif /* ALLOW_CTRL_OBCS_BALANCE */
 
           do bj = jtlo,jthi
             do bi = itlo,ithi

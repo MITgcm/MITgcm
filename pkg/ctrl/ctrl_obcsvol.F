@@ -45,6 +45,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
 c     == local variables ==
 
       integer bi,bj
@@ -108,8 +109,6 @@ c--   Read tiled data.
 cgg   Assume the number of records is the same for
 cgg   all boundaries.
 
-
-#ifdef BALANCE_CONTROL_VOLFLUX_GLOBAL
       tmpflux= 0. d 0
       tmparea= 0. d 0
       sumarea= 0. d 0
@@ -472,7 +471,7 @@ c--   Do the global summation.
       endif  
 cgg    End of the obcsnfirst, obcsnchanged loop. 
 
-#endif
+#endif /* BALANCE_CONTROL_VOLFLUX_GLOBAL */
 
       return
       end

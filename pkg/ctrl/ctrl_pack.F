@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.14 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.15 2004/12/03 00:48:57 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -158,20 +158,22 @@ c     >>> Write gradient vector <<<
      &      access  = 'sequential'   )
 
 c--       Header information.
-          write(cunit) filenvartype
-          write(cunit) filenvarlength
-          write(cunit) fileyctrlid
-          write(cunit) fileoptimCycle
-          write(cunit) filefc
-          write(cunit) fileIg
-          write(cunit) fileJg
-          write(cunit) filensx
-          write(cunit) filensy
-          write(cunit) (filenWetcGlobal(k), k=1,nr)
-          write(cunit) (filenWetsGlobal(k), k=1,nr)
-          write(cunit) (filenWetwGlobal(k), k=1,nr)
+          write(cunit) nvartype
+          write(cunit) nvarlength
+          write(cunit) yctrlid
+          write(cunit) optimCycle
+          write(cunit) fc
+C     place holder of obsolete variable iG
+          write(cunit) 1
+C     place holder of obsolete variable jG
+          write(cunit) 1
+          write(cunit) nsx
+          write(cunit) nsy
+          write(cunit) (nWetcGlobal(k), k=1,nr)
+          write(cunit) (nWetsGlobal(k), k=1,nr)
+          write(cunit) (nWetwGlobal(k), k=1,nr)
 #ifdef ALLOW_CTRL_WETV
-          write(cunit) (filenWetvGlobal(k), k=1,nr)
+          write(cunit) (nWetvGlobal(k), k=1,nr)
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -186,12 +188,12 @@ c--       Header information.
 #ifdef ALLOW_OBCSE_CONTROL
           write(cunit) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif
-          write(cunit) (filencvarindex(i), i=1,maxcvars)
-          write(cunit) (filencvarrecs(i),  i=1,maxcvars)
-          write(cunit) (filencvarxmax(i),  i=1,maxcvars)
-          write(cunit) (filencvarymax(i),  i=1,maxcvars)
-          write(cunit) (filencvarnrmax(i), i=1,maxcvars)
-          write(cunit) (filencvargrd(i),   i=1,maxcvars)
+          write(cunit) (ncvarindex(i), i=1,maxcvars)
+          write(cunit) (ncvarrecs(i),  i=1,maxcvars)
+          write(cunit) (ncvarxmax(i),  i=1,maxcvars)
+          write(cunit) (ncvarymax(i),  i=1,maxcvars)
+          write(cunit) (ncvarnrmax(i), i=1,maxcvars)
+          write(cunit) (ncvargrd(i),   i=1,maxcvars)
           write(cunit)
 
 #ifdef ALLOW_THETA0_CONTROL
