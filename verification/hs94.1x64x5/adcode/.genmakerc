@@ -1,0 +1,12 @@
+# $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/.genmakerc,v 1.1 2001/11/09 15:53:31 heimbach Exp $
+# $Name:  $
+
+# Disable packages that are not needed
+set DISABLE=( aim obcs zonal_filt cal exf )
+
+# Enable packages that are needed but are disabled by default
+set ENABLE=( autodiff cost ctrl grdchk ecco kpp gmredi shap_filt )
+
+# We can also specify other defaults
+set ROOTDIR=..
+set MODS=../verification/hs94.1x64x5/adcode
