@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.6 2004/09/18 16:09:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.7 2004/09/21 19:51:10 edhill Exp $
 #  $Name:  $
 #
 # adapted to itrda.acesgrid.org
@@ -25,4 +25,4 @@ fi
 NOOPTFLAGS='-O0'
 
 # netcdf
-LIBS="-lnetcdf"
+#LIBS="-lnetcdf"

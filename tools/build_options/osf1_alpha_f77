@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_f77,v 1.4 2004/07/22 02:25:41 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_f77,v 1.5 2004/09/21 19:51:10 edhill Exp $
 #
 
 #  confirmed on Halem by eh3, 2003-09-03
@@ -20,7 +20,7 @@ CPP='/usr/bin/cpp -P'
 # Tested and works:  Wed Jul 21 11:55:34 EDT 2004
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
-LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib -lnetcdf"
+LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib"
 
 FC='f77'
 LINK='f77'

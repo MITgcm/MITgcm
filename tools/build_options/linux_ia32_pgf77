@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.4 2004/09/18 16:09:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.5 2004/09/21 19:51:10 edhill Exp $
 #
 
 FC='pgf77'
@@ -18,4 +18,3 @@ else
     FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
 fi
 
-LIBS='-lnetcdf'

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.9 2004/09/18 16:09:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.10 2004/09/21 19:51:10 edhill Exp $
 #  $Name:  $
 #
 
@@ -21,6 +21,5 @@ else
     FOPTIM='-O0 -malign-double'
 fi
 
-# netcdf
-LIBS="-lnetcdf"
+
 

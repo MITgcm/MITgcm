@@ -25,6 +25,5 @@ else
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
 
-LIBS='-lnetcdf'
 
 
