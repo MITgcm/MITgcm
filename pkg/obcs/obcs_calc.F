@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.8 2004/09/21 20:33:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.9 2004/09/22 20:44:37 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -38,17 +38,6 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I, J , K, I_obc, J_obc
       _RL Tr_T, Ar_T, Tr, Ar 
-
-#ifdef ALLOW_OBCS_PRESCRIBE
-
-C--     Calculate future values on open boundaries
-        CALL EXF_GETOBCS(futureTime, futureIter, mythid)
-
-C ------------------------------------------------------------------------------
-
-#else /* undef ALLOW_OBCS_PRESCRIBE */
-
-C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_EAST
 C     Eastern OB
@@ -179,6 +168,11 @@ C         Southern OB
 
 C ------------------------------------------------------------------------------
 
+#ifdef ALLOW_OBCS_PRESCRIBE
+      IF (useOBCSprescribe) THEN
+C--     Calculate future values on open boundaries
+        CALL OBCS_PRESCRIBE_READ(futureTime, futureIter, mythid)
+      ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
 
 C ------------------------------------------------------------------------------
@@ -207,7 +201,7 @@ C ------------------------------------------------------------------------------
             I_obc=OB_Ie(J,bi,bj)
             IF (I_obc.ne.0) THEN
               OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
-              OBEv(J,K,bi,bj) = 0. 
+c              OBEv(J,K,bi,bj) = 0. 
             ENDIF
           ENDDO
         ENDDO
@@ -234,7 +228,7 @@ C ------------------------------------------------------------------------------
             I_obc=OB_Iw(J,bi,bj)
             IF (I_obc.ne.0) THEN
                 OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
-                OBWv(J,K,bi,bj) = 0. 
+c                OBWv(J,K,bi,bj) = 0. 
             ENDIF
           ENDDO
         ENDDO
@@ -260,7 +254,7 @@ C ------------------------------------------------------------------------------
           DO I=1-Olx,sNx+Olx
             J_obc=OB_Jn(I,bi,bj)
             IF (J_obc.ne.0) THEN
-                OBNu(I,K,bi,bj) = 0.
+c                OBNu(I,K,bi,bj) = 0.
                 OBWv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
             ENDIF
           ENDDO
@@ -287,7 +281,7 @@ C ------------------------------------------------------------------------------
           DO I=1-Olx,sNx+Olx
             J_obc=OB_Js(I,bi,bj)
             IF (J_obc.ne.0) THEN
-                OBSu(I,K,bi,bj) = 0.
+c                OBSu(I,K,bi,bj) = 0.
                 OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
             ENDIF
           ENDDO

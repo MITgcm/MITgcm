@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.7 2004/09/22 06:30:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.8 2004/09/22 20:44:37 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -33,7 +33,7 @@ C
      & spongeThickness,
      & useOrlanskiNorth,useOrlanskiSouth,
      & useOrlanskiEast,useOrlanskiWest,
-     & useOBCSsponge, useOBCSbalance
+     & useOBCSsponge, useOBCSbalance, useOBCSprescribe
       INTEGER OB_Jnorth(Nx)
       INTEGER OB_Jsouth(Nx)
       INTEGER OB_Ieast(Ny)
@@ -45,6 +45,7 @@ C
       LOGICAL useOrlanskiWest
       LOGICAL useOBCSsponge
       LOGICAL useOBCSbalance
+      LOGICAL useOBCSprescribe
 
       COMMON /PARM_R_OB/
      & Urelaxobcsinner,Urelaxobcsbound,
