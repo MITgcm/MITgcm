@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.27 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.28 2004/09/21 12:13:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -309,9 +309,9 @@ C      ----------------|--||-------
 C                      |  \/
 C                      |   x T(sNx+1,    0)
        IF ( southWestCorner ) THEN
-        DO J=1,OLy
-         DO I=1,OLx
-          localTij(1-I, 1-J   )= localTij(1-J  ,1  )
+        DO j=1,OLy
+         DO i=1,OLx
+          localTij( 1-i , 1-j )=localTij( 1-j , i  )
          ENDDO
         ENDDO
        ENDIF
