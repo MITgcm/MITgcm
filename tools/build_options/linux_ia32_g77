@@ -1,26 +1,26 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.6 2004/01/16 17:52:55 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.7 2004/07/30 20:53:25 edhill Exp $
 #  $Name:  $
 #
 
 
 FC=g77
+CC=gcc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 
-# netcdf
-# LIBS="-lnetcdf"
-
-#  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
     FFLAGS='-Wimplicit -Wunused -Wuninitialized'
     FOPTIM='-O3 -malign-double -funroll-loops'
 else
-    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    #  Try to follow IEEE-754
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
     FOPTIM='-O0 -malign-double'
 fi
 
-
+# netcdf
+# LIBS="-lnetcdf"
 

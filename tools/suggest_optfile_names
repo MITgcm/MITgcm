@@ -54,6 +54,7 @@ EOF
 	    build_cyrus_makedepend
 	fi
     fi
+    rm -f genmake_tc*
 }
 
 
