@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.136 2003/02/25 06:35:46 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.137 2003/02/26 03:29:08 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 untagged
+o improve "ini_p_ground" when using finite difference form for calc_phi_hyd
 o Added net flux to downward flux conversion to pkg/exf/exf_getffields.F
 o Added SEAICE_initialHEFF to pkg/seaice
 
