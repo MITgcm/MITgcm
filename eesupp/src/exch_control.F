@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.3 1999/05/24 15:17:10 adcroft Exp $
 
 C      MITgcmUV Exchange routine
 C      -------------------------
@@ -168,29 +168,29 @@ C      theCornerMode     - Holds working copy of corner mode
 
 C--    Error checks
        IF ( exchWidthX .GT. myOLw   ) 
-     &  STOP ' S/R EXCH: exchWidthX .GT. myOLw'
+     &  STOP ' S/R EXCH_RL: exchWidthX .GT. myOLw'
        IF ( exchWidthX .GT. myOLe   ) 
-     &  STOP ' S/R EXCH: exchWidthX .GT. myOLe'
+     &  STOP ' S/R EXCH_RL: exchWidthX .GT. myOLe'
        IF ( exchWidthY .GT. myOLs   ) 
-     &  STOP ' S/R EXCH: exchWidthY .GT. myOLs'
+     &  STOP ' S/R EXCH_RL: exchWidthY .GT. myOLs'
        IF ( exchWidthY .GT. myOLn   ) 
-     &  STOP ' S/R EXCH: exchWidthY .GT. myOLn'
+     &  STOP ' S/R EXCH_RL: exchWidthY .GT. myOLn'
        IF ( myOLw      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLw .GT. MAX_OLX_EXCH'
+     &  STOP ' S/R EXCH_RL: myOLw .GT. MAX_OLX_EXCH'
        IF ( myOLe      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLe .GT. MAX_OLX_EXCH'
+     &  STOP ' S/R EXCH_RL: myOLe .GT. MAX_OLX_EXCH'
        IF ( myOLn      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLn .GT. MAX_OLY_EXCH'
+     &  STOP ' S/R EXCH_RL: myOLn .GT. MAX_OLY_EXCH'
        IF ( myOLs      .GT. MAX_OLY_EXCH ) 
-     &  STOP ' S/R EXCH: myOLs .GT. MAX_OLY_EXCH'
+     &  STOP ' S/R EXCH_RL: myOLs .GT. MAX_OLY_EXCH'
        IF ( myNZ       .GT. MAX_NR_EXCH  ) 
-     &  STOP ' S/R EXCH: myNZ  .GT. MAX_NR_EXCH '
+     &  STOP ' S/R EXCH_RL: myNZ  .GT. MAX_NR_EXCH '
        IF (       theSimulationMode .NE. FORWARD_SIMULATION
      &      .AND. theSimulationMode .NE. REVERSE_SIMULATION
-     &    ) STOP ' S/R EXCH: Unrecognised simulationMode '
+     &    ) STOP ' S/R EXCH_RL: Unrecognised simulationMode '
        IF (       theCornerMode .NE. EXCH_IGNORE_CORNERS
      &      .AND. theCornerMode .NE. EXCH_UPDATE_CORNERS
-     &    ) STOP ' S/R EXCH: Unrecognised cornerMode '
+     &    ) STOP ' S/R EXCH_RL: Unrecognised cornerMode '
 
 C--    Cycle edge buffer level
        CALL EXCH_CYCLE_EBL( myThid )
@@ -319,29 +319,29 @@ C      theCornerMode     - Holds working copy of corner mode
 
 C--    Error checks
        IF ( exchWidthX .GT. myOLw   ) 
-     &  STOP ' S/R EXCH: exchWidthX .GT. myOLw'
+     &  STOP ' S/R EXCH_RS: exchWidthX .GT. myOLw'
        IF ( exchWidthX .GT. myOLe   ) 
-     &  STOP ' S/R EXCH: exchWidthX .GT. myOLe'
+     &  STOP ' S/R EXCH_RS: exchWidthX .GT. myOLe'
        IF ( exchWidthY .GT. myOLs   ) 
-     &  STOP ' S/R EXCH: exchWidthY .GT. myOLs'
+     &  STOP ' S/R EXCH_RS: exchWidthY .GT. myOLs'
        IF ( exchWidthY .GT. myOLn   ) 
-     &  STOP ' S/R EXCH: exchWidthY .GT. myOLn'
+     &  STOP ' S/R EXCH_RS: exchWidthY .GT. myOLn'
        IF ( myOLw      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLw .GT. MAX_OLX_EXCH'
+     &  STOP ' S/R EXCH_RS: myOLw .GT. MAX_OLX_EXCH'
        IF ( myOLe      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLe .GT. MAX_OLX_EXCH'
+     &  STOP ' S/R EXCH_RS: myOLe .GT. MAX_OLX_EXCH'
        IF ( myOLn      .GT. MAX_OLX_EXCH ) 
-     &  STOP ' S/R EXCH: myOLn .GT. MAX_OLY_EXCH'
+     &  STOP ' S/R EXCH_RS: myOLn .GT. MAX_OLY_EXCH'
        IF ( myOLs      .GT. MAX_OLY_EXCH ) 
-     &  STOP ' S/R EXCH: myOLs .GT. MAX_OLY_EXCH'
+     &  STOP ' S/R EXCH_RS: myOLs .GT. MAX_OLY_EXCH'
        IF ( myNZ       .GT. MAX_NR_EXCH  ) 
-     &  STOP ' S/R EXCH: myNZ  .GT. MAX_NR_EXCH '
+     &  STOP ' S/R EXCH_RS: myNZ  .GT. MAX_NR_EXCH '
        IF (       theSimulationMode .NE. FORWARD_SIMULATION
      &      .AND. theSimulationMode .NE. REVERSE_SIMULATION
-     &    ) STOP ' S/R EXCH: Unrecognised simulationMode '
+     &    ) STOP ' S/R EXCH_RS: Unrecognised simulationMode '
        IF (       theCornerMode .NE. EXCH_IGNORE_CORNERS
      &      .AND. theCornerMode .NE. EXCH_UPDATE_CORNERS
-     &    ) STOP ' S/R EXCH: Unrecognised cornerMode '
+     &    ) STOP ' S/R EXCH_RS: Unrecognised cornerMode '
 
 C--    Cycle edge buffer level
        CALL EXCH_CYCLE_EBL( myThid )
