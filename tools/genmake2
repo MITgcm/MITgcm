@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.78 2004/05/04 16:30:21 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.79 2004/06/16 21:15:47 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -370,6 +370,11 @@ Usage: "$0" [OPTIONS]
 
     -help | --help | -h | --h
           Print this help message and exit.
+
+    -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
+      -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
+          Use "NAME" as the adoptfile.  By default, the file at
+          "tools/adjoint_options/adjoint_default" will be used.
 
     -nooptfile | --nooptfile
       -optfile NAME | --optfile NAME | -of NAME | --of NAME
