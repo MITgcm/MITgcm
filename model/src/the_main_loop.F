@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.59 2005/02/10 05:39:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.60 2005/04/03 11:38:44 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -315,6 +315,7 @@ c--     >>> Loop body start <<<
 #ifdef ALLOW_AUTODIFF_TAMC
         nIter0 = INT( startTime/deltaTClock )
         ikey_dynamics = ilev_1
+        CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -335,6 +336,7 @@ c--     >>> Loop body start <<<
 c--     >>> Loop body end <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
+        CALL AUTODIFF_INADMODE_SET( myThid )
 #ifdef ALLOW_TAMC_CHECKPOINTING
             endif
           enddo
