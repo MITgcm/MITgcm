@@ -1,5 +1,6 @@
        subroutine diagnostics_fill_ptracers(myThid)
        implicit none
+#include "PACKAGES_CONFIG.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"

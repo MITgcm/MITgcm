@@ -36,6 +36,7 @@ C *****                                                              ****
 C ***********************************************************************
 
       implicit none
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 
