@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.2 2004/06/03 16:34:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.3 2004/06/24 23:46:26 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -7,6 +7,7 @@ CBOP
 C     !ROUTINE: THSICE_SLAB_OCEAN
 C     !INTERFACE:
       SUBROUTINE THSICE_SLAB_OCEAN( 
+     O                      dTsurf,
      I                      bi, bj, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -39,6 +40,7 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+      _RL dTsurf(sNx,sNy)
       INTEGER bi,bj
       INTEGER myThid
 CEOP
@@ -60,6 +62,7 @@ C--    add heat flux and fresh-water + salt flux :
        DO j=1,sNy
         DO i=1,sNx
          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+          dTsurf(i,j) = tOceMxL(i,j,bi,bj)
           tOceMxL(i,j,bi,bj) = tOceMxL(i,j,bi,bj)
      &       - heatFac*Qnet(i,j,bi,bj) / hOceMxL(i,j,bi,bj)
           sOceMxL(i,j,bi,bj) = sOceMxL(i,j,bi,bj)
@@ -92,6 +95,15 @@ C--    add restoring (backward) toward climatological Temp. & fixed Salinity
        ENDDO
       ENDIF
 #endif /* ALLOW_AIM */
+
+C-    Diagnose surf. temp. change
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+          dTsurf(i,j) = tOceMxL(i,j,bi,bj) - dTsurf(i,j)
+         ENDIF
+        ENDDO
+       ENDDO
 
 #endif  /* ALLOW_THSICE */
 
