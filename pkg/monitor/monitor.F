@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.2 2001/06/04 13:25:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.3 2001/06/06 14:49:20 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,7 +49,7 @@ C      Print the numerical stablility parameters for current state
        dT=max(deltaTtracer,deltaTmom)
        CALL MON_ADVCFL('U',uVel,recip_dxc,dT,myThid)
        CALL MON_ADVCFL('V',vVel,recip_dyc,dT,myThid)
-       CALL MON_ADVCFL('W',wVel,recip_drc,dT,myThid)
+       CALL MON_ADVCFLW('W',wVel,recip_drc,dT,myThid)
 
 C      Print stats for KE
        CALL MON_KE(myThid)
