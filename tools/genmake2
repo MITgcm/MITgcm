@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.57 2003/12/09 18:58:24 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.58 2004/01/09 22:08:39 afe Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -959,6 +959,19 @@ if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
 	echo "Error: problem encountered while building source files in eesupp:"
 	cat make_eesupp.errors
 	exit 1
+    fi
+fi
+
+#same for exch2
+if test -r $ROOTDIR"/pkg/exch2/Makefile" ; then
+    echo "  Making source files in exch2 from  templates"
+    ( cd $ROOTDIR"/pkg/exch2/" && $MAKE ) > make_exch2.errors 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+        rm -f make_exch2.errors
+    else
+        echo "Error: problem encountered while building source files in exch2:"        cat make_exch2.errors
+        exit 1
     fi
 fi
 
