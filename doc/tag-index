@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.158 2003/05/23 18:24:17 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.159 2003/05/23 18:44:58 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint50f_post
+o exf totally restructured
+  - replaced all exf_set_ routines by one generic exf_set_gen.F
+    and made sure it's still differentiable
+  - split exf_getffields.F into new exf_bulkformulae.F
+  - exf_inscal_/exf_outscal_ suffixes consistent with field names
+  - updated adjoint/makefile and relevant verif. accordingly
 
 checkpoint50f_pre
  o AIM: near surface temp evaluated from Pot.Temp: fixed for Part Cell ;
