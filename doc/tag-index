@@ -1,8 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.68 2002/03/14 15:23:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.69 2002/03/24 02:44:49 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint44h_post = checkpoint45
+o Fix to restore differentiability:
+  place at which packages_init_variables is called in
+  initialise_varia is crucial for reverse control flow.
+o modifications in GMRedi to enable stable adjoint
+  (corresponding modif's in thermodynamics, dynamics)
+o added missing hook for sponge layer code in external_forcing
+o modified test cost functions
+o storing in gad_advection (plus removal of write(0,*)!
+o missing headers TR1.h added in convective_adjustment routines
+o errorMessageUnit set non-equal zero in eeboot
+  (conflict on some platforms, e.g. IBM SP3)
+o modified carbon verif.
+
+checkpoint44h_pre
 o vertical grid option: allow to put the Interface at the middle between
   2 cell-centers ; replace delZ in pkg/kpp by drF.
 o GM Advective form: Tracers are advected using the residual transport (=
