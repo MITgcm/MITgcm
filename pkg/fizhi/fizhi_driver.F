@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.8 2004/07/07 19:33:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.9 2004/07/08 20:24:08 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -47,9 +47,7 @@ c -------------
 c Input Parameters
 c ----------------
       integer myid,im,jm,lm,bi,bj,ptracer,ntracer
-      integer nchp,chlat,chlon,igrd,nchpland,chfr,ityp
-      integer nwatlevs,nwatlats
-      integer nozolevs,nozolats
+      integer nchp,igrd(nchp),nchpland,ityp(nchp)
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
@@ -58,17 +56,14 @@ c ----------------
       real u(im,jm,lm), v(im,jm,lm), t(im,jm,lm)
       real q(im,jm,lm,ntracer)
       real pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm),pkht(im,jm,lm)
+      real pkl(im,jm,lm)
       real radswt(im,jm), fracland(im,jm), landtype(im,jm)
       real phis_var(im,jm), sea_ice(im,jm)
+      real chlat(nchp),chlon(nchp),chfr(nchp)
       real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
       real swetroot(nchp),swetdeep(nchp),capac(nchp),snodep(nchp)
       real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
       real xlmt(nchp,lm),khmt(nchp,lm),tke(nchp,lm)
-      real stratq(nwatlats,nwatlevs )
-      real watlats(nwatlats)
-      real watlevs(nwatlevs)
-      real ozone(nozolats,nozolevs)
-      real ozolevs(nozolevs),ozolats(nozlats)
       real co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)
       real lwdt(im,jm,lm),lwdtclr(im,jm,lm)
       real swdt(im,jm,lm),swdtclr(im,jm,lm)
@@ -98,7 +93,6 @@ c Local Variables
 c ---------------
       logical     alarm
       external    alarm
-      real massinlayer(im,jm,lm)
       integer numpcheck
       parameter (numpcheck = 5)
       integer pchecklevs(numpcheck)
