@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.10 2003/10/09 04:19:20 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.11 2003/10/10 03:29:44 edhill Exp $
+#  $Name:  $
 #
 
 usage()
@@ -583,9 +584,21 @@ EOF
 
 NDIR=0
 
+of_path=
 if test "x$OPTFILE" != xNONE ; then
     if test -r $OPTFILE ; then
-	OPTFILE=`pwd`"/$OPTFILE"
+	# get the path
+	path=${OPTFILE%/*}
+	if test "x$path" = x ; then
+	    of_path=`pwd`
+	else
+	    of_path=`( cd $path > /dev/null 2>&1 ; pwd )`
+	fi
+	file=${OPTFILE##*/}
+	OPTFILE=$of_path/$file
+    else
+	echo
+	echo "WARNING: can't read OPTFILE=\"$OPTFILE\" but will try to use it..."
     fi
 fi
 echo
