@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/SIZE.h,v 1.1 2003/01/17 14:15:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/SIZE.h,v 1.2 2003/02/05 20:29:37 jmc Exp $
 C $Name:  $
 
 C
@@ -38,11 +38,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =   1,
-     &           sNy =  56,
+     &           sNy =  14,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
-     &           nSy =   1,
+     &           nSy =   4,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
