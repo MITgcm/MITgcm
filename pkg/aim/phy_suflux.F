@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.4 2001/09/06 13:28:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.5 2001/09/25 19:53:57 jmc Exp $
 C $Name:  $
 
       SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,QSAT,Vsurfsq,PHI,
@@ -100,26 +100,14 @@ C
 C     1.1 Wind components
 C   
       DO J=1,NGP
-c_jmc   IF ( NLEVxyU(J) .GT. 0 ) THEN
-c_jmc    U0(J) = FWIND0*UA(J,NLEVxyU(J))
-c_jmc   ENDIF
-c_jmc   IF ( NLEVxyV(J) .GT. 0 ) THEN
-c_jmc    V0(J) = FWIND0*VA(J,NLEVxyV(J))
-c_jmc   ENDIF
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- Note(jmc): If we interpolate U,V from C_grid to A_grid (center of the mesh)
-C     the above distinction between NLEVxy_Upt,Vpt is no longer valid !
-C     same thing (again) few lines below.
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-         U0(J) = FWIND0*UA(J,NLEVxy(J,myThid))
-         V0(J) = FWIND0*VA(J,NLEVxy(J,myThid))
-        ELSE
          U0(J) = 0.0
          V0(J) = 0.0
+        IF ( NLEVxyU(J,myThid) .GT. 0 ) THEN
+         U0(J) = FWIND0*UA(J,NLEVxyU(J,myThid))
         ENDIF
-C       U0(J) = UA(J,5)
-C       V0(J) = VA(J,5)
+        IF ( NLEVxyV(J,myThid) .GT. 0 ) THEN
+         V0(J) = FWIND0*VA(J,NLEVxyV(J,myThid))
+        ENDIF
       ENDDO
 C
 C     1.2 Temperature
@@ -206,7 +194,7 @@ C--   2. Computation of fluxes over land and sea
 C
 C     2.1 Wind stress
 C
-      DO J=1,NGP
+c_jmc DO J=1,NGP
 c_jmc  IF ( NLEVxyu(J) .GT. 0  ) THEN
 c_jmc   USTR(J,1) = -CDL*DENVV(J,3)*UA(J,NLEVxyu(J))
 c_jmc   USTR(J,2) = -CDS*DENVV(J,3)*UA(J,NLEVxyu(J))
@@ -215,30 +203,28 @@ c_jmc  IF ( NLEVxyv(J) .GT. 0  ) THEN
 c_jmc   VSTR(J,1) = -CDL*DENVV(J,3)*VA(J,NLEVxyv(J))
 c_jmc   VSTR(J,2) = -CDS*DENVV(J,3)*VA(J,NLEVxyv(j))
 c_jmc  ENDIF
-C-- cf Note(jmc) above. 
-       IF ( NLEVxy(J,myThid) .GT. 0  ) THEN
-        USTR(J,1) = -CDL*DENVV(J,3)*UA(J,NLEVxy(J,myThid))
-        USTR(J,2) = -CDS*DENVV(J,3)*UA(J,NLEVxy(J,myThid))
-        VSTR(J,1) = -CDL*DENVV(J,3)*VA(J,NLEVxy(J,myThid))
-        VSTR(J,2) = -CDS*DENVV(J,3)*VA(J,NLEVxy(J,myThid))
-       ELSE
-        USTR(J,1) = 0.
-        USTR(J,2) = 0.
-        VSTR(J,1) = 0.
-        VSTR(J,2) = 0.
-       ENDIF
-      ENDDO
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c   Compute surface drag term (= C_drag*|V| ) to allow direct computation 
-c     of surface stress on C-grid.
-c     add Land + Sea contributions ; Convert to surface pressure level 
+C   Compute surface drag term (= C_drag*|V| ) to allow direct computation 
+C     of surface stress on C-grid.
+C     add Land + Sea contributions ; Convert to surface pressure level 
       DO J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0  ) THEN
-        DRAG(J) = ( CDS+FMASK(J)*(CDL-CDS) )
-     &                         * DENVV(J,3) * GRDSIG(NLEVxy(J,myThid))
+        DRAG(J) = ( CDS+FMASK(J)*(CDL-CDS) ) * DENVV(J,3)
        ELSE
         DRAG(J) = 0.
        ENDIF
+      ENDDO
+C - Notes: 
+C   because of a different mapping between the Drag and the Wind (A/C-grid)
+C   the surface stress is computed later, in "External Forcing", 
+C  => USTR,VSTR is no longer used. only here for diagnostic of old version.
+      DO J=1,NGP
+        USTR(J,3) = 0.
+        VSTR(J,3) = 0.
+       IF ( NLEVxyU(J,myThid) .GT. 0  ) 
+     &  USTR(J,3) = -DRAG(J)*UA(J,NLEVxyU(J,myThid))
+       IF ( NLEVxyV(J,myThid) .GT. 0  ) 
+     &  VSTR(J,3) = -DRAG(J)*VA(J,NLEVxyV(J,myThid))
       ENDDO
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
@@ -316,23 +302,24 @@ C
       CALL SHTORH (0,NGP,TSEA ,PSA,1. _d 0,QDUMMY,RDUMMY,QSAT0(1,2),myThid)
 
       DO J=1,NGP
-Cdj        EVAP(J,1) = CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*QSAT0(J,1)-Q0(J))
-c_jmc: EVAP(J,1)=CHL*DENVV(J,1)*MIN(1. _d 0,SWAV(J))*(QSAT0(J,1)-Q0(J))
-       EVAP(J,1)=CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*(QSAT0(J,1)-Q0(J)))
+Cdj    EVAP(J,1) = CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*QSAT0(J,1)-Q0(J))
+       EVAP(J,1)=CHL*DENVV(J,1)*MIN(1. _d 0,SWAV(J))*(QSAT0(J,1)-Q0(J))
 cdj try new scheme : assume that the net heat flux on land is zero
 cdj                  at all time and at all points (this is equivalent
 cdj                  to say that the land has a zero heat capacity)
 cdj        EVAP(J,1) = SSR(J)-SLR(J)-SHF(J,1)
-c_jmc:  EVAP(J,2) = CHS*DENVV(J,2)*(QSAT0(J,2)-Q0(J))
-        EVAP(J,2) = CHS*DENVV(J,2)*MAX(0. _d 0,QSAT0(J,2)-Q0(J))
+       EVAP(J,2) = CHS*DENVV(J,2)*(QSAT0(J,2)-Q0(J))
+C - test(jmc): only positive evaporation :
+c      EVAP(J,1)=CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*(QSAT0(J,1)-Q0(J)))
+c      EVAP(J,2)=CHS*DENVV(J,2)*MAX(0. _d 0,QSAT0(J,2)-Q0(J))
       ENDDO
 
 
 C--   3. Weighted average of fluxes according to land-sea mask
 
       DO J=1,NGP
-        USTR(J,3) = USTR(J,2)+FMASK(J)*(USTR(J,1)-USTR(J,2))
-        VSTR(J,3) = VSTR(J,2)+FMASK(J)*(VSTR(J,1)-VSTR(J,2))
+c_jmc   USTR(J,3) = USTR(J,2)+FMASK(J)*(USTR(J,1)-USTR(J,2))
+c_jmc   VSTR(J,3) = VSTR(J,2)+FMASK(J)*(VSTR(J,1)-VSTR(J,2))
          SHF(J,3) =  SHF(J,2)+FMASK(J)*( SHF(J,1)- SHF(J,2))
         EVAP(J,3) = EVAP(J,2)+FMASK(J)*(EVAP(J,1)-EVAP(J,2))
 cdj

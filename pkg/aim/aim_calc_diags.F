@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.5 2001/05/29 19:28:53 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.6 2001/09/25 19:53:57 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -53,8 +53,8 @@ C     == Local variables ==
       DO J=1,sNy
        DO I=1,sNx
         I2 = sNx*(J-1)+I
-        USTRtave(i,j,bi,bj)   = USTRtave(i,j,bi,bj)   + USTR(I2,3,myThid)*DDTT
-        VSTRtave(i,j,bi,bj)   = VSTRtave(i,j,bi,bj)   + VSTR(I2,3,myThid)*DDTT
+c       USTRtave(i,j,bi,bj)   = USTRtave(i,j,bi,bj)   + USTR(I2,3,myThid)*DDTT
+c       VSTRtave(i,j,bi,bj)   = VSTRtave(i,j,bi,bj)   + VSTR(I2,3,myThid)*DDTT
         TSRtave(i,j,bi,bj)    = TSRtave(i,j,bi,bj)    + TSR(I2,myThid)*DDTT
         OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)    + OLR(I2,myThid)*DDTT
         SSRtave(i,j,bi,bj)    = SSRtave(i,j,bi,bj)    + SSR(I2,myThid)*DDTT

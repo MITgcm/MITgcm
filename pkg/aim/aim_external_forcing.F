@@ -1,8 +1,7 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_forcing.F,v 1.4 2001/08/24 00:49:51 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_forcing.F,v 1.5 2001/09/25 19:53:57 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
-#undef OLD_AIM_GRIG_MAPPING
 
 CStartOfInterface
       SUBROUTINE AIM_EXTERNAL_FORCING_U(
@@ -23,6 +22,7 @@ C     == Global data ==
 
 #ifdef ALLOW_AIM
 #include "AIM2DYN.h"
+#include "AIM_DIAGS.h"
 #endif /* ALLOW_AIM */
 
 C     == Routine arguments ==
@@ -38,47 +38,56 @@ CEndOfInterface
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     Loop counters
+C     i,j  - Loop counters
       INTEGER i, j
+      _RL DDTT, uStr_tmp
 
+      DDTT = deltaTclock
 
-#ifdef OLD_AIM_GRIG_MAPPING
+#ifdef OLD_AIM_INTERFACE
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c - to reproduce old results :
+C - to reproduce old results (coupled run, summer 2000) :
       IF (kLev.eq.1) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
-           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &      -aim_drag(i-1,j,bi,bj)
-     &          *0.25*(uVel(i-1,j,kLev,bi,bj)+uVel(i,j,kLev,bi,bj))
-     &      -aim_drag(i,j,bi,bj)
-     &          *0.25*(uVel(i,j,kLev,bi,bj)+uVel(i+1,j,kLev,bi,bj))
-          ENDIF
-         ENDDO
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+          uStr_tmp = -aim_drag(i,j,bi,bj)*uVel(i,j,kLev,bi,bj)
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &                       + uStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
+#endif
         ENDDO
+       ENDDO
       ELSE
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
-           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &      -(1.-maskC(i-1,j,kLev-1,bi,bj))*aim_drag(i-1,j,bi,bj)
-     &          *0.25*(uVel(i-1,j,kLev,bi,bj)+uVel(i,j,kLev,bi,bj))
-     &      -(1.-maskC( i ,j,kLev-1,bi,bj))*aim_drag( i ,j,bi,bj)
-     &          *0.25*(uVel(i,j,kLev,bi,bj)+uVel(i+1,j,kLev,bi,bj))
-          ENDIF
-         ENDDO
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( maskW(i,j,kLev-1,bi,bj) .EQ. 0. ) THEN
+          uStr_tmp = -aim_drag(i,j,bi,bj)*uVel(i,j,kLev,bi,bj)
+#ifdef ALLOW_TIMEAVE
+          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
+#endif
+C - put the same bug as in the old setup :
+          IF ( maskC(i,j,kLev-1,bi,bj) .EQ. 1. ) uStr_tmp = 0.
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &                       + uStr_tmp*horiVertRatio*recip_drF(kLev)
+         ENDIF
         ENDDO
+       ENDDO
       ENDIF
-#else  /* OLD_AIM_GRIG_MAPPING */
+#else  /* OLD_AIM_INTERFACE */
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (kLev.eq.1) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
-          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+          uStr_tmp = 
      &     -( aim_drag(i-1,j,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * uVel(i,j,kLev,bi,bj)
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &                       + uStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
+#endif
          ENDIF
         ENDDO
        ENDDO
@@ -86,16 +95,21 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
-          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+          uStr_tmp = 
      &      -( (1.-maskC(i-1,j,kLev-1,bi,bj))*aim_drag(i-1,j,bi,bj)
      &        +(1.-maskC( i ,j,kLev-1,bi,bj))*aim_drag( i ,j,bi,bj)
      &       )* 0.5 _d 0 * uVel(i,j,kLev,bi,bj)
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &                       + uStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
+#endif
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* OLD_AIM_GRIG_MAPPING */
+#endif /* OLD_AIM_INTERFACE */
 
 #endif /* ALLOW_AIM */
 
@@ -117,10 +131,10 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
 
 #ifdef ALLOW_AIM
 #include "AIM2DYN.h"
+#include "AIM_DIAGS.h"
 #endif /* ALLOW_AIM */
 
 C     == Routine arguments ==
@@ -138,46 +152,56 @@ CEndOfInterface
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j
+      _RL DDTT, vStr_tmp
+
+      DDTT = deltaTclock
 
 C     call CHKSUM_TILED( ' drag AAA ',aim_drag,1,bi,bj,myThid )
 
-#ifdef OLD_AIM_GRIG_MAPPING
+#ifdef OLD_AIM_INTERFACE
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c - to reproduce old results :
+C - to reproduce old results (coupled run, summer 2000) :
       IF (kLev.eq.1) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          vStr_tmp = -aim_drag(i,j,bi,bj)*vVel(i,j,kLev,bi,bj)
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &     -aim_drag(i,j-1,bi,bj)
-     &         *0.25*(vVel(i,j-1,kLev,bi,bj)+vVel(i,j,kLev,bi,bj))
-     &     -aim_drag(i,j,bi,bj)
-     &         *0.25*(vVel(i,j,kLev,bi,bj)+vVel(i,j+1,kLev,bi,bj))
-         ENDIF
+     &                       + vStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
+#endif
         ENDDO
        ENDDO
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+         IF ( maskS(i,j,kLev-1,bi,bj) .EQ. 0. ) THEN
+          vStr_tmp = -aim_drag(i,j,bi,bj)*vVel(i,j,kLev,bi,bj)
+#ifdef ALLOW_TIMEAVE
+          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
+#endif
+C - put the same bug as in the old setup :
+          IF ( maskC(i,j,kLev-1,bi,bj) .EQ. 1. ) vStr_tmp = 0.
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &     -(1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
-     &         *0.25*(vVel(i,j-1,kLev,bi,bj)+vVel(i,j,kLev,bi,bj))
-     &     -(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)
-     &         *0.25*(vVel(i,j,kLev,bi,bj)+vVel(i,j+1,kLev,bi,bj))
+     &                       + vStr_tmp*horiVertRatio*recip_drF(kLev)
          ENDIF
         ENDDO
        ENDDO
       ENDIF
-#else  /* OLD_AIM_GRIG_MAPPING */
+#else  /* OLD_AIM_INTERFACE */
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (kLev.eq.1) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+          vStr_tmp = 
      &     -( aim_drag(i,j-1,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * vVel(i,j,kLev,bi,bj)
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &                       + vStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
+#endif
          ENDIF
         ENDDO
        ENDDO
@@ -185,16 +209,21 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+          vStr_tmp = 
      &     -( (1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
      &       +(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)
      &      )* 0.5 _d 0 * vVel(i,j,kLev,bi,bj)
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &                       + vStr_tmp*horiVertRatio*recip_drF(kLev)
+#ifdef ALLOW_TIMEAVE
+          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
+#endif
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* OLD_AIM_GRIG_MAPPING */
+#endif /* OLD_AIM_INTERFACE */
 
 #endif /* ALLOW_AIM */
 
