@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.22 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.23 2004/11/10 20:51:26 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -38,6 +38,7 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       _RL dT
+      _RL statsTemp(6)
       INTEGER time_as_int, i
 
       dT=deltaTclock
@@ -102,8 +103,9 @@ C       Print the basic statistics of model state variables
      &       maskS,hFacS,rAs,drF,myThid)
         CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',
      &       maskC,maskC,rA ,drC,myThid)
-        CALL MON_PRINTSTATS_RL(Nr,theta,'_theta',
-     &       maskC,hFacC,rA ,drF,myThid)
+        CALL MON_WRITESTATS_RL(Nr,theta,'_theta',
+     &       maskC,hFacC,rA ,drF,
+     &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
      &       maskC,hFacC,rA ,drF,myThid)
        
@@ -126,7 +128,7 @@ C       Print stats for surface correction terms (Linear Free-Surf)
         CALL MON_SURFCOR(myThid)
 
 C       Check that solution is within reasonable bounds
-        CALL MON_SOLUTION(myIter,myTime,myThid)
+        CALL MON_SOLUTION( statsTemp, myTime, myIter, myThid )
        
         IF (mon_write_stdout) THEN
 C         Dynamics field monitor finish
