@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.5 2003/12/17 05:05:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,7 +112,7 @@ C--   Start to compute preconditioner matrix (use cg2d_q as temporary array)
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
      &    +freeSurfFac*cg2dNorm*recip_Bo(I,J,bi,bj)* 
-     &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
          ENDDO
         ENDDO
