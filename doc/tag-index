@@ -1,7 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.26 2000/04/10 14:41:52 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.27 2000/06/09 03:13:39 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint28
+ o Corrected initialization of hFacMin for difference vertical coordinates
+ o Modified calculation of partial cell thickness to more robust algorithm
+ o config_summary.F: replaced write_1D_... by write_0D_...
+   read_write.F: added subroutines write_0D_...
+ o routines calc_common_factors, calc_gs, calc_gt, calc_phi_hyd, find_rho:
+   included some initialisations required for TAMC.
+ o routine calc_isoslopes: modified sqrt computation to make it 
+   differentiable for zero argument.
+ o routines dynamics, impldiff:
+   included store directives and tape key computations required for TAMC.
+ o ALL TAMC related changes are between ifdef ALLOW_AUTODIFF_TAMC
 
 checkpoint27
  o fixed calc_isoslopes() to so that cancellation of terms in tensor
