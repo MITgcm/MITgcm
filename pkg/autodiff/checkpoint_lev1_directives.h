@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.14 2004/10/13 07:05:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.15 2005/01/19 16:13:52 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -22,6 +22,8 @@ CADJ STORE SST0    = comlev1, key = ikey_dynamics
 CADJ STORE SST1    = comlev1, key = ikey_dynamics
 CADJ STORE SSS0    = comlev1, key = ikey_dynamics
 CADJ STORE SSS1    = comlev1, key = ikey_dynamics
+CADJ STORE saltFlux0    = comlev1, key = ikey_dynamics
+CADJ STORE saltFlux1    = comlev1, key = ikey_dynamics
 #ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = comlev1, key = ikey_dynamics
 CADJ STORE Qsw1    = comlev1, key = ikey_dynamics
