@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.5 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.6 2002/12/02 21:53:29 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,19 @@ C     I,J,K
       _RL     rhoLoc
       _RL     dPIdp
 CEOP
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+           Bo_surf(I,J,bi,bj)  = 0. _d 0
+           recip_Bo(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
