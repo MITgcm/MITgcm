@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.5 2004/01/15 19:19:59 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.6 2004/01/16 17:52:55 edhill Exp $
 #  $Name:  $
 #
 
@@ -11,7 +11,7 @@ CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 
 # netcdf
-LIBS="-lnetcdf"
+# LIBS="-lnetcdf"
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
