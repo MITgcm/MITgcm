@@ -47,6 +47,6 @@ f77write('topog.bumpchannel',h,'real*8','b');
 
 % Simple channel
 h(:,1)=0;
-h(:,2:ny)=0;
+h(:,2:ny-1)=-H;
 h(:,ny)=0;
 f77write('topog.channel',h,'real*8','b');

@@ -27,6 +27,7 @@
  eosType='LINEAR',
  hFacMin=0.2,
  openBoundaries=.TRUE.,
+ nonHydrostatic=.TRUE.,
  readBinaryPrec=64,
  &
 
@@ -34,18 +35,20 @@
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=400,
+ cg3dTargetResidual=1.E-13,
  &
 
 # Time stepping parameters
  &PARM03
- startTime=0,
-#endTime=3110400000,
- endTime=864000.,
+ niter0=0,
+ nTimeSteps=10.,
  deltaT=600.0,
  abEps=0.1,
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=86400.0,
+ dumpFreq=600.0,
  &
 
 # Gridding parameters
