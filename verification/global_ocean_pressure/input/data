@@ -21,7 +21,6 @@
  ivdc_kappa=1.030905162225000e9,
 #ivdc_kappa=10.0,
  gravity=9.81,
- gravitySign=-1.D0,
  rhonil=1035.,
  buoyancyRelation='OCEANICP',
  integr_GeoPot=1,
