@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.1 1998/12/08 19:44:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.2 1999/03/22 16:46:57 adcroft Exp $
 C
 
 C--   COMMON /GRID_OB/ Open boudary related stuff
@@ -35,3 +35,11 @@ C
       INTEGER OB_Ie(1-Oly:sNy+Oly,nSx,nSy)
       INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
 
+#ifdef ALLOW_NONHYDROSTATIC
+      COMMON /GRID_OBNH/ 
+     &  OBNw,OBSw,OBEw,OBWw
+      _RS OBNw (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBSw (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBEw (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBWw (1-Oly:sNy+Oly,Nr,nSx,nSy)
+#endif /* ALLOW_NONHYDROSTATIC */

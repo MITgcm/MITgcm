@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.2 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.3 1999/03/22 16:46:58 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -72,8 +72,6 @@ C Western boundary
      &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
        ENDIF
       ENDDO
-
-
 
       RETURN
       END

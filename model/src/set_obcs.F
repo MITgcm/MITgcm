@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.2 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.3 1999/03/22 16:46:58 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -57,6 +57,10 @@ c    &       *sin(2.*PI*myCurrentTime/OBtimeScale)
 c    &       *max(myCurrentTime/OBtimeScale,1.)
           OBWv(J,K,bi,bj)=0.
           OBWt(J,K,bi,bj)=tRef(K)
+#ifdef ALLOW_NONHYDROSTATIC
+          OBEw(J,K,bi,bj)=0.
+          OBWw(J,K,bi,bj)=0.
+#endif
          ENDDO
          DO I=1-Olx,sNx+Olx
           OBNu(I,K,bi,bj)=0.
@@ -65,6 +69,10 @@ c    &       *max(myCurrentTime/OBtimeScale,1.)
           OBSu(I,K,bi,bj)=0.
           OBSv(I,K,bi,bj)=0.
           OBSt(I,K,bi,bj)=tRef(K)
+#ifdef ALLOW_NONHYDROSTATIC
+          OBSw(I,K,bi,bj)=0.
+          OBSw(I,K,bi,bj)=0.
+#endif
          ENDDO
         ENDDO
        ENDDO
