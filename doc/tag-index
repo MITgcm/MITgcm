@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.396 2004/11/29 22:50:47 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.397 2004/12/01 22:54:42 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o collect all ptracers output in an new routine (PTRACERS_OUTPUT) that
+  is called from DO_THE_MODEL_IO
+  - rename PTRACERS_STATV_WRITE to PTRACERS_WRITE_TIMEAVE
+  - introduce new parameter PTRACERS_dumpFreq (defaults to dumpFreq)
+  - clean up PTRACERS_WRITE_TIMEAVE a little
 o add another verification experiment that tests both the cfc-pkg and
   the gchem-pkg with GCHEM_SEPARATE_FORCING undefined, that is with 
   reactive tendencies treated inline with regular timestepping
