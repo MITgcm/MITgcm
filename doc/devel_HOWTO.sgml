@@ -1,0 +1,402 @@
+<!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+
+<article id="MITgcm-Development-HOWTO">
+
+<!--
+Build commands:
+  db2pdf -d ldp.dsl devel_HOWTO.sgml
+  db2html -d ./ldp.dsl devel_HOWTO.sgml
+-->
+
+  <articleinfo>
+    <title>MITgcm Development HOWTO</title>
+
+    <author>
+      <firstname>Ed</firstname>
+      <surname>Hill III</surname>
+      <affiliation>
+        <address><email>eh3@mit.edu</email></address>
+      </affiliation>
+    </author>
+
+    <revhistory>
+      <revision>
+	<revnumber>0.01</revnumber>
+	<date>2003-0-07</date>
+	<authorinitials>eh3</authorinitials>
+	<revremark>
+	  Initial version.
+        </revremark>
+      </revision>
+    </revhistory>
+
+    <abstract>
+      <para>This document describes how to develop software for the
+      MITgcm project.</para>
+    </abstract>
+  </articleinfo>
+
+  <sect1 id="intro">
+    <title>Introduction</title> <para>The purpose of this document is
+    to help new developers get "up to speed" with MITgcm
+    development.</para>
+    <sect2>
+      <title>New Versions of This Document</title> <para>You can
+      obtain the latest version of this document <ulink
+      url="http://mitgcm.org/dev_docs/devel_HOWTO/">online</ulink> in
+      various formats.</para>
+    </sect2>
+    <sect2>
+      <title>Feedback and corrections</title> <para>If you have
+      questions or comments about this document, please feel free to
+      <ulink url="mailto:MITgcm-support@mitgcm.org">contact the
+      authors</ulink>.
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="background">
+    <title>Background</title>
+
+    <sect2>
+      <title>User Manual</title>
+
+      <para>Before jumping into
+      development, please familiarize yourself with the MITgcm user
+      manual which is available <ulink
+      url="http://mitgcm.org/">on the main web page</ulink>.  This
+      document contains volumes of useful information and is included
+      here by reference.</para>
+
+      <para>Also, a "snapshot" or<ulink
+      url="http://mitgcm.org/dev_docs/">development version</ulink> of
+      the user manual may be available, though this is only put on the
+      web for testing purposes.</para>
+    </sect2>
+
+    <sect2>
+      <title>Prerequisites</title> <para>To develop for MITgcm project
+      you will need a UNIX or UNIX-like set of build tools including
+      the following:</para>
+      <blockquote>
+	<simplelist type="inline">
+	  <member>CVS client</member>
+	  <member>make or (preferably) GNU make</member>
+	  <member>FORTRAN compiler</member>
+	  <member>C compiler</member>
+	  <member>[ba]sh and [t]csh shells</member>
+	  <member>PERL</member>
+	  <member>LaTeX and LaTeX2HTML</member>
+	</simplelist>
+      </blockquote>
+      <para>Essentially all of the work described here has been tested
+      on recent versions of Red Hat Linux (eg. 7.3 through 9).  Except
+      where noted, all shell commands will be provided using bash
+      syntax.
+      </para>
+    </sect2>
+
+  </sect1>
+
+  <sect1 id="cvs">
+    <title>CVS Repository</title>
+    <sect2>
+      <title>Layout</title>
+
+      <para>Unlike many open source projects, the MITgcm CVS tree does
+      not follow a simple "src", "docs", "share", and "test" directory
+      layout.  Instead, there are multiple higher-level directories
+      that each, to some extent, depend upon the presence of the
+      others.  The tree currently resembles:</para>
+
+<programlisting>gcmpack/
+  MITgcm-contrib        contributed code
+  CS-regrid             goes into utils
+  cvspolicy.html        -save-
+  CVSROOT               -save-
+  development           experimental stuff
+  manual                -save-
+  misc                  -?-
+
+  MITgcm                code
+       adjoint                  fold into genmake
+       bin                      stub for ecco build
+       compare01                old from 20th century
+       diags                    timeave f77 in pkgs now
+       doc                      tags -- connect to real docs?
+       eesupp                   cnh?
+       exe                      ecco user build
+    *- jobs                     runtime shell scripts for 
+    |                             various platforms
+    |  lsopt                    line search
+   m|  model                    main dynamics (core)
+   e|    optimization_drivers   ?
+   r|  optim                    line search interface
+   g|  pkg                      alternate and optional numerics, etc.
+   e*- tools
+   ?|  tutorial_examples        documented tests
+    |                             only populated on release1 branch 
+    |                             and not validated during "testscript"
+    *- utils
+       verification             std tests
+
+
+  mitgcmdoc -> manual   -remove-
+  mitgcm.org            build web site
+  models                -?-
+  packages              -?-
+  preprocess            -?-
+  tmp                   -?-
+</programlisting>
+
+      <para>Efforts are underway to reduce the complexity.</para>
+
+    </sect2>
+
+ <!--
+    <sect2>
+      <title>Releases</title> <para>Currently, there are two main
+      branches:</para>
+      <itemizedlist mark="bullet">
+        <listitem>
+          <para>Development</para>
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>MAIN</para>
+	    </listitem>
+	    <listitem>
+	      <para>ecco-branch</para>
+	    </listitem>
+	  </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Production</para>
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>Release1</para>
+	    </listitem>
+	    <listitem>
+	      <para>Release2</para>
+	    </listitem>
+	  </itemizedlist>
+        </listitem>
+      </itemizedlist>
+    </sect2>
+-->
+
+    <sect2>
+      <title>Branches</title>
+
+      <para>As shown in the online <ulink
+      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index?graph=1.174">ViewCVS-generated
+      tree</ulink>, the MITgcm codebase is split into to two branches
+      or "lines" under which development proceeds.  These two lines
+      are referred to as the "MAIN" and "ecco" versions of the code.
+      While not identical, the bulk of the MAIN and ecco lines are
+      composed of files from the same codebase.
+      </para>
+
+      <para>Periodically, a "Release" branch is formed from the "MAIN"
+      development branch.  This is done in order to create a
+      relatively stable reference point for both users and developers.
+      The intent is that once a relese branch has been created, only
+      bug-fixes will be added to it.  Meanwhile, development (which
+      might "break" or otherwise render invalid the documentation,
+      tutorials, and/or examples contained within a release branch) is
+      allowed to continue along the MAIN and ecco lines.</para>
+    </sect2>
+
+    <sect2>
+      <title>Tagging</title>
+
+      <para>The intent of tagging is to create "known-good"
+      checkpoints that developers can use as references.
+      Traditionally, MITgcm tagging has maintained the following
+      conventions:</para>
+
+      <orderedlist>
+	<listitem>
+	  <para>Developer checks out code into a local CVS-managed
+	  directory, makes various changes/additions, tests these
+	  edits, and eventually reaches a point where (s)he is
+	  satisfied that the changes form a new "useful" point in the
+	  evolution of the code.</para>
+	</listitem>
+
+	<listitem>
+	  <para>The developer then runs the <ulink
+          url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/verification/testscript">testscript</ulink>
+          shell script to see if any problems are introduced.  While
+          not intended to be exhaustive, the test cases within the
+          verification directory do provide some indication whether
+          gross errors have been introduced.
+          </para>
+	</listitem>
+
+	<listitem>
+	  <para>Having satisfied him- or herself that the changes are
+	  ready to be committed to the CVS repository, the developer
+	  then:</para>
+	  <orderedlist>
+	    <listitem>
+	      <para>adds a "checkpointXY_pre" comment (where X is a
+	      checkpoint number and Y is a letter) to the <ulink
+	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index">tag-index</ulink>
+	      file and checks it into the CVS repository</para>
+	    </listitem>
+	    <listitem>
+	      <para>submits the set of changes to the CVS repository
+	      and adds comments to <filename>tag-index</filename>
+	      describing what the changes are along with a matching
+	      "checkpointXY_post" entry</para>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+      </orderedlist>
+
+      <para>The result of this tagging procedure is a sequence of
+      development checkpoints with comments which resembles:</para>
+
+<programlisting>
+checkpoint50e_post
+o make KPP work with PTRACERS
+ - fix gad_calc_rhs to call new routine kpp_transport_ptr, which is
+   nearly a copy of kpp_transport_s
+ - there is no analogue to SurfaceTendencyS, so I have to use 
+   gPtr(of the surface layer) instead
+o add a new platform SunFire+mpi (SunFire 15000) to genmake
+checkpoint50e_pre
+
+checkpoint50d_post
+o change kpp output from multiple-record state files to single-record state 
+  files analogous to write_state.F
+o reduce the output frequency of cg3d-related stuff to the monitor frequency, 
+  analogous to the cg2d-related output. 
+o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512, 
+  so that writing to internal file fn (with length 512) fails.
+checkpoint50d_pre
+</programlisting>
+
+      <para>This information can be used to refer to various stages of
+      the code development.  For example, bugs can be traced to
+      individual sets of CVS checkins based upon their first
+      appearance when comparing the results from different
+      checkpoints.</para>
+
+    </sect2>
+  </sect1>
+
+
+  <sect1 id="documentation">
+    <title>Editing the Documentation</title>
+
+    <sect2 id="documentation_getting">
+      <title>Getting the Docs and Code</title>
+
+      <para>The first step towards editing the documentation is to
+      checkout a copy of code, docs, and build scripts from the CVS
+      server using:</para>
+
+<screen>
+$ export CVS_RSH=ssh
+$ export CVSROOT=':ext:auden.lcs.mit.edu:/u/u3/gcmpack'
+$ mkdir scratch
+$ cvs co MITgcm manual mitgcm.org
+</screen>
+
+      <para>These commands extract the necessary information from the
+      CVS server and create a temporary (called
+      <filename>scratch</filename>) directory for the storage of the
+      HTML and other files that will be created.  Please note that you
+      must either create <filename>scratch</filename> as shown or edit
+      the various <filename>Makefile</filename>s and scripts used to
+      create the documentation.</para>
+    </sect2>
+
+    <sect2>
+      <title>Editing</title>
+
+      <para>The documentation is contained in the
+      <filename>manual</filename> directory in a raw LaTeX format.
+      The main document is <filename>manual.tex</filename> and it uses
+      <command>\input{}</command>s to include the chapters and
+      subsections.</para>
+
+      <para>Since the same LaTeX source is used to produce PostScript,
+      PDF, and HTML output, care should be taken to follow certain
+      conventions.  Two of the most important are the usage of the
+      <command>\filelink{}{}</command> and
+      <command>\varlink{}{}</command> commands.  Both of these
+      commands have been defined to simplify the connection between
+      the automatically generated ("code browser") HTML and the HTML
+      version of the manual produced by LaTeX2HTML.  They each take
+      two arguments (corresponding to the contents of the two sets of
+      curly braces) which are the text that the author wishes to be
+      "wrapped" within the link, and a specially formatted link thats
+      relative to the <filename>MITgcm</filename> directory within the
+      CVS tree.</para>
+
+      <para>The result is a command that resembles either</para>
+      
+      <orderedlist>
+	<listitem>
+	  <para>a reference to a variable or subroutine name such as
+	  <command>\varlink{tRef}{tRef}</command>, or </para>
+	</listitem>
+
+	<listitem>
+	  <para>a reference to a file such as
+	      <command>\varlink{tRef}{path-to-the-file_name.F}</command>
+	      where the absolute path to the file is of the form
+	      <filename>/foo/MITgcm/path/to/the/file_name.F</filename></para>
+	      <para>(please note how the leading "/foo/MITgcm"
+	      component of the path is dropped leaving the path
+	      <emphasis>relative</emphasis> to the head of the code
+	      directory and each directory separator "/" is turned
+	      into a "-")</para>
+	</listitem>
+      </orderedlist>
+	  
+
+
+    </sect2>
+
+    <sect2>
+      <title>Building</title> <para>Given the directory structure of
+      <xref linkend="documentation_getting">, the entire documentation
+      for the web site can be built using:</para>
+
+<screen>
+$ cd mitgcm.org/devel/buildweb
+$ make All
+</screen>
+
+      <para>Which builds the PDF from the LaTeX source, creates the
+      HTML output from the LaTeX source, parses the FORTRAN code base
+      to produce a hyperlinked HTML version of the source, and then
+      determines the cross-linking between the various HTML
+      components.</para>
+
+      <para>If there are no errors, the result of the build process
+      (which can take 30+ minutes on a P4/2.5Ghz) will be contained
+      within a single directory called
+      <filename>scratch/dev_docs</filename>.  This is a freshly built
+      version of the entire on-line users manual.  If you have the
+      correct permissions, it can be directly copied to the web server
+      area:</para>
+
+<screen>
+$ mv scratch/dev_docs /u/u0/httpd/html
+</screen>
+
+      <para>and the update is complete.</para>
+
+    </sect2>
+
+  </sect1>
+
+
+
+</article>
+
+
