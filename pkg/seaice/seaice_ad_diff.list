@@ -1,0 +1,16 @@
+advect.f
+budget.f
+diffus.f
+dynsolver.f
+groatb.f
+growth.f
+ostres.f
+seaice_check.f
+seaice_do_diags.f
+seaice_get_forcing.f
+seaice_init.f
+seaice_model.f
+seaice_pickup.f
+seaice_readparms.f
+seaice_exch.f
+lsr.f

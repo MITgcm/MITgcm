@@ -1,0 +1,48 @@
+C----------------------------------------
+C subroutine  TIMEAVE_CUMULATE
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMULATE  INPUT  =   2,3,4,5,6,7
+CADJ SUBROUTINE TIMEAVE_CUMULATE  OUTPUT = 1
+
+C----------------------------------------
+C subroutine TIMEAVE_CUMUL_1K1T 
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMUL_1K1T  INPUT  =   2,3,4,5,6,7,8
+CADJ SUBROUTINE TIMEAVE_CUMUL_1K1T  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_CUMUL_1T
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMUL_1T  INPUT  =   2,3,4,5,6,7
+CADJ SUBROUTINE TIMEAVE_CUMUL_1T  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_CUMUL_DIF_1T
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMUL_DIF_1T  INPUT  =   2,3,4,5,6,7,8,9
+CADJ SUBROUTINE TIMEAVE_CUMUL_DIF_1T  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_STATVARS
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_STATVARS  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE TIMEAVE_STATVARS  OUTPUT = 
+
+C----------------------------------------
+C subroutine  TIMEAVE_STATV_WRITE
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_STATV_WRITE  INPUT  = 1,2,3
+CADJ SUBROUTINE TIMEAVE_STATV_WRITE  OUTPUT = 
+
+C----------------------------------------
+C subroutine  TIMEAVE_NORMALIZ
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_NORMALIZ  INPUT  =   2,3,4,5,6
+CADJ SUBROUTINE TIMEAVE_NORMALIZ  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_RESET
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_RESET  INPUT  =   2,3,4,5
+CADJ SUBROUTINE TIMEAVE_RESET  OUTPUT = 1
+

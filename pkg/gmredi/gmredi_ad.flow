@@ -1,0 +1,6 @@
+
+C----------------------------------------
+C subroutine  GMREDI_DIAGS
+C----------------------------------------
+CADJ SUBROUTINE GMREDI_DIAGS INPUT  = 1,2,3
+CADJ SUBROUTINE GMREDI_DIAGS OUTPUT =
