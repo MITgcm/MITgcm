@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.13 2004/12/13 21:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.14 2004/12/15 00:20:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,6 +37,22 @@ C $Name:  $
        CALL DIAGNOSTICS_FILL(tmp1k,'ETANSQ  ',0,1,0,1,1,myThid)
       ENDIF
       
+      CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0,1,0,1,1,myThid)
+
+      IF ( DIAGNOSTICS_IS_ON('PHIBOTSQ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = phiHydLow(i,j,bi,bj)
+     &                          *phiHydLow(i,j,bi,bj)
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmp1k,'PHIBOTSQ',0,1,0,1,1,myThid)
+      ENDIF
+      
 #ifdef EXACT_CONSERV
       IF ( DIAGNOSTICS_IS_ON('DETADT2 ',myThid) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -52,6 +68,7 @@ C $Name:  $
       ENDIF
 #endif
       
+      CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(uVel, 'UVEL    ',0,Nr,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(vVel, 'VVEL    ',0,Nr,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(wVel, 'WVEL    ',0,Nr,0,1,1,myThid)
