@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.5 2004/09/07 15:16:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.6 2005/03/01 16:51:27 jmc Exp $
 C $Name:  $
 
 C Portable random number generator
@@ -13,40 +13,44 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Portable random number generator
+C      seed >=0 :: initialise using this seed ; and return 0
+C      seed < 0 :: if first call then initialise using the default seed (=mseed)
+C                  and always return a random number
       
 C     !USES:
       implicit none
+C     !INPUT PARAMETERS:
+#ifdef _USE_INTEGERS
+      integer seed
+#else
+      real*8  seed
+#endif
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer nff
+      integer nff,idum
       parameter(nff=55)
-#ifdef _USE_INTEGERS
-      integer mbig,mseed,mZ,seed
-#else
-      real*8 mbig,mseed,mz,seed
-#endif
+      parameter(idum=-2)
       real*8 fac
 #ifdef _USE_INTEGERS
-      parameter (mbig=1000000000,mz=0,fac=1./mbig)
+      integer mbig,mseed,mZ
+      parameter (mbig=1000000000,mz=0,fac=1.d0/mbig)
+      integer mj,mk,ma(nff)
       data mseed/161803398/
 #else
-      parameter (mbig=4000000.,mz=0.,fac=1./mbig)
+      real*8 mbig,mseed,mz
+      parameter (mbig=4000000.,mz=0.,fac=1.d0/mbig)
+      real*8 mj,mk,ma(nff)
       data mseed/1618033./
 #endif
-      integer i,ii,inext,inextp,k,idum
-      parameter(idum=-2)
-#ifdef _USE_INTEGERS
-      integer mj,mk,ma(nff)
-#else
-      real*8 mj,mk,ma(nff)
-#endif
       logical firstCall
-      save firstCall,inext,inextp,ma
+      integer i,ii,inext,inextp,k
       data firstCall /.true./
+      save firstCall,inext,inextp,ma
 
-      mseed = seed
-      if(firstCall)then
+C-    Initialise the random number generator
+      if(firstCall .OR. seed.GE.mz)then
+        if (seed.GE.mz) mseed = seed
         firstCall=.false.
         mj=mseed-iabs(idum)
         mj=mod(mj,mbig)
@@ -62,20 +66,26 @@ C     !LOCAL VARIABLES:
         do k=1,4
           do i=1,nff
             ma(i)=ma(i)-ma(1+mod(i+30,nff))
-            if(ma(i).lt.MZ)ma(i)=ma(i)+mbig
+            if(ma(i).lt.mz)ma(i)=ma(i)+mbig
           enddo
         enddo
         inext=0
         inextp=31
       endif
-      inext=mod(inext,nff)+1
-      inextp=mod(inextp,nff)+1
-      mj=ma(inext)-ma(inextp)
-      if(mj.lt.MZ)mj=mj+mbig
-      ma(inext)=mj
-      port_rand=mj*fac
-      return
 
+C-    Compute a random number (only if seed < 0)
+      if(seed.GE.mz)then
+        port_rand=0.d0
+      else
+        inext=mod(inext,nff)+1
+        inextp=mod(inextp,nff)+1
+        mj=ma(inext)-ma(inextp)
+        if(mj.lt.mz)mj=mj+mbig
+        ma(inext)=mj
+        port_rand=mj*fac
+      endif
+
+      return
       end
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -84,8 +94,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       implicit none
       integer n,i
       real arr(n)
-      real*8 port_rand,seed
-      seed=1618033.0d0
+      real*8 port_rand
+#ifdef _USE_INTEGERS
+      integer seed
+      seed=-1
+#else
+      real*8  seed
+      seed=-1.d0
+#endif
+c     seed=1618033.0d0
       do i=1,n
        arr(i)=port_rand(seed)
       enddo
@@ -113,11 +130,19 @@ C     !USES:
 CEOP
 
 C     !LOCAL VARIABLES:
-      real*8 port_rand,seed
+      real*8 port_rand
       real*8 x1, x2, xs, t           
       integer i
 
-      seed=1618033.0d0
+#ifdef _USE_INTEGERS
+      integer seed
+      seed=-1
+#else
+      real*8  seed
+      seed=-1.d0
+#endif
+c     seed=1618033.0d0
+
 C     first generate 2 equally distributed random numbers (-1,1) 
       DO WHILE (1 .eq. 1)
          x1=2.0*port_rand(seed)-1.0
