@@ -47,7 +47,7 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      myNz       = 1
+      myNz       = Nr
 
 C First call the exchanges for the two components
 
