@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.26 2004/07/18 01:00:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.27 2005/01/04 15:56:38 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -101,19 +101,22 @@ C              Note: only used with Sea-Ice & RealFreshWater formulation
 #endif
 
 #ifndef ALLOW_EXF
-C     taux[01]  :: Temp. for zonal wind stress
-C     tauy[01]  :: Temp. for merid. wind stress
-C     qnet[01]  :: Temp. for heat flux
-C     empmr[01] :: Temp. for fresh water flux
-C     sst[01]   :: Temp. for theta climatalogy
-C     sss[01]   :: Temp. for theta climatalogy
-C     qsw[01]   :: Temp. for short wave component of heat flux
-C     [01]      :: End points for interpolation
+C     taux[0,1]     :: Temp. for zonal wind stress
+C     tauy[0,1]     :: Temp. for merid. wind stress
+C     Qnet[0,1]     :: Temp. for heat flux
+C     EmPmR[0,1]    :: Temp. for fresh water flux
+C     saltFlux[0,1] :: Temp. for isurface salt flux
+C     SST[0,1]      :: Temp. for theta climatalogy
+C     SSS[0,1]      :: Temp. for theta climatalogy
+C     Qsw[0,1]      :: Temp. for short wave component of heat flux
+C     pload[0,1]    :: Temp. for atmospheric pressure at z=eta
+C     [0,1]         :: End points for interpolation
 C     Above use static heap storage to allow exchange.
 
       COMMON /TDFIELDS/
      &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0,
-     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1
+     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1,
+     &                 saltFlux0, saltFlux1
 #ifdef SHORTWAVE_HEATING
      &               , Qsw0, Qsw1
 #endif 
@@ -125,12 +128,14 @@ C     Above use static heap storage to allow exchange.
       _RS  tauy0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  saltFlux0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  taux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  tauy1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  saltFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING

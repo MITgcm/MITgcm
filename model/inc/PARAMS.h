@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.140 2004/12/09 09:01:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.141 2005/01/04 15:56:38 jmc Exp $
 C $Name:  $
 C
 
@@ -68,6 +68,7 @@ C     surfQnetFile    :: File containing surface net heat flux
 C     surfQswFile     :: File containing surface shortwave radiation
 C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
+C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
 C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
@@ -79,7 +80,8 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
-     &                EmPmRfile, surfQfile, surfQnetFile, surfQswFile,
+     &                EmPmRfile, saltFluxFile,
+     &                surfQfile, surfQnetFile, surfQswFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eosType, pickupSuff,
@@ -97,6 +99,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) surfQnetFile
       CHARACTER*(MAX_LEN_FNAM) surfQswFile
       CHARACTER*(MAX_LEN_FNAM) EmPmRfile
+      CHARACTER*(MAX_LEN_FNAM) saltFluxFile
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(MAX_LEN_FNAM) uVelInitFile
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.142 2005/01/03 23:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.143 2005/01/04 15:57:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -206,7 +206,7 @@ C--   Input files
      & bathyFile, topoFile, hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
-     & surfQfile, surfQnetFile, surfQswFile, EmPmRfile,
+     & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCyl,
      & mdsioLocalDir,

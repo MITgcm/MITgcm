@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.18 2004/07/16 01:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.19 2005/01/04 15:57:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,12 @@ C      data for the period ahead and the period behind myTime.
        CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
      &        'RS', 1, EmPmR1, intime1, myThid )
       ENDIF
+      IF ( saltFluxFile .NE. ' '  ) THEN
+       CALL MDSREADFIELD ( saltFluxFile, readBinaryPrec,
+     &        'RS', 1, saltFlux0, intime0, myThid )
+       CALL MDSREADFIELD ( saltFluxFile, readBinaryPrec,
+     &        'RS', 1, saltFlux1, intime1, myThid )
+      ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
      &        'RS', 1, SST0, intime0, myThid )
@@ -209,6 +215,8 @@ c      _EXCH_XY_R4(tauy1 , myThid )
        _EXCH_XY_R4(Qnet1, myThid )
        _EXCH_XY_R4(EmPmR0, myThid )
        _EXCH_XY_R4(EmPmR1, myThid )
+       _EXCH_XY_R4(saltFlux0, myThid )
+       _EXCH_XY_R4(saltFlux1, myThid )
 #ifdef SHORTWAVE_HEATING
        _EXCH_XY_R4(Qsw0, myThid )
        _EXCH_XY_R4(Qsw1, myThid )
@@ -237,7 +245,8 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
      &                       +aWght*EmPmR1(i,j,bi,bj)
-          saltFlux(i,j,bi,bj) = 0. _d 0
+          saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
+     &                        + aWght*saltFlux1(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
           Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
      &                       +aWght*Qsw1(i,j,bi,bj)
@@ -251,7 +260,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
        ENDDO
       ENDDO
 
-C-- Diagnostics
+C-- Print for checking:
       IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
         _BEGIN_MASTER( myThid )
         write(*,'(a,1p7e12.4,2i6,2e12.4)')
@@ -290,7 +299,6 @@ C     !INTERFACE:
       SUBROUTINE LEF_ZERO( arr ,myThid )
 C     !DESCRIPTION: \bv
 C     This routine simply sets the argument array to zero
-C     Used only by EXTERNAL_FIELDS_LOAD
 C     \ev
 C     !USES:
       IMPLICIT NONE

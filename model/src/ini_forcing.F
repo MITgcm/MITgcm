@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.36 2004/09/02 17:39:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.37 2005/01/04 15:57:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,6 +70,8 @@ CEOP
           Qnet1           (i,j,bi,bj) = 0. _d 0
           EmPmR0          (i,j,bi,bj) = 0. _d 0
           EmPmR1          (i,j,bi,bj) = 0. _d 0
+          saltFlux0       (i,j,bi,bj) = 0. _d 0
+          saltFlux1       (i,j,bi,bj) = 0. _d 0
           SST0            (i,j,bi,bj) = 0. _d 0
           SST1            (i,j,bi,bj) = 0. _d 0
           SSS0            (i,j,bi,bj) = 0. _d 0
@@ -102,6 +104,9 @@ C
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( EmPmRfile, ' ', EmPmR, 0, myThid )
+      ENDIF
+      IF ( saltFluxFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( saltFluxFile, ' ', saltFlux, 0, myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
@@ -137,6 +142,7 @@ C
       _EXCH_XY_R4(fv   , myThid )
       _EXCH_XY_R4(Qnet , myThid )
       _EXCH_XY_R4(EmPmR, myThid )
+      _EXCH_XY_R4( saltFlux, myThid )
       _EXCH_XY_R4(SST  , myThid )
       _EXCH_XY_R4(SSS  , myThid )
 #ifdef SHORTWAVE_HEATING
