@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.6 2004/09/28 16:27:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.7 2004/09/29 00:12:00 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -21,6 +21,11 @@ C     !USES:
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
+
       EXTERNAL ILNBLNK
       INTEGER ILNBLNK
 
@@ -35,8 +40,13 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*1 prec
       CHARACTER*80 bnam
+      character*(80) dataFName
       integer ilst
-      integer i
+      integer i,k,n
+      integer ig,jg,tn,iunit
+      integer length_of_rec
+      integer bi,bj,irec,fileprec
+      Real*8 r8seg(nchp)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -46,9 +56,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ilst = ILNBLNK(fn)
       if (pickupflg.eq.0) then
         prec = 'D'
+        fileprec = 64
         WRITE(bnam,'(a,a)') 'pickup_vegtiles.', fn(1:ilst)
       else
         prec = 'D'
+        fileprec = 64
         WRITE(bnam,'(a,a)') 'state_vegtiles.', fn(1:ilst)
       endif
       
@@ -86,7 +98,175 @@ C       fizhi_earth_coms.h
         CALL MNC_CW_RL_W(prec,bnam,0,0,'chfr', chfr, myThid)
 
       ENDIF
-#endif /*  ALLOW_MNC  */
+#else /*  Next Peice for not ALLOW_MNC  */
+
+      call MDSFINDUNIT( iunit, mythid )
+      length_of_rec=MDS_RECLEN( fileprec, nchp, mythid )
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+      DO bi = myBxLo(myThid), myBxHi(myThid)
+
+#ifdef ALLOW_EXCH2
+       tn = W2_myTileList(bi)
+#else
+       iG = bi+(myXGlobalLo-1)/sNx
+       jG = bj+(myYGlobalLo-1)/sNy
+       tn = (jG - 1)*(nPx*nSx) + iG
+#endif /* ALLOW_EXCH2 */
+
+       write(dataFname(1:80),'(2a,i3.3,a,'.001',a)')
+     &              fn(1:ilst),'.',iG,'.','.data'
+       open( dUnit, file=dataFName, status='unknown',
+     &       access='direct', recl=length_of_rec )
+
+       irec = 0
+C First write single-level turbulence fields
+       do n = 1,nchp
+        r8seg(n) = ctmt(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       write(iunit,rec=1) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = xxmt(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       write(iunit,rec=2) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = yymt(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       write(iunit,rec=3) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = zetamt(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       write(iunit,rec=4) r8seg
+
+C And now write Multi-level turbulence fields
+       do k = 1,Nrphys
+        do n = 1,nchp
+         r8seg(n) = xlmt(n,k,bi,bj)
+        enddo
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        irec = 4 + 0*Nrphys + k
+        write(iunit,rec=irec) r8seg
+       enddo
+
+       do k = 1,Nrphys
+        do n = 1,nchp
+         r8seg(n) = khmt(n,k,bi,bj)
+        enddo
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        irec = 4 + 1*Nrphys + k
+        write(iunit,rec=irec) r8seg
+       enddo
+
+       do k = 1,Nrphys
+        do n = 1,nchp
+         r8seg(n) = tke(n,k,bi,bj)
+        enddo
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        irec = 4 + 2*Nrphys + k
+        write(iunit,rec=irec) r8seg
+       enddo
+
+C And finally, write land surface fields
+       do n = 1,nchp
+        r8seg(n) = tcanopy(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 1
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = tdeep(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 2
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = ecanopy(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 3
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = swetshal(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 4
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = swetroot(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 5
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = swetdeep(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 6
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = snodep(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 7
+       write(iunit,rec=irec) r8seg
+
+       do n = 1,nchp
+        r8seg(n) = capac(n,bi,bj)
+       enddo
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       irec = 4 + 3*Nrphys + 8
+       write(iunit,rec=irec) r8seg
+
+       close(iunit)
+
+C End of bi bj loop
+      enddo
+      enddo
+
+#endif /*  NOT ALLOW_MNC PART */
 
       RETURN
       END
@@ -127,13 +307,20 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*80 bnam
       integer ilst
-      integer i
+      character*(80) dataFName
+      integer i,k,n
+      integer ig,jg,tn,iunit
+      integer length_of_rec
+      integer bi,bj,irec,fileprec
+      Real*8 r8seg(nchp)
 
       DO i = 1,80
         bnam(i:i) = ' '
       ENDDO
       ilst = ILNBLNK(fn)
       WRITE(bnam,'(a,a)') 'pickup_vegtiles.', fn(1:ilst)
+      fileprec = 64
+      prec = 'D'
       
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
@@ -162,7 +349,176 @@ C       fizhi_land_coms.h
         CALL MNC_CW_RL_R(prec,bnam,0,0,'capac', capac, myThid)
 
       ENDIF
-#endif /*  ALLOW_MNC  */
+#else /* Now MDSIO stuff if MNC is off */
+
+      call MDSFINDUNIT( iunit, mythid )
+      length_of_rec=MDS_RECLEN( fileprec, nchp, mythid )
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+      DO bi = myBxLo(myThid), myBxHi(myThid)
+
+#ifdef ALLOW_EXCH2
+       tn = W2_myTileList(bi)
+#else
+       iG = bi+(myXGlobalLo-1)/sNx
+       jG = bj+(myYGlobalLo-1)/sNy
+       tn = (jG - 1)*(nPx*nSx) + iG
+#endif /* ALLOW_EXCH2 */
+
+       write(dataFname(1:80),'(2a,i3.3,a,'.001',a)')
+     &              fn(1:ilst),'.',iG,'.','.data'
+       open( dUnit, file=dataFName, status='old',
+     &       access='direct', recl=length_of_rec )
+
+       irec = 0
+C First read single-level turbulence fields
+       read(iunit,rec=1) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        ctmt(n,bi,bj) = r8seg(n)
+       enddo
+
+       read(iunit,rec=2) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        xxmt(n,bi,bj) = r8seg(n)
+       enddo
+
+       read(iunit,rec=3) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        yymt(n,bi,bj) = r8seg(n)
+       enddo
+
+       read(iunit,rec=4) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        zetamt(n,bi,bj) = r8seg(n)
+       enddo
+
+C And now read Multi-level turbulence fields
+       do k = 1,Nrphys
+        irec = 4 + 0*Nrphys + k
+        read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        do n = 1,nchp
+         xlmt(n,k,bi,bj) = r8seg(n)
+        enddo
+       enddo
+
+       do k = 1,Nrphys
+        irec = 4 + 1*Nrphys + k
+        read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        do n = 1,nchp
+         khmt(n,k,bi,bj) = r8seg(n)
+        enddo
+       enddo
+
+       do k = 1,Nrphys
+        irec = 4 + 2*Nrphys + k
+        read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+        call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+        do n = 1,nchp
+         tke(n,k,bi,bj) = r8seg(n)
+        enddo
+       enddo
+
+
+C And finally, read land surface fields
+       irec = 4 + 3*Nrphys + 1
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        tcanopy(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 2
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        tdeep(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 3
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        ecanopy(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 4
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        swetshal(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 5
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        swetroot(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 6
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        swetdeep(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 7
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        snodep(n,bi,bj) = r8seg(n)
+       enddo
+
+       irec = 4 + 3*Nrphys + 8
+       read(iunit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+       call MDS_BYTESWAPR8( nchp, r8seg )
+#endif
+       do n = 1,nchp
+        capac(n,bi,bj) = r8seg(n)
+       enddo
+
+       close(iunit)
+
+C End of bi bj loop
+      enddo
+      enddo
+
+#endif /*  Not ALLOW_MNC sequence */
 
       RETURN
       END
