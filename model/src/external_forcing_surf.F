@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.16 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.17 2003/12/05 02:40:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,14 +140,6 @@ c     consitent with volume change (=d/dt etaN).
         ENDDO
        ENDIF
 
-#ifdef ALLOW_PASSIVE_TRACER
-c  *** add the tracer flux associated with P-E+R here *** 
-c      IF (trac_EvPrRn.NE.UNSET_RL) THEN
-c    &      + PmEpR(i,j,bi,bj)*( trac_EvPrRn - tr1(i,j,kSurface,bi,bj) )
-c    &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
-c      ENDIF
-#endif /* ALLOW_PASSIVE_TRACER */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
 #else /* NONLIN_FRSURF */
@@ -212,6 +204,12 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
       ENDIF
 
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef ALLOW_TIMEAVE
+      IF ( taveFreq .NE. 0. _d 0 ) THEN
+        CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
+      ENDIF
+#endif /* ALLOW_TIMEAVE */
 
       RETURN
       END
