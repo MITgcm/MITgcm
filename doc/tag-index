@@ -1,13 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.237 2004/01/09 21:29:24 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.238 2004/01/10 00:48:49 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-checkpoint52f_pre
+o added useSingleCPUIO flag to monitor.F and mon_out.F
+
+checkpoint52f_post
 o added exch2 cube routines to pkg/exch2
 o modified hs94.cs-32x32x5 to use it
 o added new grid files to hs94.cs-32x32x5
-checkpoint52f_post
+checkpoint52f_pre
 
 checkpoint52e_post
 o first attempt to solve vertical advection (momemtum & T,S) Implicitly

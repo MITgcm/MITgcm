@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.3 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.4 2004/01/10 00:48:49 dimitri Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -13,6 +13,8 @@ C.    \==========================================================/
 C.gd  === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EESUPPORT.h"
 #include "MONITOR.h"
       EXTERNAL IFNBLNK
       INTEGER  IFNBLNK
@@ -87,8 +89,14 @@ C.
       msgBuf(35:35) = '='
 
       _BEGIN_MASTER(myThid)
-      WRITE(msgBuf(36:57),'(1X,I21)') value
-      CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        WRITE(msgBuf(36:57),'(1X,I21)') value
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       ENDIF
+#endif /* ALLOW_USE_MPI */
       _END_MASTER()
 
       RETURN
@@ -103,6 +111,8 @@ C.    \==========================================================/
 C.gd  === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EESUPPORT.h"
 #include "MONITOR.h"
       EXTERNAL IFNBLNK
       INTEGER  IFNBLNK
@@ -177,8 +187,14 @@ C.
       msgBuf(35:35) = '='
 
       _BEGIN_MASTER(myThid)
-      WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
-      CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       ENDIF
+#endif /* ALLOW_USE_MPI */
       _END_MASTER()
 
       RETURN
@@ -193,6 +209,8 @@ C.    \==========================================================/
 C.gd  === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EESUPPORT.h"
 #include "MONITOR.h"
       EXTERNAL IFNBLNK
       INTEGER  IFNBLNK
@@ -267,8 +285,14 @@ C.
       msgBuf(35:35) = '='
 
       _BEGIN_MASTER(myThid)
-      WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
-      CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+#ifdef ALLOW_USE_MPI
+       ENDIF
+#endif /* ALLOW_USE_MPI */
       _END_MASTER()
 
       RETURN
