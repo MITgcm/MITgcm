@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.281 2004/04/19 23:25:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.282 2004/04/20 19:16:48 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o bug fix in exf-package:
+  -  u/vwind are defined at tracer/pressure points. The values of u/vwindmask
+     now reflect that.
 o small fixes in the cal-package:
   - set reference date to first of January for the 'model'-calendar
   - failing of cal_CheckDate in cal_FullDate now actually results in a

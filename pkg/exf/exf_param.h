@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.16 2004/04/19 22:30:46 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.17 2004/04/20 19:16:48 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -118,7 +118,7 @@ c     data values
       _RL     uwindperiod
       _RL     uwindconst
       character*1 uwindmask
-      parameter(  uwindmask = 'u' )
+      parameter(  uwindmask = 's' )
 
       integer vwindstartdate1
       integer vwindstartdate2
@@ -126,7 +126,7 @@ c     data values
       _RL     vwindperiod
       _RL     vwindconst
       character*1 vwindmask
-      parameter(  vwindmask = 'v' )
+      parameter(  vwindmask = 's' )
 
       integer swfluxstartdate1
       integer swfluxstartdate2
