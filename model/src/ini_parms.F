@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.47 1999/08/30 18:29:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.48 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -45,6 +45,8 @@ C     K, I, J - Loop counters
 C     xxxDefault - Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
+      CHARACTER*(MAX_LEN_FNAM) delXfile
+      CHARACTER*(MAX_LEN_FNAM) delYfile
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       INTEGER goptCount
@@ -119,9 +121,10 @@ C--   Time stepping parammeters
 
 C--   Gridding parameters
       NAMELIST /PARM04/
-     & usingCartesianGrid, delZ, dxSpacing, dySpacing, delX, delY,
+     & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & l, m, n, delP, delR, rkFac
+     & l, m, n, delP, delR, rkFac,
+     & delXfile, delYfile
 
 C--   Input files
       NAMELIST /PARM05/
@@ -579,6 +582,8 @@ C     In spherical polar distances are in degrees
       recip_rSphere  = 1.D0/rSphere
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
+      delXfile = ' '
+      delYfile = ' '
       READ(UNIT=iUnit,NML=PARM04) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -596,17 +601,76 @@ C     In spherical polar distances are in degrees
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF    
-C
+
+C     X coordinate
+      IF ( delXfile .NE. ' ' ) THEN
+       IF ( delX(1) .NE. UNSET_RL .OR. dxSpacing .NE. UNSET_RL ) THEN
+         WRITE(msgBuf,'(A,A)') 'Too many specifications for delX:',
+     &   'Specify only one of delX, dxSpacing or delXfile'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ELSE
+        _BEGIN_MASTER( myThid )
+        IF (readBinaryPrec.EQ.precFloat32) THEN
+         OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
+     &        ACCESS='DIRECT',RECL=WORDLENGTH*Nx)
+         READ(37,rec=1) delX
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR4( Nx, delX )
+#endif
+         CLOSE(37)
+        ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
+         OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
+     &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Nx)
+         READ(37,rec=1) delX
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( Nx, delX )
+#endif
+         CLOSE(37)
+        ENDIF
+        _END_MASTER(myThid)
+       ENDIF
+      ENDIF
       IF ( dxSpacing .NE. UNSET_RL ) THEN
        DO i=1,Nx
         delX(i) = dxSpacing
        ENDDO
       ENDIF
+C     Y coordinate
+      IF ( delYfile .NE. ' ' ) THEN
+       IF ( delY(1) .NE. UNSET_RL .OR. dySpacing .NE. UNSET_RL ) THEN
+         WRITE(msgBuf,'(A,A)') 'Too many specifications for delY:',
+     &   'Specify only one of delY, dySpacing or delYfile'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ELSE
+        _BEGIN_MASTER( myThid )
+        IF (readBinaryPrec.EQ.precFloat32) THEN
+         OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
+     &        ACCESS='DIRECT',RECL=WORDLENGTH*Ny)
+         READ(37,rec=1) delY
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR4( Ny, delY )
+#endif
+         CLOSE(37)
+        ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
+         OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
+     &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Ny)
+         READ(37,rec=1) delY
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( Ny, delY )
+#endif
+         CLOSE(37)
+        ENDIF
+        _END_MASTER(myThid)
+       ENDIF
+      ENDIF
       IF ( dySpacing .NE. UNSET_RL ) THEN
-       DO j=1,Ny
-        delY(j) = dySpacing
+       DO i=1,Ny
+        delY(i) = dySpacing
        ENDDO
       ENDIF
+C
       IF ( rSphere .NE. 0 ) THEN
        recip_rSphere = 1.D0/rSphere
       ELSE

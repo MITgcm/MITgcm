@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.47 1999/08/30 18:29:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.48 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -511,11 +511,14 @@ C--      Apply open boundary conditions
 C--      Freeze water
          IF (allowFreezing)
      &   CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, K, myThid )
+
+#ifdef DIVG_IN_DYNAMICS
 C--      Diagnose barotropic divergence of predicted fields
          CALL CALC_DIV_GHAT(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       xA,yA,
      I       myThid)
+#endif /* DIVG_IN_DYNAMICS */
 
 C--      Cumulative diagnostic calculations (ie. time-averaging)
 #ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE

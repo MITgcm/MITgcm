@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.7 1999/08/30 18:29:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.8 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -52,10 +52,10 @@ C     Horizontal gridding
 C     In cartesian coords distances are in metres
       usingCartesianGrid = .TRUE.
       DO i=1,Nx
-       delX(i) = 0.
+       delX(i) = UNSET_RL
       ENDDO
       DO j=1,Ny
-       delY(j) = 0.
+       delY(j) = UNSET_RL
       ENDDO
 C     In spherical polar distances are in degrees
       usingSphericalPolarGrid = .FALSE.

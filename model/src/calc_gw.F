@@ -177,47 +177,6 @@ caja           and an hFacUS (above V points) too...
        ENDDO
       ENDDO
 
-C     Add div(W*) RHS of elliptic equation
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,1
-         DO j=1,sNy
-          DO i=1,sNx
-           IF ( _hFacC(i,j,k,bi,bj) .GT. 0. ) THEN
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
-     &       (
-     &        -wVel(i,j,k+1,bi,bj)
-     &         )*_rA(i,j,bi,bj)/deltatMom
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-        DO K=2,Nr-1
-         DO j=1,sNy
-          DO i=1,sNx
-           IF ( _hFacC(i,j,k,bi,bj) .GT. 0. ) THEN
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
-     &       ( wVel(i,j,k  ,bi,bj)
-     &        -wVel(i,j,k+1,bi,bj)
-     &       )*_rA(i,j,bi,bj)/deltatMom
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-        DO K=Nr,Nr
-         DO j=1,sNy
-          DO i=1,sNx
-           IF ( _hFacC(i,j,k,bi,bj) .GT. 0. ) THEN
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
-     &       wVel(i,j,k  ,bi,bj)
-     &       *_rA(i,j,bi,bj)/deltatMom
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      
 #endif /* ALLOW_NONHYDROSTATIC */
 
       RETURN

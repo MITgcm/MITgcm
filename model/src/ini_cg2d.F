@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.26 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.27 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -171,7 +171,7 @@ C           defaults to 0.51 but can be set at runtime.
      &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           IF ( aC .EQ. 0. ) THEN
-            pC(I,J,bi,bj) = 0. _d 0
+            pC(I,J,bi,bj) = 1. _d 0
           ELSE
            pC(I,J,bi,bj) =  1. _d 0 / aC
           ENDIF

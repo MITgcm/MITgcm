@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.4 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.5 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -100,7 +100,9 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
+        ENDDO
 #ifdef ALLOW_OBCS
+        DO K=1,Nr
          IF (openBoundaries) THEN
           DO I=1,sNx
            IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -131,8 +133,8 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
            ENDIF
           ENDDO
          ENDIF
-#endif
         ENDDO
+#endif
        ENDDO
       ENDDO
       _GLOBAL_MAX_R4( myNorm, myThid )
@@ -257,7 +259,7 @@ CcnhDebugEnds
            ENDIF
            aC = -aW-aE-aN-aS-aU-aL
            IF ( aC .EQ. 0. ) THEN
-            zMC(i,j,k,bi,bj) = 0.
+            zMC(i,j,k,bi,bj) = 1.
             zML(i,j,k,bi,bj) = 0.
             zMU(i,j,k,bi,bj) = 0.
 CcnhDebugStarts

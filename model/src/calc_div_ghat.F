@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.9 1999/05/18 17:42:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.10 2000/03/14 17:47:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -50,11 +50,12 @@ C     pulls div(U) + dh/dt back toward zero.
 
       IF ( k .EQ. Nr ) THEN
 C      Initialise source term on first pass
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1,sNy
+        DO i=1,sNx
+C Note: The source term containing cg2d_x and cg3d_x (at k=1)
+C       has been moved to solve_for_pressure.F for convenience.
          cg2d_b(i,j,bi,bj) =
-     &     freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*(
-     &      -cg2d_x(I,J,bi,bj)/deltaTMom/deltaTMom
+     &     freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*( 0.
 #ifdef USE_NATURAL_BCS
      &      +EmPmR(I,J,bi,bj)/deltaTMom
 #endif
@@ -63,8 +64,8 @@ C      Initialise source term on first pass
        ENDDO
       ENDIF
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1,sNy
+       DO i=1,sNx+1
         pf(i,j) = xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
        ENDDO
       ENDDO
@@ -85,8 +86,8 @@ C      Initialise source term on first pass
       ENDIF
 #endif
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1,sNy+1
+       DO i=1,sNx
         pf(i,j) = yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
        ENDDO
       ENDDO
