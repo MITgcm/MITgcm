@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.7 2004/11/11 06:28:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.8 2005/01/12 20:33:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -137,7 +137,8 @@ c--   Get the counters, flags, and the interpolation factor.
 
 c--   Add control to model variable.
 cph(
-cph this flag ported from the SIO code (dont know why its here)
+cph this flag ported from the SIO code
+cph Initial wind stress adjustments are too vigorous.
       if ( gencount0 .LE. 2 .AND. 
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file ) ) then

@@ -68,7 +68,8 @@ c     == local variables ==
       integer reclen,irectrue
       integer cunit2, cunit3
       character*(80) cfile2, cfile3
-      real*4  cbufftmp( snx*nsx*npx*sny*nsy*npy )
+      real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
+      real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
 c     == external ==
 
@@ -96,8 +97,10 @@ c     Initialise temporary file
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globmsk  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfldtmp2(i,bi,ip,j,bj,jp)   = 0.
+                           globfldtmp3(i,bi,ip,j,bj,jp)   = 0.
                         enddo
                      enddo
                   enddo
@@ -128,7 +131,7 @@ c--   Only the master thread will do I/O.
      &           ivartype, '_', optimcycle, '.bin'
          endif
 
-         reclen = nWetGlobal(1)*4.
+         reclen = FLOAT(snx*nsx*npx*sny*nsy*npy*4)
          call mdsfindunit( cunit2, mythid )
          open( cunit2, file=cfile2, status='new',
      &        access='direct', recl=reclen )
@@ -180,11 +183,6 @@ c--   Only the master thread will do I/O.
                   STOP 'in S/R ctrl_unpack'
                endif
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
-c
-               if ( doPackDiag )
-     &              write(cunit2,rec=irectrue) 
-     &              (cbuff(ii), ii=1,cbuffindex)
-c
             endif
             cbuffindex = 0
             do jp = 1,nPy
@@ -196,6 +194,9 @@ c
                   if ( globmsk(i,bi,ip,j,bj,jp,1) .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
                      globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
@@ -206,25 +207,26 @@ c
      &                       globfld3d(i,bi,ip,j,bj,jp,k)*
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
                      endif
-cph(
-                     cbufftmp(cbuffindex) =
-     &                    globfld3d(i,bi,ip,j,bj,jp,k)
-cph)
 #endif
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                 endif
-                 enddo
+                  endif
+cph(
+                  globfldtmp3(i,bi,ip,j,bj,jp) =
+     &                 globfld3d(i,bi,ip,j,bj,jp,k)
+cph)
+                  enddo
                 enddo
                enddo
               enddo
              enddo
             enddo
-c
-            if ( doPackDiag )
-     &           write(cunit3,rec=irectrue) 
-     &           (cbufftmp(ii),ii=1,nwetglobal(1))
-c
+cph(
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
+cph)
          enddo
 
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
@@ -265,11 +267,6 @@ c
                   STOP 'in S/R ctrl_unpack'
                endif
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
-c
-               if ( doPackDiag )
-     &              write(cunit2,rec=irectrue) 
-     &              (cbuff(ii), ii=1,cbuffindex)
-c
             endif
 #else ALLOW_ADMTLM
             write(fnameGlobal(1:80),'(a)') ' '
@@ -291,6 +288,9 @@ c
                   if ( globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
                      globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) = 
@@ -301,25 +301,26 @@ c
      &                       globfld3d(i,bi,ip,j,bj,jp,k)*
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
                      endif
-cph(
-                     cbufftmp(cbuffindex) =
-     &                    globfld3d(i,bi,ip,j,bj,jp,k)
-cph)
 #endif
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
+cph(
+                  globfldtmp3(i,bi,ip,j,bj,jp) =
+     &                 globfld3d(i,bi,ip,j,bj,jp,k)
+cph)
                  enddo
                 enddo
                enddo
               enddo
              enddo
             enddo
-c
-            if ( doPackDiag )
-     &           write(cunit3,rec=irectrue) 
-     &           (cbufftmp(ii), ii=1,nwetglobal(1))
-c
+cph(
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
+cph)
          enddo
              
          call MDSWRITEFIELD_2D_GL( fname, ctrlprec, 'RL',

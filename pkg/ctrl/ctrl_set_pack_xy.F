@@ -60,14 +60,14 @@ c     == local variables ==
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld2d( snx,nsx,npx,sny,nsy,npy )
       real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
-      real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
-      real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
       character*( 80) weightname
 
       integer reclen, irectrue
       integer cunit2, cunit3
       character*(80) cfile2, cfile3
+      real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
+      real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
 c     == external ==
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.7 2005/01/12 19:15:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.8 2005/01/12 20:33:13 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -357,7 +357,7 @@ C Local variables
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      integer x_size,y_size,iG_IO,jG_IO,npe
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)
@@ -944,7 +944,7 @@ C Local variables
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      integer x_size,y_size,iG_IO,jG_IO,npe
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)
