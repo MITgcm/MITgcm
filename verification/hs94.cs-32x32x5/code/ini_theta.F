@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.3 2001/06/06 19:46:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.4 2001/07/06 22:13:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,7 +42,6 @@ C     I,J,K
       INTEGER bi, bj
       INTEGER I, J, K
       _RL     term1,term2,thetaLim,thetaEq
-      _RL     thKappa
 
       _BARRIER
 
@@ -50,17 +49,15 @@ C     I,J,K
 c     CALL SRAND( J )
 
       IF ( hydrogThetaFile .EQ. ' ' ) THEN
-C--    Initialise temperature field to Held & Saurez equilibrium theta
+C--    Initialise temperature field to Held & Suarez equilibrium theta
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO K=1,Nr
-          Ro_SeaLevel=1. _d 5
-          thKappa = 2. _d 0/7. _d 0
-          thetaLim = 200. _d 0/((rC(K)/Ro_SeaLevel)**thKappa)
+          thetaLim = 200. _d 0/((rC(K)/atm_po)**atm_kappa)
           DO J=1,sNy
            DO I=1,sNx
            term1=60. _d 0*(sin(yC(I,J,bi,bj)*deg2rad)**2)
-           term2=10. _d 0*log((rC(K)/Ro_SeaLevel))
+           term2=10. _d 0*log((rC(K)/atm_po))
      &              *(cos(yC(I,J,bi,bj)*deg2rad)**2)
            thetaEq=315. _d 0-term1-term2
             theta(I,J,K,bi,bj) = MAX( thetaLim, thetaEq )
@@ -72,20 +69,20 @@ c           theta(I,J,K,bi,bj) = tRef(K)
          ENDDO
         ENDDO
        ENDDO
+#ifdef ALLOW_ZONAL_FILT
+C--   Zonal FFT filter initial conditions
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO K=1,Nr
           DO J=1,sNy
-#ifdef ALLOW_ZONAL_FILT
-C--   Zonal FFT filter initial conditions
            CALL ZONAL_FILTER(
      U      theta, hFacC,
      I      1, sNy, k, k, bi, bj, 1, myThid)
-#endif /* INCLUDE_LAT_CIRC_FFT_FILTER_CODE */
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+#endif /* INCLUDE_LAT_CIRC_FFT_FILTER_CODE */
       ELSE
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', theta, 0, myThid )
