@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.83 2002/12/10 02:47:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.84 2003/01/24 18:25:31 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -121,6 +121,8 @@ C     readBinaryPrec      :: Precision used for reading binary files
 C     nCheckLev           :: Holds current checkpoint level
 C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
+C     select_rStar        :: option related to r* vertical coordinate
+C                           =0 (default) use r coord. ; > 0 use r*
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
@@ -131,7 +133,7 @@ C                           =0 Linear free surface ; >0 Non-linear
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
-     &        nonlinFreeSurf,
+     &        nonlinFreeSurf, select_rStar,
      &        tempAdvScheme, saltAdvScheme, tracerAdvScheme
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -146,6 +148,7 @@ C                           =0 Linear free surface ; >0 Non-linear
       INTEGER readBinaryPrec
       INTEGER nCheckLev
       INTEGER nonlinFreeSurf
+      INTEGER select_rStar
       INTEGER tempAdvScheme
       INTEGER saltAdvScheme
       INTEGER tracerAdvScheme
