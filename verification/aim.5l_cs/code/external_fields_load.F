@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_fields_load.F,v 1.2 2002/11/12 20:39:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_fields_load.F,v 1.3 2002/12/10 02:37:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -213,7 +213,7 @@ C endif for periodicForcing
 #ifdef ALLOW_AIM
       IF ( useAIM ) THEN
 C      Update AIM bottom boundary data
-       CALL AIM_EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
+       CALL AIM_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
 #endif
 
