@@ -5,7 +5,7 @@ CBOP
 C !ROUTINE: O2_SURFFORCING
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE O2_SURFFORCING( PTR_O2, GO2,
+      SUBROUTINE O2_SURFFORCING( PTR_O2, SGO2,
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           myIter, myTime, myThid )
 
@@ -34,10 +34,11 @@ C  PTR_O2               :: oxygen tracer field
       _RL myTime
       _RL  PTR_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+      INTEGER myIter, myThid
 
 c  !OUTPUT PARAMETERS: ===================================================
-C  GO2                  :: air-sea exchange of oxygen
-     _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C  SGO2                  :: air-sea exchange of oxygen
+      _RL  SGO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
 
@@ -124,7 +125,7 @@ cQQ PTR_O2?
 C update surface tendencies      
         DO j=jMin,jMax
           DO i=iMin,iMax
-           GO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)*recip_drF(1) 
+           SGO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)*recip_drF(1) 
           ENDDO
          ENDDO
 #endif
