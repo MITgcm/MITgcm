@@ -2,14 +2,10 @@
  &diagnostics_list
   frequency(1) = 1,
    levels(1,1) = 1.,
-   fields(1,1) = 'TCANOPY ','OLR     ','SDIAG2  ','TGRLW   ','OSR     ','RADSWT  ',
-                 'LWGUP   ','RADLWG  ','LWGCLR  ','SDIAG1  ','TGROUND ','DTG     ',
-                 'RADSWG  ',
+   fields(1,1) = 'TCANOPY ',
    filename(1) = 'surface',
   frequency(2) = 1,
    levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
-   fields(1,2) = 'UDIAG4  ','TLW     ','TURBT   ','TURBQ   ',
-                 'OZLW    ','MOISTQ  ',
-                 'RADSW   ','RADLW   ','DIABT   ',
+   fields(1,2) = 'UDIAG4  ',
    filename(2) = 'fizhidt',
  &end

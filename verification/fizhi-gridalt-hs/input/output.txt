@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint55c_post
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint55g_post
 (PID.TID 0000.0001) // Build user:        molod
 (PID.TID 0000.0001) // Build host:        cg01
-(PID.TID 0000.0001) // Build date:        Tue Sep 28 15:33:03 EDT 2004
+(PID.TID 0000.0001) // Build date:        Fri Oct 15 16:59:47 EDT 2004
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -118,29 +118,6 @@
 (PID.TID 0000.0001) //       NORTH: Tile = 000006, Process = 000001, Comm = put
 (PID.TID 0000.0001) //                bi = 000006, bj = 000001
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MNC_READPARMS: opening file 'data.mnc'
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.mnc"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># Example "data.mnc" file
-(PID.TID 0000.0001) ># Lines beginning "#" are comments
-(PID.TID 0000.0001) > &MNC_01
-(PID.TID 0000.0001) > useMNC=.TRUE.,
-(PID.TID 0000.0001) ># mnc_echo_gvtypes=.FALSE.,
-(PID.TID 0000.0001) ># mnc_use_indir=.FALSE.,
-(PID.TID 0000.0001) > mnc_use_outdir=.TRUE.,
-(PID.TID 0000.0001) > mnc_outdir_str='mnc_test_',
-(PID.TID 0000.0001) > mnc_outdir_date=.TRUE.,
-(PID.TID 0000.0001) ># monitor_mnc=.FALSE.,
-(PID.TID 0000.0001) > snapshot_mnc=.TRUE.,
-(PID.TID 0000.0001) > timeave_mnc=.TRUE.,
-(PID.TID 0000.0001) >#pickup_write_mnc=.TRUE.,
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) ># Note: Some systems use & as the
-(PID.TID 0000.0001) ># namelist terminator. Other systems
-(PID.TID 0000.0001) ># use a / character (as shown here).
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MNC_READPARMS: finished reading data.mnc
 (PID.TID 0000.0001) ===== W2 TILE TOPLOGY =====
 (PID.TID 0000.0001)  TILE:    1
 (PID.TID 0000.0001)       NEIGHBOUR    1 = TILE    3 Comm = PUT ( PROC =    1)
@@ -346,21 +323,131 @@
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM04 : OK
 (PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM05
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM05 : OK
-(PID.TID 0000.0001)           ; Read from file tile001.mitgrid
-(PID.TID 0000.0001)                                                             DYG
-(PID.TID 0000.0001)           ; Read from file tile002.mitgrid
-(PID.TID 0000.0001)                                                             DYG
-(PID.TID 0000.0001)           ; Read from file tile003.mitgrid
-(PID.TID 0000.0001)                                                             DYG
-(PID.TID 0000.0001)           ; Read from file tile004.mitgrid
-(PID.TID 0000.0001)                                                             DYG
-(PID.TID 0000.0001)           ; Read from file tile005.mitgrid
-(PID.TID 0000.0001)                                                             DYG
-(PID.TID 0000.0001)           ; Read from file tile006.mitgrid
-(PID.TID 0000.0001)                                                             DYG
+(PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.pkg"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Packages
+(PID.TID 0000.0001) > &PACKAGES
+(PID.TID 0000.0001) > useFIZHI=.TRUE.,
+(PID.TID 0000.0001) > useGRIDALT=.TRUE.,
+(PID.TID 0000.0001) > useSHAP_FILT=.TRUE.,
+(PID.TID 0000.0001) > useDIAGNOSTICS=.TRUE.,
+(PID.TID 0000.0001) > useMNC=.FALSE.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
+(PID.TID 0000.0001)  SHAP_FILT_READPARMS: opening data.shap
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.shap
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.shap"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Shapiro Filter parameters
+(PID.TID 0000.0001) > &SHAP_PARM01
+(PID.TID 0000.0001) > shap_filt_uvStar=.FALSE.,
+(PID.TID 0000.0001) > shap_filt_TrStagg=.TRUE.,
+(PID.TID 0000.0001) > Shap_funct=2,
+(PID.TID 0000.0001) > nShapT=4,
+(PID.TID 0000.0001) > nShapUV=4,
+(PID.TID 0000.0001) > nShapTrPhys=0,
+(PID.TID 0000.0001) > nShapUVPhys=0,
+(PID.TID 0000.0001) >#Shap_TrLength=115000.,
+(PID.TID 0000.0001) >#Shap_uvLength=110000.,
+(PID.TID 0000.0001) > Shap_Trtau=5400.,
+(PID.TID 0000.0001) > Shap_uvtau=1800.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  SHAP_FILT_READPARMS: finished reading data.shap
+(PID.TID 0000.0001) Shap_funct =   /* select Shapiro filter function */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nShapT =   /* power of Shapiro filter for Temperat */
+(PID.TID 0000.0001)                       4
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nShapS =   /* power of Shapiro filter for Salinity */
+(PID.TID 0000.0001)                       4
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nShapUV =   /* power of Shapiro filter for momentum */
+(PID.TID 0000.0001)                       4
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nShapTrPhys =   /* power of physical-space filter (Tracer) */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nShapUVPhys =   /* power of physical-space filter (Momentum) */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_Trtau =   /* time scale of Shapiro filter (Tracer) */
+(PID.TID 0000.0001)                 5.400000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_TrLength =   /* Length scale of Shapiro filter (Tracer) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_uvtau =   /* time scale of Shapiro filter (Momentum) */
+(PID.TID 0000.0001)                 1.800000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_uvLength =   /* Length scale of Shapiro filter (Momentum) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_noSlip =  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Shap_diagFreq =   /* Frequency^-1 for diagnostic output (s)*/
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  DIAG_READPARMS: opening data.diagnostics
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.diagnostics"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Diagnostic Package Choices
+(PID.TID 0000.0001) > &diagnostics_list
+(PID.TID 0000.0001) >  frequency(1) = 1,
+(PID.TID 0000.0001) >   levels(1,1) = 1.,
+(PID.TID 0000.0001) >   fields(1,1) = 'TCANOPY ',
+(PID.TID 0000.0001) >   filename(1) = 'surface',
+(PID.TID 0000.0001) >  frequency(2) = 1,
+(PID.TID 0000.0001) >   levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
+(PID.TID 0000.0001) >   fields(1,2) = 'UDIAG4  ',
+(PID.TID 0000.0001) >   filename(2) = 'fizhidt',
+(PID.TID 0000.0001) > &end
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Creating Output Stream: surface
+(PID.TID 0000.0001)  Frequency:  1
+(PID.TID 0000.0001)  Levels:      1.
+(PID.TID 0000.0001)  Fields:    TCANOPY
+(PID.TID 0000.0001) Creating Output Stream: fizhidt
+(PID.TID 0000.0001)  Frequency:  1
+(PID.TID 0000.0001)  Levels:      1.  2.  3.  4.  5.  6.  7.  8.  9.  10.  11.  12.  13.  14.  15.  16.  17.  18.  19.  20.
+(PID.TID 0000.0001)  Fields:    UDIAG4
+(PID.TID 0000.0001)  FIZHI_READPARMS: opening data.fizhi
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.fizhi
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.fizhi"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Fizhi Parameters
+(PID.TID 0000.0001) > &fizhi_list
+(PID.TID 0000.0001) > nhmsbegin=120000,
+(PID.TID 0000.0001) > nymdbegin=20040101,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+   Begin Date  20040101   Begin Time  120000
+ Current Date  20040101 Current Time  120000
+(PID.TID 0000.0001) tile:   1 ; Read from file tile001.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
+(PID.TID 0000.0001) tile:   2 ; Read from file tile002.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
+(PID.TID 0000.0001) tile:   3 ; Read from file tile003.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
+(PID.TID 0000.0001) tile:   4 ; Read from file tile004.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
+(PID.TID 0000.0001) tile:   5 ; Read from file tile005.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
+(PID.TID 0000.0001) tile:   6 ; Read from file tile006.mitgrid
+(PID.TID 0000.0001)   => XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS DXG DYG
 (PID.TID 0000.0001) %MON XC_max                       =   1.7854351589505E+02
 (PID.TID 0000.0001) %MON XC_min                       =  -1.7854351589505E+02
-(PID.TID 0000.0001) %MON XC_mean                      =  -4.6999441375798E-15
+(PID.TID 0000.0001) %MON XC_mean                      =   3.4694469519536E-17
 (PID.TID 0000.0001) %MON XC_sd                        =   1.0355545336287E+02
 (PID.TID 0000.0001) %MON XG_max                       =   1.8000000000000E+02
 (PID.TID 0000.0001) %MON XG_min                       =  -1.7708797161002E+02
@@ -384,11 +471,11 @@
 (PID.TID 0000.0001) %MON DXV_sd                       =   3.4145142117723E+04
 (PID.TID 0000.0001) %MON YC_max                       =   8.7940663871962E+01
 (PID.TID 0000.0001) %MON YC_min                       =  -8.7940663871962E+01
-(PID.TID 0000.0001) %MON YC_mean                      =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON YC_mean                      =   2.4980018054066E-16
 (PID.TID 0000.0001) %MON YC_sd                        =   3.8676242969072E+01
 (PID.TID 0000.0001) %MON YG_max                       =   9.0000000000000E+01
 (PID.TID 0000.0001) %MON YG_min                       =  -9.0000000000000E+01
-(PID.TID 0000.0001) %MON YG_mean                      =  -1.2094344438470E-15
+(PID.TID 0000.0001) %MON YG_mean                      =   1.4184870772072E-15
 (PID.TID 0000.0001) %MON YG_sd                        =   3.9086186579984E+01
 (PID.TID 0000.0001) %MON DYC_max                      =   3.2375185836900E+05
 (PID.TID 0000.0001) %MON DYC_min                      =   1.1142031410131E+05
@@ -462,9 +549,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
-(PID.TID 0000.0001) // CMIN =          4.879474274727119E+04
+(PID.TID 0000.0001) // CMIN =          4.879474274727117E+04
 (PID.TID 0000.0001) // CMAX =          1.000000000000000E+05
-(PID.TID 0000.0001) // CINT =          1.896491009360326E+03
+(PID.TID 0000.0001) // CINT =          1.896491009360327E+03
 (PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
 (PID.TID 0000.0001) //                  0.0: .
 (PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 194:   1)
@@ -676,119 +763,6 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) // END OF FIELD                                          =
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.pkg"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># Packages
-(PID.TID 0000.0001) > &PACKAGES
-(PID.TID 0000.0001) > useFIZHI=.TRUE.,
-(PID.TID 0000.0001) > useGRIDALT=.TRUE.,
-(PID.TID 0000.0001) > useSHAP_FILT=.TRUE.,
-(PID.TID 0000.0001) > useDIAGNOSTICS=.TRUE.,
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
-(PID.TID 0000.0001)  SHAP_FILT_READPARMS: opening data.shap
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.shap
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.shap"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># Shapiro Filter parameters
-(PID.TID 0000.0001) > &SHAP_PARM01
-(PID.TID 0000.0001) > shap_filt_uvStar=.FALSE.,
-(PID.TID 0000.0001) > shap_filt_TrStagg=.TRUE.,
-(PID.TID 0000.0001) > Shap_funct=2,
-(PID.TID 0000.0001) > nShapT=4,
-(PID.TID 0000.0001) > nShapUV=4,
-(PID.TID 0000.0001) > nShapTrPhys=0,
-(PID.TID 0000.0001) > nShapUVPhys=0,
-(PID.TID 0000.0001) >#Shap_TrLength=115000.,
-(PID.TID 0000.0001) >#Shap_uvLength=110000.,
-(PID.TID 0000.0001) > Shap_Trtau=5400.,
-(PID.TID 0000.0001) > Shap_uvtau=1800.,
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  SHAP_FILT_READPARMS: finished reading data.shap
-(PID.TID 0000.0001) Shap_funct =   /* select Shapiro filter function */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nShapT =   /* power of Shapiro filter for Temperat */
-(PID.TID 0000.0001)                       4
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nShapS =   /* power of Shapiro filter for Salinity */
-(PID.TID 0000.0001)                       4
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nShapUV =   /* power of Shapiro filter for momentum */
-(PID.TID 0000.0001)                       4
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nShapTrPhys =   /* power of physical-space filter (Tracer) */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nShapUVPhys =   /* power of physical-space filter (Momentum) */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_Trtau =   /* time scale of Shapiro filter (Tracer) */
-(PID.TID 0000.0001)                 5.400000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_TrLength =   /* Length scale of Shapiro filter (Tracer) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_uvtau =   /* time scale of Shapiro filter (Momentum) */
-(PID.TID 0000.0001)                 1.800000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_uvLength =   /* Length scale of Shapiro filter (Momentum) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_noSlip =  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Shap_diagFreq =   /* Frequency^-1 for diagnostic output (s)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)  DIAG_READPARMS: opening data.diagnostics
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.diagnostics"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># Diagnostic Package Choices
-(PID.TID 0000.0001) > &diagnostics_list
-(PID.TID 0000.0001) >  frequency(1) = 1,
-(PID.TID 0000.0001) >   levels(1,1) = 1.,
-(PID.TID 0000.0001) >   fields(1,1) = 'TCANOPY ','OLR     ','SDIAG2  ','TGRLW   ','OSR     ','RADSWT  ',
-(PID.TID 0000.0001) >                 'LWGUP   ','RADLWG  ','LWGCLR  ','SDIAG1  ','TGROUND ','DTG     ',
-(PID.TID 0000.0001) >                 'RADSWG  ',
-(PID.TID 0000.0001) >   filename(1) = 'surface',
-(PID.TID 0000.0001) >  frequency(2) = 1,
-(PID.TID 0000.0001) >   levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
-(PID.TID 0000.0001) >   fields(1,2) = 'UDIAG4  ','TLW     ','TURBT   ','TURBQ   ',
-(PID.TID 0000.0001) >                 'OZLW    ','MOISTQ  ',
-(PID.TID 0000.0001) >                 'RADSW   ','RADLW   ','DIABT   ',
-(PID.TID 0000.0001) >   filename(2) = 'fizhidt',
-(PID.TID 0000.0001) > &end
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) Creating Output Stream: surface
-(PID.TID 0000.0001) Frequency:            1
-(PID.TID 0000.0001) Levels:       1.000000000000000
-(PID.TID 0000.0001) Fields:    TCANOPY  OLR      SDIAG2   TGRLW    OSR      RADSWT   LWGUP    RADLWG   LWGCLR   SDIAG1   TGROUND  DTG      RADSWG
-(PID.TID 0000.0001) Creating Output Stream: fizhidt
-(PID.TID 0000.0001) Frequency:            1
-(PID.TID 0000.0001) Levels:       1.000000000000000        2.000000000000000        3.000000000000000        4.000000000000000        5.000000000000000        6.000000000000000        7.000000000000000        8.000000000000000        9.000000000000000        10.00000000000000        11.00000000000000        12.00000000000000        13.00000000000000        14.00000000000000        15.00000000000000        16.00000000000000        17.00000000000000        18.00000000000000        19.00000000000000        20.00000000000000
-(PID.TID 0000.0001) Fields:    UDIAG4   TLW      TURBT    TURBQ    OZLW     MOISTQ   RADSW    RADLW    DIABT
-(PID.TID 0000.0001)  FIZHI_READPARMS: opening data.fizhi
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.fizhi
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.fizhi"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># Fizhi Parameters
-(PID.TID 0000.0001) > &fizhi_list
-(PID.TID 0000.0001) > nhmsbegin=120000,
-(PID.TID 0000.0001) > nymdbegin=20040101,
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-   Begin Date     20040101   Begin Time       120000
- Current Date     20040101 Current Time       120000
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) // GAD parameters :
@@ -824,40 +798,20 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
  Setting Alarm for: 20040101  120000,  with frequency:     3000, and Tag: moist                                                                           
  Setting Alarm for: 20040101  120000,  with frequency:        0, and Tag: pnt                                                                             
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: landFrc.2f2.bin
- Number of Total Tiles for bi=           1:         2048
- Number of Land  Tiles for bi=           1:          900
- Number of Total Tiles for bi=           2:         2048
- Number of Land  Tiles for bi=           2:          772
- Number of Total Tiles for bi=           3:         2048
- Number of Land  Tiles for bi=           3:         1190
- Number of Total Tiles for bi=           4:         2048
- Number of Land  Tiles for bi=           4:          188
- Number of Total Tiles for bi=           5:         2048
- Number of Land  Tiles for bi=           5:          622
- Number of Total Tiles for bi=           6:         2048
- Number of Land  Tiles for bi=           6:          306
+ Number of Total Tiles for bi= 1:  2048
+ Number of Land  Tiles for bi= 1:  900
+ Number of Total Tiles for bi= 2:  2048
+ Number of Land  Tiles for bi= 2:  772
+ Number of Total Tiles for bi= 3:  2048
+ Number of Land  Tiles for bi= 3:  1190
+ Number of Total Tiles for bi= 4:  2048
+ Number of Land  Tiles for bi= 4:  188
+ Number of Total Tiles for bi= 5:  2048
+ Number of Land  Tiles for bi= 5:  622
+ Number of Total Tiles for bi= 6:  2048
+ Number of Land  Tiles for bi= 6:  306
  Allocating  1 Level(s) for Diagnostic # 153 (TCANOPY ),  Total Number of Diagnostics:     1
- Allocating  1 Level(s) for Diagnostic #  37 (OLR     ),  Total Number of Diagnostics:     2
- Allocating  1 Level(s) for Diagnostic #  85 (SDIAG2  ),  Total Number of Diagnostics:     3
- Allocating  1 Level(s) for Diagnostic #  35 (TGRLW   ),  Total Number of Diagnostics:     4
- Allocating  1 Level(s) for Diagnostic #  72 (OSR     ),  Total Number of Diagnostics:     5
- Allocating  1 Level(s) for Diagnostic #  48 (RADSWT  ),  Total Number of Diagnostics:     6
- Allocating  1 Level(s) for Diagnostic #  36 (LWGUP   ),  Total Number of Diagnostics:     7
- Allocating  1 Level(s) for Diagnostic #   6 (RADLWG  ),  Total Number of Diagnostics:     8
- Allocating  1 Level(s) for Diagnostic #  39 (LWGCLR  ),  Total Number of Diagnostics:     9
- Allocating  1 Level(s) for Diagnostic #  84 (SDIAG1  ),  Total Number of Diagnostics:    10
- Allocating  1 Level(s) for Diagnostic #  30 (TGROUND ),  Total Number of Diagnostics:    11
- Allocating  1 Level(s) for Diagnostic #  32 (DTG     ),  Total Number of Diagnostics:    12
- Allocating  1 Level(s) for Diagnostic #   7 (RADSWG  ),  Total Number of Diagnostics:    13
- Allocating 20 Level(s) for Diagnostic # 133 (UDIAG4  ),  Total Number of Diagnostics:    33
- Allocating 20 Level(s) for Diagnostic #  41 (TLW     ),  Total Number of Diagnostics:    53
- Allocating 20 Level(s) for Diagnostic #  15 (TURBT   ),  Total Number of Diagnostics:    73
- Allocating 20 Level(s) for Diagnostic #  16 (TURBQ   ),  Total Number of Diagnostics:    93
- Allocating 20 Level(s) for Diagnostic #  43 (OZLW    ),  Total Number of Diagnostics:   113
- Allocating 20 Level(s) for Diagnostic #  18 (MOISTQ  ),  Total Number of Diagnostics:   133
- Allocating 20 Level(s) for Diagnostic #  20 (RADSW   ),  Total Number of Diagnostics:   153
- Allocating 20 Level(s) for Diagnostic #  19 (RADLW   ),  Total Number of Diagnostics:   173
- Allocating 20 Level(s) for Diagnostic #  90 (DIABT   ),  Total Number of Diagnostics:   193
+ Allocating 20 Level(s) for Diagnostic # 133 (UDIAG4  ),  Total Number of Diagnostics:    21
 INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
   K=  0.5  ;  r=  100000.0  ;  phiRef/g=       0.000
   K=  1.0  ;  r=   95000.0  ;  phiRef/g=     430.007
@@ -882,17 +836,17 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
   K= 10.5  ;  r=       0.0  ;  phiRef/g=   38981.791
 (PID.TID 0000.0001) %MON fCori_max                    =   1.4535016908525E-04
 (PID.TID 0000.0001) %MON fCori_min                    =  -1.4535016908525E-04
-(PID.TID 0000.0001) %MON fCori_mean                   =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON fCori_mean                   =  -4.6763277296331E-22
 (PID.TID 0000.0001) %MON fCori_sd                     =   8.3972192788621E-05
 (PID.TID 0000.0001) %MON fCoriG_max                   =   1.4544410433286E-04
 (PID.TID 0000.0001) %MON fCoriG_min                   =  -1.4544410433286E-04
-(PID.TID 0000.0001) %MON fCoriG_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON fCoriG_mean                  =  -1.3629120560874E-21
 (PID.TID 0000.0001) %MON fCoriG_sd                    =   8.4860812167727E-05
 (PID.TID 0000.0001) %MON fCoriCos_max                 =   1.4540341538469E-04
 (PID.TID 0000.0001) %MON fCoriCos_min                 =   5.2264550201501E-06
 (PID.TID 0000.0001) %MON fCoriCos_mean                =   1.1482595466044E-04
 (PID.TID 0000.0001) %MON fCoriCos_sd                  =   3.0292878037194E-05
-(PID.TID 0000.0001) // CG2D normalisation factor =          0.9911960384346748800000000E-05
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.9911960384346747761244271E-05
 (PID.TID 0000.0001) 
  ini_cg2d: sumArea,cg2dTolerance =  5.09904363781724E+14  1.12314485635777E-10
 (PID.TID 0000.0001) CONFIG_CHECK: OK
@@ -1024,22 +978,22 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) gravity =   /* Gravitational acceleration ( m/s^2 ) */
-(PID.TID 0000.0001)                 9.810000000000001E+00
+(PID.TID 0000.0001)                 9.810000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) gBaro =   /* Barotropic gravity ( m/s^2 ) */
-(PID.TID 0000.0001)                 9.810000000000001E+00
+(PID.TID 0000.0001)                 9.810000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rotationPeriod =   /* Rotation Period ( s ) */
 (PID.TID 0000.0001)                 8.640000000000000E+04
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) omega =   /* Angular velocity ( rad/s ) */
-(PID.TID 0000.0001)                 7.272205216643039E-05
+(PID.TID 0000.0001)                 7.272205216643040E-05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) f0 =   /* Reference coriolis parameter ( 1/s ) */
 (PID.TID 0000.0001)                 1.000000000000000E-04
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
-(PID.TID 0000.0001)                 9.999999999999998E-12
+(PID.TID 0000.0001)                 9.999999999999999E-12
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) freeSurfFac =   /* Implicit free surface factor */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -1178,7 +1132,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.000000000000000E-07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) cg2dTargetResWunit =   /* CG2d target residual [W units] */
-(PID.TID 0000.0001)                 1.000000000000001E-17
+(PID.TID 0000.0001)                 1.000000000000000E-17
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) cg2dPreCondFreq =   /* Freq. for updating cg2d preconditioner */
 (PID.TID 0000.0001)                       1
@@ -1238,7 +1192,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.500000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) snapshot_mdsio =   /* Model IO flag. */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) monitorFreq =   /* Monitor output interval ( s ). */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -1283,7 +1237,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) horiVertRatio =   /* Ratio on units : Horiz - Vertical */
-(PID.TID 0000.0001)                 9.810000000000001E+00
+(PID.TID 0000.0001)                 9.810000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) drC =   /* C spacing ( units of r ) */
 (PID.TID 0000.0001)                 5.000000000000000E+03,      /* K =  1 */
@@ -1340,7 +1294,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.122055553388957E+01,      /* I = 30 */
 (PID.TID 0000.0001)                 4.295641272275883E+01,      /* I = 31 */
 (PID.TID 0000.0001)                 4.439521994760536E+01,      /* I = 32 */
-(PID.TID 0000.0001)                 4.560478005239465E+01,      /* I = 33 */
+(PID.TID 0000.0001)                 4.560478005239464E+01,      /* I = 33 */
 (PID.TID 0000.0001)                 4.704358727724117E+01,      /* I = 34 */
 (PID.TID 0000.0001)                 4.877944446611043E+01,      /* I = 35 */
 (PID.TID 0000.0001)                 5.076553711512697E+01,      /* I = 36 */
@@ -1382,7 +1336,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 5.970018167786760E+01,      /* I = 72 */
 (PID.TID 0000.0001)                 6.271654991792347E+01,      /* I = 73 */
 (PID.TID 0000.0001)                 6.591914604853015E+01,      /* I = 74 */
-(PID.TID 0000.0001)                 6.929439270484149E+01,      /* I = 75 */
+(PID.TID 0000.0001)                 6.929439270484148E+01,      /* I = 75 */
 (PID.TID 0000.0001)                 7.282545807616151E+01,      /* I = 76 */
 (PID.TID 0000.0001)                 7.649168830618933E+01,      /* I = 77 */
 (PID.TID 0000.0001)                 8.026842803787176E+01,      /* I = 78 */
@@ -1394,7 +1348,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.035083116938107E+02,      /* I = 84 */
 (PID.TID 0000.0001)                 1.071745419238385E+02,      /* I = 85 */
 (PID.TID 0000.0001)                 1.107056072951585E+02,      /* I = 86 */
-(PID.TID 0000.0001)                 1.140808539514699E+02,      /* I = 87 */
+(PID.TID 0000.0001)                 1.140808539514698E+02,      /* I = 87 */
 (PID.TID 0000.0001)                 1.172834500820765E+02,      /* I = 88 */
 (PID.TID 0000.0001)                 1.202998183221324E+02,      /* I = 89 */
 (PID.TID 0000.0001)                 1.231187167466594E+02,      /* I = 90 */
@@ -1408,7 +1362,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.358367907661329E+02,      /* I = 98 */
 (PID.TID 0000.0001)                 1.359720382181193E+02,      /* I = 99 */
 (PID.TID 0000.0001)                 1.360654656901789E+02,      /* I =100 */
-(PID.TID 0000.0001)                 1.361344533147043E+02,      /* I =101 */
+(PID.TID 0000.0001)                 1.361344533147042E+02,      /* I =101 */
 (PID.TID 0000.0001)                 1.361871219420981E+02,      /* I =102 */
 (PID.TID 0000.0001)                 1.362280794509603E+02,      /* I =103 */
 (PID.TID 0000.0001)                 1.362602511071934E+02,      /* I =104 */
@@ -1430,7 +1384,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.362602511071934E+02,      /* I =121 */
 (PID.TID 0000.0001)                 1.362280794509603E+02,      /* I =122 */
 (PID.TID 0000.0001)                 1.361871219420981E+02,      /* I =123 */
-(PID.TID 0000.0001)                 1.361344533147043E+02,      /* I =124 */
+(PID.TID 0000.0001)                 1.361344533147042E+02,      /* I =124 */
 (PID.TID 0000.0001)                 1.360654656901789E+02,      /* I =125 */
 (PID.TID 0000.0001)                 1.359720382181193E+02,      /* I =126 */
 (PID.TID 0000.0001)                 1.358367907661329E+02,      /* I =127 */
@@ -1470,7 +1424,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                -1.362080546879630E+02,      /* I =162 */
 (PID.TID 0000.0001)                -1.378136964251304E+02,      /* I =163 */
 (PID.TID 0000.0001)                -1.397176767114393E+02,      /* I =164 */
-(PID.TID 0000.0001)                -1.418773831978724E+02,      /* I =165 */
+(PID.TID 0000.0001)                -1.418773831978723E+02,      /* I =165 */
 (PID.TID 0000.0001)                -1.442700437147871E+02,      /* I =166 */
 (PID.TID 0000.0001)                -1.468812832533406E+02,      /* I =167 */
 (PID.TID 0000.0001)                -1.497001816778676E+02,      /* I =168 */
@@ -1493,7 +1447,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.497001816778676E+02,      /* I =185 */
 (PID.TID 0000.0001)                 1.468812832533406E+02,      /* I =186 */
 (PID.TID 0000.0001)                 1.442700437147871E+02,      /* I =187 */
-(PID.TID 0000.0001)                 1.418773831978724E+02,      /* I =188 */
+(PID.TID 0000.0001)                 1.418773831978723E+02,      /* I =188 */
 (PID.TID 0000.0001)                 1.397176767114393E+02,      /* I =189 */
 (PID.TID 0000.0001)                 1.378136964251304E+02,      /* I =190 */
 (PID.TID 0000.0001)                 1.362080546879630E+02,      /* I =191 */
@@ -1745,7 +1699,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.202082051331828E+05,      /* J =  1 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* J =  2 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* J =  3 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* J =  4 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* J =  4 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* J =  5 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* J =  6 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* J =  7 */
@@ -1769,7 +1723,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* J = 26 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* J = 27 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* J = 28 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* J = 29 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* J = 29 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* J = 30 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* J = 31 */
 (PID.TID 0000.0001)                 1.202082051331828E+05       /* J = 32 */
@@ -1778,7 +1732,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.202082051331828E+05,      /* I =  1 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =  2 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =  3 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =  4 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =  4 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =  5 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =  6 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =  7 */
@@ -1802,13 +1756,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I = 26 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I = 27 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I = 28 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I = 29 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I = 29 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 30 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 31 */
 (PID.TID 0000.0001)     2 @  1.202082051331828E+05,             /* I = 32: 33 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 34 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 35 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I = 36 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I = 36 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I = 37 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I = 38 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I = 39 */
@@ -1832,13 +1786,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I = 58 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I = 59 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I = 60 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I = 61 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I = 61 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 62 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 63 */
 (PID.TID 0000.0001)     2 @  1.202082051331828E+05,             /* I = 64: 65 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 66 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 67 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I = 68 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I = 68 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I = 69 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I = 70 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I = 71 */
@@ -1862,13 +1816,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I = 90 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I = 91 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I = 92 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I = 93 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I = 93 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 94 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 95 */
 (PID.TID 0000.0001)     2 @  1.202082051331828E+05,             /* I = 96: 97 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I = 98 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I = 99 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =100 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =100 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =101 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =102 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =103 */
@@ -1892,13 +1846,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =122 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =123 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =124 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =125 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =125 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =126 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =127 */
 (PID.TID 0000.0001)     2 @  1.202082051331828E+05,             /* I =128:129 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =130 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =131 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =132 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =132 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =133 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =134 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =135 */
@@ -1922,13 +1876,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =154 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =155 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =156 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =157 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =157 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =158 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =159 */
 (PID.TID 0000.0001)     2 @  1.202082051331828E+05,             /* I =160:161 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =162 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =163 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =164 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =164 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =165 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =166 */
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =167 */
@@ -1952,7 +1906,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.491250781852558E+05,      /* I =186 */
 (PID.TID 0000.0001)                 2.365892017348392E+05,      /* I =187 */
 (PID.TID 0000.0001)                 2.220405216043041E+05,      /* I =188 */
-(PID.TID 0000.0001)                 2.048868197919577E+05,      /* I =189 */
+(PID.TID 0000.0001)                 2.048868197919576E+05,      /* I =189 */
 (PID.TID 0000.0001)                 1.840412227747703E+05,      /* I =190 */
 (PID.TID 0000.0001)                 1.572908084538706E+05,      /* I =191 */
 (PID.TID 0000.0001)                 1.202082051331828E+05       /* I =192 */
@@ -2175,7 +2129,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxG =  /* dxG(1,:,1,:) ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* J =  1 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* J =  2 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* J =  2 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* J =  3 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* J =  4 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* J =  5 */
@@ -2205,11 +2159,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* J = 29 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* J = 30 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* J = 31 */
-(PID.TID 0000.0001)                 1.403701524205399E+05       /* J = 32 */
+(PID.TID 0000.0001)                 1.403701524205398E+05       /* J = 32 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dyG =  /* dyG(:,1,:,1) ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I =  1 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I =  2 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I =  2 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =  3 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =  4 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =  5 */
@@ -2239,9 +2193,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I = 29 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I = 30 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 31 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 32 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 32 */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I = 33 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 34 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 34 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 35 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I = 36 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I = 37 */
@@ -2271,9 +2225,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I = 61 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I = 62 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 63 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 64 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 64 */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I = 65 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 66 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 66 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 67 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I = 68 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I = 69 */
@@ -2303,9 +2257,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I = 93 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I = 94 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 95 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 96 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 96 */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I = 97 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I = 98 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I = 98 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I = 99 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =100 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =101 */
@@ -2335,9 +2289,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =125 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =126 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =127 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I =128 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I =128 */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I =129 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I =130 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I =130 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =131 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =132 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =133 */
@@ -2367,9 +2321,9 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =157 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =158 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =159 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I =160 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I =160 */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* I =161 */
-(PID.TID 0000.0001)                 1.403701524205399E+05,      /* I =162 */
+(PID.TID 0000.0001)                 1.403701524205398E+05,      /* I =162 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =163 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =164 */
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =165 */
@@ -2399,7 +2353,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.138410773065497E+05,      /* I =189 */
 (PID.TID 0000.0001)                 1.950254041626018E+05,      /* I =190 */
 (PID.TID 0000.0001)                 1.716197227386011E+05,      /* I =191 */
-(PID.TID 0000.0001)                 1.403701524205399E+05       /* I =192 */
+(PID.TID 0000.0001)                 1.403701524205398E+05       /* I =192 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dyG =  /* dyG(1,:,1,:) ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.009837800879055E+05,      /* J =  1 */
@@ -2437,7 +2391,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) dxC =  /* dxC(:,1,:,1) ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I =  1 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I =  2 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =  3 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =  3 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =  4 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =  5 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =  6 */
@@ -2465,11 +2419,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I = 28 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I = 29 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I = 30 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 31 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 31 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 32 */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I = 33 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 34 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 35 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 35 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I = 36 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I = 37 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I = 38 */
@@ -2497,11 +2451,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I = 60 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I = 61 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I = 62 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 63 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 63 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 64 */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I = 65 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 66 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 67 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 67 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I = 68 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I = 69 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I = 70 */
@@ -2529,11 +2483,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I = 92 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I = 93 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I = 94 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 95 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 95 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 96 */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I = 97 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I = 98 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I = 99 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I = 99 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =100 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =101 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =102 */
@@ -2561,11 +2515,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =124 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =125 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =126 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =127 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =127 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I =128 */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I =129 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I =130 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =131 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =131 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =132 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =133 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =134 */
@@ -2593,11 +2547,11 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =156 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =157 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =158 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =159 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =159 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I =160 */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* I =161 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* I =162 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =163 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =163 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =164 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =165 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =166 */
@@ -2625,7 +2579,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* I =188 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* I =189 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* I =190 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* I =191 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* I =191 */
 (PID.TID 0000.0001)                 1.391343389937106E+05       /* I =192 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxC =  /* dxC(1,:,1,:) ( m - cartesian, degrees - spherical ) */
@@ -2639,8 +2593,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* J =  9 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* J = 10 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* J = 11 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* J = 12 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* J = 11 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* J = 12 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* J = 13 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* J = 14 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* J = 15 */
@@ -2648,8 +2602,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* J = 18 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* J = 19 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* J = 20 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* J = 21 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* J = 22 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* J = 21 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* J = 22 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* J = 23 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* J = 24 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* J = 25 */
@@ -2672,8 +2626,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =  8 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =  9 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 10 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 11 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 12 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 11 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 12 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 13 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 14 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 15 */
@@ -2681,8 +2635,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 18 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 19 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 20 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 21 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 22 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 21 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 22 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 23 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I = 24 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I = 25 */
@@ -2702,8 +2656,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I = 40 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I = 41 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 42 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 43 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 44 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 43 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 44 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 45 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 46 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 47 */
@@ -2711,8 +2665,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 50 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 51 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 52 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 53 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 54 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 53 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 54 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 55 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I = 56 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I = 57 */
@@ -2732,8 +2686,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I = 72 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I = 73 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 74 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 75 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 76 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 75 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 76 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 77 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 78 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 79 */
@@ -2741,8 +2695,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I = 82 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I = 83 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I = 84 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I = 85 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I = 86 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I = 85 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I = 86 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I = 87 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I = 88 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I = 89 */
@@ -2762,8 +2716,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =104 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =105 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =106 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =107 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =108 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =107 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =108 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =109 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =110 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =111 */
@@ -2771,8 +2725,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =114 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =115 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =116 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =117 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =118 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =117 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =118 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =119 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =120 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =121 */
@@ -2792,8 +2746,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =136 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =137 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =138 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =139 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =140 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =139 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =140 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =141 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =142 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =143 */
@@ -2801,8 +2755,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =146 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =147 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =148 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =149 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =150 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =149 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =150 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =151 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =152 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =153 */
@@ -2822,8 +2776,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =168 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =169 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =170 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =171 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =172 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =171 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =172 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =173 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =174 */
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =175 */
@@ -2831,8 +2785,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 3.001044073506459E+05,      /* I =178 */
 (PID.TID 0000.0001)                 2.978547649292580E+05,      /* I =179 */
 (PID.TID 0000.0001)                 2.944741346384699E+05,      /* I =180 */
-(PID.TID 0000.0001)                 2.899523122489404E+05,      /* I =181 */
-(PID.TID 0000.0001)                 2.842706922224558E+05,      /* I =182 */
+(PID.TID 0000.0001)                 2.899523122489403E+05,      /* I =181 */
+(PID.TID 0000.0001)                 2.842706922224557E+05,      /* I =182 */
 (PID.TID 0000.0001)                 2.773972106720365E+05,      /* I =183 */
 (PID.TID 0000.0001)                 2.692787333338535E+05,      /* I =184 */
 (PID.TID 0000.0001)                 2.598293319150326E+05,      /* I =185 */
@@ -2847,7 +2801,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) dyC =  /* dyC(1,:,1,:) ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.114203141013064E+05,      /* J =  1 */
 (PID.TID 0000.0001)                 1.391343389937106E+05,      /* J =  2 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* J =  3 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* J =  3 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* J =  4 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* J =  5 */
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* J =  6 */
@@ -2875,7 +2829,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.294195678257306E+05,      /* J = 28 */
 (PID.TID 0000.0001)                 2.135964483342134E+05,      /* J = 29 */
 (PID.TID 0000.0001)                 1.946503699269892E+05,      /* J = 30 */
-(PID.TID 0000.0001)                 1.709574999026267E+05,      /* J = 31 */
+(PID.TID 0000.0001)                 1.709574999026266E+05,      /* J = 31 */
 (PID.TID 0000.0001)                 1.391343389937106E+05       /* J = 32 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxV =  /* dxV(:,1,:,1) ( m - cartesian, degrees - spherical ) */
@@ -2885,7 +2839,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =  4 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =  5 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =  6 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =  7 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =  7 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =  8 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =  9 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 10 */
@@ -2905,7 +2859,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 24 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I = 25 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I = 26 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I = 27 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I = 27 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I = 28 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I = 29 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I = 30 */
@@ -2917,7 +2871,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I = 36 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I = 37 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I = 38 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I = 39 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I = 39 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I = 40 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I = 41 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 42 */
@@ -2937,7 +2891,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 56 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I = 57 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I = 58 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I = 59 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I = 59 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I = 60 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I = 61 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I = 62 */
@@ -2949,7 +2903,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I = 68 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I = 69 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I = 70 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I = 71 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I = 71 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I = 72 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I = 73 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 74 */
@@ -2969,7 +2923,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I = 88 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I = 89 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I = 90 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I = 91 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I = 91 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I = 92 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I = 93 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I = 94 */
@@ -2981,7 +2935,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =100 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =101 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =102 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =103 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =103 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =104 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =105 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =106 */
@@ -3001,7 +2955,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =120 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =121 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =122 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =123 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =123 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =124 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =125 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =126 */
@@ -3013,7 +2967,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =132 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =133 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =134 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =135 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =135 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =136 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =137 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =138 */
@@ -3033,7 +2987,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =152 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =153 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =154 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =155 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =155 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =156 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =157 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =158 */
@@ -3045,7 +2999,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =164 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =165 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =166 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =167 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =167 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =168 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =169 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =170 */
@@ -3065,7 +3019,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* I =184 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* I =185 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* I =186 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* I =187 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* I =187 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* I =188 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* I =189 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* I =190 */
@@ -3081,7 +3035,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* J =  6 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* J =  8 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* J =  9 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* J =  9 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* J = 10 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* J = 11 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* J = 12 */
@@ -3097,7 +3051,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* J = 22 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* J = 23 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* J = 24 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* J = 25 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* J = 25 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* J = 26 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* J = 27 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* J = 28 */
@@ -3115,7 +3069,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =  6 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =  7 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =  8 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =  9 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =  9 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 10 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 11 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 12 */
@@ -3131,7 +3085,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 22 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 23 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 24 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I = 25 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I = 25 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I = 26 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I = 27 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I = 28 */
@@ -3147,7 +3101,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I = 38 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I = 39 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I = 40 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I = 41 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I = 41 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 42 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 43 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 44 */
@@ -3163,7 +3117,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 54 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 55 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 56 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I = 57 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I = 57 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I = 58 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I = 59 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I = 60 */
@@ -3179,7 +3133,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I = 70 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I = 71 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I = 72 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I = 73 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I = 73 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 74 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 75 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 76 */
@@ -3195,7 +3149,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I = 86 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I = 87 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I = 88 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I = 89 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I = 89 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I = 90 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I = 91 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I = 92 */
@@ -3211,7 +3165,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =102 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =103 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =104 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =105 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =105 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =106 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =107 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =108 */
@@ -3227,7 +3181,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =118 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =119 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =120 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =121 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =121 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =122 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =123 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =124 */
@@ -3243,7 +3197,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =134 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =135 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =136 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =137 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =137 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =138 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =139 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =140 */
@@ -3259,7 +3213,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =150 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =151 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =152 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =153 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =153 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =154 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =155 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =156 */
@@ -3275,7 +3229,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =166 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =167 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =168 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =169 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =169 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =170 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =171 */
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =172 */
@@ -3291,7 +3245,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.872580915202295E+05,      /* I =182 */
 (PID.TID 0000.0001)                 2.809856491525217E+05,      /* I =183 */
 (PID.TID 0000.0001)                 2.734980225206389E+05,      /* I =184 */
-(PID.TID 0000.0001)                 2.647274964828302E+05,      /* I =185 */
+(PID.TID 0000.0001)                 2.647274964828301E+05,      /* I =185 */
 (PID.TID 0000.0001)                 2.545652950875683E+05,      /* I =186 */
 (PID.TID 0000.0001)                 2.428369969078989E+05,      /* I =187 */
 (PID.TID 0000.0001)                 2.292584591272880E+05,      /* I =188 */
@@ -3307,7 +3261,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* J =  4 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* J =  5 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* J =  6 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* J =  7 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* J =  9 */
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* J = 10 */
@@ -3327,7 +3281,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 2.734046499619031E+05,      /* J = 24 */
 (PID.TID 0000.0001)                 2.646201463834826E+05,      /* J = 25 */
 (PID.TID 0000.0001)                 2.544372984215561E+05,      /* J = 26 */
-(PID.TID 0000.0001)                 2.426774358027004E+05,      /* J = 27 */
+(PID.TID 0000.0001)                 2.426774358027003E+05,      /* J = 27 */
 (PID.TID 0000.0001)                 2.290479919481738E+05,      /* J = 28 */
 (PID.TID 0000.0001)                 2.130490056267208E+05,      /* J = 29 */
 (PID.TID 0000.0001)                 1.937548202849060E+05,      /* J = 30 */
@@ -3341,7 +3295,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =  4 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =  5 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I =  6 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =  7 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =  7 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =  8 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =  9 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 10 */
@@ -3360,8 +3314,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 23 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I = 24 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I = 25 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I = 26 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I = 27 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I = 26 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I = 27 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I = 28 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I = 29 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I = 30 */
@@ -3373,7 +3327,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I = 36 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I = 37 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I = 38 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I = 39 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I = 39 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I = 40 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I = 41 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 42 */
@@ -3392,8 +3346,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 55 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I = 56 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I = 57 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I = 58 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I = 59 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I = 58 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I = 59 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I = 60 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I = 61 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I = 62 */
@@ -3405,7 +3359,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I = 68 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I = 69 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I = 70 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I = 71 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I = 71 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I = 72 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I = 73 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 74 */
@@ -3424,8 +3378,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I = 87 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I = 88 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I = 89 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I = 90 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I = 91 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I = 90 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I = 91 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I = 92 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I = 93 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I = 94 */
@@ -3437,7 +3391,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =100 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =101 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I =102 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =103 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =103 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =104 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =105 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =106 */
@@ -3456,8 +3410,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =119 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =120 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =121 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =122 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I =123 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =122 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I =123 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =124 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =125 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I =126 */
@@ -3469,7 +3423,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =132 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =133 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I =134 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =135 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =135 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =136 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =137 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =138 */
@@ -3488,8 +3442,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =151 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =152 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =153 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =154 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I =155 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =154 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I =155 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =156 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =157 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I =158 */
@@ -3501,7 +3455,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =164 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =165 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* I =166 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =167 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =167 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =168 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =169 */
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =170 */
@@ -3520,8 +3474,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* I =183 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* I =184 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* I =185 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* I =186 */
-(PID.TID 0000.0001)                 5.594154126611157E+10,      /* I =187 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* I =186 */
+(PID.TID 0000.0001)                 5.594154126611156E+10,      /* I =187 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* I =188 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* I =189 */
 (PID.TID 0000.0001)                 3.378518544304265E+10,      /* I =190 */
@@ -3554,7 +3508,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.699293007098555E+10,      /* J = 23 */
 (PID.TID 0000.0001)                 7.256353271748119E+10,      /* J = 24 */
 (PID.TID 0000.0001)                 6.757541173817516E+10,      /* J = 25 */
-(PID.TID 0000.0001)                 6.203683527772524E+10,      /* J = 26 */
+(PID.TID 0000.0001)                 6.203683527772523E+10,      /* J = 26 */
 (PID.TID 0000.0001)                 5.594154126607553E+10,      /* J = 27 */
 (PID.TID 0000.0001)                 4.925938996118163E+10,      /* J = 28 */
 (PID.TID 0000.0001)                 4.192037169898667E+10,      /* J = 29 */
@@ -3769,13 +3723,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* J = 10 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* J = 11 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* J = 12 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* J = 13 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* J = 13 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* J = 14 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* J = 15 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* J = 16: 17 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* J = 18 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* J = 19 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* J = 20 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* J = 20 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* J = 21 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* J = 22 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* J = 23 */
@@ -3802,13 +3756,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 10 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 11 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 12 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 13 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 13 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 14 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 15 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I = 16: 17 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 18 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 19 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 20 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 20 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 21 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 22 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 23 */
@@ -3832,13 +3786,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 42 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 43 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 44 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 45 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 45 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 46 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 47 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I = 48: 49 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 50 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 51 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 52 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 52 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 53 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 54 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 55 */
@@ -3862,13 +3816,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 74 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 75 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 76 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 77 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 77 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 78 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 79 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I = 80: 81 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I = 82 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I = 83 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I = 84 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I = 84 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I = 85 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I = 86 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I = 87 */
@@ -3892,13 +3846,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =106 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =107 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =108 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =109 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =109 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =110 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =111 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I =112:113 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =114 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =115 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =116 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =116 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =117 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =118 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =119 */
@@ -3922,13 +3876,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =138 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =139 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =140 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =141 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =141 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =142 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =143 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I =144:145 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =146 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =147 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =148 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =148 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =149 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =150 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =151 */
@@ -3952,13 +3906,13 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =170 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =171 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =172 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =173 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =173 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =174 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =175 */
 (PID.TID 0000.0001)     2 @  9.071447638299399E+10,             /* I =176:177 */
 (PID.TID 0000.0001)                 9.003884657168852E+10,      /* I =178 */
 (PID.TID 0000.0001)                 8.869393350723613E+10,      /* I =179 */
-(PID.TID 0000.0001)                 8.669186205742539E+10,      /* I =180 */
+(PID.TID 0000.0001)                 8.669186205742538E+10,      /* I =180 */
 (PID.TID 0000.0001)                 8.404959656062837E+10,      /* I =181 */
 (PID.TID 0000.0001)                 8.078743937057304E+10,      /* I =182 */
 (PID.TID 0000.0001)                 7.692702995909871E+10,      /* I =183 */
@@ -4105,7 +4059,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.0957686460821E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.9332046073769E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8541489984760E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.3113053743115E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.3113053743188E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0645754271089E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.0244090284728E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   4.9982606546159E+02
@@ -4132,16 +4086,15 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.9964783303088E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -3.4494639344847E-08
 (PID.TID 0000.0001) %MON vort_p_sd                    =   9.7415692013096E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.2640078556858E-17
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   3.6550270497429E-23
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.2324776333516E-15
-(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   2.0877580492305E+00
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.1910839268235E-17
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.6890352279012E-23
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.1937680405083E-15
+(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   2.0877580492302E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-  Initializing fizhi arrays 
- Current Date     20040101 Current Time       120730
- cg2d: Sum(rhs),rhsMax =   4.00177668780088E-11  3.07911225331134E+03
+ Current Date  20040101 Current Time  120730
+ cg2d: Sum(rhs),rhsMax =  -3.57331941813754E-11  3.07911225331134E+03
 (PID.TID 0000.0001)                    cg2d_init_res =    2.97202252276319E+04
 (PID.TID 0000.0001)                       cg2d_iters =    17
 (PID.TID 0000.0001)                         cg2d_res =    3.03707087090243E-11
@@ -4152,7 +4105,7 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) %MON time_secondsf                =   4.5000000000000E+02
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   3.8595611082057E+02
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -4.0612973115148E+02
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -1.7062023034038E-17
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.8870900548563E+01
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4462521899767E+01
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.8441674707092E+01
@@ -4167,14 +4120,14 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.1021819051985E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.8698333252664E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8433068506908E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -4.4640729640721E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -4.4640729640723E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0704292719386E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.0724016094925E-02
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   4.9981954260420E+02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.6168170049187E+02
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.2592314617266E+02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   5.1710540852768E+01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.1369610426911E-01
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   4.9981954260559E+02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.6168170049149E+02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.2592314617273E+02
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   5.1710540853276E+01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.1369610427149E-01
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   1.0108484052670E-03
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -1.7671526476681E-06
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.3937902498091E-04
@@ -4190,325 +4143,308 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) %MON ke_vol                       =   4.9218928180116E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =  -2.7469415875576E-04
 (PID.TID 0000.0001) %MON vort_r_max                   =   1.9347174525906E-04
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -3.3588711198358E-08
+(PID.TID 0000.0001) %MON vort_a_mean                  =  -3.3588711198367E-08
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.9963473455838E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -3.4494639344932E-08
+(PID.TID 0000.0001) %MON vort_p_mean                  =  -3.4494639344940E-08
 (PID.TID 0000.0001) %MON vort_p_sd                    =   9.7400114136919E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.0793508362058E-02
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.0793508363223E-02
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.3718924646996E-07
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.0759468469861E+01
-(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   9.3962854599137E+00
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.0759468469976E+01
+(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   9.3962854599415E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #  72  OSR          Counter:   1      Parms: SM P    U1      
- Computing Diagnostic #  48  RADSWT       Counter:   1      Parms: SM P    U1      
- Computing Diagnostic #  36  LWGUP        Counter:   1      Parms: SM      L1      
- Computing Diagnostic #   6  RADLWG       Counter:   1      Parms: SM      L1      
- Computing Diagnostic #  39  LWGCLR       Counter:   1      Parms: SM      L1      
- Computing Diagnostic #   7  RADSWG       Counter:   1      Parms: SM P    L1      
- Computing Diagnostic #  20  RADSW        Counter:   1      Parms: SM P    ML      
- Computing Diagnostic #  19  RADLW        Counter:   1      Parms: SM      ML      
- Computing Diagnostic #  90  DIABT        Counter:   1      Parms: SM      ML      
- Current Date     20040101 Current Time       121500
- cg2d: Sum(rhs),rhsMax =   7.27595761418343E-11  6.86559732665617E+03
-(PID.TID 0000.0001)                    cg2d_init_res =    3.91813446468322E+04
+ Current Date  20040101 Current Time  121500
+ cg2d: Sum(rhs),rhsMax =   1.85494286597532E-10  6.86559732665046E+03
+(PID.TID 0000.0001)                    cg2d_init_res =    3.91813446469783E+04
 (PID.TID 0000.0001)                       cg2d_iters =    17
-(PID.TID 0000.0001)                         cg2d_res =    5.11247371851933E-11
+(PID.TID 0000.0001)                         cg2d_res =    5.11247371854886E-11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     2
 (PID.TID 0000.0001) %MON time_secondsf                =   9.0000000000000E+02
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   8.8465590863665E+02
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.8551233123697E+02
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -5.2213712788301E-15
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   1.4468320131162E+02
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   5.1593730033081E+01
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.8440016217535E+01
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   8.8465590863591E+02
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -8.8551233124221E+02
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -1.0380377921743E-15
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   1.4468320131192E+02
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   5.1593730033275E+01
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.8440016217506E+01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -5.9692320948383E+01
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.8817941879645E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.8817941879646E+00
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.1791756418114E+01
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1060697709630E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.4058636135615E+01
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.9279978395289E+01
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.4058636135606E+01
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.9279978395283E+01
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.8404441672885E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.1483859817622E+01
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.1050852105224E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.8634736005270E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8360351482487E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.2002205122907E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0765399233010E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.1006435835853E-02
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   4.9984087955889E+02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.6168589055352E+02
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.2592333720878E+02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   5.1710622518057E+01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.1361978348125E-01
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.1050852105225E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.8634736005276E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8360351482477E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.2002205119469E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0765399233012E-01
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.1006435835858E-02
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   4.9984087956168E+02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.6168589055276E+02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.2592333720892E+02
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   5.1710622519073E+01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.1361978348606E-01
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   1.0191919293997E-03
-(PID.TID 0000.0001) %MON dynstat_salt_min             =  -3.6740357200355E-06
+(PID.TID 0000.0001) %MON dynstat_salt_min             =  -3.6740357200368E-06
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.3938095172955E-04
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9432597445592E-04
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   3.0688669292396E-07
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.5879209259094E-01
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.5761795681223E-01
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.3856312023714E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.7173835416418E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =   9.8135642990762E-02
-(PID.TID 0000.0001) %MON ke_max                       =   2.6540045827886E+03
-(PID.TID 0000.0001) %MON ke_mean                      =   1.3777958313256E+02
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   3.0688669292411E-07
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.5879209259087E-01
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.5761795681224E-01
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.3856312023742E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.7173835416443E-01
+(PID.TID 0000.0001) %MON pe_b_mean                    =   9.8135642991150E-02
+(PID.TID 0000.0001) %MON ke_max                       =   2.6540045827883E+03
+(PID.TID 0000.0001) %MON ke_mean                      =   1.3777958313257E+02
 (PID.TID 0000.0001) %MON ke_vol                       =   4.9218928180114E+19
-(PID.TID 0000.0001) %MON vort_r_min                   =  -2.7577307007933E-04
+(PID.TID 0000.0001) %MON vort_r_min                   =  -2.7577307007947E-04
 (PID.TID 0000.0001) %MON vort_r_max                   =   1.9265317025386E-04
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -3.3588711198385E-08
+(PID.TID 0000.0001) %MON vort_a_mean                  =  -3.3588711198415E-08
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.9954730296280E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -3.4495292166229E-08
-(PID.TID 0000.0001) %MON vort_p_sd                    =   9.7383963904404E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.8084552344510E-02
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.0090372451993E-07
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.5645208027972E+01
-(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   1.2292991252214E+01
+(PID.TID 0000.0001) %MON vort_p_mean                  =  -3.4495292166265E-08
+(PID.TID 0000.0001) %MON vort_p_sd                    =   9.7383963904405E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.8084552353025E-02
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.0090372448179E-07
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.5645208028219E+01
+(PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   1.2292991251764E+01
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #  72  OSR          Counter:   1      Parms: SM P    U1      
- Computing Diagnostic #  48  RADSWT       Counter:   1      Parms: SM P    U1      
- Computing Diagnostic #  36  LWGUP        Counter:   1      Parms: SM      L1      
- Computing Diagnostic #   6  RADLWG       Counter:   1      Parms: SM      L1      
- Computing Diagnostic #  39  LWGCLR       Counter:   1      Parms: SM      L1      
- Computing Diagnostic #   7  RADSWG       Counter:   1      Parms: SM P    L1      
- Computing Diagnostic #  20  RADSW        Counter:   1      Parms: SM P    ML      
- Computing Diagnostic #  19  RADLW        Counter:   1      Parms: SM      ML      
- Computing Diagnostic #  90  DIABT        Counter:   1      Parms: SM      ML      
+  Writing datetime file: NYMD =  20040101 NHMS =  121500
 (PID.TID 0000.0001) %CHECKPOINT         2 ckptA
-(PID.TID 0000.0001)  Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:   11.13000011444092
-(PID.TID 0000.0001)        System time:   4.120000114664435
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:   2.119999885559082
-(PID.TID 0000.0001)        System time:  0.9900000002235174
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "GRIDALT_INITIALISE  [PACKAGES_INIT_F]":
-(PID.TID 0000.0001)          User time:  9.9999904632568359E-003
-(PID.TID 0000.0001)        System time:  9.9999904632568359E-003
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:   8.159999847412109
-(PID.TID 0000.0001)        System time:   1.230000019073486
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:  0.4100000858306885
-(PID.TID 0000.0001)        System time:  0.1899999380111694
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "GRIDALT_UPDATE  [INITIALISE_VARIA]":
-(PID.TID 0000.0001)          User time:  0.0000000000000000E+000
-(PID.TID 0000.0001)        System time:  9.9999904632568359E-003
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "MONITOR             [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:  0.5099999904632568
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:  0.2799999713897705
-(PID.TID 0000.0001)        System time:  0.2000000476837158
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:   6.959999799728394
-(PID.TID 0000.0001)        System time:  0.8400000333786011
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
-(PID.TID 0000.0001)  Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:   6.959999799728394
-(PID.TID 0000.0001)        System time:  0.8400000333786011
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.0000000000000000E+000
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:   1.919999837875366
-(PID.TID 0000.0001)        System time:  0.2200000286102295
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "FIZHI          [DO_ATMOSPHERIC_PHYS]":
-(PID.TID 0000.0001)          User time:   1.919999837875366
-(PID.TID 0000.0001)        System time:  0.2200000286102295
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DO_FIZHI          [FIZHI_WRAPPER]":
-(PID.TID 0000.0001)          User time:   1.220000267028809
-(PID.TID 0000.0001)        System time:  0.1499999761581421
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "PHYS2DYN          [FIZHI_WRAPPER]":
-(PID.TID 0000.0001)          User time:  0.2599992752075195
-(PID.TID 0000.0001)        System time:  1.0000109672546387E-002
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "ATOC              [FIZHI_WRAPPER]":
-(PID.TID 0000.0001)          User time:  6.0000419616699219E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "EXCHANGES         [FIZHI_WRAPPER]":
-(PID.TID 0000.0001)          User time:  3.9999961853027344E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  2.0000457763671875E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.6899995803833008
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "UPDATE_R_STAR      [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  5.9999942779541016E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "UPDATE_CG2D        [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  1.9999980926513672E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.1600003242492676
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.3999996185302734
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.0000000000000000E+000
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "CALC_R_STAR       [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  1.0000228881835938E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  6.0000896453857422E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           4
-(PID.TID 0000.0001)          No. stops:           4
-(PID.TID 0000.0001)  Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.3899998664855957
-(PID.TID 0000.0001)        System time:  9.9999904632568359E-003
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.3099999427795410
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "FIZHI               [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.8499994277954102
-(PID.TID 0000.0001)        System time:  4.9999952316284180E-002
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "PHYS2DYN          [STEP_FIZHI_CORR]":
-(PID.TID 0000.0001)          User time:  0.2599997520446777
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "ATOC              [STEP_FIZHI_CORR]":
-(PID.TID 0000.0001)          User time:  7.0000171661376953E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "CTOA              [STEP_FIZHI_CORR]":
-(PID.TID 0000.0001)          User time:  5.9999942779541016E-002
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DYN2PHYS          [STEP_FIZHI_CORR]":
-(PID.TID 0000.0001)          User time:  0.2799997329711914
-(PID.TID 0000.0001)        System time:  3.9999961853027344E-002
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.1600003242492676
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:   1.019999980926514
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.8699998855590820
-(PID.TID 0000.0001)        System time:  0.5600000619888306
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
-(PID.TID 0000.0001)          User time:  0.0000000000000000E+000
-(PID.TID 0000.0001)        System time:  0.0000000000000000E+000
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           2
-(PID.TID 0000.0001)          No. stops:           2
-(PID.TID 0000.0001)  Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:  0.8500003814697266
-(PID.TID 0000.0001)        System time:   1.900000095367432
-(PID.TID 0000.0001)    Wall clock time:  0.0000000000000000E+000
-(PID.TID 0000.0001)         No. starts:           1
-(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  10.8000004
+(PID.TID 0000.0001)         System time:  2.29999994
+(PID.TID 0000.0001)     Wall clock time:  16.2005701
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  0.710000029
+(PID.TID 0000.0001)         System time:  0.369999995
+(PID.TID 0000.0001)     Wall clock time:  1.85717797
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "GRIDALT_INITIALISE  [PACKAGES_INIT_F]":
+(PID.TID 0000.0001)           User time:  0.0100000054
+(PID.TID 0000.0001)         System time:  0.0300000012
+(PID.TID 0000.0001)     Wall clock time:  0.113099098
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  8.37000012
+(PID.TID 0000.0001)         System time:  1.20000005
+(PID.TID 0000.0001)     Wall clock time:  11.071101
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  0.539999962
+(PID.TID 0000.0001)         System time:  0.189999998
+(PID.TID 0000.0001)     Wall clock time:  0.731260061
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "GRIDALT_UPDATE  [INITIALISE_VARIA]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.0100939274
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "MONITOR             [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  0.419999957
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.469107151
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  0.439999938
+(PID.TID 0000.0001)         System time:  0.189999998
+(PID.TID 0000.0001)     Wall clock time:  0.925603151
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  6.97000027
+(PID.TID 0000.0001)         System time:  0.810000062
+(PID.TID 0000.0001)     Wall clock time:  8.94483495
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  6.97000027
+(PID.TID 0000.0001)         System time:  0.810000062
+(PID.TID 0000.0001)     Wall clock time:  8.94465804
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000113010406
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  1.35000062
+(PID.TID 0000.0001)         System time:  0.0600000024
+(PID.TID 0000.0001)     Wall clock time:  1.45767498
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "FIZHI          [DO_ATMOSPHERIC_PHYS]":
+(PID.TID 0000.0001)           User time:  1.35000062
+(PID.TID 0000.0001)         System time:  0.0600000024
+(PID.TID 0000.0001)     Wall clock time:  1.45744205
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DO_FIZHI          [FIZHI_WRAPPER]":
+(PID.TID 0000.0001)           User time:  0.510000229
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.536420107
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "PHYS2DYN          [FIZHI_WRAPPER]":
+(PID.TID 0000.0001)           User time:  0.259999514
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.254198074
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "ATOC              [FIZHI_WRAPPER]":
+(PID.TID 0000.0001)           User time:  0.0699999332
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.0821349621
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "EXCHANGES         [FIZHI_WRAPPER]":
+(PID.TID 0000.0001)           User time:  0.0600004196
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.062980175
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00978183746
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.819999456
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.868799925
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "UPDATE_R_STAR      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.0600004196
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0521118641
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "UPDATE_CG2D        [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.0199997425
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0189816952
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.240000248
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.248305082
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.519999743
+(PID.TID 0000.0001)         System time:  0.0100000501
+(PID.TID 0000.0001)     Wall clock time:  0.519412994
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000998020172
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "CALC_R_STAR       [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.0200002193
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0191919804
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.0799999237
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0794091225
+(PID.TID 0000.0001)          No. starts: 4
+(PID.TID 0000.0001)           No. stops: 4
+(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.519999743
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.521715879
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.390000343
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.392230988
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "FIZHI               [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.920000076
+(PID.TID 0000.0001)         System time:  0.0199999809
+(PID.TID 0000.0001)     Wall clock time:  0.968284845
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "PHYS2DYN          [STEP_FIZHI_CORR]":
+(PID.TID 0000.0001)           User time:  0.269999981
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.273026943
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "ATOC              [STEP_FIZHI_CORR]":
+(PID.TID 0000.0001)           User time:  0.0799999237
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0809080601
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "CTOA              [STEP_FIZHI_CORR]":
+(PID.TID 0000.0001)           User time:  0.0699996948
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0731010437
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DYN2PHYS          [STEP_FIZHI_CORR]":
+(PID.TID 0000.0001)           User time:  0.299999714
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.312843323
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.179999828
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.215060949
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.920000076
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.963001966
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.920000076
+(PID.TID 0000.0001)         System time:  0.690000057
+(PID.TID 0000.0001)     Wall clock time:  2.57528496
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00012087822
+(PID.TID 0000.0001)          No. starts: 2
+(PID.TID 0000.0001)           No. stops: 2
+(PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  1.72000027
+(PID.TID 0000.0001)         System time:  0.7299999
+(PID.TID 0000.0001)     Wall clock time:  3.27201796
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
@@ -4579,8 +4515,8 @@ INI_P_GROUND: PhiRef/g [m] at Center (integer) and Interface (half-int.) levels:
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           2576
+(PID.TID 0000.0001) //            No. barriers =           2584
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           2576
+(PID.TID 0000.0001) //     Total barrier spins =           2584
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
