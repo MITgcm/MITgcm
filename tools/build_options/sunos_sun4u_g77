@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.1 2004/03/01 18:22:09 edhill Exp $
+#  $Name:  $
+#
+
+
+FC=g77
+#DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+AWK='gawk'
+MAKE='gmake'
+
+# netcdf
+# LIBS="-lnetcdf"
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -malign-double -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0 -malign-double'
+fi
+
+
