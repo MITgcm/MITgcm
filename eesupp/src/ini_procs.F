@@ -168,7 +168,8 @@ C--    Get my location on the grid
        myPy = mpiPy+1
 C--    Get MPI id for neighboring procs.
        mpiGridSpec(1) = mpiPx-1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .LT. 0 ) 
+       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_
+     &   .AND. mpiGridSpec(1) .LT. 0 ) 
      &  mpiGridSpec(1) = nPx-1
        mpiGridSpec(2) = mpiPy
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidW , mpiRC )
@@ -182,7 +183,8 @@ C--    Get MPI id for neighboring procs.
        ENDIF
        pidW = mpiPidW
        mpiGridSpec(1) = mpiPx+1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .GT. nPx-1 )
+       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_
+     &   .AND. mpiGridSpec(1) .GT. nPx-1 )
      &  mpiGridSpec(1) = 0
        mpiGridSpec(2) = mpiPy
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidE , mpiRC )
@@ -197,7 +199,8 @@ C--    Get MPI id for neighboring procs.
        pidE = mpiPidE
        mpiGridSpec(1) = mpiPx
        mpiGridSpec(2) = mpiPy-1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .LT. 0 )
+       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_
+     &   .AND. mpiGridSpec(2) .LT. 0 )
      &  mpiGridSpec(2) = nPy - 1
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidS , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
@@ -211,7 +214,8 @@ C--    Get MPI id for neighboring procs.
        pidS = mpiPidS
        mpiGridSpec(1) = mpiPx
        mpiGridSpec(2) = mpiPy+1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .GT. nPy-1 )
+       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_
+     &   .AND. mpiGridSpec(2) .GT. nPy-1 )
      &  mpiGridSpec(2) = 0
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidN , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
@@ -234,7 +238,8 @@ C--    Print summary of processor mapping on standard output
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
-       WRITE(msgBuffer,'(A)') '======= Starting MPI parallel Run ========='
+       WRITE(msgBuffer,'(A)')
+     &   '======= Starting MPI parallel Run ========='
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_BOTH , myThid)
        WRITE(msgBuffer,'(A,A64)') ' My Processor Name = ', 
@@ -251,16 +256,20 @@ C--    Print summary of processor mapping on standard output
      &  ') on global grid (1:',nPx*sNx*nSx,',1:',nPy*sNy*nSy,')' 
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') ' North neighbor = processor ', mpiPidN
+       WRITE(msgBuffer,'(A,I4.4)')
+     &   ' North neighbor = processor ', mpiPidN
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') ' South neighbor = processor ', mpiPidS
+       WRITE(msgBuffer,'(A,I4.4)')
+     &   ' South neighbor = processor ', mpiPidS
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '  East neighbor = processor ', mpiPidE
+       WRITE(msgBuffer,'(A,I4.4)')
+     &   '  East neighbor = processor ', mpiPidE
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '  West neighbor = processor ', mpiPidW
+       WRITE(msgBuffer,'(A,I4.4)')
+     &   '  West neighbor = processor ', mpiPidW
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
 C
@@ -287,7 +296,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -295,7 +304,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -306,7 +315,7 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -314,7 +323,7 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -331,7 +340,7 @@ C      xFace (y=constant) for XYZ arrays with real*4 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -339,7 +348,7 @@ C      xFace (y=constant) for XYZ arrays with real*4 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT  (mpiTypeXFaceBlock_xyz_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT  (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -353,7 +362,7 @@ C      xFace (y=constant) for XYZ arrays with real*8 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -361,7 +370,7 @@ C      xFace (y=constant) for XYZ arrays with real*8 declaration.
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xyz_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -375,7 +384,7 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -383,7 +392,7 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -393,7 +402,7 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -401,7 +410,7 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -417,7 +426,7 @@ C      yFace (x=constant) for XYZ arrays with real*4 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -425,7 +434,7 @@ C      yFace (x=constant) for XYZ arrays with real*4 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r4)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -438,7 +447,7 @@ C      yFace (x=constant) for XYZ arrays with real*8 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -446,7 +455,7 @@ C      yFace (x=constant) for XYZ arrays with real*8 declaration
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r8)',
+     &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
@@ -472,4 +481,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.8 1999/03/22 17:37:43 adcroft Exp $
+C $Id: ini_procs.F,v 1.9 1999/05/03 21:37:55 adcroft Exp $
