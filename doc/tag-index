@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.233 2004/01/02 23:59:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.234 2004/01/03 01:03:10 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o first attempt to solve vertical advection (momemtum & T,S) Implicitly
+  for now, only implemented with Lax-Wendroff (tracer) and VectInv (mom)
 checkpoint52e_pre
 
 o fix bug in impldiff when Nr=1 or Nr=2.
