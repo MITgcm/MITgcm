@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.13 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.14 2003/10/16 23:46:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,8 @@ CEOP
        kSurface        = 1
       endif
 
+C--   Surface Fluxes :
+
       DO j = jMin, jMax
          DO i = iMin, iMax
 
@@ -69,13 +71,10 @@ c     Net heat flux Qnet:
           surfaceTendencyT(i,j,bi,bj) = 
      &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
-     &      -lambdaThetaClimRelax
-     &         *(theta(i,j,kSurface,bi,bj)-SST(i,j,bi,bj))
-C     Salt Flux (restoring term) : 
-C         surfaceTendencyS(i,j,bi,bj) = 
-C    &      -lambdaSaltClimRelax*(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
-C notes : because truncation is different when this tendency is splitted 
-C   in 2 parts, keep this salt flux with freshwater flux (see below)
+C     Net Salt Flux : 
+          surfaceTendencyS(i,j,bi,bj) = 
+     &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
 
 #ifdef ALLOW_PASSIVE_TRACER
 c ***  define the tracer surface tendency here ***
@@ -83,22 +82,32 @@ c ***  define the tracer surface tendency here ***
 
          ENDDO
       ENDDO
+        
+C--   Surface restoring term :
 
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Surface salinity tendency and freshwater flux EmPmR: 
+      IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+C     Heat Flux (restoring term) : 
+         IF ( abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
+          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
+     &      -lambdaThetaClimRelax
+     &         *(theta(i,j,kSurface,bi,bj)-SST(i,j,bi,bj))
+C     Salt Flux (restoring term) : 
+          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Fresh-water flux 
 
 #ifdef NONLIN_FRSURF
       IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
      &     .AND. useRealFreshWaterFlux ) THEN
-
-c     Salt Flux (restoring term) : 
-       DO j = jMin, jMax
-         DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = 
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
-         ENDDO
-       ENDDO
 
 c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes 
 c   the water column height ; temp., salt, (tracer) flux associated 
@@ -152,24 +161,20 @@ c   and is converted to a salt tendency.
 c- converts EmPmR to salinity tendency using surface local salinity
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) =
+          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &         *convertEmP2rUnit
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
         ENDDO
        ELSE 
 c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = 
+          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
      &         *convertEmP2rUnit
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDIF

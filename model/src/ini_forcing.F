@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.26 2003/10/16 15:47:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.27 2003/10/16 23:46:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,6 +48,7 @@ CEOP
           fv              (i,j,bi,bj) = 0. _d 0
           Qnet            (i,j,bi,bj) = 0. _d 0
           EmPmR           (i,j,bi,bj) = 0. _d 0
+          saltFlux        (i,j,bi,bj) = 0. _d 0
           SST             (i,j,bi,bj) = 0. _d 0
           SSS             (i,j,bi,bj) = 0. _d 0
 #ifdef SHORTWAVE_HEATING          

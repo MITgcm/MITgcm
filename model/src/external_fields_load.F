@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.13 2003/10/16 15:47:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.14 2003/10/16 23:46:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -219,6 +219,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
      &                       +aWght*EmPmR1(i,j,bi,bj)
+          saltFlux(i,j,bi,bj) = 0. _d 0
 #ifdef SHORTWAVE_HEATING
           Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
      &                       +aWght*Qsw1(i,j,bi,bj)
