@@ -229,14 +229,35 @@ makemodel()
 
 linkdata()
 {
-# linkdata flag 
-# symbolically link data files to run directory
- if [ $1 -ne 0 ]; then
-# if [ ! -r $2 ]; then
-#  mkdir $2
-# fi
-  ( cd $2; ln -sf ../input/{eedata,data*,*.bin,POLY3*,pickup*} .)
- fi
+    # linkdata flag
+    #
+    # symbolically link data files to run directory
+    if test "x$1" = x1 ; then
+        (
+            cd $2
+            if test "x$ADM" = x ; then
+                files=`( cd ../input ; ls -1 | grep -v CVS )`
+                for i in $files ; do
+                    if test ! -d "../input/"$i ; then
+                        ln -sf "../input/"$i $i
+                    fi
+                done
+            else
+                files=`( cd ../input ; ls -1 *.bin | grep -v CVS )`
+                for i in $files ; do
+                    if test ! -d "../input/"$i ; then
+                        ln -sf "../input/"$i $i
+                    fi
+                done
+                files=`( cd ../input_ad ; ls -1 | grep -v CVS )`
+                for i in $files ; do
+                    if test ! -d "../input_ad/"$i ; then
+                        ln -sf "../input_ad/"$i $i
+                    fi
+                done
+            fi
+        )
+    fi
 }
 
 runmodel()
@@ -250,9 +271,29 @@ runmodel()
     if [ $quick -eq 0 ]; then
      rm -f output.txt
     fi
+   if [ $debug -gt 0 ]; then
+    echo -n runmodel: pwd= 1>&2
+    pwd 1>&2
+   fi
     printf 'runmodel: ' 1>&2
      make output.txt && return 0
      return 1
+   fi
+ )
+}
+
+copynewresults()
+{
+# copynewresults directory
+#
+#  runs the model "exe" in "directory" (exe is relative to directory)
+
+ ( cd $1
+   if [ $newresults -eq 1 ]; then
+    if [ -r output.txt ]; then
+     cp -f output.txt ../results/
+     return 0
+    fi
    fi
  )
 }
@@ -322,6 +363,7 @@ cat - << EOF
 $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -help      Show this help message
  -quick     Skip "genmake" and "make depend" if the Makefile exists
+ -newresults Copy the output.txt into results/
  -quiet     Reduce the amount of output
  -verbose   Produce copious amounts of output
  -debug     Produce even more output which will mean nothing to most
@@ -370,6 +412,7 @@ done
 debug=0
 verbose=1
 quick=0
+newresults=0
 force=0
 clean=0
 ieee=1
@@ -383,6 +426,7 @@ do
  case $arg in
    -cleanup) clean_up; exit 0;;
    -quick) quick=1;;
+   -newresults) newresults=1;;
    -verbose) verbose=2;;
    -debug) debug=1;;
    -force) force=1;;
@@ -452,8 +496,7 @@ do
   seperatebuilddir=1
   builddir=build
   rundir=build
-  (cd $dir/input; rm -f *.{o,f,c,F} work* output.txt Make* make.log; )
-  (cd $dir/build; ln -sf ../input/* .)
+  (cd $dir/input; rm -f *.{o,f,c,F,h} work* output.txt Make* make.log; )
  else
   seperatebuilddir=0
   builddir=input
@@ -466,6 +509,7 @@ do
  && linkdata $seperatebuilddir $dir/$rundir \
  && runmodel $dir/$builddir mitgcmuv && run=Y \
  && results=`testoutput $dir $rundir` \
+ && copynewresults $dir/$rundir \
  && makecleanupafter $dir/$builddir
  echo
  formatresults $dir ${genmakepass:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
