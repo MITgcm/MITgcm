@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/diags/src/Attic/write_time_averages.F,v 1.13 2001/02/14 22:15:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/diags/src/Attic/write_time_averages.F,v 1.14 2001/02/15 19:01:39 jmc Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE WRITE_TIME_AVERAGES(myTime, myIter, myThid)
 C     /==========================================================\

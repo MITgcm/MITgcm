@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/diags/src/Attic/timeaver_final_xy.F,v 1.8 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/diags/src/Attic/timeaver_final_xy.F,v 1.9 2001/02/15 19:01:39 jmc Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVER_FINAL_XY( fldtave, timeave, bi, bj, myThid )

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/diags/src/Attic/do_time_averages.F,v 1.13 2001/02/14 22:15:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/diags/src/Attic/do_time_averages.F,v 1.14 2001/02/15 19:01:39 jmc Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE DO_TIME_AVERAGES(
      I     myTime, myIter, bi, bj, myThid)
@@ -75,7 +75,7 @@ C     Keep record of how much time has been integrated over
       TimeAve_half(k,bi,bj)=TimeAve_half(k,bi,bj)+DDTT
 
 C     Time Averages of "intermediate" fields
-      IF ( myIter .NE. 0 ) THEN
+      IF ( myIter .NE. nIter0 ) THEN
          CALL TIMEAVER_1FLD_XYZ(wVel,  wVeltave,  deltaTclock, 
      &                          bi, bj, K, myThid)
          TimeAve_full(k,bi,bj)=TimeAve_full(k,bi,bj)+deltaTclock

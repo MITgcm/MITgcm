@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/diags/src/Attic/timeaver_2fld_xyz.F,v 1.5 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/diags/src/Attic/timeaver_2fld_xyz.F,v 1.6 2001/02/15 19:01:39 jmc Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVER_2FLD_XYZ( fld1, fld2, fldtave, dir, deltaT,
