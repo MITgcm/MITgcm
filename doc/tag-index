@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.280 2004/04/19 22:30:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.281 2004/04/19 23:25:15 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o small fixes in the cal-package:
+  - set reference date to first of January for the 'model'-calendar
+  - failing of cal_CheckDate in cal_FullDate now actually results in a
+    warning
 o small modifications in exf-package to increase flexibility:
   - change climtempfreeze from a constant to a runtime parameter that
     is specified in data.exf_clim (default = -1.9)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.5 2004/04/19 23:25:15 mlosch Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -258,7 +258,7 @@ c       Week days.
 c       Assume a model calendar having 12 months with thirty days each.
 c       Reference date is the first day of year 0 at 0am, and model
 c       day 1.
-        refdate(1) = 1
+        refdate(1) = 00000101
         refdate(2) = 0
         refdate(3) = 1
         refdate(4) = 1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.3 2004/03/04 19:34:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.4 2004/04/19 23:25:15 mlosch Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -320,8 +320,8 @@ c     Error in cal_CheckDate
      &    '   cal_CheckDate: Leap year identifier not correct!'
         else if (nerrcode .eq. 7) then
           print*,
-     &    '   cal_CheckDate: Calendar date before predefined reference',
-     &    '               date!'
+     &    '   cal_CheckDate: Calendar date before predefined reference'
+     &    //' date!'
         else if (nerrcode .eq. 8) then
           print*,
      &    '   cal_CheckDate: First component not in yymmdd format!'

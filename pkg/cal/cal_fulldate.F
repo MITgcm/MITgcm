@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_fulldate.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_fulldate.F,v 1.3 2004/04/19 23:25:15 mlosch Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -78,6 +78,12 @@ c       Determine whether we are in a leap year or not.
 c       Determine the day of the week.
         call cal_TimePassed( refdate, date, numberofdays, mythid )
         date(4) = mod(numberofdays(1),7)+1
+      else
+        call cal_PrintError( calerr, mythid )
+cml   if you want the CheckDate error to stop the model uncomment
+cml   the following line, otherwise there is just going to be a
+cml   warning.
+cml        stop ' stopped in cal_FullDate'
       endif
 
       return
