@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.1 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.2 2005/02/23 14:43:18 jmc Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
@@ -12,6 +12,12 @@ CEH3 package-specific options go here
 
 C #define DIAG_DEBUG
 
+C allow to stop & restart at any time (i.e. not at a multiple of 
+C  the diagnostics frequency) reading diagnostics storage arrays 
+C  from pickup file. 
+C Note: Use with cautious since it does not work for all restart 
+C  cases (e.g., changing data.diagnostics).
+#undef  DIAGNOSTICS_HAS_PICKUP
 
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAG_OPTIONS_H */
