@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_MAX.h,v 1.3 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_MAX.h,v 1.4 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: GLOBAL_MAX.h
@@ -6,7 +6,7 @@ C     !INTERFACE:
 C     include "GLOBAL_MAX.h"
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | GLOBAL_MAX.h                                              
+C     | GLOBAL\_MAX.h                                              
 C     | o Globals used by Fortran global max routine.             
 C     *==========================================================*
 C     | The global max shared memory scheme uses global heap data 

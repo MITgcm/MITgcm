@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.5 2003/11/13 14:40:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_INIT                                     |
+C     | SUBROUTINE EXCH\_INIT                                     |
 C     | o Initialise WRAPPER exchange data structures.           |
 C     *==========================================================*
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.6 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.7 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=============================================================================*
-C     | SUBROUTINE GSUM_R8_INIT
+C     | SUBROUTINE GSUM\_R8\_INIT
 C     | o Setup data structures for global sum.
 C     *=============================================================================*
 C     | Fast true shared memory form for global sum operation.
@@ -56,7 +56,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *=============================================================================*
-C     | SUBROUTINE GSUM_R8     
+C     | SUBROUTINE GSUM\_R8     
 C     | o Perform global sum.                           
 C     *=============================================================================*
 C     | Fast true shared memory form for global sum operation.

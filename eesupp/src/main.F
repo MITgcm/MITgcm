@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.12 2003/11/13 14:40:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.13 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -63,8 +63,8 @@ C     | MAIN controls the "execution environment".
 C     | Its main functions are                                   
 C     | 1. call procedure EEBOOT to perform execution environment
 C     |    initialisation.                                       
-C     | 2. call procedure THE_MODEL_MAIN once for each concurrent
-C     |    thread. THE_MODEL_MAIN is the user supplied top-level 
+C     | 2. call procedure THE\_MODEL\_MAIN once for each concurrent
+C     |    thread. THE\_MODEL\_MAIN is the user supplied top-level 
 C     |    routine.                                              
 C     | 3. call procedure EEDIE to perform execution environment 
 C     |    shutdown.                                             

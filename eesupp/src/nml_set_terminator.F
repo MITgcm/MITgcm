@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/nml_set_terminator.F,v 1.2 2004/02/24 20:41:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/nml_set_terminator.F,v 1.3 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,10 +22,10 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=================================================================*
-C     | SUBROUTINE NML_SET_TERMINATOR
+C     | SUBROUTINE NML\_SET\_TERMINATOR
 C     | o Set namelist terminator character
 C     *=================================================================*
-C     | Change trailing & to trailing / when needed
+C     | Change trailing \& to trailing / when needed
 C     *=================================================================*
 
 C     !USES:

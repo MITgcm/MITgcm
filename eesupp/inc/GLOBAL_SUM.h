@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.3 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.4 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: GLOBAL_SUM.h
@@ -6,7 +6,7 @@ C     !INTERFACE:
 C     include "GLOBAL_SUM.h"
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | GLOBAL_SUM.h                                             |
+C     | GLOBAL\_SUM.h                                             |
 C     | o Globals used by Fortran global sum routine.            |
 C     *==========================================================*
 C     | The global sum shared memory scheme uses global heap data|

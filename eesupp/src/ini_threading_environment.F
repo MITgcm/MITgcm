@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.8 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.9 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE INI_THREADING_ENVIRONMENT                      
+C     | SUBROUTINE INI\_THREADING\_ENVIRONMENT                      
 C     | o Initialise multi-threaded environment.                  
 C     *==========================================================*
 C     | Generally we do not start separate threads here.          

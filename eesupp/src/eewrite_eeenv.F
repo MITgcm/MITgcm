@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.8 2003/12/15 02:02:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.9 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EERWITE_EEENV                                  
+C     | SUBROUTINE EERWITE\_EEENV                                  
 C     | o Write execution environment summary                     
 C     *==========================================================*
 C     | Write a summary of the execution environment as           

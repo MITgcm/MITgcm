@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/MAIN_PDIRECTIVES2.h,v 1.5 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/MAIN_PDIRECTIVES2.h,v 1.6 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: MAIN_PDIRECTIVES2.h
@@ -6,12 +6,12 @@ C     !INTERFACE:
 C     include "MAIN_PDIRECTIVES2.h"
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | MAIN_PDIRECTIVES2.h                                       
+C     | MAIN\_PDIRECTIVES2.h                                       
 C     *==========================================================*
 C     | Parallel directives to generate multithreaded code for    
 C     | various different compilers. The master preprocessor      
-C     | file CPP_OPTIONS is used to select which of these options 
-C     | is included in the code.                                  
+C     | file CPP\_OPTIONS is used to select which of these 
+C     | options is included in the code.           
 C     | Note: Only some of the directives require end blocks.     
 C     |      For directives which do not require end blocks there 
 C     |      is no entry here.                                    

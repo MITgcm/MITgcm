@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/BAR2.h,v 1.3 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/BAR2.h,v 1.4 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -23,7 +23,7 @@ C     | support barrier compile directives - sometimes these
 C     | are good, sometimes they are lousy.                       
 C     |  The barrier mechanism is used as follows                 
 C     |  1. In the single-threaded part of the code               
-C     |     CALL BAR2_INIT                                        
+C     |     CALL BAR2\_INIT                                        
 C     |     on CRAY, NEC this routine does nothing                
 C     |     on T3E there is no single-threaded code               
 C     |        but there may be barrier initialisation -          
@@ -31,7 +31,7 @@ C     |        need to check.
 C     |  2. When we need to synchronize everybody just            
 C     |     CALL BAR2( myThid )                                   
 C     |     where myThid is myThreadId                            
-C     |     on CRAY, NEC FBAR will just do C$DIR BARRIER          
+C     |     on CRAY, NEC FBAR will just do C\$DIR BARRIER          
 C     |     or CALL BARRIER or the like.                          
 C     |     on T3E FBAR does CALL BARRIER(...) or something       
 C     |     need to check this.                                   

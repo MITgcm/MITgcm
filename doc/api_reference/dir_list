@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.2 2004/03/26 23:46:11 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.3 2004/03/27 03:51:50 edhill Exp $
 #
 #
 #  The following is a list of directories to search in for *.[chF] files 
@@ -18,7 +18,8 @@
 #  consistent directory structure for source and header files.
 
 
-#  eesupp/src eesupp/inc
+eesupp/src eesupp/inc
+
 #  model/src model/inc
 #  diags/src diags/inc
 #  lsopt
@@ -43,8 +44,8 @@
 #  pkg/fizhi
 #  pkg/flt
 #  pkg/gchem
-#  pkg/generic_advdiff
 
+pkg/generic_advdiff
 pkg/gmredi
 
 #  pkg/grdchk

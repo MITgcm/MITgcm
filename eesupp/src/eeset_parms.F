@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.16 2004/02/24 16:54:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.17 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EESET_PARMS                                    
+C     | SUBROUTINE EESET\_PARMS                                    
 C     | o Routine to set model "parameters"                       
 C     *==========================================================*
 C     | This routine is called from the high-level wrapper        

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.5 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -15,7 +15,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=================================================================================*
-C     | SUBROUTINE INI_JAM
+C     | SUBROUTINE INI\_JAM
 C     | o Initialise JAM based communication
 C     *=================================================================================*
 C     | Connect to synchronising daemon process that allocates jam network ids to

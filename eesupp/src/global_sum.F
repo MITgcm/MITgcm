@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.11 2003/12/15 02:02:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.12 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 C--   File global_sum.F: Routines that perform global sum on an array
@@ -18,7 +18,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL_SUM_R4                                  
+C     | SUBROUTINE GLOBAL\_SUM\_R4                                  
 C     | o Handle sum for real*4 data.                             
 C     *==========================================================*
 C     | Perform sum an array of one value per thread and then     
@@ -106,7 +106,7 @@ C     !INTERFACE:
       IMPLICIT NONE 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL_SUM_R8                                  
+C     | SUBROUTINE GLOBAL\_SUM\_R8                                
 C     | o Handle sum for real*8 data.                             
 C     *==========================================================*
 C     | Perform sum an array of one value per thread and then     
@@ -202,7 +202,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL_SUM_INT                                 
+C     | SUBROUTINE GLOBAL\_SUM\_INT                                 
 C     | o Handle sum for integer data.                            
 C     *==========================================================*
 C     | Perform sum an array of one value per thread and then     

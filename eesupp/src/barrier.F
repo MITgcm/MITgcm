@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.10 2003/05/13 17:23:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.11 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=====================================================================*
-C     | SUBROUTINE BARRIER_INIT
+C     | SUBROUTINE BARRIER\_INIT
 C     | o Setup global barrier data structures.
 C     *=====================================================================*
 C     | Initialise global barrier data structures that can be used in
@@ -65,7 +65,7 @@ C     | =====
 C     | The door and key variables are assumed to have been       
 C     | initialized once an initial state of key = INVALID        
 C     | and door = SHUT.                                          
-C     | We use the routine FOOL_THE_COMPILER to stop compilers    
+C     | We use the routine FOOL\_THE\_COMPILER to stop compilers    
 C     | generating code which might simply set and test a         
 C     | register value. Shared-memory systems only maintain       
 C     | coherency over process caches and not registers.          

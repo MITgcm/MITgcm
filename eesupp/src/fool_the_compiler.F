@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fool_the_compiler.F,v 1.7 2002/10/10 20:07:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fool_the_compiler.F,v 1.8 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C      !INTERFACE:
        IMPLICIT NONE
 C      !DESCRIPTION:
 C      *=================================================================*
-C      | SUBROUTINE FOOL_THE_COMPILER                                    |
+C      | SUBROUTINE FOOL\_THE\_COMPILER                                  |
 C      | o Dummy routine used to supress compiler behavior.              |
 C      *=================================================================*
 C      | Routine is used to stop compiler optimizations in which global  |

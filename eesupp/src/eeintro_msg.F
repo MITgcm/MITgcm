@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.7 2001/09/27 18:13:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.8 2004/03/27 03:51:51 edhill Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================
-C     | SUBROUTINE EEINTRO_MSG                                   
+C     | SUBROUTINE EEINTRO\_MSG                                   
 C     | o Write basic WRAPPER introductory message.                      
 C     *==========================================================
 C     | This routine could be customised for different platforms.

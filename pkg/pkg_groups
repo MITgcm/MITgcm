@@ -1,5 +1,5 @@
 #
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.4 2004/03/25 15:20:29 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.5 2004/03/27 03:51:51 edhill Exp $
 #
 #  This is the package "groups" definition file where groups of packages
 #  are defined so they can be conveniently substituted.
@@ -9,7 +9,7 @@
 # JMC says that aim, aim_v23, land should be off by default
 # bulk_forcing
 
-gfd : mom_fluxform mom_vecinv generic_advdiff debug mdsio rw mnc monitor
+gfd : mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor
 
 oceanic : gfd gmredi kpp
 

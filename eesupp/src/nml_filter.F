@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.5 2004/02/24 16:54:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,7 +19,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=================================================================*
-C     | SUBROUTINE NML_FILTER
+C     | SUBROUTINE NML\_FILTER
 C     | o Remove comments from namelist.
 C     *=================================================================*
 C     |
@@ -28,8 +28,8 @@ C     |
 C     |        - remove comments from namelist file
 c     |        - usage
 C     |
-C     |    CALL NML_FILTER( 'datafile', iUnit, myThid )
-C     |    READ  ( UNIT = iunit, NML = the_namelist )
+C     |    CALL NML\_FILTER( 'datafile', iUnit, myThid )
+C     |    READ  ( UNIT = iunit, NML = the\_namelist )
 C     |    CLOSE ( iUnit )
 C     |
 C     *=================================================================*

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.17 2003/12/22 15:05:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.18 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE INI_PROCS                                      
+C     | SUBROUTINE INI\_PROCS                                      
 C     | o Initialise multiple concurrent processes environment.   
 C     *==========================================================*
 C     | Under MPI this routine calls various MPI service routines 
@@ -550,4 +550,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.17 2003/12/22 15:05:16 adcroft Exp $
+C $Id: ini_procs.F,v 1.18 2004/03/27 03:51:51 edhill Exp $

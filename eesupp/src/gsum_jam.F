@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.4 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.5 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -14,7 +14,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=========================================================================*
-C     | SUBROUTINE GLOBAL_SUM_R8_JAM
+C     | SUBROUTINE GLOBAL\_SUM\_R8\_JAM
 C     | o JAM binding of global sum routine
 C     *=========================================================================*
 C     | Does a super fast global sum over the JAM library. With JAM

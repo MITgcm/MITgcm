@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.14 2003/11/13 14:40:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.15 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -160,7 +160,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | FUNCTION IO_ERRCOUNT                                     |
+C     | FUNCTION IO\_ERRCOUNT                                     |
 C     | o Reads IO error counter.                                |
 C     *==========================================================*
 

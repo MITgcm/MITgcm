@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.10 2003/12/15 02:02:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.11 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 C--   File global_max.F: Routines that perform global max reduction on an array
@@ -19,7 +19,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL_MAX_R4                                  
+C     | SUBROUTINE GLOBAL\_MAX\_R4                                  
 C     | o Handle max for real*4 data.                             
 C     *==========================================================*
 C     | Perform max on array of one value per thread and then     
@@ -105,7 +105,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL_MAX_R8                                  
+C     | SUBROUTINE GLOBAL\_MAX\_R8                                  
 C     | o Handle max for real*8 data.                             
 C     *==========================================================*
 C     | Perform max on array of one value per thread and then     

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.5 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.6 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================
-C     | SUBROUTINE COMM_STATS                                    
+C     | SUBROUTINE COMM\_STATS                                    
 C     | o Print out statistics from communication routines.      
 C     *==========================================================
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.12 2004/01/27 15:59:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.13 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,15 +12,15 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EEBOOT_MINIMAL                                 
+C     | SUBROUTINE EEBOOT\_MINIMAL                                 
 C     | o Set an initial environment that is predictable i.e.     
 C     | behaves in a similar way on all machines and stable.      
 C     *==========================================================*
-C     | Under MPI this routine calls MPI_INIT to setup the        
+C     | Under MPI this routine calls MPI\_INIT to setup the        
 C     | mpi environment ( on some systems the code is running as  
-C     | a single process prior to MPI_INIT, on others the mpirun  
+C     | a single process prior to MPI\_INIT, on others the mpirun  
 C     | script has already created multiple processes). Until     
-C     | MPI_Init is called it is unclear what state the           
+C     | MPI\_Init is called it is unclear what state the           
 C     | application is in. Once this routine has been run it is   
 C     | "safe" to do things like I/O to report erros and to get   
 C     | run parameters.                                           

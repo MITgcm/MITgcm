@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.22 2004/02/23 20:04:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.23 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -29,15 +29,15 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *============================================================*
-C     | SUBROUTINE PRINT_ERROR                                      
+C     | SUBROUTINE PRINT\_ERROR                                      
 C     | o Write out error message using "standard" format.          
 C     *============================================================*
 C     | Notes                                                       
 C     | =====                                                       
 C     | o Some system   I/O is not "thread-safe". For this reason   
-C     |   without the FMTFTN_IO_THREAD_SAFE directive set a         
+C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a         
 C     |   critical region is defined around the write here. In some 
-C     |   cases  BEGIN_CRIT() is approximated by only doing writes  
+C     |   cases  BEGIN\_CRIT() is approximated by only doing writes  
 C     |   for thread number 1 - writes for other threads are        
 C     |   ignored!                                                  
 C     | o In a non-parallel form these routines are still used   
@@ -142,11 +142,11 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT_LIST_I                                 
+C     | o SUBROUTINE PRINT\_LIST\_I                                 
 C     *==========================================================*
 C     | Routine for producing list of values for a field with     
 C     | duplicate values collected into                           
-C     |    n @ value                                              
+C     |    n \@ value                                              
 C     | record.                                                   
 C     *==========================================================*
 
@@ -263,11 +263,11 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT_LIST_L                                 
+C     | o SUBROUTINE PRINT\_LIST\_L                                 
 C     *==========================================================*
 C     | Routine for producing list of values for a field with     
 C     | duplicate values collected into                           
-C     |    n @ value                                              
+C     |    n \@ value                                              
 C     | record.                                                   
 C     *==========================================================*
 
@@ -383,11 +383,11 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT_LIST_R8                                
+C     | o SUBROUTINE PRINT\_LIST\_R8                                
 C     *==========================================================*
 C     | Routine for producing list of values for a field with     
 C     | duplicate values collected into                           
-C     |    n @ value                                              
+C     |    n \@ value                                              
 C     | record.                                                   
 C     *==========================================================*
 
@@ -510,21 +510,21 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE PRINT_MAPR4                                    
+C     | SUBROUTINE PRINT\_MAPR4                                    
 C     | o Does textual mapping printing of a field.               
 C     *==========================================================*
 C     | This routine does the actual formatting of the data       
 C     | and printing to a file. It assumes an array using the     
 C     | MITgcm UV indexing scheme and base index variables.       
 C     | User code should call an interface routine like           
-C     | PLOT_FIELD_XYR4( ... ) rather than this code directly.    
+C     | PLOT\_FIELD\_XYR4( ... ) rather than this code directly.    
 C     | Text plots can be oriented XY, YZ, XZ. An orientation     
 C     | is specficied through the "plotMode" argument. All the    
 C     | plots made by a single call to this routine will use the  
 C     | same contour interval. The plot range (iMin,...,byStr)    
 C     | can be three-dimensional. A separate plot is made for     
 C     | each point in the plot range normal to the orientation.   
-C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY).  
+C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).  
 C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
 C     |      plots - one for K=1, one for K=3 and one for K=5.    
 C     |      Each plot would have extents iMin:iMax step iStr     
@@ -934,21 +934,21 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE PRINT_MAPRL                                    
+C     | SUBROUTINE PRINT\_MAPRL                                    
 C     | o Does textual mapping printing of a field.               
 C     *==========================================================*
 C     | This routine does the actual formatting of the data       
 C     | and printing to a file. It assumes an array using the     
 C     | MITgcm UV indexing scheme and base index variables.       
 C     | User code should call an interface routine like           
-C     | PLOT_FIELD_XYR8( ... ) rather than this code directly.    
+C     | PLOT\_FIELD\_XYR8( ... ) rather than this code directly.    
 C     | Text plots can be oriented XY, YZ, XZ. An orientation     
 C     | is specficied through the "plotMode" argument. All the    
 C     | plots made by a single call to this routine will use the  
 C     | same contour interval. The plot range (iMin,...,byStr)    
 C     | can be three-dimensional. A separate plot is made for     
 C     | each point in the plot range normal to the orientation.   
-C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY).  
+C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).  
 C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
 C     |      plots - one for K=1, one for K=3 and one for K=5.    
 C     |      Each plot would have extents iMin:iMax step iStr     
@@ -1349,15 +1349,15 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *============================================================*
-C     | SUBROUTINE PRINT_MESSAGE                                    
+C     | SUBROUTINE PRINT\_MESSAGE                                    
 C     | o Write out informational message using "standard" format.  
 C     *============================================================*
 C     | Notes                                                       
 C     | =====                                                       
 C     | o Some system   I/O is not "thread-safe". For this reason   
-C     |   without the FMTFTN_IO_THREAD_SAFE directive set a         
+C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a         
 C     |   critical region is defined around the write here. In some 
-C     |   cases  BEGIN_CRIT() is approximated by only doing writes  
+C     |   cases  BEGIN\_CRIT() is approximated by only doing writes  
 C     |   for thread number 1 - writes for other threads are        
 C     |   ignored!                                                  
 C     | o In a non-parallel form these routines can still be used.  

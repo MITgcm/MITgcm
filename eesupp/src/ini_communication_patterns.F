@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.6 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.7 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE INI_COMMUNICATION_PATTERNS                     
+C     | SUBROUTINE INI\_COMMUNICATION\_PATTERNS                     
 C     | o Initialise between tile communication data structures.  
 C     *==========================================================*
 C     | This routine assigns identifiers to each tile and then    

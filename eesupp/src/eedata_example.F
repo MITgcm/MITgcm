@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedata_example.F,v 1.4 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedata_example.F,v 1.5 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EEDATA_EXAMPLE
 C     /==========================================================\
-C     | S/R EEDATA_EXAMPLE                                       |
+C     | S/R EEDATA\_EXAMPLE                                       |
 C     | o Write example eedata file                              |
 C     |==========================================================|
 C     | Notes                                                    |

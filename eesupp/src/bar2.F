@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.4 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.5 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *=====================================================================*
-C     | SUBROUTINE BAR2_INIT
+C     | SUBROUTINE BAR2\_INIT
 C     | o Setup global barrier data structures.
 C     *=====================================================================*
 C     | Initialise global barrier data structures that can be used in

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.5 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -19,7 +19,7 @@ C     | This routine is called wherever the code requires
 C     | that writes performed by one thread or process must       
 C     | be guaranteed visible to other processes and or threads.  
 C     |  On SPARC this routine would implement a                  
-C     |  asm("membar #LoadStore|#StoreStore");                    
+C     |  asm("membar \#LoadStore|\#StoreStore");                    
 C     |  On ALPHA                                                 
 C     |  asm("mb");                                               
 C     |  Note: I have yet to show this is necessary although      

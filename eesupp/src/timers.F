@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.15 2003/11/14 19:01:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.16 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -27,7 +27,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | FUNCTION TIMER_INDEX                                      
+C     | FUNCTION TIMER\_INDEX                                      
 C     | o Timing support routine.                                 
 C     *==========================================================*
 C     | Return index in timer data structure of timer named       
@@ -74,7 +74,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE TIMER_CONTROL                                 |
+C     | SUBROUTINE TIMER\_CONTROL                                 |
 C     | o Timing routine.                                        |
 C     *==========================================================*
 C     | User callable interface to timing routines. Timers are   |
@@ -449,7 +449,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE TIMER_GET_TIME                                 
+C     | SUBROUTINE TIMER\_GET\_TIME                                 
 C     | o Query system timer routines.                            
 C     *==========================================================*
 C     | Routine returns total elapsed time for program so far.    
@@ -527,7 +527,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE TIMER_PRINTALL                                 
+C     | SUBROUTINE TIMER\_PRINTALL                                 
 C     | o Print timer information                                 
 C     *==========================================================*
 C     | Request print out of table of timing from all timers.     

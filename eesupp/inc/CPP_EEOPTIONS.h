@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.21 2004/03/08 21:20:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.22 2004/03/27 03:51:50 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -8,7 +8,7 @@ C     include "CPP_EEOPTIONS.h"
 C
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | CPP_EEOPTIONS.h                                          |
+C     | CPP\_EEOPTIONS.h                                         |
 C     *==========================================================*
 C     | C preprocessor "execution environment" supporting        |
 C     | flags. Use this file to set flags controlling the        |

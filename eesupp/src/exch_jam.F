@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_jam.F,v 1.5 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_jam.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -18,7 +18,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_O1_R8_JAM
+C     | SUBROUTINE EXCH\_XY\_O1\_R8\_JAM
 C     | o Specialiased OL=1, JAM binding exchage routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -207,7 +207,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_R8_JAM
+C     | SUBROUTINE EXCH\_XY\_R8\_JAM
 C     | o Specialiased JAM binding exchange routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -422,7 +422,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XYZ_R8_JAM
+C     | SUBROUTINE EXCH\_XYZ\_R8\_JAM
 C     | o Specialiased JAM binding exchange routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -647,7 +647,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_O1_R4_JAM
+C     | SUBROUTINE EXCH\_XY\_O1\_R4\_JAM
 C     | o Specialiased JAM binding exchange routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -831,7 +831,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_R4_JAM
+C     | SUBROUTINE EXCH\_XY\_R4\_JAM
 C     | o Specialiased JAM binding exchange routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -1044,7 +1044,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XYZ_R4_JAM
+C     | SUBROUTINE EXCH\_XYZ\_R4\_JAM
 C     | o Specialiased JAM binding exchange routine
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -1273,7 +1273,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_O1_R8_JAM
+C     | SUBROUTINE EXCH\_XY\_O1\_R8\_JAM
 C     | o Specialiased JAM binding exchange routine for dual-proc SMP node.
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -1401,7 +1401,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XY_R8_JAM
+C     | SUBROUTINE EXCH\_XY\_R8\_JAM
 C     | o Specialiased JAM binding exchange routine for dual-proc SMP node.
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.
@@ -1552,7 +1552,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *======================================================================*
-C     | SUBROUTINE EXCH_XYZ_R8_JAM
+C     | SUBROUTINE EXCH\_XYZ\_R8\_JAM
 C     | o Specialiased JAM binding exchange routine for dual-proc SMP node.
 C     *======================================================================*
 C     | Routine for high-speed communication directly over JAM library.

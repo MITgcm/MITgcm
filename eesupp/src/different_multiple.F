@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/eesupp/src/different_multiple.F,v 1.5 2001/09/21 03:54:34 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/eesupp/src/different_multiple.F,v 1.6 2004/03/27 03:51:51 edhill Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | LOGICAL FUNCTION DIFFERENT_MULTIPLE                       
+C     | LOGICAL FUNCTION DIFFERENT\_MULTIPLE                       
 C     | o Checks two numbers multiple of a third number.          
 C     *==========================================================*
 C     | This routine is used for diagnostic and other periodic    
