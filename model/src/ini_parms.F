@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.50 2000/04/11 13:51:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.51 2000/06/21 19:06:36 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -22,9 +22,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CG2D.h"
-#ifdef ALLOW_KPP
-#include "KPPMIX.h"
-#endif
 
 C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
@@ -86,11 +83,10 @@ C
 C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta,
-     &   viscAh,  viscAz,  viscA4, cosPower,
-     &  diffKhT, diffKzT, diffK4T, 
-     &  diffKhS, diffKzS, diffK4S,
-     &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
-     &  tRef, sRef, eosType,
+     & viscAh,  viscAz,  viscA4, cosPower,
+     & diffKhT, diffKzT, diffK4T, 
+     & diffKhS, diffKzS, diffK4S,
+     & tRef, sRef, eosType,
      & no_slip_sides,no_slip_bottom,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing, metricTerms,
@@ -137,23 +133,6 @@ C--   Input files
 C--   Open Boundaries
       NAMELIST /PARM06/
      & OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest
-
-#ifdef ALLOW_KPP
-C--   KPP vertical mixing parameters
-      NAMELIST /PARM07/
-     & usingKPPmixing, KPPmixingMaps, KPPwriteState,
-     & minKPPviscAz, maxKPPviscAz, minKPPghat, maxKPPghat,
-     & minKPPdiffKzT, maxKPPdiffKzT, minKPPdiffKzS, maxKPPdiffKzS,
-     & epsln, epsilon, vonk, conc1, conam, concm, conc2, zetam,
-     & conas, concs, conc3, zetas,
-     & Ricr, cekman, cmonob, concv, hbf, Vtc,
-     & zmin, zmax, umin, umax,
-     & num_v_smooth_Ri, num_v_smooth_BV,
-     & num_z_smooth_sh, num_m_smooth_sh,
-     & Riinfty, BVSQcon, difm0, difs0, dift0,
-     & difmiw, difsiw, diftiw, difmcon, difscon, diftcon,
-     & cstar, cg
-#endif
 
 C
       _BEGIN_MASTER(myThid)
@@ -752,9 +731,6 @@ C--   Input files
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN    
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A)')
@@ -808,106 +784,6 @@ C-- OBCS
        write(0,*) 'OB Ie =',OB_Ieast
        write(0,*) 'OB Iw =',OB_Iwest
       ENDIF
-
-#ifdef ALLOW_KPP
-C--   KPP vertical mixing parameters
-      usingKPPmixing      = .FALSE.
-      KPPmixingMaps       = .FALSE.
-      KPPwriteState       = .FALSE.
-      minKPPghat    = 0.
-      maxKPPghat    = 1.e10
-      minKPPviscAz  = 0.
-      DO K =1,Nr
-       maxKPPviscAz(K) = 100.
-      ENDDO
-      minKPPdiffKzT = 0.
-      maxKPPdiffKzT = 100.
-      minKPPdiffKzS = 0.
-      maxKPPdiffKzS = 100.
-
-c-----------------------------------------------------------------------
-c define some non-dimensional constants and
-c the vertical mixing coefficients in m-k-s units
-c-----------------------------------------------------------------------
-
-      epsln   = 1.e-20      !
-      epsilon = 0.1         ! nondimensional extent of surface layer
-      vonk    = 0.40        ! von Karmans constant
-      conc1   = 5.0         ! scalar coefficients
-      conam   = 1.257       ! .
-      concm   = 8.380       ! .
-      conc2   = 16.0        ! .
-      zetam   = -0.2        ! .
-      conas   = -28.86      ! .
-      concs   = 98.96       ! .
-      conc3   = 16.0        ! .
-      zetas   = -1.0        ! .
-
-c     parameters for subroutine "bldepth"
-
-      Ricr    = 0.30        ! critical bulk Richardson Number
-      cekman  = 0.7         ! coefficient for ekman depth
-      cmonob  = 1.0         ! coefficient for Monin-Obukhov depth
-      concv   = 1.8         ! ratio of interior buoyancy frequency to
-                            ! buoyancy frequency at entrainment depth
-      hbf     = 1.0         ! fraction of bounadry layer depth to
-                            ! which absorbed solar radiation
-                            ! contributes to surface buoyancy forcing
-      Vtc     = concv * sqrt(0.2/concs/epsilon) / vonk**2 / Ricr
-                            ! non-dimensional coefficient for velocity
-                            ! scale of turbulant velocity shear
-
-c     parameters and common arrays for subroutines "kmixinit" and "wscale"
-
-      zmin    = -4.e-7      ! minimum limit for zehat in table (m3/s3)
-      zmax    = 0.0         ! maximum limit for zehat in table (m3/s3)
-      umin    = 0.0         ! minimum limit for ustar in table (m/s)
-      umax    = .04         ! maximum limit for ustar in table (m/s)
-
-c     parameters for subroutine "Ri_iwmix"
-
-      num_v_smooth_Ri = 1   ! number of times Ri is vertically smoothed
-      num_v_smooth_BV = 1   ! number of times BV is vertically smoothed
-      num_z_smooth_sh = 0   ! number of times shear is zonally smoothed
-      num_m_smooth_sh = 0   ! number of times shear is meridionally smoothed
-      Riinfty = 0.7         ! local Richardson Number limit for shear instability
-      BVSQcon = -0.2e-4     ! Brunt-Vaisala squared                   (1/s^2)
-      difm0   = 0.005       ! max visc due to shear instability       (m^2/s)
-      difs0   = 0.005       ! max tracer diffusivity ..               (m^2/s)
-      dift0   = 0.005       ! max heat diffusivity ..                 (m^2/s)
-      difmiw  = 0.001       ! viscosity from background internal wave (m^2/s)
-      difsiw  = 0.00003     ! tracer diffusivity ..                   (m^2/s)
-      diftiw  = 0.00003     ! heat diffusivity ..                     (m^2/s)
-      difmcon = 0.1         ! viscosity due to convective instability (m^2/s)
-      difscon = 0.1         ! tracer diffusivity ..                   (m^2/s)
-      diftcon = 0.1         ! heat diffusivity ..                     (m^2/s)
-
-c     parameters for subroutine "blmix"
-
-      cstar   = 10.       ! proportionality coefficient for nonlocal transport
-
-                          ! non-dimensional coefficient for counter-gradient term
-      cg      = cstar * vonk * (concs * vonk * epsilon)**(1./3.)
-
-      READ(UNIT=iUnit,NML=PARM07,IOSTAT=errIO,err=13)
-      IF ( errIO .GE. 0 ) GOTO 14
-   13 CONTINUE
-       WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist PARM07'
-       CALL PRINT_ERROR( msgBuf , 1)
-       CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R INI_PARMS'
-   14 CONTINUE
-#endif
 
 C
       CLOSE(iUnit)
