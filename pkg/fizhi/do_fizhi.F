@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.10 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.11 2004/06/16 20:23:55 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   tgz,sst,sice,phis_var,landtype,fracland,emiss,albnidr,albnirdf,
+     .   tgz,sice,phis_var,landtype,fracland,emiss,albnidr,albnirdf,
      .   albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
      .   tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      .   o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
@@ -37,7 +37,6 @@ C Argument list declarations
       _RL xlmt(nchp,Nrphys,Nsx,Nsy),khmt(nchp,Nrphys,Nsx,Nsy)
       _RL tke(nchp,Nrphys,Nsx,Nsy)
       _RL tgz(im2,jm2)
-      _RL sst(idim1:idim2,jdim1:jdim2,Nsx,Nsy)
       _RL sice(idim1:idim2,jdim1:jdim2,Nsx,Nsy)
       _RL phis_var(im2,jm2,Nsx,Nsy),landtype(im2,jm2,Nsx,Nsy)
       _RL fracland(im2,jm2,Nsx,Nsy),emiss(im2,jm2,10,Nsx,Nsy)
@@ -90,6 +89,36 @@ c
       real gwet(im2,jm2),snow(im2,jm2)
 
       integer i,j,L
+      real getcon, kappa, p0kappa
+
+C***********************************************************************
+C Unshadow input arrays (and make 'fizhi theta' from true theta)
+C***********************************************************************
+
+      kappa = getcon('KAPPA')
+      p0kappa = 1000.0 ** kappa
+      
+      do L = 1,Nrphys
+      do j = jm1,jm2
+      do i = im1,im2
+       u(i,j,L) = uphys(i,j,L,bi,bj)
+       v(i,j,L) = vphys(i,j,L,bi,bj)
+       t(i,j,L) = thphys(i,j,L,bi,bj)
+       q(i,j,L,1) = sphys(i,j,L,bi,bj)
+      enddo
+      enddo
+      enddo
+      do j = jm1,jm2
+      do i = im1,im2
+       p(i,j) = pephys(i,j,Nrphys+1,bi,bj)
+       xlats(i,j) = lats(i,j,bi,bj)
+       xlons(i,j) = lons(i,j,bi,bj)
+       sea_ice(i,j) = sice(i,j,bi,bj)
+      enddo
+      enddo
+
+      ptracer = 1
+      ntracer = 1
 
       call fizhi_driver(myid,im2,jm2,Nrphys,ptracer,ntracer,xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
