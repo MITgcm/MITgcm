@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.5 2001/03/06 17:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.6 2001/03/08 20:32:35 jmc Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,8 +34,8 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 C     == Local variables
-      _RL etaSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL etaSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax
       INTEGER jMin,jMax
       INTEGER bi,bj
@@ -47,8 +47,8 @@ C     == Local variables
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          etaSurfX(i,j)=0.
-          etaSurfY(i,j)=0.
+          phiSurfX(i,j)=0.
+          phiSurfY(i,j)=0.
          ENDDO
         ENDDO
 
@@ -71,11 +71,11 @@ C       range is all but first row and column in overlaps.
         jMin = 1-OLy+1
         jMax = sNy+OLy
 
-C-      Calculate gradient of surface pressure
-        CALL CALC_GRAD_ETA_SURF(
+C-      Calculate gradient of surface Potentiel
+        CALL CALC_GRAD_PHI_SURF(
      I       bi,bj,iMin,iMax,jMin,jMax,
      I       etaN,
-     O       etaSurfX,etaSurfY,
+     O       phiSurfX,phiSurfY,
      I       myThid )
 
 C--     Loop over all layers, top to bottom
@@ -85,7 +85,7 @@ C-        Update velocity fields:  V(n) = V** - dt * grad Eta
           IF (momStepping)
      &      CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,K,
-     I         etaSurfX,etaSurfY,myTime,myThid )
+     I         phiSurfX,phiSurfY,myTime,myThid )
 
 C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
           IF (tempStepping)
