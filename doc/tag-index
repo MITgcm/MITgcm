@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.381 2004/11/04 20:19:17 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.382 2004/11/10 03:10:00 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o isolate dissipation tendency (allow to keep it out off AB) in V.I form.
+  affects (truncation level) output.txt of global_ocean.cs32x15(&.thsice)
 o add consistent build directories and .cvsignore files to verification
 o added viscA4GridMin and viscA4GridMax for more control on biharmonic viscosity
 o make all subroutines 30 or less characters in length for certain older 
