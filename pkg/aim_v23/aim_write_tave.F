@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.4 2004/06/24 23:45:29 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -72,6 +72,8 @@ C      Normalize by integrated time
          CALL TIMEAVE_NORMALIZ(aimT0tave, aim_timeAve,1,bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(aimQ0tave, aim_timeAve,1,bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(EnFxPrtave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(albedotave,aim_timeAve,1,bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(dTsurftave,aim_timeAve,1,bi,bj,myThid)
 
          CALL TIMEAVE_NORMALIZ(aimRHtave,aim_timeAve,Nr,bi,bj,myThid)
         ENDDO
@@ -118,6 +120,10 @@ C      Normalize by integrated time
      &        'RL',1,aimQ0tave, 17,myIter,myThid)
         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,EnFxPrtave,18,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+     &        'RL',1,albedotave,19,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+     &        'RL',1,dTsurftave,20,myIter,myThid)
 
        WRITE(suff,'(I10.10)') myIter
        CALL WRITE_FLD_XYZ_RL('aim_RHtave.',suff,aimRHtave,
@@ -155,6 +161,8 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(aimT0tave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(aimQ0tave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(EnFxPrtave,1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(albedotave,1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(dTsurftave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
          DO k=1,Nr
            aim_timeAve(k,bi,bj)=0.
