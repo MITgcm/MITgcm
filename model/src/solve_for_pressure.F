@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.36 2002/10/07 16:20:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.37 2003/05/13 13:30:05 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -352,14 +352,17 @@ C Western boundary
      I           myThid )
       _EXCH_XYZ_R8(phi_nh, myThid )
 
-      _BEGIN_MASTER( myThid )
-      WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      _END_MASTER( )
+      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,
+     &                                    myTime-deltaTClock) ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       _END_MASTER( )
+      ENDIF
 
       ENDIF
 #endif
