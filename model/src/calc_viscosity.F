@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.3 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.4 2002/05/30 02:27:00 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,14 +44,14 @@ C     I, J, K - Loop counters
       INTEGER i,j
 CEOP
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j = 1-Oly, sNy+Oly
+       DO i = 1-Olx, sNx+Olx
         KappaRU(i,j,k) = viscAr
        ENDDO
       ENDDO
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j = 1-Oly, sNy+Oly
+       DO i = 1-Olx, sNx+Olx
         KappaRV(i,j,k) = viscAr
        ENDDO
       ENDDO

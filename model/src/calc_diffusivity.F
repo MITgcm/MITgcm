@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.16 2001/09/26 18:09:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.17 2002/05/30 02:27:00 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,8 +54,8 @@ C     I, J :: Loop counters
       INTEGER i,j
 CEOP
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j = 1-Oly, sNy+Oly
+       DO i = 1-Olx, sNx+Olx
         KappaRT(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRT(i,j,k)
@@ -68,8 +68,8 @@ CEOP
        ENDDO
       ENDDO
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j = 1-Oly, sNy+Oly
+       DO i = 1-Olx, sNx+Olx
         KappaRS(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRS(i,j,k)
