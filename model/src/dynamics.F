@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.54 2000/11/13 16:32:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.55 2001/01/08 16:37:43 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -438,6 +438,14 @@ C--     phiHyd(z=0)=0
      I            rhoKm1, rhoKm1, rhoKm1,
      O            sigmaX, sigmaY, sigmaR,
      I            myThid )
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           sigmaX(i,j,k) = 0. _d 0
+           sigmaY(i,j,k) = 0. _d 0
+           sigmaR(i,j,k) = 0. _d 0
+          ENDDO
+         ENDDO
         ENDIF
 #endif
 
@@ -587,6 +595,14 @@ CADJ &   , key = kkey, byte = isbyte
      I             rhoK, rhotmp, rhoK,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
+         ELSE
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            sigmaX(i,j,k) = 0. _d 0
+            sigmaY(i,j,k) = 0. _d 0
+            sigmaR(i,j,k) = 0. _d 0
+           ENDDO
+          ENDDO
          ENDIF
 #endif
 
@@ -608,6 +624,22 @@ C     relaxation terms, etc.
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+
+CADJ STORE surfacetendencyu(:,:,bi,bj)
+CADJ &   , surfacetendencyv(:,:,bi,bj)
+CADJ &   , surfacetendencys(:,:,bi,bj)
+CADJ &   , surfacetendencyt(:,:,bi,bj)
+CADJ &                        = comlev1_bibj, key=ikey, byte=isbyte
+
+# ifdef ALLOW_GMREDI
+CADJ STORE sigmaX(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaY(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
+# endif /* ALLOW_GMREDI */
+
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef ALLOW_GMREDI
         IF (useGMRedi) THEN
           DO k=1, Nr
@@ -616,17 +648,31 @@ C     relaxation terms, etc.
      I             sigmaX, sigmaY, sigmaR,
      I             myThid )
           ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          DO k=1, Nr
+            CALL GMREDI_CALC_TENSOR_DUMMY(
+     I             bi, bj, iMin, iMax, jMin, jMax, k,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+          ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+C-- R.G. We need to define a new tape since Kw use mythid instead of bi,bj
+CADJ STORE Kwx(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwy(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwz(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 
 C--     dummy initialization to break data flow because
 C--     calc_div_ghat has a condition for initialization
@@ -669,7 +715,7 @@ CADJ &   , KPPviscAz (:,:,:,bi,bj)
 CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
 CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
 CADJ &   , KPPfrac   (:,:  ,bi,bj)
-CADJ &                 = comlev1_bibj, key = ikey, byte = isbyte
+CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #endif /* ALLOW_KPP */
@@ -772,12 +818,9 @@ C--      Prediction step (step forward all model variables)
 C--      Apply open boundary conditions
          IF (openBoundaries) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gunm1(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
-CADJ STORE gvnm1(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
-CADJ STORE gwnm1(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
+CADJ STORE gunm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gvnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gwnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
             CALL APPLY_OBCS2( bi, bj, k, myThid )
@@ -786,8 +829,7 @@ CADJ &   , key = kkey, byte = isbyte
 C--      Freeze water
          IF (allowFreezing) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTNm1(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
+CADJ STORE gTNm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
          END IF
@@ -825,6 +867,7 @@ C--     Implicit diffusion
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
             idkey = iikey + 1
+CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -836,6 +879,7 @@ C--     Implicit diffusion
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 2
+CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -853,6 +897,7 @@ C--     Implicit viscosity
          IF (momStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 3
+CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -861,6 +906,7 @@ C--     Implicit viscosity
      I         myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 4
+CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -872,6 +918,7 @@ C--     Implicit viscosity
 
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 5
+CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -880,6 +927,7 @@ C--     Implicit viscosity
      I         myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
         idkey = iikey + 6
+CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
