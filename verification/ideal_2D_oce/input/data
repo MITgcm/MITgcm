@@ -27,6 +27,7 @@
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
  staggerTimeStep=.TRUE.,
+ useCDscheme=.TRUE.,
  readBinaryPrec=64,
  tempAdvScheme=77,
  &
