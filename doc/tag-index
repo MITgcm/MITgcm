@@ -1,7 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.31 2000/11/13 16:49:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.32 2000/11/30 16:51:40 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint33
+ o Fixed bug in lower BC in impldiff.F
+ o Fixed confusion about units of forcing arrays in FFIELDS.h
+   namely Fu,Fv,Qnet,Qsw,EmPmR:
+   - Removed verification/natl_box/code/external_fields_scale.F
+     (did not differ from that in model/src)
+   - Changed units of fu,fv,Qnet,Qsw,EmPmR back to proper units
+     (see FFIELDS.h for description)
+   - Scale fu,fv,Qnet,Qsw,EmPmR when used in external_forcing_surf.F,
+     kpp_calc.F and kpp_transport_t.F
+   - Removed model/src/external_fields_scale.F and calls to it
+   - verification/natl_box uses flux data with "atmospheric" sign so
+     a special version of external_fields_load.F is used to
+     change the data as it's read in. This way, the arrays
+     have the right units and signs at all times tha a user could
+     possibly use them.
+ o Corrected genmake to delete a temporary file during configuration
 
 checkpoint32
  o Scaling of forcing fields moved from external_forcing.F to
