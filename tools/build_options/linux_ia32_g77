@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.12 2004/12/08 22:11:52 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.13 2005/01/27 14:20:06 jmc Exp $
 #  $Name:  $
 #
 
@@ -17,7 +17,7 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -malign-double -funroll-loops'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FFLAGS='-Wimplicit -Wunused -ffloat-store -mfpmath=sse -msse -msse2'
     FOPTIM='-O0 -malign-double'
 fi
 

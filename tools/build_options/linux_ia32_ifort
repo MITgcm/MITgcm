@@ -23,7 +23,9 @@ if test "x$IEEE" = x ; then
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
 else
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FOPTIM='-O0 -noalign'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64'
+   #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
 
 
