@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.91 2004/04/06 00:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.92 2004/05/14 21:08:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,9 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_EBM
+#  include "EBM.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -177,8 +180,8 @@ cph The following IF-statement creates an additional dependency
 cph for the forcing fields requiring additional storing.
 cph Therefore, the IF-statement will be put between CPP-OPTIONS,
 cph assuming that ALLOW_SEAICE has not yet been differentiated.
-#  ifdef ALLOW_SEAICE
-      IF ( .NOT. useSEAICE ) THEN
+#  if (defined (ALLOW_SEAICE) || defined (ALLOW_EBM))
+      IF ( .NOT. useSEAICE .AND. .NOT. useEBM ) THEN
 #  endif
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
@@ -187,7 +190,7 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
        CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
-#  ifdef ALLOW_SEAICE
+#  if (defined (ALLOW_SEAICE) || defined (ALLOW_EBM))
       ENDIF
 #  endif
 # endif /* ALLOW_EXF */
@@ -295,6 +298,18 @@ C AMM
         endif
 #endif
 C AMM
+
+#ifdef ALLOW_EBM
+        IF ( useEBM ) THEN
+# ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('EBM',myThid)
+# endif
+         CALL TIMER_START('EBM                [FORWARD_STEP]',mythid)
+         CALL EBM_DRIVER ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('EBM                [FORWARD_STEP]',mythid)
+        ENDIF
+#endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 

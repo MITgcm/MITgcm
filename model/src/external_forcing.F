@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.24 2004/04/08 04:04:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.25 2004/05/14 21:08:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -258,6 +258,7 @@ C AMM
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_FIZHI */
 C AMM
+
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -370,6 +371,7 @@ C AMM
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_FIZHI */
 C AMM
+
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax

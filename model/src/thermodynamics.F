@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.66 2004/02/18 22:23:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.67 2004/05/14 21:08:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,6 +98,9 @@ C     == Global variables ===
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"

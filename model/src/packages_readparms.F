@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.29 2004/02/12 16:01:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.30 2004/05/14 21:08:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,10 @@ C--   Custom routine to set forcing fields.
 #ifdef ALLOW_EXF
 ceh3 needs an IF ( useEXF ) THEN
       call exf_readparms  ( mythid )
+#endif
+
+#ifdef ALLOW_EBM
+      IF (useEBM) call ebm_readparms( mythid )
 #endif
 
 #ifdef ALLOW_ECCO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.32 2004/03/01 19:13:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.33 2004/05/14 21:08:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,6 +127,10 @@ cph#else
 #endif
       CALL INI_FORCING( mythid )
 cph#endif
+
+#ifdef ALLOW_EBM
+      IF (useEBM) CALL EBM_INI_VARS( mythid )
+#endif
 
 #ifdef ALLOW_COST
 c--   Initialise the cost function.
