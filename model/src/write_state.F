@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.9 2001/03/06 16:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.10 2001/03/08 20:07:43 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -97,7 +97,7 @@ C       - creates relatively few files but these files can become huge
         CALL WRITE_REC_XYZ_RL( 'V',  vVel,iRec,myIter,myThid)
         CALL WRITE_REC_XYZ_RL( 'T', theta,iRec,myIter,myThid)
         CALL WRITE_REC_XYZ_RL( 'S',  salt,iRec,myIter,myThid)
-        CALL WRITE_REC_XY_RL ('PS',etaN,iRec,myIter,myThid)
+        CALL WRITE_REC_XY_RL('Eta',etaN,iRec,myIter,myThid)
         CALL WRITE_REC_XYZ_RL( 'W',wVel,iRec,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
@@ -113,7 +113,7 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'T.',suff,theta,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'S.',suff,salt,myIter,myThid)
-        CALL WRITE_FLD_XY_RL( 'PS.',suff,etaN,myIter,myThid)
+        CALL WRITE_FLD_XY_RL('Eta.',suff,etaN,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
