@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.37 2003/07/08 15:00:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.38 2004/02/06 20:21:00 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -84,12 +84,12 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       _RL    actualResidual
       INTEGER bi, bj              
       INTEGER I, J, it2d
-      _RL    err
-      _RL    eta_qrN
+      _RL    err,errTile
+      _RL    eta_qrN,eta_qrNtile
       _RL    eta_qrNM1
       _RL    cgBeta
-      _RL    alpha
-      _RL    sumRHS
+      _RL    alpha,alphaTile
+      _RL    sumRHS,sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
 
@@ -170,6 +170,8 @@ C--   Initial residual calculation
       sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        sumRHStile = 0. _d 0
+        errTile    = 0. _d 0
         DO J=1,sNy
          DO I=1,sNx
           cg2d_s(I,J,bi,bj) = 0.
@@ -185,12 +187,14 @@ C--   Initial residual calculation
      &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
      &    )
-          err            = err            + 
+          errTile        = errTile        + 
      &     cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
-          sumRHS            = sumRHS            +
+          sumRHStile        = sumRHStile        +
      &     cg2d_b(I,J,bi,bj)
          ENDDO
         ENDDO
+        sumRHS = sumRHS + sumRHStile
+        err    = err    + errTile
        ENDDO
       ENDDO
 C     _EXCH_XY_R8( cg2d_r, myThid )
@@ -238,6 +242,7 @@ C--    conjugate direction vector "s".
        eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         eta_qrNtile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
            cg2d_q(I,J,bi,bj) = 
@@ -249,10 +254,11 @@ C--    conjugate direction vector "s".
 CcnhDebugStarts
 C          cg2d_q(I,J,bi,bj) = cg2d_r(I  ,J  ,bi,bj)
 CcnhDebugEnds
-           eta_qrN = eta_qrN
+           eta_qrNtile = eta_qrNtile
      &     +cg2d_q(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
           ENDDO
          ENDDO
+         eta_qrN = eta_qrN + eta_qrNtile
         ENDDO
        ENDDO
 
@@ -291,6 +297,7 @@ C==    q = A.s
        alpha = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         alphaTile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
            cg2d_q(I,J,bi,bj) = 
@@ -304,9 +311,10 @@ C==    q = A.s
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
      &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
-          alpha = alpha+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
+          alphaTile = alphaTile+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO
          ENDDO
+         alpha = alpha + alphaTile
         ENDDO
        ENDDO
        _GLOBAL_SUM_R8(alpha,myThid)
@@ -323,13 +331,15 @@ C      Now compute "interior" points.
        err = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         errTile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
            cg2d_x(I,J,bi,bj)=cg2d_x(I,J,bi,bj)+alpha*cg2d_s(I,J,bi,bj)
            cg2d_r(I,J,bi,bj)=cg2d_r(I,J,bi,bj)-alpha*cg2d_q(I,J,bi,bj)
-           err = err+cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+           errTile = errTile+cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
           ENDDO
          ENDDO
+         err = err + errTile
         ENDDO
        ENDDO
 
