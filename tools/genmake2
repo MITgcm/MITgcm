@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.2 2003/08/22 04:07:00 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.3 2003/08/22 20:50:40 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -757,7 +757,7 @@ done
 
 echo "  Setting package-specific CPP flags in CPP_OPTIONS.h:"
 CPP_OPTIONS=
-spaths=". $SOURCEDIRS"
+spaths="$SOURCEDIRS"
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
     #  echo -n "    trying $try : "
@@ -888,13 +888,15 @@ rm -rf .links.tmp
 mkdir .links.tmp
 echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
-echo -n 'SRCFILES = ' > srclist.inc
-echo -n 'CSRCFILES = ' > csrclist.inc
+echo -n 'SRCFILES = '    > srclist.inc
+echo -n 'CSRCFILES = '   > csrclist.inc
+echo -n 'F90SRCFILES = ' > f90srclist.inc
 echo -n 'HEADERFILES = ' > hlist.inc
 alldirs=". $SOURCEDIRS $INCLUDEDIRS"
 for d in $alldirs ; do
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] )`
+    sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
@@ -905,6 +907,10 @@ for d in $alldirs ; do
 		    F)
 			echo    " \\"  >> srclist.inc
 			echo -n " $sf" >> srclist.inc
+			;;
+		    F90)
+			echo    " \\"  >> f90srclist.inc
+			echo -n " $sf" >> f90srclist.inc
 			;;
 		    c)
 			echo    " \\"  >> csrclist.inc
@@ -928,6 +934,7 @@ done
 rm -rf .links.tmp
 echo "" >> srclist.inc
 echo "" >> csrclist.inc
+echo "" >> f90srclist.inc
 echo "" >> hlist.inc
 
 if test -e $MAKEFILE ; then
@@ -985,6 +992,8 @@ MAKEDEPEND = ${MAKEDEPEND}
 KPP = ${KPP}
 # Fortran compiler
 FC = ${FC}
+# Fortran compiler
+F90C = ${F90C}
 # Link editor
 LINK = ${LINK}
 
@@ -998,6 +1007,9 @@ KFLAGS2 = ${KFLAGS2}
 # Optim./debug for FC
 FFLAGS = ${FFLAGS}
 FOPTIM = ${FOPTIM}
+# Optim./debug for FC
+F90FLAGS = ${F90FLAGS}
+F90OPTIM = ${F90OPTIM}
 # Flags for CC
 CFLAGS = ${CFLAGS}
 # Files that should not be optimized
@@ -1005,21 +1017,25 @@ NOOPTFILES = ${NOOPTFILES}
 NOOPTFLAGS = ${NOOPTFLAGS}
 # Flags and libraries needed for linking
 LIBS = ${LIBS} \$(XLIBS)
+# Name of the Mekfile
+MAKEFILE=${MAKEFILE}
 
 EOF
 
-cat srclist.inc  >> $MAKEFILE
-cat csrclist.inc >> $MAKEFILE
-cat hlist.inc >> $MAKEFILE
-echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> $MAKEFILE
-echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> $MAKEFILE
+cat srclist.inc    >> $MAKEFILE
+cat csrclist.inc   >> $MAKEFILE
+cat f90srclist.inc >> $MAKEFILE
+cat hlist.inc      >> $MAKEFILE
+echo 'F77FILES =  $(SRCFILES:.F=.f)'                                           >> $MAKEFILE
+echo 'F90FILES =  $(F90SRCFILES:.F90=.f90)'                                    >> $MAKEFILE
+echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
 
-rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp
+rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
 
 cat >>$MAKEFILE <<EOF
 
 .SUFFIXES:
-.SUFFIXES: .o .f .p .F .c
+.SUFFIXES: .o .f .p .F .c .F90 .f90
 
 all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(OBJFILES)
@@ -1027,17 +1043,18 @@ all: \$(EXECUTABLE)
 depend:
 	@make links
 	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+	../../../tools/f90mkdepend >> \$(MAKEFILE)
 
-links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
+links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES)
 
-small_f: \$(F77FILES)
+small_f: \$(F77FILES) \$(F90FILES)
 
 output.txt: \$(EXECUTABLE)
 	@printf 'running ... '
 	@\$(EXECUTABLE) > \$@
 
 clean:
-	-rm -rf *.o *.f *.p ${RMFILES} work.{pc,pcl}
+	-rm -rf *.o *.f *.p *.f90 *.mod ${RMFILES} work.{pc,pcl}
 Clean:
 	@make clean
 	@make cleanlinks
@@ -1059,6 +1076,10 @@ cleanlinks:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+.F90.f90:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+.f90.o:
+	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
 	\$(CC) \$(CFLAGS) -c \$<
 

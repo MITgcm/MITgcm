@@ -1,0 +1,26 @@
+#!/bin/csh -f
+#
+# Generate some make file dependency entries for a Fortran 90 file that employs "use".
+# Note: We assume that the name of a module and the same of source are the same.
+#
+set flist =  ( `echo *.F90` )
+foreach filename ( $flist )
+set dirlist  =  (  . )
+
+# Try and find some use statements
+set modreflist = `cat $filename | grep '[ *] use ' | awk '{print $2}' | sed s'/,//'`
+
+set depfiles = ( )
+foreach m ( $modreflist )
+ set depfile = ( )
+ foreach d ( $dirlist )
+   if ( -f $m.F90 ) then
+    if ( $depfile == "" ) then
+     set depfile = ( $m.o )
+    endif
+   endif
+ end
+ set depfiles = ( $depfiles $depfile )
+end
+echo ${filename:r}.f90: $depfiles
+end
