@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.2 2000/11/13 16:32:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.3 2000/11/13 21:40:46 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -34,6 +34,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
  
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -134,8 +135,10 @@ C      data for the period ahead and the period behind myTime.
        CALL READ_REC_XY_RS( surfQFile,Qnet1,intime1,myIter,myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
+Cfixed CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
+Cfixed CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
+       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,1,myIter,myThid )
+       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,1,myIter,myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( thetaClimFile,SST0,intime0,myIter,myThid )
@@ -199,8 +202,24 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
        ENDDO
       ENDDO
 
-C     Convert units and signs
+C     Convert units and signs (!)
       CALL EXTERNAL_FIELDS_SCALE( myThid )
+
+C-- Diagnostics
+      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
+        write(0,'(a,1p7e12.4,2i6,2e12.4)')
+     &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
+     &   myTime,
+     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
+     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
+     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
+     &   intime0,intime1,aWght,bWght
+        write(0,'(a,1p7e12.4)')
+     &   'time,fu0,fu1,fu = ',
+     &   myTime,
+     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
+     &   aWght,bWght
+      ENDIF
 
 C endif for periodicForcing
       ENDIF
