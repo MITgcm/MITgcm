@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.17 2004/05/04 14:57:09 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.18 2004/07/05 20:25:47 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "MDSIO_OPTIONS.h"
 
       SUBROUTINE MDSREADFIELD(

@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.5 2004/04/07 13:27:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.6 2004/07/05 20:25:47 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "MDSIO_OPTIONS.h"
 
       SUBROUTINE MDSWRITEFIELD_NEW(

@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.5 2004/04/07 13:55:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.6 2004/07/05 20:25:47 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "MDSIO_OPTIONS.h"
 
       SUBROUTINE MDSWRITEFIELD_LOC(
