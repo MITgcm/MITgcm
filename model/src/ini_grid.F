@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.18 2004/06/30 23:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.19 2004/07/06 14:40:30 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
