@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.1 2005/02/17 22:17:25 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.2 2005/02/17 22:40:16 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -148,8 +148,8 @@ C-      Check for consistency with Nb of levels reserved in storage array
         if( check ) then
          undef = getcon('UNDEF')
          do i= 1,Lena
-          jindx = 1 + (indx(i+offset-1)-1/sNx)
-          newindx = indx(i+offset-1) + (jindx-1)*Olx+(sNx+Olx)*Oly+Olx
+          jindx = 1.0001 + (indx(i+offset-1)-1/sNx)
+          newindx = indx(i+offset-1)+(jindx-1)*2*Olx+(sNx+2*Olx)*Oly+Olx
           if(qdiag(newindx,1,kd,bi,bj).eq.undef 
      .                                  .or.field(i,k).eq.undef)then
            qdiag(newindx,1,kd,bi,bj) = undef
@@ -160,8 +160,8 @@ C-      Check for consistency with Nb of levels reserved in storage array
          enddo
         else
          do i= 1,Lena
-          jindx = 1 + (indx(i+offset-1)-1/sNx)
-          newindx = indx(i+offset-1) + (jindx-1)*Olx+(sNx+Olx)*Oly+Olx
+          jindx = 1.0001 + (indx(i+offset-1)-1/sNx)
+          newindx = indx(i+offset-1)+(jindx-1)*2*Olx+(sNx+2*Olx)*Oly+Olx
           qdiag(newindx,1,kd,bi,bj)=qdiag(newindx,1,kd,bi,bj)+
      .                                             field(i,k)*chfr(i)
          enddo
