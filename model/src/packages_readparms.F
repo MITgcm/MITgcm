@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.3 2001/02/20 19:39:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,6 +42,12 @@ C--   Initialize KPP parameters
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) CALL OBCS_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_AIM
+c--   Read in AIM package parameters
+C     Currently AIM does not have any runtime parameters
+C     IF (useAIM) CALL AIM_READPARMS ( myThid )
 #endif
 
 #ifdef INCLUDE_ECCO_PACKAGE

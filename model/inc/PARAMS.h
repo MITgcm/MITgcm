@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.48 2001/02/20 15:00:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.49 2001/02/20 19:38:24 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -494,6 +494,8 @@ C Logical flags for selecting packages
       LOGICAL useKPP
       LOGICAL useGMRedi
       LOGICAL useOBCS
+      LOGICAL useAIM
       LOGICAL useECCO
       COMMON /PARM_PACKAGES/
-     &        useKPP, useGMRedi, useOBCS, useECCO
+     &        useKPP, useGMRedi, useOBCS, useAIM, useECCO
+

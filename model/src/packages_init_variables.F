@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.3 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.4 2001/02/20 19:39:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,10 @@ C--   Open boundaries data
       IF (useOBCS) THEN
         CALL OBCS_INIT_VARIABLES( myThid )
       ENDIF
+#endif
+
+#ifdef ALLOW_AIM
+      IF ( useAIM ) CALL AIM_INIT( mythid )
 #endif
 
 #ifdef INCLUDE_ECCO_PACKAGE

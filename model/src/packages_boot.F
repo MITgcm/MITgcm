@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.3 2001/02/20 19:39:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,7 @@ C--   data.pkg namelists
      &          useKPP,
      &          useGMRedi,
      &          useOBCS,
+     &          useAIM,
      &          useECCO
 
 C     === Local variables ===
@@ -56,6 +57,7 @@ C--   Default package configuration
       useGMRedi=.FALSE.
       useKPP=.FALSE.
       useOBCS=.FALSE.
+      useAIM=.FALSE.
       useECCO=.FALSE.
 
 C--   Read parameters from open data file

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.6 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.7 2001/02/20 19:39:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,6 +45,10 @@ C     msgBuf      - Informational/error meesage buffer
       IF (useOBCS) CALL OBCS_CHECK( myThid )
 #else
       IF (useOBCS) CALL PACKAGES_CHECK_ERROR('OBCS', myThid)
+#endif
+
+#ifndef ALLOW_AIM
+      IF (useAIM) CALL PACKAGES_CHECK_ERROR('AIM', myThid)
 #endif
 
       RETURN
