@@ -1,5 +1,14 @@
 #ifdef ALLOW_EXF
 
+CADJ STORE hflux0    = tapelev2, key = ilev_2
+CADJ STORE hflux1    = tapelev2, key = ilev_2
+CADJ STORE sflux0    = tapelev2, key = ilev_2
+CADJ STORE sflux1    = tapelev2, key = ilev_2
+CADJ STORE ustress0  = tapelev2, key = ilev_2
+CADJ STORE ustress1  = tapelev2, key = ilev_2
+CADJ STORE vstress0  = tapelev2, key = ilev_2
+CADJ STORE vstress1  = tapelev2, key = ilev_2
+
 # ifdef ALLOW_ATM_TEMP
 
 CADJ STORE aqh0      = tapelev2, key = ilev_2
@@ -24,17 +33,9 @@ CADJ STORE swdown1   = tapelev2, key = ilev_2
 CADJ STORE lwdown0   = tapelev2, key = ilev_2
 CADJ STORE lwdown1   = tapelev2, key = ilev_2
 #  endif
-#  ifdef ALLOW_SEAICE
-CADJ STORE hflux0    = tapelev2, key = ilev_2
-CADJ STORE hflux1    = tapelev2, key = ilev_2
-#  endif
 
 # else /* ALLOW_ATM_TEMP undef */
 
-CADJ STORE hflux0    = tapelev2, key = ilev_2
-CADJ STORE hflux1    = tapelev2, key = ilev_2
-CADJ STORE sflux0    = tapelev2, key = ilev_2
-CADJ STORE sflux1    = tapelev2, key = ilev_2
 #  ifdef SHORTWAVE_HEATING
 CADJ STORE swflux0   = tapelev2, key = ilev_2
 CADJ STORE swflux1   = tapelev2, key = ilev_2
@@ -50,11 +51,6 @@ CADJ STORE vwind0    = tapelev2, key = ilev_2
 CADJ STORE vwind1    = tapelev2, key = ilev_2
 
 # else /* ALLOW_ATM_WIND undef */
-
-CADJ STORE ustress0  = tapelev2, key = ilev_2
-CADJ STORE ustress1  = tapelev2, key = ilev_2
-CADJ STORE vstress0  = tapelev2, key = ilev_2
-CADJ STORE vstress1  = tapelev2, key = ilev_2
 
 # endif  /* ALLOW_ATM_WIND */
 

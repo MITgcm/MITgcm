@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.5 2004/03/03 05:17:44 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.6 2004/07/02 00:48:23 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -181,6 +181,7 @@ c     == local variables ==
       _RL     hs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     hl(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     hfl
+      _RL     tmpbulk
 
 c     == external functions ==
 
@@ -344,9 +345,8 @@ c             deltap : potential temperature diff (K)
                 t0     = atemp(i,j,bi,bj)*
      &                   (exf_one + humid_fac*aqh(i,j,bi,bj))
                 ssttmp = theta(i,j,k,bi,bj)
-                ssq    = saltsat*
-     &                   exf_BulkqSat(ssttmp + cen2kel)/
-     &                   atmrho
+                tmpbulk= exf_BulkqSat(ssttmp + cen2kel)
+                ssq    = saltsat*tmpbulk/atmrho
                 deltap = atemp(i,j,bi,bj)   + gamma_blk*ht -
      &                   ssttmp - cen2kel
                 delq   = aqh(i,j,bi,bj) - ssq
@@ -354,9 +354,11 @@ c             deltap : potential temperature diff (K)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sh     = comlev1_exf_1, key = ikey_1
 #endif
-                rdn    = sqrt(exf_BulkCdn(sh))
+                tmpbulk= exf_BulkCdn(sh)
+                rdn    = sqrt(tmpbulk)
                 ustar  = rdn*sh
-                tstar  = exf_BulkRhn(stable)*deltap 
+                tmpbulk= exf_BulkRhn(stable)
+                tstar  = tmpbulk*deltap 
                 qstar  = cdalton*delq 
 
                 do iter = 1,niter_bulk
@@ -364,11 +366,11 @@ CADJ STORE sh     = comlev1_exf_1, key = ikey_1
 #ifdef ALLOW_AUTODIFF_TAMC
                    ikey_2 = iter
      &                  + niter_bulk*(i-1)
-     &                  + sNx*niter_bulk*(j-1)
-     &                  + sNx*niter_bulk*sNy*act1
-     &                  + sNx*niter_bulk*sNy*max1*act2
-     &                  + sNx*niter_bulk*sNy*max1*max2*act3
-     &                  + sNx*niter_bulk*sNy*max1*max2*max3*act4
+     &                  + niter_bulk*sNx*(j-1)
+     &                  + niter_bulk*sNx*sNy*act1
+     &                  + niter_bulk*sNx*sNy*max1*act2
+     &                  + niter_bulk*sNx*sNy*max1*max2*act3
+     &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
 
 CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
 CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
@@ -401,31 +403,33 @@ c                 Evaluate all stability functions assuming hq = ht.
 c                 Shift wind speed using old coefficient
 ccc                  rd   = rdn/(exf_one + rdn/karman*
 ccc     &                 (log(hu/zref) - psimh) )
-                  rd   = rdn/(exf_one - rdn/karman*psimh )
-                  shn  = sh*rd/rdn
-                  uzn  = max(shn, umin)
+                  rd     = rdn/(exf_one - rdn/karman*psimh )
+                  shn    = sh*rd/rdn
+                  uzn    = max(shn, umin)
 
 c                 Update the transfer coefficients at 10 meters
 c                 and neutral stability.
 
-                  rdn = sqrt(exf_BulkCdn(uzn))
+                  tmpbulk= exf_BulkCdn(uzn)
+                  rdn    = sqrt(tmpbulk)
 
 c                 Shift all coefficients to the measurement height
 c                 and stability.
 c                 rd = rdn/(exf_one + rdn/karman*(log(hu/zref) - psimh))
-                  rd = rdn/(exf_one - rdn/karman*psimh)
-                  rh = exf_BulkRhn(stable)/(exf_one +
-     &                                      exf_BulkRhn(stable)/
-     &                                     karman*(aln - psixh))
-                  re = cdalton/(exf_one + cdalton/karman*(aln - psixh))
+                  rd     = rdn/(exf_one - rdn/karman*psimh)
+                  tmpbulk= exf_BulkRhn(stable)
+                  rh     = tmpbulk/( exf_one + 
+     &                               tmpbulk/karman*(aln - psixh) )
+                  re     = cdalton/( exf_one + 
+     &                               cdalton/karman*(aln - psixh) )
 
 c                 Update ustar, tstar, qstar using updated, shifted
 c                 coefficients.
-                  ustar = rd*sh  
-                  qstar = re*delq 
-                  tstar = rh*deltap
-                  tau   = atmrho*ustar**2
-                  tau   = tau*us/sh
+                  ustar  = rd*sh  
+                  qstar  = re*delq 
+                  tstar  = rh*deltap
+                  tau    = atmrho*ustar**2
+                  tau    = tau*us/sh
 
                 enddo
 
@@ -457,9 +461,10 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
 
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
-              ustress(i,j,bi,bj) = atmrho*exf_BulkCdn(sh)*us*
+              tmpbulk= exf_BulkCdn(sh)
+              ustress(i,j,bi,bj) = atmrho*tmpbulk*us*
      &                             uwind(i,j,bi,bj)
-              vstress(i,j,bi,bj) = atmrho*exf_BulkCdn(sh)*us*
+              vstress(i,j,bi,bj) = atmrho*tmpbulk*us*
      &                             vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */

@@ -5,6 +5,15 @@ c     created: heimbach@mit.edu 10-Jan-2002
 c
 #ifdef ALLOW_EXF
 
+CADJ STORE hflux0    = comlev1, key = ikey_dynamics
+CADJ STORE hflux1    = comlev1, key = ikey_dynamics
+CADJ STORE sflux0    = comlev1, key = ikey_dynamics
+CADJ STORE sflux1    = comlev1, key = ikey_dynamics
+CADJ STORE ustress0  = comlev1, key = ikey_dynamics
+CADJ STORE ustress1  = comlev1, key = ikey_dynamics
+CADJ STORE vstress0  = comlev1, key = ikey_dynamics
+CADJ STORE vstress1  = comlev1, key = ikey_dynamics
+
 # ifdef ALLOW_ATM_TEMP
 
 CADJ STORE aqh0      = comlev1, key = ikey_dynamics
@@ -29,17 +38,9 @@ CADJ STORE swdown1   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown0   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown1   = comlev1, key = ikey_dynamics
 #  endif
-#  ifdef ALLOW_SEAICE
-CADJ STORE hflux0    = comlev1, key = ikey_dynamics
-CADJ STORE hflux1    = comlev1, key = ikey_dynamics
-#  endif
 
 # else /* ALLOW_ATM_TEMP undef */
 
-CADJ STORE hflux0    = comlev1, key = ikey_dynamics
-CADJ STORE hflux1    = comlev1, key = ikey_dynamics
-CADJ STORE sflux0    = comlev1, key = ikey_dynamics
-CADJ STORE sflux1    = comlev1, key = ikey_dynamics
 #  ifdef SHORTWAVE_HEATING
 CADJ STORE swflux0   = comlev1, key = ikey_dynamics
 CADJ STORE swflux1   = comlev1, key = ikey_dynamics
@@ -53,10 +54,7 @@ CADJ STORE uwind1    = comlev1, key = ikey_dynamics
 CADJ STORE vwind0    = comlev1, key = ikey_dynamics
 CADJ STORE vwind1    = comlev1, key = ikey_dynamics
 # else /* ALLOW_ATM_WIND undef */
-CADJ STORE ustress0  = comlev1, key = ikey_dynamics
-CADJ STORE ustress1  = comlev1, key = ikey_dynamics
-CADJ STORE vstress0  = comlev1, key = ikey_dynamics
-CADJ STORE vstress1  = comlev1, key = ikey_dynamics
+
 # endif  /* ALLOW_ATM_WIND */
 
 # ifdef ALLOW_BULKFORMULAE
