@@ -15,8 +15,9 @@ function [U,V] = uvcube2latlon(LON,LAT,u,v,xc,yc)
 % >> xi=-179:2:180;yi=-89:2:90;
 % >> [ui,vi]=uvcube2latlon(x,y,u,v,xi,yi);
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/uvcube2latlon.m,v 1.3 2001/08/15 13:40:40 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/uvcube2latlon.m,v 1.4 2001/08/28 18:16:40 adcroft Exp $
 
+NN=size(u);
 [nnx ny nz]=size(u);
 
 U=reshape(u,[ny 6 ny nz]);
@@ -50,8 +51,8 @@ for k=1:6;
 end
 end
 
-U=reshape(U,[nnx ny nz]);
-V=reshape(V,[nnx ny nz]);
+U=reshape(U,[nnx NN(2:end)]);
+V=reshape(V,[nnx NN(2:end)]);
 
 % xc=-179:2:179;
 % yc=-89:2:89;
