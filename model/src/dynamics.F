@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.76 2001/08/13 18:05:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.77 2001/08/13 23:26:56 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,6 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 C     == Local variables
-C     maskUp                   o maskUp: land/water mask for W points
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
@@ -78,7 +77,6 @@ C     k, kup,        - Index for layer above and below. kup and kDown
 C     kDown, km1       are switched with layer to be the appropriate 
 C                      index into fVerTerm.
 C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
-      _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -100,7 +98,7 @@ C This is currently used by IVDC and Diagnostics
       INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j
-      INTEGER k, km1, kup, kDown
+      INTEGER k, km1, kp1, kup, kDown
 
 Cjmc : add for phiHyd output <- but not working if multi tile per CPU
 c     CHARACTER*(MAX_LEN_MBUF) suff 
@@ -161,8 +159,8 @@ C     uninitialised but inert locations.
        DO i=1-OLx,sNx+OLx
         DO k=1,Nr
          phiHyd(i,j,k)  = 0. _d 0 
-         KappaRU(i,j,k) = 0. _d 0
-         KappaRV(i,j,k) = 0. _d 0
+cph         KappaRU(i,j,k) = 0. _d 0
+cph         KappaRV(i,j,k) = 0. _d 0
          sigmaX(i,j,k) = 0. _d 0
          sigmaY(i,j,k) = 0. _d 0
          sigmaR(i,j,k) = 0. _d 0
@@ -240,6 +238,16 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
      I         myThid )                         
         ENDIF
 
+#ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
+C--      Calculate the total vertical diffusivity
+        DO k=1,Nr
+         CALL CALC_VISCOSITY(
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
+     O        KappaRU,KappaRV,
+     I        myThid)
+       ENDDO
+#endif
+
 C--     Start of dynamics loop
         DO k=1,Nr
 
@@ -248,6 +256,7 @@ C--       kup    Cycles through 1,2 to point to layer above
 C--       kDown  Cycles through 2,1 to point to current layer
 
           km1  = MAX(1,k-1)
+          kp1  = MIN(k+1,Nr)
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
 
@@ -271,15 +280,6 @@ C        distinguishe between Stagger and Non Stagger time stepping
      U        phiHyd,
      I        myThid )
          ENDIF
-
-#ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
-C--      Calculate the total vertical diffusivity
-         CALL CALC_VISCOSITY(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        maskUp,
-     O        KappaRU,KappaRV,
-     I        myThid)
-#endif
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gUnm1, gVnm1, etc...
