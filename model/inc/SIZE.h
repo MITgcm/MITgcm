@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.13 1998/06/22 16:24:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.14 1998/08/15 17:02:02 cnh Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -22,7 +22,7 @@ C     nPx - No. of processes to use in X.
 C     nPy - No. of processes to use in Y.
 C     Nx  - No. points in X for the total domain.
 C     Ny  - No. points in Y for the total domain.
-C     Nz  - No. points in Z for full process domain.
+C     Nr  - No. points in R for full process domain.
       INTEGER sNx
       INTEGER sNy
       INTEGER OLx
@@ -33,7 +33,7 @@ C     Nz  - No. points in Z for full process domain.
       INTEGER nPy
       INTEGER Nx
       INTEGER Ny
-      INTEGER Nz
+      INTEGER Nr
       PARAMETER (
      &           sNx =  90,
      &           sNy =  20,
@@ -45,7 +45,7 @@ C     Nz  - No. points in Z for full process domain.
      &           nPy =   2,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nz  =  20)
+     &           Nr  =  20)
 
 C     l - Runtime global problem size in X
 C     m - Runtime global problem size in Y
