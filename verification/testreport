@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.14 2003/11/07 21:32:19 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.15 2003/11/10 17:42:51 edhill Exp $
 #  $Name:  $
 #
 
@@ -81,7 +81,7 @@ testoutput_for_prop()
 	echo testoutput_for_prop: grep "$2" $1/$4/output.txt 1>&2
     fi
     if [ -r $1/$4/output.txt ]; then
-	grep "$2" $1/$4/output.txt | sed 's/.*=//' | nl > tmp1.txt
+	grep "$2" $1/$4/output.txt | sed 's/.*=//' | cat -n > tmp1.txt
 	lncnt=`wc -l tmp1.txt | awk '{print $1}' `
 	if [ $lncnt -lt 3 ]; then
 	    if [ $verbose -gt 0 ]; then
@@ -96,7 +96,7 @@ testoutput_for_prop()
     if [ $debug -gt 0 ]; then
 	echo testoutput_for_prop: grep "$2" $1/results/output.txt 1>&2
     fi
-    grep "$2" $1/results/output.txt | sed 's/.*=//' | nl > tmp2.txt
+    grep "$2" $1/results/output.txt | sed 's/.*=//' | cat -n > tmp2.txt
     lncnt=`wc -l tmp2.txt | awk '{print $1}' `
     if [ $lncnt -lt 3 ]; then
 	if [ $verbose -gt 0 ]; then
