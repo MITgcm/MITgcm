@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.4 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.5 1999/08/30 18:29:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_OBCS
 CStartOfInterface
       SUBROUTINE INI_OBCS( myThid )
 C     /==========================================================\
@@ -24,6 +23,8 @@ C     myThid -  Number of this instance of INI_DEPTHS
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_OBCS
+
 C     == Local variables ==
 C     xG, yG - Global coordinate location.
 C     zG
@@ -40,7 +41,6 @@ C     I,i,K
       INTEGER  I,  J, K
 c
 
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -52,6 +52,27 @@ c
         DO J=1-Oly,sNy+Oly
          OB_Ie(J,bi,bj)=0
          OB_Iw(J,bi,bj)=0
+        ENDDO
+
+        DO J=1-Oly,sNy+Oly
+         jG = myYGlobalLo-1+(bj-1)*sNy+J
+         jGm = 1+mod( jG-1+Ny , Ny )
+         DO I=1,sNx
+          iG = myXGlobalLo-1+(bi-1)*sNx+I
+          iGm = 1+mod( iG-1+Nx , Nx )
+          IF (iG.EQ.OB_Ieast(jGm))  OB_Ie(J,bi,bj)=I
+          IF (iG.EQ.OB_Iwest(jGm))  OB_Iw(J,bi,bj)=I
+         ENDDO
+        ENDDO
+        DO J=1,sNy
+         jG = myYGlobalLo-1+(bj-1)*sNy+J
+         jGm = 1+mod( jG-1+Ny , Ny )
+         DO I=1-Olx,sNx+Olx
+          iG = myXGlobalLo-1+(bi-1)*sNx+I
+          iGm = 1+mod( iG-1+Nx , Nx )
+          IF (jG.EQ.OB_Jnorth(iGm)) OB_Jn(I,bi,bj)=J
+          IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(I,bi,bj)=J
+         ENDDO
         ENDDO
 
         DO K=1,Nr
@@ -84,24 +105,6 @@ c
        ENDDO
       ENDDO
 
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         jG = myYGlobalLo-1+(bj-1)*sNy+J
-         jGm = 1+mod( jG-1+Ny , Ny )
-         DO I=1-Olx,sNx+Olx
-          iG = myXGlobalLo-1+(bi-1)*sNx+I
-          iGm = 1+mod( iG-1+Nx , Nx )
-          IF (jG.EQ.OB_Jnorth(iGm)) OB_Jn(I,bi,bj)=J
-          IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(I,bi,bj)=J
-          IF (iG.EQ.OB_Ieast(jGm))  OB_Ie(J,bi,bj)=I
-          IF (iG.EQ.OB_Iwest(jGm))  OB_Iw(J,bi,bj)=I
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
+#endif
       RETURN
       END
-#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.46 1999/08/30 18:25:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.47 1999/08/30 18:29:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,9 +37,9 @@ C     == Routine arguments ==
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
 C     myThid - Thread number for this instance of the routine.
-      INTEGER myThid
       _RL myTime
       INTEGER myIter
+      INTEGER myThid
 
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
@@ -453,6 +453,11 @@ C--      Get temporary terms used by tendency routines
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
+#ifdef ALLOW_OBCS
+        IF (openBoundaries) THEN
+         CALL APPLY_OBCS3( bi, bj, K, Kup, rTrans, rVel, myThid )
+        ENDIF
+#endif
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
@@ -488,6 +493,13 @@ C--      Calculate active tracer tendencies
      U         aTerm,xTerm,fZon,fMer,fVerS,
      I         myTime, myThid)
          ENDIF
+#ifdef ALLOW_OBCS
+C--      Calculate future values on open boundaries
+         IF (openBoundaries) THEN
+Caja      CALL CYCLE_OBCS( K, bi, bj, myThid )
+          CALL SET_OBCS( K, bi, bj, myTime+deltaTclock, myThid )
+         ENDIF
+#endif
 C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,

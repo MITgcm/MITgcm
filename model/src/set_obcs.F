@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.5 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.6 1999/08/30 18:32:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_OBCS
 CStartOfInterface
       SUBROUTINE SET_OBCS( myCurrentTime, myThid )
 C     /==========================================================\
@@ -26,6 +25,8 @@ C     myThid -  Number of this instance of INI_DEPTHS
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_OBCS
+
 C     == Local variables ==
 C     xG, yG - Global coordinate location.
 C     zG
@@ -40,28 +41,17 @@ C     I,i,K
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
-      _RL OBtimeScale
-c
-      OBtimeScale = 2000.0
-
+ 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
           OBEu(J,K,bi,bj)=0.
-c    &       *sin(2.*PI*myCurrentTime/OBtimeScale)
-c    &       *max(myCurrentTime/OBtimeScale,1.)
           OBEv(J,K,bi,bj)=0.
           OBEt(J,K,bi,bj)=tRef(K)
           OBWu(J,K,bi,bj)=0.
-c    &       *sin(2.*PI*myCurrentTime/OBtimeScale)
-c    &       *max(myCurrentTime/OBtimeScale,1.)
           OBWv(J,K,bi,bj)=0.
           OBWt(J,K,bi,bj)=tRef(K)
-#ifdef ALLOW_NONHYDROSTATIC
-          OBEw(J,K,bi,bj)=0.
-          OBWw(J,K,bi,bj)=0.
-#endif
          ENDDO
          DO I=1-Olx,sNx+Olx
           OBNu(I,K,bi,bj)=0.
@@ -70,10 +60,6 @@ c    &       *max(myCurrentTime/OBtimeScale,1.)
           OBSu(I,K,bi,bj)=0.
           OBSv(I,K,bi,bj)=0.
           OBSt(I,K,bi,bj)=tRef(K)
-#ifdef ALLOW_NONHYDROSTATIC
-          OBSw(I,K,bi,bj)=0.
-          OBSw(I,K,bi,bj)=0.
-#endif
          ENDDO
         ENDDO
        ENDDO
@@ -147,8 +133,6 @@ C         Outgoing
       ENDDO
 #endif
 
-
-C
+#endif
       RETURN
       END
-#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.3 1999/05/24 15:42:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.4 1999/08/30 18:29:21 adcroft Exp $
 C
 
 #ifdef ALLOW_OBCS
@@ -26,11 +26,11 @@ C
       _RS OBEu (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBEv (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBEt (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS OBEs (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBEs (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBWu (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBWv (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBWt (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS OBWs (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBWs (1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER OB_Jn(1-Olx:sNx+Olx,nSx,nSy)
       INTEGER OB_Js(1-Olx:sNx+Olx,nSx,nSy)
       INTEGER OB_Ie(1-Oly:sNy+Oly,nSx,nSy)
@@ -41,7 +41,7 @@ C
      &  OBNw,OBSw,OBEw,OBWw
       _RS OBNw (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RS OBSw (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RS OBEw (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RS OBEw (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBWw (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
 

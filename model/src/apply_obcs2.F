@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.4 1999/05/24 15:42:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.5 1999/08/30 18:29:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_OBCS
-C     /==========================================================\
-C     | S/R APPLY_OBCS                                           |
-C     | o Calculate the gradient of the surface pressure         |
-C     \==========================================================/
       SUBROUTINE APPLY_OBCS2( bi, bj, K,
      I                       myThid )
+C     /==========================================================\
+C     | S/R APPLY_OBCS2                                          |
+C     | o                                                        |
+C     \==========================================================/
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
@@ -21,6 +20,9 @@ C     == Global variables ==
 C     == Routine Arguments ==
       INTEGER bi,bj,K
       INTEGER myThid
+
+#ifdef ALLOW_OBCS
+
 C     == Local variables ==
       INTEGER i,j
 
@@ -30,7 +32,6 @@ C Northern boundary
        IF (OB_Jn(I,bi,bj).NE.0) THEN
         gVnm1(I,OB_Jn(I,bi,bj),K,bi,bj)=OBNv(I,K,bi,bj)
      &                              *_maskS(I,OB_Jn(I,bi,bj),K,bi,bj)
-!aja    gWnm1(I,OB_Jn(I,bi,bj),K,bi,bj)=0.
         gUnm1(I,OB_Jn(I,bi,bj),K,bi,bj)=OBNu(I,K,bi,bj)
      &                              *_maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
         gVnm1(I,OB_Jn(I,bi,bj)+1,K,bi,bj)=OBNv(I,K,bi,bj)
@@ -40,7 +41,6 @@ C Southern boundary
        IF (OB_Js(I,bi,bj).NE.0) THEN
         gVnm1(I,OB_Js(I,bi,bj)+1,K,bi,bj)=OBSv(I,K,bi,bj)
      &                              *_maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-!aja    gWnm1(I,OB_Js(I,bi,bj),K,bi,bj)=0.
         gUnm1(I,OB_Js(I,bi,bj),K,bi,bj)=OBSu(I,K,bi,bj)
      &                              *_maskW(I,OB_Js(I,bi,bj),K,bi,bj)
         gVnm1(I,OB_Js(I,bi,bj),K,bi,bj)=OBSv(I,K,bi,bj)
@@ -56,7 +56,6 @@ C Eastern boundary
        IF (OB_Ie(J,bi,bj).NE.0) THEN
         gUnm1(OB_Ie(J,bi,bj),J,K,bi,bj)=OBEu(J,K,bi,bj)
      &                              *_maskW(OB_Ie(J,bi,bj),J,K,bi,bj)
-!aja    gWnm1(OB_Ie(J,bi,bj),J,K,bi,bj)=0.
         gVnm1(OB_Ie(J,bi,bj),J,K,bi,bj)=OBEv(J,K,bi,bj)
      &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
         gUnm1(OB_Ie(J,bi,bj)+1,J,K,bi,bj)=OBEu(J,K,bi,bj)
@@ -66,7 +65,6 @@ C Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
         gUnm1(OB_Iw(J,bi,bj)+1,J,K,bi,bj)=OBWu(J,K,bi,bj)
      &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
-!aja    gWnm1(OB_Ie(J,bi,bj),J,K,bi,bj)=0.
         gVnm1(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWv(J,K,bi,bj)
      &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
         gUnm1(OB_Iw(J,bi,bj),J,K,bi,bj)=OBWu(J,K,bi,bj)
@@ -74,6 +72,6 @@ C Western boundary
        ENDIF
       ENDDO
 
+#endif
       RETURN
       END
-#endif

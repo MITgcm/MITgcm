@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.46 1999/08/26 17:47:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.47 1999/08/30 18:29:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -128,7 +128,8 @@ C--   Input files
      & bathyFile, hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
-     & surfQfile, EmPmRfile
+     & surfQfile, EmPmRfile,
+     & uVelInitFile, vVelInitFile
 
 C--   Open Boundaries
       NAMELIST /PARM06/

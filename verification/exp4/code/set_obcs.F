@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.2 1999/05/18 17:45:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.3 1999/08/30 18:29:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -24,6 +24,8 @@ C     myThid -  Number of this instance of INI_DEPTHS
       _RL myCurrentTime
       INTEGER myThid
 CEndOfInterface
+
+#ifdef ALLOW_OBCS
 
 C     == Local variables ==
 C     xG, yG - Global coordinate location.
@@ -139,7 +141,6 @@ C         Outgoing
       ENDDO
 #endif
 
-
-C
+#endif
       RETURN
       END

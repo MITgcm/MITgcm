@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.8 1999/07/30 15:42:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.9 1999/08/30 18:29:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -57,6 +57,12 @@ C--   Initialise velocity field to zero
         ENDDO
        ENDDO
       ENDDO
+C     Read an initial state
+      IF (uVelInitFile .NE. ' ') THEN
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
+       _END_MASTER(myThid)
+      ENDIF
 C     Set initial tendency terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

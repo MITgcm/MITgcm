@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.30 1999/07/30 15:46:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.31 1999/08/30 18:29:27 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -142,15 +142,6 @@ C--    Step forward all tiles, filter and exchange.
        CALL TIMER_STOP ('SHAP_FILT          [MAIN LOOP]',myThid)
 #endif
 
-#ifdef ALLOW_OBCS
-C--    Set Open Boundaries Values
-       IF (openBoundaries) THEN
-        CALL TIMER_START('OBCS               [MAIN LOOP]',myThid)
-        CALL SET_OBCS( myCurrentTime, myThid )
-        CALL TIMER_STOP ('OBCS               [MAIN LOOP]',myThid)
-       ENDIF
-#endif
-
 C--    Step forward fields and calculate time tendency terms
        CALL TIMER_START('DYNAMICS           [MAIN LOOP]',myThid)
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
@@ -226,15 +217,6 @@ C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL 
      & WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('I/O (WRITE)         [SPIN-DOWN]',myThid)
-
-#ifdef ALLOW_OBCS
-C--   Set Open Boundaries Values
-      IF (openBoundaries) THEN
-       CALL TIMER_START('OBCS               [SPIN_DOWN]',myThid)
-       CALL SET_OBCS( myCurrentTime, myThid )
-       CALL TIMER_STOP ('OBCS               [SPIN_DOWN]',myThid)
-      ENDIF
-#endif
 
 C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
       CALL TIMER_START('DYNAMICS            [SPIN-DOWN]',myThid)

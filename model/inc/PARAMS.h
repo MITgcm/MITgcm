@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.41 1999/08/26 17:47:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.42 1999/08/30 18:29:21 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -63,7 +63,8 @@ C                        get buoyancy.
      &                bathyFile, hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
-     &                EmPmRfile,surfQfile
+     &                EmPmRfile, surfQfile,
+     &                uVelInitFile, vVelInitFile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -75,6 +76,8 @@ C                        get buoyancy.
       CHARACTER*(MAX_LEN_FNAM) surfQfile
       CHARACTER*(MAX_LEN_FNAM) EmPmRfile
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
+      CHARACTER*(MAX_LEN_FNAM) uVelInitFile
+      CHARACTER*(MAX_LEN_FNAM) vVelInitFile
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        - Maximum number of iterations in the

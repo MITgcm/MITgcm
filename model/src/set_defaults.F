@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.6 1999/08/26 17:47:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.7 1999/08/30 18:29:27 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -160,6 +160,8 @@ C--   Input files
       saltClimFile    = ' '
       EmPmRfile       = ' '
       surfQfile       = ' '
+      uVelInitFile    = ' '
+      vVelInitFile    = ' '
 
 C--   OBCS
       DO I=1,Nx
