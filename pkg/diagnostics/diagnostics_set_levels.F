@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.5 2005/02/07 03:46:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.6 2005/02/13 23:26:03 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -24,6 +24,8 @@ C                   &  1  &  levels = 1  \\
 C                   &  R  &  levels = Nr  \\
 C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
 C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
+C                   &  G  &  levels = Ground_level Number \\
+C                   &  I  &  levels = sea-Ice_level Number \\
 C       \end{tabular}
 C     \end{center}
 
@@ -31,6 +33,7 @@ C     !USES:
       IMPLICIT NONE
 
 #include "SIZE.h"
+#define SIZE_IS_SET
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
@@ -43,13 +46,20 @@ C     !USES:
        PARAMETER (Nrphys=0)
 #endif
 
+#ifdef ALLOW_LAND
+#include "LAND_SIZE.h"
+#else
+      INTEGER land_nLev
+      PARAMETER ( land_nLev = 0 )
+#endif
+
 C     !INPUT PARAMETERS:
 C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER l, n, nlevs
+      INTEGER l, n, nlevs, nGroundLev
       INTEGER  dUnit, stdUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(72) ccHead, ccLine
@@ -60,6 +70,7 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       nlevs   = MAX(Nr,Nrphys)
+      nGroundLev = land_nLev
 
 c     Diagnostic Levels
 c     -----------------
@@ -69,6 +80,7 @@ c     -----------------
         IF (gdiag(n)(10:10) .EQ. 'R')  kdiag(n) = Nr
         IF (gdiag(n)(10:10) .EQ. 'L')  kdiag(n) = nlevs
         IF (gdiag(n)(10:10) .EQ. 'M')  kdiag(n) = nlevs - 1
+        IF (gdiag(n)(10:10) .EQ. 'G')  kdiag(n) = nGroundLev
       ENDDO
 
       _BEGIN_MASTER( myThid )
