@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.2 2005/02/20 04:31:54 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,15 +8,17 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_INIT_VARIA
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_INIT_VARIA(myThid)
+      SUBROUTINE DIAGNOSTICS_INIT_VARIA(
+     I     myThid )
 
 C     !DESCRIPTION:
 C     Initialize the qdiag array which accumulates during integration
       
 C     !USES:
       IMPLICIT NONE
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
@@ -26,6 +28,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i,j,n,bi,bj
+      CHARACTER*(80) fn
+      LOGICAL glf
 
 C     Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -39,6 +43,27 @@ C     Zero out the qdiag array which accumulates during integration
           ENDDO
         ENDDO
       ENDDO
+
+
+C     Add pickup capability
+      IF (diag_pickup_read) THEN
+
+#ifdef ALLOW_MNC
+C       IF (useMNC .AND. diag_pickup_read_mnc) THEN
+C       ENDIF
+#endif
+        
+        IF (diag_pickup_read_mdsio) THEN
+          DO i = 1,80
+            fn(i:i) = ' '
+          ENDDO
+          write(fn,'(a)') 'pickup_diagnostics'
+          glf = globalFiles
+          CALL MDSREADFIELD(fn,readBinaryPrec,glf,'RL',
+     &         numdiags,qdiag,1,myThid)
+        ENDIF
+
+      ENDIF
 
       RETURN 
       END

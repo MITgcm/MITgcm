@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.4 2005/02/07 20:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.5 2005/02/20 04:31:54 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -49,7 +49,9 @@ C     filename  :: List Output Filename
 
       NAMELIST / diagnostics_list /
      &     frequency, levels, fields, filename,
-     &     diag_mnc
+     &     diag_mnc,
+     &     diag_pickup_read,     diag_pickup_write,
+     &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -67,6 +69,10 @@ C     Initialize and Read Diagnostics Namelist
         ENDDO
       ENDDO
       diag_mnc = useMNC
+      diag_pickup_read      = .FALSE.
+      diag_pickup_write     = .FALSE.
+      diag_pickup_read_mnc  = .FALSE.
+      diag_pickup_write_mnc = .FALSE.
 
       WRITE(msgBuf,'(A)')
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
@@ -96,6 +102,12 @@ C     Initialise diag_choices common block
 C     Fill Diagnostics Common Block with Namelist Info
       diag_mnc = diag_mnc .AND. useMNC
       diag_mdsio = (.NOT. diag_mnc) .OR. outputTypesInclusive
+      diag_pickup_read_mnc  = diag_pickup_read_mnc .AND. diag_mnc
+      diag_pickup_write_mnc = diag_pickup_write_mnc .AND. diag_mnc
+      diag_pickup_read_mdsio  = 
+     &     diag_pickup_read .AND. (.NOT. diag_pickup_read_mnc)
+      diag_pickup_write_mdsio = diag_pickup_write .AND.
+     &     ((.NOT. diag_pickup_write_mnc) .OR. outputTypesInclusive)
 
       DO l = 1,ldimLoc
        IF ( frequency(l).NE.0 .AND. nlists.LT.numlists ) THEN

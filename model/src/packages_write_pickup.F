@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.10 2004/09/30 18:59:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.11 2005/02/20 04:31:54 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -194,6 +194,13 @@ C     Write pickup file for fizhi package
         CALL FIZHI_WRITE_PICKUP(fn,myTime,myIter,myThid)
         CALL FIZHI_WRITE_VEGTILES(fn,0,myTime,myIter,myThid)
         CALL FIZHI_WRITE_DATETIME(myTime,myIter,myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+C     Write pickup file for diagnostics package
+      IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_WRITE_PICKUP(fn,myTime,myIter,myThid)
       ENDIF
 #endif
 
