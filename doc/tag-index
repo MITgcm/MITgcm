@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.182 2003/10/07 15:47:00 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.183 2003/10/08 19:35:00 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint 51i_pre
+o new output for adjoin of global ocean vector invariant
+o fix for checkpoint of thermodynamic seaice and bulk_force
+o Steph gchem various cleanups
+
 checkpoint 51h_pre
+o fixed some single quotes
 o modify gchem pkg to be more versatile
 o modifications to clean up dic pkg
 o add pkg/cfc
