@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.49 2005/01/04 00:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.50 2005/02/06 23:20:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -177,7 +177,8 @@ C--   Do GCHEM diagnostics.
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics ) CALL DIAGNOSTICS_WRITE (myIter, myThid)
+      IF ( usediagnostics ) 
+     &     CALL DIAGNOSTICS_WRITE( myTime, myIter, myThid )
 #endif
 
       RETURN
