@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.17 2004/07/20 17:47:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.18 2004/07/26 21:16:18 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -122,7 +122,7 @@ C       Update the record dimension by writing the iteration number
               if (parse1(5).ne.'C') then
 
                 do k = 1,nlevels(listnum)
-                  call getdiag ( myThid,k,m,undef,qtmp1)
+                  call getdiag ( myThid,levs(k,listnum),m,undef,qtmp1)
                 enddo
 
 C               Check for Mate of a Vector Diagnostic
@@ -144,8 +144,8 @@ C               Check for Mate of a Counter Diagnostic
 C               --------------------------------------
                 read (mate_index,100) mate
                 do k = 1,nlevels(listnum)
-                  call getdiag2 ( myThid,k,m,undef,qtmp1)
-                  call getdiag2 ( myThid,k,mate,undef,qtmp2)
+                  call getdiag2(myThid,levs(k,listnum),m,undef,qtmp1)
+                  call getdiag2(myThid,levs(k,listnum),mate,undef,qtmp2)
                   do bj = myByLo(myThid), myByHi(myThid)
                     do bi = myBxLo(myThid), myBxHi(myThid)
                       do j = 1,sNy

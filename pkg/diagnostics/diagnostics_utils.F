@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.13 2004/07/08 16:16:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.14 2004/07/26 21:16:18 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP 0
 C     !ROUTINE: GETDIAG
 
 C     !INTERFACE:
-      SUBROUTINE GETDIAG (myThid,lev,ipoint,undef,qtmp)
+      SUBROUTINE GETDIAG (myThid,levreal,ipoint,undef,qtmp)
 
 C     !DESCRIPTION:
 C     Retrieve averaged model diagnostic
@@ -36,17 +36,20 @@ C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU
 C     undef  ..... UNDEFINED VALUE                                                 
 C     bi     ..... X-direction process(or) number
 C     bj     ..... Y-direction process(or) number
-      integer myThid,lev,ipoint
+      integer myThid,ipoint
       _RL undef
       
 C     OUTPUT:
 C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
       _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+      _RL levreal
 
       _RL factor
       integer i,j,ipnt,klev
       integer bi,bj
+      integer lev
 
+      lev = levreal
       if (ipoint.lt.1) go to 999
 
       klev = kdiag(ipoint)
