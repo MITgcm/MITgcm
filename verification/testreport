@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.60 2004/12/12 04:25:54 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.61 2004/12/16 20:25:11 edhill Exp $
 #  $Name:  $
 #
 
@@ -971,24 +971,24 @@ for dir in $TESTDIRS ; do
 	echo "tdir='$dir'" >> $CDIR"/summary.txt"
 
 	for ex in $extra_runs ; do
-	    test -e "$dir/tr_run.$ex" && rm -rf "$dir/tr_run.$ex"
-	    mkdir "$dir/tr_run.$ex"
-	    links=`( cd "$dir/input" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
-	    (
-		cd "$dir/tr_run.$ex"
-		for i in $links; do
-		    ln -s ../input/$i $i
-		done
-	    )
-	    links=`( cd "$dir/input.$ex" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
-	    ( 
-		cd "$dir/tr_run.$ex"
-		for i in $links; do
-		    test -e $i  &&  rm -f $i
-		    ln -s ../input.$ex/$i $i
-		done
-		ln -s ../$builddir/mitgcmuv mitgcmuv
-	    )
+	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
+	    for ldir in build input input.$ex ; do
+		(
+		    cd "$dir/$ldir" > /dev/null 2>&1
+		    ls -1 2>/dev/null \
+			| sed -e 's|^CVS$||g' | sed -e 's|^output.txt$||g'
+		) > tr_exrun_links
+		(
+		    cd "$dir/tr_run.$ex"
+		    cat ../../tr_exrun_links | while read i ; do
+			if test ! "x$i" = x ; then
+			    test -e $i  &&  rm -f $i
+			    ln -s "../"$ldir"/"$i $i
+			fi
+		    done
+		)
+		test -e tr_exrun_links  &&  rm -f tr_exrun_links
+	    done
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput $dir tr_run.$ex "."$ex`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
