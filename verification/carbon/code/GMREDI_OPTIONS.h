@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/GMREDI_OPTIONS.h,v 1.4 2003/01/10 01:02:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/GMREDI_OPTIONS.h,v 1.5 2003/01/13 20:08:15 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -11,12 +11,11 @@ C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
 #ifdef ALLOW_GMREDI
 
-C Specify as tapering scheme either 'orig' or 'clipping',
-C otherwise one of the following is used:
-C 'linear', 'gkw91', 'dm95', 'ldd97'
-#undef GM_TAPER_ORIG_CLIPPING
-#undef GM_TAPER_AC02
-#define GM_TAPER_REST
+C Designed to simplify the Ajoint code:
+C  exclude the clipping/tapering part of the code that is not used
+#define GM_EXCLUDE_CLIPPING
+#define GM_EXCLUDE_AC02_TAP
+#undef  GM_EXCLUDE_TAPERING 
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #define GM_VISBECK_VARIABLE_K
