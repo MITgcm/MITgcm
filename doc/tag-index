@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.390 2004/11/21 22:22:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.391 2004/11/22 21:12:48 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exf_check_range:
+  * default changed to .TRUE.
+  * will check values for niter0 if debLevA, every timestep if debLevB
+  * STOP in exf_check_range if 'out of range'
+  * range chosen generous to allow for potential extema
+  TBD: a version with stricter range
+       permitted range would be runtime parameters
 o GMredi:
   - fix ldd97 slope limit ; extend valid domain of Psi-Bolus ;
   - change S/R GRAD_SIGMA to be valid in the overlap on CS-grid.
