@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/Attic/diagnostics_SIZE.h,v 1.2 2004/12/13 22:12:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/DIAGNOSTICS_SIZE.h,v 1.1 2004/12/13 22:12:13 jmc Exp $
 C $Name:  $
 
 
