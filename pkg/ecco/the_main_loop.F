@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.2 2003/11/13 19:35:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.3 2003/11/17 22:32:33 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -117,6 +117,7 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
+# include "ecco_cost.h"
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************

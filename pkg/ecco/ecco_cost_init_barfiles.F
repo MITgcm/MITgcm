@@ -1,4 +1,5 @@
 
+#include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
       subroutine ecco_cost_init_barfiles( mythid )

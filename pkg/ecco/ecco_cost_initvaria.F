@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.2 2003/11/17 22:32:33 heimbach Exp $
 
+#include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
       subroutine ecco_cost_initvaria( mythid )
@@ -69,7 +70,7 @@ cph   of a divided adjoint run
 cph)
       inquire( file='costfinal', exist=exst )
       if ( .NOT. exst) then
-         call cost_init_barfiles( mythid )
+         call ecco_cost_init_barfiles( mythid )
       endif
 #endif
 

@@ -40,9 +40,9 @@ c        END DO
        END DO
       END DO
 
-      fc = objf_state_final(45,4,1,1)
-      _GLOBAL_SUM_R8( fc , myThid )
-      print *, 'fc for admtlm test at 83,33 : ', fc
+cph      fc = objf_state_final(45,4,1,1)
+cph      _GLOBAL_SUM_R8( fc , myThid )
+cph      print *, 'fc for admtlm test at 83,33 : ', fc
 
 #endif
       
