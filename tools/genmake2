@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.86 2004/07/17 02:52:14 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.87 2004/07/17 03:29:08 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -792,7 +792,7 @@ fi
 #done
 #parse_options
 ac_prev=
-for ac_option ; do
+for ac_option in $@ ; do
 
     G2ARGS="$G2ARGS \"$ac_option\""
 
@@ -960,7 +960,8 @@ if test -f ./.genmakerc ; then
 fi
 
 if test "x${ROOTDIR}" = x ; then
-    if test "${PWD##/*/}" = "bin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
+    tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
+    if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
 	ROOTDIR=".."
     else
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
@@ -1222,7 +1223,8 @@ if test "x${PLATFORM}" = x ; then
 fi
 
 if test "x${EXEDIR}" = x ; then
-    if test "${PWD##/*/}" = "bin" -a -d ../exe -a $ROOTDIR = .. ; then
+    tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
+    if test "x$tmp" = "xbin" -a -d ../exe -a $ROOTDIR = .. ; then
 	EXEDIR=../exe
     else
 	EXEDIR=.
@@ -1340,7 +1342,8 @@ else
 	    PACKAGES="$PACKAGES $i"
 	done
 	echo "    before group expansion packages are: $PACKAGES"
-	while ! expand_pkg_groups; do echo > /dev/null; done
+	RET=1
+        while test $RET = 1 ; do expand_pkg_groups; RET=$?; done
 	echo "    after group expansion packages are:  $PACKAGES"
     fi
 fi
@@ -1449,7 +1452,8 @@ while test "x$ck" != xtt ; do
 	    echo "  the dependency rules for \"$dname\""
 	    exit 1
 	fi
-	i=$(( $i + 1 ))
+        i=`echo "$i + 1" | bc -l`
+	#i=$(( $i + 1 ))
     done
     ck=$ck"t"
 done
@@ -1611,9 +1615,7 @@ echo
 echo "===  Creating the Makefile  ==="
 echo "  setting INCLUDES"
 for i in $INCLUDEDIRS ; do
-    if ! test -d $i ; then
-#	INCLUDES="$INCLUDES -I$i"
-#   else
+    if test ! -d $i ; then
 	echo "Warning: can't find INCLUDEDIRS=\"$i\""
     fi
 done
