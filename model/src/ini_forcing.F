@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.17 2000/03/27 22:25:44 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.18 2000/09/11 23:02:31 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -34,13 +34,17 @@ C     I,J
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          fu   (i,j,bi,bj) = 0. _d 0
-          fv   (i,j,bi,bj) = 0. _d 0
-          Qnet (i,j,bi,bj) = 0. _d 0
-          EmPmR(i,j,bi,bj) = 0. _d 0
-          SST  (i,j,bi,bj) = 0. _d 0
-          SSS  (i,j,bi,bj) = 0. _d 0
-          Qsw  (i,j,bi,bj) = 0. _d 0
+          fu              (i,j,bi,bj) = 0. _d 0
+          fv              (i,j,bi,bj) = 0. _d 0
+          Qnet            (i,j,bi,bj) = 0. _d 0
+          EmPmR           (i,j,bi,bj) = 0. _d 0
+          SST             (i,j,bi,bj) = 0. _d 0
+          SSS             (i,j,bi,bj) = 0. _d 0
+          Qsw             (i,j,bi,bj) = 0. _d 0
+          surfaceTendencyU(i,j,bi,bj) = 0. _d 0
+          surfaceTendencyV(i,j,bi,bj) = 0. _d 0
+          surfaceTendencyT(i,j,bi,bj) = 0. _d 0
+          surfaceTendencyS(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -59,15 +63,22 @@ C
       IF ( EmPmRfile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( EmPmRfile, ' ', EmPmR, 0, myThid )
       ENDIF
+#ifdef SHORTWAVE_HEATING
+      IF ( surfQswFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
+      ENDIF
+#endif
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
       ENDIF
       IF ( saltClimFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( saltClimFile, ' ', SSS, 0, myThid )
       ENDIF
-c     IF ( surfQswFile .NE. ' '  ) THEN
-c      CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
-c     ENDIF
+#ifdef SHORTWAVE_HEATING
+      IF ( surfQswFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
+      ENDIF
+#endif
       _END_MASTER(myThid)
 C
       _EXCH_XY_R4(fu   , myThid )
@@ -80,6 +91,9 @@ C
 
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
+
+C     Convert units and signs (!)
+      CALL EXTERNAL_FIELDS_SCALE( myThid )
 
       RETURN
       END
