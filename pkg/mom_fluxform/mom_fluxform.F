@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.20 2004/10/21 21:14:02 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.21 2004/10/29 16:25:37 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -123,12 +123,12 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       _RL  rTransU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  rTransV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAhD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAhZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
@@ -265,14 +265,14 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
 
       CALL MOM_CALC_KE(bi,bj,k,3,uFld,vFld,KE,myThid)
 
-c     IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.) THEN
+      IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.) THEN
          CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,
      O                         tension,
      I                         myThid)
          CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,
      O                        strain,
      I                        myThid)
-c     ENDIF
+      ENDIF
 
 C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
@@ -311,7 +311,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
 c     IF (momViscosity) THEN
 c    &  CALL MOM_CALC_VISCOSITY(bi,bj,k,
 c    I                         uFld,vFld,
-c    O                         viscAhD,viscAhZ,myThid)
+c    O                         viscAh_D,viscAh_Z,myThid)
 
 C---- Zonal momentum equation starts here
 
