@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.9 2001/09/28 16:49:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.10 2003/10/02 21:30:22 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -129,7 +129,11 @@ C--     Do check to see if there are nThreads threads running
 
 C--     Invoke nThreads instances of the numerical model
         IF ( .NOT. eeBootError ) THEN
+#ifdef ALLOW_ADMTLM_RUN
+         CALL DSVD(myThid)
+#else
          CALL THE_MODEL_MAIN(myThid)
+#endif
         ENDIF
 
 C--     Each threads sets flag indicating it is done

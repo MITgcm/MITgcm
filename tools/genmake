@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.83 2003/09/17 18:24:51 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.84 2003/10/02 21:30:22 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -9,7 +9,7 @@
 #   modified by aja 01/00
 
 # Default lists
-if (! $?DISABLE) set DISABLE = ( aim aim_v23 autodiff cal cost ctrl ecco exf grdchk flt land ptracers seaice therm_seaice bulk_force dic gchem )
+if (! $?DISABLE) set DISABLE = ( aim aim_v23 admtlm autodiff cal cost ctrl ecco exf grdchk flt land ptracers seaice therm_seaice bulk_force dic gchem )
 if (! $?ENABLE) set ENABLE  = ( )
 if (! $?DEFINES) set DEFINES = ( )
 if (! $?MODS) set MODS  = ( )
@@ -100,6 +100,10 @@ while ($#allargs)
    set include_jam_libs
    echo "Including paths to JAM libraries"
    breaksw
+ case -arpack:
+   echo "Enabling ARPACK libraries"
+   set USEARPACK
+   breaksw
  case -fc:
  case -fc=:
    echo "To change the compiler (\$FC) you must specify one with -fc="
@@ -113,7 +117,7 @@ while ($#allargs)
    set FC = ( `echo $arg | sed 's/-fc=//' `)
    breaksw
  case -help:
-   echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi] [-jam] [-disable=pkg1[,pkg2,...]] [-enable=pkg1[,pkg2,...]] [-mods=dir1[,dir2,...]] [-rootdir=dir]"
+   echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi] [-jam] [-arpack] [-disable=pkg1[,pkg2,...]] [-enable=pkg1[,pkg2,...]] [-mods=dir1[,dir2,...]] [-rootdir=dir]"
 cat << EOF
 
 $0 is used to generate the Makefile in the current directory.
@@ -376,8 +380,15 @@ else
 # set DEFINES = ( ${DEFINES} '-UALLOW_USE_MPI -UALWAYS_USE_MPI' )
 endif
 
+if ($?USEARPACK) then
+  set USEARPACK  = ( '+arpack' )
+  set LIBS       = ( '-L/usr/lib -larpack -llapack' )
+else
+  set USEARPACK
+endif
+
 # Platform specific options
-switch ($platform$USEMPI)
+switch ($platform$USEMPI$USEARPACK)
   case OSF1+mpi:
 #ph: e.g. halem.gsfc.nasa.gov
     echo "Configuring for DEC Alpha with MPI"
@@ -622,7 +633,7 @@ switch ($platform$USEMPI)
       set FOPTIM     = ( '-O3 -align' ) 
 #P3   set FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
 #P4   set FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
-      set LIBS       = ( '-lPEPCF90' )
+      set LIBS       = ( ${LIBS} '-lPEPCF90' )
       breaksw
      default:
       echo Error: Linux compiler not recognized: \$FC=$FC
@@ -735,6 +746,18 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
     set LIBS       = ( '-L/opt/mpich/lib/ -lfmpich -lmpich' )
     set INCLUDES   = ( '-I/opt/mpich/include' )
+    breaksw
+  case gfdl-sgi-o3k
+    echo "Configuring for " $platform
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set FFLAGS     = ( 'extend_source -mp -mpio -bytereclen -mips4 -r8 -static' )
+    set FOPTIM     = ( '-O3' )
+    set LIBS       = ( '-lmpi' )
+    set INCLUDES   = ( '-I/opt/mpt/1510/usr/include' )
+    breaksw
+  default:
+    echo "Error: platform not recognized: uname -p = " $platform$USEMPI
+    exit
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
