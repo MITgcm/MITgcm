@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.51 2004/11/29 21:38:08 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.52 2004/12/01 16:59:42 edhill Exp $
 #  $Name:  $
 #
 
@@ -519,23 +519,23 @@ createcodelet()
 #include <math.h>
 int main( int argc, char** argv )  {
   int linnum,best,lncnt;
-  double a,b,diff;
+  double a,b,abave,relerr;
   best = -16;
   lncnt = 0;
   while( 1 & (lncnt+=1) < 999 )  {
     scanf("%d", &linnum);
     if (linnum == -1)  break;
     scanf("%lf", &a);  scanf("%lf", &b);
-    diff = 0.5*(fabs(a)+fabs(b));
-    if (diff > 0.0) {
-      diff=fabs(a-b)/diff;
-      if (diff > 1.e-12) {
-        linnum = (int)log10(diff);
+    abave = 0.5*(fabs(a)+fabs(b));
+    if (abave > 0.0) {
+      relerr=fabs(a-b)/abave;
+      if (relerr > 0.0) {
+        linnum = (int)log10(relerr);
         best = (best > linnum) ? best : linnum;
       }
-      else {
-        if (best == -16 && diff != 0)  best = -22;
-      }
+    }
+    else {
+      if (best == -16 && abave != 0)  best = -22;
     }
   }
   if (lncnt == 999) best=-29;
