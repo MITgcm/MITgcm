@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.4 2004/02/06 19:23:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.5 2004/02/25 23:52:11 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -38,13 +38,9 @@ C     === Local variables ====
       _RL tmpFac
       _RL etaFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
-#ifdef USE_W2
-      LOGICAL northWestCorner, northEastCorner,
-     &        southWestCorner, southEastCorner,
-     &        northEdge, eastEdge
-      INTEGER myTile
-
-#endif /* USE_W2 */
+      LOGICAL northWestCorner, northEastCorner 
+      LOGICAL southWestCorner, southEastCorner 
+      INTEGER myTile, iG
 
       theMin = 1. _d 20
       theMax =-1. _d 20
@@ -72,17 +68,10 @@ C     === Local variables ====
 #endif
         DO k=1,Nr
 
-#ifndef USE_W2
          iMax = sNx
          jMax = sNy
          DO j=1,sNy
           DO i=1,sNx
-#else /* USE_W2 */
-         iMax = sNx + 1
-         jMax = sNy + 1
-         DO j=1,jMax
-          DO i=1,iMax
-#endif /* USE_W2 */
 #ifdef MONITOR_TEST_HFACZ
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Test various definitions of hFacZ (for 1 layer, flat bottom ocean):
@@ -134,61 +123,43 @@ C-    Standard definition of hFac at vorticity point:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Special stuff for Cubed Sphere:
          IF (useCubedSphereExchange) THEN
-#ifndef USE_W2
 c          AZcorner = 0.75 _d 0
            iMax = sNx+1
            jMax = sNy+1
-#else /* USE_W2 */
-          southWestCorner = .FALSE.
-          southEastCorner = .FALSE.
-          northWestCorner = .FALSE.
-          northEastCorner = .FALSE.
-          eastEdge        = .FALSE.
-          northEdge       = .FALSE.
-          myTile = W2_myTileList(bi)
-          IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &         exch2_isSedge(myTile) .EQ. 1 ) THEN
-           southWestCorner = .TRUE.
-          ENDIF
-          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &         exch2_isSedge(myTile) .EQ. 1 ) THEN
-           southEastCorner = .TRUE.
-          ENDIF
-          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-           northEastCorner = .TRUE.
-          ENDIF
-          IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-           northWestCorner = .TRUE.
-          ENDIF
-          IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
-           eastEdge  = .TRUE.
-          ENDIF
-          IF ( exch2_isNedge(myTile) .EQ. 1 ) THEN
-           northEdge = .TRUE.
-          ENDIF
-
-c         AZcorner = 0.75 _d 0
-          IF ( northEdge ) THEN
-#endif /* USE_W2 */
            DO i=1,iMax
             hFacZ(i,jMax)=0.
             vort3(i,jMax)=0.
            ENDDO
-#ifdef USE_W2
-          ENDIF
-          IF ( eastEdge ) THEN
-#endif /* USE_W2 */
            DO j=1,jMax
             hFacZ(iMax,j)=0.
             vort3(iMax,j)=0.
            ENDDO
+
+           southWestCorner = .TRUE.
+           southEastCorner = .TRUE.
+           northWestCorner = .TRUE.
+           northEastCorner = .TRUE.
+           iG = bi+(myXGlobalLo-1)/sNx
 #ifdef USE_W2
-          ENDIF
+           myTile = W2_myTileList(bi)
+           iG = exch2_myFace(myTile)
+           southWestCorner = exch2_isWedge(myTile).EQ.1 
+     &                 .AND. exch2_isSedge(myTile).EQ.1
+           southEastCorner = exch2_isEedge(myTile).EQ.1
+     &                 .AND. exch2_isSedge(myTile).EQ.1
+           northEastCorner = exch2_isEedge(myTile).EQ.1
+     &                 .AND. exch2_isNedge(myTile).EQ.1
+           northWestCorner = exch2_isWedge(myTile).EQ.1
+     &                 .AND. exch2_isNedge(myTile).EQ.1
+#endif /* USE_W2 */
+
+C--        avoid to count 3 times the same corner:
+           southEastCorner = southEastCorner .AND. iG.EQ.2
+           northWestCorner = northWestCorner .AND. iG.EQ.1
+           northEastCorner = .FALSE.
+
 C--       S.W. corner:
           IF ( southWestCorner ) THEN
-#endif /* USE_W2 */
            i=1
            j=1
            vort3(i,j)=
@@ -201,10 +172,8 @@ C--       S.W. corner:
      &                  + _hFacW(i, j ,k,bi,bj) 
      &                  + _hFacS( i ,j,k,bi,bj)
      &                  )/3. _d 0
-#ifdef USE_W2
           ENDIF
           IF ( southEastCorner ) THEN
-#endif /* USE_W2 */
 C--        S.E. corner:
            i=iMax
            j=1
@@ -218,10 +187,8 @@ C--        S.E. corner:
      &                  + _hFacW(i, j ,k,bi,bj) 
      &                  + _hFacS(i-1,j,k,bi,bj) 
      &                  )/3. _d 0
-#ifdef USE_W2
           ENDIF
           IF ( northWestCorner ) THEN
-#endif /* USE_W2 */
 C--        N.W. corner:
            i=1
            j=jMax
@@ -235,10 +202,8 @@ C--        N.W. corner:
      &                  + _hFacW(i, j ,k,bi,bj) 
      &                  + _hFacS( i ,j,k,bi,bj)
      &                  )/3. _d 0
-#ifdef USE_W2
           ENDIF
           IF ( northEastCorner ) THEN
-#endif /* USE_W2 */
 C--        N.E. corner:
            i=iMax
            j=jMax
@@ -252,17 +217,13 @@ C--        N.E. corner:
      &                  + _hFacW(i, j ,k,bi,bj) 
      &                  + _hFacS(i-1,j,k,bi,bj) 
      &                  )/3. _d 0
-#ifdef USE_W2
           ENDIF
-#endif /* USE_W2 */
          ENDIF
 
 C-    Special stuff for North & South Poles, LatLon grid
          IF ( usingSphericalPolarGrid ) THEN
           IF (yG(1,sNy+1,bi,bj).EQ.90.) THEN
-#ifndef USE_W2
            jMax = sNy+1
-#endif /* not USE_W2 */
            j = jMax
            DO i=1,sNx
             vort3(i,j) = 0.
