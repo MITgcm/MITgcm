@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_addtime.F,v 1.3 2003/10/20 06:25:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_addtime.F,v 1.4 2004/07/26 23:24:11 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -160,26 +160,30 @@ c             mi = mod(mi-1,nmonthyear)+1
 c             if (switch .eq. 1) li = cal_IsLeap( yi, mythid )
 c           enddo
 
-c     First take care of February 29
+c     Set start value
             ndays_left=ndays
-            if ( mi.eq.2 .and. di.eq.29 .and. ndays_left.gt.1 ) then
-               mi = 3
-               di = 1
-               ndays_left = ndays_left - 1
+
+c     First take care of February 29
+            if ( usingGregorianCalendar ) then
+               if ( mi.eq.2 .and. di.eq.29 .and. ndays_left.gt.1 ) then
+                  mi = 3
+                  di = 1
+                  ndays_left = ndays_left - 1
+               endif
             endif
 
 c     Next compute year
-            days_in_year=365
+            days_in_year=ndaysnoleap
             if ((mi.gt.2.and.cal_IsLeap(yi+1,mythid).eq.2).or.
      &           (mi.le.2.and.cal_IsLeap(yi,mythid).eq.2) )
-     &           days_in_year=366
+     &           days_in_year=ndaysleap
             do while (ndays_left .ge. days_in_year)
                ndays_left = ndays_left - days_in_year
                yi = yi + 1
-               days_in_year=365
+               days_in_year=ndaysnoleap
                if ((mi.gt.2.and.cal_IsLeap(yi+1,mythid).eq.2).or.
      &              (mi.le.2.and.cal_IsLeap(yi,mythid).eq.2) )
-     &              days_in_year=366
+     &              days_in_year=ndaysleap
             enddo
             li = cal_IsLeap( yi, mythid )
 
