@@ -43,7 +43,7 @@ function [AA] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.5 2001/08/28 17:03:25 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.6 2001/08/28 17:58:49 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -84,7 +84,7 @@ end
 % Loop over each iteration
 for iter=1:size(iters,2);
 if iters(iter)>=0
- fname=sprintf('%s.%10.10i',fnamearg,iters(iter))
+ fname=sprintf('%s.%10.10i',fnamearg,iters(iter));
 end
 
 % Match name of all meta-files
