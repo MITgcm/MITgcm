@@ -27,7 +27,9 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "g_common.h"
+#ifdef ALLOW_AUTODIFF_MONITOR
+# include "g_common.h"
+#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -41,7 +43,9 @@ C     myTime - time counter for this thread
 C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
+
+#ifdef ALLOW_AUTODIFF_MONITOR
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -146,6 +150,9 @@ C--     Check for IO errors
       ENDIF
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
       end
 
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.7 2001/11/20 23:27:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.8 2002/07/13 03:30:30 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -28,7 +28,9 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "adcommon.h"
+#ifdef ALLOW_AUTODIFF_MONITOR
+# include "adcommon.h"
+#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -43,6 +45,8 @@ C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
       _RL     mytime 
+
+#ifdef ALLOW_AUTODIFF_MONITOR
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -147,6 +151,9 @@ C--     Check for IO errors
       ENDIF
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
       end
 
 
