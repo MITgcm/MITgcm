@@ -1,6 +1,6 @@
       function minval (q,im)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer  im, i
       _RL   q(im), minval
       minval = 1.e15
@@ -50,7 +50,7 @@ C **********************************************************************
       END
 
       SUBROUTINE STRIP(A,B,IA,IB,L,K)                                           
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
@@ -77,7 +77,7 @@ C **********************************************************************
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PASTE(B,A,IB,IA,L,K)                                           
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
@@ -93,7 +93,7 @@ C **********************************************************************
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PSTBMP(B,A,IB,IA,L,K)                                          
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
@@ -158,7 +158,7 @@ C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
 C***********************************************************************
 
       IMPLICIT NONE
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL TT, P, Q, DQDT
       LOGICAL LDQDT
       _RL AIRMW, H2OMW
@@ -330,7 +330,7 @@ c ------------------------------------
       END
       subroutine vqsat (tt,p,q,dqdt,ldqdt,n)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer  i,n
       logical  ldqdt
       _RL     tt(n), p(n), q(n), dqdt(n)
@@ -347,7 +347,7 @@ cfpp$ expand (qsat)
 
       subroutine stripit(a,b,irun,ia,ib,l,k)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,l,k
       _RL a(ia,l), b(ib,l)
       integer   i,j,len,offset
@@ -376,7 +376,7 @@ cfpp$ expand (qsat)
 
       subroutine stripitint(a,b,irun,ia,ib,l,k)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,l,k,a(ia,l),b(ib,l)
       integer i,j,len,offset
 
@@ -404,7 +404,7 @@ cfpp$ expand (qsat)
 
       subroutine pastit(b,a,ib,ia,irun,L,k)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
@@ -422,7 +422,7 @@ cfpp$ expand (qsat)
 
       subroutine pstbitint(b,a,ib,ia,irun,l,k)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL a(ia,l)
       integer b(ib,l)
       integer ib,ia,L,k,irun,len,offset
@@ -442,7 +442,7 @@ cfpp$ expand (qsat)
 
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
@@ -478,7 +478,7 @@ c output:
 c      b      - array to be filled, ie, one processors field [ib,levs]
 c-----------------------------------------------------------------------
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,levs,npeice
       _RL a(ia,levs), b(ib,levs)
       integer index(irun)
@@ -533,7 +533,7 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
       _RL a(ia,levs), b(ib,levs), chfr(ib)
@@ -579,7 +579,7 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
       _RL a(ia,levs), b(ib,levs), chfr(ib)
@@ -616,7 +616,7 @@ c-----------------------------------------------------------------------
       SUBROUTINE GRD2MSC(A,IM,JM,IGRD,B,MXCHPS,NCHP)
 
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
       _RL A(IM,JM), B(MXCHPS)
@@ -637,7 +637,7 @@ c-----------------------------------------------------------------------
       SUBROUTINE MSC2GRD(IGRD,CHFR,B,MXCHPS,NCHP,FRACG,A,IM,JM)
 
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       _RL zero,one
       parameter ( one = 1.)
       parameter (zero = 0.)
@@ -671,7 +671,7 @@ c-----------------------------------------------------------------------
      1       agrn,zoch,z2ch,cdrc,cdsc,sqsc,ufac,rsl1,rsl2,rdcs)
 
        implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
        integer nymd,nhms,nchp,mxchps,ityp(mxchps)
        _RL chlt(mxchps)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.5 2004/06/10 20:17:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.6 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -383,7 +383,7 @@ C    fac2     : Interpolation factor for Boundary Data 2
 C                                                                               
 C                                                                               
 C***********************************************************************        
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
                                                                                 
       INTEGER  YEAR , MONTH , DAY , SEC                                                    
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
@@ -693,7 +693,7 @@ C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
 C***********************************************************************
 
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
 c Input Variables
 c ---------------

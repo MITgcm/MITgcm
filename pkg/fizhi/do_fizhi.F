@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.3 2004/06/08 15:25:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.4 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
        subroutine do_fizhi(uphy,vphy,thphy,sphy,pephy,
      .                              ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
@@ -12,7 +12,7 @@ c common blocks.
 c
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
        integer im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
        integer Nrphys,Nsx,Nsy,bi,bj,nchp

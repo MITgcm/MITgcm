@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.4 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
 
        subroutine AtoC(myThid,fieldin1,fieldin2,mask,im1,im2,jm1,jm2,
@@ -25,7 +25,7 @@ c
 c Call:   exch_uv_agrid_xyz_RL - exchange on a-grid
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 #include "EEPARAMS.h"
                                                                                      
        integer myThid, numlevs

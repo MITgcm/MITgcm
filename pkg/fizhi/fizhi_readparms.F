@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.2 2004/06/08 16:12:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.3 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
 
       subroutine fizhi_readparms (myThid)
@@ -13,7 +13,6 @@ C     myThid ... Process(or) number
 C***********************************************************************
       implicit none
 
-#include "CPP_EEOPTIONS.h"
 #include "CPP_OPTIONS.h"
 #include "chronos.h"
 #include "EEPARAMS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.7 2004/06/10 20:17:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.8 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -141,7 +141,7 @@ C     ANIRDF:   near infra-red, diffuse albedo.
 C*******************************************************************
 
       IMPLICIT NONE
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
       INTEGER IRUN
       _RL AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN),
@@ -662,7 +662,7 @@ cfpp$ expand (coeff)
       RETURN
       END
       FUNCTION COEFF(TABLE, NTABL, LAI ,DX, DY)
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
          
       INTEGER NTABL, LAI
  
@@ -680,7 +680,7 @@ cfpp$ expand (coeff)
      .                                                      ALAI,AGRN)
 C*********************************************************************
       implicit none
-#include "CPP_OPTIONS"
+#include "CPP_EEOPTIONS.h"
 
       integer ntyps
       _RL one,daylen
@@ -770,8 +770,8 @@ C*********************************************************************
         ID = IDAY
       ENDIF
 
-      FAC = (REAL(ID  -MIDM)*DAYLEN + SEC) /
-     *      (REAL(MIDP-MIDM)*DAYLEN            )
+      FAC = (float(ID  -MIDM)*DAYLEN + SEC) /
+     *      (float(MIDP-MIDM)*DAYLEN            )
 
       DO 220 I=1,NCHPS
 
@@ -834,7 +834,7 @@ C albnf    - real array [im,jm] of near-ir diffuse beam albedo
 C
 C***********************************************************************
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
       integer sec,month,day,im,jm,nchp,nchpland,nSx,nSy,bi,bj
       _RL cosz(im,jm),fraci(im,jm),fracg(im,jm)
@@ -892,8 +892,8 @@ C finally some transformations back to grid space for albedos
       return
       end
 
-      subroutine getemiss(fracg,im,jm,nchp,igrd,ityp,chfr,snowdep,fraci,
-     .                                                            emiss)
+      subroutine getemiss(fracg,im,jm,nchp,nSx,nSy,bi,bj,igrd,ityp,
+     .                                         chfr,snowdep,fraci,emiss)
 C***********************************************************************
 C  PURPOSE
 C     To act as an interface to routine to emissivity, which calculates
@@ -904,6 +904,10 @@ C fracg    - real array in grid space of total land fraction [im,jm]
 C im       - model grid longitude dimension
 C jm       - model grid latitude dimension (number of lat. points)
 C nchp     - integer actual number of tiles in tile space
+C nSx      - number of processors in x-direction
+C nSy      - number of processors in y-direction
+C bi       - processors index in x-direction
+C bj       - processors index in y-direction
 C igrd     - integer array in tile space of grid point number for each
 C            tile [nchp]
 C ityp     - integer array in tile space of land surface type for each
@@ -915,20 +919,20 @@ C            in mm [nchp]
 C fraci    - real array in tile space of sea ice fraction [nchp]
 C
 C OUTPUT:
-C emiss    - real array [im,jm,10] of surface emissivities (fraction)
+C emiss    - real array [im,jm,10,nSx,nSy] - surface emissivity (frac)
 C
 C***********************************************************************
       implicit none
-#include "CPP_OPTIONS.h"
-      integer im,jm,nchp
+#include "CPP_EEOPTIONS.h"
+      integer im,jm,nchp,nSx,nSy,bi,bj
       _RL fracg(im,jm)
-      _RL chfr(nchp)
-      integer igrd(nchp), ityp(nchp)
-      _RL snowdep(nchp),fraci(nchp)
-      _RL emiss(im,jm,10)
+      _RL chfr(nchp,nSx,nSy)
+      integer igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
+      _RL snowdep(nchp,nSx,nSy),fraci(nchp)
+      _RL emiss(im,jm,10,nSx,nSy)
 
       _RL emisstile(nchp,10)
-      integer i,n
+      integer i,j,k,n
 
       do i = 1,10
       do n = 1,nchp
@@ -938,13 +942,19 @@ C***********************************************************************
 
 c call emissivity to get values in tile space
 c -------------------------------------------
-      call emissivity (snowdep,fraci,nchp,ityp,emisstile)
+      call emissivity(snowdep(1,bi,bj),fraci,nchp,ityp(1,bi,bj),
+     .                                                    emisstile)
 
 c transform back to grid space for emissivities
 c ---------------------------------------------
-      do i = 1,10
-      emiss(:,:,i) = 0.0
-      call msc2grd (igrd,chfr,emisstile(1,i),nchp,nchp,fracg,emiss(1,1,i),im,jm)
+      do k = 1,10
+      do j = 1,jm
+      do i = 1,im
+      emiss(i,j,k) = 0.0
+      enddo
+      enddo
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),emisstile(1,k),nchp,nchp,
+     .      fracg,emiss(1,1,k,bi,bj),im,jm)
       enddo
 
       return
@@ -952,7 +962,7 @@ c ---------------------------------------------
 
       subroutine emissivity (snowdepth,fraci,numpts,ityp,newemis)
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
       integer numpts
       integer   ityp(numpts)
       _RL snowdepth(numpts),fraci(numpts)
@@ -1117,7 +1127,7 @@ C     To compute the total fraction of land within a model grid-box
 C
 C***********************************************************************
       implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
       integer i,j,nSx,nSy,bi,bj,maxtyp
       integer surftype(im,jm,nSx,nSy)

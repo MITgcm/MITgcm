@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/CtoA.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/CtoA.F,v 1.4 2004/06/10 20:53:19 molod Exp $
 C $Name:  $
 
        subroutine CtoA(myThid,fieldin1,fieldin2,mask1,mask2,im1,im2,jm1,
@@ -26,7 +26,7 @@ c
 c Call: exchange on c-grid
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 #include "EEPARAMS.h"
 
        integer myThid, numlevs
