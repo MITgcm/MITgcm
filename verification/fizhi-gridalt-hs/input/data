@@ -6,7 +6,7 @@
  &PARM01
  tRef=288.8,292.7,298.1,303.8,309.8,316.2,323.2,332.5,356.1,437.4,
 #tRef=280.,290.,300.,310.,320.,330.,360.,390.,420.,450.,
- sRef=10*0.,
+ sRef=1.0E-3,5.0E-4,1.E-4,5*1.E-6,1.E-8,1.E-9,
  viscAr=0.E1,
  viscAh=0.E6,
  viscA4=0.E17,
@@ -58,9 +58,10 @@
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
  chkptFreq=0.0,
- dumpFreq=2592000.0,
+#dumpFreq=2592000.0,
+ dumpFreq=450.0,
  monitorFreq=1.,
- taveFreq=2592000.0,
+ taveFreq=0.0,
  tave_lastiter=1.,
  &
 
@@ -78,4 +79,9 @@
 # Input datasets
  &PARM05
  topoFile='topo.cs.bin',
+#uVelInitFile='U.input',
+#vVelInitFile='V.input',
+#pSurfInitFile='Eta.input',
+#hydrogThetaFile='T.input',
+#hydrogSaltFile='S.input',
  &

@@ -3,4 +3,5 @@
  useFIZHI=.TRUE.,
  useGRIDALT=.TRUE.,
  useSHAP_FILT=.TRUE.,
+ useDIAGNOSTICS=.TRUE.,
  &
