@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.4 2001/09/21 15:13:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.5 2001/11/08 20:57:51 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -33,6 +33,12 @@ C IMPORTANT:  ksurfC,W,S = Nr+1  where the fluid column is empty (continent)
       INTEGER ksurfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER ksurfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef EXACT_CONSERV
+C     hDivFlow :: Div. Barotropic Flow at current time [transport unit m3/s]
+      COMMON /EXACT_ETA_LOCAL/ hDivFlow
+      _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+#endif
 
 #ifdef NONLIN_FRSURF
 C--   COMMON /SURF_CHANGE/ transient varariable used for Non-Lin Free-Surf

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.5 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.6 2001/11/08 20:57:51 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"

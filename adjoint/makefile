@@ -66,6 +66,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_common_factors.f		\
 		$(SOURCE_CODE)/calc_diffusivity.f		\
 		$(SOURCE_CODE)/calc_div_ghat.f			\
+		$(SOURCE_CODE)/calc_exact_eta.f			\
 		$(SOURCE_CODE)/calc_grad_phi_surf.f		\
 		$(SOURCE_CODE)/calc_gs.f			\
 		$(SOURCE_CODE)/calc_gt.f			\
@@ -121,6 +122,7 @@ SRC_MODEL	= \
 								\
 		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/impldiff.f			\
+		$(SOURCE_CODE)/ini_autodiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
 		$(SOURCE_CODE)/ini_cg2d.f			\
 		$(SOURCE_CODE)/ini_communication_patterns.f	\
@@ -160,6 +162,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_u_adv_vu.f			\
 		$(SOURCE_CODE)/mom_u_adv_wu.f			\
 		$(SOURCE_CODE)/mom_u_bottomdrag.f		\
+		$(SOURCE_CODE)/mom_u_coriolis.f			\
 		$(SOURCE_CODE)/mom_u_del2u.f			\
 		$(SOURCE_CODE)/mom_u_metric_nh.f		\
 		$(SOURCE_CODE)/mom_u_metric_sphere.f		\
@@ -171,6 +174,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_v_adv_vv.f			\
 		$(SOURCE_CODE)/mom_v_adv_wv.f			\
 		$(SOURCE_CODE)/mom_v_bottomdrag.f		\
+		$(SOURCE_CODE)/mom_v_coriolis.f			\
 		$(SOURCE_CODE)/mom_v_del2v.f			\
 		$(SOURCE_CODE)/mom_v_metric_nh.f		\
 		$(SOURCE_CODE)/mom_v_metric_sphere.f		\
@@ -230,6 +234,17 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_tile.f			\
 		$(SOURCE_CODE)/cost_test.f			\
 		$(SOURCE_CODE)/cost_tracer.f			\
+		  						\
+		$(SOURCE_CODE)/shap_filt_apply.f		\
+		$(SOURCE_CODE)/shap_filt_apply_ts.f		\
+		$(SOURCE_CODE)/shap_filt_tracer_s1.f		\
+		$(SOURCE_CODE)/shap_filt_tracer_s2.f		\
+		$(SOURCE_CODE)/shap_filt_tracer_s2g.f		\
+		$(SOURCE_CODE)/shap_filt_tracer_s4.f		\
+		$(SOURCE_CODE)/shap_filt_uv_s1.f		\
+		$(SOURCE_CODE)/shap_filt_uv_s2.f		\
+		$(SOURCE_CODE)/shap_filt_uv_s2g.f		\
+		$(SOURCE_CODE)/shap_filt_uv_s4.f		\
 		  						\
 
 

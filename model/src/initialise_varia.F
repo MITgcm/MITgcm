@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.20 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.21 2001/11/08 20:57:51 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,6 +111,12 @@ C     stored files.
 #ifdef ALLOW_PASSIVE_TRACER
 C--   Initialise passive tracer(s)
       CALL INI_TR1( myThid )
+      _BARRIER
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   Initialise active fields to help TAMC
+      CALL INI_AUTODIFF( myThid )
       _BARRIER
 #endif
 

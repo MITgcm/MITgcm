@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.21 2001/09/28 02:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.22 2001/11/08 20:57:51 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,6 +43,9 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
 #  include "CG3D.h"
+# endif
+# ifdef EXACT_CONSERV
+#  include "SURFACE.h"
 # endif
 #endif
 
@@ -151,10 +154,10 @@ CADJ STORE uvel      = tapelev3, key = ilev_3
 CADJ STORE vvel      = tapelev3, key = ilev_3
 CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
-CADJ STORE etanm1    = tapelev3, key = ilev_3
 CADJ STORE gu        = tapelev3, key = ilev_3
 CADJ STORE gv        = tapelev3, key = ilev_3
 #ifdef INCLUDE_CD_CODE
+CADJ STORE etanm1    = tapelev3, key = ilev_3
 CADJ STORE uveld     = tapelev3, key = ilev_3
 CADJ STORE vveld     = tapelev3, key = ilev_3
 CADJ STORE unm1      = tapelev3, key = ilev_3
@@ -165,6 +168,10 @@ CADJ STORE gvcd      = tapelev3, key = ilev_3
 #ifdef ALLOW_COST_TRACER
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
+#endif
+#ifdef EXACT_CONSERV
+CADJ STORE etaH      = tapelev3, key = ilev_3
+CADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif
 
 c--     Initialise storage for the middle loop.
@@ -182,10 +189,10 @@ CADJ STORE uvel      = tapelev2, key = ilev_2
 CADJ STORE vvel      = tapelev2, key = ilev_2
 CADJ STORE wvel      = tapelev2, key = ilev_2
 CADJ STORE etan      = tapelev2, key = ilev_2
-CADJ STORE etanm1    = tapelev2, key = ilev_2
 CADJ STORE gu        = tapelev2, key = ilev_2
 CADJ STORE gv        = tapelev2, key = ilev_2
 #ifdef INCLUDE_CD_CODE
+CADJ STORE etanm1    = tapelev2, key = ilev_2
 CADJ STORE uveld     = tapelev2, key = ilev_2
 CADJ STORE vveld     = tapelev2, key = ilev_2
 CADJ STORE unm1      = tapelev2, key = ilev_2
@@ -196,6 +203,10 @@ CADJ STORE gvcd      = tapelev2, key = ilev_2
 #ifdef ALLOW_COST_TRACER
 CADJ STORE tr1       = tapelev2, key = ilev_2
 CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
+#endif
+#ifdef EXACT_CONSERV
+CADJ STORE etaH      = tapelev2, key = ilev_2
+CADJ STORE hDivFlow  = tapelev2, key = ilev_2
 #endif
 
 c--       Initialize storage for the innermost loop.
