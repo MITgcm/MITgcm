@@ -1,0 +1,53 @@
+# Land package parameters:
+
+#--  Land model parameter (namelist LAND_MODEL_PAR):
+#     land_calc_grT  :: step forward ground Temperature
+#     land_calc_grW  :: step forward soil moiture
+#     land_impl_grT  :: solve ground Temperature implicitly
+#     land_calc_snow :: step forward snow thickness
+#     land_calc_alb  :: compute albedo of snow over land
+#     land_oldPickup :: restart from an old pickup (=before checkpoint 52l)
+#     land_grT_iniFile  :: File containing initial ground Temp.
+#     land_grW_iniFile  :: File containing initial ground Water.
+#     land_snow_iniFile :: File containing initial snow thickness.
+#     land_deltaT   :: land model time-step
+#     land_taveFreq :: Frequency^-1 for time-Aver. output (s)
+#     land_diagFreq :: Frequency^-1 for diagnostic output (s)
+#     land_monFreq  :: Frequency^-1 for monitor    output (s)
+#     land_dzF      :: layer thickness
+ &LAND_MODEL_PAR
+# land_calc_grT =.FALSE.,
+# land_calc_grW =.FALSE.,
+# land_impl_grT =.FALSE.,
+# land_calc_snow=.FALSE.,
+# land_calc_alb =.FALSE.,
+  land_grT_iniFile='land_grT_ini.cpl.bin',
+  land_grW_iniFile='land_grW_ini.mn.bin',
+  land_snow_iniFile='land_snw_ini.cpl.bin',
+# land_oldPickup=.TRUE.,
+  land_dzF= 0.1, 4.0,
+# land_diagFreq=2592000.,
+ &
+
+#--  Physical constants (namelist LAND_PHYS_PAR):
+#     land_grdLambda  :: Thermal conductivity of the ground (W/m/K)
+#     land_heatCs     :: Heat capacity of dry soil (J/m3/K)
+#     land_CpWater    :: Heat capacity of water    (J/kg/K)
+#     land_wTauDiff   :: soil moisture diffusion time scale
+#     land_waterCap   :: field capacity per meter of soil
+#     land_fractRunOff:: fraction of water in excess which run-off
+#     land_rhoLiqW    :: density of liquid water (kg/m3)
+#     land_rhoSnow    :: density of snow (kg/m3)
+#     land_Lfreez     :: Latent heat of freezing (J/kg)
+#     land_hMaxSnow   :: Maximum snow-thickness  (m)
+#     diffKsnow       :: thermal conductivity of snow (W/m/K)
+#     timeSnowAge     :: snow aging time scale   (s)
+#     hNewSnowAge     :: new snow thickness that refresh the snow-age (by 1/e)
+#     albColdSnow     :: albedo of cold (=dry) new snow (Tsfc < -10)
+#     albWarmSnow     :: albedo of warm (=wet) new snow (Tsfc = 0)
+#     albOldSnow      :: albedo of old snow (snowAge > 35.d)
+#     hAlbSnow        :: snow thickness for albedo transition: snow/ground
+ &LAND_PHYS_PAR
+# land_Lfreez=0.,
+  land_hMaxSnow=10.,
+ &

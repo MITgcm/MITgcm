@@ -1,0 +1,144 @@
+# AIM physics package parameters:
+
+C--   AIM interface parameter (namelist AIM_PARAMS):
+#     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
+#     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
+#     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
+#     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
+#     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
+#     aim_LandFile :: file name for Land fraction [0-1]
+#     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
+#     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forc. files)
+#     aim_albFile  :: file name for Albedo input file   (F.M. surfBC)
+#     aim_vegFile  :: file name for vegetation fraction (F.M. surfBC)
+#     aim_sstFile  :: file name for  Sea.Surf.Temp      (F.M. surfBC)
+#     aim_lstFile  :: file name for Land.Surf.Temp      (F.M. surfBC)
+#     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
+#     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
+#     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
+#     aim_dragStrato :: stratospheric-drag damping time scale (s)
+#     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
+#     aim_taveFreq :: Frequency^-1 for time-average output (s)
+#     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
+#     aim_tendFreq :: Frequency^-1 for tendencies output (s)
+ &AIM_PARAMS
+#  aim_useFMsurfBC=.FALSE.,
+#  aim_useMMsurfFc=.TRUE.,
+#  aim_surfPotTemp=.TRUE.,
+   aim_energPrecip=.TRUE.,
+   aim_splitSIOsFx=.TRUE.,
+   aim_LandFile= 'landFrc.cpl_FM.bin',
+   aim_albFile = 'albedo_cs32.bin',
+   aim_vegFile = 'vegetFrc.cpl_FM.bin',
+   aim_sstFile = 'seaSurfT.cpl_FM.bin',
+   aim_lstFile = 'lndSurfT.cpl_FM.bin',
+   aim_oiceFile= 'seaIce.cpl3FM.bin',
+   aim_snowFile= 'snowDepth.cpl_FM.bin',
+   aim_swcFile = 'soilMoist.cpl_FM.bin',
+   aim_dragStrato= 2592000.,
+#  aim_clrSkyDiag=.TRUE.,
+#  aim_diagFreq=3600.,
+ &
+
+#--   Physical constants
+#       P0    = reference pressure                 [Pa=N/m2]
+#       GG    = gravity accel.                     [m/s2]
+#       RD    = gas constant for dry air           [J/kg/K]
+#       CP    = specific heat at constant pressure [J/kg/K]
+#       ALHC  = latent heat of condensation        [J/g]
+#       ALHF  = latent heat of freezing            [J/g]
+#       SBC   = Stefan-Boltzmann constant
+#     rainCP  = heat capacity of liquid water      [J/g/K]
+#     tFreeze = freezing temperature of pure water [K]
+
+#--   Constants for forcing fields (namelist AIM_PAR_FOR):
+#      SOLC   = Solar constant (area averaged) in W/m^2
+#      ALBSEA = Albedo over sea
+#      ALBICE = Albedo over sea ice (for ice fraction = 1)
+#      ALBSN  = Albedo over snow (for snow depth > SDALB)
+#      SDALB  = Snow depth (mm water) corresponding to maximum albedo
+#      SWCAP  = Soil wetness at field capacity (volume fraction)
+#      SWWIL  = Soil wetness at wilting point  (volume fraction)
+#      hSnowWetness :: snow depth (m) corresponding to maximum wetness
+ &AIM_PAR_FOR
+ &
+
+#--   Constants for surface fluxes (namelist AIM_PAR_SFL):
+#      FWIND0 = ratio of near-sfc wind to lowest-level wind
+#      FTEMP0 = weight for near-sfc temperature extrapolation (0-1) :
+#               1 : linear extrapolation from two lowest levels
+#               0 : constant potential temperature ( = lowest level)
+#      FHUM0  = weight for near-sfc specific humidity extrapolation (0-1) :
+#               1 : extrap. with constant relative hum. ( = lowest level)
+#               0 : constant specific hum. ( = lowest level)
+#      CDL    = drag coefficient for momentum over land
+#      CDS    = drag coefficient for momentum over sea
+#      CHL    = heat exchange coefficient over land
+#      CHS    = heat exchange coefficient over sea
+#      VGUST  = wind speed for sub-grid-scale gusts
+#      CTDAY  = daily-cycle correction (dTskin/dSSRad)
+#      DTHETA = Potential temp. gradient for stability correction
+#      dTstab = potential temp. increment for stability function derivative
+#      FSTAB  = Amplitude of stability correction (fraction)
+#      HDRAG  = Height scale for orographic correction
+#      FHDRAG = Amplitude of orographic correction (fraction)
+ &AIM_PAR_SFL
+#  FTEMP0 = 0.,
+#  FHUM0  = 0.,
+#  dTstab = 0.,
+ &
+
+#--   Convection constants (namelist AIM_PAR_CNV):
+#      PSMIN  = minimum (norm.) sfc. pressure for the occurrence of convection
+#      TRCNV  = time of relaxation (in hours) towards reference state
+#      QBL    = specific hum. threshold in the boundary layer
+#      RHBL   = relative hum. threshold in the boundary layer
+#      RHIL   = rel. hum. threshold in intermed. layers for secondary mass flux
+#      ENTMAX = max. entrainment as a fraction of cloud-base mass flux
+#      SMF    = ratio between secondary and primary mass flux at cloud-base
+ &AIM_PAR_CNV
+ &
+
+#--   Constants for large-scale condensation (namelist AIM_PAR_LSC):
+#      TRLSC  = Relaxation time (in hours) for specific humidity
+#      RHLSC  = Maximum relative humidity threshold (at sigma=1)
+#      DRHLSC = Vertical range of relative humidity threshold
+#      QSMAX  = used to define the maximum latent heat release
+ &AIM_PAR_LSC
+ &
+
+#--   Radiation constants (namelist AIM_PAR_RAD):
+#      RHCL1  = relative hum. corresponding to cloud cover = 0
+#      RHCL2  = relative hum. corresponding to cloud cover = 1
+#      QACL1  = specific hum. threshold for cloud cover in the upper troposphere
+#      QACL2  = specific hum. threshold for cloud cover in the upper troposphere
+#      ALBCL  = cloud albedo (for cloud cover = 1)
+#      EPSSW  = fraction of incoming solar radiation absorbed by ozone
+#      EPSLW  = fraction of surface LW radiation emitted directly to space
+#      EMISFC = longwave surface emissivity
+#--:            shortwave absorptivities (for dp = 10^5 Pa) :
+#      ABSDRY = abs. of dry air      (visible band)
+#      ABSAER = abs. of aerosols     (visible band)
+#      ABSWV1 = abs. of water vapour (visible band, for dq = 1 g/kg)
+#      ABSWV2 = abs. of water vapour (near IR band, for dq = 1 g/kg)
+#      ABSCL1 = abs. of clouds       (visible band, constant term)
+#      ABSCL2 = abs. of clouds       (visible band, for dw = 1 g/kg)
+#--:            longwave absorptivities (per dp = 10^5 Pa) :
+#      ABLWIN = abs. of air in "window" band
+#      ABLCO2 = abs. of air in CO2 band
+#      ABLWV1 = abs. of water vapour in H2O band 1 (weak),   for dq = 1 g/kg
+#      ABLWV2 = abs. of water vapour in H2O band 2 (strong), for dq = 1 g/kg
+#      ABLCL1 = abs. of clouds       in "window" band,       constant term
+#      ABLCL2 = abs. of clouds       in "window" band,       for dw = 1 g/kg
+ &AIM_PAR_RAD
+ &
+
+#--   Constants for vertical dif. and sh. conv. (namelist AIM_PAR_VDI):
+#      TRSHC  = relaxation time (in hours) for shallow convection
+#      TRVDI  = relaxation time (in hours) for moisture diffusion
+#      TRVDS  = relaxation time (in hours) for super-adiab. conditions
+#      RHGRAD = maximum gradient of relative humidity (d_RH/d_sigma)
+#      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
+ &AIM_PAR_VDI
+ &
+
