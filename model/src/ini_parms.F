@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.129 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.130 2004/10/14 21:40:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -216,12 +216,6 @@ C--   Initialise "which vertical coordinate system used" flags.
       usingPCoords    = .FALSE.
       usingZCoords    = .FALSE.
       coordsSet       = 0
-
-C     Initialize local IO flags
-      pickup_write_ioinc = .FALSE.
-      timeave_ioinc      = .FALSE.
-      snapshot_ioinc     = .FALSE.
-      monitor_ioinc      = .FALSE.
 
 C--   Iniialise retired parameters to unlikely value
       nRetired = 0

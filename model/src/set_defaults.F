@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.72 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.73 2004/10/14 21:40:07 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -217,14 +217,18 @@ C--   Time stepping parameters
       pickup_read_mdsio = .TRUE.
       pickup_write_mdsio= .TRUE.
       pickup_write_immed= .FALSE.
+      pickup_write_ioinc= .FALSE.
       dumpFreq          = deltaT*0
       adjDumpFreq       = deltaT*0
       diagFreq          = deltaT*0
       snapshot_mdsio    = .TRUE.
+      snapshot_ioinc    = .FALSE.
       monitorFreq       = -1.
       monitor_stdio     = .TRUE.
+      monitor_ioinc     = .FALSE.
       taveFreq          = deltaT*0
       timeave_mdsio     = .TRUE.
+      timeave_ioinc     = .FALSE.
       tave_lastIter     = 0.5 _d 0
       writeStatePrec    = precFloat64
       writeBinaryPrec   = precFloat32
