@@ -1,0 +1,78 @@
+C $Id: ini_salt.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+
+#include "CPP_EEOPTIONS.h"
+
+CStartOfInterface
+      SUBROUTINE INI_SALT ( myThid )
+C     /==========================================================\
+C     | SUBROUTINE INI_SALT                                      |
+C     | o Set model initial salinity field.                      |
+C     |==========================================================|
+C     | There are several options for setting the initial        |
+C     | temperature file                                         |
+C     |  1. Inline code                                          |
+C     |  2. Vertical profile ( uniform S in X and Y )            |
+C     |  3. Three-dimensional data from a file. For example from |
+C     |     Levitus or from a checkpoint file from a previous    |
+C     |     integration.                                         |
+C     | In addition to setting the salinity field we also        |
+C     | set the initial salinity tendency term here.             |
+C     \==========================================================/
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+
+C     == Routine arguments ==
+C     myThid -  Number of this instance of INI_SALT 
+      INTEGER myThid
+CEndOfInterface
+
+C     == Local variables ==
+C     iC, jC - Center of domain
+C     iD, jD - Disitance from domain center.
+C     rad    - Radius of initial patch
+C     rD     - Radial displacement of point I,J
+C     iG, jG - Global coordinate index
+C     bi,bj  - Loop counters
+C     I,J,K
+      INTEGER iC, jC, iD, jD
+      INTEGER iG, jG
+      INTEGER bi, bj
+      INTEGER  I,  J, K
+      REAL rad, rD
+
+C--   Initialise salinity field to the vertical reference profile
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           salt(I,J,K,bi,bj) = sRef(K)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C     Set initial tendency terms
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           gs   (I,J,K,bi,bj) = 0. _d 0
+           gsNM1(I,J,K,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C
+      _EXCH_XYZ_R8(salt  , myThid )
+      _EXCH_XYZ_R8(gs , myThid )
+      _EXCH_XYZ_R8(gsNM1 , myThid )
+      RETURN
+      END

@@ -1,0 +1,71 @@
+C $Id: ini_vvel.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+
+#include "CPP_EEOPTIONS.h"
+
+CStartOfInterface
+      SUBROUTINE INI_VVEL( myThid )
+C     /==========================================================\
+C     | SUBROUTINE INI_VVEL                                      |
+C     | o Set model initial meridional velocity field.           |
+C     |==========================================================|
+C     | There are several options for setting the initial        |
+C     | meridional velocity field.                               |
+C     |  1. Inline code                                          |
+C     |  2. Three-dimensional data from a file. For example from |
+C     |     a checkpoint file from a previous integration.       |
+C     | In addition to setting the velocity field we also        |
+C     | set the initial velocity tendency term here.             |
+C     \==========================================================/
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+
+C     == Routine arguments ==
+C     myThid -  Number of this instance of INI_VVEL 
+      INTEGER myThid
+CEndOfInterface
+
+C     == Local variables ==
+C     bi,bj  - Loop counters
+C     I,J,K
+      INTEGER iC, jC, iD, jD
+      INTEGER iG, jG
+      INTEGER bi, bj
+      INTEGER  I,  J, K
+      REAL rad, rD
+
+C--   Initialise velocity field to zero
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           vVel(I,J,K,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C     Set initial tendency terms
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           gv   (I,J,K,bi,bj) = 0. _d 0
+           gvNM1(I,J,K,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C
+      _EXCH_XYZ_R8(vVel  , myThid )
+      _EXCH_XYZ_R8(gv    , myThid )
+      _EXCH_XYZ_R8(gvNM1 , myThid )
+      RETURN
+      END

@@ -1,0 +1,974 @@
+C $Id: print.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+
+#include "CPP_EEOPTIONS.h"
+
+C--   File printf.F: Routines for performing formatted textual I/O
+C--                  in the MITgcm UV implementation environment.
+C--    Contents
+C--    o print_error    Does IO with **ERROR** highlighted header
+C--    o print_mapr8    Formats ABCD... contour map of a Real*8 field
+C--                     Uses print_message for writing
+C--    o print_message  Does IO with unhighlighted header
+
+CStartOfInterface
+      SUBROUTINE PRINT_ERROR( message , myThid )
+C     /============================================================\
+C     | SUBROUTINE PRINT_ERROR                                     |
+C     | o Write out error message using "standard" format.         |
+C     | Notes                                                      |
+C     | =====                                                      |
+C     | o Some system's I/O is not "thread-safe". For this reason  |
+C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
+C     |   critical region is defined around the write here. In some|
+C     |   cases  BEGIN_CRIT() is approximated by only doing writes |
+C     |   for thread number 1 - writes for other threads are       |
+C     |   ignored!                                                 |
+C     | o In a non-parallel form these routines can still be used. |
+C     |   to produce pretty printed output!                        |
+C     \============================================================/
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+C     == Routine arguments ==
+      CHARACTER*(*) message
+      INTEGER       myThid
+CEndOfInterface
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+C     == Local variables ==
+      INTEGER iStart
+      INTEGER iEnd
+      CHARACTER*9 idString
+C--   Find beginning and end of message
+      iStart = IFNBLNK( message )
+      iEnd   = ILNBLNK( message )
+C--   Test to see if in multi-process ( or multi-threaded ) mode.
+C     If so include process or thread identifier.
+      IF ( numberOfProcs .EQ. 0 .AND. nThreads .EQ. 1 ) THEN
+C--    Write single process format
+       IF ( message .EQ. ' ' ) THEN
+        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, ' '
+       ELSE
+        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, message(iStart:iEnd)
+       ENDIF
+      ELSEIF ( pidIO .EQ. myProcId ) THEN
+C--    Write multi-process format
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _BEGIN_CRIT(myThid)
+#endif
+        WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _END_CRIT(myThid)
+#endif
+       IF ( message .EQ. ' ' ) THEN
+C       PRINT_ERROR can be called by several threads simulataneously.
+C       The write statement may need to be marked as a critical section.
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
+     &  '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
+     &  ' '
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ELSE
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
+     &  '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
+     &  message(iStart:iEnd)
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ENDIF
+      ENDIF
+C
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE PRINT_MAPR4 ( fld, fldTitle, plotMode,
+     I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
+     I       iMin,  iMax,  iStr,
+     I       jMin,  jMax,  jStr,
+     I       kMin, kMax,   kStr,
+     I      bxMin, bxMax,  bxStr,
+     I      byMin, byMax,  byStr )
+C     /==========================================================\
+C     | SUBROUTINE PRINT_MAPR4                                   |
+C     | o Does textual mapping printing of a field.              |
+C     |==========================================================|
+C     | This routine does the actual formatting of the data      |
+C     | and printing to a file. It assumes an array using the    |
+C     | MITgcm UV indexing scheme and base index variables.      |
+C     | User code should call an interface routine like          |
+C     | PLOT_FIELD_XYR4( ... ) rather than this code directly.   |
+C     | Text plots can be oriented XY, YZ, XZ. An orientation    |
+C     | is specficied through the "plotMode" argument. All the   |
+C     | plots made by a single call to this routine will use the |
+C     | same contour interval. The plot range (iMin,...,byStr)   |
+C     | can be three-dimensional. A separate plot is made for    |
+C     | each point in the plot range normal to the orientation.  |
+C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY). |
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY|
+C     |      plots - one for K=1, one for K=3 and one for K=5.   |
+C     |      Each plot would have extents iMin:iMax step iStr    |
+C     |      and jMin:jMax step jStr.                            |
+C     \==========================================================/
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     == Routine arguments ==
+C     fld        - Real*4 array holding data to be plotted
+C     fldTitle   - Name of field to be plotted
+C     plotMode   - Text string indicating plot orientation
+C                  ( see - EEPARAMS.h for valid values ).
+C     iLo, iHi,  - Dimensions of array fld. fld is assumed to
+C     jLo, jHi     be five-dimensional.
+C     kLo, kHi
+C     nBx, nBy
+C     iMin, iMax - Indexing for points to plot. Points from
+C     iStr         iMin -> iMax in steps of iStr are plotted 
+C     jMin. jMax   and similarly for jMin, jMax, jStr and
+C     jStr         kMin, kMax, kStr and bxMin, bxMax, bxStr
+C     kMin, kMax   byMin, byMax, byStr.
+C     kStr
+      CHARACTER*(*) fldTitle
+      CHARACTER*(*) plotMode
+      INTEGER iLo, iHi
+      INTEGER jLo, jHi
+      INTEGER kLo, kHi
+      INTEGER nBx, nBy
+      Real*4 fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
+      INTEGER iMin, iMax, iStr
+      INTEGER jMin, jMax, jStr
+      INTEGER kMin, kMax, kStr
+      INTEGER bxMin, bxMax, bxStr
+      INTEGER byMin, byMax, byStr
+CEndOfInterface
+C     == Local variables ==
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     == Local variables ==
+C     plotBuf - Buffer for building plot record
+C     chList  - Character string used for plot
+C     fMin, fMax - Contour min, max and range
+C     fRange
+C     val     - Value of element to be "plotted"
+C     small   - Lowest range for which contours are plotted
+C     accXXX  - Variables used in indexing accross page records.
+C     dwnXXX    Variables used in indexing down the page.
+C     pltXXX    Variables used in indexing multiple plots ( multiple
+C               plots use same contour range).
+C               Lab  - Label
+C               Base - Base number for element indexing
+C                      The process bottom, left coordinate in the
+C                      global domain.
+C               Step - Block size
+C               Blo  - Start block
+C               Bhi  - End block
+C               Bstr - Block stride
+C               Min  - Start index within block
+C               Max  - End index within block
+C               Str  - stride within block
+      INTEGER MAX_LEN_PLOTBUF
+      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-4 )
+      CHARACTER*(MAX_LEN_PLOTBUF) plotBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER lChList
+      PARAMETER ( lChList = 28 )
+      CHARACTER*(lChList) chList
+      REAL fMin
+      REAL fMax
+      REAL fRange
+      REAL val
+      REAL small
+      CHARACTER*2  accLab
+      CHARACTER*7  dwnLab
+      CHARACTER*3  pltLab
+      INTEGER     accBase, dwnBase, pltBase
+      INTEGER     accStep, dwnStep, pltStep
+      INTEGER     accBlo,  dwnBlo,  pltBlo
+      INTEGER     accBhi,  dwnBhi,  pltBhi
+      INTEGER     accBstr, dwnBstr, pltBstr
+      INTEGER     accMin,  dwnMin,  pltMin
+      INTEGER     accMax,  dwnMax,  pltMax
+      INTEGER     accStr,  dwnStr,  pltStr
+      INTEGER I, J, K, iStrngLo, iStrngHi, iBuf, iDx
+      INTEGER bi, bj, bk
+      LOGICAL validRange
+
+      chList = '-abcdefghijklmnopqrstuvwxyz+'
+      small  = 1. _d -15
+      fMin   =  1. _d 32
+      fMax   = -1. _d 32
+      validRange = .FALSE.
+
+C--   Calculate field range
+      DO bj=byMin, byMax, byStr
+       DO bi=bxMin, bxMax, bxStr
+        DO K=kMin, kMax, kStr
+         DO J=jMin, jMax, jStr
+          DO I=iMin, iMax, iStr
+           IF ( fld(I,J,K,bi,bj) .NE. 0. ) THEN
+            IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
+     &       fMin = fld(I,J,K,bi,bj)
+            IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
+     &       fMax = fld(I,J,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      fRange = fMax-fMin
+      IF ( fRange .GT. small ) THEN
+       validRange = .TRUE.
+      ENDIF
+
+C--   Write field title and statistics
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      iStrngLo = IFNBLNK(fldTitle)
+      iStrngHi = ILNBLNK(fldTitle)
+      IF ( iStrngLo .LE. iStrngHi ) THEN
+       WRITE(msgBuf,'(A)') fldTitle(iStrngLo:iStrngHi)
+      ELSE
+       msgBuf = '// UNKNOWN FIELD'
+      ENDIF
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CMIN = ', fMin
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CMAX = ', fMax
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CINT = ', fRange/FLOAT(lChlist-1)
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1024A1)')
+     & '// SYMBOLS (CMIN->CMAX): ',(chList(I:I),I=1,lChList)
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1024A1)')
+     & '//                  0.0: ','.'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE I (Lo:Hi:Step):',
+     &  '(',myXGlobalLo-1+(bxMin-1)*sNx+iMin,
+     &  ':',myXGlobalLo-1+(bxMax-1)*sNx+iMax,
+     &  ':',iStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE J (Lo:Hi:Step):',
+     &  '(',myYGlobalLo-1+(byMin-1)*sNy+jMin,
+     &  ':',myYGlobalLo-1+(byMax-1)*sNy+jMax,
+     &  ':',jStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE K (Lo:Hi:Step):',
+     &  '(',kMin,
+     &  ':',kMax,
+     &  ':',kStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+
+C--   Write field
+C     Figure out slice type and set plotting parameters appropriately
+C     acc = accross the page
+C     dwn = down the page
+      IF ( plotMode .EQ. PRINT_MAP_XY ) THEN
+C      X across, Y down slice
+       accLab  = 'I='
+       accBase = myXGlobalLo
+       accStep = sNx
+       accBlo  = bxMin
+       accBhi  = bxMax
+       accBStr = bxStr
+       accMin  = iMin
+       accMax  = iMax
+       accStr  = iStr
+       dwnLab  = '|--J--|'
+       dwnBase = myYGlobalLo
+       dwnStep = sNy
+       dwnBlo  = byMin
+       dwnBhi  = byMax
+       dwnBStr = byStr
+       dwnMin  = jMin
+       dwnMax  = jMax
+       dwnStr  = jStr
+       pltBlo  = 1
+       pltBhi  = 1
+       pltBstr = 1
+       pltMin  = kMin
+       pltMax  = kMax
+       pltStr  = kStr
+       pltBase = 1
+       pltStep = 1
+       pltLab  = 'K ='
+      ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
+C      Y across, Z down slice
+       accLab  = 'J='
+       accBase = myYGlobalLo
+       accStep = sNy
+       accBlo  = byMin
+       accBhi  = byMax
+       accBStr = byStr
+       accMin  = jMin
+       accMax  = jMax
+       accStr  = jStr
+       dwnLab  = '|--K--|'
+       dwnBase = 1
+       dwnStep = 1
+       dwnBlo  = 1
+       dwnBhi  = 1
+       dwnBStr = 1
+       dwnMin  = kMin
+       dwnMax  = kMax
+       dwnStr  = kStr
+       pltBlo  = bxMin
+       pltBhi  = bxMax
+       pltBstr = bxStr
+       pltMin  = iMin
+       pltMax  = iMax
+       pltStr  = iStr
+       pltBase = myXGlobalLo
+       pltStep = sNx
+       pltLab  = 'I ='
+      ELSEIF ( plotMode .EQ. PRINT_MAP_XZ ) THEN
+C      X across, Z down slice
+       accLab  = 'I='
+       accBase = myXGlobalLo
+       accStep = sNx
+       accBlo  = bxMin
+       accBhi  = bxMax
+       accBStr = bxStr
+       accMin  = iMin
+       accMax  = iMax
+       accStr  = iStr
+       dwnLab  = '|--K--|'
+       dwnBase = 1
+       dwnStep = 1
+       dwnBlo  = 1
+       dwnBhi  = 1
+       dwnBStr = 1
+       dwnMin  = kMin
+       dwnMax  = kMax
+       dwnStr  = kStr
+       pltBlo  = byMin
+       pltBhi  = byMax
+       pltBstr = byStr
+       pltMin  = jMin
+       pltMax  = jMax
+       pltStr  = jStr
+       pltBase = myYGlobalLo
+       pltStep = sNy
+       pltLab  = 'J ='
+      ENDIF
+      IF ( validRange ) THEN
+C      Header
+C      Data
+       DO bk=pltBlo, pltBhi, pltBstr
+        DO K=pltMin,pltMax,pltStr
+         WRITE(plotBuf,'(A,I,I,I,I)') pltLab,
+     &   pltBase-1+(bk-1)*pltStep+K
+         CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1)
+         plotBuf = ' '
+         iBuf = 6 
+         DO bi=accBlo, accBhi, accBstr
+          DO I=accMin, accMax, accStr
+           iDx = accBase-1+(bi-1)*accStep+I
+           iBuf = iBuf + 1
+           IF ( 10*((iBuf-6)/10) .EQ. iBuf-6 ) THEN
+            IF ( iDx. LT. 10 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I1)') accLab,iDx
+            ELSEIF ( iDx. LT. 100 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I2)') accLab,iDx
+            ELSEIF ( iDx. LT. 1000 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I3)') accLab,iDx
+            ELSEIF ( iDx. LT. 10000 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I4)') accLab,iDx
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+         WRITE(msgBuf,'(A,A)') '// ',plotBuf
+         CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1)
+         plotBuf = dwnLab
+         iBuf = 7 
+         DO bi=accBlo, accBhi, accBstr
+          DO I=accMin, accMax, accStr
+           iDx = accBase-1+(bi-1)*accStep+I
+           iBuf = iBuf+1
+           IF ( 10*((iBuf-7)/10) .EQ. iBuf-7 ) THEN
+            WRITE(plotBuf(iBuf:),'(A)')  '|'
+           ELSE
+            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(iDx,10)
+           ENDIF
+          ENDDO
+         ENDDO
+         WRITE(msgBuf,'(A,A)') '// ',plotBuf
+         CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1)
+         DO bj=dwnBlo, dwnBhi, dwnBStr
+          DO J=dwnMin, dwnMax, dwnStr
+           WRITE(plotBuf,'(1X,I5,1X)') 
+     &      dwnBase-1+(bj-1)*dwnStep+J
+           iBuf = 7
+           DO bi=accBlo,accBhi,accBstr
+            DO I=accMin,accMax,accStr
+             iBuf = iBuf + 1
+             IF     ( plotMode .EQ. PRINT_MAP_XY ) THEN
+              val = fld(I,J,K,bi,bj)
+             ELSEIF ( plotMode .EQ. PRINT_MAP_XZ ) THEN
+              val = fld(I,K,J,bi,bk)
+             ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
+              val = fld(K,I,J,bk,bi)
+             ENDIF
+             IDX = NINT( 
+     &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
+     &             )+1
+             IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+     &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
+             IF ( val .EQ. 0. ) THEN
+              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+     &         plotBuf(iBuf:iBuf) = '.'
+             ENDIF
+            ENDDO
+           ENDDO
+           WRITE(msgBuf,'(A,A)') '// ',plotBuf
+           CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, 1)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+C--   Write delimiter
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// END OF FIELD                                          ='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = ' '
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE PRINT_MAPR8 ( fld, fldTitle, plotMode,
+     I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
+     I       iMin,  iMax,  iStr,
+     I       jMin,  jMax,  jStr,
+     I       kMin, kMax,   kStr,
+     I      bxMin, bxMax,  bxStr,
+     I      byMin, byMax,  byStr )
+C     /==========================================================\
+C     | SUBROUTINE PRINT_MAPR8                                   |
+C     | o Does textual mapping printing of a field.              |
+C     |==========================================================|
+C     | This routine does the actual formatting of the data      |
+C     | and printing to a file. It assumes an array using the    |
+C     | MITgcm UV indexing scheme and base index variables.      |
+C     | User code should call an interface routine like          |
+C     | PLOT_FIELD_XYR8( ... ) rather than this code directly.   |
+C     | Text plots can be oriented XY, YZ, XZ. An orientation    |
+C     | is specficied through the "plotMode" argument. All the   |
+C     | plots made by a single call to this routine will use the |
+C     | same contour interval. The plot range (iMin,...,byStr)   |
+C     | can be three-dimensional. A separate plot is made for    |
+C     | each point in the plot range normal to the orientation.  |
+C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY). |
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY|
+C     |      plots - one for K=1, one for K=3 and one for K=5.   |
+C     |      Each plot would have extents iMin:iMax step iStr    |
+C     |      and jMin:jMax step jStr.                            |
+C     \==========================================================/
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     == Routine arguments ==
+C     fld        - Real*8 array holding data to be plotted
+C     fldTitle   - Name of field to be plotted
+C     plotMode   - Text string indicating plot orientation
+C                  ( see - EEPARAMS.h for valid values ).
+C     iLo, iHi,  - Dimensions of array fld. fld is assumed to
+C     jLo, jHi     be five-dimensional.
+C     kLo, kHi
+C     nBx, nBy
+C     iMin, iMax - Indexing for points to plot. Points from
+C     iStr         iMin -> iMax in steps of iStr are plotted 
+C     jMin. jMax   and similarly for jMin, jMax, jStr and
+C     jStr         kMin, kMax, kStr and bxMin, bxMax, bxStr
+C     kMin, kMax   byMin, byMax, byStr.
+C     kStr
+      CHARACTER*(*) fldTitle
+      CHARACTER*(*) plotMode
+      INTEGER iLo, iHi
+      INTEGER jLo, jHi
+      INTEGER kLo, kHi
+      INTEGER nBx, nBy
+      Real*8 fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
+      INTEGER iMin, iMax, iStr
+      INTEGER jMin, jMax, jStr
+      INTEGER kMin, kMax, kStr
+      INTEGER bxMin, bxMax, bxStr
+      INTEGER byMin, byMax, byStr
+CEndOfInterface
+C     == Local variables ==
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     == Local variables ==
+C     plotBuf - Buffer for building plot record
+C     chList  - Character string used for plot
+C     fMin, fMax - Contour min, max and range
+C     fRange
+C     val     - Value of element to be "plotted"
+C     small   - Lowest range for which contours are plotted
+C     accXXX  - Variables used in indexing accross page records.
+C     dwnXXX    Variables used in indexing down the page.
+C     pltXXX    Variables used in indexing multiple plots ( multiple
+C               plots use same contour range).
+C               Lab  - Label
+C               Base - Base number for element indexing
+C                      The process bottom, left coordinate in the
+C                      global domain.
+C               Step - Block size
+C               Blo  - Start block
+C               Bhi  - End block
+C               Bstr - Block stride
+C               Min  - Start index within block
+C               Max  - End index within block
+C               Str  - stride within block
+      INTEGER MAX_LEN_PLOTBUF
+      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-4 )
+      CHARACTER*(MAX_LEN_PLOTBUF) plotBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER lChList
+      PARAMETER ( lChList = 28 )
+      CHARACTER*(lChList) chList
+      REAL fMin
+      REAL fMax
+      REAL fRange
+      REAL val
+      REAL small
+      CHARACTER*2  accLab
+      CHARACTER*7  dwnLab
+      CHARACTER*3  pltLab
+      INTEGER     accBase, dwnBase, pltBase
+      INTEGER     accStep, dwnStep, pltStep
+      INTEGER     accBlo,  dwnBlo,  pltBlo
+      INTEGER     accBhi,  dwnBhi,  pltBhi
+      INTEGER     accBstr, dwnBstr, pltBstr
+      INTEGER     accMin,  dwnMin,  pltMin
+      INTEGER     accMax,  dwnMax,  pltMax
+      INTEGER     accStr,  dwnStr,  pltStr
+      INTEGER I, J, K, iStrngLo, iStrngHi, iBuf, iDx
+      INTEGER bi, bj, bk
+      LOGICAL validRange
+
+      chList = '-abcdefghijklmnopqrstuvwxyz+'
+      small  = 1. _d -15
+      fMin   =  1. _d 32
+      fMax   = -1. _d 32
+      validRange = .FALSE.
+
+C--   Calculate field range
+      DO bj=byMin, byMax, byStr
+       DO bi=bxMin, bxMax, bxStr
+        DO K=kMin, kMax, kStr
+         DO J=jMin, jMax, jStr
+          DO I=iMin, iMax, iStr
+C          IF ( fld(I,J,K,bi,bj) .NE. 0. ) THEN
+            IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
+     &       fMin = fld(I,J,K,bi,bj)
+            IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
+     &       fMax = fld(I,J,K,bi,bj)
+C          ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      fRange = fMax-fMin
+      IF ( fRange .GT. small ) THEN
+       validRange = .TRUE.
+      ENDIF
+
+C--   Write field title and statistics
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      iStrngLo = IFNBLNK(fldTitle)
+      iStrngHi = ILNBLNK(fldTitle)
+      IF ( iStrngLo .LE. iStrngHi ) THEN
+       WRITE(msgBuf,'(A)') fldTitle(iStrngLo:iStrngHi)
+      ELSE
+       msgBuf = '// UNKNOWN FIELD'
+      ENDIF
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CMIN = ', fMin
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CMAX = ', fMax
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1PE30.15)')
+     & '// CINT = ', fRange/FLOAT(lChlist-1)
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1024A1)')
+     & '// SYMBOLS (CMIN->CMAX): ',(chList(I:I),I=1,lChList)
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      WRITE(msgBuf,'(A,1024A1)')
+     & '//                  0.0: ','.'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE I (Lo:Hi:Step):',
+     &  '(',myXGlobalLo-1+(bxMin-1)*sNx+iMin,
+     &  ':',myXGlobalLo-1+(bxMax-1)*sNx+iMax,
+     &  ':',iStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE J (Lo:Hi:Step):',
+     &  '(',myYGlobalLo-1+(byMin-1)*sNy+jMin,
+     &  ':',myYGlobalLo-1+(byMax-1)*sNy+jMax,
+     &  ':',jStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       WRITE(msgBuf,'(A,3(A,I4),A)')
+     & '// RANGE K (Lo:Hi:Step):',
+     &  '(',kMin,
+     &  ':',kMax,
+     &  ':',kStr,')'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+
+C--   Write field
+C     Figure out slice type and set plotting parameters appropriately
+C     acc = accross the page
+C     dwn = down the page
+      IF ( plotMode .EQ. PRINT_MAP_XY ) THEN
+C      X across, Y down slice
+       accLab  = 'I='
+       accBase = myXGlobalLo
+       accStep = sNx
+       accBlo  = bxMin
+       accBhi  = bxMax
+       accBStr = bxStr
+       accMin  = iMin
+       accMax  = iMax
+       accStr  = iStr
+       dwnLab  = '|--J--|'
+       dwnBase = myYGlobalLo
+       dwnStep = sNy
+       dwnBlo  = byMin
+       dwnBhi  = byMax
+       dwnBStr = byStr
+       dwnMin  = jMin
+       dwnMax  = jMax
+       dwnStr  = jStr
+       pltBlo  = 1
+       pltBhi  = 1
+       pltBstr = 1
+       pltMin  = kMin
+       pltMax  = kMax
+       pltStr  = kStr
+       pltBase = 1
+       pltStep = 1
+       pltLab  = 'K ='
+      ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
+C      Y across, Z down slice
+       accLab  = 'J='
+       accBase = myYGlobalLo
+       accStep = sNy
+       accBlo  = byMin
+       accBhi  = byMax
+       accBStr = byStr
+       accMin  = jMin
+       accMax  = jMax
+       accStr  = jStr
+       dwnLab  = '|--K--|'
+       dwnBase = 1
+       dwnStep = 1
+       dwnBlo  = 1
+       dwnBhi  = 1
+       dwnBStr = 1
+       dwnMin  = kMin
+       dwnMax  = kMax
+       dwnStr  = kStr
+       pltBlo  = bxMin
+       pltBhi  = bxMax
+       pltBstr = bxStr
+       pltMin  = iMin
+       pltMax  = iMax
+       pltStr  = iStr
+       pltBase = myXGlobalLo
+       pltStep = sNx
+       pltLab  = 'I ='
+      ELSEIF ( plotMode .EQ. PRINT_MAP_XZ ) THEN
+C      X across, Z down slice
+       accLab  = 'I='
+       accBase = myXGlobalLo
+       accStep = sNx
+       accBlo  = bxMin
+       accBhi  = bxMax
+       accBStr = bxStr
+       accMin  = iMin
+       accMax  = iMax
+       accStr  = iStr
+       dwnLab  = '|--K--|'
+       dwnBase = 1
+       dwnStep = 1
+       dwnBlo  = 1
+       dwnBhi  = 1
+       dwnBStr = 1
+       dwnMin  = kMin
+       dwnMax  = kMax
+       dwnStr  = kStr
+       pltBlo  = byMin
+       pltBhi  = byMax
+       pltBstr = byStr
+       pltMin  = jMin
+       pltMax  = jMax
+       pltStr  = jStr
+       pltBase = myYGlobalLo
+       pltStep = sNy
+       pltLab  = 'J ='
+      ENDIF
+      IF ( validRange ) THEN
+C      Header
+C      Data
+       DO bk=pltBlo, pltBhi, pltBstr
+        DO K=pltMin,pltMax,pltStr
+         WRITE(plotBuf,'(A,I,I,I,I)') pltLab,
+     &   pltBase-1+(bk-1)*pltStep+K
+         CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1)
+         plotBuf = ' '
+         iBuf = 6 
+         DO bi=accBlo, accBhi, accBstr
+          DO I=accMin, accMax, accStr
+           iDx = accBase-1+(bi-1)*accStep+I
+           iBuf = iBuf + 1
+           IF ( 10*((iBuf-6)/10) .EQ. iBuf-6 ) THEN
+            IF ( iDx. LT. 10 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I1)') accLab,iDx
+            ELSEIF ( iDx. LT. 100 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I2)') accLab,iDx
+            ELSEIF ( iDx. LT. 1000 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I3)') accLab,iDx
+            ELSEIF ( iDx. LT. 10000 ) THEN
+             WRITE(plotBuf(iBuf:),'(A,I4)') accLab,iDx
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+         CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, 1)
+         plotBuf = dwnLab
+         iBuf = 7 
+         DO bi=accBlo, accBhi, accBstr
+          DO I=accMin, accMax, accStr
+           iDx = accBase-1+(bi-1)*accStep+I
+           iBuf = iBuf+1
+           IF ( 10*((iBuf-7)/10) .EQ. iBuf-7 ) THEN
+            WRITE(plotBuf(iBuf:),'(A)')  '|'
+           ELSE
+            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(iDx,10)
+           ENDIF
+          ENDDO
+         ENDDO
+         CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1)
+         DO bj=dwnBlo, dwnBhi, dwnBStr
+          DO J=dwnMin, dwnMax, dwnStr
+           WRITE(plotBuf,'(1X,I5,1X)') 
+     &      dwnBase-1+(bj-1)*dwnStep+J
+           iBuf = 7
+           DO bi=accBlo,accBhi,accBstr
+            DO I=accMin,accMax,accStr
+             iBuf = iBuf + 1
+             IF     ( plotMode .EQ. PRINT_MAP_XY ) THEN
+              val = fld(I,J,K,bi,bj)
+             ELSEIF ( plotMode .EQ. PRINT_MAP_XZ ) THEN
+              val = fld(I,K,J,bi,bk)
+             ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
+              val = fld(K,I,J,bk,bi)
+             ENDIF
+             IDX = NINT( 
+     &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
+     &             )+1
+             IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+     &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
+             IF ( val .EQ. 0. ) THEN
+              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+     &         plotBuf(iBuf:iBuf) = '.'
+             ENDIF
+            ENDDO
+           ENDDO
+           CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, 1)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+C--   Write delimiter
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// END OF FIELD                                          ='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+      msgBuf = ' '
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE PRINT_MESSAGE( message, unit, sq , myThid )
+C     /============================================================\
+C     | SUBROUTINE PRINT_MESSAGE                                   |
+C     | o Write out informational message using "standard" format. |
+C     | Notes                                                      |
+C     | =====                                                      |
+C     | o Some system's I/O is not "thread-safe". For this reason  |
+C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
+C     |   critical region is defined around the write here. In some|
+C     |   cases  BEGIN_CRIT() is approximated by only doing writes |
+C     |   for thread number 1 - writes for other threads are       |
+C     |   ignored!                                                 |
+C     | o In a non-parallel form these routines can still be used. |
+C     |   to produce pretty printed output!                        |
+C     \============================================================/
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+C     == Routine arguments ==
+C     message - Message to write
+C     unit    - Unit number to write to
+C     sq      - Justification option
+      CHARACTER*(*) message
+      INTEGER       unit
+      CHARACTER*(*) sq
+      INTEGER  myThid
+CEndOfInterface
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+C     == Local variables ==
+      INTEGER iStart
+      INTEGER iEnd
+      CHARACTER*9 idString
+C--   Find beginning and end of message
+      IF ( sq .EQ. SQUEEZE_BOTH .OR.
+     &     sq .EQ. SQUEEZE_LEFT ) THEN
+       iStart = IFNBLNK( message )
+      ELSE
+       iStart = 1
+      ENDIF
+      IF ( sq .EQ. SQUEEZE_BOTH .OR.
+     &     sq .EQ. SQUEEZE_RIGHT ) THEN
+       iEnd   = ILNBLNK( message )
+      ELSE
+       iEnd   = LEN(message)
+      ENDIF
+C--   Test to see if in multi-process ( or multi-threaded ) mode.
+C     If so include process or thread identifier.
+      IF ( numberOfProcs .EQ. 0 .AND. nThreads .EQ. 1 ) THEN
+C--    Write single process format
+       IF ( message .EQ. ' ' ) THEN
+        WRITE(unit,'(A)') ' '
+       ELSE
+        WRITE(unit,'(A)') message(iStart:iEnd)
+       ENDIF
+      ELSEIF ( pidIO .EQ. myProcId ) THEN
+C--    Write multi-process format
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _BEGIN_CRIT(myThid)
+#endif
+        WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _END_CRIT(myThid)
+#endif
+       IF ( message .EQ. ' ' ) THEN
+C       PRINT can be called by several threads simultaneously.
+C       The write statement may need to ne marked as a critical section.
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+         WRITE(unit,'(A,A,A,A,A,A)') 
+     &   '(',PROCESS_HEADER,' ',idString,')',' '
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ELSE
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+         WRITE(unit,'(A,A,A,A,A,A,A)') 
+     &   '(',PROCESS_HEADER,' ',idString(1:ILNBLNK(idString)),')',' ', 
+     &   message(iStart:iEnd)
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ENDIF
+      ENDIF
+C
+      RETURN
+      END
+
+C $Id: print.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $

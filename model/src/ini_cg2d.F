@@ -1,0 +1,146 @@
+C $Id: ini_cg2d.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+
+#include "CPP_EEOPTIONS.h"
+
+CStartOfInterface
+      SUBROUTINE INI_CG2D( myThid )
+C     /==========================================================\
+C     | SUBROUTINE INI_CG2D                                      |
+C     | o Initialise 2d conjugate gradient solver operators.     |
+C     |==========================================================|
+C     | These arrays are purely a function of the basin geom.    |
+C     | We set then here once and them use then repeatedly.      |
+C     \==========================================================/
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "CG2D.h"
+
+C     === Routine arguments ===
+C     myThid - Thread no. that called this routine.
+      INTEGER myThid
+CEndOfInterface
+
+C     === Local variables ===
+C     xG, yG - Global coordinate location.
+C     zG
+C     iG, jG - Global coordinate index
+C     bi,bj  - Loop counters
+C     faceArea - Temporary used to hold cell face areas.
+C     I,J,K
+C     myNorm - Work variable used in clculating normalisation factor
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER bi, bj
+      INTEGER I,  J, K
+      real    faceArea
+      _RL     myNorm
+
+C--   Initialise laplace operator
+C     aW2d: integral in Z Ax/dX
+C     aS2d: integral in Z Ay/dY
+      myNorm = 0. _d 0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          aW2d(I,J,bi,bj) = 0. _d 0
+          aS2d(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           faceArea = dyG(I,J,bi,bj)*dzF(K)*HFacW(I,J,K,bi,bj)
+           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
+     &      gravity*faceArea*rDxC(I,J,bi,bj)
+           faceArea = dxG(I,J,bi,bj)*dzF(K)*HFacS(I,J,K,bi,bj)
+           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
+     &      gravity*faceArea*rDyC(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+        DO J=1,sNy
+         DO I=1,sNx
+          myNorm = MAX(ABS(aW2d(I,J,bi,bj)),myNorm)
+          myNorm = MAX(ABS(aS2d(I,J,bi,bj)),myNorm)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      cg2dNbuf(1,myThid) = myNorm
+      _GLOBAL_MAX_R8( cg2dNbuf, myNorm, myThid )
+      IF ( cg2dNbuf(1,1) .NE. 0. _d 0 ) THEN
+       myNorm = 1. _d 0/cg2dNbuf(1,1)
+      ELSE
+       myNorm = 1. _d 0
+      ENDIF
+      _BEGIN_MASTER( myThid )
+       cg2dNorm = myNorm
+CcnhDebugStarts
+       WRITE(msgBuf,*) ' CG2D normalisation factor = ', cg2dNorm
+       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+CcnhDebugEnds
+      _END_MASTER( myThid )
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)*myNorm
+          aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)*myNorm
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      
+C--   Update overlap regions
+CcnhDebugStarts
+C     CALL PLOT_FIELD_XYR8( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
+C     CALL PLOT_FIELD_XYR8( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
+CcnhDebugEnds
+      _EXCH_XY_R4(aW2d, myThid)
+      _EXCH_XY_R4(aS2d, myThid)
+CcnhDebugStarts
+C     CALL PLOT_FIELD_XYR8( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYR8( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
+CcnhDebugEnds
+
+C--   Initialise preconditioner
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          pC(I,J,bi,bj) = 1. _d 0
+          IF (
+     &     aW2d(I,J,bi,bj) + aW2d(I+1,J,bi,bj) 
+     &    +aS2d(I,J,bi,bj) + aS2D(I,J+1,bi,bj)
+     &     .EQ. 0. 
+     &       )  pC(I,J,bi,bj) = 0. _d 0
+          pW(I,J,bi,bj) = 0.
+          pS(I,J,bi,bj) = 0.
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C--   Update overlap regions
+      _EXCH_XY_R4(pC, myThid)
+      _EXCH_XY_R4(pW, myThid)
+      _EXCH_XY_R4(pS, myThid)
+
+C--   Set default values for initial guess
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          cg2d_x(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C--   Update overlap regions
+      _EXCH_XY_R8(cg2d_x, myThid)
+
+      RETURN
+      END
