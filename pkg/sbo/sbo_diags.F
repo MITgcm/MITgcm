@@ -150,9 +150,9 @@ C     Keep record of how much time has been integrated over
          ENDDO
       ENDIF
 
-#endif ALLOW_TIMEAVE
+#endif /* ALLOW_TIMEAVE */
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */
 
       RETURN
       END

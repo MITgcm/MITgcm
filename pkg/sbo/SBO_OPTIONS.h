@@ -13,4 +13,4 @@ C     \==========================================================/
 
 #ifdef ALLOW_SBO
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */

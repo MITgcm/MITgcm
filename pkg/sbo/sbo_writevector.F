@@ -148,7 +148,7 @@ C Create meta-file
 
       ENDIF
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */
 
       return
       end

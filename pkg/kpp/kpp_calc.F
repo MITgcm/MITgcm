@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.17 2003/04/30 07:04:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.18 2003/10/02 14:38:37 adcroft Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -102,7 +102,7 @@ c     to OLx=1, OLy=1.
 
 #ifdef ALLOW_SEAICE
 #include "SEAICE_EXTERNAL.h"
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -387,7 +387,7 @@ cph)
      &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
      &       ) *
      &       drF(1) / work2(I,J)
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst*recip_dRf(1) *

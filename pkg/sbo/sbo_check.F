@@ -36,7 +36,7 @@ C     SBO assumes spherical polar coordinates
          STOP 'ABNORMAL END: S/R SBO_CHECK'
       ENDIF
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */
 
       return
       end

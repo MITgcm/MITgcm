@@ -295,7 +295,7 @@ c     finish calculating center-of-mass of oceans
       ycom = ycom / mass
       zcom = zcom / mass
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */
 
       return
       end

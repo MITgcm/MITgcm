@@ -53,6 +53,6 @@ C----------------------------------------------------------------
       _RL OBPtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /SBO_TAVE_DIAGS/ OBPtave
 
-#endif ALLOW_TIMEAVE
+#endif /* ALLOW_TIMEAVE */
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */

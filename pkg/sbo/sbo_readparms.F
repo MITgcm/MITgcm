@@ -77,7 +77,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-#endif ALLOW_SBO
+#endif /* ALLOW_SBO */
 
       return
       end
