@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.6 2002/02/10 00:39:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.7 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,27 +41,39 @@ C     myThid :: Thread no. that called this routine.
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j
+C     number of surface interface layer
+      INTEGER kSurface
+      _RL convertVol2Mass
 CEOP
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface        = Nr 
+       convertVol2Mass = horiVertRatio
+      else
+       kSurface        = 1
+       convertVol2Mass = 1. _d 0
+      endif
 
       DO j = jMin, jMax
          DO i = iMin, iMax
 
 c     Zonal wind stress fu:
           surfaceTendencyU(i,j,bi,bj) = 
-     &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoNil
-     &           *recip_drF(1)*recip_hFacW(i,j,1,bi,bj)
+     &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacW(i,j,kSurface,bi,bj)
 c     Meridional wind stress fv:
           surfaceTendencyV(i,j,bi,bj) = 
-     &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoNil
-     &           *recip_drF(1)*recip_hFacS(i,j,1,bi,bj)
+     &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacS(i,j,kSurface,bi,bj)
 c     Net heat flux Qnet:
           surfaceTendencyT(i,j,bi,bj) = 
-     &      -Qnet(i,j,bi,bj)*recip_Cp*recip_rhoNil
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-     &      -lambdaThetaClimRelax*(theta(i,j,1,bi,bj)-SST(i,j,bi,bj))
+     &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
+     &      -lambdaThetaClimRelax
+     &         *(theta(i,j,kSurface,bi,bj)-SST(i,j,bi,bj))
 C     Salt Flux (restoring term) : 
 C         surfaceTendencyS(i,j,bi,bj) = 
-C    &      -lambdaSaltClimRelax*(salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
+C    &      -lambdaSaltClimRelax*(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
 C notes : because truncation is different when this tendency is splitted 
 C   in 2 parts, keep this salt flux with freshwater flux (see below)
 
@@ -85,9 +97,11 @@ c- converts EmPmR to salinity tendency using surface local salinity
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) =
-     &      + EmPmR(i,j,bi,bj)*salt(i,j,1,bi,bj)
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-     &      -lambdaSaltClimRelax*(salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
+     &      + EmPmR(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
+     &         *convertVol2Mass
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
         ENDDO
        ELSE 
@@ -96,8 +110,9 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) = 
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-     &      -lambdaSaltClimRelax*(salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
+     &         *convertVol2Mass
+     &      -lambdaSaltClimRelax*(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDIF
@@ -110,7 +125,8 @@ c     Salt Flux (restoring term) :
        DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) = 
-     &      -lambdaSaltClimRelax*(salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
        ENDDO
 
@@ -125,8 +141,10 @@ c     consitent with volume change (=d/dt etaN).
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &      + PmEpR(i,j,bi,bj)*( temp_EvPrRn - theta(i,j,1,bi,bj) )
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+     &      + PmEpR(i,j,bi,bj)
+     &         *( temp_EvPrRn - theta(i,j,kSurface,bi,bj) )
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
+     &         *convertVol2Mass
          ENDDO
         ENDDO
        ENDIF
@@ -135,8 +153,10 @@ c     consitent with volume change (=d/dt etaN).
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &      + PmEpR(i,j,bi,bj)*( salt_EvPrRn - salt(i,j,1,bi,bj) )
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+     &      + PmEpR(i,j,bi,bj)
+     &         *( salt_EvPrRn - salt(i,j,kSurface,bi,bj) )
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
+     &         *convertVol2Mass
          ENDDO
         ENDDO
        ENDIF
@@ -144,8 +164,8 @@ c     consitent with volume change (=d/dt etaN).
 #ifdef ALLOW_PASSIVE_TRACER
 c  *** add the tracer flux associated with P-E+R here *** 
 c      IF (trac_EvPrRn.NE.UNSET_RL) THEN
-c    &      + PmEpR(i,j,bi,bj)*( trac_EvPrRn - tr1(i,j,1,bi,bj) )
-c    &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+c    &      + PmEpR(i,j,bi,bj)*( trac_EvPrRn - tr1(i,j,kSurface,bi,bj) )
+c    &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
 c      ENDIF
 #endif /* ALLOW_PASSIVE_TRACER */
 

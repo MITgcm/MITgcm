@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.7 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.8 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,6 +47,17 @@ C--   == Local variables ==
        DO j=jMin,jMax
         DO i=iMin,iMax
          buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
+        ENDDO
+       ENDDO
+
+      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         if ( rholoc(i,j) .ne. 0. ) then
+          rholoc(i,j) = 1./rholoc(i,j)
+          buoy(i,j)=rholoc(i,j)
+         endif
         ENDDO
        ENDDO
 

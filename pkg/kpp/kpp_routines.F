@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.11 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.12 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -1355,7 +1355,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
       DO J = jbot, jtop
          DO I = ibot, itop
-            RHO1(I,J)      = WORK1(I,J) + rhonil
+            RHO1(I,J)      = WORK1(I,J) + rhoConst
             TTALPHA(I,J,1) = WORK2(I,J)
             SSBETA(I,J,1)  = WORK3(I,J)
             DBSFC(I,J,1)   = 0.
@@ -1398,9 +1398,9 @@ CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
                TTALPHA(I,J,K) = WORK1 (I,J)
                SSBETA(I,J,K)  = WORK2 (I,J)
                DBLOC(I,J,K-1) = gravity * (RHOK(I,J) - RHOKM1(I,J)) /
-     &                                    (RHOK(I,J) + rhonil)
+     &                                    (RHOK(I,J) + rhoConst)
                DBSFC(I,J,K)   = gravity * (RHOK(I,J) - RHO1K (I,J)) /
-     &                                    (RHOK(I,J) + rhonil)
+     &                                    (RHOK(I,J) + rhoConst)
             END DO
          END DO
 

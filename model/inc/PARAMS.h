@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.74 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.75 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 C
 CBOP
@@ -321,8 +321,9 @@ C     delY        on input flags.
 C     gravity   :: Accel. due to gravity ( m/s^2 )
 C     recip_gravity and its inverse
 C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
-C     ronil     :: Reference density
+C     rhoNil    :: Reference density for the linear equation of state
 C     rhoConst  :: Vertically constant reference density 
+C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     startTime :: Start time for model ( s )
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
@@ -444,7 +445,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
-     & recip_rhoConst, rhoConst, tRef, sRef,
+     & recip_rhoConst, rhoConst, 
+     & recip_rhoConstFresh, rhoConstFresh, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
      & diagFreq, taveFreq, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
@@ -517,6 +519,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL recip_rhonil
       _RL rhoConst
       _RL recip_rhoConst
+      _RL rhoConstFresh
+      _RL recip_rhoConstFresh
       _RL tRef(Nr)
       _RL sRef(Nr)
       _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

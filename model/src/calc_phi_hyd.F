@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.20 2002/09/18 16:38:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.21 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -151,15 +151,21 @@ c           within the k-loop.
 CADJ GENERAL
 #endif      /* ALLOW_AUTODIFF_TAMC */
 
-C---------- This discretization is the "finite volume" form
-C           which has not been used to date since it does not
-C           conserve KE+PE exactly even though it is more natural
-C
-c           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-c    &              drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-c           phiHyd(i,j,k)=phiHyd(i,j,k)+
-c    &          0.5*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-C-----------------------------------------------------------------------
+CmlC---------- This discretization is the "finite volume" form
+CmlC           which has not been used to date since it does not
+CmlC           conserve KE+PE exactly even though it is more natural
+CmlC
+Cml          IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+Cml           phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+Cml     &          + hFacC(i,j,k,bi,bj)
+Cml     &            *drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+Cml     &          + gravity*etaN(i,j,bi,bj)
+Cml          ENDIF
+Cml           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
+Cml     &         drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+Cml           phiHyd(i,j,k)=phiHyd(i,j,k)+
+Cml     &          0.5*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+CmlC-----------------------------------------------------------------------
 
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
@@ -177,7 +183,7 @@ C           tracer point and .5 of the cell's thickness has to be
 C           substracted from hFacC
             IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
              phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &              + (hFacC(i,j,k,bi,bj)-0.5)*drF(K)
+     &              + (hFacC(i,j,k,bi,bj)-.5)*drF(K)
      &                   *gravity*alphaRho(i,j)*recip_rhoConst
      &              + gravity*etaN(i,j,bi,bj)
             ENDIF
@@ -190,6 +196,9 @@ C-----------------------------------------------------------------------
 C       This is the hydrostatic pressure calculation for the Ocean
 C       which uses the FIND_RHO() routine to calculate density
 C       before integrating g*rho over the current layer/interface
+#ifdef      ALLOW_AUTODIFF_TAMC
+CADJ GENERAL
+#endif      /* ALLOW_AUTODIFF_TAMC */
 
         dRloc=drC(k)
         IF (k.EQ.1) dRloc=drF(1)
@@ -204,9 +213,6 @@ C       before integrating g*rho over the current layer/interface
             DO i=iMin,iMax
               phiHyd(i,j,k)=0.
               phiHyd(i,j,k)=pload(i,j,bi,bj)
-c    &  -Ro_surf(i,j,bi,bj)*recip_rhoNil
-c    &  -(Ro_surf(i,j,bi,bj)-.5*drF( kSurfC(i,j,bi,bj) ))/1000.
-c    &  -(Ro_surf(i,j,bi,bj)-.5*drF( kSurfC(i,j,bi,bj) ))*recip_rhoNil
             ENDDO
           ENDDO
         ENDIF
@@ -224,29 +230,36 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax
           DO i=iMin,iMax
-            locAlpha=alphaRho(i,j)+rhoNil
+            locAlpha=alphaRho(i,j)+rhoConst
             IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
 
-C---------- This discretization is the "finite volume" form
-C           which has not been used to date since it does not
-C           conserve KE+PE exactly even though it is more natural
-C
-c           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-c    &              drF(K)*locAlpha
-c           phiHyd(i,j,k)=phiHyd(i,j,k)+
-c    &          0.5*drF(K)*locAlpha
-C-----------------------------------------------------------------------
+CmlC---------- This discretization is the "finite volume" form
+CmlC           which has not been used to date since it does not
+CmlC           conserve KE+PE exactly even though it is more natural
+CmlC
+Cml            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+Cml             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+Cml     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
+Cml     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+Cml            ENDIF
+Cml            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
+Cml     &           drF(K)*locAlpha
+Cml            phiHyd(i,j,k)=phiHyd(i,j,k)+
+Cml     &           0.5*drF(K)*locAlpha
+CmlC-----------------------------------------------------------------------
 
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 C
+
             phiHyd(i,j,k)=phiHyd(i,j,k)+
      &          0.5*dRloc*locAlpha
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
      &          0.5*dRlocKp1*locAlpha
+
 C-----------------------------------------------------------------------
 
-C---------- Compute gravity*(sea surface elevation)
+C---------- Compute gravity*(sea surface elevation) first
 C           This has to be done starting from phiHyd at the current
 C           tracer point and .5 of the cell's thickness has to be
 C           substracted from hFacC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.5 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.6 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -51,7 +51,7 @@ C
      &       .or. equationOfState .eq. 'MDJWF' ) ) then
          do J=1-Oly,sNy+Oly
             do I=1-Olx,sNx+Olx
-               pressure(i,j,k,bi,bj) = rhonil * (
+               pressure(i,j,k,bi,bj) = rhoConst * (
      &              - gravity*rC(k)
      &              + gravity*etaN(i,j,bi,bj)
      &              + phiHyd(i,j,k)

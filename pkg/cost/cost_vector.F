@@ -48,7 +48,7 @@ C      parameter ( kmaxdepth = 14 )
 C------------------------------------------------------
 C     Accumulate meridionally integrated transports
 C     Note bar(V)*bar(T) not bar(VT)
-C     Attention pYFaceA [m^2*gravity*rhonil]
+C     Attention pYFaceA [m^2*gravity*rhoConst]
 C------------------------------------------------------
 
       DO bj=myByLo(myThid),myByHi(myThid)

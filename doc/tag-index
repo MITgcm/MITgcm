@@ -1,7 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.86 2002/09/18 16:38:01 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.87 2002/09/25 19:36:50 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+
+checkpoint46h_post
+o cleaned up the use of rhoNil and rhoConst. 
+  - rhoNil should only appear in the LINEAR equation of state, everywhere 
+    else rhoNil is replaced by rhoConst, e.g. find_rho computes rho-rhoConst
+    and the dynamical equations are all divided by rhoConst
+o introduced new parameter rhoConstFresh, a reference density of fresh 
+  water, to remove the fresh water flux's dependence on rhoNil. The default
+  value is 999.8 kg/m^3
+o cleanup up external_forcing.F and external_forcing_surf.F
+  - can now be used by both OCEANIC and OCEANICP
+checkpoint46h_pre
+
+ Added code to convert surface volume flux (fresh water) into
+ a mass flux when using P coordinates in the ocean (OCEANICP).
+ Note: It assumes you have set rho0=rhoConst=density of fresh water.
 
 checkpoint46g_post
 o Include a new diagnostic variable phiHydLow for the ocean model

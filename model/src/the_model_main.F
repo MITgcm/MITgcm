@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.46 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.47 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 CBOI
@@ -225,7 +225,7 @@ C/\  | | |-THERMODYNAMICS :: theta, salt + tracer equations driver.
 C/\  | | | |
 C/\  | | | |-INTEGRATE_FOR_W :: Integrate for vertical velocity.
 C/\  | | | |-OBCS_APPLY_W    :: Open bndy. package ( see pkg/obcs ).
-C/\  | | | |-FIND_RHO        :: Calculates [rho(S,T,z)-Rhonil] of a slice
+C/\  | | | |-FIND_RHO        :: Calculates [rho(S,T,z)-RhoConst] of a slice
 C/\  | | | |-GRAD_SIGMA      :: Calculate isoneutral gradients
 C/\  | | | |-CALC_IVDC       :: Set Implicit Vertical Diffusivity for Convection
 C/\  | | | |

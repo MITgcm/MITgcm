@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.16 2002/07/13 04:59:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.17 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,11 +44,19 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J
+C     number of surface interface layer
+      INTEGER kSurface
 CEOP
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface = Nr
+      else
+       kSurface = 1
+      endif
 
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
-      IF ( kLev .EQ. 1 ) THEN
+      IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
@@ -109,11 +117,19 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J
+C     number of surface interface layer
+      INTEGER kSurface
 CEOP
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface = Nr
+      else
+       kSurface = 1
+      endif
 
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
-      IF ( kLev .EQ. 1 ) THEN
+      IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
@@ -181,11 +197,19 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J
+C     number of surface interface layer
+      INTEGER kSurface
 CEOP
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface = Nr
+      else
+       kSurface = 1
+      endif
 
 C--   Forcing term
 C     Add heat in top-layer
-      IF ( kLev .EQ. 1 ) THEN
+      IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
@@ -206,7 +230,7 @@ C Penetrating SW radiation
        DO i=iMin,iMax
         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) 
      &   -maskC(i,j,klev,bi,bj)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
-     &    *recip_Cp*recip_rhoNil*recip_drF(klev)
+     &    *recip_Cp*recip_rhoConst*recip_drF(klev)
        ENDDO
       ENDDO
 #endif
@@ -263,11 +287,20 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J
+C     number of surface interface layer
+      INTEGER kSurface
 CEOP
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface = Nr
+      else
+       kSurface = 1
+      endif
+
 
 C--   Forcing term
 C     Add fresh-water in top-layer
-      IF ( kLev .EQ. 1 ) THEN
+      IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)

@@ -168,7 +168,7 @@ c--     Surface heat flux:
         DO j=1-oLy,sNy+oLy
          DO i=1-oLx,sNx+oLx
             tmpflux(i,j,bi,bj) =
-     &           - Qnet(i,j,bi,bj)*HeatCapacity_Cp*rhoNil*dRf(1)
+     &           - Qnet(i,j,bi,bj)*HeatCapacity_Cp*rhoConst*dRf(1)
          ENDDO
         ENDDO
        ENDDO
@@ -202,7 +202,7 @@ c--     Surface zonal wind stress:
         DO j=1-oLy,sNy+oLy
          DO i=1-oLx,sNx+oLx
             tmpflux(i,j,bi,bj) =
-     &            -fu(i,j,bi,bj)*rhoNil*dRf(1)/horiVertRatio
+     &            -fu(i,j,bi,bj)*rhoConst*dRf(1)/horiVertRatio
          ENDDO
         ENDDO
        ENDDO
@@ -219,7 +219,7 @@ c--     Surface meridional wind stress:
         DO j=1-oLy,sNy+oLy
          DO i=1-oLx,sNx+oLx
             tmpflux(i,j,bi,bj) =
-     &            -fv(i,j,bi,bj)*rhoNil*dRf(1)/horiVertRatio
+     &            -fv(i,j,bi,bj)*rhoConst*dRf(1)/horiVertRatio
          ENDDO
         ENDDO
        ENDDO
@@ -312,7 +312,7 @@ c--     Short wave radiative flux:
         DO j=1-oLy,sNy+oLy
          DO i=1-oLx,sNx+oLx
             tmpflux(i,j,bi,bj) =
-     &            -Qsw(i,j,bi,bj)*HeatCapacity_Cp*rhoNil*dRf(1)
+     &            -Qsw(i,j,bi,bj)*HeatCapacity_Cp*rhoConst*dRf(1)
          ENDDO
         ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.20 2002/09/18 16:38:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.21 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -16,7 +16,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHO                                     
-C     |   Calculates [rho(S,T,z)-Rhonil] of a slice               
+C     |   Calculates [rho(S,T,z)-rhoConst] of a slice               
 C     *==========================================================*
 C     |                                                           
 C     | k - is the Theta/Salt level                               
@@ -48,7 +48,7 @@ C     == Routine arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer i,j
-      _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
+      _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -75,11 +75,14 @@ C **********
        refTemp=tRef(kRef)
        refSalt=sRef(kRef)
 
+       dRho = rhoNil-rhoConst
+
        do j=jMin,jMax
         do i=iMin,iMax
-         rholoc(i,j)=rhonil*(
+         rholoc(i,j)=rhoNil*(
      &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
      &   -tAlpha*(tFld(i,j,k,bi,bj)-refTemp) )
+     &        + dRho
         enddo
        enddo
        
@@ -87,7 +90,7 @@ C **********
 
        refTemp=eosRefT(kRef)
        refSalt=eosRefS(kRef)
-       sigRef=eosSig0(kRef) + (1000.-Rhonil)
+       sigRef=eosSig0(kRef) + (1000.-rhoConst)
 
        do j=jMin,jMax
         do i=iMin,iMax
@@ -141,7 +144,7 @@ C     density of sea water at pressure p
                rholoc(i,j) = rhoP0(i,j)
      &              /(1. _d 0 - 
      &              pressure(i,j,kRef,bi,bj)*SItoBar/bulkMod(i,j))
-     &              - rhonil
+     &              - rhoConst
 
             end do
          end do
@@ -157,7 +160,7 @@ C     density of sea water at pressure p
          do j=jMin,jMax
             do i=iMin,iMax
 
-               rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoNil
+               rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
 
             end do
          end do
@@ -542,7 +545,7 @@ C     issue a warning
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHO_SCALAR                                   
-C     |   Calculates [rho(S,T,p)-Rhonil] 
+C     |   Calculates [rho(S,T,p)-rhoConst] 
 C     *==========================================================*
 C     \ev
 
@@ -688,7 +691,7 @@ C     secant bulk modulus of sea water at pressure p
          bulkMod = bMfresh + bMsalt + bMpres
          
 C     density of sea water at pressure p
-         rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhonil
+         rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhoConst
 
       elseif ( equationOfState.eq.'MDJWF' ) then
 
@@ -720,7 +723,7 @@ C     density of sea water at pressure p
             
          rhoDen = 1.0/(epsln+den) 
 
-         rhoLoc = rhoNum*rhoDen - rhoNil
+         rhoLoc = rhoNum*rhoDen - rhoConst
 
       elseif( equationOfState .eq. 'IDEALG' ) then
 C     

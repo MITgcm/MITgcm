@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.38 2002/08/15 17:25:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.39 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -83,10 +83,12 @@ C     General curvilinear coordinate system
 C--   Set default "physical" parameters
       DO K =1,Nr
        tRef(K) = 30.D0 - FLOAT( K )
+Cml       sRef(K) = 35.D0
       ENDDO
       gravitySign         = 1.D0
       gravity             = 9.81D0
       rhoNil              = 999.8D0
+      rhoConstFresh       = 999.8D0
       f0                  = 1.D-4
       beta                = 1.D-11
       omega               = 2.D0 * PI / ( 3600.D0 * 24.D0 )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.5 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.6 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -112,7 +112,7 @@ C
                   do K=1,Nr
                      do J=1-Oly,sNy+Oly
                         do I=1-Olx,sNx+Olx
-                           pressure(i,j,k,bi,bj) = rhonil * (
+                           pressure(i,j,k,bi,bj) = rhoConst * (
      &                          - gravity*rC(k)
      &                          )
                         end do
@@ -430,7 +430,7 @@ C     check nonlinear EOS
      &           SQUEEZE_RIGHT , 1)
             write(msgBuf,'(a14,a22,f10.5,1x,f11.5)')
      &           'rho(find_rho) ',
-     &           ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
+     &           ' = ', rholoc(i,j)+rhoConst, bulkMod(i,j)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
 
@@ -439,7 +439,7 @@ C     check nonlinear EOS
             bulkMod(i,j) = 0. _d 0
             write(msgBuf,'(a21,a15,f10.5,1x,f11.5)')
      &           'rho(find_rho_scalar) ',
-     &           ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
+     &           ' = ', rholoc(i,j)+rhoConst, bulkMod(i,j)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             

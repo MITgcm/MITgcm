@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.34 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.35 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -135,6 +135,8 @@ CEOP
       CALL WRITE_0D_R8( rhonil,  INDEX_NONE,'rhonil =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_0D_R8( rhoConst, INDEX_NONE,'rhoConst =',
+     &'   /* Reference density ( kg/m^3 ) */')
+      CALL WRITE_0D_R8( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_0D_R8( gravity, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.11 2002/07/13 03:12:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.12 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -359,7 +359,7 @@ cph)
      &       ) *
      &       drF(1) / work2(I,J)
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoNil*recip_dRf(1) *
+     &       recip_Cp*recip_rhoConst*recip_dRf(1) *
      &       drF(1) / work2(I,J)
        END DO
       END DO

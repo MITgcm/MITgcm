@@ -47,7 +47,7 @@ C     I,J,K
       _RL rmspp, rmsppold 
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
+CEOP
       iMin = 1-OLx
       iMax = sNx+OLx
       jMin = 1-OLy

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.10 2002/09/23 16:13:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.11 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,7 +64,8 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( buoyancyRelation .eq. 'OCEANICP' )  THEN
-        convertVol2Mass = horiVertRatio
+C        convertVol2Mass = horiVertRatio
+        convertVol2Mass = gravity*rhoConstFresh
       ELSE
         convertVol2Mass = 1.
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.4 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.5 2002/09/25 19:36:50 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,12 +91,13 @@ C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
              CALL FIND_RHO_SCALAR( 
      &            tRef(k), sRef(k), Ro_surf(I,J,bi,bj),
      &            rhoLoc, myThid )
-             if ( rhoLoc+rhoNil .eq. 0. _d 0 ) then
+             rhoLoc = rhoLoc + rhoConst
+             if ( rhoLoc .eq. 0. _d 0 ) then
               Bo_surf(I,J,bi,bj) = 0. _d 0
              else
-              Bo_surf(I,J,bi,bj) = 1./(rhoLoc+rhoNil)
+              Bo_surf(I,J,bi,bj) = 1./rhoLoc
              endif
-             recip_Bo(I,J,bi,bj) =  rhoLoc+rhoNil
+             recip_Bo(I,J,bi,bj) =  rhoLoc
             ELSE
               Bo_surf(I,J,bi,bj)  = 0. _d 0
               recip_Bo(I,J,bi,bj) = 0. _d 0

@@ -49,7 +49,7 @@ C      parameter ( kmaxdepth = 14 )
 C------------------------------------------------------
 C     Accumulate meridionally integrated transports
 C     Note bar(V)*bar(T) not bar(VT)
-C     Attention pYFaceA [m^2*gravity*rhonil]
+C     Attention pYFaceA [m^2*gravity*rhoConst]
 C------------------------------------------------------
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -120,7 +120,7 @@ c
         end do
 
         objf_atl(bi,bj) = 
-     &   sum*HeatCapacity_Cp*rhonil/petawatt
+     &   sum*HeatCapacity_Cp*rhoConst/petawatt
 
 c--   end of bi,bj loop
        end do
