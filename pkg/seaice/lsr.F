@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.9 2003/12/14 04:56:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.10 2003/12/19 19:56:02 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -334,7 +334,7 @@ cph        GO TO 8001
 cph)
        END IF
       END IF
-      CALL SEAICE_EXCH_UV ( UICE, VICE, myThid )
+      CALL SEAICE_EXCH ( UICE, myThid )
 
 cph(
       END IF
@@ -555,7 +555,7 @@ cph)
        END IF
       END IF
 
-      CALL SEAICE_EXCH_UV ( UICE, VICE, myThid )
+      CALL SEAICE_EXCH ( VICE, myThid )
 
 cph(
       END IF

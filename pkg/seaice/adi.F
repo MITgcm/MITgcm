@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/adi.F,v 1.9 2003/12/14 04:56:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/adi.F,v 1.10 2003/12/19 19:56:01 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -245,7 +245,7 @@ c        END DO
        ENDDO
       ENDDO
 
-       CALL SEAICE_EXCH_UV( UICE, VICE, myThid )
+       CALL SEAICE_EXCH( UICE, myThid )
 
 C NOW SECOND HALF
 
@@ -515,7 +515,7 @@ c         END DO
        ENDDO
       ENDDO
 
-       CALL SEAICE_EXCH_UV( UICE, VICE, myThid )
+       CALL SEAICE_EXCH( VICE, myThid )
 
 C NOW SECOND HALF
 
