@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.36 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.37 2004/07/27 00:21:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -212,20 +212,20 @@ C--   compute the future surface level thickness according to etaH(n+1)
       ENDIF
 #endif /* NONLIN_FRSURF */
 
-      IF ( nIter0.EQ.0 .AND. staggerTimeStep ) THEN
+c     IF ( nIter0.EQ.0 .AND. staggerTimeStep ) THEN
 C--    Filter initial T & S fields if staggerTimeStep 
 C       (only for backward compatibility ; to be removed later)
 #ifdef ALLOW_SHAP_FILT
-       IF ( useSHAP_FILT .AND. shap_filt_TrStagg ) THEN
-        CALL SHAP_FILT_APPLY_TS(theta,salt,startTime,nIter0,myThid)
-       ENDIF
+c      IF ( useSHAP_FILT .AND. shap_filt_TrStagg ) THEN
+c       CALL SHAP_FILT_APPLY_TS(theta,salt,startTime,nIter0,myThid)
+c      ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
-       IF ( useZONAL_FILT .AND. zonal_filt_TrStagg ) THEN
-        CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )
-       ENDIF
+c      IF ( useZONAL_FILT .AND. zonal_filt_TrStagg ) THEN
+c       CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )
+c      ENDIF
 #endif
-      ENDIF
+c     ENDIF
 
 #ifdef ALLOW_TIMEAVE
       DO bj=myByLo(myThid),myByHi(myThid)
