@@ -93,6 +93,8 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/convect.f			\
 		$(SOURCE_CODE)/convective_adjustment.f		\
 		$(SOURCE_CODE)/convective_adjustment_ini.f	\
+		$(SOURCE_CODE)/convective_weights.f		\
+		$(SOURCE_CODE)/convectively_mixtracer.f		\
 		$(SOURCE_CODE)/correction_step.f		\
 		$(SOURCE_CODE)/cycle_tracer.f			\
 		$(SOURCE_CODE)/different_multiple.f		\
@@ -233,6 +235,8 @@ SRC_MODEL	= \
 		  						\
 		$(SOURCE_CODE)/gmredi_calc_diff.f		\
 		$(SOURCE_CODE)/gmredi_calc_tensor.f		\
+		$(SOURCE_CODE)/gmredi_calc_uvflow.f		\
+		$(SOURCE_CODE)/gmredi_calc_wflow.f		\
 		$(SOURCE_CODE)/gmredi_diags.f			\
 		$(SOURCE_CODE)/gmredi_init.f			\
 		$(SOURCE_CODE)/gmredi_rtransport.f		\
@@ -259,6 +263,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/shap_filt_tracer_s4.f		\
 		$(SOURCE_CODE)/shap_filt_uv_s1.f		\
 		$(SOURCE_CODE)/shap_filt_uv_s2.f		\
+		$(SOURCE_CODE)/shap_filt_uv_s2c.f		\
 		$(SOURCE_CODE)/shap_filt_uv_s2g.f		\
 		$(SOURCE_CODE)/shap_filt_uv_s4.f		\
 		  						\
