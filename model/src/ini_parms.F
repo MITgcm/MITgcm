@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.78 2002/03/07 14:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.79 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -140,7 +140,7 @@ C--   Elliptic solver parameters
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter, deltaT, deltaTmom, deltaTtracer,
-     & abEps, tauCD, rCD,
+     & forcing_In_AB, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq,
      & dumpFreq, taveFreq, deltaTClock, diagFreq,
      & monitorFreq, pChkPtFreq, cAdjFreq, 
@@ -323,6 +323,11 @@ C--   Metric terms on/off flag.
       ELSE
        mTFacMom = 0.D0
       ENDIF
+C--   Advection and Forcing for Temp and salt  on/off flags
+      tempAdvection = tempStepping .AND. tempAdvection
+      tempForcing   = tempStepping .AND. tempForcing
+      saltAdvection = saltStepping .AND. saltAdvection
+      saltForcing   = saltStepping .AND. saltForcing
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( viscAp .NE. UNSET_RL ) pCoordInputData = .TRUE.
@@ -358,7 +363,7 @@ C--   z,p,r coord input switching.
       ENDIF
 
       IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN
-       WRITE(msgBuf,'(A,A)')
+        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
      &  ' vertical diffusion.'
        CALL PRINT_ERROR( msgBuf , myThid)

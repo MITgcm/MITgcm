@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.32 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.33 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,33 +78,42 @@ C     myThid :: Instance number for this innvocation of CALC_GT
 
 CEOP
 
+C     === Local variables ===
+      LOGICAL calcAdvection
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverS is set in this subroutine
 C--   the kDown is still required
       fVerS(1,1,kDown) = fVerS(1,1,kDown)
 #endif
 
+      calcAdvection = saltAdvection .AND. .NOT.saltMultiDimAdvec
       CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           diffKhS, diffK4S, KappaRS, Salt,
-     I           GAD_SALINITY, saltAdvScheme,
+     I           GAD_SALINITY, saltAdvScheme, calcAdvection,
      U           fVerS, gS,
      I           myThid )
 
-C--   External forcing term(s)
-      CALL EXTERNAL_FORCING_S(
+C--   External salinity forcing term(s) inside Adams-Bashforth:
+      IF ( saltForcing .AND. forcing_In_AB )
+     & CALL EXTERNAL_FORCING_S(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
 
-      IF ( saltAdvScheme.EQ.ENUM_CENTERED_2ND
-     & .OR.saltAdvScheme.EQ.ENUM_UPWIND_3RD
-     & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF ( saltAdamsBashforth ) THEN
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, K,
      U                        gS, gSnm1,
      I                        myIter, myThid )
       ENDIF
+
+C--   External salinity forcing term(s) outside Adams-Bashforth:
+      IF ( saltForcing .AND. .NOT.forcing_In_AB )
+     & CALL EXTERNAL_FORCING_S(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myTime,myThid)
 
 #ifdef NONLIN_FRSURF
       IF (nonlinFreeSurf.GT.0) THEN

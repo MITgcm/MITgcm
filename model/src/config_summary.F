@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.32 2002/03/07 14:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.33 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -196,6 +196,9 @@ CEOP
      &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
       ENDIF
 
+      CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE, 
+     & 'multiDimAdvection =',
+     &'   /* enable/disable Multi-Dim Advection */')
       CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
      &                 'staggerTimeStep =',
      &'   /* Stagger time stepping on/off flag */')
@@ -214,6 +217,16 @@ CEOP
      & '  /* Momentum pressure term on/off flag */')
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
+      CALL WRITE_0D_L( tempAdvection,  INDEX_NONE,
+     & 'tempAdvection=', '  /* Temperature advection on/off flag */')
+      CALL WRITE_0D_L( tempForcing,  INDEX_NONE,
+     & 'tempForcing  =', '  /* Temperature forcing on/off flag */')
+      CALL WRITE_0D_L( saltStepping,  INDEX_NONE,
+     & 'saltStepping =', '  /* Salinity equation on/off flag */')
+      CALL WRITE_0D_L( saltAdvection,  INDEX_NONE,
+     & 'saltAdvection=', '  /* Salinity advection on/off flag */')
+      CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
+     & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       WRITE(msgBuf,'(A)') '//  '
@@ -257,6 +270,8 @@ CEOP
      &'   /* Model clock timestep ( s ) */')
       CALL WRITE_0D_R8( cAdjFreq, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')
+      CALL WRITE_0D_L( forcing_In_AB,INDEX_NONE,'forcing_In_AB =',
+     &'   /* put T,S Forcing in Adams-Bash. stepping */')
       CALL WRITE_0D_R8( abeps, INDEX_NONE,'abeps =',
      &'   /* Adams-Bashforth stabilizing weight */')
       CALL WRITE_0D_R8( tauCD, INDEX_NONE,'tauCD =',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.6 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.7 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,35 +57,47 @@ C     myThid - Instance number for this innvocation of CALC_GT
 
 CEOP
 
+#ifdef ALLOW_PASSIVE_TRACER
+C     === Local variables ===
+      LOGICAL calcAdvection
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
 #endif
 
+      calcAdvection = .NOT.tr1_MultiDimAdvec
       CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           diffKhT, diffK4T, KappaRT, tr1,
-     I           GAD_TR1, tracerAdvScheme,
+     I           GAD_TR1, tracerAdvScheme, calcAdvection,
      U           fVerT, gTr1,
      I           myThid )
 
 #ifdef INCLUDE_TR_FORCING_CODE
-C--   External thermal forcing term(s)
-      CALL EXTERNAL_FORCING_TR(
+C--   External forcing term(s) inside Adams-Bashforth:
+      IF ( forcing_In_AB )
+     & CALL EXTERNAL_FORCING_TR(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
 #endif /*  INCLUDE_TR_FORCING_CODE */
 
-      IF ( tracerAdvScheme.EQ.ENUM_CENTERED_2ND
-     & .OR.tracerAdvScheme.EQ.ENUM_UPWIND_3RD
-     & .OR.tracerAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF ( tr1_AdamsBashforth ) THEN
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, K,
      U                        gTr1, gTr1nm1,
      I                        myIter, myThid )
       ENDIF
+
+#ifdef INCLUDE_TR_FORCING_CODE
+C--   External forcing term(s) outside Adams-Bashforth:
+      IF ( .NOT.forcing_In_AB )
+     & CALL EXTERNAL_FORCING_TR(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myTime,myThid)
+#endif /*  INCLUDE_TR_FORCING_CODE */
 
 #ifdef NONLIN_FRSURF
       IF (nonlinFreeSurf.GT.0) THEN
@@ -95,6 +107,8 @@ C--   External thermal forcing term(s)
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */
+
+#endif /* ALLOW_PASSIVE_TRACER */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.4 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.5 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,6 +18,8 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
 C       |
+C       |-- GAD_INIT
+C       |
 C       |-- OBCS_INIT_FIXED
 C       |
 C       |-- FLT_INIT
@@ -34,6 +36,9 @@ C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
+
+C--   Initialize fixed params for GAD
+      CALL GAD_INIT( myThid )
 
 C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS

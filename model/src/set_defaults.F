@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.34 2002/03/07 14:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.35 2002/06/15 03:28:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -118,7 +118,11 @@ C--   Set default "physical" parameters
       momStepping         = .TRUE.
       vectorInvariantMomentum = .FALSE.
       tempStepping        = .TRUE.
+      tempAdvection       = .TRUE.
+      tempForcing         = .TRUE.
       saltStepping        = .TRUE.
+      saltAdvection       = .TRUE.
+      saltForcing         = .TRUE.
       tr1Stepping         = .FALSE.
       metricTerms         = .TRUE.
       implicitDiffusion   = .FALSE.
@@ -179,6 +183,7 @@ C--   Time stepping parameters
       nTimeSteps        = 0
       nEndIter          = nIter0+nTimeSteps
       endTime           = deltaT*float(nEndIter)
+      forcing_In_AB     = .TRUE.
       abEps             = 0.01
       pchkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
