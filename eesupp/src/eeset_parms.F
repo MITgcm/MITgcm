@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.6 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.7 1998/12/08 21:35:08 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -74,8 +74,8 @@ C
       notUsingXPeriodicity       = .FALSE.
       notUsingYPeriodicity       = .FALSE.
       usingMPI                   = .FALSE.
-      nTx                        = 2
-      nTy                        = 2
+      nTx                        = 1
+      nTy                        = 1
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
