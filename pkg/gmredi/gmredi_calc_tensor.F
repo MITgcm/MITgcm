@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.6 2001/03/06 17:58:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.7 2001/08/21 15:27:19 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -118,7 +118,7 @@ C       Now we convert deltaH to a non-dimensional fraction
         if (K.eq.2) VisbeckK(i,j,bi,bj)=0.
 Calt?   if (dSigmaDrReal(i,j).NE.0.) then
 Calt?    N2=(-Gravity*recip_Rhonil)*dSigmaDrReal(i,j)
-        if (dRdSigmaLtd(i,j).NE.0.) then
+        if ( dRdSigmaLtd(i,j).NE.0. .AND. Ssq.NE.0. ) then
          N2=(-Gravity*recip_Rhonil)/dRdSigmaLtd(i,j)
          SN=sqrt(Ssq*N2)
          VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH

@@ -1,0 +1,16 @@
+heimbach@mit.edu, 16-Aug-2001
+
+The following files (and probably only those) could
+potentially cause problems in the context of AD,
+i.e. may leed to large sensitivities:
+
+- gmredi_calc_tensor:
+  (all for the case GM_VISBECK_VARIABLE_K)
+         N2=(-Gravity*recip_Rhonil)/dRdSigmaLtd(i,j)
+         SN=sqrt(Ssq*N2)
+        VisbeckK(i,j,bi,bj)=
+     &     min(VisbeckK(i,j,bi,bj),GM_Visbeck_maxval_K)
+
+- gmredi_slope_limit:
+  gradSmod, Small_Number, dSigmaDrLtd, Smod
+  Lrho=Cspd/abs(Fcori(i,j,bi,bj))
