@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.222 2003/12/10 19:37:25 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.223 2003/12/14 23:30:13 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -14,6 +14,9 @@ o changes to permit hi-res, cubed-sphere, configuration
    Gaussian grid is described in MITgcm_contrib/high_res_cube/README_ice,
    complete with example surface forcing files and matlab scripts to look
    at the output and compare it with that of global_ocean.cs32x15.)
+o packages pickup: $PKG_write_pickup called from packages_write_pickup ;
+   but call to $PKG_read_pickup remains in $PKG_ini_vars: change CD_code
+   to conform to the common rule.
 
 checkpoint52d_pre
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
