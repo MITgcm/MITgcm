@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.4 2001/09/28 16:49:54 adcroft Exp $
 C $Name:  $
 
 CBOI
 C !TITLE: pkg/mom\_advdiff
 C !AUTHORS: adcroft@mit.edu
-C !INTRODUCTION:
-C \section{Flux-form Momentum Equations Package}
+C !INTRODUCTION: Flux-form Momentum Equations Package
 C
 C Package "mom\_fluxform" provides methods for calculating explicit terms
 C in the momentum equation cast in flux-form:

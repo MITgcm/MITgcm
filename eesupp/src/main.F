@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.8 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.9 2001/09/28 16:49:54 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -7,7 +7,7 @@ C !TITLE: WRAPPER CODE SYNOPSIS
 C !AUTHORS: mitgcm developers ( support@mitgcm.org )
 C !AFFILIATION: Massachussetts Institute of Technology
 C !DATE:
-C !INTRODUCTION: eesupp/ subdirectory
+C !INTRODUCTION: Wrapper synopsis and code
 C Routines in the subdirectories under eesupp/ ( src/ and inc/ ) provide the core
 C framework within which numerical and ancilliary software of MITgcm operates.
 C The eesupp/ directories provide a collection of software we call {\bf WRAPPER} (

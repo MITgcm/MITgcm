@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.42 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.43 2001/09/28 16:49:54 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -7,7 +7,7 @@ C !TITLE: MITGCM KERNEL CODE SYNOPSIS
 C !AUTHORS: mitgcm developers ( support@mitgcm.org )
 C !AFFILIATION: Massachussetts Institute of Technology
 C !DATE:
-C !INTRODUCTION: model/ subdirectory
+C !INTRODUCTION: Kernel dynamical routines
 C This document summarises MITgcm code under the model/ subdirectory.
 C The code under model/ ( src/ and inc/ ) contains most of
 C the driver routines for the baseline forms of the kernel equations in the

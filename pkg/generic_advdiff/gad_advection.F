@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.7 2001/09/28 02:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.8 2001/09/28 16:49:54 adcroft Exp $
 C $Name:  $
 
 CBOI
 C !TITLE: pkg/generic\_advdiff
 C !AUTHORS: adcroft@mit.edu
-C !INTRODUCTION:
-C \section{Generica Advection Diffusion Package}
+C !INTRODUCTION: Generic Advection Diffusion Package
 C
 C Package "generic\_advdiff" provides a common set of routines for calculating
 C advective/diffusive fluxes for tracers (cell centered quantities on a C-grid).
