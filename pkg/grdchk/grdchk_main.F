@@ -1,42 +1,81 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.2 2001/07/13 14:50:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.3 2001/09/28 16:53:46 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
+CBOI
+C
+C !TITLE: GRADIENT CHECK
+C !AUTHORS: mitgcm developers ( support@mitgcm.org )
+C !AFFILIATION: Massachussetts Institute of Technology
+C !DATE:
+C !INTRODUCTION: gradient check package
+c \bv
+c Compare the gradients calculated by the adjoint model with
+c finite difference approximations.
+c
+C     !CALLING SEQUENCE:
+c
+c the_model_main
+c |
+c |-- ctrl_unpack
+c |-- adthe_main_loop          - unperturbed cost function and
+c |-- ctrl_pack                  adjoint gradient are computed here
+c |
+c |-- grdchk_main
+c     |
+c     |-- grdchk_init
+c     |-- do icomp=...        - loop over control vector elements
+c         |
+c         |-- grdchk_loc      - determine location of icomp on grid
+c         |
+c         |-- grdchk_getxx    - get control vector component from file
+c         |                     perturb it and write back to file
+c         |-- grdchk_getadxx  - get gradient component calculated 
+c         |                     via adjoint
+c         |-- the_main_loop   - forward run and cost evaluation
+c         |                     with perturbed control vector element
+c         |-- calculate ratio of adj. vs. finite difference gradient
+c         |
+c         |-- grdchk_setxx    - Reset control vector element
+c         |
+c         |-- grdchk_print    - print results
+c \ev
+CEOI
 
-      subroutine grdchk_main(
-     I                        mythid
-     &                      )
+CBOP
+C     !ROUTINE: grdchk_main
+C     !INTERFACE:
+      subroutine grdchk_main( mythid )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE grdchk_main
 c     ==================================================================
-c
 c     o Compare the gradients calculated by the adjoint model with
 c       finite difference approximations.
-c
 c     started: Christian Eckert eckert@mit.edu 24-Feb-2000
 c     continued: heimbach@mit.edu: 13-Jun-2001
-c
 c     ==================================================================
 c     SUBROUTINE grdchk_main
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-
 #include "grdchk.h"
 #include "cost.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
       integer mythid 
 
 #ifdef ALLOW_GRADIENT_CHECK
+C     !LOCAL VARIABLES:
 c     == local variables ==
       integer myiter
       _RL     mytime 
@@ -73,6 +112,7 @@ cph(
 cph)
 
 c     == end of interface ==
+CEOP
 
 c--   Set the loop ranges.
       jtlo = mybylo(mythid)
