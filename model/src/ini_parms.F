@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.93 2003/03/17 17:10:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.94 2003/03/18 14:37:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -302,7 +302,11 @@ C--   Set default "physical" parameters
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
       IF ( omega .EQ. UNSET_RL ) THEN
-        omega = 2.D0 * PI / rotationPeriod
+        omega = 0. _d 0
+        IF ( rotationPeriod .NE. 0. _d 0 ) 
+     &  omega = 2.D0 * PI / rotationPeriod
+      ELSEIF ( omega .EQ. 0. _d 0 ) THEN
+        rotationPeriod = 0. _d 0
       ELSE
         rotationPeriod = 2.D0 * PI / omega
       ENDIF
