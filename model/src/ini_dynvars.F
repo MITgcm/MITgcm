@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.7 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.8 2003/02/18 15:34:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,6 +80,7 @@ C-      3D arrays
            gWnm1(I,J,K,bi,bj)=0. _d 0
 #endif
 
+           totPhiHyd(I,J,K,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO

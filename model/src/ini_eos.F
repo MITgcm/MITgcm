@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.9 2003/02/03 21:58:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.10 2003/02/18 15:34:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#define EXCLUDE_EOS_CHECK
 
 CBOP
 C     !ROUTINE: INI_EOS
@@ -38,6 +39,7 @@ C     I,J,K
       INTEGER  I,  J,  K
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       
+      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) RETURN
 
       equationOfState = eosType
 
@@ -62,55 +64,6 @@ C     I,J,K
       do k = 0,12
          eosMDJWFden(k) = 0. _d 0
       end do
-
-C     initialise pressure to zero (this is not really the right place to 
-C     do it, but let's do it anyway; pressure will be initialised to
-C     sensible values in ini_pressure)
-      do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
-        do K=1,Nr
-         do J=1-Oly,sNy+Oly
-          do I=1-Olx,sNx+Olx
-           pressure(i,j,k,bi,bj) = 0. _d 0
-          end do
-         end do
-        end do
-       end do
-      end do
-C
-C     initialise pressure to something sensible (will be overwritten)
-C
-      if ( buoyancyRelation .eq. 'OCEANIC' ) then
-       do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do J=1-Oly,sNy+Oly
-           do I=1-Olx,sNx+Olx
-            pressure(i,j,k,bi,bj) = rhoConst * (
-     &           - gravity*rC(k)
-     &           )
-           end do
-          end do
-         end do
-        end do
-       end do
-      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
-C     
-C     in pressure coordinates the pressure is just the coordinate of
-C     the tracer point, that is, its constant in time
-C
-       do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do J=1-Oly,sNy+Oly
-           do I=1-Olx,sNx+Olx
-            pressure(i,j,k,bi,bj) = rC(k)
-           end do 
-          end do
-         end do
-        end do
-       end do
-      endif
 
       if ( equationOfState .eq. 'LINEAR' ) then
          if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.D-4
@@ -307,28 +260,10 @@ C--   Check EOS initialisation:
 
       call check_eos( myThid )
 
-      IF ( buoyancyRelation .EQ. 'OCEANIC' .AND.
-     &     ( equationOfState .EQ. 'JMD95P'.OR.
-     &       equationOfState .EQ. 'MDJWF' .OR.
-     &       equationOfState .EQ. 'UNESCO'   ) ) THEN
-        WRITE(msgBuf,'(A)')
-     &   'S/R INI_EOS: WARNING >>> Wrong Restart !!!'
-        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT,myThid)
-        WRITE(msgBuf,'(2A)') 'S/R INI_EOS: ',
-     &   'not correct using Z-coord with EOS function of P'
-        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT,myThid)
-        WRITE(msgBuf,'(A)')
-     &   'S/R INI_EOS: WARNING <<< Wrong Restart !!!'
-        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT,myThid)
-      ENDIF                                         
-
       _END_MASTER( myThid )
 
-      return
-      end
+      RETURN
+      END
 
 CBOP
 C     !ROUTINE: CHECK_EOS
@@ -354,6 +289,7 @@ C     == Routine arguments ==
 C     myThid -  Number of this instance of CHECK_EOS
       INTEGER myThid
 
+#ifndef EXCLUDE_EOS_CHECK
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  - Loop counters
@@ -465,7 +401,7 @@ C     check nonlinear EOS
      &           '(a4,f4.1,a5,f4.1,a6,f5.0,a5,a3,f10.5,1x,f11.5)')
      &           'rho(', sFld(i,j,k,bi,bj), ' PSU,',
      &           tFld(i,j,k,bi,bj), ' degC,', 
-     &           pressure(i,j,k,bi,bj)*SItoBar, ' bar)',' = ',
+c    &           pressure(i,j,k,bi,bj)*SItoBar, ' bar)',' = ',
      &           rloc(kcheck), bloc(kcheck)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
@@ -486,14 +422,15 @@ C     check nonlinear EOS
             
          enddo
 C     end check nonlinear EOS
-         pressure(i,j,k,bi,bj) = psave
+c        pressure(i,j,k,bi,bj) = psave
 
          write(msgBuf,'(A)') 'end check the equation of state'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &        SQUEEZE_RIGHT , 1)
 
       endif
+#endif /* EXCLUDE_EOS_CHECK */
 
-      return
-      end
+      RETURN
+      END
 

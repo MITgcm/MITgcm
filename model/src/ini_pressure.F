@@ -42,12 +42,13 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I,  J, K
-      INTEGER ncount, iMin, iMax, jMin, jMax, npiter
-      _RL phiHyd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr) 
+      INTEGER  iMin, iMax, jMin, jMax, npiter
+      _RL PhiHydF (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL PhiHydC (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL pold(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rmspp, rmsppold 
+      _RL oldPhi  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL count, rmspp, rmsppold 
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -60,107 +61,111 @@ CEOP
      &     'Start initial hydrostatic pressure computation'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &     SQUEEZE_RIGHT , 1)
-C     initialise pressure to water column thickness times a constant
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k = 1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           phiHyd(i,j,k) = 0. _d 0
-           dPhiHydX(i,j) = 0. _d 0
-           dPhiHydY(i,j) = 0. _d 0
+           totPhiHyd(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
-         CALL STORE_PRESSURE(  bi, bj, k, phiHyd, myThid )
         ENDDO
        ENDDO
       ENDDO
 
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+c     IF ( startTime .NE. 0. ) RETURN
+c     IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( useDynP_inEos_Zc ) THEN
 
        rmspp    = 1. _d 0
        rmsppold = 0. _d 0
        npiter = 0
 
 C     iterate pressure p = integral of (g*rho(p)*dz)
-       DO npiter = 1, 15
+       DO npiter= 1, 15
         rmsppold = rmspp
         rmspp    = 0. _d 0
-        ncount   = 0
+        count    = 0.
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             phiHydF(i,j) = 0. _d 0
+            ENDDO
+           ENDDO
           DO k = 1, Nr
 C     for each level save old pressure and compute new pressure 
            DO j=jMin,jMax
             DO i=iMin,iMax
-             pold(i,j,k) = pressure(i,j,k,bi,bj)
+             oldPhi(i,j) = totPhiHyd(i,j,k,bi,bj)
             ENDDO
            ENDDO
            CALL CALC_PHI_HYD(
      I          bi, bj, iMin, iMax, jMin, jMax, k,
      I          theta, salt, 
-     U          phiHyd, 
-     O          dPhiHydX, dPhiHydY,
+     U          phiHydF,
+     O          phiHydC, dPhiHydX, dPhiHydY,
      I          startTime, nIter0, myThid)
-           CALL STORE_PRESSURE(  bi, bj, k, phiHyd, myThid )
-          ENDDO
 C     compute convergence criterion
-          DO k = 1, Nr
            DO j=jMin,jMax
             DO i=iMin,iMax
              rmspp = rmspp 
-     &            + (pressure(i,j,k,bi,bj)-pold(i,j,k))**2
-             ncount = ncount + int(maskC(i,j,k,bi,bj))
+     &            + (totPhiHyd(i,j,k,bi,bj)-oldPhi(i,j))**2
+             count = count + maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
+C --      end k loop
           ENDDO
          ENDDO
         ENDDO
 Cml        WRITE(msgBuf,'(I10.10)') npiter
 Cml        CALL WRITE_FLD_XYZ_RL( 'POLD.',msgBuf,pold,npiter,myThid)
 Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
-        IF ( ncount .EQ. 0 ) THEN
+        _GLOBAL_SUM_R8( rmspp, myThid )
+        _GLOBAL_SUM_R8( count, myThid )  
+        IF ( count .EQ. 0. ) THEN
            rmspp = 0. _d 0
         ELSE
-           rmspp = sqrt(rmspp/ncount)
+           rmspp = sqrt(rmspp/count)
         ENDIF
         WRITE(msgBuf,'(a,i2,a,e20.13)')
      &       'Iteration ', npiter, ', RMS-difference = ', rmspp
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &       SQUEEZE_RIGHT , 1)
 
+C --   end npiter loop
        ENDDO
 C     print some diagnostics	
        IF ( rmspp .ne. 0. ) THEN
         IF ( rmspp .EQ. rmsppold ) THEN
-         WRITE(msgBuf,'(a)')
+         WRITE(msgBuf,'(A)')
      &      'Initial hydrostatic pressure did not converge perfectly,' 
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &        SQUEEZE_RIGHT , 1)
-         WRITE(msgBuf,'(a)')
+         WRITE(msgBuf,'(A)')
      &      'but the RMS-difference is constant, indicating that the'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &        SQUEEZE_RIGHT , 1)
-         WRITE(msgBuf,'(a)')
+         WRITE(msgBuf,'(A)')
      &      'algorithm converged within machine precision.'    
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &        SQUEEZE_RIGHT , 1)
         ELSE
-         WRITE(msgBuf,'(a,i2,a)')
+         WRITE(msgBuf,'(A,I2,A)')
      &       'Initial hydrostatic pressure did not converge after ', 
      &          npiter-1, ' steps'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PRESSURE'
         ENDIF
        ENDIF
-       WRITE(msgBuf,'(a)')
+       WRITE(msgBuf,'(A)')
      &     'Initial hydrostatic pressure converged.' 
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &      SQUEEZE_RIGHT , 1)
 
       ELSE
 C     print a message and DO nothing
-       WRITE(msgBuf,'(a,a)')
+       WRITE(msgBuf,'(A,A)')
      &        'Pressure is predetermined for buoyancyRelation ',
      &        buoyancyRelation(1:11)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
@@ -168,7 +173,7 @@ C     print a message and DO nothing
 
       ENDIF
 
-      WRITE(msgBuf,'(a)') ' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &     SQUEEZE_RIGHT , 1)
 
