@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.1 2002/06/15 03:31:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.2 2002/07/03 20:29:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -38,8 +38,8 @@ C     msgBuf      - Informational/error meesage buffer
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-- Set Temp & Salt muti-Dim Advec. flag according to advection scheme used
-      tempMultiDimAdvec = multiDimAdvection
-      saltMultiDimAdvec = multiDimAdvection
+      tempMultiDimAdvec = multiDimAdvection .AND. tempAdvection
+      saltMultiDimAdvec = multiDimAdvection .AND. saltAdvection
       IF ( tempAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.tempAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.tempAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
