@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.227 2003/12/16 20:02:54 molod Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.228 2003/12/16 23:28:39 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o added exf_offset_atemp for Celsius to Kelvin conversion of atemp
 
 checkpoint52d_post
 o add infrastructure in model routines for fizhi and gridalt packages

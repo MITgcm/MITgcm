@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.13 2003/10/20 06:25:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.14 2003/12/16 23:28:40 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -99,16 +99,16 @@ c     Surface flux data.
      &         swfluxfile,         lwfluxfile, apressurefile,
      &         swdownfile,         lwdownfile,
      &          exf_iprec,         exf_yftype,
-     &   exf_inscal_hflux,   exf_inscal_sflux,
-     & exf_inscal_ustress, exf_inscal_vstress,
-     &   exf_inscal_uwind,   exf_inscal_vwind,
-     &    exf_inscal_evap,   exf_inscal_atemp, exf_inscal_aqh,
-     &     exf_inscal_sst,     exf_inscal_sss,
-     &  exf_inscal_swflux,  exf_inscal_lwflux, exf_inscal_precip,
-     &  exf_inscal_runoff,               exf_inscal_apressure,
+     &   exf_inscal_hflux,  exf_inscal_sflux,
+     & exf_inscal_ustress,  exf_inscal_vstress,
+     &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_evap,
+     &   exf_inscal_atemp,  exf_offset_atemp,    exf_inscal_aqh,
+     &     exf_inscal_sst,  exf_inscal_sss,
+     &  exf_inscal_swflux,  exf_inscal_lwflux,   exf_inscal_precip,
+     &  exf_inscal_runoff,  exf_inscal_apressure,
      &  exf_inscal_swdown,  exf_inscal_lwdown,
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
-     & exf_outscal_swflux,    exf_outscal_sst,exf_outscal_sss,
+     & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
      &         hfluxconst,
      &         atempconst,
@@ -322,6 +322,7 @@ c     Input scaling factors.
       exf_inscal_sst       =  1. _d 0
       exf_inscal_sss       =  1. _d 0
       exf_inscal_atemp     =  1. _d 0
+      exf_offset_atemp     =  0. _d 0
       exf_inscal_aqh       =  1. _d 0
       exf_inscal_evap      =  1. _d 0
       exf_inscal_apressure =  1. _d 0

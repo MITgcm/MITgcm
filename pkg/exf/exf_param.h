@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.12 2003/12/10 19:37:25 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.13 2003/12/16 23:28:40 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -287,7 +287,10 @@ c     file precision and field type
       integer exf_iprec
       character*(2) exf_yftype
 
-c     input and output scaling factors
+c     exf_inscal_*      input scaling factors
+c     exf_offset_atemp  input air temperature offset
+c                       (for conversion from C to K, if needed)
+c     exf_outscale_*    output scaling factors
 
       _RL     exf_inscal_hflux
       _RL     exf_inscal_sflux
@@ -301,6 +304,7 @@ c     input and output scaling factors
       _RL     exf_inscal_sst
       _RL     exf_inscal_sss
       _RL     exf_inscal_atemp
+      _RL     exf_offset_atemp
       _RL     exf_inscal_aqh
       _RL     exf_inscal_evap
       _RL     exf_inscal_apressure
@@ -330,6 +334,7 @@ c     input and output scaling factors
      &                    , exf_inscal_sst
      &                    , exf_inscal_sss
      &                    , exf_inscal_atemp
+     &                    , exf_offset_atemp
      &                    , exf_inscal_aqh
      &                    , exf_inscal_evap
      &                    , exf_inscal_apressure
