@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.18 2004/07/26 21:16:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.19 2004/09/22 02:50:49 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,6 +21,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 #ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"

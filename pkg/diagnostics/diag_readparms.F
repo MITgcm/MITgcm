@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.12 2004/07/27 14:55:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.13 2004/09/22 02:50:49 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
@@ -37,12 +40,12 @@ C     !LOCAL VARIABLES:
       character*8 fields(ndim,ndim)  ! List Output Fields
       character*8 filename(ndim)     ! List Output Filename
       character*8 blank
-      LOGICAL use_mdsio, use_mnc
+      LOGICAL diag_mdsio, diag_mnc, diag_ioinc
       INTEGER mnc_lev_used(ndim)
 
       namelist / diagnostics_list /
      &     frequency, levels, fields, filename,
-     &     use_mdsio, use_mnc
+     &     diag_mdsio, diag_mnc, diag_ioinc
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -58,8 +61,9 @@ C     Initialize and Read Diagnostics Namelist
         enddo
       enddo
 
-      use_mdsio = .true.
-      use_mnc   = .false.
+      diag_mdsio = .true.
+      diag_mnc   = .false.
+      diag_ioinc = .false.
 
 #ifdef ALLOW_MNC
       IF (useMNC .and. diag_use_mnc) THEN
@@ -92,9 +96,12 @@ C     Initialise diag_choices common block
       enddo
 
 C     Fill Diagnostics Common Block with Namelist Info
-      diag_use_mdsio = use_mdsio
-      diag_use_mnc   = use_mnc
-
+      diag_use_mdsio = diag_mdsio
+      diag_use_mnc   = diag_mnc
+      IF (diag_mnc .AND. (.NOT. diag_ioinc)) THEN
+        diag_use_mdsio = .FALSE.
+      ENDIF
+      
       do n = 1,numlists
         if (frequency(n) .ne. 0) then
           nlists = nlists + 1
