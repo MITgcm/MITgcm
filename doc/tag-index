@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.232 2003/12/31 20:29:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.233 2004/01/02 23:59:36 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52e_pre
+
+o fix bug in impldiff when Nr=1 or Nr=2.
 o change the albedo in pkg/thsice (as GISS model); update output_thsice.txt
 o little changes (fftpack, aim/phy_suflux ...) to pass the "checkbounds" test.
 o fix deltaTfreesurf in update_cg2d.F (left from c45d_post): affects 2
