@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.1 2004/07/06 01:01:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.2 2004/07/06 21:12:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_GCHEM
-#include "GCHEM_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: TRACERS_CORRECTION_STEP
@@ -133,21 +130,6 @@ C--     Convectively adjust new fields to be statically stable
         CALL CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       myTime, myIter, myThid )
-
-#ifdef ALLOW_TIMEAVE
-        IF (taveFreq.GT.0.) THEN 
-          CALL TIMEAVE_STATVARS(myTime, myIter, bi, bj, myThid)
-        ENDIF
-cswdptr -- add ---
-#ifdef ALLOW_PTRACERS
-ceh3 this define should not be visible!
-#ifndef PTRACERS_SEPARATE_FORCING
-ceh3 this should have an IF ( usePTRACERS ) THEN 
-          CALL PTRACERS_STATVARS(myTime, myIter, bi, bj, myThid)
-#endif
-#endif
-cswdptr -- end add ---
-#endif /* ALLOW_TIMEAVE */
 
 C--    End of 2nd bi,bj loop
        ENDDO

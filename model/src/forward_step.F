@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.96 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.97 2004/07/06 21:12:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -261,23 +261,6 @@ C jmc: don't know precisely where to put this call. leave it here for now.
 # endif
 #endif /* COMPONENT_MODULE */
 
-C--     Step forward fields and calculate time tendency terms.
-
-C AMM
-#ifdef ALLOW_FIZHI
-        if( useFIZHI) then
-         CALL TIMER_START('FIZHI               [FORWARD_STEP]',mythid)
-         CALL FIZHI_UPDATE_TIME ( myIter, deltaTclock )
-         CALL UPDATE_OCEAN_EXPORTS ( myTime, myIter, myThid )
-         CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
-         CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
-         CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
-         CALL STEP_FIZHI_FG ( myTime, myIter, myThid, deltaTtracer )
-         CALL TIMER_STOP ('FIZHI               [FORWARD_STEP]',mythid)
-        endif
-#endif
-C AMM
-
 #ifdef ALLOW_EBM
         IF ( useEBM ) THEN
 # ifdef ALLOW_DEBUG
@@ -289,6 +272,16 @@ C AMM
          CALL TIMER_STOP ('EBM                [FORWARD_STEP]',mythid)
         ENDIF
 #endif
+
+C--     Step forward fields and calculate time tendency terms.
+
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
+#endif
+       CALL TIMER_START('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
+       CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
+       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
@@ -519,6 +512,11 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
+C--   State-variables statistics (time-aver, diagnostics ...)
+      CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+      CALL DO_STATEVARS_DIAGS( myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+
 #ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
@@ -526,40 +524,12 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
 
-C AMM  -- Diagnostics package
-#ifdef ALLOW_DIAGNOSTICS
-
-       if(usediagnostics)then
-        call diagnostics_fill_state(myThid)
-       endif
-
-# ifdef ALLOW_PTRACERS
-      if(useptracers)then
-       CALL PTRACERS_FILL_DIAGNOSTICS(myThid)
-      endif
-# endif
-
-#endif
-C AMM
-
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 
 C--   Save state for restarts
-C     Note:    (jmc: is it still the case after ckp35 ?)
-C     =====
-C     Because of the ordering of the timestepping code and
-C     tendency term code at end of loop model arrays hold
-C     U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
-C     at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
-C     gu at "time-level" N-1/2) and etaN at "time-level" N+1/2.
-C      where N = I+timeLevBase-1
-C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
-C     etaN.0000000001 in the indexing scheme used for the model 
-C     "state" files. This example is referred to as a checkpoint 
-C     at time level 1 
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
       CALL PACKAGES_WRITE_PICKUP(
      I               .FALSE., myTime, myIter, myThid )
