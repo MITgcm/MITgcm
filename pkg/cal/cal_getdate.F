@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getdate.F,v 1.1 2001/05/14 22:07:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getdate.F,v 1.2 2003/09/23 04:34:25 dimitri Exp $
 
 #include "CAL_CPPOPTIONS.h"
 

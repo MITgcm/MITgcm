@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.2 2002/12/19 13:12:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.3 2003/09/23 04:34:25 dimitri Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
@@ -19,7 +19,7 @@ c       If one wanted to use calendar dates in this routine, then
 c       the date should be after the calendar's refdate and timeint
 c       would be the number of seconds that have elapsed since the
 c       refdate. Of course this can also be done by first calling
-c       sub cal_TimePassed and the calling this routine with the
+c       sub cal_TimePassed and then calling this routine with the
 c       resulting time interval array.
 c              
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
@@ -33,6 +33,9 @@ c              Christian Eckert eckert@mit.edu  03-Feb-2000
 c
 c              - Introduced new routine and function names, cal_<NAME>,
 c                for verion 0.1.3.
+c
+c              21-Sep-2003: fixed check_sign logic to work with
+c              negative intervals (menemenlis@jpl.nasa.gov)
 c
 c     ==================================================================
 c     SUBROUTINE cal_ToSeconds
@@ -56,19 +59,17 @@ c     == local variables ==
       integer ndays
       integer nsecs
       integer hhmmss
-      integer check_sign_1
-      integer check_sign_2
       integer ierr
+      _RL check_sign
 
 c     == end of interface ==
 c     print *,'cal_toseconds: date',date
 c     print *,'cal_toseconds: timeint',timeint
 
-      check_sign_1 = sign(1,date(1))
-      check_sign_2 = sign(1,date(2))
+      check_sign = sign(1,dble(date(1))*dble(date(2)))
       if (((date(4) .eq. -1) .and.
      &    (date(3) .eq.  0) .and.
-     &    (check_sign_1*check_sign_2 .ge. 0)) .or.
+     &    (check_sign .ge. 0)) .or.
      &    usingModelCalendar) then
         if ((date(1) .lt. 0) .or.
      &      (date(2) .lt. 0)) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.5 2003/08/04 22:53:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.6 2003/09/23 04:34:25 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -52,33 +52,23 @@ C Loop over tracers
       DO iTracer = 1, PTRACERS_num
 
 C Loop over tiles
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C Initialize arrays in common blocks :
-        DO k=1,Nr
-         DO j=1-Oly,sNy+OLy
-          DO i=1-Olx,sNx+Olx
-           pTracer(i,j,k,bi,bj,iTracer) = 0. _d 0
-           gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
-           gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
+         DO k=1,Nr
+          DO j=1-Oly,sNy+OLy
+           DO i=1-Olx,sNx+Olx
+            pTracer(i,j,k,bi,bj,iTracer) = 0. _d 0
+            gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
+            gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
-
-#ifdef ALLOW_TIMEAVE
-C     Initialize averages to zero
-c       CALL TIMEAVE_RESET(GM_Kwx_T,Nr, bi,bj,myThid)
-c       CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
-c       CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
-c       DO k=1,Nr
-c        GM_TimeAve(k,bi,bj)=0.
-c       ENDDO
-#endif /* ALLOW_TIMEAVE */
 
 C end bi,bj loops
+        ENDDO
        ENDDO
-      ENDDO
 
 C end of Tracer loop
       ENDDO
@@ -117,7 +107,7 @@ cswdptr -- end add ---
        ENDDO
       ENDIF
 
-C Read from a pickup file if nIter0
+C Read from a pickup file if needed
 cswdptr IF (nIter0.NE.0) THEN
 cswdptr -- change --
       IF (nIter0.GT.tIter0) THEN

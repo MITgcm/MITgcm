@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.9 2003/08/15 01:42:44 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.10 2003/09/23 04:34:25 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -101,6 +101,7 @@ c     get record numbers and interpolation factor for climsst
             call exf_SwapFFields( climsst0, climsst1, mythid )
             
 #ifdef USE_EXF_INTERPOLATION
+          interp_method = 2
           call exf_interp(
      &    climsstfile, exf_iprec
      &  , climsst1, count1, xC, yC

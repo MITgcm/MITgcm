@@ -112,6 +112,7 @@ c     get record numbers and interpolation factor for gen
             call exf_SwapFFields( gen0, gen1, mythid )
             
 #ifdef USE_EXF_INTERPOLATION
+            interp_method = 2
             call exf_interp( genfile, exf_iprec
      &           , gen1, count1, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc

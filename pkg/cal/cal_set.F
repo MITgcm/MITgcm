@@ -352,11 +352,11 @@ c       Some useful numbers.
 c     A next set of checks of the user specifications.
 c     Number of possible modelsteps per calendar day.
       modelstepsperday = cal_nStepDay(mythid)
-      if (modelstepsperday .eq. 0 ) then
-        ierr = 105
-        call cal_PrintError( ierr, mythid )
-        stop ' stopped in cal_Set.'
-      endif
+cdm   if (modelstepsperday .eq. 0 ) then
+cdm     ierr = 105
+cdm     call cal_PrintError( ierr, mythid )
+cdm     stop ' stopped in cal_Set.'
+cdm   endif
 
 c     Complete the start date specification to get a full date array.
       call cal_FullDate( modstartdate_1, modstartdate_2,
