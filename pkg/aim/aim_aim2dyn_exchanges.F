@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn_exchanges.F,v 1.1 2001/05/29 19:28:53 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn_exchanges.F,v 1.2 2001/08/03 19:01:34 adcroft Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -38,28 +38,28 @@ C     bi,bj
 #ifdef ALLOW_AIM
 
       _EXCH_XY_R8( aim_drag, myThid )
-      _EXCH_XYZ_R8( gT, myThid )
-      _EXCH_XYZ_R8( gS, myThid )
-      _EXCH_XYZ_R8( gTNM1, myThid )
-      _EXCH_XYZ_R8( gSNM1, myThid )
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
-           gT(i,j,k,bi,bj) = 
-     &      maskC(i,j,k,bi,bj)*gT(i,j,k,bi,bj)
-           gTNM1(i,j,k,bi,bj) = 
-     &      maskC(i,j,k,bi,bj)*gTNM1(i,j,k,bi,bj)
-           gS(i,j,k,bi,bj) = 
-     &      maskC(i,j,k,bi,bj)*gS(i,j,k,bi,bj)
-           gSNM1(i,j,k,bi,bj) = 
-     &      maskC(i,j,k,bi,bj)*gSNM1(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+c     _EXCH_XYZ_R8( gT, myThid )
+c     _EXCH_XYZ_R8( gS, myThid )
+c     _EXCH_XYZ_R8( gTNM1, myThid )
+c     _EXCH_XYZ_R8( gSNM1, myThid )
+c     DO bj=myByLo(myThid),myByHi(myThid)
+c      DO bi=myBxLo(myThid),myBxHi(myThid)
+c       DO K=1,Nr
+c        DO J=1-OLy,sNy+OLy
+c         DO I=1-OLx,sNx+OLx
+c          gT(i,j,k,bi,bj) = 
+c    &      maskC(i,j,k,bi,bj)*gT(i,j,k,bi,bj)
+c          gTNM1(i,j,k,bi,bj) = 
+c    &      maskC(i,j,k,bi,bj)*gTNM1(i,j,k,bi,bj)
+c          gS(i,j,k,bi,bj) = 
+c    &      maskC(i,j,k,bi,bj)*gS(i,j,k,bi,bj)
+c          gSNM1(i,j,k,bi,bj) = 
+c    &      maskC(i,j,k,bi,bj)*gSNM1(i,j,k,bi,bj)
+c         ENDDO
+c        ENDDO
+c       ENDDO
+c      ENDDO
+c     ENDDO
 
 #endif /* ALLOW_AIM */
 
