@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.296 2004/05/14 21:15:08 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.297 2004/05/19 08:43:38 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o changes to calc_gw.F
+ - bug fix for w^2 term near the bottom boundary
+ - (hopefully) improve the lateral slip boundary condtions for use with
+    partial/looped cells
+  - because the bug fix changes two verification experiments anyway (exp5
+    and plume on slope), change the lateral boundary condition from half slip
+    to the value of no_slip_sides
 
 checkpoint53b_post
 o Commiting new energy balance model to repository
