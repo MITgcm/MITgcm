@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.16 2005/02/10 15:01:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.17 2005/02/10 16:30:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -170,7 +170,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             DO j = 1,sNy
              DO i = 1,sNx+1
               tmpMk(i,j,K,bi,bj) = 0.25 _d 0
-     &           *(uVel(i,km1,K,bi,bj)+uVel(i,j,K,bi,bj))
+     &           *(uVel(i,j,km1,bi,bj)+uVel(i,j,K,bi,bj))
      &           *(wVel(i-1,j,K,bi,bj)*rA(i-1,j,bi,bj)
      &            +wVel( i ,j,K,bi,bj)*rA( i ,j,bi,bj)
      &            )*recip_rAw(i,j,bi,bj)
@@ -190,7 +190,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             DO j = 1,sNy+1
              DO i = 1,sNx
               tmpMk(i,j,K,bi,bj) = 0.25 _d 0
-     &           *(vVel(i,km1,K,bi,bj)+vVel(i,j,K,bi,bj))
+     &           *(vVel(i,j,km1,bi,bj)+vVel(i,j,K,bi,bj))
      &           *(wVel(i,j-1,K,bi,bj)*rA(i,j-1,bi,bj)
      &            +wVel(i, j ,K,bi,bj)*rA(i, j ,bi,bj)
      &            )*recip_rAs(i,j,bi,bj)
