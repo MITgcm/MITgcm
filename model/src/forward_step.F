@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.62 2003/10/06 20:37:30 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.63 2003/10/07 04:31:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,7 +57,7 @@ C     == Global variables ==
 # include "EOS.h"
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 #  include "exf_fields.h"
-#  if (defined (ALLOW_BULKFORMULAE) || defined (ALLOW_BULK_FORCE))
+#  ifdef ALLOW_BULKFORMULAE
 #   include "exf_constants.h"
 #  endif
 # endif
@@ -167,8 +167,9 @@ c     Update the tile edges.
        CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 C       _EXCH_XY_R8(fu     , mythid)
 C       _EXCH_XY_R8(fv     , mythid)
-      END IF
+      ELSE
 #endif /* ALLOW_BULK_FORCE */
+
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C     NOTE, that although the exf package is part of the
 C     distribution, it is not currently maintained, i.e.
@@ -199,6 +200,10 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
       ENDIF
 #  endif
 # endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#ifdef ALLOW_BULK_FORCE
+C--   end of if/else block useBulfforce --
+      ENDIF
+#endif /* ALLOW_BULK_FORCE */
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
 c--   Add control vector for forcing and parameter fields

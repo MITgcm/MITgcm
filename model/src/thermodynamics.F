@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.49 2003/10/02 21:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.50 2003/10/07 04:31:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -426,7 +426,7 @@ C       including effects from ice
         CALL ICE_FORCING(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
-       END IF
+       ELSE
 #endif /* ALLOW_THERM_SEAICE */
 
 C--     Determines forcing terms based on external fields
@@ -438,6 +438,11 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
+
+#ifdef ALLOW_THERM_SEAICE
+C--    end of if/else block useThermSeaIce --
+       ENDIF
+#endif /* ALLOW_THERM_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
