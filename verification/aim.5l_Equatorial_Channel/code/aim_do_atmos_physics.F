@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.7 2001/08/27 18:47:06 jmc Exp $
-C $Name:  $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.8 2001/09/27 23:42:16 jmc Exp $
+C     $Name:  $
 
 #include "AIM_OPTIONS.h"
-#undef OLD_AIM_GRIG_MAPPING
 
       SUBROUTINE AIM_DO_ATMOS_PHYSICS( phi_hyd, 
      I                                 bi, bj,
@@ -91,14 +90,14 @@ C     Katm          - Atmospheric K index
       SAVE mnthNam
       REAL    hInitial(Nr)
       REAL    hInitialW(Nr)
-      DATA    hInitial / 418.038,2038.54,5296.88,10090.02,17338.0/
+      DATA    hInitial / 17338.0,10090.02,5296.88,2038.54,418.038/
       SAVE    hInitial
-      DATA    hInitialW / 0., 1657.54, 4087.75, 8050.96,15090.4 /
+      DATA    hInitialW / 15090.4, 8050.96, 4087.75, 1657.54, 0. /
       REAL    pSurfs(Nr)
-      DATA    pSurfs   / 950.D2,775.D2, 500.D2,  250.D2, 75.D2 /
+      DATA    pSurfs   / 75.D2, 250.D2, 500.D2, 775.D2, 950.D2 /
       SAVE    pSurfs
       REAL    pSurfw(Nr)
-      DATA    pSurfw   /1000.D2, 900.D2, 650.D2, 350.D2, 150.D2  /
+      DATA    pSurfw / 150.D2, 350.D2, 650.D2, 900.D2, 1000.D2 /
       SAVE    pSurfw
       REAL    RD
       REAL    CPAIR
@@ -169,6 +168,7 @@ C     _GLOBAL_SUM_R8( phiTSum, myThid )
 C     ptotalniv5=phiTSum/phiTCount
       ptotalniv5=0.
 
+#ifndef OLD_AIM_INTERFACE
 c_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 c      ==> move water wapor from the stratos to the surface level.
       DO J = 1-Oly, sNy+Oly
@@ -179,6 +179,7 @@ c    &   + maskC(i,j,Nr,bi,bj)*salt(I,J,Nr,bi,bj)*drF(Nr)*recip_drF(k)
         salt(I,J,Nr,bi,bj) = 0.
        ENDDO
       ENDDO
+#endif /* OLD_AIM_INTERFACE */
 
 C     Note the mapping here is only valid for one tile per proc.
       DO K = 1, Nr
@@ -186,24 +187,25 @@ C     Note the mapping here is only valid for one tile per proc.
         DO I = 1, sNx
          I2 = (sNx)*(J-1)+I
          Katm = _KD2KA( K )
-         UG1(I2,Katm,myThid)   = 
-     &    0.5*(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-         VG1(I2,Katm,myThid)   = 
-     &    0.5*(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
+C - to reproduce old results (coupled run, summer 2000) :
+         UG1(I2,Katm,myThid)   = uVel(I,J,K,bi,bj)
+         VG1(I2,Katm,myThid)   = vVel(I,J,K,bi,bj)
 C        Physics works with temperature - not potential temp.
          TG1(I2,Katm,myThid)   = theta(I,J,K,bi,bj)
-     &                  / ((pGround/pSurfs(K))**(RD/CPAIR))
-c_jmc    QG1(I2,Katm,myThid)   = salt(I,J,K,bi,bj)
+     &                  / ((pGround/pSurfs(Katm))**(RD/CPAIR))
+#ifdef OLD_AIM_INTERFACE
+         QG1(I2,Katm,myThid)   = salt(I,J,K,bi,bj)
+#else
          QG1(I2,Katm,myThid)   = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+#endif
          PHIG1(I2,Katm,myThid) = (phiTotal(I,J,K)- ptotalniv5 ) 
-     &                  + gravity*Hinitial(k)
-C *NOTE* Fix me for lopped cells
-         if(hFacC(i,j,k,bi,bj).eq.1.) then
-           RHOG1(I2,Katm) = pSurfs(K)/RD/TG1(I2,Katm,myThid)
-         else
+     &                  + gravity*Hinitial(Katm)
+C *NOTE* Fix me for lopped cells <== done !
+         IF (maskC(i,j,k,bi,bj).EQ.1.) THEN
+           RHOG1(I2,Katm) = pSurfs(Katm)/RD/TG1(I2,Katm,myThid)
+         ELSE
            RHOG1(I2,Katm)=0.
-         endif
-C *NOTE* Fix me for lopped cells
+         ENDIF
         ENDDO
        ENDDO
       ENDDO
@@ -213,6 +215,18 @@ c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
       DO J = 1, sNy
        DO I = 1, sNx
         I2 = I+(J-1)*sNx
+#ifdef OLD_AIM_INTERFACE
+C - to reproduce old results (coupled run, summer 2000) :
+         Vsurfsq(I2,myThid) = 0.
+        IF (NLEVxyU(I2,myThid).GT.0) 
+     &   Vsurfsq(I2,myThid) = Vsurfsq(I2,myThid)
+     &    +UG1(I2,NLEVxyU(I2,myThid),myThid)
+     &    *UG1(I2,NLEVxyU(I2,myThid),myThid)
+        IF (NLEVxyV(I2,myThid).GT.0) 
+     &   Vsurfsq(I2,myThid) = Vsurfsq(I2,myThid)
+     &    +VG1(I2,NLEVxyV(I2,myThid),myThid)
+     &    *VG1(I2,NLEVxyV(I2,myThid),myThid)
+#else /* OLD_AIM_INTERFACE */
         K = ksurfC(i,j,bi,bj)
         IF (K.LE.Nr) THEN
          Vsurfsq(I2,myThid) = 0.5 * (
@@ -221,16 +235,10 @@ c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
      &               + vVel(I,J,K,bi,bj)*vVel(I,J,K,bi,bj)
      &               + vVel(I,J+1,K,bi,bj)*vVel(I,J+1,K,bi,bj)
      &                        )
-#ifdef OLD_AIM_GRIG_MAPPING
-c - to reproduce old results :
-         Katm = _KD2KA( K )
-         Vsurfsq(I2,myThid) =  
-     &     UG1(I2,Katm,myThid)*UG1(I2,Katm,myThid)
-     &   + VG1(I2,Katm,myThid)*VG1(I2,Katm,myThid)
-#endif /* OLD_AIM_GRIG_MAPPING */
         ELSE
          Vsurfsq(I2,myThid) = 0.
         ENDIF
+#endif /* OLD_AIM_INTERFACE */
        ENDDO
       ENDDO
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -259,7 +267,7 @@ C     Get surface pressure from pbot-dpref/dz*Z'
          PNLEVW(I2,myThid) = PsurfW(Nlevxy(I2,myThid))/pGround
         ELSE
 C        Dummy value for land
-         PNLEVW(I2,myThid) = PsurfW(1)/pGround
+         PNLEVW(I2,myThid) = PsurfW(Nr)/pGround
         ENDIF
         PSLG1(I2,myThid) = 0.
        ENDDO
@@ -273,6 +281,7 @@ C     Physics package needs to know time of year as a fraction
      &        FLOAT(INT(currentTime/(86400.*360.)))
 C_EqCh: Fix solar insolation with Sun directly overhead on Equator
       tYear = 0.25
+
 C
 C     Load external data needed by physics package
 C     1. Albedo
@@ -361,16 +370,17 @@ C_cnh01      ENDIF
 C
 C Addition may 15 . Reset humidity to 0. if negative
 C ---------------------------------------------------
-Caja  DO K=1,Nr
-Caja   DO J=1-OLy,sNy+OLy
-Caja    DO I=1-Olx,sNx+OLx
-Caja     IF ( salt(i,j,k,bi,bj) .LT. 0. .OR. K .EQ. Nr ) THEN
-Caja      salt(i,j,k,bi,bj) = 0.
-Caja     ENDIF
-Caja    ENDDO
-Caja   ENDDO
-Caja  ENDDO
-
+#ifdef OLD_AIM_INTERFACE
+      DO K=1,Nr
+       DO J=1-OLy,sNy+OLy
+        DO I=1-Olx,sNx+OLx
+         IF ( salt(i,j,k,bi,bj) .LT. 0. .OR. K .EQ. Nr ) THEN
+          salt(i,j,k,bi,bj) = 0.
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* OLD_AIM_INTERFACE */
 
       CALL PDRIVER( tYear, myThid )
 

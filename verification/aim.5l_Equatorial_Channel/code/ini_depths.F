@@ -1,47 +1,53 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.5 2001/08/24 11:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.6 2001/09/27 23:42:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INI_DEPTHS
+C     !INTERFACE:
       SUBROUTINE INI_DEPTHS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_DEPTHS                                    |
-C     | o define R_position of Lower and Surface Boundaries      |
-C     |==========================================================|
-C     |atmosphere orography:                                     |
-C     | define either in term of P_topo or converted from Z_topo |
-C     |ocean bathymetry:                                         |
-C     | The depths of the bottom of the model is specified in    |
-C     | terms of an XY map with one depth for each column of     |
-C     | grid cells. Depths do not have to coincide with the      |
-C     | model levels. The model lopping algorithm makes it       |
-C     | possible to represent arbitrary depths.                  |
-C     | The mode depths map also influences the models topology  |
-C     | By default the model domain wraps around in X and Y.     |
-C     | This default doubly periodic topology is "supressed"     |
-C     | if a depth map is defined which closes off all wrap      |
-C     | around flow.                                             |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_DEPTHS                                     
+C     | o define R_position of Lower and Surface Boundaries       
+C     *==========================================================*
+C     |atmosphere orography:                                      
+C     | define either in term of P_topo or converted from Z_topo  
+C     |ocean bathymetry:                                          
+C     | The depths of the bottom of the model is specified in     
+C     | terms of an XY map with one depth for each column of      
+C     | grid cells. Depths do not have to coincide with the       
+C     | model levels. The model lopping algorithm makes it        
+C     | possible to represent arbitrary depths.                   
+C     | The mode depths map also influences the models topology   
+C     | By default the model domain wraps around in X and Y.      
+C     | This default doubly periodic topology is "supressed"      
+C     | if a depth map is defined which closes off all wrap       
+C     | around flow.                                              
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_DEPTHS
       INTEGER myThid
 CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables in common ==
 C     Hloc  - Temporary array used to read surface topography
 C             has to be in common for multi threading    
       COMMON / LOCAL_INI_DEPTHS / Hloc
       _RS Hloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy) 
-
 C     == Local variables ==
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
@@ -52,6 +58,7 @@ C     msgBuf    - Informational/error meesage buffer
       INTEGER bi, bj
       INTEGER  I, J
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       IF (groundAtK1 .AND. bathyFile .NE. ' '
      &               .AND. topoFile  .NE. ' ' ) THEN
@@ -206,7 +213,7 @@ C          Test for northern edge
 c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
 c- Domain : Symetric % Eq. & closed at N & S boundaries:
            IF (usingSphericalPolarGrid .AND.
-     &         abs(yC(I,J,bi,bj)).GE.-phiMin) 
+     &         abs(yC(I,J,bi,bj)).GE.-phiMin)
      &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
            IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. ) 
      &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
@@ -227,7 +234,7 @@ C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
 c- Domain : Symetric % Eq. & closed at N & S boundaries:
            IF (usingSphericalPolarGrid .AND.
-     &         abs(yC(I,J,bi,bj)).GE.-phiMin) 
+     &         abs(yC(I,J,bi,bj)).GE.-phiMin)
      &       R_low(I,J,bi,bj) = Ro_SeaLevel
            IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. ) 
      &       R_low(I,J,bi,bj) = Ro_SeaLevel

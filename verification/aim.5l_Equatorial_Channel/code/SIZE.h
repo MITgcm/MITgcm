@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/SIZE.h,v 1.4 2001/05/29 14:01:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/SIZE.h,v 1.5 2001/09/27 23:42:16 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -38,8 +38,8 @@ C     Nr  - No. points in Z for full process domain.
       PARAMETER (
      &           sNx = 128,
      &           sNy =  23,
-     &           OLx =   5,
-     &           OLy =   5,
+     &           OLx =   3,
+     &           OLy =   3,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,
