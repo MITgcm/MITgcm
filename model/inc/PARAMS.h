@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.101 2004/01/29 14:10:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.102 2004/02/07 16:27:13 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -380,6 +380,12 @@ C     viscAr    :: Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
+C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
+C                 momentum laterally ( m^2/s )
+C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
+C                 momentum laterally ( m^4/s )
+C     viscAhGrid:: non-dimensional grid-size dependent viscosity
+C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKrT   :: Laplacian diffusion coeff. for mixing of
@@ -471,7 +477,9 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG, fCoriCos,
-     & viscAh,  viscA4,  viscAr, viscAstrain, viscAtension,
+     & viscAh,  viscAhMax, viscAhGrid,
+     & viscA4,  viscA4Max, viscA4Grid,
+     & viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrT,
      & diffKhS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
@@ -523,10 +531,14 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL hFacSup
       _RL beta
       _RL viscAh
+      _RL viscAhMax
+      _RL viscAhGrid
       _RL viscAstrain
       _RL viscAtension
       _RL viscAr
       _RL viscA4 
+      _RL viscA4Max
+      _RL viscA4Grid
       _RL diffKhT 
       _RL diffKrT
       _RL diffK4T 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.57 2004/01/03 00:34:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.58 2004/02/07 16:27:19 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,6 +95,8 @@ c     rhoConstFresh       = 999.8D0
 C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       rotationPeriod      = 86400. _d 0
       viscAh              = 0.D3
+      viscAhGrid          = 0.D0
+      viscAhMax           = 1.D21
       viscAstrain         = 0.D3
       viscAtension        = 0.D3
       diffKhT             = 0.D3
@@ -105,6 +107,8 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       diffKrTDefault      = 0.D-3
       diffKrSDefault      = 0.D-3
       viscA4              = 0.D11
+      viscA4Grid          = 0.D0
+      viscA4Max           = 1.D21
       diffK4T             = 0.D11
       diffK4S             = 0.D11
       cosPower            = 0.

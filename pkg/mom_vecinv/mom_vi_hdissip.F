@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.3 2001/10/30 23:11:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.4 2004/02/07 16:27:19 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,16 +56,39 @@ c       Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*vort3(i+1, j )
         Zij=                   hFacZ( i , j )*vort3( i , j )
         Zpj=                   hFacZ(i+1, j )*vort3(i+1, j )
 
+C This bit scales the harmonic dissipation operator to be proportional
+C to the grid-cell area over the time-step. viscAh is then non-dimensional
+C and should be less than 1/8, for example viscAh=0.01 
+        if (viscAhGrid*deltaTmom.NE.0.) then
+          Dij=Dij*
+     &     min(viscAh+viscAhGrid*rA ( i , j ,bi,bj)/deltaTmom,viscAhMax)
+          Dim=Dim*
+     &     min(viscAh+viscAhGrid*rA ( i ,j-1,bi,bj)/deltaTmom,viscAhMax)
+          Dmj=Dmj*
+     &     min(viscAh+viscAhGrid*rA (i-1, j ,bi,bj)/deltaTmom,viscAhMax)
+          Zij=Zij*
+     &     min(viscAh+viscAhGrid*rAz( i , j ,bi,bj)/deltaTmom,viscAhMax)
+          Zip=Zip*
+     &     min(viscAh+viscAhGrid*rAz( i ,j+1,bi,bj)/deltaTmom,viscAhMax)
+          Zpj=Zpj*
+     &     min(viscAh+viscAhGrid*rAz(i+1, j ,bi,bj)/deltaTmom,viscAhMax)
+          uD2 = (
+     &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
+     &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
+          vD2 = (
+     &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
+     &                                           *cosFacV(j,bi,bj)
+     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+        else
 c       uD2 = recip_rAw(i,j,bi,bj)*(
 c    &    recip_hFacW(i,j,k,bi,bj)*viscAh*( (Dij-Dmj)*cosFacU(j,bi,bj) )
 c    &   -recip_hFacW(i,j,k,bi,bj)*viscAh*( Zip-Zij ) )
 c       uD2 = recip_rAw(i,j,bi,bj)*(
 c    &                             viscAh*( (Dij-Dmj)*cosFacU(j,bi,bj) )
 c    &   -recip_hFacW(i,j,k,bi,bj)*viscAh*( Zip-Zij ) )
-        uD2 = viscAh*(
+          uD2 = viscAh*(
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
-
 c       vD2 = recip_rAs(i,j,bi,bj)*(
 c    &    recip_hFacS(i,j,k,bi,bj)*viscAh*( (Zpj-Zij)*cosFacV(j,bi,bj) )
 c    &   +recip_hFacS(i,j,k,bi,bj)*viscAh*( Dij-Dim ) )
@@ -76,6 +99,7 @@ c    &   +                         viscAh*( Dij-Dim ) )
      &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+        endif
 
 c       Dim=dyF( i ,j-1,bi,bj)*hFacC( i ,j-1,k,bi,bj)*dStar( i ,j-1)
 c       Dij=dyF( i , j ,bi,bj)*hFacC( i , j ,k,bi,bj)*dStar( i , j )
@@ -88,19 +112,49 @@ c       Dmj=dyF(i-1, j ,bi,bj)*hFacC(i-1, j ,k,bi,bj)*dStar(i-1, j )
         Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
         Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
 
+C This bit scales the harmonic dissipation operator to be proportional
+C to the grid-cell area over the time-step. viscAh is then non-dimensional
+C and should be less than 1/8, for example viscAh=0.01 
+        if (viscAhGrid*deltaTmom.NE.0.) then
+          Dij = Dij * min(
+     &         viscA4+viscA4Grid*(rA ( i , j ,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          Dim = Dim * min(
+     &         viscA4+viscA4Grid*(rA ( i ,j-1,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          Dmj = Dmj * min(
+     &         viscA4+viscA4Grid*(rA (i-1, j ,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          Zij = Zij * min(
+     &         viscA4+viscA4Grid*(rAz( i , j ,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          Zip = Zip * min(
+     &         viscA4+viscA4Grid*(rAz( i ,j+1,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          Zpj = Zpj * min(
+     &         viscA4+viscA4Grid*(rAz(i+1, j ,bi,bj)**2)/deltaTmom,
+     &         viscA4Max)
+          uD4 = recip_rAw(i,j,bi,bj)*(
+     &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
+     &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
+          vD4 = recip_rAs(i,j,bi,bj)*(
+     &    recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
+     &   +                         ( Dij-Dim ) )
+        else
 c       uD4 = recip_rAw(i,j,bi,bj)*(
 c    &    recip_hFacW(i,j,k,bi,bj)*viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
 c    &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
-        uD4 = recip_rAw(i,j,bi,bj)*(
+          uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
 
 c       vD4 = recip_rAs(i,j,bi,bj)*(
 c    &    recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
 c    &   +recip_hFacS(i,j,k,bi,bj)*viscA4*( Dij-Dim ) )
-        vD4 = recip_rAs(i,j,bi,bj)*(
+          vD4 = recip_rAs(i,j,bi,bj)*(
      &    recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         viscA4*( Dij-Dim ) )
+        endif
 
         uDissip(i,j) = uD2 - uD4
         vDissip(i,j) = vD2 - vD4
