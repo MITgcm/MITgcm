@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.352 2004/09/22 21:31:35 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.353 2004/09/23 17:48:23 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55c_post
 o obcs stuff
   - new runtime flags useOBCSprescribe, useOBCSbalance
   - re-arranged obcs_calc
@@ -10,6 +11,9 @@ o obcs stuff
     obcs_prescibe_read is called after ORLANSKI stuff
     and independent of it (executable can contain all).
   - updated obcs_check
+  - added exchanges for U,V,gU,gV for useOBCSprescribe=.TRUE.
+    These may be necessary only if tangential velocities are
+    prescribed at OB, not sure, needs testing.
 o make the MNC_CW_ADD_VATTR_* subroutines all take scalar arguments
   which simplifies the calls and passes the ifc check-bounds test
 

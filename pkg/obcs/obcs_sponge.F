@@ -69,7 +69,8 @@ C Northern Open Boundary
 
           lambda_obcs_u = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           IF (lambda_obcs_u.ne.0.) THEN 
            lambda_obcs_u = 1. _d 0 /(lambda_obcs_u * secondsperday)
@@ -102,7 +103,8 @@ C Southern Open Boundary
 
           lambda_obcs_u = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_u.ne.0.) then
             lambda_obcs_u = 1. _d 0 /(lambda_obcs_u * secondsperday)
@@ -135,7 +137,8 @@ C Eastern Open Boundary
 
           lambda_obcs_u = ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_u.ne.0.) then
             lambda_obcs_u = 1. _d 0 /(lambda_obcs_u * secondsperday)
@@ -168,7 +171,8 @@ C Western Open Boundary
 
           lambda_obcs_u= ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_u.ne.0.) then
             lambda_obcs_u = 1. _d 0 /(lambda_obcs_u * secondsperday)
@@ -258,7 +262,8 @@ C Northern Open Boundary
 
           lambda_obcs_v = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           IF (lambda_obcs_v.ne.0.) THEN
             lambda_obcs_v = 1. _d 0 /(lambda_obcs_v * secondsperday)
@@ -291,7 +296,8 @@ C Southern Open Boundary
 
           lambda_obcs_v = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_v.ne.0.) then
             lambda_obcs_v = 1. _d 0 /(lambda_obcs_v * secondsperday)
@@ -324,7 +330,8 @@ C Eastern Open Boundary
 
           lambda_obcs_v = ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_v.ne.0.) then
             lambda_obcs_v = 1. _d 0 /(lambda_obcs_v * secondsperday)
@@ -358,7 +365,8 @@ C Western Open Boundary
  
           lambda_obcs_v = ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_v.ne.0.) then
             lambda_obcs_v = 1. _d 0 /(lambda_obcs_v * secondsperday)
@@ -473,7 +481,8 @@ CADJ STORE OBNt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
      &    / float(spongeThickness)
           lambda_obcs_t = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           IF (lambda_obcs_t.ne.0.) THEN 
            lambda_obcs_t = 1. _d 0 /(lambda_obcs_t * secondsperday)
@@ -513,7 +522,8 @@ CADJ STORE OBSt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
           lambda_obcs_t = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_t.ne.0.) then
             lambda_obcs_t = 1. _d 0 /(lambda_obcs_t * secondsperday)
@@ -553,7 +563,8 @@ CADJ STORE OBEt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
           lambda_obcs_t = ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_t.ne.0.) then
             lambda_obcs_t = 1. _d 0 /(lambda_obcs_t * secondsperday)
@@ -595,7 +606,8 @@ cgg  Needed to fix the coordinate of the tracer open boundary. This is the class
 
           lambda_obcs_t= ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_t .ne. 0.) then
             lambda_obcs_t = 1. _d 0 / (lambda_obcs_t * secondsperday)
@@ -712,7 +724,8 @@ CADJ STORE OBNs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
           lambda_obcs_s = ( 
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           IF (lambda_obcs_s.ne.0.) THEN 
            lambda_obcs_s = 1. _d 0 /(lambda_obcs_s * secondsperday)
@@ -751,8 +764,9 @@ CADJ STORE OBSs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
      &    / float(spongeThickness)
 
           lambda_obcs_s = ( 
-     &      float(spongeThickness-jsl)*Vrelaxobcsbound
-     &    + float(jsl-1)*Vrelaxobcsinner)/ float(spongeThickness-1)
+     &      float(spongeThickness)*Vrelaxobcsbound
+     &    + float(jsl)*Vrelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_s.ne.0.) then
             lambda_obcs_s = 1. _d 0 /(lambda_obcs_s * secondsperday)
@@ -792,7 +806,8 @@ CADJ STORE OBEs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
           lambda_obcs_s = ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_s.ne.0.) then
             lambda_obcs_s = 1. _d 0 /(lambda_obcs_s * secondsperday)
@@ -835,7 +850,8 @@ cgg  Fix the tracer o.b. coordinate.
 
           lambda_obcs_s= ( 
      &      float(spongeThickness-isl)*Urelaxobcsbound
-     &    + float(isl-1)*Urelaxobcsinner)/ float(spongeThickness-1)
+     &    + float(isl)*Urelaxobcsinner)
+     &    / float(spongeThickness)
 
           if (lambda_obcs_s.ne.0.) then
             lambda_obcs_s = 1. _d 0 /(lambda_obcs_s * secondsperday)

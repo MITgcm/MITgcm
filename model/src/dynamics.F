@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.108 2004/09/17 23:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.109 2004/09/23 17:48:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -459,6 +459,12 @@ C--     End implicit Vertical advection & viscosity
  
        ENDDO
       ENDDO
+
+#ifdef ALLOW_OBCS
+      IF (useOBCS) THEN
+       CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
+      ENDIF
+#endif
 
 Cml(
 C     In order to compare the variance of phiHydLow of a p/z-coordinate
