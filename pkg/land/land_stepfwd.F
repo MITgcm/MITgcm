@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.4 2004/05/15 20:43:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.5 2004/05/21 13:41:02 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -170,10 +170,12 @@ C-    snow aging:
            land_snowAge(i,j,bi,bj) = 
      &         ( land_deltaT + land_snowAge(i,j,bi,bj)*ageFac )
            IF ( enWfx.LT.0. ) THEN
-C-    snow precip in excess (Snow > Evap) :
+C-    snow precip in excess ( > Evap of snow) or snow prec & Evap of Liq.Water:
 C     => start to melt (until ground at freezing point) and then accumulate 
             snowPrec = -enWfx -MAX( enGr1/land_deltaT, 0. _d 0 )
-            snowPrec = MAX( snowPrec*recip_Lfreez , 0. _d 0 )
+C-    snow accumulation cannot be larger that net precip
+            snowPrec = MAX( 0. _d 0 ,
+     &                      MIN( snowPrec*recip_Lfreez, mPmE ) )
             mPmE = mPmE - snowPrec
             flxEngU(i,j) = enWfx + land_Lfreez*snowPrec
             hNewSnow = land_deltaT * snowPrec / land_rhoSnow
@@ -191,7 +193,7 @@ C     glacier & ice-sheet missing: excess of snow put directly into run-off
             land_runOff(i,j,bi,bj) = mIceDt/land_rhoLiqW
             land_enRnOf(i,j,bi,bj) = -mIceDt*land_Lfreez
            ELSE
-C-    rain precip (whatever Evap is) or Evap exceeds snow precip :
+C-    rain precip (whatever Evap is) or Evap of snow exceeds snow precip:
 C     => snow melts or sublimates
 c           snowMelt = MIN( enWfx*recip_Lfreez ,
 c    &                 land_hSnow(i,j,bi,bj)*land_rhoSnow/land_deltaT )
