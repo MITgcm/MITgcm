@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.26 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.27 2004/10/13 04:37:37 edhill Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -30,6 +30,9 @@ C     == Global variables ==
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "GRID.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"

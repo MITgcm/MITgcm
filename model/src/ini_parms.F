@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.127 2004/10/10 06:08:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.128 2004/10/13 04:37:37 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "GRID.h"
 #include "EOS.h"
 

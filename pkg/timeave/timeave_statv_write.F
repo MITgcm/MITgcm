@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.22 2004/10/10 06:08:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.23 2004/10/13 04:37:38 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.17 2004/10/10 06:08:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.18 2004/10/13 04:37:37 edhill Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -28,6 +28,9 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "GRID.h" 
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"

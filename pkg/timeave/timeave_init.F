@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.3 2004/10/10 06:08:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.4 2004/10/13 04:37:38 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -26,9 +26,9 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_TIMEAVE        
+#ifdef ALLOW_TIMEAVE
 
-#ifdef ALLOW_MNC        
+#ifdef ALLOW_MNC
       IF (useMNC) THEN
 
       CALL MNC_CW_ADD_VNAME('ETAtave', 'Cen_xy_Hn__-__t',3,4,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.5 2004/10/10 06:08:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.6 2004/10/13 04:37:37 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "CD_CODE_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -103,6 +106,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "CD_CODE_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

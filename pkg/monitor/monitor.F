@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.21 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.22 2004/10/13 04:37:37 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -19,6 +19,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "EESUPPORT.h"
 #include "DYNVARS.h"
 #include "GRID.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.59 2004/10/10 06:08:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.60 2004/10/13 04:37:37 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,6 +24,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "EOS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
