@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.16 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.17 2001/07/30 20:20:43 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,6 +57,17 @@ CEndOfInterface
 C     == Local variables ==
 C     I, J, K - Loop counters
       INTEGER i,j
+
+C--   Initialisation
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        xA(i,j)      = 0. _d 0
+        yA(i,j)      = 0. _d 0
+        uTrans(i,j)  = 0. _d 0
+        vTrans(i,j)  = 0. _d 0
+        rTrans(i,j)  = 0. _d 0
+       ENDDO
+      ENDDO      
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
       IF (K .EQ. 1) THEN
