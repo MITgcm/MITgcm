@@ -1,5 +1,7 @@
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_KPP
+
 c-- File kppmix.F: subroutines needed to implement
 c--                KPP vertical mixing scheme
 c-- Contents
@@ -22,6 +24,7 @@ c*************************************************************************
       SUBROUTINE KPPMIX (
      I     lri, kmtj, shsq, dvsq, ustar, bo, bosol
      I     , dbloc, Ritop, coriol
+     I     , ikey
      O     , diffus, ghat, hbl )
 
 c-------------------------------------------------------------------------
@@ -47,10 +50,11 @@ c-----------------------------------------------------------------------
 #include "KPPMIX.h"
 #include "FFIELDS.h"
 
-      integer kmp1, mdiff, imt
+      integer    kmp1         , imt
       parameter (kmp1 = Nr + 1, imt = (sNx+2*OLx)*(sNy+2*OLy))
 
 c--   number of local array diffusivities
+      integer    mdiff
       parameter (mdiff = 3)
 
 c input
@@ -76,6 +80,7 @@ c     coriol (imt)    - Coriolis parameter                                  (1/s
       _RS    dbloc  (imt,Nr)
       _RS    Ritop  (imt,Nr)
       _RS    coriol (imt   )
+      integer ikey
 
 c output
 c     diffus (imt,1)  - vertical viscosity coefficient                    (m^2/s)
@@ -107,9 +112,6 @@ c     Rib    (imt,Nr      ) - bulk Richardson number
       _RS sigma   (imt         )
       _RS Rib     (imt,Nr      )
 
-C--   informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       integer i, k, md
 
 c-----------------------------------------------------------------------
@@ -119,8 +121,9 @@ c instability.
 c-----------------------------------------------------------------------
 
       call Ri_iwmix (
-     I     Nr, kmp1, imt, kmtj, shsq, dbloc,
-     O     diffus )
+     I       Nr, kmp1, imt, kmtj, shsq, dbloc
+     I     , ikey
+     O     , diffus )
 
 c-----------------------------------------------------------------------
 c set seafloor values to zero and fill extra "kmp1" coefficients
@@ -142,29 +145,33 @@ c diagnose the new boundary layer depth
 c-----------------------------------------------------------------------
 
       call bldepth (
-     I     Nr, kmp1, imt, kmtj
+     I       Nr, kmp1, imt, kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
+     I     , ikey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      &     )
+
+CADJ STORE hbl,bfsfc,stable,casea,kbl = kpptape, key = ikey
 
 c-----------------------------------------------------------------------
 c compute boundary layer diffusivities
 c-----------------------------------------------------------------------
 
       call blmix (
-     I     Nr, kmp1, imt, mdiff
-     I     , ustar, bfsfc, hbl, stable, casea, diffus, kbl
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma
      &     )
+
+CADJ STORE dkm1,blmc,ghat = kpptape, key = ikey
 
 c-----------------------------------------------------------------------
 c enhance diffusivity at interface kbl - 1
 c-----------------------------------------------------------------------
 
       call enhance (
-     I     Nr, kmp1, imt, mdiff, dkm1, hbl, kbl, diffus, casea,
-     U     ghat,
-     O     blmc )
+     I       Nr, kmp1, imt, mdiff, dkm1, hbl, kbl, diffus, casea
+     U     , ghat
+     O     , blmc )
 
 c-----------------------------------------------------------------------
 c combine interior and boundary layer coefficients and nonlocal term
@@ -188,8 +195,9 @@ c-----------------------------------------------------------------------
 c*************************************************************************
 
       subroutine bldepth (
-     I     km, kmp1, imt, kmtj
+     I       km, kmp1, imt, kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
+     I     , ikey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      &     )
 
@@ -245,6 +253,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _RS bo     (imt)
       _RS bosol  (imt)
       _RS coriol (imt)
+      integer ikey
 
 c  output
 c--------
@@ -265,16 +274,18 @@ c sigma     : normalized depth (d/hbl)
 
 c  local
 c-------
-c wm, ws    : turbulent velocity scales         (m/s)
-c zwork     : depth work array
-      _RS wm(imt), ws(imt)
-      _RS zwork(imt)
+      _RS bvsq, vtsq, hekman, hmonob, hlimit
+      _RS stab
+      integer i, kl
+      _RS minusone
+      parameter(minusone=-1.0)
 
-      _RS bvsq, vtsq, hekman, hmonob, hlimit, p5
-      integer i, kl, jwtype
+      integer    jwtype
+      parameter (jwtype = 3)
 
+      _RS        p5
       parameter (p5 = 0.5)
-      jwtype = 3
+      _RL        dpshear2
 
 c find bulk Richardson number at every grid level until > Ricr
 c
@@ -297,11 +308,13 @@ c     initialize hbl and kbl to bottomed out values
 
 c     compute bfsfc = sw fraction at hbf * zgrid
 
+c     use caseA as temporary array
+
          do i = 1, imt
-            zwork(i) = zgrid(kl)
+            casea(i) = zgrid(kl)
          end do
          call SWFRAC(
-     I        imt, hbf, zwork, jwtype,
+     I        imt, hbf, casea, jwtype,
      O        bfsfc)
 
          do i = 1, imt
@@ -313,18 +326,19 @@ c     use caseA as temporary array
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
 
             bfsfc(i) = bo(i) + bosol(i)*(1. - bfsfc(i))
-            stable(i) = p5 + sign(p5,bfsfc(i))
-            sigma(i) = stable(i) + (1. - stable(i)) * epsilon
+            stab     = p5 + sign(p5,bfsfc(i))
+            sigma(i) = stab + (1. - stab) * epsilon
 
          end do
 
 c-----------------------------------------------------------------------
 c     compute velocity scales at sigma, for hbl= caseA = -zgrid(kl)
+c     use stable instead of ws as temporary
 c-----------------------------------------------------------------------
- 
-         call wscale (
+
+         call wscale1 (
      I        imt, sigma, casea, ustar, bfsfc,
-     O        wm, ws )
+     O        stable )
 
          do i = 1, imt
 
@@ -335,7 +349,7 @@ c-----------------------------------------------------------------------
             bvsq = p5 *
      1           ( dbloc(i,kl-1) / (zgrid(kl-1)-zgrid(kl  ))+
      2             dbloc(i,kl  ) / (zgrid(kl  )-zgrid(kl+1)))
-            vtsq = -zgrid(kl) * ws(i) * sqrt(abs(bvsq)) * vtc
+            vtsq = -zgrid(kl) * stable(i) * sqrt(abs(bvsq)) * Vtc
 
 c     compute bulk Richardson number at new level, dunder
 c     note: Ritop needs to be zero on land and ocean bottom
@@ -343,17 +357,22 @@ c     points so that the following if statement gets triggered
 c     correctly. otherwise, hbl might get set to (big) negative
 c     values, that might exceed the limit for the "exp" function
 c     in "SWFRAC"
-
-            Rib(i,kl) = Ritop(i,kl)/(dvsq(i,kl)+vtsq+epsln)
+c
+c     assignment to double precision variable to avoid overflow
+c
+            dpshear2  = dvsq(i,kl) + vtsq + epsln
+            Rib(i,kl) = Ritop(i,kl) / dpshear2
 
          end do
       end do
-      
+
       do kl = 2, km
          do i = 1, imt
             if (kbl(i).eq.kmtj(i) .and. Rib(i,kl).gt.Ricr) kbl(i) = kl
          end do
       end do
+
+CADJ store kbl = kpptape, key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          kl = kbl(i)
@@ -366,12 +385,14 @@ c     linearly interpolate to find hbl where Rib = Ricr
          endif
       end do
 
+CADJ store hbl = kpptape, key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+
 c-----------------------------------------------------------------------
 c     find stability and buoyancy forcing for boundary layer
 c-----------------------------------------------------------------------
 
       call SWFRAC(
-     I     imt, -1.0, hbl, jwtype,
+     I     imt, minusone, hbl, jwtype,
      O     bfsfc)
 
       do i = 1, imt
@@ -393,10 +414,22 @@ c-----------------------------------------------------------------------
             hlimit = stable(i) * min(hekman,hmonob)
      &             + (stable(i)-1.) * zgrid(km)
             hbl(i) = min(hbl(i),hlimit)
+         endif
+      end do
+
+CADJ store hbl = kpptape, key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+
+      do i = 1, imt
+         if (bfsfc(i) .gt. 0.0) then
             hbl(i) = max(hbl(i),(-zgrid(1)))
          endif
+      end do
+
+      do i = 1, imt
          kbl(i) = kmtj(i)
       end do
+
+CADJ store hbl = kpptape, key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
 c      find new kbl
@@ -415,13 +448,13 @@ c      find stability and buoyancy forcing for final hbl values
 c-----------------------------------------------------------------------
 
       call SWFRAC(
-     I     imt, -1.0, hbl, jwtype,
+     I     imt, minusone, hbl, jwtype,
      O     bfsfc)
  
       do i = 1, imt
-         bfsfc(i) = bo(i) + bosol(i) * (1. - bfsfc(i))
+         bfsfc(i)  = bo(i) + bosol(i) * (1. - bfsfc(i))
          stable(i) = p5 + sign( p5, bfsfc(i) )
-         bfsfc(i) = bfsfc(i) + stable(i) * epsln
+         bfsfc(i)  = bfsfc(i) + stable(i) * epsln
       end do
 
 c-----------------------------------------------------------------------
@@ -435,6 +468,7 @@ c-----------------------------------------------------------------------
 
       return
       end
+
 
 c*************************************************************************
 
@@ -529,10 +563,98 @@ c-----------------------------------------------------------------------
       end
 
 c*************************************************************************
+
+      subroutine wscale1 (
+     I     imt, sigma, hbl, ustar, bfsfc,
+     O     ws )
+
+c     compute turbulent velocity scales.
+c     use a 2D-lookup table for wm and ws as functions of ustar and
+c     zetahat (=vonk*sigma*hbl*bfsfc).
+c
+c     note: the lookup table is only used for unstable conditions
+c     (zehat.le.0), in the stable domain wm (=ws) gets computed
+c     directly.
+c 
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "KPPMIX.h"
+
+c input
+c------
+c imt     : number of horizontal grid points
+c sigma   : normalized depth (d/hbl)
+c hbl     : boundary layer depth (m)
+c ustar   : surface friction velocity         (m/s)
+c bfsfc   : total surface buoyancy flux       (m^2/s^3)
+      integer imt
+      _RS sigma(imt)
+      _RS hbl  (imt)           ! boundary layer depth (m)
+      _RS ustar(imt)
+      _RS bfsfc(imt)
+ 
+c  output
+c--------
+c ws  : turbulent velocity scales at sigma
+      _RS ws(imt)
+
+c local
+c------
+c zehat   : = zeta *  ustar**3
+      _RS zehat
+
+      integer iz, izp1, ju, i, jup1
+      _RS udiff, zdiff, zfrac, ufrac, fzfrac, was, wbs
+
+      _RS u3
+
+c-----------------------------------------------------------------------
+c use lookup table for zehat < zmax only; otherwise use
+c stable formulae
+c-----------------------------------------------------------------------
+      do i = 1, imt
+         zehat = vonk*sigma(i)*hbl(i)*bfsfc(i)
+
+         if (zehat .le. zmax) then
+
+            zdiff = zehat - zmin
+            iz    = int( zdiff / deltaz )
+            iz    = min( iz, nni )
+            iz    = max( iz, 0 )
+            izp1  = iz + 1
+ 
+            udiff = ustar(i) - umin
+            ju    = int( udiff / deltau )
+            ju    = min( ju, nnj )
+            ju    = max( ju, 0 )
+            jup1  = ju + 1
+ 
+            zfrac = zdiff / deltaz - float(iz)
+            ufrac = udiff / deltau - float(ju)
+
+            fzfrac= 1. - zfrac
+
+            was   = fzfrac     * wst(iz,jup1) + zfrac * wst(izp1,jup1)
+            wbs   = fzfrac     * wst(iz,ju  ) + zfrac * wst(izp1,ju  )
+            ws(i) = (1.-ufrac) * wbs          + ufrac * was
+ 
+         else
+            u3    = ustar(i) * ustar(i) * ustar(i)
+            ws(i) = vonk     * ustar(i) * u3 / (u3 + conc1 * zehat)
+         endif
+ 
+      end do
+ 
+      return 
+      end
+
+c*************************************************************************
  
       subroutine Ri_iwmix (
-     I     km, kmp1, imt, kmtj, shsq, dbloc,
-     O     diffus )
+     I       km, kmp1, imt, kmtj, shsq, dbloc
+     I     , ikey
+     O     , diffus )
 
 c     compute interior viscosity diffusivity coefficients due
 c     to shear instability (dependent on a local Richardson number),
@@ -550,17 +672,18 @@ c  input
       integer km, kmp1          ! number of vertical levels
       integer imt               ! number of horizontal grid points
       integer kmtj (imt)        ! number of vertical layers on this row
-      _RS    shsq (imt,km)     ! (local velocity shear)^2              ((m/s)^2)
-      _RS    dbloc(imt,km)     ! local delta buoyancy                    (m/s^2)
+      _RS    shsq (imt,km)      ! (local velocity shear)^2              ((m/s)^2)
+      _RS    dbloc(imt,km)      ! local delta buoyancy                    (m/s^2)
+      integer ikey
  
 c output
-c     diffus(imt,0:kmp1,1)      ! vertical viscosivity coefficient        (m^2/s)
-c     diffus(imt,0:kmp1,2)      ! vertical scalar diffusivity             (m^2/s)
-c     diffus(imt,0:kmp1,3)      ! vertical temperature diffusivity        (m^2/s)
+c     diffus(imt,0:kmp1,1)     ! vertical viscosivity coefficient        (m^2/s)
+c     diffus(imt,0:kmp1,2)     ! vertical scalar diffusivity             (m^2/s)
+c     diffus(imt,0:kmp1,3)     ! vertical temperature diffusivity        (m^2/s)
       _RS diffus(imt,0:kmp1,3)
 
 c local variables
-      _RS Rig, Rigg            ! local Richardson number
+      _RS Rigg                 ! local Richardson number
       _RS fRi, fcon            ! function of Rig
       _RS ratio
       integer i, ki, mr
@@ -575,7 +698,7 @@ c     compute interior gradient Ri at all interfaces ki=1,km, (not surface)
 c     use diffus(*,*,1) as temporary storage of Ri to be smoothed
 c     use diffus(*,*,2) as temporary storage for Brunt-Vaisala squared
 c     set values at bottom and below to nearest value above bottom
-
+#ifdef RI_IWMIX_ORG
       do ki = 1, km
          do i = 1, imt
             if     (kmtj(i) .EQ. 0      ) then
@@ -591,6 +714,26 @@ c     set values at bottom and below to nearest value above bottom
             endif
          end do
       end do
+#else
+      do i = 1, imt
+         if     (kmtj(i) .EQ. 0      ) then
+            do ki = 1, km
+               diffus(i,ki,1) = 0.
+               diffus(i,ki,2) = 0.
+            end do
+         else
+            do ki = 1, kmtj(i)-1
+               diffus(i,ki,1) = dbloc(i,ki) * (zgrid(ki)-zgrid(ki+1)) /
+     1                          ( shsq(i,ki) + epsln )
+               diffus(i,ki,2) = dbloc(i,ki) / (zgrid(ki)-zgrid(ki+1))
+            end do
+            do ki = kmtj(i), km
+               diffus(i,ki,1) = diffus(i,kmtj(i)-1,1)
+               diffus(i,ki,2) = diffus(i,kmtj(i)-1,2)
+            end do
+         endif
+      end do
+#endif
 
 c-----------------------------------------------------------------------
 c     vertically smooth Ri
@@ -600,13 +743,15 @@ c     vertically smooth Ri
      I     kmp1, imt,
      U     diffus(1,0,1))
       end do
- 
+
       do mr = 1, num_v_smooth_BV
          call z121 (
      I     kmp1, imt,
      U     diffus(1,0,2))
       end do
- 
+
+CADJ store diffus = kpptape, key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2,3 /)
+
 c-----------------------------------------------------------------------
 c                           after smoothing loop
 
@@ -697,8 +842,7 @@ c local
 c*************************************************************************
 
       subroutine blmix (
-     I     km, kmp1, imt, mdiff
-     I     , ustar, bfsfc, hbl, stable, casea, diffus, kbl
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma
      &     )
 
@@ -715,34 +859,39 @@ c
 #include "SIZE.h"
 #include "KPPMIX.h"
 
+      integer    km     , kmp1
+      parameter( km = Nr, kmp1 = Nr + 1 )
+      integer    imt
+      parameter( imt = (sNx+2*OLx)*(sNy+2*OLy))
+      integer    mdiff
+      parameter( mdiff = 3 )
+
 c input
-      integer km, kmp1          ! number of vertical levels
-      integer imt               ! number of horizontal grid points
-      integer mdiff             ! number of viscosities + diffusivities
       _RS ustar (imt)          ! surface friction velocity                 (m/s)
       _RS bfsfc (imt)          ! surface buoyancy forcing              (m^2/s^3)
       _RS hbl   (imt)          ! boundary layer depth                        (m)
       _RS stable(imt)          ! = 1 in stable forcing
       _RS casea (imt)          ! = 1 in case A
       _RS diffus(imt,0:kmp1,mdiff) ! vertical diffusivities              (m^2/s)
-      integer kbl(imt)          ! -1 of first grid level below hbl
+      integer kbl(imt)         ! -1 of first grid level below hbl
 
 c output
       _RS dkm1  (imt,mdiff)    ! boundary layer difs at kbl-1 level
       _RS blmc  (imt,km,mdiff) ! boundary layer mixing coefficients      (m^2/s)
-      _RS ghat (imt,km)        ! nonlocal scalar transport
-      _RS sigma(imt)           ! normalized depth (d / hbl)
+      _RS ghat  (imt,km)       ! nonlocal scalar transport
+      _RS sigma (imt)          ! normalized depth (d / hbl)
 
 c  local
-      _RS gat1  (imt,mdiff)     ! shape function at sigma = 1
-      _RS dat1  (imt,mdiff)     ! derivative of shape function at sigma = 1
-      _RS ws(imt), wm(imt)      ! turbulent velocity scales                (m/s)
+cc    _RS gat1  (imt,mdiff)    ! now dkm1! shape function at sigma = 1
+      _RS dat1  (imt,mdiff)    ! derivative of shape function at sigma = 1
+      _RS ws(imt), wm(imt)     ! turbulent velocity scales                (m/s)
       integer i, kn, ki
       _RS     R, dvdzup, dvdzdn, viscp
       _RS     difsp, diftp, visch, difsh, difth
       _RS     f1, sig, a1, a2, a3, delhat
-      _RS     GM, Gs, Gt, p0
+      _RS     GM, Gs, Gt
 
+      _RS        p0
       parameter (p0 = 0.0)
  
 c-----------------------------------------------------------------------
@@ -758,8 +907,10 @@ c-----------------------------------------------------------------------
      O        wm, ws )
 
       do i = 1, imt
-         kn = ifix(casea(i)+epsln) * (kbl(i)-1) +
-     1        (1 - ifix(casea(i)+epsln)) * kbl(i)
+Caja     kn = ifix(casea(i)+epsln) * (kbl(i)-1) +
+Caja 1        (1 - ifix(casea(i)+epsln)) * kbl(i)
+         kn = int(casea(i)+epsln) * (kbl(i)-1) +
+     1        (1 - int(casea(i)+epsln)) * kbl(i)
 
 c-----------------------------------------------------------------------
 c find the interior viscosities and derivatives at hbl(i)
@@ -789,15 +940,15 @@ c-----------------------------------------------------------------------
 c
          f1 = stable(i) * conc1 * bfsfc(i) / (ustar(i)**4+epsln)
  
-         gat1(i,1) = visch / hbl(i) / (wm(i)+epsln)
+         dkm1(i,1) = visch / hbl(i) / (wm(i)+epsln)
          dat1(i,1) = -viscp / (wm(i)+epsln) + f1 * visch
          dat1(i,1) = min(dat1(i,1),p0)
  
-         gat1(i,2) = difsh / hbl(i) / (ws(i)+epsln)
+         dkm1(i,2) = difsh / hbl(i) / (ws(i)+epsln)
          dat1(i,2) = -difsp / (ws(i)+epsln) + f1 * difsh
          dat1(i,2) = min(dat1(i,2),p0)
  
-         gat1(i,3) = difth / hbl(i) / (ws(i)+epsln)
+         dkm1(i,3) = difth / hbl(i) / (ws(i)+epsln)
          dat1(i,3) = -diftp / (ws(i)+epsln) + f1 * difth
          dat1(i,3) = min(dat1(i,3),p0)
  
@@ -827,9 +978,9 @@ c-----------------------------------------------------------------------
             a2 = 3. - 2. * sig
             a3 = sig - 1.
 
-            GM = a1 + a2 * gat1(i,1) + a3 * dat1(i,1)
-            Gs = a1 + a2 * gat1(i,2) + a3 * dat1(i,2)
-            Gt = a1 + a2 * gat1(i,3) + a3 * dat1(i,3)
+            GM = a1 + a2 * dkm1(i,1) + a3 * dat1(i,1)
+            Gs = a1 + a2 * dkm1(i,2) + a3 * dat1(i,2)
+            Gt = a1 + a2 * dkm1(i,3) + a3 * dat1(i,3)
 
 c-----------------------------------------------------------------------
 c     compute boundary layer diffusivities at the interfaces
@@ -868,9 +1019,9 @@ c-----------------------------------------------------------------------
          a1 = sig - 2.
          a2 = 3. - 2. * sig
          a3 = sig - 1.
-         GM = a1 + a2 * gat1(i,1) + a3 * dat1(i,1)
-         Gs = a1 + a2 * gat1(i,2) + a3 * dat1(i,2)
-         Gt = a1 + a2 * gat1(i,3) + a3 * dat1(i,3)
+         GM = a1 + a2 * dkm1(i,1) + a3 * dat1(i,1)
+         Gs = a1 + a2 * dkm1(i,2) + a3 * dat1(i,2)
+         Gt = a1 + a2 * dkm1(i,3) + a3 * dat1(i,3)
          dkm1(i,1) = hbl(i) * wm(i) * sig * (1. + sig * GM)
          dkm1(i,2) = hbl(i) * ws(i) * sig * (1. + sig * Gs)
          dkm1(i,3) = hbl(i) * ws(i) * sig * (1. + sig * Gt)
@@ -963,9 +1114,9 @@ c local variables
       _RS usta
       INTEGER bi, bj            ! Loop counters
       integer i, j, k
-      _RS p5
+
+      _RS        p5
       parameter (p5 = 0.5)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf ! informational/error message buffer
 
 C   initialization of most KPP model parameters has been moved to ini_parms.F
 C   and can be specified in PARM06 of the data file
@@ -1143,7 +1294,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
       DO J = 1-OLy, sNy+OLy
          DO I = 1-OLx, sNx+OLx
-            RHO1(I,J)      = WORK1(I,J) + Rhonil
+            RHO1(I,J)      = WORK1(I,J) + rhonil
             TTALPHA(I,J,1) = WORK2(I,J)
             SSBETA(I,J,1)  = WORK3(I,J)
             DBSFC(I,J,1)   = 0.
@@ -1152,6 +1303,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
 c calculate alpha, beta, and gradients in interior layers
 
+!HPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
       DO K = 2, Nr
 
          call FIND_RHO(
@@ -1179,9 +1331,9 @@ c calculate alpha, beta, and gradients in interior layers
 
          DO J = 1-OLy, sNy+OLy
             DO I = 1-OLx, sNx+OLx
-               RHOK(I,J)      = RHOK  (I,J) + Rhonil
-               RHOKM1(I,J)    = RHOKM1(I,J) + Rhonil
-               RHO1K(I,J)     = RHO1K (I,J) + Rhonil
+               RHOK(I,J)      = RHOK  (I,J) + rhonil
+               RHOKM1(I,J)    = RHOKM1(I,J) + rhonil
+               RHO1K(I,J)     = RHO1K (I,J) + rhonil
                TTALPHA(I,J,K) = WORK1 (I,J)
                SSBETA(I,J,K)  = WORK2 (I,J)
                DBLOC(I,J,K-1) = gravity * (1. - RHOKM1(I,J) / RHOK(I,J))
@@ -1232,7 +1384,7 @@ c input
 
 c local
 c msgBuf    : informational/error message buffer
-      character*(max_len_mbuf) msgBuf
+      character*(MAX_LEN_MBUF) msgBuf
 
       integer i, k, zero_val, nonzero_val
       _RS     min_val, max_val, mean_val
@@ -1339,3 +1491,5 @@ C      Substitute other plotting utilities here!
 
       RETURN
       END
+
+#endif

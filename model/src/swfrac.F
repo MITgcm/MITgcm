@@ -2,6 +2,7 @@ C $Header: /u/gcmpack/models/MITgcmUV/model/src/ini_forcing.F,v 1.15 1998/12/15 
 
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_KPP
 C I.Fukumori 8/24/98 
 CStartOfInterface
       SUBROUTINE SWFRAC(
@@ -64,3 +65,4 @@ C
 
       RETURN
       END
+#endif

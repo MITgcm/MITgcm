@@ -1,7 +1,10 @@
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_KPP
+
       subroutine KVMIX(
-     I     bi, bj, myTime, mythid )
+     I     bi, bj, myTime, myThid )
+CADJ I     bi, bj, ikey, myTime, myThid )
 
 c=======================================================================
 c
@@ -90,17 +93,18 @@ c Routine arguments
 c     bi, bj - array indices on which to apply calculations
 c     myTime - Current time in simulation
 
-      INTEGER bi, bj, myThid
-      _RL myTime
+      INTEGER bi, bj
+      INTEGER ikey
+      INTEGER myThid
+      _RS     myTime
 
 c Local arrays and variables
-c     worku(nx,ny), workv(nx,ny), work1(nx,ny), work2(nx,ny)
 c                            horizontal working arrays
 c     ustar  (nx,ny)       - surface friction velocity                      (m/s)
 c     Bo     (nx,ny)       - surface turbulent buoyancy forcing         (m^2/s^3)
 c     Bosol  (nx,ny)       - surface radiative buoyancy forcing         (m^2/s^3)
 c     Coriol (nx,ny)       - Coriolis parameter on "t-grid"                 (1/s)
-c     Shsq   (nx,ny,Nr)    - local velocity shear squared
+c     shsq   (nx,ny,Nr)    - local velocity shear squared
 c                            at interfaces for ri_iwmix                 (m^2/s^2)
 c     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
 c                            at grid levels for bldepth                 (m^2/s^2)
@@ -120,14 +124,10 @@ c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient               (s/m^2
 c     hbl    (nx,ny)       - mixing layer depth                               (m)
 c     kmtj   (nx,ny)       - maximum number of wet levels in each column
 
-      _RS worku   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS workv   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS work1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS work2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS ustar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS Bo      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS Bosol   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS Shsq    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS bo      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS bosol   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS shsq    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS dVsq    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS rho1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS ttalpha (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
@@ -139,18 +139,20 @@ c     kmtj   (nx,ny)       - maximum number of wet levels in each column
       _RS ghat    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS hbl     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      logical LRI               ! mixing process switches
-      data LRI  /.true. /
-      
-      CHARACTER*(MAX_LEN_MBUF) msgBuf ! informational/error message buffer
+      logical    lri               ! mixing process switches
+      parameter( lri = .true. )
 
-      _RS p5, p25, tmp_DVSQ, tmp_SHSQ, tmp
+      _RS        p5    , p25
       parameter (p5=0.5, p25=0.25)
 
-      _RS tempVar
-      integer i, j, k, mr, kp1, imt, ip1, jp1
+      integer    imt
       parameter (imt = (sNx+2*OLx)*(sNy+2*OLy))
       
+      _RS     tmp_dVsq, tmp_shsq, tmp
+
+      _RS     tempVar
+      integer i, j, k, mr, kp1, ip1, jp1
+
 c     Check to see if new vertical mixing coefficient should be computed now?
 c     Recomputation frequency depends on convective adjustment parameter.
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) .OR.
@@ -177,82 +179,144 @@ c     --------------
 c     Get velocity shear squared, averaged from "u,v-grid"
 c     onto "t-grid" (in (m/s)**2):
 c     dVsq(k)=(Uref-U(k))**2+(Vref-V(k))**2      at grid levels
-c     Shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
+c     shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
 
-         DO K = 1, Nr                       ! dVsq
+         DO k = 1, Nr
+            DO j = 1-OLy, sNy+OLy
+               dVsq(sNx+OLx,j,k) = 0.0
+               shsq(sNx+OLx,j,k) = 0.0
+            END DO
+            DO i = 1-OLx, sNx+OLx
+               dVsq(i,sNy+OLy,k) = 0.0
+               shsq(i,sNy+OLy,k) = 0.0
+            END DO
+         END DO
+
+#ifdef OLDER
+         DO k = 1, Nr
             DO j = 1-OLy, sNy+OLy-1 
                jp1 = j + 1
                DO i = 1-OLx, sNx+OLx-1
                   ip1 = i + 1
-                  DVSQ(i,j,K) = p5 * (
-     $                 (uVel(i,j,1,bi,bj)-uVel(i,j,K,bi,bj)) *
-     1                    (uVel(i,j,1,bi,bj)-uVel(i,j,K,bi,bj)) +
-     $                 (uVel(ip1,j,1,bi,bj)-uVel(ip1,j,K,bi,bj)) *
-     1                    (uVel(ip1,j,1,bi,bj)-uVel(ip1,j,K,bi,bj)) )
-     $        + p5 * ( (vVel(i,j,1,bi,bj)-vVel(i,j,K,bi,bj)) *
-     1                    (vVel(i,j,1,bi,bj)-vVel(i,j,K,bi,bj)) + 
-     $                 (vVel(i,jp1,1,bi,bj)-vVel(i,jp1,K,bi,bj)) *
-     1                    (vVel(i,jp1,1,bi,bj)-vVel(i,jp1,K,bi,bj)) )
+                  dVsq(i,j,k) = p5 * (
+     &              (uVel(i  ,j  ,1,bi,bj)-uVel(i  ,j  ,k,bi,bj)) *
+     &              (uVel(i  ,j  ,1,bi,bj)-uVel(i  ,j  ,k,bi,bj)) +
+     &              (uVel(ip1,j  ,1,bi,bj)-uVel(ip1,j  ,k,bi,bj)) *
+     &              (uVel(ip1,j  ,1,bi,bj)-uVel(ip1,j  ,k,bi,bj)) )
+     &     + p5 * ( (vVel(i  ,j  ,1,bi,bj)-vVel(i  ,j  ,k,bi,bj)) *
+     &              (vVel(i  ,j  ,1,bi,bj)-vVel(i  ,j  ,k,bi,bj)) + 
+     &              (vVel(i  ,jp1,1,bi,bj)-vVel(i  ,jp1,k,bi,bj)) *
+     &              (vVel(i  ,jp1,1,bi,bj)-vVel(i  ,jp1,k,bi,bj)) )
+               END DO
+            END DO
+         END DO
+
+         DO k = 1, Nr-1
+            kp1 = k + 1
+            DO j = 1-OLy, sNy+OLy-1   
+               jp1 = j + 1
+               DO i = 1-OLx, sNx+OLx-1
+                  ip1 = i + 1
+                  shsq(i,j,k) = p5 * (
+     &              (uVel(i  ,j  ,k,bi,bj)-uVel(i  ,j  ,kp1,bi,bj)) *
+     &              (uVel(i  ,j  ,k,bi,bj)-uVel(i  ,j  ,kp1,bi,bj)) + 
+     &              (uVel(ip1,j  ,k,bi,bj)-uVel(ip1,j  ,kp1,bi,bj)) *
+     &              (uVel(ip1,j  ,k,bi,bj)-uVel(ip1,j  ,kp1,bi,bj)) )
+     &     + p5 * ( (vVel(i  ,j  ,k,bi,bj)-vVel(i  ,j  ,kp1,bi,bj)) *
+     &              (vVel(i  ,j  ,k,bi,bj)-vVel(i  ,j  ,kp1,bi,bj)) + 
+     &              (vVel(i  ,jp1,k,bi,bj)-vVel(i  ,jp1,kp1,bi,bj)) *
+     &              (vVel(i  ,jp1,k,bi,bj)-vVel(i  ,jp1,kp1,bi,bj)) ) 
+               END DO
+            END DO
+         END DO
+
+#else
+c     velocity shear
+c     --------------
+c     Get velocity shear squared, averaged from "u,v-grid"
+c     onto "t-grid" (in (m/s)**2):
+c     dVsq(k)=(Uref-U(k))**2+(Vref-V(k))**2      at grid levels
+c     Shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
+
+         DO K = 1, Nr                       ! dVsq
+            DO j = 1-OLy, sNy+OLy-1
+               jp1 = j + 1
+               DO i = 1-OLx, sNx+OLx-1
+                  ip1 = i + 1
+                  dvsq(i,j,K) = pMask(i,j,K,bi,bj) *
+     $              (p5 * maskW(i,j,K,bi,bj) * maskW(ip1,j,K,bi,bj) *
+     $              ( (uVel(i  ,j,1,bi,bj)-uVel(i  ,j,K,bi,bj)) *
+     $                (uVel(i  ,j,1,bi,bj)-uVel(i  ,j,K,bi,bj)) +
+     $                (uVel(ip1,j,1,bi,bj)-uVel(ip1,j,K,bi,bj)) *
+     $                (uVel(ip1,j,1,bi,bj)-uVel(ip1,j,K,bi,bj)) ) +
+     $              p5 * maskS(i,j,K,bi,bj) * maskS(i,jp1,K,bi,bj) *
+     $              ( (vVel(  i,j,1,bi,bj)-vVel(i,j  ,K,bi,bj)) *
+     $                (vVel(i,j  ,1,bi,bj)-vVel(i,j  ,K,bi,bj)) + 
+     $                (vVel(i,jp1,1,bi,bj)-vVel(i,jp1,K,bi,bj)) *
+     $                (vVel(i,jp1,1,bi,bj)-vVel(i,jp1,K,bi,bj)) ))
                END DO
             END DO
          END DO
 
          DO K = 1, Nr-1                      ! Shsq
             KP1 = K + 1
-            DO j = 1-OLy, sNy+OLy-1   
+            DO j = 1-OLy, sNy+OLy-1
                jp1 = j + 1
                DO i = 1-OLx, sNx+OLx-1
                   ip1 = i + 1
-                  SHSQ(i,j,K) = p5 * (
-     $                 (uVel(i,j,K,bi,bj)-uVel(i,j,KP1,bi,bj)) *
-     1                    (uVel(i,j,K,bi,bj)-uVel(i,j,KP1,bi,bj)) + 
-     $                 (uVel(ip1,j,K,bi,bj)-uVel(ip1,j,KP1,bi,bj)) *
-     1                    (uVel(ip1,j,K,bi,bj)-uVel(ip1,j,KP1,bi,bj)) )
-     $        + p5 * ( (vVel(i,j,K,bi,bj)-vVel(i,j,KP1,bi,bj)) *
-     1                    (vVel(i,j,K,bi,bj)-vVel(i,j,KP1,bi,bj)) + 
-     $                 (vVel(i,jp1,K,bi,bj)-vVel(i,jp1,KP1,bi,bj)) *
-     1                    (vVel(i,jp1,K,bi,bj)-vVel(i,jp1,KP1,bi,bj)) ) 
+                  shsq(i,j,K) = pMask(i,j,KP1,bi,bj) *
+     $           (p5 * maskW(i,j,KP1,bi,bj) * maskW(ip1,j,KP1,bi,bj) *
+     $           ( (uVel(i  ,j,K,bi,bj)-uVel(i  ,j,KP1,bi,bj)) *
+     $             (uVel(i  ,j,K,bi,bj)-uVel(i  ,j,KP1,bi,bj)) + 
+     $             (uVel(ip1,j,K,bi,bj)-uVel(ip1,j,KP1,bi,bj)) *
+     $             (uVel(ip1,j,K,bi,bj)-uVel(ip1,j,KP1,bi,bj)) )
+     $           + p5 * maskS(i,j,KP1,bi,bj) * maskS(i,jp1,KP1,bi,bj) *
+     $           ( (vVel(i  ,j,K,bi,bj)-vVel(i,j  ,KP1,bi,bj)) *
+     $             (vVel(i  ,j,K,bi,bj)-vVel(i,j  ,KP1,bi,bj)) + 
+     $             (vVel(i,jp1,K,bi,bj)-vVel(i,jp1,KP1,bi,bj)) *
+     $             (vVel(i,jp1,K,bi,bj)-vVel(i,jp1,KP1,bi,bj)) ))
                END DO
             END DO
          END DO
+#endif
 
-         DO j = 1-OLy, sNy+OLy               ! Shsq @ Nr
+         DO j = 1-OLy, sNy+OLy
             DO i = 1-OLx, sNx+OLx
-               SHSQ(i,j,Nr) = 0.
+               shsq(i,j,Nr) = 0.
             END DO
          END DO
 
-c     smooth DVSQ and SHSQ zonally with 121 filters
+c     smooth dVsq and shsq zonally with 121 filters
        do mr = 1, num_z_smooth_sh
         do k = 1, Nr
          do j = 1-OLy, sNy+OLy 
-          tmp_DVSQ = p25*DVSQ(1-OLx,j,K)
-          tmp_SHSQ = p25*SHSQ(1-OLx,j,K)
+          tmp_dVsq = p25*dVsq(1-OLx,j,k)
+          tmp_shsq = p25*shsq(1-OLx,j,k)
           do i = 2-OLx, sNx+OLx-1
-           tmp = DVSQ(i,j,K)
-           DVSQ(i,j,K) = tmp_DVSQ + p5*DVSQ(i,j,k) + p25*DVSQ(i+1,j,k)
-           tmp_DVSQ = p25*tmp
-           tmp = SHSQ(i,j,K)
-           SHSQ(i,j,K) = tmp_SHSQ + p5*SHSQ(i,j,k) + p25*SHSQ(i+1,j,k)
-           tmp_SHSQ = p25*tmp
+           tmp = dVsq(i,j,k)
+           dVsq(i,j,k) = tmp_dVsq + p5*dVsq(i,j,k) + p25*dVsq(i+1,j,k)
+           tmp_dVsq = p25*tmp
+           tmp = shsq(i,j,k)
+           shsq(i,j,k) = tmp_shsq + p5*shsq(i,j,k) + p25*shsq(i+1,j,k)
+           tmp_shsq = p25*tmp
           end do
          end do
         end do
        end do
 
-c     smooth DVSQ and SHSQ meridionally with 121 filters
+c     smooth dVsq and shsq meridionally with 121 filters
        do mr = 1, num_m_smooth_sh
         do k = 1, Nr
          do i = 1-OLx, sNx+OLx
-          tmp_DVSQ = p25*DVSQ(i,1-OLy,K)
-          tmp_SHSQ = p25*SHSQ(i,1-OLy,K)
+          tmp_dVsq = p25*dVsq(i,1-OLy,k)
+          tmp_shsq = p25*shsq(i,1-OLy,k)
           do j = 2-OLy, sNy+OLy-1
-           tmp = DVSQ(i,j,K)
-           DVSQ(i,j,K) = tmp_DVSQ + p5*DVSQ(i,j,k) + p25*DVSQ(i,j+1,k)
-           tmp_DVSQ = p25*tmp
-           tmp = SHSQ(i,j,K)
-           SHSQ(i,j,K) = tmp_SHSQ + p5*SHSQ(i,j,k) + p25*SHSQ(i,j+1,k)
-           tmp_SHSQ = p25*tmp
+           tmp = dVsq(i,j,k)
+           dVsq(i,j,k) = tmp_dVsq + p5*dVsq(i,j,k) + p25*dVsq(i,j+1,k)
+           tmp_dVsq = p25*tmp
+           tmp = shsq(i,j,k)
+           shsq(i,j,k) = tmp_shsq + p5*shsq(i,j,k) + p25*shsq(i,j+1,k)
+           tmp_shsq = p25*tmp
           end do
          end do
         end do
@@ -275,8 +339,9 @@ c                d(rho{k,k})/d(S(k))                                 (kg/m^3/PSU
 
          CALL TIMER_START('STATEKPP      [KVMIX]', myThid)
          CALL STATEKPP(
-     I        bi, bj, myThid,
-     O        RHO1, DBLOC, DBSFC, TTALPHA, SSBETA)
+     I          bi, bj, myThid
+     O        , rho1, dbloc, dbsfc, ttalpha, ssbeta
+     &        )
          CALL TIMER_STOP ('STATEKPP      [KVMIX]', myThid)
 
 c     Transfer from global to local arrays
@@ -287,17 +352,17 @@ c     Transfer from global to local arrays
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
-                  DBLOC(i,j,k) = DBLOC(i,j,k) * pMask(i,j,k,bi,bj)
-                  DBSFC(i,j,k) = DBSFC(i,j,k) * pMask(i,j,k,bi,bj)
+                  dbloc(i,j,k) = dbloc(i,j,k) * pMask(i,j,k,bi,bj)
+                  dbsfc(i,j,k) = dbsfc(i,j,k) * pMask(i,j,k,bi,bj)
                   if(k.eq.nzmax(i,j,bi,bj)) then
-                     DBLOC(i,j,k) = 0.
-                     DBSFC(i,j,k) = 0.
+                     dbloc(i,j,k) = 0.
+                     dbsfc(i,j,k) = 0.
                   endif
 
 c     numerator of bulk richardson number on grid levels
 c     note: land and ocean bottom values need to be set to zero
 c     so that the subroutine "bldepth" works correctly
-                  Ritop(i,j,K) = (ZGRID(1)-ZGRID(K)) * DBSFC(i,j,K)
+                  Ritop(i,j,k) = (zgrid(1)-zgrid(k)) * dbsfc(i,j,k)
 
                END DO
             END DO
@@ -307,24 +372,35 @@ c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
 c     taux / rho = fu * delZ(1)                                   (N/m^2)
 c     tauy / rho = fv * delZ(1)                                   (N/m^2)
-c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                         (m/s)
-c     Bo    = g * (alpha * Qnet - beta * EmPmR) * delZ(1) / rho         (m^2/s^3)
-c     Bosol = g * alpha * Qshort / rho                                  (m^2/s^3)
+c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )               (m/s)
+c     bo    = g * (alpha * Qnet - beta * EmPmR) * delZ(1) / rho   (m^2/s^3)
+c     bosol = g * alpha * Qsw / rho                               (m^2/s^3)
 
-         DO j = 1-OLy, sNy+OLy-1      ! worku
+         DO j = 1-OLy, sNy+OLy-1
             DO i = 1-OLx, sNx+OLx-1
-               USTAR(i,j) = SQRT( SQRT(
+               ustar(i,j) = SQRT( SQRT(
      &              (fu(i,j,bi,bj) + fu(i+1,j,bi,bj)) * p5 * delZ(1) * 
      &              (fu(i,j,bi,bj) + fu(i+1,j,bi,bj)) * p5 * delZ(1) +
      &              (fv(i,j,bi,bj) + fv(i,j+1,bi,bj)) * p5 * delZ(1) * 
      &              (fv(i,j,bi,bj) + fv(i,j+1,bi,bj)) * p5 * delZ(1) )) 
-               BO(I,J) = gravity *
-     &                 ( TTALPHA(I,J,1) * Qnet(i,j,bi,bj) -
-     &                 SSBETA(I,J,1) * EmPmR(i,j,bi,bj) ) *
-     &                 delZ(1) / RHO1(I,J)
-               BOSOL(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj)
-     &              / RHO1(I,J)
+               bo(i,j) = gravity *
+     &                 ( ttalpha(i,j,1) * Qnet(i,j,bi,bj) -
+     &                 ssbeta(i,j,1) * EmPmR(i,j,bi,bj) ) *
+     &                 delZ(1) / rho1(i,j)
+              bosol(i,j) = gravity * ttalpha(i,j,1) * Qsw(i,j,bi,bj)
+     &              / rho1(i,j)
             END DO
+         END DO
+
+         DO j = 1-OLy, sNy+OLy
+            ustar(sNx+OLx,j) = 0.0
+            bo   (sNx+OLx,j) = 0.0
+            bosol(sNx+OLx,j) = 0.0
+         END DO
+         DO i = 1-OLx, sNx+OLx
+            ustar(i,sNy+OLy) = 0.0
+            bo   (i,sNy+OLy) = 0.0
+            bosol(i,sNy+OLy) = 0.0
          END DO
 
 c-----------------------------------------------------------------------
@@ -333,11 +409,15 @@ c-----------------------------------------------------------------------
 
          CALL TIMER_START('KPPMIX [KVMIX]', myThid)
          CALL KPPMIX (
-     I        lri, nzmax(1-OLx,1-OLy,bi,bj), shsq, dvsq, ustar,
-     I        bo, bosol, dbloc, ritop,
-     I        Fcori(1-OLx,1-OLy,bi,bj),
-     O        vddiff, ghat, hbl )
+     I          lri, nzmax(1-OLx,1-OLy,bi,bj), shsq, dVsq, ustar
+     I        , bo, bosol, dbloc, Ritop
+     I        , fCori(1-OLx,1-OLy,bi,bj)
+     I        , ikey
+     O        , vddiff, ghat, hbl
+     &        )
          CALL TIMER_STOP ('KPPMIX [KVMIX]', myThid)
+
+CADJ STORE vddiff, ghat  = uvtape, key = ikey
 
 c-----------------------------------------------------------------------
 c     zero out land values,
@@ -349,15 +429,15 @@ c-----------------------------------------------------------------------
             DO i = 1-OLx, sNx+OLx
                DO k = 1, Nr
 c KPPviscAz
-                  tempVar = min( maxKPPviscAz(k), VDDIFF(i,j,k-1,1) )
+                  tempVar = min( maxKPPviscAz(k), vddiff(i,j,k-1,1) )
                   tempVar = max( minKPPviscAz, tempVar )
                   KPPviscAz(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
 c KPPdiffKzS
-                  tempVar = min( maxKPPdiffKzS, VDDIFF(i,j,k-1,2) )
+                  tempVar = min( maxKPPdiffKzS, vddiff(i,j,k-1,2) )
                   tempVar = max( minKPPdiffKzS, tempVar )
                   KPPdiffKzS(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
 c KPPdiffKzT
-                  tempVar = min( maxKPPdiffKzT, VDDIFF(i,j,k-1,3) )
+                  tempVar = min( maxKPPdiffKzT, vddiff(i,j,k-1,3) )
                   tempVar = max( minKPPdiffKzT, tempVar )
                   KPPdiffKzT(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
 c KPPghat
@@ -376,3 +456,5 @@ c KPPhbl: set to -zgrid(1) over land
       RETURN
 
       END
+
+#endif
