@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.96 2003/10/29 00:17:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.97 2003/11/13 21:46:35 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -237,7 +237,8 @@ C     useSingleCpuIO :: On SGI platforms, option globalFiles is either
 C                       slow (f77) or does not work (f90).  When
 C                       useSingleCpuIO is set, mdsio_writefield.F
 C                       outputs from master mpi process only.
-C     allowFreezing  :: Allows water to freeze and form ice
+C     allowFreezing  :: Allows surface water to freeze and form ice
+C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid,
@@ -260,7 +261,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & periodicExternalForcing, 
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
-     & allowFreezing, groundAtK1,
+     & allowFreezing, useOldFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
      & readPickupWithTracer, writePickupWithTracer
       LOGICAL usingCartesianGrid
@@ -316,6 +317,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL globalFiles
       LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
+      LOGICAL useOldFreezing
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
       LOGICAL debugMode
