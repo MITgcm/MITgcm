@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.15 1998/06/25 20:43:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.16 1998/07/15 22:09:19 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,7 +73,7 @@ C     aS2d: integral in Z Ay/dY
        ENDDO
       ENDDO
       cg2dNbuf(1,myThid) = myNorm
-      _GLOBAL_MAX_R8( cg2dNbuf, myNorm, myThid )
+      _GLOBAL_MAX_R4( cg2dNbuf, myNorm, myThid )
       IF ( cg2dNbuf(1,1) .NE. 0. _d 0 ) THEN
        myNorm = 1. _d 0/cg2dNbuf(1,1)
       ELSE
