@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.35 2003/10/30 18:44:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.36 2004/11/10 03:02:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +9,7 @@ C     !ROUTINE: TIMESTEP
 C     !INTERFACE:
       SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax, k,
      I                     dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
+     I                     guDissip, gvDissip,
      I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -32,18 +33,24 @@ C     == Routine Arguments ==
 C     dPhiHydX,Y :: Gradient (X & Y directions) of Hydrostatic Potential
 C     phiSurfX :: gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY ::          or geopotential (atmos) in X and Y direction
+C     guDissip :: dissipation tendency (all explicit terms), u component
+C     gvDissip :: dissipation tendency (all explicit terms), v component
+
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       _RL     dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL     dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     guDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     gvDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     myTime
       INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       LOGICAL momForcing_In_AB
+      LOGICAL momDissip_In_AB
       INTEGER i,j
       _RL ab15,ab05
       _RL phxFac,phyFac, psFac
@@ -64,21 +71,13 @@ C     Adams-Bashforth timestepping weights
        ab05=-0.5-abeps
       ENDIF
 
-C-- stagger time step: grad Phi_Hyp is not in gU,gV => add it in this S/R
-      IF (staggerTimeStep) THEN
-        phxFac = pfFacMom
-        phyFac = pfFacMom
-      ELSE
-        phxFac = 0.
-        phyFac = 0.
-      ENDIF 
-
 C-- explicit part of the surface potential gradient is added in this S/R
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
 
 C-- including or excluding momentum forcing from Adams-Bashforth:
       momForcing_In_AB = forcing_In_AB
       momForcing_In_AB = .TRUE.
+      momDissip_In_AB  = .TRUE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -93,6 +92,38 @@ C-    Initialize local arrays (not really necessary but safer)
 #endif
        ENDDO
       ENDDO
+
+C--   Stagger time step: grad Phi_Hyp will be added later
+      IF (staggerTimeStep) THEN
+        phxFac = pfFacMom
+        phyFac = pfFacMom
+      ELSE
+C--   Synchronous time step: add grad Phi_Hyp to gU,gV before doing Adams-Bashforth
+C     note: already done in S/R mom_vecinv and mom_fluxform but would be better 
+C     to add it to gU,gV here.
+c       DO j=jMin,jMax
+c        DO i=iMin,iMax
+c         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - pfFacMom*dPhiHydX(i,j)
+c         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) - pfFacMom*dPhiHydY(i,j)
+c        ENDDO
+c       ENDDO
+        phxFac = 0.
+        phyFac = 0.
+      ENDIF 
+
+#ifdef ALLOW_MOM_VECINV
+C--   Dissipation term inside the Adams-Bashforth:
+C     note: already in gU,gV if using fluxform
+      IF ( momViscosity .AND. momDissip_In_AB
+     &          .AND. vectorInvariantMomentum ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + guDissip(i,j)
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) + gvDissip(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+#endif
 
 C--   Forcing term inside the Adams-Bashforth:
       IF (momForcing .AND. momForcing_In_AB) THEN
@@ -202,6 +233,20 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
 #endif /* NONLIN_FRSURF */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_MOM_VECINV
+C--   Dissipation term outside the Adams-Bashforth:
+C     note: only implemented with vecinv formulation
+      IF ( momViscosity .AND. .NOT.momDissip_In_AB
+     &               .AND. vectorInvariantMomentum ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gUtmp(i,j) + guDissip(i,j)
+          gVtmp(i,j) = gVtmp(i,j) + gvDissip(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+#endif
 
 C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax

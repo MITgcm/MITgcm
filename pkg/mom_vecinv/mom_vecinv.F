@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.30 2004/11/05 19:23:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.31 2004/11/10 03:05:04 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -7,6 +7,7 @@ C $Name:  $
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U        fVerU, fVerV,
+     O        guDiss, gvDiss,
      I        myTime, myIter, myThid)
 C     /==========================================================\
 C     | S/R MOM_VECINV                                           |
@@ -39,10 +40,11 @@ C     == Global variables ==
 #endif
 
 C     == Routine arguments ==
-C     fVerU   - Flux of momentum in the vertical
-C     fVerV     direction out of the upper face of a cell K
-C               ( flux into the cell above ).
+C     fVerU  :: Flux of momentum in the vertical direction, out of the upper
+C     fVerV  :: face of a cell K ( flux into the cell above ).
 C     dPhiHydX,Y :: Gradient (X & Y dir.) of Hydrostatic Potential
+C     guDiss :: dissipation tendency (all explicit terms), u component
+C     gvDiss :: dissipation tendency (all explicit terms), v component
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown                     - Index for upper and lower layers.
@@ -53,6 +55,8 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL guDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gvDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER kUp,kDown
       _RL     myTime
       INTEGER myIter
@@ -81,8 +85,6 @@ c     _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
       INTEGER i,j,k
 C     xxxFac - On-off tracer parameters used for switching terms off.
@@ -133,20 +135,20 @@ C       write(*,*) 'offsets = ',(offsets(i),i=1,9)
 C     Initialise intermediate terms
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
-        vF(i,j)   = 0.
-        vrF(i,j)  = 0.
+        vF(i,j)    = 0.
+        vrF(i,j)   = 0.
         uCf(i,j)   = 0.
         vCf(i,j)   = 0.
-c       mT(i,j)   = 0.
+c       mT(i,j)    = 0.
         del2u(i,j) = 0.
         del2v(i,j) = 0.
         dStar(i,j) = 0.
         zStar(i,j) = 0.
-        uDiss(i,j) = 0.
-        vDiss(i,j) = 0.
+        guDiss(i,j)= 0.
+        gvDiss(i,j)= 0.
         vort3(i,j) = 0.
-        omega3(i,j) = 0.
-        ke(i,j) = 0.
+        omega3(i,j)= 0.
+        ke(i,j)    = 0.
 #ifdef ALLOW_AUTODIFF_TAMC
         strain(i,j)  = 0. _d 0
         tension(i,j) = 0. _d 0
@@ -224,7 +226,7 @@ C      in terms of vorticity and divergence
      &    .OR. viscC2leith.NE.0. .OR. viscC4leith.NE.0.
      &    ) THEN
          CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
-     O                       uDiss,vDiss,
+     O                       guDiss,gvDiss,
      &                       myThid)
        ENDIF
 C      or in terms of tension and strain
@@ -237,7 +239,7 @@ C      or in terms of tension and strain
      I                        myThid)
          CALL MOM_HDISSIP(bi,bj,k,
      I                    tension,strain,hFacZ,viscAtension,viscAstrain,
-     O                    uDiss,vDiss,
+     O                    guDiss,gvDiss,
      I                    myThid)
        ENDIF
       ENDIF
@@ -250,28 +252,28 @@ C---- Zonal momentum equation starts here
 C--   Vertical flux (fVer is at upper face of "u" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF (momViscosity.AND..NOT.implicitViscosity)
-     & CALL MOM_U_RVISCFLUX(bi,bj,k,uVel,KappaRU,vrF,myThid)
+      IF (momViscosity.AND..NOT.implicitViscosity) THEN
+       CALL MOM_U_RVISCFLUX(bi,bj,k,uVel,KappaRU,vrF,myThid)
 
 C     Combine fluxes
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        fVerU(i,j,kDown) = ArDudrFac*vrF(i,j)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         fVerU(i,j,kDown) = ArDudrFac*vrF(i,j)
+        ENDDO
        ENDDO
-      ENDDO
 
-C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
-        gU(i,j,k,bi,bj) = uDiss(i,j)
+C--   Tendency is minus divergence of the fluxes
+       DO j=2-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
+         guDiss(i,j) = guDiss(i,j)
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAw(i,j,bi,bj)
      &  *(
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
      &   )
-     &  - phxFac*dPhiHydX(i,j)
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (momViscosity.AND.no_slip_sides) THEN
@@ -279,7 +281,7 @@ C-     No-slip BCs impose a drag at walls...
        CALL MOM_U_SIDEDRAG(bi,bj,k,uFld,del2u,hFacZ,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+vF(i,j)
+         guDiss(i,j) = guDiss(i,j)+vF(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -289,7 +291,7 @@ C-    No-slip BCs impose a drag at bottom
        CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+vF(i,j)
+         guDiss(i,j) = guDiss(i,j)+vF(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -310,28 +312,28 @@ C---- Meridional momentum equation starts here
 C--   Vertical flux (fVer is at upper face of "v" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF (momViscosity.AND..NOT.implicitViscosity)
-     & CALL MOM_V_RVISCFLUX(bi,bj,k,vVel,KappaRV,vrf,myThid)
+      IF (momViscosity.AND..NOT.implicitViscosity) THEN
+       CALL MOM_V_RVISCFLUX(bi,bj,k,vVel,KappaRV,vrf,myThid)
 
 C     Combine fluxes -> fVerV
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        fVerV(i,j,kDown) = ArDvdrFac*vrF(i,j)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         fVerV(i,j,kDown) = ArDvdrFac*vrF(i,j)
+        ENDDO
        ENDDO
-      ENDDO
 
-C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = vDiss(i,j)
+C--   Tendency is minus divergence of the fluxes
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gvDiss(i,j) = gvDiss(i,j)
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rAs(i,j,bi,bj)
      &  *(
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
      &   )
-     &  - phyFac*dPhiHydY(i,j)
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (momViscosity.AND.no_slip_sides) THEN
@@ -339,7 +341,7 @@ C-     No-slip BCs impose a drag at walls...
        CALL MOM_V_SIDEDRAG(bi,bj,k,vFld,del2v,hFacZ,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vF(i,j)
+         gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -348,7 +350,7 @@ C-    No-slip BCs impose a drag at bottom
        CALL MOM_V_BOTTOMDRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vF(i,j)
+         gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -371,8 +373,8 @@ C--   Horizontal Coriolis terms
      &                      uCf,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+         gU(i,j,k,bi,bj) = uCf(i,j) - phxFac*dPhiHydX(i,j)
+         gV(i,j,k,bi,bj) = vCf(i,j) - phyFac*dPhiHydY(i,j)
         ENDDO
        ENDDO
        IF ( writeDiag ) THEN
@@ -389,6 +391,13 @@ C--   Horizontal Coriolis terms
          ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = -phxFac*dPhiHydX(i,j)
+         gV(i,j,k,bi,bj) = -phyFac*dPhiHydY(i,j)
+        ENDDO
+       ENDDO
       ENDIF
 
       IF (momAdvection) THEN
@@ -507,7 +516,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
         CALL DEBUG_CS_CORNER_UV( ' uDiss,vDiss from MOM_VECINV',
-     &             uDiss,vDiss, k, standardMessageUnit,bi,bj,myThid )
+     &             guDiss,gvDiss, k, standardMessageUnit,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
 
@@ -516,8 +525,8 @@ C--   Set du/dt & dv/dt on boundaries to zero
           CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,
      &         myThid)
-          CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
+          CALL WRITE_LOCAL_RL('Du','I10',1,guDiss,bi,bj,k,myIter,myThid)
+          CALL WRITE_LOCAL_RL('Dv','I10',1,gvDiss,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
@@ -529,9 +538,9 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dt',tension,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Du',uDiss,
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Du',guDiss,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dv',vDiss,
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dv',gvDiss,
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Z3',vort3,
      &          offsets, myThid)

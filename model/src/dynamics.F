@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.109 2004/09/23 17:48:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.110 2004/11/10 03:02:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,6 +134,8 @@ C     phiHydF    :: hydrostatic potential anomaly at middle between 2 centers
 C     dPhiHydX,Y :: Gradient (X & Y directions) of hydrostatic potential anom.
 C     phiSurfX,  ::  gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY             or geopotential (atmos) in X and Y direction
+C     guDissip   :: dissipation tendency (all explicit terms), u component
+C     gvDissip   :: dissipation tendency (all explicit terms), v component
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -148,6 +150,8 @@ C                      index into fVerTerm.
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL guDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gvDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
@@ -278,6 +282,8 @@ cph)
           dPhiHydY(i,j)  = 0. _d 0 
           phiSurfX(i,j)  = 0. _d 0
           phiSurfY(i,j)  = 0. _d 0
+          guDissip(i,j)  = 0. _d 0
+          gvDissip(i,j)  = 0. _d 0
          ENDDO
         ENDDO
 
@@ -375,11 +381,13 @@ C        and step forward storing the result in gU, gV, etc...
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U         fVerU, fVerV,
+     O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 #endif
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
+     I         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 
 #ifdef   ALLOW_OBCS
