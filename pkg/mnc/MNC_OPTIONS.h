@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.4 2004/01/29 05:30:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.5 2004/09/01 02:43:36 edhill Exp $
 C $Name:  $
 
 #ifndef MNC_OPTIONS_H
@@ -11,6 +11,7 @@ C $Name:  $
 CEH3 package-specific options go here
 
 C #define MNC_DEBUG
+C #define MNC_DEBUG_GTYPE  /*  Adds MNC gtype as an attribute  */
 
 #include "mnc_id_header.h"
 

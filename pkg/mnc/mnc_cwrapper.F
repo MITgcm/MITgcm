@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.17 2004/07/09 02:41:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.18 2004/09/01 02:43:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -570,7 +570,9 @@ C     Check that gname exists
       mnc_cw_vbij(1,indv) = bi_dim
       mnc_cw_vbij(2,indv) = bj_dim
 
+#ifdef MNC_DEBUG_GTYPE
       CALL MNC_CW_ADD_VATTR_TEXT(vname,1,'mitgcm_grid',gname, myThid)
+#endif
 
       RETURN
       END
