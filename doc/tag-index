@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.423 2004/12/20 17:10:27 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.424 2004/12/20 19:56:15 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57b_post
+o simplify options in diagnostics_fill arguments (remove weird combinations)
 o fix MNC coordinate variables so that they now contain per-face index
   values (instead of xC,xG,yC,yG values) when run with EXCH2 since, in 
   general, EXCH2 grids are only aligned to a "local" coordinate system
