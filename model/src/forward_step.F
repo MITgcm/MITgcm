@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.23 2001/09/27 20:12:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.24 2001/10/27 02:16:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -120,6 +120,14 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_START('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
+
+#ifdef ALLOW_SHAP_FILT
+       IF (staggerTimeStep .AND. useSHAP_FILT) THEN
+c       CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+        CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
+c       CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+       ENDIF
+#endif
 
 C--     Step forward fields and calculate time tendency terms.
         IF ( momStepping ) THEN
