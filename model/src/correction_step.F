@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.11 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.12 2000/09/11 23:00:13 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -11,7 +11,8 @@ C     \==========================================================/
      I                       K, etaSurfX, etaSurfY,
      I                       myCurrentTime, myThid )
       IMPLICIT NONE
-! Common
+
+C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
