@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.39 2004/10/06 23:23:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.40 2004/10/07 00:12:28 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -10,6 +10,9 @@ C $Name:  $
      . albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
      . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      . o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
+     . iras,nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
+     . nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
+     . imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw,
      . duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - calls fizhi_driver.
@@ -61,6 +64,22 @@ C Argument list declarations
       _RL o3(im2,jm2,Nrphin,Nsxin,Nsyin)
       _RL qstr(im2,jm2,Nrphin,Nsxin,Nsyin)
       _RL co2,cfc11,cfc12,cfc22,n2o(Nrphin),methane(Nrphin)
+
+      integer iras,nlwcld,nlwlz,nswcld,nswlz
+      integer imstturbsw,imstturblw
+      _RL cldtot_lw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL cldras_lw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL cldlsp_lw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL lwlz(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL cldtot_sw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL cldras_sw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL cldlsp_sw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL swlz(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL qliqavesw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL qliqavelw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL fccavesw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL fccavelw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+
       _RL duphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL dvphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL dthphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -70,8 +89,6 @@ c Local Variables
       integer ptracer,ntracer
       parameter (ptracer = 1)
       parameter (ntracer = 1)
-      integer iras,nlwcld,nlwlz,nswcld,nswlz
-      integer imstturbsw,imstturblw
 
       _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy) 
       _RL p(sNx,sNy,Nsx,Nsy)
@@ -100,21 +117,9 @@ c Local Variables
       _RL tg0(sNx,sNy,Nsx,Nsy),radlwg(sNx,sNy,Nsx,Nsy)
       _RL lwgclr(sNx,sNy,Nsx,Nsy),st4(sNx,sNy,Nsx,Nsy)
       _RL dst4(sNx,sNy,Nsx,Nsy),dlwdtg(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL qq(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL rainlsp(sNx,sNy,Nsx,Nsy),raincon(sNx,sNy,Nsx,Nsy)
       _RL snowfall(sNx,sNy,Nsx,Nsy)
-      _RL cldtot_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL cldras_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL cldlsp_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL lwlz(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL cldtot_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL cldras_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL cldlsp_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL swlz(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL qliqavesw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL qliqavelw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL fccavesw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL fccavelw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL qq(sNx,sNy,Nrphys,Nsx,Nsy)
 
       integer i,j,L
       _RL getcon, kappa, p0kappa, s0, ra
@@ -129,15 +134,8 @@ c Local Variables
       common /saver/ moistu,moistv,moistt,moistq
       common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
       common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
-      common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
-      common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
-      common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
-      common /saver/ fccavelw
       common /saver/ qq
       common /saver/ pl,ple,dpres,pkle,pkl
-      common /saver/ nlwcld,nlwlz
-      common /saver/ nswcld,nswlz
-      common /saver/ iras
  
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -145,7 +143,7 @@ C***********************************************************************
 
       if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
        _BEGIN_MASTER(myid)
-       if(bi.eq.1) print *,' Initializing fizhi arrays '
+       if(myid.eq.1) print *,' Initializing fizhi arrays '
        _END_MASTER(myid)
        imstturblw = 0
        imstturbsw = 0
@@ -189,6 +187,7 @@ C***********************************************************************
         snowfall(i,j,bi,bj) = 0.
        enddo
        enddo
+
       endif
 
       kappa = getcon('KAPPA')
