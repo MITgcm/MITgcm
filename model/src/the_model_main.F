@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.85 2004/12/04 17:57:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.86 2004/12/10 19:56:31 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -527,11 +527,6 @@ c
                CALL CTRL_UNPACK( .TRUE. , mythid )
                CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',mythid)
             ENDIF
-            IF ( optimcycle.EQ.0 .AND. mycurrentiter.EQ.niter0 ) THEN
-               CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
-               CALL CTRL_PACK( .TRUE. , mythid )
-               CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
-            ENDIF
          ENDIF
       ENDIF
       _END_MASTER( mythid )
@@ -592,6 +587,11 @@ C--   Call time stepping loop of full model
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
          call CTRL_PACK( .FALSE. , mythid )
          CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
+         IF ( optimcycle.EQ.0 .AND. mycurrentiter.EQ.niter0 ) THEN
+            CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
+            CALL CTRL_PACK( .TRUE. , mythid )
+            CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
+         ENDIF
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
