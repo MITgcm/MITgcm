@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/input/Attic/gm_local,v 1.1 2003/08/16 14:01:09 edhill Exp $
+
+#  This is the local options file for the "new" version of genmake 
+#
+#  EH3 initial version 2003-08
+
+
+DISABLE="aim gmredi kpp obcs zonal_filt"
+

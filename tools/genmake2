@@ -1,0 +1,978 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.1 2003/08/16 14:01:08 edhill Exp $
+#
+# Makefile generator for MITgcm UV codes
+#   created  by cnh 03/98
+#   adapted  by aja 06/98
+#   modified by aja 01/00
+#   rewritten in bash by eh3 08/03
+
+
+# Guess possible config options for this host
+find_possible_configs()  {
+
+    p_PLATFORM=`uname`"-"`uname -m`
+    echo "The platform appears to be:"
+    echo "  "$p_PLATFORM
+
+    p_LN=
+    echo "test" > test
+    ln -s ./test link
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	p_LN="ln -s"
+    fi
+    rm -f test link
+
+    p_CPP=`which cpp`
+    
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	p_LN="ln -s"
+    fi
+    rm -f test link
+
+    # look for possible fortran compilers
+    p_FC=
+    for c in f77 g77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95 ; do
+	which $c > /dev/null 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    p_FC="$p_FC $c"
+	fi
+    done
+    echo "Possible FORTRAN compilers appear to be:  "
+    if test "x${p_FC}" = x ; then
+	echo "  None found!!!"
+    else
+	echo "  "$p_FC
+    fi
+
+    # look for possible MPI libraries
+    mpi_libs=
+    mpi_fort=`which mpif77 2>/dev/null`
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	cat >>test.f <<EOF
+      PROGRAM HELLO
+      DO 10, I=1,10
+      PRINT *,'Hello World'
+   10 CONTINUE
+      STOP
+      END
+EOF
+	eval "$mpi_fort -showme test.f > out"
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    a=`cat out`
+	    for i in $a ; do
+		case $i in 
+		    -*)
+			mpi_libs="$mpi_libs $i" ;;
+		esac
+	    done
+	    echo "The MPI libs appear to be:"
+	    echo "  "$mpi_libs
+	fi
+	rm -f test.f out
+    fi
+
+}
+
+parse_options()  {
+
+    ac_prev=
+    for ac_option in "${OPTIONS[@]}" ; do
+
+	# echo "ac_option = :$ac_option:"
+	
+        # If the previous option needs an argument, assign it.
+	if test -n "$ac_prev"; then
+	    eval "$ac_prev=\$ac_option"
+	    ac_prev=
+	    continue
+	fi
+	
+	ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
+	
+	case $ac_option in
+	    
+	    -help | --help | -h | --h)
+		usage ;;
+	    
+	    -nooptfile | --nooptfile)
+		OPTFILE="NONE" ;;
+	    -optfile | --optfile | -of | --of)
+		ac_prev=optfile ;;
+	    -optfile=* | --optfile=* | -of=* | --of=*)
+		OPTFILE=$ac_optarg ;;
+	    
+	    -pdepend | --pdepend)
+		ac_prev=pdepend ;;
+	    -pdepend=* | --pdepend=*)
+		PDEPEND=$ac_optarg ;;
+	    
+	    -pdefault | --pdefault)
+		ac_prev=pdefault ;;
+	    -pdefault=* | --pdefault=*)
+		PDEFAULT=$ac_optarg ;;
+	    
+	    -makefile | -ma)
+		ac_prev=makefile ;;
+	    --makefile=* | -ma=*)
+		MAKEFILE=$ac_optarg ;;
+	    
+	    -platform | --platform | -pl | --pl)
+		ac_prev=platform ;;
+	    -platform=* | --platform=* | -pl=* | --pl=*)
+		PLATFORM=$ac_optarg ;;
+
+	    -rootdir | --rootdir | -rd | --rd)
+		ac_prev=rootdir ;;
+	    -rootdir=* | --rootdir=* | -rd=* | --rd=*)
+		ROOTDIR=$ac_optarg ;;
+	    
+	    -mods | --mods | -mo | --mo)
+		ac_prev=mods ;;
+	    -mods=* | --mods=* | -mo=* | --mo=*)
+		MODS=$ac_optarg ;;
+	    
+	    -disable | --disable)
+		ac_prev=disable ;;
+	    -disable=* | --disable=*)
+		DISABLE=$ac_optarg ;;
+	    
+	    -enable | --enable)
+		ac_prev=enable ;;
+	    -enable=* | --enable=*)
+		ENABLE=$ac_optarg ;;
+	    
+	    -noopt | --noopt)
+		ac_prev=noopt ;;
+	    -noopt=* | --noopt=*)
+		NOOPT=$ac_optarg ;;
+	    
+#	    -cpp | --cpp)
+#		ac_prev=cpp ;;
+#	    -cpp=* | --cpp=*)
+#		CPP=$ac_optarg ;;
+	    
+	    -fortran | --fortran | -fc | --fc)
+		ac_prev=fc ;;
+	    -fc=* | --fc=*)
+		FC=$ac_optarg ;;
+	    
+	    -ieee | --ieee)
+		IEEE=1 ;;
+	    -noieee | --noieee)
+		IEEE=0 ;;
+	    
+	    -mpi | --mpi)
+		MPI=1 ;;
+	    -nompi | --nompi)
+		MPI=0 ;;
+	    
+	    -jam | --jam)
+		JAM=1 ;;
+	    -nojam | --nojam)
+		JAM=0 ;;
+	    
+	    -*)
+		echo "Error: unrecognized option: "$ac_option
+		usage
+		;;
+	    
+	    *)
+		echo "Error: unrecognized argument: "$ac_option
+		usage
+		;;
+	    
+	esac
+	
+    done
+}
+
+#  Parse the package dependency information
+get_pdepend_list()  {
+
+    #  strip the comments and then convert the dependency file into
+    #  two arrays: PNAME, DNAME
+    cat $1 | sed -e 's/#.*$//g' \
+	| awk 'BEGIN{nn=0;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
+	> ./.pd_tmp
+    source ./.pd_tmp
+    rm -f ./.pd_tmp
+
+    echo -n "PNAME = "${}
+}
+
+
+#  Explain usage
+usage()  {
+    echo ""
+    echo "Usage: "$0" [OPTIONS]"
+    echo "  where [OPTIONS] can be:"$'\n'
+    echo "    -help | --help | -h | --h"
+    echo "    -nooptfile | --nooptfile"
+    echo "      -optfile NAME | --optfile NAME | -of NAME | --of NAME"
+    echo "      -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME"
+    echo "    -pdepend NAME | --pdepend NAME"
+    echo "      -pdepend=NAME | --pdepend=NAME"
+    echo "    -pdefault NAME | --pdefault NAME"
+    echo "      -pdefault=NAME | --pdefault=NAME"
+    echo "    -makefile NAME | -ma NAME"
+    echo "      --makefile=NAME | -ma=NAME"
+    echo "    -platform NAME | --platform NAME | -pl NAME | --pl NAME"
+    echo "      -platform=NAME | --platform=NAME | -pl=NAME | --pl=NAME"
+    echo "    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME"
+    echo "      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME"
+    echo "    -mods NAME | --mods NAME | -mo NAME | --mo NAME"
+    echo "      -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME"
+    echo "    -disable NAME | --disable NAME"
+    echo "      -disable=NAME | --disable=NAME"
+    echo "    -enable NAME | --enable NAME"
+    echo "      -enable=NAME | --enable=NAME"
+    echo "    -noopt NAME | --noopt NAME"
+    echo "      -noopt=NAME | --noopt=NAME"
+#    echo "    -cpp NAME | --cpp NAME"
+#    echo "      -cpp=NAME | --cpp=NAME"
+    echo "    -fortran NAME | --fortran NAME | -fc NAME | --fc NAME"
+    echo "      -fc=NAME | --fc=NAME"
+    echo "    -[no]ieee | --[no]ieee"
+    echo "    -[no]mpi | --[no]mpi"
+    echo "    -[no]jam | --[no]jam"$'\n'
+    echo "  and NAME is a string such as:"$'\n'
+    echo "    --enable pkg1   --enable 'pkg1 pkg2'   --enable 'pkg1 pkg2 pkg3'"
+    echo "    -mods=dir1   -mods='dir1'   -mods='dir1 dir2 dir3'"
+    echo "    -foptim='-Mvect=cachesize:512000,transform -xtypemap=real:64,double:64,integer:32'"$'\n'
+    echo "  which, depending upon your shell, may need to be single-quoted"
+    echo "  if it contains spaces, dashes, or other special characters."
+    exit 1
+}
+
+# Dump all important state
+dump_state()  {
+    fname=$1
+    echo " " > $fname
+    RETVAL=$?
+    if test "x${RETVAL}" = x ; then
+	echo "Error: cannot write to $fname"
+	exit 1
+    fi
+    echo "makefile "$makefile > $fname
+}
+
+
+#eh3 # This is the generic configuration.
+#eh3 set LN         = ( 'ln -s' )
+#eh3 set CPP        = ( '/lib/cpp -P' )
+#eh3 set S64        = ( '$(TOOLSDIR)/set64bitConst.sh' )
+#eh3 set KPP        = (  )
+#eh3 set FC         = ( 'f77' )
+#eh3 set LINK       = $FC
+#eh3 set MAKEDEPEND = ( 'makedepend' )
+#eh3 set INCLUDES   = ( -I. )
+#eh3 set FFLAGS     = (  )
+#eh3 set FOPTIM     = (  )
+#eh3 set CFLAGS     = (  )
+#eh3 set KFLAGS1    = (  )
+#eh3 set KFLAGS2    = (  )
+#eh3 set LIBS       = (  )
+#eh3 set KPPFILES   = (  )
+#eh3 if (! $?NOOPTFILES ) set NOOPTFILES = (  )
+#eh3 if (! $?NOOPTFLAGS ) set NOOPTFLAGS = (  )
+
+#  Set defaults here
+PLATFORM=
+LN=
+S64=
+KPP=
+FC=
+LINK=
+PACKAGES=
+ENABLE=
+DISABLE=
+MAKEFILE=
+MAKEDEPEND=
+PDEPEND=
+PDEFAULT=
+OPTFILE=
+INCLUDES=-I.
+FFLAGS=
+FOPTIM=
+CFLAGS=
+KFLAGS1=
+KFLAGS2=
+LIBS=
+KPPFILES=
+NOOPTFILES=
+NOOPTFLAGS=
+
+MODS=
+TOOLSDIR=
+SOURCEDIRS=
+INCLUDEDIRS=
+
+PWD=`pwd`
+MAKE=make
+THISHOSTNAME=`hostname`
+THISCWD=`pwd`
+THISDATE=`date`
+MACHINE=`uname -a`
+
+echo $'\n'"===  Processing options files and arguments  ==="
+gm_local="./gm_local"
+echo -n "  getting local config information:  "
+if test -e $gm_local ; then
+    echo "using $gm_local"
+    source $gm_local
+    echo "DISABLE=$DISABLE"$'\n'"ENABLE=$ENABLE"
+else
+    echo "none found"
+fi
+
+#  echo "$0::$1:$2:$3:$4:$5:$6:$7:"
+OPTIONS=()
+n=0
+for i ; do 
+   setvar="OPTIONS[$n]='$i'"
+   #  echo "  $setvar"
+   eval "$setvar"
+   n=$(( $n + 1 ))
+done
+parse_options
+
+echo "  getting OPTFILE information:  "
+if test "x${OPTFILE}" = x ; then
+    echo "Warning: no OPTFILE specified so we'll look for possible settings"
+    echo $'\n'"===  Searching for possible settings for OPTFILE  ==="
+    find_possible_configs
+else
+    if test "x$OPTFILE" = xNONE ; then
+	echo "    OPTFILE=NONE so we'll try to use default settings"
+    else
+	if test -f "$OPTFILE" -a -r "$OPTFILE" ; then
+	    echo "    using OPTFILE=\"$OPTFILE\""
+	    source "$OPTFILE"
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
+		echo "--please check that variable syntax is bash-compatible"
+		exit 1
+	    fi
+	else
+	    echo "Error: can't read OPTFILE=\"$OPTFILE\""
+	    exit 1
+	fi
+    fi
+fi
+
+echo $'\n'"===  Setting defaults  ==="
+echo -n "  Adding MODS directories:  "
+for d in $MODS ; do
+    if test ! -d $d ; then
+	echo $'\n\n'"Error: MODS directory \"$d\" not found!"
+	exit 1
+    else
+	echo -n " $d"
+	SOURCEDIRS="$SOURCEDIRS $d"
+	INCLUDEDIRS="$INCLUDEDIRS $d"
+    fi
+done
+echo
+
+if test "x$MAKEFILE" = x ; then
+    MAKEFILE="Makefile"
+fi
+if test "x${PLATFORM}" = x ; then
+    PLATFORM=$p_PLATFORM
+fi
+
+if test "x${ROOTDIR}" = x ; then
+    if test "${PWD##/*/}" = "bin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
+	ROOTDIR=".."
+    else
+	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
+	    if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
+		ROOTDIR=$d
+		echo -n "Warning:  ROOTDIR was not specified but there appears to be"
+		echo " a copy of MITgcm at \"$ROOTDIR\" so we'll try it."
+		break
+	    fi
+	done
+    fi
+fi
+if test "x${ROOTDIR}" = x ; then
+    echo "Error: Cannot determine ROOTDIR for MITgcm code."
+    echo "  Please specify a ROOTDIR using either an options "
+    echo "  file or a command-line option."
+    exit 1
+fi
+if test ! -d ${ROOTDIR} ; then
+    echo "Error: the specified ROOTDIR (\"$ROOTDIR\") does not exist!"
+    exit 1
+fi
+
+if test "x${EXEDIR}" = x ; then
+    if test "${PWD##/*/}" = "bin" -a -d ../exe -a $ROOTDIR = .. ; then
+	EXEDIR=../exe
+    else
+	EXEDIR=.
+    fi
+fi
+if test ! -d ${EXEDIR} ; then
+    echo "Error:  the specified EXEDIR (\"$EXEDIR\") does not exist!"
+    exit 1
+fi
+
+if test "x${TOOLSDIR}" = x ; then
+    TOOLSDIR="$ROOTDIR/tools"
+fi
+if test ! -d ${TOOLSDIR} ; then
+    echo "Error: the specified $TOOLSDIR (\"$TOOLSDIR\") does not exist!"
+    exit 1
+fi
+
+EXECUTABLE=${EXECUTABLE:-mitgcmuv}
+
+#  We have a special set of source files in eesupp/src which are
+#  generated from some template source files. We'll make them first so
+#  they appear as regular source code
+if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
+    echo "  Making source files in eesupp from templates"
+    $MAKE -C $ROOTDIR"/eesupp/src/" > make_eesupp.errors 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" == "x0" ; then
+	rm -f make_eesupp.errors
+    else
+	echo "Error: problem encountered while building source files in eesupp:"
+	cat make_eesupp.errors
+	exit 1
+    fi
+fi
+
+echo $'\n'"===  Determining package settings  ==="
+if  test "x${PDEPEND}" = x ; then
+    tmp=$ROOTDIR"/pkg/pkg_depend"
+    if test -r $tmp ; then
+	PDEPEND=$tmp
+    else
+	echo "Warning:  No package dependency information was specified."
+	echo "  Please check that ROOTDIR/pkg/pkg_depend exists."
+    fi
+else
+    if test ! -r ${PDEPEND} ; then
+	echo "Error:  can't read package dependency info from PDEPEND=\"$PDEPEND\""
+	exit 1
+    fi
+fi
+echo "  getting package dependency info from  $PDEPEND"
+#  Strip the comments and then convert the dependency file into
+#  two arrays: PNAME, DNAME
+cat $PDEPEND | sed -e 's/#.*$//g' \
+    | awk 'BEGIN{nn=-1;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
+    > ./.pd_tmp
+RETVAL=$?
+if test ! "x${RETVAL}" = x0 ; then
+    echo "Error: unable to parse package dependencies -- please check PDEPEND=\"$PDEPEND\""
+    exit 1
+fi
+source ./.pd_tmp
+rm -f ./.pd_tmp
+
+echo  -n "  checking default package list:  "
+if test "x${PDEFAULT}" = x ; then
+    PDEFAULT="$ROOTDIR/pkg/pkg_default"
+fi
+if test "x${PDEFAULT}" = xNONE ; then
+    echo "default packages file disabled"
+else
+    if test ! -r $PDEFAULT ; then
+	echo ""
+	echo "Warning:  can't read default packages from PDEFAULT=\"$PDEFAULT\""
+    else
+	echo "  using PDEFAULT=\"$PDEFAULT\""
+        #  Strip the comments and add all the names
+	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | awk '(NF>0){print $0}'`
+	RETVAL=$?
+	if test "x${RETVAL}" != x0 ; then
+	    echo -n "Error: can't parse default package list "
+	    echo "-- please check PDEFAULT=\"$PDEFAULT\""
+	    exit 1
+	fi
+	for i in $def ; do
+	    PACKAGES="$PACKAGES $i"
+	done
+	echo "    packages are:  $PACKAGES"
+    fi
+fi
+
+echo "  applying DISABLE settings"
+pack=
+for p in $PACKAGES ; do
+    addit="t"
+    for d in $DISABLE ; do
+	if test "x$p" = "x$d" ; then
+	    addit="f"
+	fi
+    done
+    if test "x$addit" = xt ; then
+	pack="$pack $p"
+    fi
+done
+PACKAGES="$pack"
+echo "  applying ENABLE settings"
+rm -f ./.tmp_pack
+PACKAGES="$PACKAGES $ENABLE"
+for i in $PACKAGES ; do
+    if test ! -d "$ROOTDIR/pkg/$i" ; then
+	echo "Error: can't find package $i at \"$ROOTDIR/pkg/$i\""
+	exit 1
+    fi
+    echo $i >> ./.tmp_pack
+done
+pack=`cat ./.tmp_pack | sort | uniq`
+rm -f ./.tmp_pack
+PACKAGES=
+for i in $pack ; do
+    PACKAGES="$PACKAGES $i"
+done
+echo "    packages are:  $PACKAGES"
+
+echo "  applying package dependency rules"
+ck=
+while test "x$ck" != xtt ; do
+    i=0
+    rtot=${#PNAME[@]}
+    while test $i -lt $rtot ; do
+
+	#  Is $pname in the current $PACKAGES list?
+	pname=${PNAME[$i]}
+	pin="f"
+	for p in $PACKAGES ; do
+	    if test "x$p" = "x$pname" ; then
+		pin="t"
+	    fi
+	done
+
+	#  Is the DNAME entry a (+) or (-) rule ?
+	plus="-"
+	echo "${DNAME[$i]}" | grep '^+' > /dev/null 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" = x0 ; then
+	    plus="+"
+	fi
+
+	#  Is $dname in the current $PACKAGES list?
+	dname=`echo ${DNAME[$i]} | sed -e 's/^[+-]//'`
+	din="f"
+	for p in $PACKAGES ; do
+	    if test "x$p" = "x$dname" ; then
+		din="t"
+	    fi
+	done
+
+	#  Do we need to add $dname according to the dependency rules?
+	if test "x$pin" = xt -a "x$plus" = "x+" -a "x$din" = xf ; then
+	    in_dis="f"
+	    for dis in $DISABLE ; do
+		if test "x$dis" = "x$dname" ; then
+		    in_dis="t"
+		fi
+	    done
+	    if test "x$in_dis" = xt ; then
+		echo "Error: can't satisfy package dependencies:"
+		echo "  \"$dname\" is required by the dependency rules"
+		echo "  but is disallowed by the DISABLE settings"
+		exit 1
+	    else
+		PACKAGES="$PACKAGES $dname"
+		ck=
+	    fi
+	fi
+
+	#  Do we need to get rid of $dname according to the dependency rules?
+	if test "x$pin" = xt -a "x$plus" = "x-" -a "x$din" = xt; then
+	    echo "Error: can't satisfy package dependencies:"
+	    echo "  \"$pname\" was requested but is disallowed by" 
+	    echo "  the dependency rules for \"$dname\""
+	    exit 1
+	fi
+	i=$(( $i + 1 ))
+    done
+    ck=$ck"t"
+done
+echo "    packages are:  $PACKAGES"
+for i in $PACKAGES ; do
+    adr="$ROOTDIR/pkg/$i"
+    if test -d $adr ; then
+	SOURCEDIRS="$SOURCEDIRS $adr"
+	INCLUDEDIRS="$INCLUDEDIRS $adr"
+    else
+	echo "Error: the directory \"$adr\" for package $i doesn't exist"
+	exit 1
+    fi
+done
+
+#  This is compatible with the old genmake.  The "DISABLE_*" flags
+#  need to be replaced by the "ALLOW_*" flags set below.
+#
+# echo -n "  Setting package-specific CPP flags:  "
+# pkrm=( mom_fluxform mom_vecinv generic_advdiff )
+# pkrmdef=( -DDISABLE_MOM_FLUXFORM -DDISABLE_MOM_VECINV -DDISABLE_GENERIC_ADVDIFF -DDISABLE_DEBUGMODE )
+# echo -n "  "
+# i=0
+# while test $i -lt "${#pkrm[@]}" ; do
+#     echo "$PACKAGES" | grep "${pk[$i]}" > /dev/null 2>&1
+#     RETVAL=$?
+#     if test "x$RETVAL" = x1 ; then
+# 	DEFINES="$DEFINES ${pkdef[$i]}"
+# 	echo -n " ${pkdef[$i]}"
+#     fi
+#     i=$(( $i + 1 ))
+# done
+# echo
+
+echo "  Setting package-specific CPP flags in CPP_OPTIONS.h:"
+CPP_OPTIONS=
+spaths=". $SOURCEDIRS"
+for i in $spaths ; do
+    try="$i/CPP_OPTIONS.h"
+    #  echo -n "    trying $try : "
+    if test -f $try -a -r $try ; then
+	echo "    found CPP_OPTIONS=\"$try\""
+	CPP_OPTIONS="$try"
+	if test "x$i" != "x." ; then
+	    cp -f $CPP_OPTIONS .
+	fi
+	break
+    fi
+done
+if test "x$CPP_OPTIONS" = x ; then
+    echo "Error: can't find \"CPP_OPTIONS.h\" in the path list: $spaths"
+    exit 1
+fi
+if test -e CPP_OPTIONS.h ; then
+    if test ! -e CPP_OPTIONS.h.bak ; then
+	cp -f CPP_OPTIONS.h CPP_OPTIONS.h.bak
+    fi
+    cat CPP_OPTIONS.h \
+	| awk 'BEGIN{p=1;} ($1=="C===" && $2=="GENMAKE"){p=0;} {if (p==1) print $0}' \
+	> CPP_OPTIONS.h.tmp
+fi
+cat <<EOF >>CPP_OPTIONS.h.tmp
+C=== GENMAKE v2 ===
+C  The following defines have been set by GENMAKE, so please edit 
+C  them only if you know what you're doing.  In general, you should
+C  add or remove packages by re-running genmake with different 
+C  "-enable" and/or "-disable" options.
+
+C  Packages disabled by genmake:
+EOF
+#  The following UGLY HACK sets multiple "#undef"s and it needs to go 
+#  away.  On 2003-08-12, CNH, JMC, and EH3 agreed that the CPP_OPTIONS.h 
+#  file would eventually be split up so that all package-related #define
+#  statements could be separated and handled only by genmake.
+names=`ls -1 "$ROOTDIR/pkg"`
+all_pack=
+for n in $names ; do
+    if test -d "$ROOTDIR/pkg/$n" -a "x$n" != xCVS ; then
+	has_pack="f"
+	for pack in $PACKAGES ; do
+	    if test "x$pack" = "x$n" ; then
+		has_pack="t"
+		break
+	    fi
+	done
+	if test "x$has_pack" = xf ; then
+	    undef=`echo "ALLOW_$n" | awk '{print toupper($0)}'`
+	    echo "#undef $undef" >> CPP_OPTIONS.h.tmp
+
+#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
+	    case $n in 
+		mom_fluxform)
+		    DEFINES="$DEFINES -DDISABLE_MOM_FLUXFORM"
+		    ;;
+		mom_vecinv)
+		    DEFINES="$DEFINES -DDISABLE_MOM_VECINV"
+		    ;;
+		generic_advdiff)
+		    DEFINES="$DEFINES -DDISABLE_GENERIC_ADVDIFF"
+		    ;;
+		debug)
+		    DEFINES="$DEFINES -DDISABLE_DEBUGMODE"
+		    ;;
+	    esac
+#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
+
+	fi
+    fi
+done
+cat <<EOF >>CPP_OPTIONS.h.tmp
+
+C  Packages enabled by genmake:
+EOF
+for i in $PACKAGES ; do
+    def=`echo "ALLOW_$i" | awk '{print toupper($0)}'`
+    echo "#define $def" >> CPP_OPTIONS.h.tmp
+
+#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
+    case $i in 
+	aim_v23)
+	    echo "#define   ALLOW_AIM" >> CPP_OPTIONS.h.tmp
+	    ;;
+    esac
+#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
+
+done
+mv -f CPP_OPTIONS.h.tmp CPP_OPTIONS.h
+
+echo "  Adding STANDARDDIRS"
+BUILDDIR=${BUILDDIR:-.}
+STANDARDDIRS=${STANDARDDIRS:-"eesupp model"}
+for d in $STANDARDDIRS ; do
+    adr="$ROOTDIR/$d/src"
+    if test ! -d $adr ; then
+	echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	echo "  is correct and that you correctly specified the STANDARDDIRS option"
+	exit 1
+    else
+	SOURCEDIRS="$SOURCEDIRS $adr"
+    fi
+    adr="$ROOTDIR/$d/inc"
+    if test ! -d $adr ; then
+	echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	echo "  is correct and that you correctly specified the STANDARDDIRS option"
+	exit 1
+    else
+	INCLUDEDIRS="$INCLUDEDIRS $adr"
+    fi
+done
+
+
+echo $'\n'"===  Creating the Makefile  ==="
+echo "  setting INCLUDES"
+for i in $INCLUDEDIRS ; do
+    if test -d $i ; then
+	INCLUDES="$INCLUDES -I$i"
+    else
+	echo "Warning: can't find INCLUDEDIRS=\"$i\""
+    fi
+done
+
+echo "  Determining the list of source and include files"
+rm -rf .links.tmp
+mkdir .links.tmp
+echo "# This section creates symbolic links" > srclinks.tmp
+echo "" >> srclinks.tmp
+echo -n 'SRCFILES = ' > srclist.inc
+echo -n 'CSRCFILES = ' > csrclist.inc
+echo -n 'HEADERFILES = ' > hlist.inc
+alldirs=". $SOURCEDIRS $INCLUDEDIRS"
+for d in $alldirs ; do
+    deplist=
+    sfiles=`( cd $d; echo *.[h,c,F] )`
+    for sf in $sfiles ; do
+	if test ! -r ".links.tmp/$sf" ; then
+	    if test -f "$d/$sf" ; then
+		extn=`echo $sf | awk -F '.' '{print $NF}'`
+		touch .links.tmp/$sf
+		deplist="$deplist $sf"
+		case $extn in
+		    F)
+			echo    " \\"  >> srclist.inc
+			echo -n " $sf" >> srclist.inc
+			;;
+		    c)
+			echo    " \\"  >> csrclist.inc
+			echo -n " $sf" >> csrclist.inc
+			;;
+		    h)
+			echo    " \\"  >> hlist.inc
+			echo -n " $sf" >> hlist.inc
+			;;
+		esac
+	    fi
+	fi
+    done
+    if test "x$deplist" != x ; then
+	echo $'\n'"#  These files are linked from $d" >> srclinks.tmp
+	echo "$deplist :" >> srclinks.tmp
+	echo $'\t$(LN) '$d'/$@ $@' >> srclinks.tmp
+    fi
+done
+rm -rf .links.tmp
+echo "" >> srclist.inc
+echo "" >> csrclist.inc
+echo "" >> hlist.inc
+
+if test -e $MAKEFILE ; then
+    mv -f $MAKEFILE "$MAKEFILE.bak"
+fi
+echo "  Writing makefile: $MAKEFILE"
+echo "# Multithreaded + multi-processing makefile for:" > $MAKEFILE
+echo "#    $MACHINE" >> $MAKEFILE
+echo "# This makefile was generated automatically on" >> $MAKEFILE
+echo "#    $THISDATE" >> $MAKEFILE
+echo "# by the command:" >> $MAKEFILE
+echo "#    $0 $@" >> $MAKEFILE
+echo "# executed by:" >> $MAKEFILE
+echo "#    $USER@${THISHOSTNAME}:${THISCWD}" >> $MAKEFILE
+cat >>$MAKEFILE <<EOF
+# 
+# BUILDDIR     : Directory where object files are written
+# SOURCEDIRS   : Directories containing the source (.F) files
+# INCLUDEDIRS  : Directories containing the header-source (.h) files
+# EXEDIR       : Directory where executable that is generated is written
+# EXECUTABLE   : Full path of executable binary
+#
+# CPP          : C-preprocessor command
+# INCLUDES     : Directories searched for header files
+# DEFINES      : Macro definitions for CPP
+# MAKEDEPEND   : Dependency generator
+# KPP          : Special preprocessor command (specific to platform)
+# KFLAGS       : Flags for KPP
+# FC           : Fortran compiler command
+# FFLAGS       : Configuration/debugging options for FC
+# FOPTIM       : Optimization options for FC
+# LINK         : Command for link editor program
+# LIBS         : Library flags /or/ additional optimization/debugging flags
+
+ROOTDIR     = ${ROOTDIR}
+BUILDDIR    = ${BUILDDIR}  
+SOURCEDIRS  = ${SOURCEDIRS}
+INCLUDEDIRS = ${INCLUDEDIRS}
+EXEDIR      = ${EXEDIR}
+EXECUTABLE  = \$(EXEDIR)/${EXECUTABLE}
+TOOLSDIR    = ${TOOLSDIR}
+
+EOF
+
+#  Note: figure out some way to add Hyades JAM libraries here
+ 
+cat >>$MAKEFILE <<EOF
+# Unix ln (link)
+LN = ${LN}
+# C preprocessor
+CPP = cat \$< | ${S64} | ${CPP}
+# Dependency generator
+MAKEDEPEND = ${MAKEDEPEND}
+# Special preprocessor (KAP on DECs, FPP on Crays)
+KPP = ${KPP}
+# Fortran compiler
+FC = ${FC}
+# Link editor
+LINK = ${LINK}
+
+# Defines for CPP
+DEFINES = ${DEFINES}
+# Includes for CPP
+INCLUDES = ${INCLUDES}
+# Flags for KPP
+KFLAGS1 = ${KFLAGS1}
+KFLAGS2 = ${KFLAGS2}
+# Optim./debug for FC
+FFLAGS = ${FFLAGS}
+FOPTIM = ${FOPTIM}
+# Flags for CC
+CFLAGS = ${CFLAGS}
+# Files that should not be optimized
+NOOPTFILES = ${NOOPTFILES}
+NOOPTFLAGS = ${NOOPTFLAGS}
+# Flags and libraries needed for linking
+LIBS = ${LIBS} \$(XLIBS)
+
+EOF
+
+cat srclist.inc  >> $MAKEFILE
+cat csrclist.inc >> $MAKEFILE
+cat hlist.inc >> $MAKEFILE
+echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> $MAKEFILE
+echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> $MAKEFILE
+
+rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp
+
+cat >>$MAKEFILE <<EOF
+
+.SUFFIXES:
+.SUFFIXES: .o .f .p .F .c
+
+all: \$(EXECUTABLE)
+\$(EXECUTABLE): \$(OBJFILES)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
+depend:
+	@make links
+	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+
+links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
+
+small_f: \$(F77FILES)
+
+output.txt: \$(EXECUTABLE)
+	@printf 'running ... '
+	@\$(EXECUTABLE) > \$@
+
+clean:
+	-rm -rf *.o *.f *.p ${RMFILES} work.{pc,pcl}
+Clean:
+	@make clean
+	@make cleanlinks
+	-rm -f Makefile.bak
+CLEAN:
+	@make Clean
+	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
+	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
+	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
+	-rm -f \$(EXECUTABLE)
+
+makefile:
+	${0} $@
+cleanlinks:
+	-find . -type l -exec rm {} \;
+
+# The normal chain of rules is (  .F - .f - .o  )
+.F.f:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+.f.o:
+	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+.c.o:
+	\$(CC) \$(CFLAGS) -c \$<
+
+# Special exceptions that use the ( .F - .p - .f - .o ) rule-chain
+.F.p:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+.p.f:
+	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
+
+EOF
+
+echo "  Making list of \"exceptions\" that need \".p\" files"
+for i in $KPPFILES ; do
+    base=`echo $i | sed -e 's/\/.*\///g' | sed -e 's/\..*$//g'`
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	echo "Error: unable to add file \"$i\" to the exceptions list"
+    fi
+    echo "$base.f: $base.p" >> $MAKEFILE
+done
+
+echo "  Making list of NOOPTFILES"
+for i in $NOOPTFILES ; do
+    base=`echo $i | sed -e 's/\/.*\///g' | sed -e 's/\..*$//g'`
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	echo "Error: unable to add file \"$i\" to the exceptions list"
+    fi
+    echo "$base.o: $base.f" >> $MAKEFILE
+    echo $'\t$(FC) $(FFLAGS) $(NOOPTFLAGS) -c $<' >> $MAKEFILE
+done
+
+echo "  Add rules for links"
+cat srclinks.tmp >> $MAKEFILE
+rm -f srclinks.tmp
+
+echo "  Adding makedepend marker"
+echo $'\n\n'"# DO NOT DELETE" >> $MAKEFILE
+
+echo $'\n'"===  Done  ==="

@@ -1,0 +1,6 @@
+FC='f90'
+LINK='f90'
+LN='/bin/ln -s'
+CPP='/opt/ctl/bin/cpp -N -P'
+FOPTIM='-O0'
+NOOPTFLAGS='-O0'

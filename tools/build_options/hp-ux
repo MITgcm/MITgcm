@@ -1,0 +1,3 @@
+CPP='/usr/ccs/lbin/cpp -P'
+FOPTIM='+O2'
+NOOPTFLAGS='+O0'

@@ -1,0 +1,4 @@
+INCLUDES='-I/usr/include'
+FFLAGS='-n32 -extend_source -bytereclen'
+FOPTIM='-O0'
+LIBS='-lmpi'

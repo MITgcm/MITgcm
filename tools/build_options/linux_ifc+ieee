@@ -1,0 +1,7 @@
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+FOPTIM='-O3 -align'
+#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
+#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
+LIBS='-lPEPCF90'

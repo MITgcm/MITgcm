@@ -1,0 +1,6 @@
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FC='g77'
+FFLAGS=' '
+FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
+LINK='g77'

@@ -1,0 +1,8 @@
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FC='/opt/mpich/bin/mpif77'
+LINK='/opt/mpich/bin/mpif77'
+FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+LIBS='-L/opt/mpich/lib/ -lfmpich -lmpich'
+INCLUDES='-I/opt/mpich/include'

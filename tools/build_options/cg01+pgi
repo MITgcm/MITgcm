@@ -1,0 +1,8 @@
+LN='/bin/ln -s'
+CPP='/lib/cpp -traditional -P'
+INCLUDES='-I/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
+FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
+FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+#    set LIBS       = ( '-L/home/cnh/src/gm-1.4/libgm')
+FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+LINK='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'

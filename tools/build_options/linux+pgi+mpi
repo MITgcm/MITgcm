@@ -1,0 +1,4 @@
+INCLUDES='-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include'
+LIBS='-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich'
+INCLUDES='-I/usr/local/include'
+LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'

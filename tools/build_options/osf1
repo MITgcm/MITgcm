@@ -1,0 +1,8 @@
+CPP='/usr/bin/cpp -P'
+#ph: makedepend not available on some/many DEC Alpha's; use mkdep instead
+FC='f77'
+FFLAGS='-convert big_endian -r8 -extend_source -automatic -call_shared -notransform_loops -align dcommons'
+FOPTIM='-O5 -fast -tune host -inline all'
+#ph: -O5 probably too aggressive in conjunction with adjoint code
+NOOPTFLAGS='-O0'
+RMFILES='*.p.out'

@@ -1,0 +1,3 @@
+#ph: e.g. halem.gsfc.nasa.gov
+LIBS='-lfmpi -lmpi -lkmp_osfp10 -pthread'
+#ph: -lkmp_osfp10 not needed on some/many platforms

@@ -1,0 +1,6 @@
+INCLUDES='-I/usr/local/mpi/include'
+FFLAGS='-extend_source -mp -mpio -bytereclen -r10000 -mips4 -r8 -static'
+FOPTIM='-O3'
+FFLAGS='-extend_source -mp -mpio -bytereclen -r10000 -mips4 -static'
+FOPTIM='-O0 -OPT:IEEE_arithmetic=1 -OPT:IEEE_NaN_inf=ON'
+RMFILES='rii_files'

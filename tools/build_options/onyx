@@ -1,0 +1,5 @@
+FFLAGS='-extend_source -bytereclen -r10000 -64'
+FOPTIM='-O2'
+NOOPTFLAGS='-O0'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
+LIBS='-lmpi'

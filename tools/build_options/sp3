@@ -1,0 +1,14 @@
+# originally from A. Biastoch, SIO.
+# e.g. horizon.npaci.edu
+LN='ln -s'
+INCLUDES='-I/usr/lpp/ppe.poe/include'
+#    set CPP        = ( '/lib/cpp' )
+FC='mpxlf95'
+LINK='mpxlf95'
+LIBS=' -L/usr/local/apps/mass -lmass'
+#   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
+#    set FOPTIM     = ( '-O3' )
+#   set NOOPTFLAGS = ( '-O0' )
+#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+#                      'external_fields_load.F' )
+RMFILES='rii_files'

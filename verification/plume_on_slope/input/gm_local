@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/plume_on_slope/input/Attic/gm_local,v 1.1 2003/08/16 14:01:09 edhill Exp $
+
+#  This is the local options file for the "new" version of genmake 
+#
+#  EH3 initial version 2003-08
+
+
+DISABLE="aim gmredi zonal_filt"
+
+ENABLE="kpp shap_filt obcs timeave"

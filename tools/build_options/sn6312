@@ -1,0 +1,3 @@
+FC='f90'
+LINK='f90'
+FFLAGS='-O 2,fusion'

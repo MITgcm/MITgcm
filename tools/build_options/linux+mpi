@@ -1,0 +1,2 @@
+LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'
+INCLUDES='-I/usr/local/include'

@@ -1,0 +1,27 @@
+#
+#  This is the list of packages that genmake will, by default, add to MITgcm.
+#
+#  To override this list, please specify a different file to genmake using, for 
+#  instance:
+#
+#    genmake --pdefault=/some/other/defaults_file
+#
+
+
+# JMC says that aim, aim_v23, land should be off by default
+# bulk_forcing
+debug
+generic_advdiff
+gmredi
+kpp
+mdsio
+mom_fluxform
+mom_vecinv
+monitor
+obcs
+rw
+sbo
+shap_filt
+timeave
+zonal_filt
+

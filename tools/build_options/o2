@@ -1,0 +1,3 @@
+FFLAGS='-extend_source -bytereclen -r10000 -mips4'
+FOPTIM='-O2'
+NOOPTFLAGS='-O0'

@@ -1,0 +1,45 @@
+#
+#  $ID$
+#
+
+#  This file contains a terse list of package dependencies that
+#  specify which packages either must be or must not be compiled
+#  simultaneously.  The format is:
+#
+#    package0   +package1 -package2
+#  
+#  where:
+#
+#    "+" ==> "must be used"
+#    "-" ==> "must not be used"
+#
+#  The default behavior (that is, nothing specified) assumes that any
+#  two packages can be compiled together.
+
+
+aim		-aim_v23
+aim_v23		-aim
+
+#  Ask PH about the following:
+#    cal cost ctrl ecco exf grdchk
+
+#  Ask Steph about:
+#    dic gchem
+
+#  Ask AJA about:
+#    flt
+
+#  According to JMC, the following probably don't have any dependencies
+generic_advdiff
+gmredi
+
+#  Known dependencies
+shap_filt	+mom_vecinv
+seaice		-therm_seaice
+therm_seaice	-seaice
+exf		-bulk_force
+bulk_force	-exf
+
+#  Need more information on the following:
+
+obcs

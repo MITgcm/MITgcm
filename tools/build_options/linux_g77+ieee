@@ -1,0 +1,5 @@
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+FOPTIM='-O3 -malign-double -funroll-loops'
+NOOPTFLAGS='-O0'

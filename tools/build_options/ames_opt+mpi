@@ -1,0 +1,6 @@
+INCLUDES='-I/usr/include -I/opt/mpt/1.6.1.beta/usr/include'
+FFLAGS='-n32 -extend_source -bytereclen'
+FOPTIM='-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed'
+LIBS='-lmpi -lscs'
+FC='f90'
+LINK='f90'

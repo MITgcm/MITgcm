@@ -1,0 +1,6 @@
+LN='/usr/bin/ln -s'
+CPP='/usr/ccs/lib/cpp -P'
+INCLUDES='-I/usr/local/mpi/include'
+FFLAGS='-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0'
+FOPTIM='-dalign -O3 -xarch=v9'
+NOOPTFLAGS='-dalign -O0 -xarch=v9'

@@ -1,0 +1,6 @@
+INCLUDES='-I/usr/local/mpi/include'
+FC='mpif77'
+LINK='mpif77'
+FFLAGS='-extend_source -bytereclen -r10000 -mips4'
+FOPTIM='-O3'
+RMFILES='rii_files'

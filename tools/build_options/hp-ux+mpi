@@ -1,0 +1,3 @@
+FC='mpif77'
+LINK='mpif77'
+INCLUDES='-I/opt/mpi/include'

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/input/Attic/gm_local,v 1.1 2003/08/16 14:01:08 edhill Exp $
+
+#  This is the local options file for the "new" version of genmake 
+#
+#  EH3 initial version 2003-08
+
+
+DISABLE="kpp gmredi obcs aim_v23"
+
+ENABLE=aim
+
+NOOPTFILES='aim_do_atmos_physics.F'
