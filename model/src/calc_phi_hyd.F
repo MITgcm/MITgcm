@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.13 2001/05/14 21:51:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.14 2001/07/06 21:47:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,15 +20,17 @@ C     |                 at cell centers (tracer points)          |
 C     |                 - 1:k-1 layers are valid                 |
 C     |                 - k:Nr layers are invalid                |
 C     |   phiHyd(i,j,k) is the hydrostatic Potential             |
-C     |                 at cell the interface k (w point above)  |
+C     |  (ocean only_^) at cell the interface k (w point above)  |
 C     | On exit:                                                 |
 C     |   phiHyd(i,j,1:k) is the hydrostatic Potential           |
 C     |                 at cell centers (tracer points)          |
 C     |                 - 1:k layers are valid                   |
 C     |                 - k+1:Nr layers are invalid              |
 C     |   phiHyd(i,j,k+1) is the hydrostatic Potential (P/rho)   |
-C     |                 at cell the interface k+1 (w point below)|
-C     |                                                          |
+C     |  (ocean only-^) at cell the interface k+1 (w point below)|
+C     | Atmosphere:                                              |
+C     |   Integr_GeoPot allows to select one integration method  |
+C     |    (see the list below)                                  |
 C     \==========================================================/
       IMPLICIT NONE
 C     == Global variables ==
@@ -47,15 +49,29 @@ C     == Routine arguments ==
       _RL salt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
-
+      
 #ifdef INCLUDE_PHIHYD_CALCULATION_CODE
 
 C     == Local variables ==
-      INTEGER i,j
+      INTEGER i,j, Kp1
+      _RL zero, one, half
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRloc,dRlocKp1
-      _RL ddRm1, ddRp1, ddRm, ddRp
-      _RL atm_cp, atm_kappa, atm_po
+      _RL ddPI, ddPIm, ddPIp, ratioRp, ratioRm
+
+      zero = 0. _d 0
+      one  = 1. _d 0
+      half = .5 _d 0
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C  Atmosphere:  
+C Integr_GeoPot => select one option for the integration of the Geopotential:
+C   = 0 : Energy Conserving Form, No hFac ;
+C   = 1 : Finite Volume Form, with hFac, linear in P by Half level;
+C   =2,3: Finite Difference Form, with hFac, linear in P between 2 Tracer levels
+C     2 : case Tracer level at the middle of InterFace_W; 
+C     3 : case InterFace_W  at the middle of Tracer levels;
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -112,7 +128,7 @@ C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax
           DO i=iMin,iMax
 #ifdef      ALLOW_AUTODIFF_TAMC
-c           Patrick, is this directive correct or even necessary in 
+c           Patrick, is this directive correct or even necessary in
 c           this new code?
 c           Yes, because of phiHyd(i,j,k+1)=phiHyd(i,j,k)+...
 c           within the k-loop.
@@ -143,76 +159,189 @@ C-----------------------------------------------------------------------
 
 
       ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C       This is the hydrostatic geopotential calculation for the Atmosphere
 C       The ideal gas law is used implicitly here rather than calculating
 C       the specific volume, analogous to the oceanic case.
 
 C       Integrate d Phi / d pi
 
-C *NOTE* These constants should be in the data file and PARAMS.h
-        atm_cp=1004. _d 0
-        atm_kappa=2. _d 0/7. _d 0
-        atm_po=1. _d 5
-        IF (K.EQ.1) THEN
-          ddRp1=atm_cp*( ((rC(K)/atm_po)**atm_kappa)
-     &                  -((rF(K)/atm_po)**atm_kappa) )
-          DO j=jMin,jMax
-            DO i=iMin,iMax
-              ddRp=ddRp1
-              IF (hFacC(I,J, K ,bi,bj).EQ.0.) ddRp=0.
-C------------ The integration for the first level phi(k=1) is the
-C             same for both the "finite volume" and energy conserving
-C             methods.
-C             *NOTE* The geopotential boundary condition should go
-C                    here but has not been implemented yet
-              phiHyd(i,j,K)=0.
-     &          -ddRp*(theta(I,J,K,bi,bj)-tRef(K))
+      IF (Integr_GeoPot.EQ.0) THEN
+C  --  Energy Conserving Form, No hFac  --
+C------------ The integration for the first level phi(k=1) is the same
+C             for both the "finite volume" and energy conserving methods.
+C    *NOTE* o Working with geopotential Anomaly, the geopotential boundary 
+C             condition is simply Phi'(Ro_surf)=0.
+C           o convention ddPI > 0 (same as drF & drC)
 C-----------------------------------------------------------------------
+        IF (K.EQ.1) THEN
+          ddPIp=atm_cp*( ((rF(K)/atm_po)**atm_kappa)
+     &                  -((rC(K)/atm_po)**atm_kappa) )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K)=
+     &          ddPIp*maskC(i,j,K,bi,bj)
+     &               *(theta(I,J,K,bi,bj)-tRef(K))
            ENDDO
           ENDDO
         ELSE
-
-C-------- This discretization is the "finite volume" form which
-C         integrates the hydrostatic equation of each half/sub-layer.
-C         This seems most natural and could easily allow for lopped cells
-C         by replacing rF(K) with the height of the surface (not implemented).
-C         in the lower layers (e.g. at k=1).
-C
-c         ddRm1=atm_cp*( ((rF( K )/atm_po)**atm_kappa)
-c    &                  -((rC(K-1)/atm_po)**atm_kappa) )
-c         ddRp1=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
-c    &                  -((rF( K )/atm_po)**atm_kappa) )
-C-----------------------------------------------------------------------
-
-
 C-------- This discretization is the energy conserving form
-          ddRp1=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
-     &                  -((rC(K-1)/atm_po)**atm_kappa) )*0.5
-          ddRm1=ddRp1
-C-----------------------------------------------------------------------
-
+          ddPI=atm_cp*( ((rC(K-1)/atm_po)**atm_kappa)
+     &                 -((rC( K )/atm_po)**atm_kappa) )*0.5
           DO j=jMin,jMax
-            DO i=iMin,iMax
-              ddRp=ddRp1
-              ddRm=ddRm1
-              IF (hFacC(I,J, K ,bi,bj).EQ.0.) ddRp=0.
-              IF (hFacC(I,J,K-1,bi,bj).EQ.0.) ddRm=0.
+           DO i=iMin,iMax
               phiHyd(i,j,K)=phiHyd(i,j,K-1)
-     &           -( ddRm*(theta(I,J,K-1,bi,bj)-tRef(K-1))
-     &             +ddRp*(theta(I,J, K ,bi,bj)-tRef( K )) )
+     &           +ddPI*maskC(i,j,K-1,bi,bj)
+     &                *(theta(I,J,K-1,bi,bj)-tRef(K-1))
+     &           +ddPI*maskC(i,j, K ,bi,bj)
+     &                *(theta(I,J, K ,bi,bj)-tRef( K ))
 C             Old code (atmos-exact) looked like this
-Cold          phiHyd(i,j,K)=phiHyd(i,j,K-1) - ddRm1*
+Cold          phiHyd(i,j,K)=phiHyd(i,j,K-1) - ddPI*
 Cold &      (theta(I,J,K-1,bi,bj)+theta(I,J,K,bi,bj)-2.*tRef(K))
-            ENDDO
+           ENDDO
           ENDDO
         ENDIF
+C end: Energy Conserving Form, No hFac  --
+C-----------------------------------------------------------------------
 
+      ELSEIF (Integr_GeoPot.EQ.1) THEN
+C  --  Finite Volume Form, with hFac, linear in P by Half level  --
+C---------
+C  Finite Volume formulation consistent with Partial Cell, linear in p by piece
+C   Note: a true Finite Volume form should be linear between 2 Interf_W :
+C     phi_C = (phi_W_k+ phi_W_k+1)/2 ; but not accurate in Stratosphere (low p)
+C   also: if Interface_W at the middle between tracer levels, this form
+C     is close to the Energy Cons. form in the Interior, except for the 
+C     non-linearity in PI(p)
+C---------
+        IF (K.EQ.1) THEN
+          ddPIp=atm_cp*( ((rF(K)/atm_po)**atm_kappa)
+     &                  -((rC(K)/atm_po)**atm_kappa) )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) =
+     &          ddPIp*hFacC(I,J, K ,bi,bj)
+     &               *(theta(I,J, K ,bi,bj)-tRef( K ))
+           ENDDO
+          ENDDO
+        ELSE
+          ddPIm=atm_cp*( ((rC(K-1)/atm_po)**atm_kappa)
+     &                  -((rF( K )/atm_po)**atm_kappa) )
+          ddPIp=atm_cp*( ((rF( K )/atm_po)**atm_kappa)
+     &                  -((rC( K )/atm_po)**atm_kappa) )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) = phiHyd(i,j,K-1)
+     &         +ddPIm*hFacC(I,J,K-1,bi,bj)
+     &               *(theta(I,J,K-1,bi,bj)-tRef(K-1))
+     &         +ddPIp*hFacC(I,J, K ,bi,bj)
+     &               *(theta(I,J, K ,bi,bj)-tRef( K ))
+           ENDDO
+          ENDDO
+        ENDIF
+C end: Finite Volume Form, with hFac, linear in P by Half level  --
+C-----------------------------------------------------------------------
 
+      ELSEIF (Integr_GeoPot.EQ.2) THEN
+C  --  Finite Difference Form, with hFac, Tracer Lev. = middle  --
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C  Finite Difference formulation consistent with Partial Cell,
+C    case Tracer level at the middle of InterFace_W 
+C    linear between 2 Tracer levels ; conserve energy in the Interior 
+C---------
+        Kp1 = min(Nr,K+1)
+        IF (K.EQ.1) THEN
+          ddPIm=atm_cp*( ((rF( K )/atm_po)**atm_kappa)
+     &                  -((rC( K )/atm_po)**atm_kappa) ) * 2. _d 0
+          ddPIp=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
+     &                  -((rC(Kp1)/atm_po)**atm_kappa) )  
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) =
+     &        ( ddPIm*max(zero, hFacC(i,j,K,bi,bj)-half)
+     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)-half) )
+     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               * maskC(i,j, K ,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          ddPIm=atm_cp*( ((rC(K-1)/atm_po)**atm_kappa)
+     &                  -((rC( K )/atm_po)**atm_kappa) )
+          ddPIp=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
+     &                  -((rC(Kp1)/atm_po)**atm_kappa) ) 
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) = phiHyd(i,j,K-1)
+     &        + ddPIm*0.5
+     &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
+     &               * maskC(i,j,K-1,bi,bj)
+     &        +(ddPIm*max(zero, hFacC(i,j,K,bi,bj)-half)
+     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)-half) )
+     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               * maskC(i,j, K ,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+C end: Finite Difference Form, with hFac, Tracer Lev. = middle  --
+C-----------------------------------------------------------------------
+
+      ELSEIF (Integr_GeoPot.EQ.3) THEN
+C  --  Finite Difference Form, with hFac, Interface_W = middle  --
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C  Finite Difference formulation consistent with Partial Cell,
+C   Valid & accurate if Interface_W at middle between tracer levels
+C   linear in p between 2 Tracer levels ; conserve energy in the Interior 
+C---------
+        Kp1 = min(Nr,K+1)
+        IF (K.EQ.1) THEN
+          ratioRm=0.5*drF(K)/(rF(k)-rC(K))
+          ratioRp=drF(K)*recip_drC(Kp1)
+          ddPIm=atm_cp*( ((rF( K )/atm_po)**atm_kappa)
+     &                  -((rC( K )/atm_po)**atm_kappa) ) * 2. _d 0
+          ddPIp=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
+     &                  -((rC(Kp1)/atm_po)**atm_kappa) )  
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) =
+     &        ( ddPIm*max(zero,(hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
+     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)*ratioRp     -half) )
+     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               * maskC(i,j, K ,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          ratioRm=drF(K)*recip_drC(K)
+          ratioRp=drF(K)*recip_drC(Kp1)
+          ddPIm=atm_cp*( ((rC(K-1)/atm_po)**atm_kappa)
+     &                  -((rC( K )/atm_po)**atm_kappa) )
+          ddPIp=atm_cp*( ((rC( K )/atm_po)**atm_kappa)
+     &                  -((rC(Kp1)/atm_po)**atm_kappa) ) 
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             phiHyd(i,j,K) = phiHyd(i,j,K-1)
+     &        + ddPIm*0.5
+     &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
+     &               * maskC(i,j,K-1,bi,bj)
+     &        +(ddPIm*max(zero,(hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
+     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)*ratioRp     -half) )
+     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               * maskC(i,j, K ,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+C end: Finite Difference Form, with hFac, Interface_W = middle  --
+C-----------------------------------------------------------------------
+
+      ELSE
+        STOP 'CALC_PHI_HYD: Bad Integr_GeoPot option !'
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
         STOP 'CALC_PHI_HYD: We should never reach this point!'
       ENDIF
 
-#endif
+#endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
 
       RETURN
       END
