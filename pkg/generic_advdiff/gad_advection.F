@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.6 2001/09/27 20:12:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.7 2001/09/28 02:26:57 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -242,7 +242,7 @@ C-    Advective flux in X
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_MULTIDIM_ADVECTION
+#ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -308,7 +308,7 @@ C-    Advective flux in Y
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-#ifdef ALLOW_MULTIDIM_ADVECTION
+#ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */

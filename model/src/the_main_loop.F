@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.20 2001/09/27 20:12:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.21 2001/09/28 02:26:57 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,6 +37,7 @@ C     == Global variables ==
 # include "cost.h"
 # include "DYNVARS.h"
 # include "FFIELDS.h"
+# include "GAD.h"
 # ifdef ALLOW_PASSIVE_TRACER
 #  include "TR1.h"
 # endif
@@ -203,10 +204,10 @@ CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
-#ifdef ALLOW_MULTIDIM_ADVECTION
+#ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_pass
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
-#endif
+#endif /* DISABLE_MULTIDIM_ADVECTION */
 #ifdef ALLOW_BULKFORMULAE
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt

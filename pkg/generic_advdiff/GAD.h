@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.7 2001/09/19 20:45:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.8 2001/09/28 02:26:57 adcroft Exp $
 C $Name:  $
 
 CBOP
@@ -14,6 +14,9 @@ C
 C Unfortunately, there is no easy way to make use of the
 C tokens in namelist input so for now we have to enter the
 C tokens value into "data" (ie. 2 for 2nd order etc.)
+
+C !USES:
+#include "GAD_OPTIONS.h"
 
 C !DEFINED PARAMETERS:
 
