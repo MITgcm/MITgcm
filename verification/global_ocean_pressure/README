@@ -1,0 +1,25 @@
+global ocean in pressure coordinate 
+===================================
+
+To apply the changes to the default configuration of MITgcmUV:
+Configure and compile the code:
+  cd verification/global_ocean_pressure/input
+  ../../../tools/genmake -mods='../code'
+  make depend
+  make
+To run the code:
+  ./mitgcmuv
+
+There is comparison output in directory:
+ ../verification/global_ocean_pressure/results
+
+Comments
+o the set up is similar to that of global_ocean.90x40x15
+o the code directory contains calc_phi_hyd.F, where the potential is computed
+  according to the more natural finite volume discretization. Finite difference
+  discretization is energy conserving, but the representation of the "fixed"
+  surface (interface ocean-atmosphere) is less consistent.
+o the code directory also contains dynamics.F which calls
+  remove_mean_rl.F, a generic routine, to remove the mean from the
+  diagnostic variable phiHydLow (sea surface height/gravity in pressure
+  coordinates) 
