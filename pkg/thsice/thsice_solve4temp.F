@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.2 2004/04/18 22:06:14 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -282,8 +282,7 @@ C Compute final flux values at surfaces.
       IF ( useBlkFlx ) THEN
         evpAtm = evap
 C--   needs to update also Evap (Tsf changes) since Latent heat has been updated
-C     Note: this fix affects the results and is postponed for now.
-c       evpAtm = evap + dEvdT*dTsf
+        evpAtm = evap + dEvdT*dTsf
 C-    energy flux to Atmos: use net short-wave flux at surf. and
 C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
         flxAtm = flxSW + flxExceptSw + df0dT*dTsf
