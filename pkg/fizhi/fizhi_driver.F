@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.6 2004/06/28 16:12:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.7 2004/07/06 20:20:51 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -99,6 +99,11 @@ c ---------------
       logical     alarm
       external    alarm
       real massinlayer(im,jm,lm)
+      integer numpcheck
+      parameter (numpcheck = 5)
+      integer pchecklevs(numpcheck)
+      real pcheckpress(numpcheck)
+      data pcheckpress/950.,750.,700.,400.,10./
 
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
@@ -125,7 +130,9 @@ C **********************************************************************
       call get_alarm ( 'pnt',ndum,ndum,ndpnt,ndum )
       lpnt = ndpnt.ne.0
 
-C pchecks for use by mini-drivers
+C Fill array of model levels closest to a given pressure value
+
+      call getpwhere(myid,numpcheck,pcheckpress,pchecklevs)
 
 C **********************************************************************        
 C ****                  Call Physics Mini-Drivers                   ****        
