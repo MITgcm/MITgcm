@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.29 2001/03/08 20:49:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.30 2001/03/09 20:45:09 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,6 +6,9 @@ C $Name:  $
       SUBROUTINE CG2D(  
      I                cg2d_b,
      U                cg2d_x,
+     U                tolerance,
+     O                residual,
+     U                numIters,
      I                myThid )
 C     /==========================================================\
 C     | SUBROUTINE CG2D                                          |
@@ -40,11 +43,20 @@ C     === Global data ===
 #include "SURFACE.h"
 
 C     === Routine arguments ===
-C     myThid - Thread on which I am working.
-      INTEGER myThid
-      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     myThid    - Thread on which I am working.
+C     cg2d_b    - The source term or "right hand side"
+C     cg2d_x    - The solution
+C     tolerance - Entry: the tolerance of accuracy to solve to
+C                 Exit:  the initial residual before any iterations
+C     residual  - Exit:  the actual residual reached
+C     numIters  - Entry: the maximum number of iterations allowed
+C                 Exit:  the actual number of iterations used
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
+      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  tolerance
+      _RL  residual
+      INTEGER numIters
+      INTEGER myThid
 
 C     === Local variables ====
 C     actualIts      - Number of iterations taken
@@ -62,7 +74,7 @@ C                   or they converge at a non-zero residual.
 C     err         - Measure of residual of Ax - b, usually the norm.
 C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER actualIts
-      _RL    actualResidual
+      _RL    actualResidual,initialResidual
       INTEGER bi, bj              
       INTEGER I, J, it2d
       _RL    err
@@ -211,19 +223,20 @@ C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
-      _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
-     & actualIts, actualResidual
-      _END_MASTER( )
+c     _BEGIN_MASTER( myThid )
+c      WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
+c    & actualIts, actualResidual
+c     _END_MASTER( )
+      initialResidual=actualResidual
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      DO 10 it2d=1, cg2dMaxIters
+      DO 10 it2d=1, numIters
 
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',
 C    &  actualResidual
 CcnhDebugEnds
-       IF ( err .LT. cg2dTargetResidual ) GOTO 11
+       IF ( err .LT. tolerance ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
        eta_qrN = 0. _d 0
@@ -373,10 +386,15 @@ C--   Un-normalise the answer
 C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
 C     _EXCH_XY_R8(cg2d_x, myThid )
-      _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
-     & actualIts, actualResidual
-      _END_MASTER( )
+c     _BEGIN_MASTER( myThid )
+c      WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
+c    & actualIts, actualResidual
+c     _END_MASTER( )
+
+C--   Return parameters to caller
+      tolerance=initialResidual
+      residual=actualResidual
+      numIters=actualIts
 
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )
