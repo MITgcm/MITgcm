@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.13 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.14 2000/04/10 14:36:00 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -65,24 +65,32 @@ C     Now we convert deltaH to a non-dimensional fraction
        DO i=1-Olx+1,sNx+Olx-1
 
 C      Horizontal gradient of Sigma at rVel points
-        dSigmaDx=0.25*_recip_dxF(i,j,bi,bj)*
+        dSigmaDx=0.25*
      &   (_maskW(i+1,j, k ,bi,bj)
-     &    *(rhoKp1(i+1,j)-rhoKp1( i ,j))
+     &    *_recip_dxC(i+1,j,bi,bj)
+     &        *(rhoKp1(i+1,j)-rhoKp1( i ,j))
      &   +_maskW( i ,j, k ,bi,bj)
-     &    *(rhoKp1( i ,j)-rhoKp1(i-1,j))
+     &    *_recip_dxC(i,j,bi,bj)
+     &        *(rhoKp1( i ,j)-rhoKp1(i-1,j))
      &   +_maskW(i+1,j,k-1,bi,bj)
-     &    *(rhoKm1(i+1,j)-rhoKm1( i ,j))
+     &    *_recip_dxC(i+1,j,bi,bj)
+     &        *(rhoKm1(i+1,j)-rhoKm1( i ,j))
      &   +_maskW( i ,j,k-1,bi,bj)
-     &    *(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
-        dSigmaDy=0.25*_recip_dyF(i,j,bi,bj)*
+     &    *_recip_dxC(i,j,bi,bj)
+     &        *(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
+        dSigmaDy=0.25*
      &   (_maskS(i,j+1, k ,bi,bj)
-     &    *(rhoKp1(i,j+1)-rhoKp1(i, j ))
+     &    *_recip_dyC(i,j+1,bi,bj)
+     &        *(rhoKp1(i,j+1)-rhoKp1(i, j ))
      &   +_maskS(i,  j, k ,bi,bj)
-     &    *(rhoKp1(i, j )-rhoKp1(i,j-1))
+     &    *_recip_dyC(i,j,bi,bj)
+     &        *(rhoKp1(i, j )-rhoKp1(i,j-1))
      &   +_maskS(i,j+1,k-1,bi,bj)
-     &    *(rhoKm1(i,j+1)-rhoKm1(i, j ))
+     &    *_recip_dyC(i,j+1,bi,bj)
+     &        *(rhoKm1(i,j+1)-rhoKm1(i, j ))
      &   +_maskS(i, j ,k-1,bi,bj)
-     &    *(rhoKm1(i, j )-rhoKm1(i,j-1)) )
+     &    *_recip_dyC(i,j,bi,bj)
+     &        *(rhoKm1(i, j )-rhoKm1(i,j-1)) )
 
 C       Calculate magnitude of horizontal gradient
         gradSmod=sqrt(dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy)
