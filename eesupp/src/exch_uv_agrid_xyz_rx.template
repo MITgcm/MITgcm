@@ -1,9 +1,15 @@
-      subroutine exch_uv_agrid_xyz_RX( component1,component2, myThid )
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xyz_rx.template,v 1.4 2004/11/16 17:21:40 jmc Exp $
+C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
+
+      SUBROUTINE EXCH_UV_AGRID_XYZ_RX( component1,component2, myThid )
+
       implicit none
 
 C*=====================================================================*
-C  Purpose: subroutine exch_uv_agrid_xyz_rx will
+C  Purpose: subroutine exch_uv_agrid_xyz_RX will
 C      handle exchanges for a 3D vector field on an A-grid.  
 C
 C  Input: component1(lon,lat,levs,bi,bj) - first component of vector
@@ -41,6 +47,11 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
       integer OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
       _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_UV_AGRID_XYZ_RX( component1,component2, myThid )
+      RETURN
+#endif
 
       OLw        = OLx
       OLe        = OLx
@@ -142,3 +153,9 @@ C south
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
