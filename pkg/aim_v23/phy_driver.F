@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.5 2004/05/21 17:43:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.6 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -54,8 +54,6 @@ C     Radiation scheme variables
 C     Radiation constants
 #include "com_radcon.h"
 
-c #include "com_sflcon.h"
-
 C     Logical flags
 c_FM  include "com_lflags.h"
 
@@ -69,7 +67,10 @@ C-- Local variables:
 C    kGrd   :: Ground level index              (2-dim)  
 C    dpFac  :: cell delta_P fraction           (3-dim)
 C    dTskin :: temp. correction for daily-cycle heating [K]
-C    CDENVV :: sensible heat flux coefficient (1:land, 2:sea, 3:sea-ice)
+C    T1s    :: near-surface air temperature (from Pot.Temp)
+C    DENVV  :: surface flux (sens,lat.) coeff. (=Rho*|V|) [kg/m2/s]
+C    Shf0   :: sensible heat flux over freezing surf.
+C    dShf   :: sensible heat flux derivative relative to surf. temp
 C    Evp0   :: evaporation computed over freezing surface (Ts=0.oC)
 C    dEvp   :: evaporation derivative relative to surf. temp 
 C    Slr0   :: upward long wave radiation over freezing surf.
@@ -83,11 +84,16 @@ C              0: Flux(Ts=0.oC) ; 1: Flux(Ts^n) ; 2: d.Flux/d.Ts(Ts^n)
 c_FM  REAL    RPS(NGP), ST4S(NGP)
       _RL ST4S(NGP)
       _RL PSG_1(NGP), RPS_1
-      _RL dTskin(NGP), CDENVV(NGP,3)
-      _RL Evp0(NGP), dEvp(NGP), Slr0(NGP), dSlr(NGP), sFlx(NGP,0:2)
+      _RL dTskin(NGP), T1s(NGP), DENVV(NGP)
+      _RL Shf0(NGP), dShf(NGP), Evp0(NGP), dEvp(NGP)
+      _RL Slr0(NGP), dSlr(NGP), sFlx(NGP,0:2)
 
       INTEGER J, K
 
+#ifdef ALLOW_CLR_SKY_DIAG
+      _RL dummyR(NGP)
+      INTEGER dummyI(NGP)
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   1. Compute grid-point fields
@@ -192,6 +198,7 @@ C     The sw radiation may be called at selected time steps
  
 c_FM    CALL RADSW (PSG,QG1,RH,ALB1,
 c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
+       ICLTOP(1) = 1
        CALL RADSW (PSG,dpFac,QG1,RH(1,1,myThid),ALB1(1,0,myThid),
      I             FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O             TAU2, STRATC,
@@ -232,25 +239,26 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      I             WVSurf(1,myThid),csLat(1,myThid),fOrogr(1,myThid),
      I             FMASK1(1,1,myThid),STL1(1,myThid),SST1(1,myThid),
      I             sti1(1,myThid), SSR(1,0,myThid),
-     O             SPEED0(1,myThid),DRAG(1,0,myThid),CDENVV,
-     O             dTskin,T0(1,myThid),Q0(1,myThid),
+     O             SPEED0(1,myThid),DRAG(1,0,myThid),DENVV,
+     O             dTskin,T1s,T0(1,myThid),Q0(1,myThid),
      I             kGround,bi,bj,myThid)
 
       CALL SUFLUX_LAND (
      I             PSG, FMASK1(1,1,myThid), EMISFC,
      I             STL1(1,myThid), dTskin,
      I             SOILW1(1,myThid), SSR(1,1,myThid), SLR(1,0,myThid),
-     I             T0(1,myThid), Q0(1,myThid), CDENVV(1,1),
+     I             T1s, T0(1,myThid), Q0(1,myThid), DENVV,
      O             SHF(1,1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
-     O             Evp0, dEvp, Slr0, dSlr, sFlx,
+     O             Shf0, dShf, Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
 #ifdef ALLOW_LAND      
       CALL AIM_LAND_IMPL(
      I             FMASK1(1,1,myThid), dTskin,
-     I             Evp0, dEvp, Slr0, dSlr,
-     U             sFlx,
-     U             STL1(1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
+     I             Shf0, dShf, Evp0, dEvp, Slr0, dSlr,
+     U             sFlx, STL1(1,myThid),
+     U             SHF(1,1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
+     O             dTsurf(1,1,myThid),
      I             bi, bj, myTime, myIter, myThid)
 #endif /* ALLOW_LAND */
 
@@ -258,7 +266,7 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      I             PSG, FMASK1(1,2,myThid),
      I             SST1(1,myThid),
      I             SSR(1,2,myThid), SLR(1,0,myThid),
-     O             T0(1,myThid), Q0(1,myThid), CDENVV(1,2),
+     O             T1s, T0(1,myThid), Q0(1,myThid), DENVV,
      O             SHF(1,2,myThid), EVAP(1,2,myThid), SLR(1,2,myThid),
      I             bi,bj,myThid)
 
@@ -267,20 +275,23 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      I             PSG, FMASK1(1,3,myThid), EMISFC,
      I             STI1(1,myThid), dTskin,
      I             SSR(1,3,myThid), SLR(1,0,myThid),
-     I             T0(1,myThid), Q0(1,myThid), CDENVV(1,3),
+     I             T1s, T0(1,myThid), Q0(1,myThid), DENVV,
      O             SHF(1,3,myThid), EVAP(1,3,myThid), SLR(1,3,myThid),
-     O             Evp0, dEvp, Slr0, dSlr, sFlx,
+     O             Shf0, dShf, Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
 #ifdef ALLOW_THSICE      
         CALL AIM_SICE_IMPL(
      I             FMASK1(1,3,myThid), SSR(1,3,myThid), sFlx,
-     I             Evp0, dEvp, Slr0, dSlr,
-     U             STI1(1,myThid), EVAP(1,3,myThid), SLR(1,3,myThid),
+     I             Shf0, dShf, Evp0, dEvp, Slr0, dSlr,
+     U             STI1(1,myThid),
+     U             SHF(1,3,myThid), EVAP(1,3,myThid), SLR(1,3,myThid),
+     O             dTsurf(1,3,myThid),
      I             bi, bj, myTime, myIter, myThid)
 #endif /* ALLOW_THSICE */
       ELSE
         DO J=1,NGP
+          SHF (J,3,myThid) = 0. _d 0
           EVAP(J,3,myThid) = 0. _d 0
           SLR (J,3,myThid) = 0. _d 0
         ENDDO
@@ -290,7 +301,7 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      I             FMASK1(1,1,myThid), EMISFC, 
      I             STL1(1,myThid), SST1(1,myThid), sti1(1,myThid), 
      I             dTskin, SLR(1,0,myThid),
-     I             T0(1,myThid), Q0(1,myThid), CDENVV,
+     I             T0(1,myThid), Q0(1,myThid), DENVV,
      U             DRAG(1,0,myThid), SHF(1,0,myThid), 
      U             EVAP(1,0,myThid), SLR(1,1,myThid),
      O             ST4S, TS(1,myThid), TSKIN(1,myThid),
@@ -313,6 +324,43 @@ c_FM &            OLR,SLR,TT_RLW)
 c_FM    TTEND (J,K)=TTEND(J,K)+TT_RSW(J,K)+TT_RLW(J,K)
        ENDDO
       ENDDO 
+
+#ifdef ALLOW_CLR_SKY_DIAG
+C     3.5 Compute clear-sky radiation (for diagnostics only)
+      IF ( aim_clrSkyDiag ) THEN
+        
+C      3.5.1 Compute shortwave tendencies
+       dummyI(1) = -1
+       CALL RADSW (PSG,dpFac,QG1,RH(1,1,myThid),ALB1(1,0,myThid),
+     I             FSOL, OZONE, OZUPP, ZENIT, STRATZ,
+     O             TAU2, STRATC,
+     O             dummyI, dummyR,
+     O      TSWclr(1,myThid), SSWclr(1,myThid), TT_SWclr(1,1,myThid),
+     I             kGround,bi,bj,myThid)
+ 
+C      3.5.2 Compute downward longwave fluxes
+ 
+       CALL RADLW (-1,TG1,TS(1,myThid),ST4S,
+     &             OZUPP, STRATC, TAU2, FLUX, ST4A,
+     O      OLWclr(1,myThid), SLWclr(1,myThid), TT_LWclr(1,1,myThid),
+     I             kGround,bi,bj,myThid)
+
+C      3.5.3 Compute upward longwave fluxes, convert them to tendencies
+
+       CALL RADLW (1,TG1,TS(1,myThid),ST4S,
+     &            OZUPP, STRATC, TAU2, FLUX, ST4A,
+     O      OLWclr(1,myThid), SLWclr(1,myThid), TT_LWclr(1,1,myThid),
+     I            kGround,bi,bj,myThid)
+ 
+       DO K=1,NLEV
+        DO J=1,NGP
+          TT_SWclr(J,K,myThid)=TT_SWclr(J,K,myThid)*RPS_1*GRDSCP(K)
+          TT_LWclr(J,K,myThid)=TT_LWclr(J,K,myThid)*RPS_1*GRDSCP(K)
+        ENDDO
+       ENDDO 
+
+      ENDIF
+#endif /* ALLOW_CLR_SKY_DIAG */
 
 C--   4. PBL interactions with lower troposphere
 

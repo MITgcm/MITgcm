@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.2 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.3 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -176,6 +176,7 @@ c     EQUIVALENCE ( FREFL(1,1),TAU2(1,1,4))
 
       INTEGER NL1(NGP)
       INTEGER K, J
+      LOGICAL makeClouds
 
 C- jmc: declare local variables:
       _RL FBAND1, FBAND2, RRCL, RQCL, DQACL, QACL3
@@ -196,16 +197,14 @@ C         CLOUDC =  0 for RHmax < RHCL1, = 1 for RHmax > RHCL2.
 C         This value is reduced by a factor (Qbase/QACL) if the
 C         cloud-base absolute humidity Qbase < QACL.
 C
-
+      makeClouds = ICLTOP(1) .GE. 0
       RRCL=1./(RHCL2-RHCL1)
       RQCL=1./QACL2
 C
       DO J=1,NGP
         CLOUDC(J)=0.
         QCLOUD(J)=0.
-        IF (kGrd(J).NE.0)
-     &  QCLOUD(J)= MAX( QA(J,kGrd(J)), QA(J,NL1(J)) )
-        ICLTOP(J)= kGrd(J)
+        ICLTOP(J)=NLEV+1
         FREFL(J,1)=0.
       ENDDO
 
@@ -215,18 +214,24 @@ C
        ENDDO
       ENDDO
 C
-      DQACL=(QACL2-QACL1)/(0.5 _d 0 - SIG(2))
-      DO J=1,NGP
-       DO K=NL1(J),2,-1
+      IF ( makeClouds ) THEN
+C-    skipp this part for clear-sky diagnostics
+
+       DQACL=(QACL2-QACL1)/(0.5 _d 0 - SIG(2))
+       DO J=1,NGP
+        ICLTOP(J)= kGrd(J)
+        DO K=NL1(J),2,-1
          QACL3=MIN(QACL2,QACL1+DQACL*(SIG(K)-SIG(2)))
          IF (RH(J,K).GT.RHCL1.AND.QA(J,K).GT.QACL1) THEN
             CLOUDC(J)=MAX(CLOUDC(J),RH(J,K)-RHCL1)
             IF (QA(J,K).GT.QACL3) ICLTOP(J)=K
          ENDIF
+        ENDDO
        ENDDO
-      ENDDO
 
-      DO J=1,NGP
+       DO J=1,NGP
+        IF (kGrd(J).NE.0)
+     &  QCLOUD(J)= MAX( QA(J,kGrd(J)), QA(J,NL1(J)) )
         CLOUDC(J)=MIN(1. _d 0,CLOUDC(J)*RRCL)
         IF (CLOUDC(J).GT.0.0) THEN
           CLOUDC(J)=CLOUDC(J)*MIN(1. _d 0,QCLOUD(J)*RQCL)
@@ -234,7 +239,10 @@ C
         ELSE
           ICLTOP(J)=NLEV+1
         ENDIF
-      ENDDO
+       ENDDO
+
+C-    end if makeClouds
+      ENDIF
 
 C
 C--   2. Shortwave transmissivity:
@@ -577,13 +585,13 @@ C     4.1  Surface
       DO J=1,NGP
         ST4S(J)=TS(J)*TS(J)
         ST4S(J)=SBC*ST4S(J)*ST4S(J)
+        ST4S(J)=EMISFC*ST4S(J)
       ENDDO
 
 C     Entry point for upward-only mode (IMODE=1)
  410  CONTINUE
 
       DO J=1,NGP
-        ST4S(J)=EMISFC*ST4S(J)
         FSFC(J)=ST4S(J)-FSFC(J)
         FTOP(J)=FTOP(J)+FBAND(NINT(TS(J)),0)*ST4S(J)
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_post.F,v 1.2 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_post.F,v 1.3 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE SUFLUX_POST(
      I                   FMASK, EMISloc, 
      I                   TLAND, TSEA, TSICE, dTskin, SLRD,
-     I                   T0, Q0, CDENVV,
+     I                   T0, Q0, DENVV,
      U                   DRAG, SHF, EVAP, SLRup,
      O                   SLRU, TSFC, TSKIN,
      I                   bi,bj,myThid)
@@ -62,7 +62,7 @@ C    SLRD   :: sfc lw radiation (downward flux)(2-dim)
 C    SSR    :: sfc sw radiation (net flux)     (2-dim)
 C    T0     :: near-surface air temperature    (2-dim)
 C    Q0     :: near-surface sp. humidity [g/kg](2-dim)
-C    CDENVV :: sensible heat flux coefficient (1:land, 2:sea, 3:sea-ice)
+C    DENVV  :: surface flux (sens,lat.) coeff. (=Rho*|V|) [kg/m2/s]
 C--   Output:
 C    DRAG   :: surface Drag term (= Cd*Rho*|V|)(2-dim)
 C    SHF    :: sensible heat flux              (2-dim)
@@ -77,7 +77,7 @@ C    myThid :: Thread number for this instance of the routine
 C--
       _RL  FMASK(NGP,3), EMISloc 
       _RL  TLAND(NGP), TSEA(NGP), TSICE(NGP), dTskin(NGP), SLRD(NGP)
-      _RL  T0(NGP), Q0(NGP), CDENVV(NGP,3)
+      _RL  T0(NGP), Q0(NGP), DENVV(NGP)
 
       _RL  DRAG(NGP,0:3), SHF(NGP,0:3), EVAP(NGP,0:3), SLRup(NGP,3)
       _RL  SLRU(NGP), TSFC(NGP), TSKIN(NGP)
@@ -101,16 +101,6 @@ C--   2. Computation of fluxes over land and sea
 
 C--   3. Adjustment of skin temperature and fluxes over land
 C--      based on energy balance (to be implemented)
-
-C     3.2 Sensible heat flux (from clim. TS over land)
-C       Note: needs to update SHF if land or sea-ice surf temp are computed 
-C          implicitly ; recomputes SHF is consistent since SHF linear in TS
-
-      DO J=1,NGP
-        SHF(J,1) = CDENVV(J,1)*CP*(TLAND(J)+dTskin(J)-T0(J))
-c       SHF(J,2) = CDENVV(J,2)*CP*(TSEA(J) -T0(J))
-        SHF(J,3) = CDENVV(J,3)*CP*(TSICE(J)-T0(J))
-      ENDDO
 
 
 C--   4. Weighted average of surface fluxes and temperatures
@@ -146,6 +136,7 @@ C      (for diagnostic only)
         SLRup(J,1)=EMISloc*SLRup(J,1)-SLRD(J)
         SLRup(J,2)=EMISloc*SLRup(J,2)-SLRD(J)
         SLRup(J,3)=EMISloc*SLRup(J,3)-SLRD(J)
+        SLRU(J)   =EMISloc*SLRU(J)
       ENDDO
 
 C-    Check that Temp is OK for LW Radiation scheme :

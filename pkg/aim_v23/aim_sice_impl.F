@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice_impl.F,v 1.1 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice_impl.F,v 1.2 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -11,8 +11,9 @@ C     !ROUTINE: AIM_SICE_IMPL
 C     !INTERFACE:
       SUBROUTINE AIM_SICE_IMPL(
      I               FMASK, netSW, sFlx,
-     I               Evp0, dEvp, Slr0, dSlr,
-     U               Tsurf, EVAP, SLRU,
+     I               Shf0, dShf, Evp0, dEvp, Slr0, dSlr,
+     U               Tsurf, SHF, EVAP, SLRU,
+     O               dTsurf,
      I               bi, bj, myTime, myIter, myThid)
 
 C     !DESCRIPTION: \bv
@@ -48,19 +49,25 @@ C     FMASK    :: sea-ice fraction [0-1]
 C     netSW    :: net Short Wave surf. flux (+=down) [W/m2]
 C     sFlx     :: net heat flux (+=down) except SW, function of surf. temp Ts:
 C                 0: Flux(Ts=0.oC) ; 1: Flux(Ts^n) ; 2: d.Flux/d.Ts(Ts^n)
+C     Shf0     :: sensible heat flux over freezing surf.
+C     dShf     :: sensible heat flux derivative relative to surf. temp
 C     Evp0     :: evaporation computed over freezing surface (Ts=0.oC)
 C     dEvp     :: evaporation derivative relative to surf. temp
 C     Slr0     :: upward long wave radiation over freezing surf.
 C     Tsurf    :: surface temperature        (2-dim)
+C     SHF      :: sensible heat flux              (2-dim)
 C     EVAP     :: evaporation [g/(m^2 s)]         (2-dim)
 C     SLRU     :: sfc lw radiation (upward flux)  (2-dim)
+C     dTsurf   :: surf. temp change after 1 implicit time step [oC]
 C     bi,bj    :: Tile index
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
 C     myThid   :: Number of this instance of the routine
       _RL  FMASK(NGP), netSW(NGP), sFlx(NGP,0:2)
-      _RL  Evp0(NGP), dEvp(NGP), Slr0(NGP), dSlr(NGP)
-      _RL  Tsurf(NGP), EVAP(NGP), SLRU(NGP)
+      _RL  Shf0(NGP), dShf(NGP), Evp0(NGP), dEvp(NGP)
+      _RL  Slr0(NGP), dSlr(NGP)
+      _RL  Tsurf(NGP), SHF(NGP), EVAP(NGP), SLRU(NGP)
+      _RL  dTsurf(NGP)
       INTEGER bi, bj, myIter, myThid
       _RL myTime
 CEOP
@@ -69,8 +76,6 @@ CEOP
 #ifdef ALLOW_THSICE
 C     == Local variables ==
 C       J          :: loop counters
-C     dTsurf       :: surf. temp change after 1 implicit time step [oC]
-      _RL  dTsurf(NGP)
       INTEGER J
 
 C--   Physics tendency term
@@ -92,11 +97,14 @@ C-    initialize temp. changes and fresh water flux :
 C-     Update Surf.Temp., Evap, Upward SW according to surf. temp. changes
        DO J=1,NGP
         IF ( dTsurf(J) .GT. 999. ) THEN
+         dTsurf(J)= tFreeze - Tsurf(J)
          Tsurf(J) = tFreeze
+         SHF (J)  = Shf0(J)
          EVAP(J)  = Evp0(J)
          SLRU(J)  = Slr0(J)
         ELSE
          Tsurf(J) = Tsurf(J)+ dTsurf(J)
+         SHF (J)  = SHF (J) + dTsurf(J)*dShf(J)
          EVAP(J)  = EVAP(J) + dTsurf(J)*dEvp(J)
          SLRU(J)  = SLRU(J) + dTsurf(J)*dSlr(J)
         ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.7 2004/05/21 17:49:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.8 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -53,8 +53,8 @@ C     myThid - Number of this instance of the routine
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     i,j,k,I2      - Loop counters
-      INTEGER i,j,I2
+C     i,j,k,I2,k   - Loop counters
+      INTEGER i,j,I2,k
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
       _RL RSD, alb_land, oceTfreez
 c     _RL DALB, alb_sea
@@ -313,6 +313,13 @@ C-- set the mean albedo :
           alb1(J,0,myThid) = fMask1(J,1,myThid)*alb1(J,1,myThid)
      &                     + fMask1(J,2,myThid)*alb1(J,2,myThid)
      &                     + fMask1(J,3,myThid)*alb1(J,3,myThid)
+        ENDDO
+
+C-- initialize surf. temp. change to zero:
+        DO k=1,3
+         DO J=1,NGP
+          dTsurf(J,k,myThid) = 0.
+         ENDDO
         ENDDO
 
         IF (.NOT.aim_splitSIOsFx) THEN

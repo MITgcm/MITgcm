@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_inphys.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_inphys.F,v 1.4 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -122,6 +122,10 @@ C--   2. Constants for physical parametrization routines:
 c_FM  include "cls_inphys.h"
 #include "phy_const.h"
  
+C-     pot. temp. increment for computing stability function derivative
+C      note: use the discrete form: F(Ts+dTstab)-F(Ts-dTstab)/2.dTstab 
+       dTstab = 1. _d 0
+
       _END_MASTER(myThid)
 
 #endif /* ALLOW_AIM */ 

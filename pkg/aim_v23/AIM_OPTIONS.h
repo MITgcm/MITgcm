@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.4 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.5 2004/06/24 23:41:12 jmc Exp $
 C $Name:  $
 
 C  CPP options file for AIM package 
@@ -17,6 +17,9 @@ C  - do not include minor changes (added to avoid negative Q).
 
 C  allow time average diagnostic:
 #define ALLOW_AIM_TAVE
+
+C  allow time average diagnostic:
+#define ALLOW_CLR_SKY_DIAG
 
 C   Macro mapping dynamics vertical indexing (KD) to AIM vertical indexing (KA).
 C   ( dynamics puts K=1 at bottom of atmos., AIM puts K=1 at top of atmos. )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.3 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.4 2004/06/24 23:41:12 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -35,6 +35,8 @@ C     aimV0tave - surface wind speed [m/s]
 C     aimT0tave - surface air absolute temp. [K]
 C     aimQ0tave - surface air spec. humidity [g/kg]
 C     EnFxPrtave- energy flux associated with precip. (snow, rain temp) [W/m^2]
+C     albedotave- surface albedo [0-1]
+C     dTsurftave- surf. Temp change from 1 iter to the next one (>0) [K]
 C     aimRHtave - Relative Humidity [0-1]
 C
       COMMON /AIM_TAVE_A/
@@ -42,7 +44,8 @@ C
      &                   TSRtave, OLRtave, SSRtave, SLRtave, SHFtave,
      &                   EVAPtave, PRECNVtave, PRECLStave,
      &                   CLOUDCtave, CLTOPtave, CBMFtave, DRAGtave,
-     &                   aimV0tave, aimT0tave, aimQ0tave, EnFxPrtave,
+     &                   aimV0tave, aimT0tave, aimQ0tave, 
+     &                   EnFxPrtave, albedotave, dTsurftave,
      &                   aimRHtave
       _RL  USTRtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  VSTRtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -62,6 +65,8 @@ C
       _RL  aimT0tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aimQ0tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  EnFxPrtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  albedotave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dTsurftave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aimRHtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #endif /* ALLOW_AIM_TAVE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.6 2004/06/11 16:06:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.7 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -19,6 +19,7 @@ C-- size for MITgcm & Physics package :
 #include "PARAMS.h"
 
 #include "AIM_PARAMS.h"
+#include "AIM2DYN.h"
 #include "AIM_DIAGS.h"
 #include "com_physvar.h"
 #include "com_forcing.h"
@@ -41,8 +42,19 @@ C     == Local variables ==
       INTEGER I,J,K, I2,Katm
       _RL DDTT
       CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_DIAGNOSTICS
+      _RL tmpVar(NGP)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--  mean surf. temp. change:
+       DO J=1,NGP
+         dTsurf(J,1,myThid) = fMask1(J,1,myThid)*dTsurf(J,1,myThid)
+     &                      + fMask1(J,2,myThid)*dTsurf(J,2,myThid)
+     &                      + fMask1(J,3,myThid)*dTsurf(J,3,myThid)
+         dTsurf(J,1,myThid) = ABS(dTsurf(J,1,myThid))
+       ENDDO
 
       IF (
      &    DIFFERENT_MULTIPLE(aim_tendFreq,myTime+deltaTClock,myTime)
@@ -66,6 +78,15 @@ C--   Write Tendencies to files :
      &                      bi,bj,1,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aim_dQ_LSC.',suff,Nr,QT_LSC(1,1,myThid),
      &                      bi,bj,1,myIter,myThid)
+#ifdef ALLOW_CLR_SKY_DIAG
+C--   write clear-sky tendencies to files :
+       IF ( aim_clrSkyDiag ) THEN
+        CALL AIM_WRITE_LOCAL('aim_dT_clskySW.',suff,Nr,
+     &                     TT_SWclr(1,1,myThid),bi,bj,1,myIter,myThid)
+        CALL AIM_WRITE_LOCAL('aim_dT_clskyLW.',suff,Nr,
+     &                     TT_LWclr(1,1,myThid),bi,bj,1,myIter,myThid)
+       ENDIF
+#endif /* ALLOW_CLR_SKY_DIAG */
       ENDIF
 
       IF (
@@ -112,10 +133,30 @@ C--   Write AIM Physics diagnostics (2D, all in 1 file) :
      &                      bi,bj,16,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,alb1(1,0,myThid),
      &                      bi,bj,17,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,dTsurf(1,1,myThid),
+     &                      bi,bj,18,myIter,myThid)
+#ifdef ALLOW_CLR_SKY_DIAG
+C--   write clear-sky radiative fluxes to files :
+      IF ( aim_clrSkyDiag ) THEN
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,TSWclr(1,myThid),
+     &                      bi,bj, 19,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,OLWclr(1,myThid),
+     &                      bi,bj, 20,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SSWclr(1,myThid),
+     &                      bi,bj, 21,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SLWclr(1,myThid),
+     &                      bi,bj, 22,myIter,myThid)
+      ENDIF
+#endif /* ALLOW_CLR_SKY_DIAG */
 C--
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   cloud-top pressure: multiplied by cloud fraction before averaging:
+      DO J=1,NGP
+        CLTOP(J,myThid)=CLTOP(J,mythid)*CLOUDC(J,myThid)
+      ENDDO
 
 #ifdef ALLOW_AIM_TAVE
 
@@ -160,6 +201,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                          + EnPrec(I2,myThid)
      &                          *(PRECNV(I2,myThid)+
      &                            PRECLS(I2,myThid))*DDTT
+          albedotave(i,j,bi,bj) = albedotave(i,j,bi,bj)
+     &                          + alb1(I2,0,myThid)*DDTT
+          dTsurftave(i,j,bi,bj) = dTsurftave(i,j,bi,bj)
+     &                          + dTsurf(I2,1,myThid)*DDTT
          ENDDO
         ENDDO
 
@@ -185,34 +230,90 @@ C-    Keep record of how much time has been integrated over
 #endif /* ALLOW_AIM_TAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
-       if(usediagnostics)then
-        call fill_diagnostics(myThid,'RADSW   ',0,Nr,2,bi,bj,TT_RSW)
-        call fill_diagnostics(myThid,'RADLW   ',0,Nr,2,bi,bj,TT_RLW)
-        call fill_diagnostics(myThid,'DTCONV  ',0,Nr,2,bi,bj,TT_CNV)
-        call fill_diagnostics(myThid,'TURBT   ',0,Nr,2,bi,bj,TT_PBL)
-        call fill_diagnostics(myThid,'DTLS    ',0,Nr,2,bi,bj,TT_LSC)
-        call fill_diagnostics(myThid,'DQCONV  ',0,Nr,2,bi,bj,QT_CNV)
-        call fill_diagnostics(myThid,'TURBQ   ',0,Nr,2,bi,bj,QT_PBL)
-        call fill_diagnostics(myThid,'DQLS    ',0,Nr,2,bi,bj,QT_LSC)
-        call fill_diagnostics(myThid,'RELHUM  ',0,Nr,2,bi,bj,RH)
-        call fill_diagnostics(myThid,'DRAG    ',1,1,2,bi,bj,DRAG)
-        call fill_diagnostics(myThid,'WINDS   ',1,1,2,bi,bj,SPEED0)
-        call fill_diagnostics(myThid,'OSR     ',1,1,2,bi,bj,TSR)
-        call fill_diagnostics(myThid,'OLR     ',1,1,2,bi,bj,OLR)
-        call fill_diagnostics(myThid,'RADSWG  ',1,1,2,bi,bj,SSR)
-        call fill_diagnostics(myThid,'RADLWG  ',1,1,2,bi,bj,SLR)
-        call fill_diagnostics(myThid,'HFLUX   ',1,1,2,bi,bj,SHF)
-        call fill_diagnostics(myThid,'EVAP    ',1,1,2,bi,bj,EVAP)
-        call fill_diagnostics(myThid,'PRECON  ',1,1,2,bi,bj,PRECNV)
-        call fill_diagnostics(myThid,'PRECLS  ',1,1,2,bi,bj,PRECLS)
-        call fill_diagnostics(myThid,'CLDTOT  ',1,1,2,bi,bj,CLOUDC)
-        call fill_diagnostics(myThid,'CLDPRS  ',1,1,2,bi,bj,CLTOP)
-        call fill_diagnostics(myThid,'CLDMAS  ',1,1,2,bi,bj,CBMF)
-        call fill_diagnostics(myThid,'TS      ',1,1,2,bi,bj,T0)
-        call fill_diagnostics(myThid,'QS      ',1,1,2,bi,bj,Q0)
-        call fill_diagnostics(myThid,'ENPREC  ',1,1,2,bi,bj,EnPrec)
-       endif
-#endif ALLOW_DIAGNOSTICS
+       IF (usediagnostics) THEN
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DIABT   ',0,Nr,1,bi,bj,aim_dTdt)
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DIABQ   ',0,Nr,1,bi,bj,aim_dSdt)
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'RADSW   ',0,Nr,2,bi,bj,TT_RSW(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'RADLW   ',0,Nr,2,bi,bj,TT_RLW(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DTCONV  ',0,Nr,2,bi,bj,TT_CNV(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'TURBT   ',0,Nr,2,bi,bj,TT_PBL(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DTLS    ',0,Nr,2,bi,bj,TT_LSC(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DQCONV  ',0,Nr,2,bi,bj,QT_CNV(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'TURBQ   ',0,Nr,2,bi,bj,QT_PBL(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'DQLS    ',0,Nr,2,bi,bj,QT_LSC(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'RELHUM  ',0,Nr,2,bi,bj,RH(1,1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'OSR     ',1,1, 2,bi,bj,TSR(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'OLR     ',1,1, 2,bi,bj,OLR(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'RADSWG  ',1,1, 2,bi,bj,SSR(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'RADLWG  ',1,1, 2,bi,bj,SLR(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'HFLUX   ',1,1, 2,bi,bj,SHF(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'EVAP    ',1,1, 2,bi,bj,EVAP(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'PRECON  ',1,1, 2,bi,bj,PRECNV(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'PRECLS  ',1,1, 2,bi,bj,PRECLS(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'CLDFRC  ',1,1, 2,bi,bj,CLOUDC(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'CLDPRS  ',1,1, 2,bi,bj,CLTOP(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'CTPCNT  ',1,1, 2,bi,bj,CLOUDC(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'CLDMAS  ',1,1, 2,bi,bj,CBMF(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'KM      ',1,1, 2,bi,bj,DRAG(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'WINDS   ',1,1, 2,bi,bj,SPEED0(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'TS      ',1,1, 2,bi,bj,T0(1,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'QS      ',1,1, 2,bi,bj,Q0(1,myThid))
+        DO J=1,NGP
+          tmpVar(J) = EnPrec(J,myThid)
+     &              *(PRECNV(J,myThid)+PRECLS(J,myThid))
+        ENDDO
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'ENPREC  ',1,1, 2,bi,bj,tmpVar)
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'ALBVISDF',1,1, 2,bi,bj,alb1(1,0,myThid))
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'SDIAG1  ',1,1, 2,bi,bj,dTsurf(1,1,myThid))
+#ifdef ALLOW_CLR_SKY_DIAG
+        IF ( aim_clrSkyDiag ) THEN 
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'SWCLR   ',0,Nr,2,bi,bj,TT_SWclr(1,1,myThid))
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'LWCLR   ',0,Nr,2,bi,bj,TT_LWclr(1,1,myThid))
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'OSRCLR  ',1,1,2,bi,bj,TSWclr(1,myThid))
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'OLRCLR  ',1,1,2,bi,bj,OLWclr(1,myThid))
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'SWGCLR  ',1,1,2,bi,bj,SSWclr(1,myThid))
+         CALL FILL_DIAGNOSTICS(myThid,
+     &        'LWGCLR  ',1,1,2,bi,bj,SLWclr(1,myThid))
+        ENDIF
+#endif /* ALLOW_CLR_SKY_DIAG */
+
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_AIM */
 

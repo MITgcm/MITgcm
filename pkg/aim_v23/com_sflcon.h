@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_sflcon.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_sflcon.h,v 1.2 2004/06/24 23:41:12 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -18,15 +18,16 @@ C      CHS    = heat exchange coefficient over sea
 C      VGUST  = wind speed for sub-grid-scale gusts
 C      CTDAY  = daily-cycle correction (dTskin/dSSRad)
 C      DTHETA = Potential temp. gradient for stability correction
+C      dTstab = potential temp. increment for stability function derivative
 C      FSTAB  = Amplitude of stability correction (fraction)
 C      HDRAG  = Height scale for orographic correction
 C      FHDRAG = Amplitude of orographic correction (fraction)
       COMMON /SFLCON/ FWIND0, FTEMP0, FHUM0,
      &                CDL, CDS, CHL, CHS, VGUST, CTDAY,
-     &                DTHETA, FSTAB, HDRAG, FHDRAG
+     &                DTHETA, dTstab, FSTAB, HDRAG, FHDRAG
       _RL FWIND0, FTEMP0, FHUM0
       _RL CDL, CDS, CHL, CHS, VGUST, CTDAY
-      _RL DTHETA, FSTAB, HDRAG, FHDRAG
+      _RL DTHETA, dTstab, FSTAB, HDRAG, FHDRAG
 
 C--   COMMON /SFLFIX/: Time-invariant fields (initial. in SFLSET)
 c     COMMON /SFLFIX/ FOROG

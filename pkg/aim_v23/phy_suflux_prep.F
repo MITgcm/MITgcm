@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_prep.F,v 1.1 2004/03/11 14:33:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_prep.F,v 1.2 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE SUFLUX_PREP(
      I                   PSA,TA,QA,RH,ThA,Vsurf2,WVS,CLAT,FOROG,
      I                   FMASK,TLAND,TSEA,TSICE,SSR,
-     O                   SPEED0,DRAG,CDENVV,dTskin,T0,Q0,
+     O                   SPEED0,DRAG,DENVV,dTskin,T1,T0,Q0,
      I                   kGrd,bi,bj,myThid)
 
 C     !DESCRIPTION: \bv
@@ -68,8 +68,9 @@ C--   Output:
 C    SPEED0 :: effective surface wind speed    (2-dim)
 C    DRAG   :: surface Drag term (= Cd*Rho*|V|)(2-dim)
 C                         ==> USTR,VSTR are no longer used
-C    CDENVV :: sensible heat flux coefficient (1:land, 2:sea, 3:sea-ice)
+C    DENVV  :: surface flux (sens,lat.) coeff. (=Rho*|V|) [kg/m2/s]
 C    dTskin :: temp. correction for daily-cycle heating [K]
+C    T1     :: near-surface air temperature (from Pot.Temp)
 C    T0     :: near-surface air temperature    (2-dim)
 C    Q0     :: near-surface sp. humidity [g/kg](2-dim)
 C--   Input:
@@ -83,7 +84,7 @@ C--
       _RL  FMASK(NGP,3), TLAND(NGP), TSEA(NGP), TSICE(NGP)
       _RL  SSR(NGP)
 
-      _RL  SPEED0(NGP), DRAG(NGP,0:3), CDENVV(NGP,3)
+      _RL  SPEED0(NGP), DRAG(NGP,0:3), T1(NGP), DENVV(NGP)
       _RL  dTskin(NGP), T0(NGP), Q0(NGP)
 
       INTEGER kGrd(NGP)
@@ -93,15 +94,15 @@ CEOP
 #ifdef ALLOW_AIM
 
 C-- Local variables:
-       _RL  T1(NGP), QSAT0(NGP,2), DENVV(NGP)
+       _RL  QSAT0(NGP,2)
 
       INTEGER J, Ktmp, NL1
       _RL tmpRH(NGP)
       _RL factWind2, kappa
 
 C- jmc: declare all local variables:
-      _RL GTEMP0, GHUM0, RCP, PRD, VG2, RDTH
-      _RL FSLAND, FSSEA, FSSICE
+      _RL GTEMP0, GHUM0, RCP, PRD, VG2
+c     _RL RDTH, FSLAND, FSSEA, FSSICE
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   1. Extrapolation of wind, temp, hum. and density to the surface
@@ -205,21 +206,6 @@ c       VSTR(J,1) = -CDENVV(J,1)*VA(J,NLEV)
 c       USTR(J,2) = -CDENVV(J,2)*UA(J,NLEV)
 c       VSTR(J,2) = -CDENVV(J,2)*VA(J,NLEV)
 c     ENDDO
-
-C     2.2 Sensible heat flux (from clim. TS over land)
-
-C     Stability correction
-
-      RDTH = FSTAB/DTHETA
-
-      DO J=1,NGP
-        FSLAND=1.+MIN(DTHETA,MAX(-DTHETA,TLAND(J)+dTskin(J)-T1(J)))*RDTH
-        FSSEA =1.+MIN(DTHETA,MAX(-DTHETA, TSEA(J)-T1(J)))*RDTH
-        FSSICE=1.+MIN(DTHETA,MAX(-DTHETA,TSICE(J)-T1(J)))*RDTH
-        CDENVV(J,1)=CHL*DENVV(J)*FSLAND
-        CDENVV(J,2)=CHS*DENVV(J)*FSSEA
-        CDENVV(J,3)=CHS*DENVV(J)*FSSICE
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */

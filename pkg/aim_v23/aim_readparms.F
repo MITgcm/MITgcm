@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.7 2004/05/14 16:08:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.8 2004/06/24 23:43:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -71,6 +71,7 @@ C     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
 C     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 C     aim_dragStrato :: stratospheric-drag damping time scale (s)
+C     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
@@ -82,7 +83,7 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
      &    aim_swcFile,
      &    aim_dragStrato,
-     &    aim_taveFreq, aim_diagFreq, aim_tendFreq
+     &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq
 
 C--   Physical constants (common PHYCON) :
 C       P0    = reference pressure                 [Pa=N/m2]
@@ -123,13 +124,14 @@ C      CHS    = heat exchange coefficient over sea
 C      VGUST  = wind speed for sub-grid-scale gusts
 C      CTDAY  = daily-cycle correction (dTskin/dSSRad)
 C      DTHETA = Potential temp. gradient for stability correction
+C      dTstab = potential temp. increment for stability function derivative
 C      FSTAB  = Amplitude of stability correction (fraction)
 C      HDRAG  = Height scale for orographic correction
 C      FHDRAG = Amplitude of orographic correction (fraction)
       NAMELIST /AIM_PAR_SFL/
      &    FWIND0, FTEMP0, FHUM0,
      &    CDL, CDS, CHL, CHS, VGUST, CTDAY,
-     &    DTHETA, FSTAB, HDRAG, FHDRAG
+     &    DTHETA, dTstab, FSTAB, HDRAG, FHDRAG
 
 C--   Convection constants (common CNVCON) :
 C      PSMIN  = minimum (norm.) sfc. pressure for the occurrence of convection
@@ -232,6 +234,19 @@ C--   Close the open data file
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check parameters and model configuration
 
+#ifndef ALLOW_CLR_SKY_DIAG
+C-    If aim_clrSkyDiag is set, then must compile the Clear-Sky Diagnostic code
+      IF ( aim_clrSkyDiag ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'AIM_READPARMS: aim_clrSkyDiag=T but ALLOW_CLR_SKY_DIAG undef'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)')
+     &  'Re-compile with: #define ALLOW_CLR_SKY_DIAG (AIM_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R AIM_READPARMS'
+      ENDIF
+#endif
+
 C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
 #ifndef ALLOW_AIM_TAVE
       IF (aim_taveFreq.GT.0.) THEN
@@ -239,8 +254,7 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
      &  'AIM_READPARMS: aim_taveFreq > 0 but ALLOW_AIM_TAVE undefined'
         CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(2A)')
-     &  'Re-compile with: #define ALLOW_AIM_TAVE',
-     &                    '  or -DALLOW_AIM_TAVE'
+     &  'Re-compile with: #define ALLOW_AIM_TAVE (AIM_OPTIONS.h)'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R AIM_READPARMS'
       ENDIF
@@ -280,6 +294,9 @@ C- namelist AIM_PARAMS:
      &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')       
        CALL WRITE_0D_R8(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
      &    ' /* stratospheric-drag damping time scale (s) */')
+       CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
+     &                 'aim_clrSkyDiag =',
+     &  ' /* do clear-sky radiation diagnostics */')       
        CALL WRITE_0D_R8( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
      &  '   /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_R8( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
@@ -327,6 +344,8 @@ C- namelist AIM_PAR_SFL:
      &  '   /* daily-cycle correction (dTskin/dSSRad) */')
        CALL WRITE_0D_R8( DTHETA,INDEX_NONE,'AIM_SFL: DTHETA =',
      &  '   /* Pot.Temp. gradient for stability correction */')
+       CALL WRITE_0D_R8( dTstab,INDEX_NONE,'AIM_SFL: dTstab =',
+     &  '   /* Pot.Temp. increment for stab.funct. derivative */')
        CALL WRITE_0D_R8( FSTAB, INDEX_NONE,'AIM_SFL:  FSTAB =',
      &  '   /* Amplitude of stability correction (fract.) */')
        CALL WRITE_0D_R8( HDRAG, INDEX_NONE,'AIM_SFL:  HDRAG =',
@@ -385,8 +404,6 @@ C- namelist AIM_PAR_RAD:
      &  '   /* abs. of dry air (visible band) */')
        CALL WRITE_0D_R8( ABSAER,INDEX_NONE,'AIM_RAD: ABSAER =',
      &  '   /* abs. of aerosols (visible band) */')
-       CALL WRITE_0D_R8( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
-     &  '   /* abs. of water vap. (vis. band)(/dq, 1g/kg) */')
        CALL WRITE_0D_R8( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
      &  '   /* abs. of water vap. (vis. band)(/dq, 1g/kg) */')
        CALL WRITE_0D_R8( ABSWV2,INDEX_NONE,'AIM_RAD: ABSWV2 =',
