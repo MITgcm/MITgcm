@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.5 2004/04/17 22:46:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.6 2004/10/09 20:44:09 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -106,3 +106,5 @@ C           filled in some way.
 #endif /* _CPP_EEOPTIONS_H_ */
 
 #include "CPP_EEMACROS.h"
+
+#include "BUILD_INFO.h"
