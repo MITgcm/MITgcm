@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.3 2004/04/05 15:27:06 edhill Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE EXCH2_SEND_RX2 (
@@ -430,3 +433,9 @@ C      Store MPI_Wait token in messageHandle.
  
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

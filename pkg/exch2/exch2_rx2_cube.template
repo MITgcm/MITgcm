@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.1 2004/01/09 20:46:09 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -226,4 +226,8 @@ C             that is has consumed the buffer the sender filled here.
       RETURN
       END
 
-C ----------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

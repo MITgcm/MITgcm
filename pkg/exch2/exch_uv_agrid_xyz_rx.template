@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch_uv_agrid_xyz_rx.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
+C $Name:  $
+
       subroutine exch_uv_agrid_xyz_RX( component1,component2, myThid )
 #include "CPP_EEOPTIONS.h"
       implicit none
@@ -145,3 +148,9 @@ C south
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE EXCH2_RECV_RX1(
@@ -178,3 +181,9 @@ C        Read from e2Bufr1_RX(iBufr,mb,nb)
  
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
