@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.3 2001/02/28 14:45:21 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -59,15 +59,15 @@ C     == Local variables ==
          ENDDO
         ENDDO
 
-       ENDDO
-      ENDDO
-
 #ifdef ALLOW_ORLANSKI
         IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &      useOrlanskiEast.OR.useOrlanskiWest) THEN
           CALL ORLANSKI_INIT(bi, bj, myThid)
         ENDIF
 #endif /* ALLOW_ORLANSKI */
+
+       ENDDO
+      ENDDO     
 
 C--   Apply OBCS values to initial conditions for consistancy
       DO bj = myByLo(myThid), myByHi(myThid)
