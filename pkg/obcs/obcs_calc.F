@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.10 2004/10/12 18:37:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.11 2004/10/19 17:40:17 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -39,8 +39,15 @@ C     == Local variables ==
       INTEGER I, J , K, I_obc, J_obc
       _RL Tr_T, Ar_T, Tr, Ar 
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('OBCS_CALC',myThid)
+#endif
+
 #ifdef ALLOW_OBCS_EAST
 C     Eastern OB
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_MSG('OBCS_CALC: East',myThid)
+#endif
       IF (useOrlanskiEast) THEN
 #ifdef ALLOW_ORLANSKI
         CALL ORLANSKI_EAST(
@@ -73,6 +80,9 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_WEST
 C     Western OB
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_MSG('OBCS_CALC: West',myThid)
+#endif
       IF (useOrlanskiWest) THEN
 #ifdef ALLOW_ORLANSKI
         CALL ORLANSKI_WEST(
@@ -105,6 +115,9 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_NORTH
 C         Northern OB
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_MSG('OBCS_CALC: North',myThid)
+#endif
       IF (useOrlanskiNorth) THEN
 #ifdef ALLOW_ORLANSKI
         CALL ORLANSKI_NORTH(
@@ -137,6 +150,9 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_SOUTH
 C         Southern OB
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_MSG('OBCS_CALC: South',myThid)
+#endif
       IF (useOrlanskiSouth) THEN   
 #ifdef ALLOW_ORLANSKI
         CALL ORLANSKI_SOUTH(
@@ -171,6 +187,9 @@ C ------------------------------------------------------------------------------
 #ifdef ALLOW_OBCS_PRESCRIBE
       IF (useOBCSprescribe) THEN
 C--     Calculate future values on open boundaries
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('OBCS_PRESCRIBE_READ',myThid)
+#endif
         CALL OBCS_PRESCRIBE_READ(futureTime, futureIter, mythid)
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
@@ -179,6 +198,9 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
+#endif
 
 #ifdef ALLOW_OBCS_EAST
         Tr_T = 0. _d 0
@@ -293,5 +315,8 @@ c                OBSu(I,K,bi,bj) = 0.
 
 #endif /* ALLOW_OBCS */
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
+#endif
       RETURN
       END

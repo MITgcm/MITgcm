@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.40 2004/10/08 17:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.41 2004/10/19 17:42:27 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,22 +85,38 @@ C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('INITIALISE_VARIA',myThid)
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 
       nIter0 = INT( startTime/deltaTClock )
 
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
+#endif
       CALL INI_LINEAR_PHISURF( myThid )
 
 C--   Set coriolis operators
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CORI',myThid)
+#endif
       CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CG2D',myThid)
+#endif
       CALL INI_CG2D( myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
 ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_CG3D',myThid)
+#endif
       CALL INI_CG3D( myThid )
 #endif
 
@@ -108,10 +124,16 @@ ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
       _BARRIER
 
 C--   Initialise 3-dim. diffusivities
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_MIXING',myThid)
+#endif
       CALL INI_MIXING( myThid )
       _BARRIER
 
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_DYNVARS',myThid)
+#endif
       CALL INI_DYNVARS( myThid )
 
 C--   Initialise model fields.
@@ -119,6 +141,9 @@ C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
 C     stored files.
 #ifndef ALLOW_OFFLINE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
+#endif
       CALL INI_FIELDS( myThid )
 #endif
       _BARRIER
@@ -130,6 +155,9 @@ C--   Initialise active fields to help TAMC
 #endif
 
 C--   Initialize variable data for packages
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PACKAGES_INIT_VARIABLES',myThid)
+#endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
 
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -137,6 +165,9 @@ C--   Initialize variable data for packages
 C-- IMPORTANT : Need to activate the following call to restart from 
 C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
       IF ( startTime .NE. 0. ) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_CORRECTION_STEP',myThid)
+#endif
        CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
       ENDIF
       ENDIF
@@ -145,6 +176,9 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
 C--   Initial conditions are convectively adjusted (for historical reasons)
 #ifndef ALLOW_OFFLINE
       IF ( startTime .EQ. 0. .AND. cAdjFreq .NE. 0. ) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CONVECTIVE_ADJUSTMENT_INI',myThid)
+#endif
 CADJ loop = parallel 
         DO bj = myByLo(myThid), myByHi(myThid)
 CADJ loop = parallel
@@ -182,6 +216,9 @@ C-    update also CG2D matrix (and preconditioner)
 #endif /* NONLIN_FRSURF */
 
 #ifndef ALLOW_OFFLINE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INTEGR_CONTINUITY',myThid)
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -226,6 +263,9 @@ c      ENDIF
 c     ENDIF
 
 #ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('TIMEAVE_STATVARS',myThid)
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -236,6 +276,9 @@ C--   initialise time-average arrays with initial state values
 cswdptr -- add ---
 #ifdef ALLOW_PTRACERS
 che3 needs an IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PTRACERS_STATVARS',myThid)
+#endif
            CALL PTRACERS_STATVARS(startTime, nIter0, bi, bj, myThid)
 #endif
 cswdptr -- end add ---
@@ -261,7 +304,13 @@ C--   Fill in overlap regions for wVel :
 #endif
 
 C--   Finally summarise the model state
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('STATE_SUMMARY',myThid)
+#endif
       CALL STATE_SUMMARY( myThid )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_VARIA',myThid)
+#endif
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.38 2004/10/12 15:14:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.39 2004/10/19 17:42:27 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,21 +75,34 @@ C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('PACKAGES_INIT_VARIABLES',myThid)
+#endif
+
 #ifdef ALLOW_CD_CODE
 C--   Initialize CD_CODE variables: 
 C- note(jmc): before packaging CD_CODE, was done within ini_fields (=called before),
 C             therefore call CD-ini-vars before others pkg.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CD_CODE_INI',myThid)
+#endif
       IF (useCDscheme) CALL CD_CODE_INI_VARS( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameterization
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CD_CODE_INI',myThid)
+#endif
       IF (useGMRedi) CALL GMREDI_INIT( myThid )
 #endif
 
 #ifdef ALLOW_KPP
 C--   Initialize KPP vertical mixing scheme.
       IF (useKPP) THEN
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('KPP_INIT + KPP_OPEN_DIAGS',myThid)
+#endif
        CALL KPP_INIT( myThid )
        CALL KPP_OPEN_DIAGS( myThid )
       ENDIF
@@ -98,6 +111,9 @@ C--   Initialize KPP vertical mixing scheme.
 #ifdef ALLOW_PP81
 C--   Initialize PP81 vertical mixing scheme.
       IF (usePP81) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PP81_INIT',myThid)
+#endif
        CALL PP81_INIT( myThid )
       ENDIF
 #endif
@@ -112,12 +128,18 @@ C--   Initialize MY82 vertical mixing scheme.
 #ifdef ALLOW_GGL90
 C--   Initialize GGL90 vertical mixing scheme.
       IF (useGGL90) THEN
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('GGL90_INIT',myThid)
+#endif
        CALL GGL90_INIT( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_SEAICE
 C--   Initialize SEAICE model.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT',myThid)
+#endif
       IF (useSEAICE) CALL SEAICE_INIT( myThid )
 #endif
 
@@ -133,6 +155,9 @@ cph#endif
 # ifndef ALLOW_AUTODIFF_TAMC
       IF ( usePTRACERS ) THEN
 # endif
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('PTRACERS_INIT',myThid)
+#endif
          CALL PTRACERS_INIT( mythid )
 #ifdef ALLOW_GCHEM
          CALL GCHEM_INIT_VARI( mythid )
@@ -143,6 +168,9 @@ cph#endif
 #endif
 
 #ifdef ALLOW_LAND
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('LAND_INI_VARS',myThid)
+#endif
       IF ( useLAND ) CALL LAND_INI_VARS( mythid )
 #endif
 
@@ -160,8 +188,14 @@ c--   Map the control variables onto the model state.
 #endif
 
 #ifdef ALLOW_EXF
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('EXF_INIT',myThid)
+#endif
       CALL EXF_INIT( mythid )
 cph#else
+#endif
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_FORCING',myThid)
 #endif
       CALL INI_FORCING( mythid )
 cph#endif
@@ -182,6 +216,9 @@ ceh3 needs an IF ( useCOST ) THEN
 
 #ifdef ALLOW_OBCS
 C--   Open boundaries data
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('OBCS_INIT_VARIABLES',myThid)
+#endif
       IF (useOBCS) CALL OBCS_INIT_VARIABLES( myThid )
 #endif
 
@@ -190,19 +227,31 @@ C--   Open boundaries data
 #endif
 
 #ifdef ALLOW_THSICE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THSICE_INI_VARS',myThid)
+#endif
       IF (useThSIce) CALL THSICE_INI_VARS( mythid)
 #endif
 
 #ifdef COMPONENT_MODULE
-      IF ( useCoupler ) CALL CPL_INI_VARS( mythid )
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CPL_INI_VARS',myThid)
+#endif
+      IF (useCoupler) CALL CPL_INI_VARS( mythid )
 #endif
 
 C AMM
 #ifdef ALLOW_FIZHI
 C Initialize FIZHI state variables
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('FIZHI_INIT_VARS',myThid)
+#endif
       IF (useFIZHI) CALL FIZHI_INIT_VARS( mythid)
 #endif
 C AMM
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('PACKAGES_INIT_VARIABLES',myThid)
+#endif
       RETURN
       END
