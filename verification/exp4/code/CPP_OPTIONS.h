@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/CPP_OPTIONS.h,v 1.10 2003/10/09 22:50:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/CPP_OPTIONS.h,v 1.11 2003/10/09 22:48:22 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,7 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
-#define NONLIN_FRSURF
+#undef NONLIN_FRSURF
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
