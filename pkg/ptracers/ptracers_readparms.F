@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.12 2004/10/28 00:32:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.13 2004/11/28 23:50:59 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,6 +41,7 @@ C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
       NAMELIST /PTRACERS_PARM01/
      &     PTRACERS_taveFreq,
+     &     PTRACERS_monitorFreq,
      &     PTRACERS_advScheme,
      &     PTRACERS_diffKh,
      &     PTRACERS_diffK4,
@@ -62,7 +63,8 @@ C     internal flag to indicate we are in business
       PTRACERSisON=.TRUE.
 
 C     Set defaults values for parameters in PTRACERS.h
-      PTRACERS_taveFreq=taveFreq
+      PTRACERS_taveFreq    = taveFreq
+      PTRACERS_monitorFreq = monitorFreq
       PTRACERS_numInUse=-1
       DO iTracer=1,PTRACERS_num
         PTRACERS_advScheme(iTracer)=saltAdvScheme
@@ -155,6 +157,8 @@ C       Set the default I/O Types
         IF (PTRACERS_read_mnc) PTRACERS_read_mdsio = .FALSE.
         IF ( (.NOT. outputTypesInclusive) 
      &       .AND. PTRACERS_write_mnc ) pickup_write_mdsio = .FALSE.
+        IF ( (.NOT. outputTypesInclusive) 
+     &       .AND. PTRACERS_write_mnc ) PTRACERS_write_mdsio = .FALSE.
         
 C       Initialize the MNC variable types for PTRACERS 
         CALL PTRACERS_MNC_INIT( myThid )
