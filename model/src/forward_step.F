@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.31 2002/02/08 22:14:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.32 2002/05/30 02:32:14 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,7 +85,7 @@ C--     Reset the model iteration counter and the model time.
         mytime = startTime + float(iloop-1)*deltaTclock
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
 C       Include call to a dummy routine. Its adjoint will be 
 C       called at the proper place in the adjoint code.
 C       The adjoint routine will print out adjoint values 
