@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/CPP_OPTIONS.h,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/CPP_OPTIONS.h,v 1.3 2001/02/08 04:20:39 cnh Exp $
 C $Name:  $
 C
 
@@ -30,7 +30,7 @@ C o Include/exclude diagnostics package interface code
 #define INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 
 C o Include/exclude zonal FFT filter code
-#define ALLOW_ZONAL_FILT
+#undef  ALLOW_ZONAL_FILT
 
 C o Include/exclude temperature advection code
 #define  INCLUDE_T_ADVECTION_CODE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.3 2001/02/08 04:20:39 cnh Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -28,6 +28,7 @@ C     Physics package
 #include "com_physvar.h"
 #include "com_forcing1.h"
 #include "Lev_def.h"
+#include "AIM_DDT.h"
 C     MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -167,7 +168,7 @@ C     per proc.
          I2 = (sNx)*(J-1)+I
          Katm = _KD2KA( K )
          UG1(I2,Katm)   = 0.5*(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-         VG1(I2,Katm)   = 0.5*(vVel(I,J,K,bi,bj)+uVel(I,J+1,K,bi,bj))
+         VG1(I2,Katm)   = 0.5*(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
 C        Phyiscs works with temperature - not potential temp.
          TG1(I2,Katm)   = theta(I,J,K,bi,bj)/((pGround/pSurfs(K))**(RD/CPAIR))
          QG1(I2,Katm)   = salt(I,J,K,bi,bj)
@@ -274,7 +275,9 @@ caja     IF ( I .GE. 64-10 .AND. I .LE. 65+10 ) THEN
 caja      sst1(I2) = 300.+10.*exp( -((float(I)-64.5)/5.)**2 )
 caja      stl1(I2) = sst1(I2)
 caja     ENDIF
-         sst1(I2) = 300.+10.*exp( -((float(I)-64.5)/25.)**2 )
+         sst1(I2) = 300.
+     &    +10.*exp( -((float(I)-64.5)/25.)**2 )
+     &    +10.*exp( -((float(J)-12.5)/25.)**2 )
          stl1(I2) = sst1(I2)
         ENDDO
        ENDDO
@@ -346,6 +349,17 @@ C     Calculate diagnostics for AIM
 #endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
 C
       FirstCall = .FALSE.
+C
+C     For velocity tendencies on C grid need to interpolate
+C     to do this in multi-processor mode we copy U and V tendencies
+C     into dynamics conforming array and then exchange.
+C     ** NOTE - Exchange at this point is not compatible with
+C               multiple-tiles per compute thread/process.
+C               However, AIM code itself is not compatible with
+C               this as its global data assumes only one "tile".
+      CALL AIM_UTVT2DYN( bi, bj, myThid )
+      _EXCH_XYZ_R8( AIM_UT, myThid )
+      _EXCH_XYZ_R8( AIM_VT, myThid )
 C
 #endif /* ALLOW_AIM */
 
