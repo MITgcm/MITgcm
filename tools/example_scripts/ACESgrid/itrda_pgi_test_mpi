@@ -25,7 +25,9 @@ EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 cat << EOF > $RUNIT
 #!/bin/bash
 
-$EXE > output.txt
+$EXE
+
+cp -p STDOUT.0000 output.txt
 
 EOF
 chmod a+x $RUNIT
