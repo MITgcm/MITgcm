@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.5 1998/09/06 14:45:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.6 1998/09/06 17:35:20 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -187,7 +187,7 @@ C--    Set gamma to convert from N/m^2 to m/s^2
        IF     ( UsingZCoords ) THEN
         gamma = 1. _d 0 / (delR(1)*rhonil)
        ELSEIF ( UsingPCoords ) THEN
-        gamma = Gravity / (delR(1))
+        gamma = Gravity / delR(1)
        ELSE
         WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
         CALL PRINT_ERROR( msgBuf, 1 )
@@ -200,7 +200,7 @@ C--    Set gamma to convert from N/m^2 to m/s^2
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           fu(i,j,bi,bj) = fu(i,j,bi,bj)/(delZ(1)*rhonil)
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)*gamma
           ENDDO
          ENDDO
         ENDDO
@@ -225,7 +225,7 @@ C--    Set gamma to convert from N/m^2 to m/s^2
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)*gamma
           ENDDO
          ENDDO
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.9 1998/09/06 14:45:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.10 1998/09/06 17:35:19 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -72,6 +72,11 @@ C--   Initialise inverter
       sumRHSBuf(1,myThid) = 0. D0
       etaNM1              = 1. D0
 
+CcnhDebugStarts
+      _EXCH_XY_R8( cg2d_b, myThid )
+      CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.0 CG2D_B' , 1, myThid )
+CcnhDebugEnds
+
 C--   Normalise RHS
       rhsMax = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -104,7 +109,7 @@ C--   Update overlaps
       _EXCH_XY_R8( cg2d_b, myThid )
       _EXCH_XY_R8( cg2d_x, myThid )
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
+      CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initial residual calculation
@@ -124,7 +129,7 @@ C--   Initial residual calculation
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)* Gravity*rhoConst*
+     &    -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
      &    )
           err            = err            + 
@@ -157,7 +162,7 @@ C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it2d=1, cg2dMaxIters
 
 CcnhDebugStarts
-       WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',actualResidual
+C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',actualResidual
 CcnhDebugEnds
        IF ( err .LT. cg2dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
@@ -225,7 +230,7 @@ C==    q = A.s
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)* Gravity*rhoConst*
+     &    -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
      &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
           alpha = alpha+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO

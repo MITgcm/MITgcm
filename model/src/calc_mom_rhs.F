@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.28 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.29 1998/09/06 17:35:19 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -159,30 +159,30 @@ C     Initialise intermediate terms
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac     = afFacMom*1.D0
-      AhDudxFac    = vfFacMom*1.D0
-      A4DuxxdxFac  = vfFacMom*1.D0
-      vDudyFac     = afFacMom*1.D0
-      AhDudyFac    = vfFacMom*1.D0
-      A4DuyydyFac  = vfFacMom*1.D0
-      rVelDudrFac  = afFacMom*1.D0
-      ArDudrFac    = vfFacMom*1.D0
-      mTFacU       = mtFacMom*1.D0
-      fuFac        = cfFacMom*1.D0
-      phxFac       = pfFacMom*1.D0
+      uDudxFac     = afFacMom*0.D0
+      AhDudxFac    = vfFacMom*0.D0
+      A4DuxxdxFac  = vfFacMom*0.D0
+      vDudyFac     = afFacMom*0.D0
+      AhDudyFac    = vfFacMom*0.D0
+      A4DuyydyFac  = vfFacMom*0.D0
+      rVelDudrFac  = afFacMom*0.D0
+      ArDudrFac    = vfFacMom*0.D0
+      mTFacU       = mtFacMom*0.D0
+      fuFac        = cfFacMom*0.D0
+      phxFac       = pfFacMom*0.D0
       uForcFac     = foFacMom*1.D0
 C     o V momentum equation
-      uDvdxFac     = afFacMom*1.D0
-      AhDvdxFac    = vfFacMom*1.D0
-      A4DvxxdxFac  = vfFacMom*1.D0
-      vDvdyFac     = afFacMom*1.D0
-      AhDvdyFac    = vfFacMom*1.D0
-      A4DvyydyFac  = vfFacMom*1.D0
-      rVelDvdrFac  = afFacMom*1.D0
-      ArDvdrFac    = vfFacMom*1.D0
-      mTFacV       = mtFacMom*1.D0
-      fvFac        = cfFacMom*1.D0
-      phyFac       = pfFacMom*1.D0
+      uDvdxFac     = afFacMom*0.D0
+      AhDvdxFac    = vfFacMom*0.D0
+      A4DvxxdxFac  = vfFacMom*0.D0
+      vDvdyFac     = afFacMom*0.D0
+      AhDvdyFac    = vfFacMom*0.D0
+      A4DvyydyFac  = vfFacMom*0.D0
+      rVelDvdrFac  = afFacMom*0.D0
+      ArDvdrFac    = vfFacMom*0.D0
+      mTFacV       = mtFacMom*0.D0
+      fvFac        = cfFacMom*0.D0
+      phyFac       = pfFacMom*0.D0
       vForcFac     = foFacMom*1.D0
 
 C--   Adams-Bashforth weighting factors

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.18 1998/09/06 14:45:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.19 1998/09/06 17:35:20 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -82,7 +82,7 @@ C     aS2d: integral in Z Ay/dY
        cg2dNorm = myNorm
       _BEGIN_MASTER( myThid )
 CcnhDebugStarts
-       WRITE(msgBuf,'(A,F)') '// CG2D normalisation factor = ', cg2dNorm
+       WRITE(msgBuf,'(A,E40.25)') '// CG2D normalisation factor = ', cg2dNorm
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,*) '                               '
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -133,19 +133,19 @@ C           defaults to 0.51 but can be set at runtime.
           aC = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
+     &    +freeSurfFac*myNorm* horiVertRatio*
      &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
-     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
+     &    +freeSurfFac*myNorm* horiVertRatio*
      &     rA(I,J-1,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
+     &    +freeSurfFac*myNorm* horiVertRatio*
      &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           IF ( aC .EQ. 0. ) THEN
