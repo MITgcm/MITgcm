@@ -1810,6 +1810,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_mean                      =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
@@ -1852,6 +1853,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.9664053936784E-05
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.0926139801085E-04
 (PID.TID 0000.0001) %MON ke_mean                      =   1.8469128271821E-05
 (PID.TID 0000.0001) // =======================================================
@@ -1894,6 +1896,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.7873388119385E-05
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   3.4635151636303E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   7.9605483238568E-04
 (PID.TID 0000.0001) %MON ke_mean                      =   6.8219565607818E-05
 (PID.TID 0000.0001) // =======================================================
@@ -1936,6 +1939,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.3966509492284E-05
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.7633668497706E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   1.6745482526364E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   1.4410635111763E-04
 (PID.TID 0000.0001) // =======================================================
@@ -1978,6 +1982,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0734801158037E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.8248084035217E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.7349984773341E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.3695859012060E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2020,6 +2025,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.2750625973368E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.2579888537123E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.8562820301118E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.3745655705044E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2062,6 +2068,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.4403184108971E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.4968812604619E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   4.9194682525315E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.3651460317843E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2104,6 +2111,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.5663554281135E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.6941143990454E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   5.8207528033613E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   5.2611915687131E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2146,6 +2154,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.6516349920858E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.8456865230576E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   6.4819323381827E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   5.9997246093697E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2526,6 +2535,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.6960648265009E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.9487340907284E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   6.8568761628117E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.5389487414102E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2568,6 +2578,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.7010050751783E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   2.0016238012483E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   6.9331628689600E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.8596727845023E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2610,6 +2621,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.6698886215893E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   2.0040451078327E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   6.7290215645682E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.9642408212150E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2652,6 +2664,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.6229507142008E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.9571036942588E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   6.2866410125185E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.8733358714246E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2694,6 +2707,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.5515156285148E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.8634083874873E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   5.6831244055454E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.6212351273423E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2736,6 +2750,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.4613626343082E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.7271332954868E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   5.1496940653537E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.2502297409544E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2778,6 +2793,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.3893103125436E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.5540263829621E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   4.6124723031321E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   5.8049657008495E-04
 (PID.TID 0000.0001) // =======================================================
@@ -2820,6 +2836,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.3259104937709E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3513291926499E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   4.1707274251650E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   5.3274073626398E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3200,6 +3217,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.2640241886916E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.1275739658498E-04
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.8500359512803E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.8529770500181E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3242,6 +3260,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.2201092726779E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.9223648432330E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.5309961790860E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.4082029068215E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3284,6 +3303,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.1735504455511E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.5524519986744E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.2929629494147E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.0099478363798E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3326,6 +3346,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.1344388412976E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.9752315858975E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.0672347804072E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.6660406699792E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3368,6 +3389,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0982684465168E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.6534994843964E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.8697650114623E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.3769341050040E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3410,6 +3432,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0634439206077E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.4839132803830E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.7032966567703E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.1379092742638E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3452,6 +3475,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0344435794770E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.2130890259515E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.5383541241775E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.9413489244600E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3494,6 +3518,7 @@
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0034824389802E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.0718082966278E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   2.4107824184859E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.7786976487559E-04
 (PID.TID 0000.0001) // =======================================================
@@ -3838,93 +3863,100 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  5.92999983
-(PID.TID 0000.0001)         System time:  0.0499999989
-(PID.TID 0000.0001)     Wall clock time:  5.97583294
+(PID.TID 0000.0001)           User time:  6.48000002
+(PID.TID 0000.0001)         System time:  0.0799999982
+(PID.TID 0000.0001)     Wall clock time:  6.78812504
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED   [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.239999995
+(PID.TID 0000.0001)           User time:  0.25
 (PID.TID 0000.0001)         System time:  0.00999999978
-(PID.TID 0000.0001)     Wall clock time:  0.251052022
+(PID.TID 0000.0001)     Wall clock time:  0.328373075
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  5.64000012
-(PID.TID 0000.0001)         System time:  0.0399999991
-(PID.TID 0000.0001)     Wall clock time:  5.67729008
+(PID.TID 0000.0001)           User time:  6.19000006
+(PID.TID 0000.0001)         System time:  0.0600000005
+(PID.TID 0000.0001)     Wall clock time:  6.41189098
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0300000161
+(PID.TID 0000.0001)           User time:  0.0500000119
 (PID.TID 0000.0001)         System time:  0.00999999978
-(PID.TID 0000.0001)     Wall clock time:  0.0369470119
+(PID.TID 0000.0001)     Wall clock time:  0.0650669336
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "WRITE_STATE         [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.0199999809
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0226169825
+(PID.TID 0000.0001)     Wall clock time:  0.0261950493
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.0100000203
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00766801834
+(PID.TID 0000.0001)     Wall clock time:  0.00789606571
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  5.5800001
-(PID.TID 0000.0001)         System time:  0.0299999993
-(PID.TID 0000.0001)     Wall clock time:  5.60976207
+(PID.TID 0000.0001)           User time:  6.11000004
+(PID.TID 0000.0001)         System time:  0.0500000007
+(PID.TID 0000.0001)     Wall clock time:  6.31243801
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  6.11000004
+(PID.TID 0000.0001)         System time:  0.0500000007
+(PID.TID 0000.0001)     Wall clock time:  6.31105065
+(PID.TID 0000.0001)          No. starts: 24
+(PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)           USTOP NORMAL END statement executed
+ser time:  0.00999999046
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00135302544
+(PID.TID 0000.0001)     Wall clock time:  0.00237607956
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.57999986
-(PID.TID 0000.0001)         System time:  0.00999999978
-(PID.TID 0000.0001)     Wall clock time:  1.57802713
+(PID.TID 0000.0001)           User time:  1.68000048
+(PID.TID 0000.0001)         System time:  0.0300000031
+(PID.TID 0000.0001)     Wall clock time:  1.76205909
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  3.44999987
-(PID.TID 0000.0001)         System time:  0.0100000016
-(PID.TID 0000.0001)     Wall clock time:  3.47044039
+(PID.TID 0000.0001)           User time:  3.8299987
+(PID.TID 0000.0001)         System time:  0.0199999977
+(PID.TID 0000.0001)     Wall clock time:  3.85388708
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0999996662
+(PID.TID 0000.0001)           User time:  0.0899999738
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.11147809
+(PID.TID 0000.0001)     Wall clock time:  0.113180995
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0199997425
+(PID.TID 0000.0001)           User time:  0.0499999523
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0162818432
+(PID.TID 0000.0001)     Wall clock time:  0.0164897442
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.180000544
-(PID.TID 0000.0001)         System time:  0.00999999791
-(PID.TID 0000.0001)     Wall clock time:  0.187178254
+(PID.TID 0000.0001)           User time:  0.160000324
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.286604404
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)           User time:  0.0200004578
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00134682655
+(PID.TID 0000.0001)     Wall clock time:  0.00138306618
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT   [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0499997139
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0472340584
+(PID.TID 0000.0001)           User time:  0.0300002098
+(PID.TID 0000.0001)         System time:  0.00999999791
+(PID.TID 0000.0001)     Wall clock time:  0.0475898981
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
@@ -3942,8 +3974,8 @@
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          11853
+(PID.TID 0000.0001) //            No. barriers =          11953
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          11853
+(PID.TID 0000.0001) //     Total barrier spins =          11953
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
