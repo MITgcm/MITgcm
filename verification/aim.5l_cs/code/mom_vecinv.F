@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.2 2003/02/08 02:20:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.3 2003/04/11 13:42:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -264,10 +264,6 @@ C      or in terms of tension and strain
        ENDIF
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c     include 'mom_vecinv.inc'
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 C---- Zonal momentum equation starts here
 
 C--   Vertical flux (fVer is at upper face of "u" cell)
@@ -332,13 +328,6 @@ c        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
 c       ENDDO
 c      ENDDO
 c     ENDIF
-
-C--   Set du/dt on boundaries to zero
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
 
 
 C---- Meridional momentum equation starts here
@@ -406,80 +395,79 @@ c       ENDDO
 c      ENDDO
 c     ENDIF
 
-C--   Set dv/dt on boundaries to zero
+C--   Horizontal Coriolis terms
+      CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
+c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
+      IF (useCoriolis) THEN
+       CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,omega3,hFacZ,r_hFacZ,
+     &                      uCf,vCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+
+      IF (momAdvection) THEN
+C--   Horizontal advection of relative vorticity
+c      CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,r_hFacZ,uCf,myThid)
+       CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,vort3,hFacZ,r_hFacZ,
+     &                        uCf,myThid)
+c      CALL MOM_VI_U_CORIOLIS_C4(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+        ENDDO
+       ENDDO
+c      CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,r_hFacZ,vCf,myThid)
+       CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,vort3,hFacZ,r_hFacZ,
+     &                       vCf,myThid)
+c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        ENDDO
+       ENDDO
+
+C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
+       CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+        ENDDO
+       ENDDO
+       CALL MOM_VI_V_VERTSHEAR(bi,bj,K,vVel,wVel,vCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        ENDDO
+       ENDDO
+
+C--   Bernoulli term
+       CALL MOM_VI_U_GRAD_KE(bi,bj,K,KE,uCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+        ENDDO
+       ENDDO
+       CALL MOM_VI_V_GRAD_KE(bi,bj,K,KE,vCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        ENDDO
+       ENDDO
+C--   end if momAdvection
+      ENDIF
+
+C--   Set du/dt & dv/dt on boundaries to zero
       DO j=jMin,jMax
        DO i=iMin,iMax
+        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
-C--   Horizontal Coriolis terms
-      CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
-c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
-      CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,omega3,hFacZ,r_hFacZ,
-     &                     uCf,vCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = (gU(i,j,k,bi,bj)+uCf(i,j))
-     &                    *_maskW(i,j,k,bi,bj)
-        gV(i,j,k,bi,bj) = (gV(i,j,k,bi,bj)+vCf(i,j))
-     &                    *_maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-c     CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,r_hFacZ,uCf,myThid)
-      CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,vort3,hFacZ,r_hFacZ,
-     &                       uCf,myThid)
-c     CALL MOM_VI_U_CORIOLIS_C4(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = (gU(i,j,k,bi,bj)+uCf(i,j))
-     &                    *_maskW(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-c     CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,r_hFacZ,vCf,myThid)
-      CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,vort3,hFacZ,r_hFacZ,
-     &                       vCf,myThid)
-c     CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = (gV(i,j,k,bi,bj)+vCf(i,j))
-     &                    *_maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-      IF (momAdvection) THEN
-C--   Vertical shear terms (Coriolis)
-      CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = (gU(i,j,k,bi,bj)+uCf(i,j))
-     &                    *_maskW(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-      CALL MOM_VI_V_VERTSHEAR(bi,bj,K,vVel,wVel,vCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = (gV(i,j,k,bi,bj)+vCf(i,j))
-     &                    *_maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-C--   Bernoulli term
-      CALL MOM_VI_U_GRAD_KE(bi,bj,K,KE,uCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = (gU(i,j,k,bi,bj)+uCf(i,j))
-     &                    *_maskW(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-      CALL MOM_VI_V_GRAD_KE(bi,bj,K,KE,vCf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = (gV(i,j,k,bi,bj)+vCf(i,j))
-     &                    *_maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-      ENDIF
 
       IF (
      &  DIFFERENT_MULTIPLE(diagFreq,myCurrentTime,
@@ -492,7 +480,7 @@ C--   Bernoulli term
        CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
-       CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
+c      CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('D','I10',1,hdiv,bi,bj,k,myIter,myThid)
       ENDIF
