@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.5 2004/10/14 11:56:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.6 2004/10/19 17:52:03 adcroft Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -51,7 +51,7 @@ c     == end of interface ==
      I                       obcsNstartdate, obcsNperiod
      I                     , obcsNstartdate1, obcsNstartdate2
      I                     , .false.
-     O                     , fac, first, changed,
+     O                     , fac, first, changed
      O                     , count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
@@ -174,5 +174,5 @@ cgg    calendar information as other boundaries.
 
 #endif /* ALLOW_OBCS */
 
-      end
-
+      RETURN
+      END
