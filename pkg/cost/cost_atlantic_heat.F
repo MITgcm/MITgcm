@@ -16,7 +16,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-
 #include "cost.h"
 
 C     ======== Routine arguments ======================
@@ -31,14 +30,16 @@ C     ========= Local variables =========================
       integer ig, jg
       integer bi, bj
       _RL     locfc
-      _RL        vVel_bar(Nr), theta_bar(Nr), count(Nr)
+      _RL     vVel_bar(Nr), theta_bar(Nr) 
+      _RL     countT(Nr), countV(Nr)
       _RL     petawatt
       _RL     sum
       parameter( petawatt = 1.e+15 )
 
 C     80W - 0W at 24N
+cph      parameter( isecbeg = 66, isecend = 86, jsec = 27 )
       parameter( isecbeg = 70, isecend = 90, jsec = 27 )
-      parameter ( kmaxdepth = 15 )
+      parameter ( kmaxdepth = 12 )
 C     80W - 0W at 48N
 C      parameter( isecbeg = 70, isecend = 90, jsec = 33 )
 C      parameter ( kmaxdepth = 14 )
@@ -55,6 +56,8 @@ C------------------------------------------------------
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
         locfc = 0.0
+        sum = 0.0
+
         do j=1,sNy
          jg = myYGlobalLo-1+(bj-1)*sNy+j
          if (jg .eq. jsec) then
@@ -81,32 +84,43 @@ C------------------------------------------------------
           do k = 1, Nr
            vVel_bar(k) = 0.0
            theta_bar(k) = 0.0
-           count(k) = 0.0
+           countT(k) = 0.0
+           countV(k) = 0.0
            do i=1,sNx
             ig = myXGlobalLo-1+(bi-1)*sNx+i
+c
             if ((ig .ge. isecbeg) .and. (ig .le. isecend)) then
-             vVel_bar(k) = vVel_bar(k) + vVel(i,j,k,bi,bj)
-             theta_bar(k) = theta_bar(k) + 
-     &            0.5*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj) )
-             count(k) = count(k) + maskS(i,j,k,bi,bj)
+             vVel_bar(k) = vVel_bar(k) 
+     &                      + vVel(i,j,k,bi,bj)
+     &                      *maskS(i,j,k,bi,bj)
+             theta_bar(k) = theta_bar(k)
+     &                      + theta(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)
+cph     &            0.5*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj) )
+cph     &               *maskS(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+             countT(k) = countT(k) + maskC(i,j,k,bi,bj)
+             countV(k) = countV(k) + maskS(i,j,k,bi,bj)
             end if
+
            enddo
           enddo
-          sum = 0.0
-          do k = 1, kmaxdepth
-           sum = sum
-     &          + vVel_bar(k) *theta_bar(k) 
-     &          * drF(k) / count(k)
+c
+          do k = 1, Nr
+           if ( k .LE. kmaxdepth .AND.
+     &          countT(k) .NE. 0 .AND. countV(k) .NE. 0) then
+            sum = sum
+     &            + vVel_bar(k) * theta_bar(k) * drF(k) 
+     &            / ( countT(k) * countV(k) )
+           end if
           end do
-          locfc = locfc + sum*dxG(i,j,bi,bj)
 
 #endif
 
          end if
         end do
-        locfc = locfc*HeatCapacity_Cp*rhonil/petawatt
 
-        objf_atl(bi,bj) = objf_atl(bi,bj) + locfc
+        objf_atl(bi,bj) = 
+     &   sum*HeatCapacity_Cp*rhonil/petawatt
 
 c--   end of bi,bj loop
        end do
