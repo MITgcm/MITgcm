@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.9 2002/06/21 18:36:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.10 2002/09/23 16:13:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,9 +58,16 @@ C     vTrans :: Volume transports ( vVel.yA )
       INTEGER i,j,k
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL convertVol2Mass
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( buoyancyRelation .eq. 'OCEANICP' )  THEN
+        convertVol2Mass = horiVertRatio
+      ELSE
+        convertVol2Mass = 1.
+      ENDIF
 
       IF ( UpdateEtaN_EtaH .OR. myTime.EQ.startTime ) THEN
 
@@ -117,7 +124,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
         DO j=1,sNy
          DO i=1,sNx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      - implicDiv2Dflow*( EmPmR(i,j,bi,bj)
+     &      - implicDiv2Dflow*( convertVol2Mass*EmPmR(i,j,bi,bj)
      &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &                        )*deltaTfreesurf
          ENDDO
@@ -200,7 +207,7 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
         DO j=1,sNy
          DO i=1,sNx
            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
-     &      - (1. - implicDiv2Dflow)*( EmPmR(i,j,bi,bj)
+     &      - (1. - implicDiv2Dflow)*( convertVol2Mass*EmPmR(i,j,bi,bj)
      &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &                               )*deltaTfreesurf
          ENDDO

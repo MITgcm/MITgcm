@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.33 2002/06/21 18:36:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.34 2002/09/23 16:13:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,6 +74,9 @@ C--   Save previous solution & Initialise Vector solution and source term :
         IF (useRealFreshWaterFlux) THEN
          tmpFac = freeSurfFac
          IF (exactConserv) tmpFac = freeSurfFac*implicDiv2DFlow
+         IF ( buoyancyRelation .eq. 'OCEANICP' )  THEN
+           tmpFac = tmpFac*horiVertRatio
+         ENDIF
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) = 
