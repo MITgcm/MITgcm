@@ -1,8 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.1 2001/05/14 22:07:27 heimbach Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
-#ifdef ALLOW_CAL_NENDITER
       subroutine cal_Set(
      I                    modstart,
      I                    modend,
@@ -17,21 +15,6 @@ C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.1 2001/05/14 22:07:27 heimbac
      I                    modintsteps,
      I                    mythid
      &                  )
-#else
-      subroutine cal_Set(
-     I                    modstart,
-     I                    modend,
-     I                    modstep,
-     I                    modcalendartype,
-     I                    modstartdate_1,
-     I                    modstartdate_2,
-     I                    modenddate_1,
-     I                    modenddate_2,
-     I                    moditerini,
-     I                    modintsteps,
-     I                    mythid
-     &                  )
-#endif
 
 c     ==================================================================
 c     SUBROUTINE cal_Set
@@ -112,9 +95,7 @@ c     mythid          - number of this instance of the subrotuine.
       integer modenddate_1
       integer modenddate_2
       integer moditerini
-#ifdef ALLOW_CAL_NENDITER
       integer moditerend
-#endif
       integer modintsteps
       integer mythid
 
@@ -159,11 +140,7 @@ c                                               CALENDAR.h
       modeliter0       = moditerini
       modelintsteps    = modintsteps
 
-#ifdef ALLOW_CAL_NENDITER
       modeliterend     = moditerend
-#else
-      modeliterend     = 0
-#endif
 
 c     Do first consistency checks (most are taken from the MITgcmUV).
 c     o Time step.
@@ -461,12 +438,10 @@ c     Check consistency of the numerical model and the calendar tool.
         ierr = 115
         call cal_PrintError( ierr, mythid )
         stop ' stopped in cal_Set.'
-#ifdef ALLOW_CAL_NENDITER
       else if ( modeliterend .ne. moditerend ) then
         ierr = 116
         call cal_PrintError( ierr, mythid )
         stop ' stopped in cal_Set.'
-#endif
       else if ( modelintsteps .ne. modintsteps) then
         ierr = 117
         call cal_PrintError( ierr, mythid )

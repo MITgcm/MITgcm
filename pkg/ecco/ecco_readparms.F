@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.3 2002/01/11 19:24:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.4 2002/05/30 22:49:56 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
 
-      subroutine ecco_readparms(
-     I                      mythid
-     &                    )
+      subroutine ecco_readparms( mythid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_readparms
@@ -80,74 +78,29 @@ c--     Next, read the ECCO data file.
         read  ( unit = scrunit1, nml = ecco_parms)
         close ( scrunit1 )
 
-c-------------------------------- ECCO --------------------------------
-
 #ifdef INCLUDE_ECCO_PACKAGE
 C--   Initialise the ECCO State Estimation package.
-
-#ifdef ALLOW_CALENDAR
-C--   Initialise the calendar package.
-#ifdef ALLOW_CAL_NENDITER
-      call cal_init(
-     I               startTime,
-     I               endTime,
-     I               deltaTclock,
-     I               nIter0,
-     I               nEndIter,
-     I               nTimeSteps,
-     I               myThid
-     &             )
-#else
-      call cal_init(
-     I               startTime,
-     I               endTime,
-     I               deltaTclock,
-     I               nIter0,
-     I               nTimeSteps,
-     I               myThid
-     &             )
-#endif
-      _BARRIER
-#endif
-
-C--   Custom routine to set forcing fields.
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-      call exf_readparms  ( mythid )
-#endif
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 c--   Initialise the optimization-related parts of the ECCO State
 c--   Estimation package.
       call optim_init( myThid )
       _BARRIER
-#else
-c--   Optimization not enabled.
 #endif
 
 #ifndef ALLOW_ECCO_FORWARD_RUN
-C--   Initialise the cost function.
-      call cost_readparms( mythid )
-      call cost_init( myThid )
-      _BARRIER
-
 C--   Initialise the control vector.
       call ctrl_init( myThid )
       _BARRIER
-#else
-c     not needed for forward run only
 #endif
 
 #ifdef ALLOW_ECCO_DIAGNOSTICS_RUN
 c--   Initialise the ECCO diagnostics package.
       call diagnos_init( myThid )
       _BARRIER
-#else
-c--   Diagnostics not enabled.
 #endif
 
 #endif /* INCLUDE_ECCO_PACKAGE */
-
-c-------------------------------- ECCO --------------------------------
 
 c--     Summarize the setup of the ECCO release.
 c        call ecco_summary( mythid )

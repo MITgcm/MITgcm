@@ -1,30 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/Attic/cal_init.F,v 1.1 2001/05/14 22:07:26 heimbach Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
-#ifdef ALLOW_CAL_NENDITER
-      subroutine cal_Init(
-     I                     modstart,
-     I                     modend,
-     I                     modstep,
-     I                     moditerini,
-     I                     moditerend,
-     I                     modintsteps,
-     I                     mythid
-     &                   )
-#else
-      subroutine cal_Init(
-     I                     modstart,
-     I                     modend,
-     I                     modstep,
-     I                     moditerini,
-     I                     modintsteps,
-     I                     mythid
-     &                   )
-#endif
+      subroutine cal_readparms( mythid )
 
 c     ==================================================================
-c     SUBROUTINE cal_Init
+c     SUBROUTINE cal_readparms
 c     ==================================================================
 c
 c     o This routine initialises the calendar according to the user
@@ -62,14 +42,16 @@ c              - Introduced new routine and function names, cal_<NAME>,
 c                for verion 0.1.3.
 c
 c     ==================================================================
-c     SUBROUTINE cal_Init
+c     SUBROUTINE cal_readparms
 c     ==================================================================
 
       implicit none
 
 c     == global variables ==
 
+#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 
 c     == routine arguments ==
 
@@ -85,9 +67,7 @@ c     mythid          - number of this instance of the subrotuine.
       _RL     modend
       _RL     modstep
       integer moditerini
-#ifdef ALLOW_CAL_NENDITER
       integer moditerend
-#endif
       integer modintsteps
       integer mythid
 
@@ -125,6 +105,11 @@ c     (version 0.1.3 >> END << )
 
       _BEGIN_MASTER(myThid)
 
+#ifndef ALLOW_CAL_NENDITER
+      print *, 'WARNING: ALLOW_CAL_NENDITER must be defined in CPP file'
+      STOP 'undef ALLOW_CAL_NENDITER no longer supported by cal package'
+#endif
+
 c       Initialise the calendar's parameters
         TheCalendar = ' '
         startdate_1 = 0
@@ -140,7 +125,7 @@ c       Next, read the calendar data file.
         if ( errio .lt. 0 ) then
           ierr = 1
           call cal_PrintError( ierr, mythid )
-          stop ' stopped in cal_Init.'
+          stop ' stopped in cal_readparms.'
         endif
 
         do while ( .true. )
@@ -162,7 +147,13 @@ c       Check consistency of the date specifications with the MITgcmUV's
 c       startTime, endTime, and nTimeSteps, then set all the calendar
 c       parameters.
 
-#ifdef ALLOW_CAL_NENDITER
+        modstart    = startTime
+        modend      = endTime
+        modstep     = deltaTclock
+        moditerini  = nIter0
+        moditerend  = nEndIter
+        modintsteps = nTimeSteps
+
         call cal_Set(
      I                modstart,
      I                modend,
@@ -177,21 +168,6 @@ c       parameters.
      I                modintsteps,
      I                mythid
      &              )
-#else
-        call cal_Set(
-     I                modstart,
-     I                modend,
-     I                modstep,
-     I                TheCalendar,
-     I                startdate_1,
-     I                startdate_2,
-     I                enddate_1,
-     I                enddate_2,
-     I                moditerini,
-     I                modintsteps,
-     I                mythid
-     &              )
-#endif
 
         call cal_Summary( mythid )
 
