@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.15 2003/12/15 23:00:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.16 2004/01/29 14:10:51 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,13 @@ C--   Initialise GRIDALT parameters - the alternative grid
 #ifdef ALLOW_FIZHI
 C--   Initialise & Read FIZHI physical parameters
       IF (useFIZHI) CALL FIZHI_INIT_FIXED( myThid )
+#endif
+C AMM
+
+C AMM
+#ifdef ALLOW_DIAGNOSTICS
+C--   Read DIAGNOSTICS namelists and initialise parameters
+      IF (useDIAGNOSTICS) CALL DIAGNOSTICS_INITIALISE( myThid )
 #endif
 C AMM
 
