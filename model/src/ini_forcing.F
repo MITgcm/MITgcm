@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.6 1998/06/09 18:57:38 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.7 1998/06/10 01:44:03 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -74,6 +74,15 @@ C          fu(i,j,bi,bj) = -tauMax
       ELSE
        _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)/(delZ(1)*rhonil)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
        _END_MASTER(myThid)
       ENDIF
 C
@@ -92,6 +101,15 @@ C
       ELSE
        _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
        _END_MASTER(myThid)
       ENDIF
 C

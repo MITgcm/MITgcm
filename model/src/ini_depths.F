@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.4 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.5 1998/06/10 01:44:03 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -186,6 +186,9 @@ C--   Calculate recipricols of hFacC, hFacW and hFacS
       _EXCH_XYZ_R4(rhFacC , myThid )
       _EXCH_XYZ_R4(rhFacW , myThid )
       _EXCH_XYZ_R4(rhFacS , myThid )
+
+C
+      CALL PLOT_FIELD_XYR4( H, 'Model depths' , 1, myThid )
 C
       RETURN
       END

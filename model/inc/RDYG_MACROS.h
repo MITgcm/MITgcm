@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RDYG_MACROS.h,v 1.1 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RDYG_MACROS.h,v 1.2 1998/06/10 01:44:03 cnh Exp $
 C
 C     /==========================================================\
 C     | RDYG_MACROS.h                                             |
@@ -20,6 +20,6 @@ C     \==========================================================/
 #define  _rdyG(i,j,bi,bj) rdyG(1,j,1,bj)
 #endif
 
-#ifndef rdyG
+#ifndef _rdyG
 #define  _rdyG(i,j,bi,bj) rdyG(i,j,bi,bj)
 #endif

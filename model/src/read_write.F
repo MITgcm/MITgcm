@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.4 1998/06/09 16:48:03 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.5 1998/06/10 01:44:03 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -362,12 +362,17 @@ C          U.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A)' )
+      IF     ( pref .EQ. ' ' ) THEN
+       WRITE( fNamData, '(A)' )
+     & suff(s2Lo:s2Hi)
+      ELSEIF ( suff .EQ. ' ' ) THEN
+       WRITE( fNamData, '(A)' )
+     & pref(s1Lo:s1Hi)
+      ELSE
+       WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A)' )
-     & pref(s1Lo:s1Hi),
-     & suff(s2Lo:s2Hi)
+      ENDIF
 
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.3 1998/06/09 18:57:38 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.4 1998/06/10 01:44:03 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -62,7 +62,7 @@ C--    Initialise salinity field to the vertical reference profile
        ENDDO
       ELSE
        _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RS( hydrogSaltFile, ' ', salt, 0, myThid )
+       CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
        _END_MASTER(myThid)
       ENDIF
 C     Set initial tendency terms
