@@ -1,21 +1,19 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_g77_faulks,v 1.2 2003/08/27 22:12:31 edhill Exp $
+#
 
-#
-#  OLD:
-#    ../../../tools/genmake -mods=../code
-#
-#  NEW:
-#    ../../../tools/genmake2 -mods=../code --optfile=../../../tools/build_options/linux_g77
-#
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
 
 LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
 FOPTIM='-O3 -malign-double -funroll-loops'
 NOOPTFLAGS='-O0'
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
 FC=g77
 LINK=g77
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 
 

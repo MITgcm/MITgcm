@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_alpha,v 1.2 2003/08/27 22:12:31 edhill Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+
 LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 FC='g77'

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.4 2003/08/26 16:22:15 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.5 2003/08/27 22:12:31 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -80,119 +80,6 @@ EOF
 
 }
 
-parse_options()  {
-
-    ac_prev=
-    for ac_option in "${OPTIONS[@]}" ; do
-
-	# echo "ac_option = :$ac_option:"
-	
-        # If the previous option needs an argument, assign it.
-	if test -n "$ac_prev"; then
-	    eval "$ac_prev=\$ac_option"
-	    ac_prev=
-	    continue
-	fi
-	
-	ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
-	
-	case $ac_option in
-	    
-	    -help | --help | -h | --h)
-		usage ;;
-	    
-	    -nooptfile | --nooptfile)
-		OPTFILE="NONE" ;;
-	    -optfile | --optfile | -of | --of)
-		ac_prev=optfile ;;
-	    -optfile=* | --optfile=* | -of=* | --of=*)
-		OPTFILE=$ac_optarg ;;
-	    
-	    -pdepend | --pdepend)
-		ac_prev=pdepend ;;
-	    -pdepend=* | --pdepend=*)
-		PDEPEND=$ac_optarg ;;
-	    
-	    -pdefault | --pdefault)
-		ac_prev=pdefault ;;
-	    -pdefault=* | --pdefault=*)
-		PDEFAULT=$ac_optarg ;;
-	    
-	    -makefile | -ma)
-		ac_prev=makefile ;;
-	    --makefile=* | -ma=*)
-		MAKEFILE=$ac_optarg ;;
-	    
-	    -platform | --platform | -pl | --pl)
-		ac_prev=platform ;;
-	    -platform=* | --platform=* | -pl=* | --pl=*)
-		PLATFORM=$ac_optarg ;;
-
-	    -rootdir | --rootdir | -rd | --rd)
-		ac_prev=rootdir ;;
-	    -rootdir=* | --rootdir=* | -rd=* | --rd=*)
-		ROOTDIR=$ac_optarg ;;
-	    
-	    -mods | --mods | -mo | --mo)
-		ac_prev=mods ;;
-	    -mods=* | --mods=* | -mo=* | --mo=*)
-		MODS=$ac_optarg ;;
-	    
-	    -disable | --disable)
-		ac_prev=disable ;;
-	    -disable=* | --disable=*)
-		DISABLE=$ac_optarg ;;
-	    
-	    -enable | --enable)
-		ac_prev=enable ;;
-	    -enable=* | --enable=*)
-		ENABLE=$ac_optarg ;;
-	    
-	    -noopt | --noopt)
-		ac_prev=noopt ;;
-	    -noopt=* | --noopt=*)
-		NOOPT=$ac_optarg ;;
-	    
-#	    -cpp | --cpp)
-#		ac_prev=cpp ;;
-#	    -cpp=* | --cpp=*)
-#		CPP=$ac_optarg ;;
-	    
-	    -fortran | --fortran | -fc | --fc)
-		ac_prev=fc ;;
-	    -fc=* | --fc=*)
-		FC=$ac_optarg ;;
-	    
-	    -ieee | --ieee)
-		IEEE=1 ;;
-	    -noieee | --noieee)
-		IEEE=0 ;;
-	    
-	    -mpi | --mpi)
-		MPI=1 ;;
-	    -nompi | --nompi)
-		MPI=0 ;;
-	    
-	    -jam | --jam)
-		JAM=1 ;;
-	    -nojam | --nojam)
-		JAM=0 ;;
-	    
-	    -*)
-		echo "Error: unrecognized option: "$ac_option
-		usage
-		;;
-	    
-	    *)
-		echo "Error: unrecognized argument: "$ac_option
-		usage
-		;;
-	    
-	esac
-	
-    done
-}
-
 #  Parse the package dependency information
 get_pdepend_list()  {
 
@@ -255,19 +142,6 @@ usage()  {
     exit 1
 }
 
-# Dump all important state
-dump_state()  {
-    fname=$1
-    echo " " > $fname
-    RETVAL=$?
-    if test "x${RETVAL}" = x ; then
-	echo "Error: cannot write to $fname"
-	exit 1
-    fi
-    echo "makefile "$makefile > $fname
-}
-
-
 #eh3 # This is the generic configuration.
 #eh3 set LN         = ( 'ln -s' )
 #eh3 set CPP        = ( '/lib/cpp -P' )
@@ -288,6 +162,8 @@ dump_state()  {
 #eh3 if (! $?NOOPTFLAGS ) set NOOPTFLAGS = (  )
 
 #  Set defaults here
+COMMANDL="$0 $@"
+
 PLATFORM=
 LN=
 S64=
@@ -300,6 +176,7 @@ DISABLE=
 MAKEFILE=
 MAKEDEPEND=
 PDEPEND=
+DUMPSTATE=f
 PDEFAULT=
 OPTFILE=
 INCLUDES="-I."
@@ -324,6 +201,18 @@ THISHOSTNAME=`hostname`
 THISCWD=`pwd`
 THISDATE=`date`
 MACHINE=`uname -a`
+
+#  The following state can be set directly by command-line switches
+gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE NOOPT"
+gm_s2="FC IEEE MPI JAM DUMPSTATE"
+
+#  The following state is not directly set by command-line switches
+gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
+gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
+gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
+
+gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5"
+
 
 echo
 echo "===  Processing options files and arguments  ==="
@@ -444,6 +333,9 @@ for ac_option ; do
 	-nojam | --nojam)
 	    JAM=0 ;;
 	
+	-ds | --ds)
+	    DUMPSTATE=t ;;
+	
 	-*)
 	    echo "Error: unrecognized option: "$ac_option
 	    usage
@@ -475,6 +367,9 @@ else
 		echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
 		echo "--please check that variable syntax is bash-compatible"
 		exit 1
+	    fi
+	    if test "x$DUMPSTATE" != xf ; then
+		cp -f $OPTFILE "gm_optfile"
 	    fi
 	else
 	    echo "Error: can't read OPTFILE=\"$OPTFILE\""
@@ -1120,3 +1015,14 @@ echo "  Adding makedepend marker"
 printf "\n\n# DO NOT DELETE\n" >> $MAKEFILE
 
 printf "\n===  Done  ===\n"
+
+
+#  Write the "state" for future records
+if test "x$DUMPSTATE" != xf ; then
+    echo -n "" > gm_state
+    for i in $gm_state ; do
+	t1="t2=\$$i"
+	eval $t1
+	echo "$i='$t2'" >> gm_state
+    done
+fi

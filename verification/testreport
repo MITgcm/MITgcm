@@ -1,0 +1,564 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.1 2003/08/27 22:12:31 edhill Exp $
+#
+
+usage()
+{
+    echo
+    echo "Usage:  $0 [OPTIONS]"
+    echo
+    echo "where possible OPTIONS are:"
+    echo "  (-help|-h)               print usage"
+    echo "  (-optfile=|-of=)STRING   list of genmake2 \"optfiles\""
+    echo "  (-a|-addr)STRING         list of email recipients"
+    echo "  (-t|-tdir)STRING         list of \"test\" dirs"
+    echo
+    exit 1
+}
+
+#  build the mpack utility
+build_mpack()
+{
+    echo -n "building the mpack utility...  "
+    if test ! -x "$MPACKDIR/mpack" ; then
+	if test ! -d $MPACKDIR ; then
+	    echo "Error: can't find \"$MPACKDIR\""
+	    echo "  are you sure this program is being run in the correct "
+	    echo "  (that is, \"MITGCM_ROOT\verification\") directory?"
+	    exit 1
+	fi
+	echo -n "building mpack...  "
+	( cd $MPACKDIR && ./configure && make ) > build_mpack.out 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    echo
+	    echo "Error building the mpack tools at: $MPACK_DIR"
+	    exit 1
+	fi
+    fi
+    echo "OK"
+}
+
+compare_lines()
+{
+    # use codelet to compare lines
+    if [ $verbose -gt 1 ]; then
+	cat tmp3.txt 1>&2
+    fi
+    return `./a.out < tmp3.txt`
+}
+
+testoutput_for_prop()
+{
+    # testoutput_for_prop dir s1 label subdir
+    #
+    #  compares files in $dir/$subdir/output.txt and $dir/results/output.txt
+    #  using search strings s1 and text label 
+
+    if [ $debug -gt 0 ]; then
+	echo testoutput_for_prop: grep "$2" $1/$4/output.txt 1>&2
+    fi
+    if [ -r $1/$4/output.txt ]; then
+	grep "$2" $1/$4/output.txt | sed 's/.*=//' | nl > tmp1.txt
+	lncnt=`wc -l tmp1.txt | awk '{print $1}' `
+	if [ $lncnt -lt 3 ]; then
+	    if [ $verbose -gt 0 ]; then
+		echo Not enough lines of output when searching for "$2" 1>&2
+	    fi
+	    return 99
+	fi
+    else
+	echo testoutput_for_prop: output.txt from model run was not readable 1>&2
+	return 99
+    fi
+    if [ $debug -gt 0 ]; then
+	echo testoutput_for_prop: grep "$2" $1/results/output.txt 1>&2
+    fi
+    grep "$2" $1/results/output.txt | sed 's/.*=//' | nl > tmp2.txt
+    lncnt=`wc -l tmp2.txt | awk '{print $1}' `
+    if [ $lncnt -lt 3 ]; then
+	if [ $verbose -gt 0 ]; then
+	    echo Not enough lines of output when searching for "$2" 1>&2
+	fi
+	return 99
+    fi
+    if [ $debug -gt 0 ]; then
+	echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
+    fi
+    join tmp1.txt tmp2.txt | awk '{print $1 " " $2 " " $3}' > tmp3.txt
+    if [ $debug -gt 0 ]; then
+	echo testoutput_for_prop: compare_lines 1>&2
+    fi
+    compare_lines
+    digits_of_similarity=$?
+    if [ $digits_of_similarity -eq 99 ]; then
+	if [ $verbose -gt 0 ]; then
+	    echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
+	fi
+	digits_of_similarity=99
+    else
+	if [ $verbose -gt 0 ]; then
+	    echo There were $digits_of_similarity decimal places of similarity for \"$2\" 1>&2
+	fi
+    fi
+    rm tmp1.txt tmp2.txt tmp3.txt
+    
+    return $digits_of_similarity
+}
+
+dashnum()
+{
+    # dashnum n1 n2 n3 ...
+    #
+    #  print numbers using %3i format or "--" if number = 99
+
+    for num in $@ ; do
+	if [ $num = 99 ]; then
+	    printf ' --'
+	else
+	    printf '%3i' $num
+	fi
+    done
+}
+
+testoutput()
+{
+    # testoutput diretory subdir
+    #
+    #  test output in "directory"
+
+    if [ $debug -gt 0 ]; then
+	echo testoutput: testoutput_for_prop $1 cg2d_init_res 1>&2
+    fi
+    testoutput_for_prop $1 "cg2d_init_res" "cg2d init. residual" $2; cg2dres=$?
+    if [ $debug -gt 0 ]; then
+	echo testoutput: cg2dres=$cg2dres 1>&2
+    fi
+    
+    testoutput_for_prop $1 "dynstat_theta_min" "theta minimum" $2; tmin=$?
+    testoutput_for_prop $1 "dynstat_theta_max" "theta maximum" $2; tmax=$?
+    testoutput_for_prop $1 "dynstat_theta_mean" "theta mean" $2; tmean=$?
+    testoutput_for_prop $1 "dynstat_theta_sd" "theta s.d." $2; tsd=$?
+    testoutput_for_prop $1 "dynstat_salt_min" "salt minimum" $2; smin=$?
+    testoutput_for_prop $1 "dynstat_salt_max" "salt maximum" $2; smax=$?
+    testoutput_for_prop $1 "dynstat_salt_mean" "salt mean" $2; smean=$?
+    testoutput_for_prop $1 "dynstat_salt_sd" "salt s.d." $2; ssd=$?
+    testoutput_for_prop $1 "dynstat_uvel_min" "U minimum" $2; umin=$?
+    testoutput_for_prop $1 "dynstat_uvel_max" "U maximum" $2; umax=$?
+    testoutput_for_prop $1 "dynstat_uvel_mean" "U mean" $2; umean=$?
+    testoutput_for_prop $1 "dynstat_uvel_sd" "U s.d." $2; usd=$?
+    testoutput_for_prop $1 "dynstat_vvel_min" "V minimum" $2; vmin=$?
+    testoutput_for_prop $1 "dynstat_vvel_max" "V maximum" $2; vmax=$?
+    testoutput_for_prop $1 "dynstat_vvel_mean" "V mean" $2; vmean=$?
+    testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d." $2; vsd=$?
+    
+    dashnum $cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd \
+        $umin $umax $umean $usd $vmin $vmax $vmean $vsd
+}
+
+genmakemodel()
+{
+    # genmakemodel directory
+    GENMAKE2="../../../tools/genmake2"
+    (
+	cd $1;
+	printf 'genmake ... ' 1>&2
+        # ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
+	$GENMAKE2  -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
+	RETVAL=$?
+	for i in gm_state gm_optfile gm_local Makefile ; do
+	    if test -r $i ; then
+		cp $i $CDIR
+	    fi
+	done
+	if test "x$RETVAL" != x0 ; then
+	    tail make.log
+	    echo "genmakemodel: genmake failed" 1>&2
+	    cp make.log $CDIR
+	    return 1
+	else
+	    echo "succesful" 1>&2
+	fi
+    )
+}
+
+makeclean()
+{
+    # makeclean directory
+    (
+	cd $1;
+	rm -f output.txt
+	printf 'make CLEAN ... ' 2>&1
+	if test -r Makefile ; then
+	    make CLEAN >> make.log 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		tail make.log
+		echo "makeclean: \"make CLEAN\" failed" 1>&2
+		cp make.log $CDIR"/make.log"
+		return 1
+	    fi
+	fi
+	echo succesful 1>&2
+	exit 0
+    )
+}
+
+makedependmodel()
+{
+    # makedependmodel directory
+    (
+	cd $1;
+	printf 'make depend ... ' 1>&2
+	make depend >> make.log 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    tail make.log
+	    echo "makedependmodel: make depend failed" 1>&2
+	    cp make.log $CDIR"/make.log"
+	    return 1
+	else
+	    echo succesful 1>&2
+	fi
+    )
+}
+
+makemodel()
+{
+    # makemodel directory
+    (
+	cd $1;
+	if test -r Makefile ; then
+	    printf 'make ... ' 1>&2
+	    make >> make.log 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		tail make.log
+		echo failed 1>&2
+		cp make.log $CDIR"/make.log"
+		return 1
+	    else
+		echo succesful 1>&2
+	    fi
+	fi
+    )
+}
+
+linkdata()
+{
+    # linkdata flag
+    #
+    # symbolically link data files to run directory
+    if [ $1 -ne 0 ]; then
+	( cd $2 ;  ln -sf ../input/* . )
+    fi
+}
+
+runmodel()
+{
+    # runmodel directory exe
+    #
+    #  runs the model "exe" in "directory" (exe is relative to directory)
+    (
+	cd $1
+	if [ -x $2 ]; then
+	    if [ $quick -eq 0 ]; then
+		rm -f output.txt
+	    fi
+	    printf 'runmodel: ' 1>&2
+	    make output.txt
+	    RETVAL=$?
+	    if test "x$RETVAL" = x0 ; then
+		cp output.txt $CDIR"/output.txt"
+		return 0
+	    else
+		return 1
+	    fi
+	fi
+    )
+}
+
+createcodelet()
+{
+    # create codelet for comparing model output
+
+    echo -n "creating the comparison code...  "
+    cat > tmp_cmpnum.f <<EOFA
+      program cmpnum
+      implicit none
+      real*8 a,b,diff
+      integer linnum,best
+      best=-16
+  99  read(*,*,end=70,err=60) linnum,a,b
+      diff=0.5*(abs(a)+abs(b))
+c     print *,a,b,diff,abs(a-b)/diff
+      if (diff.gt.1.e-12) then
+        diff=abs(a-b)/diff
+        if (diff.gt.0.) then
+c         print *,int(log10(diff)),diff
+          linnum=int(log10(diff))
+          best=max(best,linnum)
+        endif
+      else
+        if (best.eq.-16.and.diff.ne.0.) best=-22
+      endif
+      goto 99
+  60  stop 'cmpnum: An error occured reading a,b'
+  70  print *,-best
+      end
+EOFA
+
+    f77 tmp_cmpnum.f
+    if [ -x ./a.out ]; then
+	echo "OK"
+	return 0
+    else
+	echo
+	echo "createcodelet: failed to compile codelet" | tee 
+	exit 1
+    fi
+}
+
+formatresults()
+{
+    # formatresults expt genmake depend make run results*
+
+    nm=$1
+    printf '%s %s %s %s' $2 $3 $4 $5
+    shift; shift; shift; shift; shift;
+    printf '%3s' $@
+    
+    if [ $1 = '--' ]; then
+	printf ' N/O '
+    else
+	if [ $1 -gt 12 ]; then
+	    printf ' pass'
+	else
+	    printf ' FAIL'
+	fi
+    fi
+    printf '  %s' $nm
+    printf '\n'
+    
+}
+
+show_help()
+{
+    cat - << EOF
+$0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
+ -help      Show this help message
+ -quick     Skip "genmake" and "make depend" if the Makefile exists
+ -quiet     Reduce the amount of output
+ -verbose   Produce copious amounts of output
+ -debug     Produce even more output which will mean nothing to most
+ -force     Do "make CLEAN" before compiling. This forces a complete rebuild.
+ -clean     Do "make CLEAN" after compiling and testing.
+ -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
+ -cleanup   Aggresively removes all model output, executables and object files
+            and then exits. Use with care.
+
+Normal usage:
+ $0 *       Configure, compile, run and analyze in all experiment directories
+EOF
+}
+
+scandirs()
+{
+    if [ $# -eq 0 ]; then
+	for arg in * ; do
+	    test -d $arg/input && echo $arg
+	done
+    else
+	echo $*
+    fi
+}
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+#  Default properties
+debug=0
+verbose=1
+quick=0
+clean=0
+ieee=1
+expts=''
+
+OPTFILES=
+ADDRESSES=edhill@mitgcm.org
+TESTDIRS=
+MPACKDIR="../tools/mpack-1.6"
+MPACK="$MPACKDIR/mpack"
+
+echo -n "parsing options...  "
+
+ac_prev=
+for ac_option ; do
+
+    # If the previous option needs an argument, assign it.
+    if test -n "$ac_prev"; then
+        eval "$ac_prev=\$ac_option"
+        ac_prev=
+        continue
+    fi
+
+    ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
+    
+    case $ac_option in
+	
+	-help | --help | -h | --h)
+	    usage ;;
+	
+	-optfile | --optfile | -f | --f)
+            ac_prev=OPTFILES ;;
+        -optfile=* | --optfile=*)
+            OPTFILES=$ac_optarg ;;
+	
+	-addr | --addr | -a | --a)
+            ac_prev=ADDRESSES ;;
+        -addr=* | --addr=*)
+            ADDRESSES=$ac_optarg ;;
+
+	-tdir | --tdir | -t | --t)
+            ac_prev=TESTDIRS ;;
+        -tdir=* | --tdir=*)
+            TESTDIRS=$ac_optarg ;;
+
+	-quick) quick=1 ;;
+	-verbose) verbose=2 ;;
+	-debug) debug=1 ;;
+	-clean) clean=1 ;;
+	-noieee) ieee=0 ;;
+	-quiet) verbose=0 ;;
+
+        -*)
+            echo "Error: unrecognized option: "$ac_option
+            usage
+            ;;
+        
+        *)
+            echo "Error: unrecognized argument: "$ac_option
+            usage
+            ;;
+        
+     esac
+     
+done
+
+if test "x$TESTDIRS" = x ; then
+    TESTDIRS=`scandirs`
+fi
+
+echo "OK"
+
+#  create the FORTRAN comparison code
+createcodelet
+
+#  build the mpack utility
+build_mpack
+
+#  Create a uniquely named directory to store results
+MACH=`hostname`
+DATE=`date +%Y%m%d`
+BASE=$MACH"_"$DATE"_"
+DNUM=0
+DRESULTS="$BASE$DNUM"
+while test -e $DRESULTS ; do
+    DNUM=$(( $DNUM + 1 ))
+    DRESULTS="$BASE$DNUM"
+done
+mkdir $DRESULTS
+RETVAL=$?
+if test "x$RETVAL" != x0 ; then
+    echo "Error: can't create results directory \"./$DRESULTS\""
+    exit 1
+fi
+SUMMARY="$DRESULTS/summary.txt"
+date > $SUMMARY
+cat << EOF >> $SUMMARY
+                T           S           U           V
+G D M    c        m  s        m  s        m  s        m  s
+E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+
+EOF
+
+NDIR=0
+
+#  For each optfile...
+for OPTFILE in $OPTFILES ; do
+
+    OPTFILE=`pwd`"/$OPTFILE"
+    if test ! -r $OPTFILE ; then
+	echo "Error: can't read optfile \"$OPTFILE\""
+	exit 1
+    fi
+    echo
+    echo "OPTFILE=$OPTFILE" >> $SUMMARY
+    echo >> $SUMMARY
+    
+    #  ...and each test directory...
+    for dir in $TESTDIRS ; do
+	
+	#  Create an output dir for each OPTFILE/tdir combination
+	CDIR=$DRESULTS"/"$NDIR
+	mkdir $CDIR
+	CDIR=`pwd`"/$CDIR"
+
+	#  ...configue, make, run, and compare the output.
+	echo "-------------------------------------------------------------------------------"
+	echo
+	echo "Experiment:  $dir"
+	echo
+	unset genmake makedepend make run
+	results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+	( cd $dir/input; rm -f *.{o,f,c,F} *.[f,F]90 work* output.txt Make* make.log; )
+	if [ -r $dir/build ]; then
+	    seperatebuilddir=1
+	    builddir=build
+	    rundir=build
+	    ( cd $dir/build; ln -sf ../input/* . )
+	else
+	    seperatebuilddir=0
+	    builddir=input
+	    rundir=input
+	fi
+	genmakemodel $dir/$builddir && genmake=Y \
+	    && makeclean $dir/$builddir \
+	    && makedependmodel $dir/$builddir && makedepend=Y \
+	    && makemodel $dir/$builddir && make=Y \
+	    && linkdata $seperatebuilddir $dir/$rundir \
+	    && runmodel $dir/$builddir mitgcmuv && run=Y \
+	    && results=`testoutput $dir $rundir`
+	echo
+	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
+	echo
+	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> $SUMMARY
+
+	( cd $DRESULTS"/"$NDIR ; gzip * )
+
+	tar -cf $DRESULTS"/"$NDIR".tar" $DRESULTS"/"$NDIR
+	$MPACK -s MITgcm-test -m 1000000 $DRESULTS"/"$NDIR".tar" $ADDRESSES
+
+	NDIR=$(( $NDIR + 1 ))
+	
+    done
+done
+
+# rm tmp_cmpnum.f a.out
+
+echo -------------------------------------------------------------------------------
+echo 
+echo >> $SUMMARY
+date >> $SUMMARY
+cat $SUMMARY
+
+# tar -cf $DRESULTS".tar" $DRESULTS
+#
+# $MPACK -s MITgcm-test -m 1000000 $DRESULTS".tar" $ADDRESSES
+

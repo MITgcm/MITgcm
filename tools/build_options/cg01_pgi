@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Ed Hill
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/cg01_pgi,v 1.2 2003/08/27 22:12:31 edhill Exp $
 #
 #  tested on cluster, 2003/08
 
