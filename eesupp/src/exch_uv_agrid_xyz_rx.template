@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xyz_rx.template,v 1.5 2004/11/17 16:29:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xyz_rx.template,v 1.6 2004/11/19 02:32:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,7 +16,7 @@ C
 C  Input: component1(lon,lat,levs,bi,bj) - first component of vector
 C         component2(lon,lat,levs,bi,bj) - second component of vector
 C         withSigns (logical)            - true to use signs of components
-C         myThid                         - tile number
+C         myThid                         - Thread number
 C
 C  Output: component1 and component2 are updated (halo regions filled)
 C
@@ -48,12 +48,14 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
 
       integer i,j,L,bi,bj
       integer OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
-      _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RX negOne
 
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_AGRID_XYZ_RX( component1,component2, withSigns,
-     .                                                      myThid )
+      CALL EXCH2_UV_AGRID_XYZ_RX(
+     U                           component1, component2,
+     I                           withSigns, myThid )
       RETURN
 #endif
 
@@ -64,6 +66,8 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
       exchWidthX = OLx
       exchWidthY = OLy
       myNz       = Nr
+      negOne = 1.
+      IF (withSigns) negOne = -1.
 
 C First call the exchanges for the two components
 
@@ -94,14 +98,13 @@ C and/or the signs depending on which cube face we are located.
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
+       do L = 1,Nr
 
 C First we need to copy the component info into dummy arrays
-       do L = 1,Nr
        do j = 1-OLy,sNy+OLy
        do i = 1-OLx,sNx+OLx
-        dummy1(i,j,L,bi,bj) = component1(i,j,L,bi,bj)
-        dummy2(i,j,L,bi,bj) = component2(i,j,L,bi,bj)
-       enddo
+        dummy1(i,j) = component1(i,j,L,bi,bj)
+        dummy2(i,j) = component2(i,j,L,bi,bj)
        enddo
        enddo
 
@@ -110,46 +113,43 @@ C    (we assume that bj is always=1)
 
 C odd faces share disposition of all sections of the halo
        if ( mod(bi,2).eq.1 ) then
-        do L = 1,Nr
          do j = 1,sNy
          do i = 1,exchWidthX
 C east
-          component1(sNx+i,j,L,bi,bj) = dummy1(sNx+i,j,L,bi,bj)
-          component2(sNx+i,j,L,bi,bj) = dummy2(sNx+i,j,L,bi,bj)
+          component1(sNx+i,j,L,bi,bj) = dummy1(sNx+i,j)
+          component2(sNx+i,j,L,bi,bj) = dummy2(sNx+i,j)
 C west
-          component1(i-OLx,j,L,bi,bj) = dummy2(i-OLx,j,L,bi,bj)
-          component2(i-OLx,j,L,bi,bj) = -dummy1(i-OLx,j,L,bi,bj)
+          component1(i-OLx,j,L,bi,bj) = dummy2(i-OLx,j)
+          component2(i-OLx,j,L,bi,bj) = negOne*dummy1(i-OLx,j)
 C north
-          component1(j,sNy+i,L,bi,bj) = -dummy2(j,sNy+i,L,bi,bj)
-          component2(j,sNy+i,L,bi,bj) = dummy1(j,sNy+i,L,bi,bj)
+          component1(j,sNy+i,L,bi,bj) = negOne*dummy2(j,sNy+i)
+          component2(j,sNy+i,L,bi,bj) = dummy1(j,sNy+i)
 C south
-          component1(j,i-OLx,L,bi,bj) = dummy1(j,i-OLx,L,bi,bj)
-          component2(j,i-OLx,L,bi,bj) = dummy2(j,i-OLx,L,bi,bj)
+          component1(j,i-OLx,L,bi,bj) = dummy1(j,i-OLx)
+          component2(j,i-OLx,L,bi,bj) = dummy2(j,i-OLx)
          enddo
          enddo
-        enddo
 C now the even faces (share disposition of all sections of the halo)
        elseif ( mod(bi,2).eq.0 ) then
-        do L = 1,Nr
          do j = 1,sNy
          do i = 1,exchWidthX
 C east
-          component1(sNx+i,j,L,bi,bj) = dummy2(sNx+i,j,L,bi,bj)
-          component2(sNx+i,j,L,bi,bj) = -dummy1(sNx+i,j,L,bi,bj)
+          component1(sNx+i,j,L,bi,bj) = dummy2(sNx+i,j)
+          component2(sNx+i,j,L,bi,bj) = negOne*dummy1(sNx+i,j)
 C west
-          component1(i-OLx,j,L,bi,bj) = dummy1(i-OLx,j,L,bi,bj)
-          component2(i-OLx,j,L,bi,bj) = dummy2(i-OLx,j,L,bi,bj)
+          component1(i-OLx,j,L,bi,bj) = dummy1(i-OLx,j)
+          component2(i-OLx,j,L,bi,bj) = dummy2(i-OLx,j)
 C north
-          component1(j,sNy+i,L,bi,bj) = dummy1(j,sNy+i,L,bi,bj)
-          component2(j,sNy+i,L,bi,bj) = dummy2(j,sNy+i,L,bi,bj)
+          component1(j,sNy+i,L,bi,bj) = dummy1(j,sNy+i)
+          component2(j,sNy+i,L,bi,bj) = dummy2(j,sNy+i)
 C south
-          component1(j,i-OLy,L,bi,bj) = -dummy2(j,i-OLy,L,bi,bj)
-          component2(j,i-OLy,L,bi,bj) = dummy1(j,i-OLy,L,bi,bj)
+          component1(j,i-OLy,L,bi,bj) = negOne*dummy2(j,i-OLy)
+          component2(j,i-OLy,L,bi,bj) = dummy1(j,i-OLy)
          enddo
          enddo
-        enddo
        endif
 
+       enddo
        enddo
        enddo
 
