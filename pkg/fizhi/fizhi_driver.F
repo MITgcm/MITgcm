@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.5 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.6 2004/06/28 16:12:17 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -98,6 +98,7 @@ c Local Variables
 c ---------------
       logical     alarm
       external    alarm
+      real massinlayer(im,jm,lm)
 
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
@@ -124,9 +125,7 @@ C **********************************************************************
       call get_alarm ( 'pnt',ndum,ndum,ndpnt,ndum )
       lpnt = ndpnt.ne.0
 
-C Compute pl,ple,pkht,pkl,dpres   and pcheck for use by mini-drivers
-
-C Make 'model theta' out of theta, ie, divide by p0**kappa
+C pchecks for use by mini-drivers
 
 C **********************************************************************        
 C ****                  Call Physics Mini-Drivers                   ****        
