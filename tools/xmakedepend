@@ -27,13 +27,9 @@
 
 CPPARGS="-Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE  -D_GNU_SOURCE  "
 
-if test -r ./genmake_optfile ; then
-    . ./genmake_optfile
-fi
-if test "x$CPP" != x0 ; then
-    CC="$CPP $CPPARGS"
-else
-    CC="cpp $CPPARGS"
+CC="cpp $CPPARGS"
+if test -x /lib/cpp ; then
+    CC="/lib/cpp $CPPARGS"
 fi
 
 silent='-'
