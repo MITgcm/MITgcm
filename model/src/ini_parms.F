@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.118 2004/07/16 01:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.119 2004/09/04 18:19:21 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -206,7 +206,8 @@ C--   Input files
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCyl,
-     & mdsioLocalDir
+     & mdsioLocalDir,
+     & the_run_name
 
 C
       _BEGIN_MASTER(myThid)

@@ -90,5 +90,5 @@
  saltClimFile=   'lev_monthly_salt.bin',
  surfQFile=      'shi_qnet.bin',
  EmPmRFile=      'shi_empmr_year.bin',
-# the_run_name=   'Testing PTRACERS and MNC',
+ the_run_name=   'Testing PTRACERS and MNC',
  /

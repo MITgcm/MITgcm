@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.121 2004/09/02 09:13:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.122 2004/09/04 18:19:21 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -709,12 +709,14 @@ C     Run-time flags for early-initialization of MNC
      &     mnc_use_for_mon
       CHARACTER*(MAX_LEN_FNAM) mnc_outdir_str
       CHARACTER*(MAX_LEN_FNAM) mnc_indir_str
+      CHARACTER*(MAX_LEN_FNAM) the_run_name
       COMMON /PARM_MNC/
      &     useMNC,
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date, 
      &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read, 
+     &     mnc_use_for_mon,
      &     mnc_outdir_str, mnc_indir_str, 
-     &     mnc_use_for_mon
+     &     the_run_name
 
 
 CEH3 ;;; Local Variables: ***

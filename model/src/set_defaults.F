@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.67 2004/07/16 01:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.68 2004/09/04 18:19:22 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -270,6 +270,9 @@ C--   Input files
       dQdTFile        = ' '
       ploadFile       = ' '
       mdsioLocalDir   = ' '
+      DO k = 1,MAX_LEN_FNAM
+        the_run_name(k:k) = ' '
+      ENDDO
 
 C
       RETURN

@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.8 2004/05/14 17:41:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.9 2004/09/04 18:19:20 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: MNC_CW_SET_GATTR
-
-C !INTERFACE:
+C     !ROUTINE: MNC_CW_SET_GATTR
+      
+C     !INTERFACE:
       SUBROUTINE MNC_CW_SET_GATTR( 
      I     fname,
      I     bi, bj, tnum,
@@ -29,21 +29,53 @@ C     !USES:
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif
+C     Functions
+      integer ILNBLNK
 
-C !INPUT PARAMETERS:
+C     !INPUT PARAMETERS:
       integer myThid, bi,bj, tnum
       character*(*) fname
 CEOP
 
+C     !LOCAL VARIABLES:
+      integer ilnb
+
       CALL MNC_FILE_REDEF(fname, myThid)
 
 C     Global attributes
-      CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_ref',
+      ilnb = ILNBLNK(the_run_name)
+      IF (ilnb .GT. 0) THEN
+        CALL MNC_FILE_ADD_ATTR_STR(fname, 'the_run_name',
+     &       the_run_name, myThid )
+      ENDIF
+
+#ifdef THISVER
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_version',
+     &     THISVER ,
+     &     myThid )
+#endif
+#ifdef THISUSER
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'build_user',
+     &     THISUSER ,
+     &     myThid )
+#endif
+#ifdef THISHOST
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'build_host',
+     &     THISHOST ,
+     &     myThid )
+#endif
+#ifdef THISDATE
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'build_date',
+     &     THISDATE ,
+     &     myThid )
+#endif
+
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_URL',
      &     'http://mitgcm.org', myThid )
-      CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_tag_index', 
+      CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_tag_id', 
      &     MNC_TAG_ID, myThid )
       CALL MNC_FILE_ADD_ATTR_DBL(fname, 'MITgcm_mnc_ver', 
-     &     1, 0.1D0, myThid )
+     &     1, 0.2D0, myThid )
 
 C     Grid info included as attributes
       CALL MNC_FILE_ADD_ATTR_INT(fname,'tile_number', 1, tnum, myThid)
