@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.5 2004/12/29 02:13:38 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.6 2005/02/07 03:07:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -43,15 +43,15 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, k, m, n, bi, bj
       CHARACTER*8 parms1
       CHARACTER*3 mate_index
-      INTEGER mate
+      INTEGER mate, mVec
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
-      _RL qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
       _RL undef, getcon
       EXTERNAL getcon
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
       INTEGER ilen
 
+      INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) pref
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -71,6 +71,7 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      ioUnit= standardMessageUnit
       undef = getcon('UNDEF')
       glf = globalFiles
       WRITE(suff,'(I10.10)') myIter
@@ -160,55 +161,43 @@ C-        Empty diagnostics case :
 C-        diagnostics is not empty :
 
             IF ( myThid.EQ.1 ) 
-     &             WRITE(6,2000) m,cdiag(m),ndiag(m),gdiag(m)
-            IF ( parms1(5:5).NE.'C' ) THEN
+     &             WRITE(ioUnit,2000) m,cdiag(m),ndiag(m),gdiag(m)
 
-              DO k = 1,nlevels(listnum)
-                CALL GETDIAG (levs(k,listnum),m,undef,qtmp1,myThid)
-              ENDDO
-
-C             Check for Mate of a Vector Diagnostic
-C             -------------------------------------
-              IF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
-                mate_index = parms1(6:8)
-                READ (mate_index,'(I3)') mate
-                IF ( idiag(mate).NE.0 ) THEN
-                  IF ( myThid.EQ.1 )
-     &                 WRITE(6,2001) cdiag(m),mate,cdiag(mate)
-                ELSE
-                  IF ( myThid.EQ.1 )
-     &                 WRITE(6,2002) cdiag(m),mate,cdiag(mate)
-                ENDIF
-              ENDIF
-                
-            ELSE
-
+            IF ( parms1(5:5).EQ.'C' ) THEN
 C             Check for Mate of a Counter Diagnostic
 C             --------------------------------------
               mate_index = parms1(6:8)
               READ (mate_index,'(I3)') mate
               IF ( myThid.EQ.1 )
-     &                 WRITE(6,2003) cdiag(m),mate,cdiag(mate)
-              DO k = 1,nlevels(listnum)
-                CALL getdiag2(levs(k,listnum),m,undef,qtmp1,myThid)
-                CALL getdiag2(levs(k,listnum),mate,undef,qtmp2,myThid)
-                DO bj = myByLo(myThid), myByHi(myThid)
-                  DO bi = myBxLo(myThid), myBxHi(myThid)
-                    DO j = 1,sNy
-                      DO i = 1,sNx
-                        IF (qtmp2(i,j,k,bi,bj).NE.0.) THEN
-                          qtmp1(i,j,k,bi,bj) = 
-     &                         qtmp1(i,j,k,bi,bj) / qtmp2(i,j,k,bi,bj)
-                        ELSE
-                          qtmp1(i,j,k,bi,bj) = undef
-                        ENDIF
-                      ENDDO
-                    ENDDO
-                  ENDDO
-                ENDDO
-              ENDDO
+     &                 WRITE(ioUnit,2003) cdiag(m),mate,cdiag(mate)
+            ELSE
+              mate = 0
 
+C             Check for Mate of a Vector Diagnostic
+C             -------------------------------------
+              IF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
+                mate_index = parms1(6:8)
+                READ (mate_index,'(I3)') mVec
+                IF ( idiag(mVec).NE.0 ) THEN
+                  IF ( myThid.EQ.1 )
+     &                 WRITE(ioUnit,2001) cdiag(m),mVec,cdiag(mVec)
+                ELSE
+                  IF ( myThid.EQ.1 )
+     &                 WRITE(ioUnit,2002) cdiag(m),mVec,cdiag(mVec)
+                ENDIF
+              ENDIF
             ENDIF
+
+            DO bj = myByLo(myThid), myByHi(myThid)
+             DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO k = 1,nlevels(listnum)
+                CALL GETDIAG(
+     I                       levs(k,listnum),undef,
+     O                       qtmp1(1-OLx,1-OLy,k,bi,bj),
+     I                       m,mate,bi,bj,myThid)
+              ENDDO
+             ENDDO
+            ENDDO
 
 C-        end of empty diag / not empty block
           ENDIF

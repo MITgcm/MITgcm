@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.17 2005/01/28 01:06:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.18 2005/02/07 03:07:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,146 +8,88 @@ CBOP 0
 C     !ROUTINE: GETDIAG
 
 C     !INTERFACE:
-      SUBROUTINE GETDIAG (levreal,ipoint,undef,qtmp,myThid)
+      SUBROUTINE GETDIAG(
+     I                    levreal, undef,
+     O                    qtmp,
+     I                    ipoint, mate, bi, bj, myThid )
 
 C     !DESCRIPTION:
 C     Retrieve averaged model diagnostic
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
-CEOP
 
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-#else
-      integer Nrphys
-      parameter (Nrphys=0)
-#endif
-
-C     INPUT:
+C     !INPUT PARAMETERS:
 C     levreal .... Diagnostic LEVEL
-C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU
 C     undef  ..... UNDEFINED VALUE
-C     bi     ..... X-direction process(or) number
-C     bj     ..... Y-direction process(or) number
+C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU
+C     mate   ..... counter DIAGNOSTIC NUMBER if any ; 0 otherwise
+C     bi     ..... X-direction tile number
+C     bj     ..... Y-direction tile number
+C     myThid ..... my thread Id number
       _RL levreal
-      integer myThid,ipoint
       _RL undef
+      INTEGER ipoint, mate
+      INTEGER bi,bj, myThid
 
-C     OUTPUT:
+C     !OUTPUT PARAMETERS:
 C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
-      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
-
-      _RL factor
-      integer i,j,ipnt,klev
-      integer bi,bj
-      integer lev
-
-      if (ipoint.ge.1) then
-       lev = NINT(levreal)
-
-       klev = kdiag(ipoint)
-       if (klev.ge.lev) then
-        ipnt = idiag(ipoint) + lev - 1
-        factor = 1.0
-        if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
-
-        do bj=myByLo(myThid), myByHi(myThid)
-          do bi=myBxLo(myThid), myBxHi(myThid)
-
-            do j = 1,sNy
-              do i = 1,sNx
-                if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
-                  qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
-                else
-                  qtmp(i,j,lev,bi,bj) = undef
-                endif
-              enddo
-            enddo
-
-          enddo
-        enddo
-
-       endif
-      endif
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
-C     !ROUTINE: GETDIAG2
-
-C     !INTERFACE:
-      SUBROUTINE GETDIAG2 (levreal,ipoint,undef,qtmp,myThid)
-
-C     !DESCRIPTION:
-C***********************************************************************
-C  PURPOSE
-C     Retrieve averaged model diagnostic
-C  INPUT:
-C  levreal .... Diagnostic LEVEL
-C  ipoint ..... DIAGNOSTIC NUMBER FROM MENU
-C   undef ..... UNDEFINED VALUE
-C
-C  OUTPUT:
-C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
-C
-C***********************************************************************
-
-C     !USES:
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
+      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-#else
-       integer Nrphys
-       parameter (Nrphys=0)
-#endif
+C     !LOCAL VARIABLES:
+      _RL factor
+      INTEGER i, j, ipnt,ipCt
+      INTEGER lev, levCt, klev
 
-      _RL levreal
-      integer myThid,ipoint
-      _RL undef
-      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
-
-      integer i,j,ipnt,klev
-      integer bi,bj
-      integer lev
-
-      if (ipoint.ge.1) then
+      IF (ipoint.GE.1) THEN
        lev = NINT(levreal)
-
        klev = kdiag(ipoint)
-       if (klev.ge.lev) then
-        ipnt = idiag(ipoint) + lev - 1
+       IF (lev.LE.klev) THEN
 
-        do bj=myByLo(myThid), myByHi(myThid)
-          do bi=myBxLo(myThid), myBxHi(myThid)
+        IF ( mate.EQ.0 ) THEN
+C-      No counter diagnostics => average = Sum / ndiag :
 
-            do j = 1,sNy
-              do i = 1,sNx
-                if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
-                  qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
-                else
-                  qtmp(i,j,lev,bi,bj) = undef
-                endif
-              enddo
-            enddo
+          ipnt = idiag(ipoint) + lev - 1
+c         factor = 1.0
+c         if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
+          factor = FLOAT(ndiag(ipoint))
+          IF (ndiag(ipoint).NE.0) factor = 1. _d 0 / factor
 
-          enddo
-        enddo
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              IF ( qdiag(i,j,ipnt,bi,bj) .LE. undef ) THEN
+                qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)*factor
+              ELSE
+                qtmp(i,j) = undef
+              ENDIF
+            ENDDO
+          ENDDO
 
-       endif
-      endif
+        ELSE
+C-      With counter diagnostics => average = Sum / counter:
+
+          ipnt = idiag(ipoint) + lev - 1
+          levCt= MIN(lev,kdiag(mate))
+          ipCt = idiag(mate) + levCt - 1
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              IF ( qdiag(i,j,ipCt,bi,bj) .NE. 0. ) THEN
+                qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)
+     &                    / qdiag(i,j,ipCt,bi,bj)
+              ELSE
+                qtmp(i,j) = undef
+              ENDIF
+            ENDDO
+          ENDDO
+
+        ENDIF
+       ENDIF
+      ENDIF
 
       RETURN
       END
