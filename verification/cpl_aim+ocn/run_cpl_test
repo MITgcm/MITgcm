@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.5 2004/10/28 20:46:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.6 2004/11/07 23:30:32 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -46,7 +46,7 @@ fi
 
 if test $kpr = 0
 then
- rm -f genmake_optfile pr_group std_outp Coupler.0000.clog
+ rm -f genmake_optfile pr_group std_outp
  rm -f build_???/TTT.*make.* build_???/TTT.mkdepend.*
  /bin/rm -r -f rank_0 rank_1 rank_2
  if test -f build_cpl/Makefile ; then cd build_cpl ; make CLEAN ; cd .. ; fi
