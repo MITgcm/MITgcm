@@ -74,8 +74,9 @@ c--   scale runoff array
            do bi = mybxlo(mythid), mybxhi(mythid)
              do j = 1, sny
                do i = 1, snx
-                 if (runoff(i,j,bi,bj).gt.20.) runoff(i,j,bi,bj)=0.
-                 runoff(i,j,bi,bj) = exf_inscal_runoff*runoff(i,j,bi,bj)
+                 if (ABS(runoff(i,j,bi,bj)).gt.20.) runoff(i,j,bi,bj)=0.
+                 runoff(i,j,bi,bj) = exf_inscal_runoff/year2sec
+     &                               *runoff(i,j,bi,bj)
               enddo
             enddo
           enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.20 2004/10/11 16:41:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.21 2004/11/11 02:23:18 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -162,6 +162,8 @@ c     Surface flux data.
       _BEGIN_MASTER(mythid)
 
 c     Set default values.
+
+      year2sec           = 365.*86400.
 
 c     Calendar data.
       hfluxstartdate1    = 0
@@ -328,7 +330,8 @@ c     Input scaling factors.
       exf_inscal_evap      =  1. _d 0
       exf_inscal_apressure =  1. _d 0
 cds   convert runoff from m/yr to m/s and change sign.
-      exf_inscal_runoff    = -1.0/(86400.*365.0)
+cph   do this later, in exf_init_runoff
+      exf_inscal_runoff    =  1. _d 0
       exf_inscal_swdown    =  1. _d 0
       exf_inscal_lwdown    =  1. _d 0
 

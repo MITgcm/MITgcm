@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.18 2004/10/11 16:41:01 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.19 2004/11/11 02:23:18 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -29,6 +29,9 @@ c
 c     ==================================================================
 c     HEADER exf_param
 c     ==================================================================
+
+c     year in seconds
+      _RL     year2sec
 
 c     Calendar data.
       _RL     repeatPeriod
@@ -235,7 +238,7 @@ c     File names.
      &                          apressurestartdate1,apressurestartdate2
 
       common /exf_param_r/
-     &                          windstressmax,
+     &                          year2sec,          windstressmax,
      &                          repeatPeriod,      exf_albedo,
      &                          hfluxperiod,       hfluxstartdate,
      &                          atempperiod,       atempstartdate,

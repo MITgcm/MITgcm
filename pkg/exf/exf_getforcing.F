@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.12 2004/10/11 16:41:01 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.13 2004/11/11 02:23:18 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -144,7 +144,7 @@ c     Apply runoff, masks and exchanges
           do j = 1,sny
             do i = 1,snx
 #ifdef ALLOW_RUNOFF
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj) + runoff(i,j,bi,bj)
 #endif
 
               hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
