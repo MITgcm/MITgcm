@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.13 2004/11/11 02:24:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.14 2004/11/13 06:19:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -169,10 +169,13 @@ c--   == end of interface ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the initialisations.
-CADJ  INIT tapelev3 = USER
-c--   Some more initialisations to please TAMC
 CADJ INIT tapelev_ini_bibj_k   = USER
 CADJ INIT tapelev_init = USER
+#ifdef AUTODIFF_2_LEVEL_CHECKPOINT
+CADJ  INIT tapelev2 = USER
+#else
+CADJ  INIT tapelev3 = USER
+#endif
 # ifdef ALLOW_DIVIDED_ADJOINT
 CADJ INIT onetape = user
 cphCADJ INIT onetape = common, 1
@@ -238,21 +241,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
-c--   Implement a three level checkpointing. For a two level
-c--   checkpointing delete the middle loop; for n levels (n > 3)
-c--   insert more loops.
 
-c--   Check the choice of the checkpointing parameters in relation
-c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
-      if (nchklev_1*nchklev_2*nchklev_3 .lt. nTimeSteps) then
-        print*
-        print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '            nchklev_1*nchklev_2*nchklev_3 = ',
-     &       nchklev_1*nchklev_2*nchklev_3
-        print*, '            are not consistent with nTimeSteps = ',
-     &       nTimeSteps
-        stop    ' ... stopped in the_main_loop.'
-      endif
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
       max_lev2=nTimeSteps/nchklev_1+1
 
@@ -261,6 +250,8 @@ c**************************************
 CADJ loop = divided
 #endif
 c**************************************
+
+#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
 
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
@@ -271,12 +262,13 @@ c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
 
+#endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
+
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
 c**************************************
 #include "checkpoint_lev2_directives.h"
 c**************************************
-
 
 c**************************************
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -336,8 +328,10 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 c--
 c--         Requirement: nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps .
 
-            iloop = (ilev_3 - 1)*nchklev_2*nchklev_1 +
-     &              (ilev_2 - 1)*nchklev_1           + ilev_1
+            iloop = (ilev_2 - 1)*nchklev_1           + ilev_1
+#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
+     &            + (ilev_3 - 1)*nchklev_2*nchklev_1
+#endif
 
             if ( iloop .le. nTimeSteps ) then
 
@@ -737,8 +731,10 @@ C--   Save state for restarts
           enddo
           endif
         enddo
+#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
         endif
       enddo
+#endif
 #else
       enddo
 #endif
