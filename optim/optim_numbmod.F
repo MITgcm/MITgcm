@@ -147,16 +147,16 @@ c     == end of interface ==
      &  xx_efluxy_file,
      &  xx_efluxp_file,
      &  xx_bottomdrag_file,
-     &  doInitXX
+     &  doInitXX,
+     &  doPackDiag,
+     &  doZscaleUnpack,
+     &  doZscalePack
 
       namelist /CTRL_PACKNAMES/
-     &  yadmark,
+     &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
 
-      namelist /ECCO_PARMS/
-     &                      expId
-    
-      namelist /ECCO_OPTIM/
+      namelist /OPTIM/
      &                      optimcycle,
      &                      numiter, nfunc, fmin, iprint,
      &                      epsf, epsx, epsg,
@@ -175,32 +175,10 @@ c--   Preset the optimization parameters.
       nupdate    =  1
       ff         = 0.
       expId      = 'MIT_CE_000'
+      yctrlid    = expId
 
       modeldataunit = 14
       scrunit1      = 11
-
-c--   Read ecco parameters from file.
-      open(unit=scrunit1,status='scratch')
-
-      open(unit = modeldataunit,file = 'data.ecco',
-     &     status = 'old', iostat = errio)
-      if ( errio .lt. 0 ) then
-         stop ' stopped in optim_numbmod'
-      endif
-
-      do while ( .true. )
-         read(modeldataunit, fmt='(a)', end=20) record
-         il = max(ilnblnk(record),1)
-         if ( record(1:1) .ne. commentcharacter )
-     &        write(unit=scrunit1, fmt='(a)') record(:il)
-      enddo
-   20 continue
-      close( modeldataunit )
-
-      rewind( scrunit1 )
-      read(unit = scrunit1, nml = ecco_parms)
-      close( scrunit1 )
-      print*, ' OPTIM_NUMBMOD: ECCO options have been read.'
 
 c--   Read control parameters from file.
       open(unit=scrunit1,status='scratch')
@@ -226,6 +204,10 @@ c--   Read control parameters from file.
       close( scrunit1 )
       print*, ' OPTIM_NUMBMOD: Control options have been read.'
 
+cph(
+      expId = yctrlid
+cph)
+
 c--   Read optimization parameters from file.
       open(unit=scrunit1,status='scratch')
 
@@ -245,7 +227,7 @@ c--   Read optimization parameters from file.
       close( modeldataunit )
 
       rewind( scrunit1 )
-      read(unit = scrunit1, nml = ecco_optim)
+      read(unit = scrunit1, nml = optim)
       close( scrunit1 )
       print*, ' OPTIM_NUMBMOD: Minimization options have been read.'
 
