@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.115 2003/01/10 01:21:53 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.116 2003/01/10 23:41:38 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48
+This will be a good checkpoint to plug into the ecco-branch.
+o few modif.'s to get latest version adjointed
+  (mainly kick out code in ini_linear_phisurf)
+o modif's to run adjoint with exactConserv
+o case GM_BOLUS_ADVEC should be cleaned
+  S/R gmredi_slope_psi should be cleaned
+o verification/carbon now has exactConserv=.TRUE.
 
 checkpoint47g_post
 o time-average AIM output: becomes independent from statvars time-average
