@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.25 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.26 2004/03/20 23:51:23 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,12 +77,24 @@ C     an input file called data.
       CALL INI_PARMS( myThid )
       _BARRIER
 
+#ifdef ALLOW_MNC
+C     Initialize MNC look-up tables
+      write(*,*) 'INITIALISE_FIXED: useMNC = ',useMNC
+      IF (useMNC) THEN
+        CALL MNC_INIT(myThid)
+        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
+        CALL INI_MNC_IO(myThid)
+        IF ( mnc_echo_gtypes ) THEN
+          CALL MNC_CW_DUMP( myThid )
+        ENDIF
+      ENDIF
+#endif
+
 #ifdef ALLOW_MONITOR
 C--   Initialise MONITOR I/O streams so we can report config. info
       CALL MON_INIT( myThid )
       _BARRIER
 #endif
-
 
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.15 2004/03/20 20:35:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.16 2004/03/20 23:51:23 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -156,8 +156,8 @@ C--   Initiialise the multi-process IO package
       CALL DFILE_INIT
 #endif
 
-C     Read the run-time flags for MNC
 #ifdef ALLOW_MNC
+C     Read the run-time flags for MNC
       CALL MNC_READPARMS( 1 )
 #endif
 

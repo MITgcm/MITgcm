@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.9 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.10 2004/03/20 23:51:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -63,63 +63,111 @@ C     Check that this name is not already defined
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_CW_DUMP()
+      SUBROUTINE MNC_CW_DUMP( myThid )
 
       implicit none
 #include "mnc_common.h"
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     Arguments
+      integer myThid
 
 C     Local Variables
       integer i,j, ntot
+      integer NBLNK
+      parameter ( NBLNK = 150 )
+      character s1*(NBLNK), blnk*(NBLNK)
 
-      write(*,'(a)') 'The currently defined Grid Types are:'
+
+      _BEGIN_MASTER(myThid)
+      
+      DO i = 1,NBLNK
+        blnk(i:i) = ' '
+      ENDDO
+      
+      s1(1:NBLNK) = blnk(1:NBLNK)
+      write(s1,'(a5,a)') 'MNC: ',
+     &     'The currently defined Grid Types are:'
+      CALL PRINT_MESSAGE(
+     &     s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ntot = 0
       DO j = 1,MNC_MAX_ID
         IF (mnc_cw_gname(j)(1:MNC_MAX_CHAR) 
      &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
           
           ntot = ntot + 1
-          write(*,'(2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a4)')
+          s1(1:NBLNK) = blnk(1:NBLNK)
+          write(s1,'(a5,2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a4)')
+     &         'MNC: ',
      &         j, ntot, ' : ', mnc_cw_gname(j)(1:20), mnc_cw_ndim(j), 
      &         ' : ', (mnc_cw_dims(i,j), i=1,5), 
      &         '  | ', (mnc_cw_is(i,j), i=1,5),
      &         '  | ', (mnc_cw_ie(i,j), i=1,5),
      &         '  | ', (mnc_cw_dn(i,j)(1:4), i=1,5)
-
+          CALL PRINT_MESSAGE(
+     &         s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
+          
         ENDIF
       ENDDO
-
-      write(*,'(a)') 'The currently defined Variable Types are:'
+      
+      s1(1:NBLNK) = blnk(1:NBLNK)
+      write(s1,'(a5,a)') 'MNC: ',
+     &     'The currently defined Variable Types are:'
+      CALL PRINT_MESSAGE(
+     &     s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ntot = 0
       DO j = 1,MNC_MAX_ID
         IF (mnc_cw_vname(j)(1:MNC_MAX_CHAR) 
      &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
-
+          
           ntot = ntot + 1
-          write(*,'(2i5,a3,a25,a3,i4)') j, ntot, ' : ', 
-     &         mnc_cw_vname(j)(1:20), ' : ', mnc_cw_vgind(j)
-
+          s1(1:NBLNK) = blnk(1:NBLNK)
+          write(s1,'(a5,2i5,a3,a25,a3,i4)') 'MNC: ',
+     &         j, ntot, ' | ', 
+     &         mnc_cw_vname(j)(1:20), ' | ', mnc_cw_vgind(j)
+          CALL PRINT_MESSAGE(
+     &         s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
+          
           DO i = 1,mnc_cw_vnat(1,j)
-            write(*,'(a14,i4,a3,a25,a3,a55)') '      text_at:',i, 
+            s1(1:NBLNK) = blnk(1:NBLNK)
+            write(s1,'(a5,a14,i4,a3,a25,a3,a55)') 
+     &           'MNC: ','      text_at:',i, 
      &           ' : ', mnc_cw_vtnm(i,j)(1:25), ' : ',
      &           mnc_cw_vtat(i,j)(1:55)
+            CALL PRINT_MESSAGE(
+     &           s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
           ENDDO
           DO i = 1,mnc_cw_vnat(2,j)
-            write(*,'(a14,i4,a3,a25,a3,i20)') '      int__at:',i, 
+            s1(1:NBLNK) = blnk(1:NBLNK)
+            write(s1,'(a5,a14,i4,a3,a25,a3,i20)') 
+     &           'MNC: ','      int__at:',i, 
      &           ' : ', mnc_cw_vinm(i,j)(1:25), ' : ',
      &           mnc_cw_viat(i,j)
+            CALL PRINT_MESSAGE(
+     &           s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
           ENDDO
           DO i = 1,mnc_cw_vnat(3,j)
-            write(*,'(a14,i4,a3,a25,a3,f25.10)') '      dbl__at:',i, 
+            s1(1:NBLNK) = blnk(1:NBLNK)
+            write(s1,'(a5,a14,i4,a3,a25,a3,f25.10)') 
+     &           'MNC: ','      dbl__at:',i, 
      &           ' : ', mnc_cw_vdnm(i,j)(1:25), ' : ',
      &           mnc_cw_vdat(i,j)
-          ENDDO
-
+            CALL PRINT_MESSAGE(
+     &           s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
+        ENDDO
+        
         ENDIF
       ENDDO
       IF (ntot .EQ. 0) THEN
-        write(*,'(a)') '   None defined!'
+        s1(1:NBLNK) = blnk(1:NBLNK)
+        write(s1,'(a)') 'MNC:    None defined!'
+        CALL PRINT_MESSAGE(
+     &       s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ENDIF
-
+      
+      _END_MASTER(myThid)
 
       RETURN
       END

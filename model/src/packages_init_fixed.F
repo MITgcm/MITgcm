@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.22 2004/03/19 05:09:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.23 2004/03/20 23:51:23 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,15 +45,6 @@ C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
-
-C--   Initialize MNC look-up tables
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        CALL MNC_INIT(myThid)
-        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
-        CALL INI_MNC_IO(myThid)
-      ENDIF
-#endif
 
 C--   Initialize fixed params for GAD
       CALL GAD_INIT( myThid )
