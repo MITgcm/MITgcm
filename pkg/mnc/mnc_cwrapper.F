@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.15 2004/07/06 21:04:28 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.16 2004/07/06 22:38:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -781,9 +781,13 @@ C     Text Attributes
       DO i = 1,ntat
         n1 = IFNBLNK(tnames(i))
         n2 = ILNBLNK(tnames(i))
+        mnc_cw_vtnm(n+i,indv)(1:MNC_MAX_CHAR) =
+     &       mnc_blank_name(1:MNC_MAX_CHAR)
         mnc_cw_vtnm(n+i,indv)(1:(n2-n1+1)) = tnames(i)(n1:n2)
         n1 = IFNBLNK(tvals(i))
         n2 = ILNBLNK(tvals(i))
+        mnc_cw_vtat(n+i,indv)(1:MNC_MAX_CHAR) =
+     &       mnc_blank_name(1:MNC_MAX_CHAR)
         mnc_cw_vtat(n+i,indv)(1:(n2-n1+1)) = tvals(i)(n1:n2)
       ENDDO
       mnc_cw_vnat(1,indv) = n + ntat
