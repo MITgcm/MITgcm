@@ -9,6 +9,8 @@ cadj SUBROUTINE autodiff_inadmode_set REQUIRED
 cadj SUBROUTINE autodiff_inadmode_set INFLUENCED
 cadj SUBROUTINE autodiff_inadmode_set ADNAME  = 
 CADJ & adautodiff_inadmode_set
+cadj SUBROUTINE autodiff_inadmode_set FTLNAME  = 
+CADJ & g_autodiff_inadmode_set
 
 C     /==========================================================\
 C     | SUBROUTINE AUTODIFF_INADMODE_UNSET                         |
@@ -21,4 +23,5 @@ cadj SUBROUTINE autodiff_inadmode_unset REQUIRED
 cadj SUBROUTINE autodiff_inadmode_unset INFLUENCED
 cadj SUBROUTINE autodiff_inadmode_unset ADNAME  = 
 CADJ & adautodiff_inadmode_unset
-
+cadj SUBROUTINE autodiff_inadmode_unset FTLNAME  = 
+CADJ & g_autodiff_inadmode_unset
