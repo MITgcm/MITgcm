@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.70 2004/02/28 05:01:12 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.71 2004/03/10 23:34:04 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -37,7 +37,7 @@ test_for_string_in_file() {
     grep -i "$strng" $file > /dev/null 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
-	echo -n "Error: In $file there is an illegal line: "
+	printf "Error: In $file there is an illegal line: "
         grep -i "$strng" $file
 	return 1
     fi
@@ -258,7 +258,7 @@ get_pdepend_list()  {
     . ./.pd_tmp
     rm -f ./.pd_tmp
 
-    echo -n "PNAME = "${}
+    printf "PNAME = "${}
 }
 
 
@@ -347,6 +347,9 @@ Usage: "$0" [OPTIONS]
           Include MPI header files and link to MPI libraries using MPI_ROOT
           set to PATH. i.e. Include files from $PATH/include, link to libraries
           from $PATH/lib and use binaries from $PATH/bin.
+
+    -bash NAME
+          Explicitly specify the Bourne or BASH shell to use
 
   While it is most often a single word, the "NAME" variables specified 
   above can in many cases be a space-delimited string such as:
@@ -582,6 +585,7 @@ SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
 
+BASH=
 PWD=`pwd`
 MAKE=make
 AWK=awk
@@ -650,7 +654,7 @@ for i in . $MODS ; do
 	break
     fi
 done
-echo -n "  getting local config information:  "
+printf "  getting local config information:  "
 if test -e $gm_local ; then
     echo "using $gm_local"
     . $gm_local
@@ -714,6 +718,11 @@ for ac_option ; do
 	    ac_prev=MAKE ;;
 	-make=* | --make=* | -m=* | --m=*)
 	    MAKE=$ac_optarg ;;
+	
+	-bash | --bash)
+	    ac_prev=BASH ;;
+	-bash=* | --bash=*)
+	    BASH=$ac_optarg ;;
 	
 	-makedepend | --makedepend | -md | --md)
 	    ac_prev=MAKEDEPEND ;;
@@ -829,7 +838,7 @@ if test "x${ROOTDIR}" = x ; then
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
 	    if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
 		ROOTDIR=$d
-		echo -n "Warning:  ROOTDIR was not specified but there appears to be"
+		printf "Warning:  ROOTDIR was not specified but there appears to be"
 		echo " a copy of MITgcm at \"$ROOTDIR\" so we'll try it."
 		break
 	    fi
@@ -863,7 +872,7 @@ if test "x$OPTFILE" != xNONE ; then
 	. "$OPTFILE"
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
-	    echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
+	    printf "Error: failed to source OPTFILE \"$OPTFILE\""
 	    echo "--please check that variable syntax is bash-compatible"
 	    exit 1
 	fi
@@ -890,7 +899,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 	. "$AD_OPTFILE"
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
-	    echo -n "Error: failed to source AD_OPTFILE \"$AD_OPTFILE\""
+	    printf "Error: failed to source AD_OPTFILE \"$AD_OPTFILE\""
 	    echo "--please check that variable syntax is bash-compatible"
 	    exit 1
 	fi
@@ -905,6 +914,10 @@ fi
 
 #  Check that FC, LINK, CPP, S64, LN, and MAKE are defined.  If not,
 #  either set defaults or complain and abort!
+if test ! "x$BASH" = x ; then
+    # add a trailing space so that it works within the Makefile syntax (see below)
+    BASH="$BASH "
+fi
 if test "x$FC" = x ; then
     cat <<EOF 1>&2
 
@@ -975,7 +988,7 @@ if test ! "x$MPI" = x ; then
 fi
 
 printf "\n===  Checking system libraries  ===\n"
-echo -n "  Do we have the system() command using $FC...  "
+printf "  Do we have the system() command using $FC...  "
 cat > genmake_tcomp.f <<EOF
       program hello
       call system('echo hi')
@@ -993,7 +1006,7 @@ else
 fi
 rm -f genmake_tcomp*
 
-echo -n "  Do we have the fdate() command using $FC...  "
+printf "  Do we have the fdate() command using $FC...  "
 cat > genmake_tcomp.f <<EOF
       program hello
       CHARACTER(128) string
@@ -1014,7 +1027,7 @@ else
 fi
 rm -f genmake_tcomp*
 
-echo -n "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
+printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
 if test "x$HAVE_CLOC" != x ; then
     echo "yes"
@@ -1023,7 +1036,7 @@ else
 fi
 rm -f genmake_t*
 
-echo -n "  Can we create NetCDF-enabled binaries...  "
+printf "  Can we create NetCDF-enabled binaries...  "
 check_netcdf_libs
 if test "x$HAVE_NETCDF" != x ; then
     echo "yes"
@@ -1033,14 +1046,14 @@ fi
 
 
 printf "\n===  Setting defaults  ===\n"
-echo -n "  Adding MODS directories:  "
+printf "  Adding MODS directories:  "
 for d in $MODS ; do
     if test ! -d $d ; then
 	echo
 	echo "Error: MODS directory \"$d\" not found!"
 	exit 1
     else
-	echo -n " $d"
+	printf " $d"
 	SOURCEDIRS="$SOURCEDIRS $d"
 	INCLUDEDIRS="$INCLUDEDIRS $d"
     fi
@@ -1165,7 +1178,7 @@ else
 	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
 	RETVAL=$?
 	if test "x${RETVAL}" != x0 ; then
-	    echo -n "Error: can't parse default package list "
+	    printf "Error: can't parse default package list "
 	    echo "-- please check PDEFAULT=\"$PDEFAULT\""
 	    exit 1
 	fi
@@ -1448,11 +1461,11 @@ rm -rf .links.tmp
 mkdir .links.tmp
 echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
-echo -n 'SRCFILES = '    > srclist.inc
-echo -n 'CSRCFILES = '   > csrclist.inc
-echo -n 'F90SRCFILES = ' > f90srclist.inc
-echo -n 'HEADERFILES = ' > hlist.inc
-echo -n 'AD_FLOW_FILES = ' > ad_flow_files.inc
+printf 'SRCFILES = '    > srclist.inc
+printf 'CSRCFILES = '   > csrclist.inc
+printf 'F90SRCFILES = ' > f90srclist.inc
+printf 'HEADERFILES = ' > hlist.inc
+printf 'AD_FLOW_FILES = ' > ad_flow_files.inc
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
@@ -1477,23 +1490,23 @@ for d in $alldirs ; do
 		case $extn in
 		    F)
 			echo    " \\"  >> srclist.inc
-			echo -n " $sf" >> srclist.inc
+			printf " $sf" >> srclist.inc
 			;;
 		    F90)
 			echo    " \\"  >> f90srclist.inc
-			echo -n " $sf" >> f90srclist.inc
+			printf " $sf" >> f90srclist.inc
 			;;
 		    c)
 			echo    " \\"  >> csrclist.inc
-			echo -n " $sf" >> csrclist.inc
+			printf " $sf" >> csrclist.inc
 			;;
 		    h)
 			echo    " \\"  >> hlist.inc
-			echo -n " $sf" >> hlist.inc
+			printf " $sf" >> hlist.inc
 			;;
 		    flow)
 			echo    " \\"  >> ad_flow_files.inc
-			echo -n " $sf" >> ad_flow_files.inc
+			printf " $sf" >> ad_flow_files.inc
 			;;
 		esac
 	    fi
@@ -1675,10 +1688,10 @@ cleanlinks:
 # Special targets ($SPECIAL_FILES) which are create by make
 ${PACKAGES_DOT_H}:
 	@echo Creating \$@ ...
-	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" \$(DISABLED_PACKAGES) " " "Enabled packages:" \$(ENABLED_PACKAGES) > \$@
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" \$(DISABLED_PACKAGES) " " "Enabled packages:" \$(ENABLED_PACKAGES) > \$@
 AD_CONFIG.h:
 	@echo Creating \$@ ...
-	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > \$@
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > \$@
 FC_NAMEMANGLE.h:
 	@echo Creating \$@ ...
 	echo "$FC_NAMEMANGLE" > \$@
@@ -1725,11 +1738,11 @@ done
 
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
-echo -n "AD_FILES = " >> $MAKEFILE
+printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat ad_files`
 for i in $AD_FILES ; do
     echo    " \\" >> $MAKEFILE
-    echo -n " $i" >> $MAKEFILE
+    printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
 rm -f ad_files
@@ -1742,7 +1755,7 @@ adtaf: ad_taf_output.f
 adtamc: ad_tamc_output.f
 
 ad_input_code.f: \$(AD_FILES) \$(HEADERFILES)
-	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	-rm -f ad_config.template
 	@make \$(F77FILES)
@@ -1774,7 +1787,7 @@ ftltaf: ftl_taf_output.f
 ftltamc: ftl_tamc_output.f
 
 ftl_input_code.f: \$(AD_FILES) \$(HEADERFILES)
-	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ftl_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ftl_config.template
 	cmp ftl_config.template AD_CONFIG.h || cat ftl_config.template > AD_CONFIG.h
 	-rm -f ftl_config.template
 	@make \$(F77FILES)
@@ -1847,7 +1860,7 @@ printf "\n\n# DO NOT DELETE\n" >> $MAKEFILE
 printf "\n===  Done  ===\n"
 
 # Create special header files
-$TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" $DISABLED_PACKAGES " " "Enabled packages:" $ENABLED_PACKAGES > $PACKAGES_DOT_H".tmp" 
+$BASH $TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" $DISABLED_PACKAGES " " "Enabled packages:" $ENABLED_PACKAGES > $PACKAGES_DOT_H".tmp" 
 if test ! -f $PACKAGES_DOT_H ; then
     mv -f $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
 else
@@ -1861,13 +1874,13 @@ else
     fi
 fi
 if test ! -f AD_CONFIG.h ; then
-    $TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > AD_CONFIG.h
+    $BASH $TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > AD_CONFIG.h
 fi
 
 
 #  Write the "state" for future records
 if test "x$DUMPSTATE" != xf ; then
-    echo -n "" > genmake_state
+    printf "" > genmake_state
     for i in $gm_state ; do
 	t1="t2=\$$i"
 	eval $t1
