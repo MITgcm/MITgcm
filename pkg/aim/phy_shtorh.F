@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_shtorh.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_shtorh.F,v 1.4 2001/09/06 13:28:01 adcroft Exp $
 C $Name:  $
  
       SUBROUTINE SHTORH (IMODE,NGP,TA,PS,SIG,QA,RH,QSAT,myThid)
@@ -22,6 +22,7 @@ C--
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
+      INTEGER IMODE,NGP,J
       INTEGER  myThid
 
 
@@ -88,6 +89,7 @@ C
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
+      INTEGER NLON,NLAT,I,J
 
 
 C

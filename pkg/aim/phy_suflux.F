@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.4 2001/09/06 13:28:01 adcroft Exp $
 C $Name:  $
 
       SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,QSAT,Vsurfsq,PHI,
@@ -46,6 +46,7 @@ C     Resolution parameters
 #include "atparam1.h"
 #include "Lev_def.h"
 C
+      INTEGER NLON,NLAT,NLEV,NGP
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 
 C     Physical constants + functions of sigma and latitude
@@ -92,6 +93,7 @@ Cchdbg
       REAL Q0moy(NGP)
       SAVE Q0moy
       REAL factwind2
+      INTEGER J
 C
 C--   1. Extrapolation of wind, temp, hum. and density to the surface
 C

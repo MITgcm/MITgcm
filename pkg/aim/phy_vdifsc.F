@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.4 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.5 2001/09/06 13:28:01 adcroft Exp $
 C $Name:  $
 
 cch      SUBROUTINE VDIFSC (UA,VA,SE,RH,QA,QSAT,
@@ -34,6 +34,7 @@ C     Resolution parameters
 #include "EEPARAMS.h"
 #include "Lev_def.h"
 C
+      INTEGER NLON,NLAT,NLEV,NGP
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 C
 C     Physical constants + functions of sigma and latitude
@@ -73,6 +74,7 @@ Cchdbg
       LOGICAL ifirst
       DATA ifirst /.TRUE./       
       SAVE ifirst
+      INTEGER J,K
 C
 C--   1. Initalization
 C
