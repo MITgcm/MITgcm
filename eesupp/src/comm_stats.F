@@ -59,7 +59,8 @@ C        o X exchange stats.
          IF ( FLOAT(exchRecvXExchCount(1,bi,bj)) .NE. 0. ) THEN
           WRITE(msgBuf,'(A,A,1PE15.2)')
      &    '//','            Avg. X spins =',
-     &    FLOAT(exchRecvXSpinCount(1,bi,bj))/FLOAT(exchRecvXExchCount(1,bi,bj))
+     &    FLOAT(exchRecvXSpinCount(1,bi,bj))/
+     &    FLOAT(exchRecvXExchCount(1,bi,bj))
          ELSE
           WRITE(msgBuf,'(A,A,1PE15.2)')
      &    '//','            Avg. X spins =',
@@ -87,7 +88,8 @@ C        o Y exchange stats.
          IF ( FLOAT(exchRecvYExchCount(1,bi,bj)) .NE. 0. ) THEN
           WRITE(msgBuf,'(A,A,1PE15.2)')
      &    '//','            Avg. Y spins =',
-     &    FLOAT(exchRecvYSpinCount(1,bi,bj))/FLOAT(exchRecvYExchCount(1,bi,bj))
+     &    FLOAT(exchRecvYSpinCount(1,bi,bj))/
+     &    FLOAT(exchRecvYExchCount(1,bi,bj))
          ELSE
           WRITE(msgBuf,'(A,A,1PE15.2)')
      &    '//','            Avg. Y spins =',

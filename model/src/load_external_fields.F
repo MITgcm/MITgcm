@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.7 1998/09/29 18:50:57 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.8 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -34,8 +34,8 @@ C     === Global variables ===
  
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
-C     myTime - Simulation's time
-C     myIter - Simulation's iteration number
+C     myTime - Simulation time
+C     myIter - Simulation timestep number
       INTEGER myThid
       REAL    myTime
       INTEGER myIter
@@ -150,6 +150,7 @@ C
       IF ( thetaClimFile .NE. ' ' ) THEN
        CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )
       ENDIF
+
 C
       RETURN
       END
@@ -190,7 +191,8 @@ C--    Set gamma to convert from N/m^2 to m/s^2
        ELSE
         WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
         CALL PRINT_ERROR( msgBuf, 1 )
-        WRITE(msgBuf,'(A)')'No relation converting input to acceleration.'
+        WRITE(msgBuf,'(A)')
+     &   'No relation converting input to acceleration.'
         CALL PRINT_ERROR( msgBuf, 1 )
         STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
        ENDIF
@@ -218,7 +220,8 @@ C--    Set gamma to convert from N/m^2 to m/s^2
        ELSE
         WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
         CALL PRINT_ERROR( msgBuf, 1 )
-        WRITE(msgBuf,'(A)')'No relation converting input to acceleration.'
+        WRITE(msgBuf,'(A)')
+     &   'No relation converting input to acceleration.'
         CALL PRINT_ERROR( msgBuf, 1 )
         STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
        ENDIF
@@ -242,10 +245,12 @@ C
       _EXCH_XY_R4(fv  , myThid )
 C
       IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
-       CALL PLOT_FIELD_XYRS( fu, 'S/R LOAD_WIND_STRESS_CLIMATOLOGY FU',1,myThid)
+       CALL PLOT_FIELD_XYRS( fu, 
+     &   'S/R LOAD_WIND_STRESS_CLIMATOLOGY FU',1,myThid)
       ENDIF
       IF (.NOT. meridWindFile .EQ. ' ' ) THEN
-       CALL PLOT_FIELD_XYRS( fv, 'S/R LOAD_WIND_STRESS_CLIMATOLOGY FV',1,myThid)
+       CALL PLOT_FIELD_XYRS( fv, 
+     &   'S/R LOAD_WIND_STRESS_CLIMATOLOGY FV',1,myThid)
       ENDIF
 C
       RETURN
@@ -293,13 +298,16 @@ C     msgBuf - Error message buffer
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
        _BEGIN_MASTER(myThid)
-       write(0,*) 'S/R LOAD_INTERPOLATE_FORCING: Reading new data',myTime,myIter
+       write(0,*) 
+     &   'S/R LOAD_INTERPOLATE_FORCING: Reading new data',myTime,myIter
        _END_MASTER(myThid)
        intime0=int( (myForcingTime-externForcingCycle*
      &               int(myForcingTime/externForcingCycle)
      &              )/externForcingPeriod )
-       intime1=int( (myForcingTime+externForcingPeriod-externForcingCycle*
-     &              int((myForcingTime+externForcingPeriod)/externForcingCycle)
+       intime1=
+     &   int( (myForcingTime+externForcingPeriod-externForcingCycle*
+     &              int((myForcingTime+externForcingPeriod)
+     &                  /externForcingCycle)
      &              )/externForcingPeriod )
 
 C--    SST
@@ -342,7 +350,8 @@ C      Convert SSTdot into the increment to SST per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           SSTdot(i,j,bi,bj)=SSTdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           SSTdot(i,j,bi,bj)=
+     &     SSTdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -389,7 +398,8 @@ C      Convert SSSdot into the increment to SSS per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           SSSdot(i,j,bi,bj)=SSSdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           SSSdot(i,j,bi,bj)= 
+     &     SSSdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -438,7 +448,8 @@ C      Convert fudot into the increment to fu per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           fudot(i,j,bi,bj)=fudot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           fudot(i,j,bi,bj)=
+     &     fudot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -487,7 +498,8 @@ C      Convert fvdot into the increment to fv per time-step (here after)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           fvdot(i,j,bi,bj)=fvdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           fvdot(i,j,bi,bj)=
+     &     fvdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -511,7 +523,8 @@ C      Set Qnetdot to the total change over the period
          DO j=1,sNy
           DO i=1,sNx
            Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)/(4200.*rhonil*delZ(1))
-           Qnetdot(i,j,bi,bj) = Qnetdot(i,j,bi,bj)/(4200.*rhonil*delZ(1))
+           Qnetdot(i,j,bi,bj) = 
+     &     Qnetdot(i,j,bi,bj)/(4200.*rhonil*delZ(1))
            Qnetdot(i,j,bi,bj) = Qnetdot(i,j,bi,bj)-Qnet(i,j,bi,bj)
           ENDDO
          ENDDO

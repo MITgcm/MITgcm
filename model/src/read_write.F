@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.11 1998/08/22 17:51:09 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.12 1998/10/28 03:11:38 cnh Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -88,7 +88,8 @@ C       Raw fields
         CALL READ_FLD_XYZ_RL(  'gSNm1.',suff,     gSNm1, myIter, myThid)
         CALL READ_FLD_XY_RL ( 'cg2d_x.',suff,    cg2d_x, myIter, myThid)
 #ifdef ALLOW_CD
-        CALL READ_FLD_XY_RL ( 'cg2d_xNM1.',suff, cg2d_xNM1, myIter, myThid)
+        CALL READ_FLD_XY_RL 
+     &   ( 'cg2d_xNM1.',suff, cg2d_xNM1, myIter, myThid)
         CALL READ_FLD_XYZ_RL(  'uVelD.',suff,    uVelD, myIter, myThid)
         CALL READ_FLD_XYZ_RL(  'vVelD.',suff,    vVelD, myIter, myThid)
         CALL READ_FLD_XYZ_RL(  'uNM1.', suff,     uNM1, myIter, myThid)
@@ -110,10 +111,13 @@ C--     Check for IO errors
          CALL PRINT_ERROR( msgBuf, 1 )
          STOP 'ABNORMAL END: S/R READ_CHECKPOINT'
         ELSE
-         WRITE(msgBuf,'(A,I10)')  '// Model checkpoint read, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         WRITE(msgBuf,'(A,I10)')  
+     &    '// Model checkpoint read, timestep', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
 C       Resotre default IO precision
@@ -306,9 +310,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -481,9 +487,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -658,9 +666,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -835,9 +845,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -880,10 +892,13 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       WRITE(msgBuf,'(A,A)') head, comment
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_I( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
+      CALL PRINT_LIST_I( fld, lFld, index_type, .FALSE., 
+     &    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
 C
       RETURN
       END
@@ -922,10 +937,13 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       WRITE(msgBuf,'(A,A)') head, comment
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_L( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
+      CALL PRINT_LIST_L( fld, lFld, index_type, .FALSE., 
+     &    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
 C
       RETURN
       END
@@ -964,10 +982,13 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       WRITE(msgBuf,'(A,A)') head, comment
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
+      CALL PRINT_LIST_R8( fld, lFld, index_type, .FALSE., 
+     &    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
 C
       RETURN
       END
@@ -1117,9 +1138,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Wrote file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error writing file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error writing file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -1282,9 +1305,11 @@ C--   Check errors
       IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
        WRITE(msgBuf,'(A,A,A,A)')  '// Wrote file(s) ',
      &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
       ELSE
-       WRITE(msgBuf,'(A,A,A)') 'Error writing file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       WRITE(msgBuf,'(A,A,A)') 'Error writing file ',
+     &    pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
        CALL PRINT_ERROR( msgBuf, 1 )
       ENDIF
 
@@ -1294,7 +1319,8 @@ C--   Check errors
       END
 
 CStartofinterface
-      SUBROUTINE WRITE_CHECKPOINT ( modelEnd, myCurrentTime, myIter, myThid )
+      SUBROUTINE WRITE_CHECKPOINT ( modelEnd, myCurrentTime, 
+     &                              myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE WRITE_CHECKPOINT                              |
 C     | o Controlling routine for IO to write restart file.      |
@@ -1351,13 +1377,15 @@ C                      be written.
 
       permCheckPoint = .FALSE.
       permCheckPoint=
-     & DIFFERENT_MULTIPLE(pChkptFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     & DIFFERENT_MULTIPLE(pChkptFreq,myCurrentTime,
+     &                    myCurrentTime-deltaTClock)
 
       IF (
      &    (.NOT. modelEnd .AND. (
      &     permCheckPoint
      &     .OR.
-     &     DIFFERENT_MULTIPLE(chkptFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     &     DIFFERENT_MULTIPLE(chkptFreq,
+     &    myCurrentTime,myCurrentTime-deltaTClock)
      &     ) 
      &    ) 
      &     .OR.
@@ -1366,7 +1394,8 @@ C                      be written.
      &     .AND. .NOT.
      &     permCheckPoint 
      &     .AND. .NOT.
-     &     DIFFERENT_MULTIPLE(chkptFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     &     DIFFERENT_MULTIPLE(chkptFreq,
+     &    myCurrentTime,myCurrentTime-deltaTClock)
      &    )
      & ) THEN
 
@@ -1392,21 +1421,35 @@ C--     Read IO error counter
 
 C--     Write model fields
 C       Raw fields
-        CALL WRITE_FLD_XYZ_RL(   'uVel.',suff,      uVel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(     'gU.',suff,        gU, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(  'gUNm1.',suff,     gUNm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(   'vVel.',suff,      vVel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(     'gV.',suff,        gV, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(  'gVNm1.',suff,     gVNm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(  'theta.',suff,     theta, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(     'gT.',suff,        gT, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(  'gTNm1.',suff,     gTNm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(   'salt.',suff,      salt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(     'gS.',suff,        gS, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(  'gSNm1.',suff,     gSNm1, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'cg2d_x.',suff,    cg2d_x, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (   'uVel.',suff,      uVel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (     'gU.',suff,        gU, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (  'gUNm1.',suff,     gUNm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (   'vVel.',suff,      vVel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (     'gV.',suff,        gV, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (  'gVNm1.',suff,     gVNm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (  'theta.',suff,     theta, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (     'gT.',suff,        gT, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (  'gTNm1.',suff,     gTNm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (   'salt.',suff,      salt, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (     'gS.',suff,        gS, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL
+     &    (  'gSNm1.',suff,     gSNm1, myIter, myThid)
+        CALL WRITE_FLD_XY_RL 
+     &    ( 'cg2d_x.',suff,    cg2d_x, myIter, myThid)
 #ifdef ALLOW_CD
-        CALL WRITE_FLD_XY_RL ( 'cg2d_xNM1.',suff, cg2d_xNM1, myIter, myThid)
+        CALL WRITE_FLD_XY_RL 
+     &    ( 'cg2d_xNM1.',suff, cg2d_xNM1, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'uVelD.',suff,    uVelD, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'vVelD.',suff,    vVelD, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(  'uNM1.', suff,     uNM1, myIter, myThid)
@@ -1428,10 +1471,13 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  '// Model checkpoint written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         WRITE(msgBuf,'(A,I10)')  
+     &    '// Model checkpoint written, timestep', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
 C        Wrote OK so step forward to use next checkpoint in loop.
          IF ( .NOT. permCheckPoint ) THEN
           nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
@@ -1447,7 +1493,8 @@ C        Wrote OK so step forward to use next checkpoint in loop.
       END
 
 CStartofinterface
-      SUBROUTINE WRITE_STATE ( forceOutput, myCurrentTime, myIter, myThid )
+      SUBROUTINE WRITE_STATE ( forceOutput, myCurrentTime, 
+     &    myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE WRITE_STATE                                   |
 C     | o Controlling routine for IO to dump model state.        |
@@ -1489,7 +1536,8 @@ C     msgBuf - Error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF ( 
-     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
+     &    myCurrentTime-deltaTClock)
      &  .OR. forceOutput
      & ) THEN
 
@@ -1537,10 +1585,13 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  '// Model state written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         WRITE(msgBuf,'(A,I10)')  
+     &    '// Model state written, timestep', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
        _END_MASTER( myThid )

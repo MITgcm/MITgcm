@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.1 1998/09/29 18:53:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_Y( array,
@@ -161,9 +161,12 @@ C        Clear requests
 C        Update statistics
          IF ( exchCollectStatistics ) THEN
           exchRecvYExchCount(1,bi,bj) = exchRecvYExchCount(1,bi,bj)+1
-          exchRecvYSpinCount(1,bi,bj) = exchRecvYSpinCount(1,bi,bj)+spinCount
-          exchRecvYSpinMax(1,bi,bj) = MAX(exchRecvYSpinMax(1,bi,bj),spinCount)
-          exchRecvYSpinMin(1,bi,bj) = MIN(exchRecvYSpinMin(1,bi,bj),spinCount)
+          exchRecvYSpinCount(1,bi,bj) = 
+     &    exchRecvYSpinCount(1,bi,bj)+spinCount
+          exchRecvYSpinMax(1,bi,bj) = 
+     &    MAX(exchRecvYSpinMax(1,bi,bj),spinCount)
+          exchRecvYSpinMin(1,bi,bj) = 
+     &    MIN(exchRecvYSpinMin(1,bi,bj),spinCount)
          ENDIF
 
 
@@ -207,65 +210,113 @@ C--   Read from the buffers
          jMin = sNy+1
          jMax = sNy+exchWidthY
          iB0  = 0
+         IF (  northCommMode .EQ. COMM_PUT
+     &        .OR. northCommMode .EQ. COMM_MSG  ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = northRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = array(I,iB,K,biN,bjN)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = sNy-exchWidthY+1
          jMax = sNy
          iB0  = 1-exchWidthY-1
-        ENDIF
-        IF (     northCommMode .EQ. COMM_PUT 
-     &      .OR. northCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=jMin,jMax
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = northRecvBuf_RL(iB,eBl,bi,bj)
+         IF (  northCommMode .EQ. COMM_PUT 
+     &        .OR. northCommMode .EQ. COMM_MSG  ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+northRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          iB = iB0
-          DO J=jMin,jMax
-           iB = iB+1
-           DO I=iMin,iMax
-            array(I,J,K,bi,bj) = array(I,iB,K,biN,bjN)
+         ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(I,iB,K,biN,bjN)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
+
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1-exchWidthY
          jMax = 0
          iB0  = sNy-exchWidthY
+         IF (      southCommMode .EQ. COMM_PUT
+     &        .OR. southCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = southRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = array(I,iB,K,biS,bjS)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
          iB0  = sNy
-        ENDIF
-        IF (      southCommMode .EQ. COMM_PUT 
-     &       .OR. southCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=jMin,jMax
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = southRecvBuf_RL(iB,eBl,bi,bj)
+         IF (      southCommMode .EQ. COMM_PUT 
+     &        .OR. southCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+southRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          iB = iB0
-          DO J=jMin,jMax
-           iB = iB+1
-           DO I=iMin,iMax
-            array(I,J,K,bi,bj) = array(I,iB,K,biS,bjS)
+         ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(I,iB,K,biS,bjS)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
-
        ENDDO
       ENDDO
 
@@ -439,9 +490,12 @@ C        Clear requests
 C        Update statistics
          IF ( exchCollectStatistics ) THEN
           exchRecvYExchCount(1,bi,bj) = exchRecvYExchCount(1,bi,bj)+1
-          exchRecvYSpinCount(1,bi,bj) = exchRecvYSpinCount(1,bi,bj)+spinCount
-          exchRecvYSpinMax(1,bi,bj) = MAX(exchRecvYSpinMax(1,bi,bj),spinCount)
-          exchRecvYSpinMin(1,bi,bj) = MIN(exchRecvYSpinMin(1,bi,bj),spinCount)
+          exchRecvYSpinCount(1,bi,bj) = 
+     &    exchRecvYSpinCount(1,bi,bj)+spinCount
+          exchRecvYSpinMax(1,bi,bj) = 
+     &    MAX(exchRecvYSpinMax(1,bi,bj),spinCount)
+          exchRecvYSpinMin(1,bi,bj) = 
+     &    MIN(exchRecvYSpinMin(1,bi,bj),spinCount)
          ENDIF
 
 
@@ -485,63 +539,112 @@ C--   Read from the buffers
          jMin = sNy+1
          jMax = sNy+exchWidthY
          iB0  = 0
+         IF (     northCommMode .EQ. COMM_PUT
+     &       .OR. northCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = northRecvBuf_RS(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = array(I,iB,K,biN,bjN)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = sNy-exchWidthY+1
          jMax = sNy
          iB0  = 1-exchWidthY-1
-        ENDIF
-        IF (     northCommMode .EQ. COMM_PUT 
-     &      .OR. northCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=jMin,jMax
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = northRecvBuf_RS(iB,eBl,bi,bj)
+         IF (     northCommMode .EQ. COMM_PUT 
+     &       .OR. northCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+northRecvBuf_RS(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          iB = iB0
-          DO J=jMin,jMax
-           iB = iB+1
-           DO I=iMin,iMax
-            array(I,J,K,bi,bj) = array(I,iB,K,biN,bjN)
+         ELSEIF ( northCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(I,iB,K,biN,bjN)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
+
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1-exchWidthY
          jMax = 0
          iB0  = sNy-exchWidthY
+         IF (      southCommMode .EQ. COMM_PUT
+     &        .OR. southCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = southRecvBuf_RS(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = array(I,iB,K,biS,bjS)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
          iB0  = sNy
-        ENDIF
-        IF (      southCommMode .EQ. COMM_PUT 
-     &       .OR. southCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=jMin,jMax
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = southRecvBuf_RS(iB,eBl,bi,bj)
+         IF (      southCommMode .EQ. COMM_PUT 
+     &        .OR. southCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=jMin,jMax
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+southRecvBuf_RS(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          iB = iB0
-          DO J=jMin,jMax
-           iB = iB+1
-           DO I=iMin,iMax
-            array(I,J,K,bi,bj) = array(I,iB,K,biS,bjS)
+         ELSEIF ( southCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           iB = iB0
+           DO J=jMin,jMax
+            iB = iB+1
+            DO I=iMin,iMax
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(I,iB,K,biS,bjS)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
 
        ENDDO

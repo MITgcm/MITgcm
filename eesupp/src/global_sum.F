@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.4 1998/10/28 03:11:35 cnh Exp $
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.
@@ -50,7 +50,7 @@ C     mpiRC  - MPI return code
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
-C--   Can't start until everyone is ready
+C--   Can not start until everyone is ready
       _BARRIER
 
 C--   Sum within the process first
@@ -122,7 +122,7 @@ C     mpiRC  - MPI return code
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 
-C--   Can't start until everyone is ready
+C--   Can not start until everyone is ready
       _BARRIER
 
 C--   Sum within the process first
@@ -146,7 +146,7 @@ C--     Write solution to place where all threads can see it
         phi(1,1) = sumPhi
       _END_MASTER( myThid )
 
-C--   Don't leave until we are sure that the sum is done
+C--   Do not leave until we are sure that the sum is done
       _BARRIER
 C
       RETURN

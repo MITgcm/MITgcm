@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.33 1998/09/09 15:19:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.34 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -96,11 +96,13 @@ C--   Continuous equation parameters
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual, cg2dpcOffDFac
+     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual, cg2dpcOffDFac,
+     & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
+     & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, 
+     & tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, taveFreq, deltaTClock,
      & pChkPtFreq, cAdjFreq, tauThetaClimRelax, tauSaltClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
@@ -132,7 +134,8 @@ C--   Initialise "which vertical coordinate system used" flags.
 C--   Open the parameter file
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-      OPEN(UNIT=modelDataUnit,FILE='data',STATUS='OLD',err=1,IOSTAT=errIO)
+      OPEN(UNIT=modelDataUnit,FILE='data',STATUS='OLD',
+     &     err=1,IOSTAT=errIO)
       IF ( errIO .GE. 0 ) GOTO 2
     1 CONTINUE
        WRITE(msgBuf,'(A)')
@@ -161,9 +164,11 @@ C--   Open the parameter file
 C--   Report contents of model parameter file
       WRITE(msgBuf,'(A)') 
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// Model parameter file "data"'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') 
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -174,7 +179,8 @@ C--   Report contents of model parameter file
        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
        WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       GOTO 2000
  2001 CONTINUE
       CLOSE(iUnit)
@@ -329,8 +335,9 @@ C--   z,p,r coord input switching.
       IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDrDefault
 
       IF ( implicitFreeSurface .AND.  rigidLid ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: Cannot select both implicitFreeSurface and rigidLid.'
+       WRITE(msgBuf,'(A,A)')
+     & 'S/R INI_PARMS: Cannot select both implicitFreeSurface',
+     & ' and rigidLid.'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
@@ -365,6 +372,9 @@ C--   Elliptic solver parameters
       cg2dMaxIters       = 150
       cg2dTargetResidual = 1.D-7
       cg2dChkResFreq     = 1
+      cg3dMaxIters       = 150
+      cg3dTargetResidual = 1.D-7
+      cg3dChkResFreq     = 1
       cg2dpcOffDFac      = 0.51D0
       READ(UNIT=iUnit,NML=PARM02,IOSTAT=errIO,err=5)
       IF ( errIO .GE. 0 ) GOTO 6

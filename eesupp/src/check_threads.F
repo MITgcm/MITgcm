@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.2 1998/04/23 20:37:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.3 1998/10/28 03:11:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -64,7 +64,7 @@ C
      &  ' thread(s), ',nThreads,' are needed for this configuration!'
         CALL PRINT_ERROR( msgBuffer , myThid)
 C--     Not enough threads are running so halt the program.
-C       I didn't want this here but it is the only place I have found that
+C       I did not want this here but it is the only place I have found that
 C       KAP deadlocks if it there are fewer threads than iterations in a BLOCKED(1)
 C       loop. The deadlock appears to be in the routine mppjoin which never 
 C       returns. I tried putting the STOP in main or breaking out of the loop in main

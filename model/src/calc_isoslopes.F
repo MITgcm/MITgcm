@@ -66,15 +66,23 @@ C     Now we convert deltaH to a non-dimensional fraction
 
 C      Horizontal gradient of Sigma at rVel points
         dSigmaDx=0.25*_recip_dxF(i,j,bi,bj)*
-     &   (_maskW(i+1,j, k ,bi,bj)*(rhoKp1(i+1,j)-rhoKp1( i ,j))
-     &   +_maskW( i ,j, k ,bi,bj)*(rhoKp1( i ,j)-rhoKp1(i-1,j))
-     &   +_maskW(i+1,j,k-1,bi,bj)*(rhoKm1(i+1,j)-rhoKm1( i ,j))
-     &   +_maskW( i ,j,k-1,bi,bj)*(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
+     &   (_maskW(i+1,j, k ,bi,bj)
+     &    *(rhoKp1(i+1,j)-rhoKp1( i ,j))
+     &   +_maskW( i ,j, k ,bi,bj)
+     &    *(rhoKp1( i ,j)-rhoKp1(i-1,j))
+     &   +_maskW(i+1,j,k-1,bi,bj)
+     &    *(rhoKm1(i+1,j)-rhoKm1( i ,j))
+     &   +_maskW( i ,j,k-1,bi,bj)
+     &    *(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
         dSigmaDy=0.25*_recip_dyF(i,j,bi,bj)*
-     &   (_maskS(i,j+1, k ,bi,bj)*(rhoKp1(i,j+1)-rhoKp1(i, j ))
-     &   +_maskS(i,  j, k ,bi,bj)*(rhoKp1(i, j )-rhoKp1(i,j-1))
-     &   +_maskS(i,j+1,k-1,bi,bj)*(rhoKm1(i,j+1)-rhoKm1(i, j ))
-     &   +_maskS(i, j ,k-1,bi,bj)*(rhoKm1(i, j )-rhoKm1(i,j-1)) )
+     &   (_maskS(i,j+1, k ,bi,bj)
+     &    *(rhoKp1(i,j+1)-rhoKp1(i, j ))
+     &   +_maskS(i,  j, k ,bi,bj)
+     &    *(rhoKp1(i, j )-rhoKp1(i,j-1))
+     &   +_maskS(i,j+1,k-1,bi,bj)
+     &    *(rhoKm1(i,j+1)-rhoKm1(i, j ))
+     &   +_maskS(i, j ,k-1,bi,bj)
+     &    *(rhoKm1(i, j )-rhoKm1(i,j-1)) )
 
 C       Calculate magnitude of horizontal gradient
         gradSmod=sqrt(dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy)

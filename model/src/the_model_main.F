@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.20 1998/09/29 18:50:57 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.21 1998/10/28 03:11:38 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -185,7 +185,8 @@ C      cg2d_x.0000000001 in the indexing scheme used for the model
 C      "state" files. This example is referred to as a checkpoint 
 C      at time level 1 
        CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
-       CALL WRITE_CHECKPOINT( .FALSE., myCurrentTime, myCurrentIter, myThid )
+       CALL 
+     & WRITE_CHECKPOINT( .FALSE., myCurrentTime, myCurrentIter, myThid )
        CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
 
       ENDDO
@@ -194,7 +195,8 @@ C      at time level 1
 
 C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL TIMER_START('I/O (WRITE)         [SPIN-DOWN]',myThid)
-      CALL WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
+      CALL 
+     & WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('I/O (WRITE)         [SPIN-DOWN]',myThid)
 
 C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump

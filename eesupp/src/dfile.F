@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.7 1998/06/30 12:25:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.8 1998/10/28 03:11:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -38,7 +38,7 @@ C   level calls to these routines. A mode flag is also used to
 C   control whether the DFILE_OPEN routine opens a file in
 C   read-write or read-only mode. On some systems this is necessary
 C   as the default is read-write and will fail for read-only files or
-C   file systems. Other systems don't support the OPEN(...='READ_ONLY')
+C   file systems. Other systems do not support the OPEN(...='READ_ONLY')
 C   so this feature may need to be switched on or off as appropriate.
 C    The DFILE_SET routines provide this mechanism. They work by setting
 C   a "context" flag which is applied to IO ahndles when the DFILE_OPEN 
@@ -216,9 +216,11 @@ C--   Remove previous meta information if there was any
       metaDataStatus(fileHandle,myThid) = metaDataWritten
       IF ( fNamMeta .NE. ' ' ) THEN
        IF ( aMode .EQ. accessModeRW ) THEN
-        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),STATUS='UNKNOWN',ERR=899)
+        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),
+     &       STATUS='UNKNOWN',ERR=899)
         CLOSE(mUnit,ERR=899)
-        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),STATUS='UNKNOWN',ERR=899)
+        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),
+     &       STATUS='UNKNOWN',ERR=899)
         metaDataStatus(fileHandle,myThid) = metaDataNotWritten
         nameOfMFile(fileHandle,myThid) = fNamMeta(i2Lo:i2Hi)
        ENDIF
@@ -238,7 +240,7 @@ C--   Open data file
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A,A)') ' Too many open files '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid, ' trying to open ',
+       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid,' trying to open ',
      & fNam(i1Lo:i1Hi)
        CALL PRINT_ERROR( msgBuf , 1)
        IF ( eMode .EQ. errorModeSTOP ) THEN
@@ -250,7 +252,7 @@ C--   Open data file
   899 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_OPEN '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid, ' failed open for ',
+       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ',myThid,' failed open for ',
      & fNamMeta(i2Lo:i2Hi)
        CALL PRINT_ERROR( msgBuf , 1)
        IF ( eMode .EQ. errorModeSTOP ) THEN
@@ -262,7 +264,7 @@ C--   Open data file
   799 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_OPEN '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid, ' failed open for ',
+       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ',myThid,' failed open for ',
      & fNam(i1Lo:i1Hi)
        CALL PRINT_ERROR( msgBuf , 1)
        IF ( eMode .EQ. errorModeSTOP ) THEN
@@ -345,7 +347,7 @@ C--   Check that file is active
   899 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_READ_R4 '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid, ' error reading file'
+       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid,' error reading file'
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A,A,A)') ' "', fNam(iLo:iHi),'"'
        CALL PRINT_ERROR( msgBuf , 1)
@@ -428,7 +430,7 @@ C--   Check that file is active
   899 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_READ_R8 '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid, ' error reading file'
+       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid,' error reading file'
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A,A,A)') ' "', fNam(iLo:iHi),'"'
        CALL PRINT_ERROR( msgBuf , 1)
@@ -564,7 +566,8 @@ C--   Write data
       WRITE(ioUnit,ERR=899) (ioBuf_R4(I),I=1,lBuffer)
 
 C--   Now write meta information
-      IF ( metaDataStatus(fileHandle,myThid) .EQ. metaDataNotWritten ) THEN
+      IF ( metaDataStatus(fileHandle,myThid) .EQ. 
+     &     metaDataNotWritten ) THEN
        ioUnit = mUnitNumber(fileHandle,myThid)
 
        WRITE(msgBuf,'(A)') '// START OF META DATA'
@@ -572,13 +575,15 @@ C--   Now write meta information
 
        WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., 
+     &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
        WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., 
+     &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
@@ -586,7 +591,8 @@ C--   Now write meta information
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, I.NE.nDims, .FALSE., ioUnit )
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, 
+     &                    I.NE.nDims, .FALSE., ioUnit )
        ENDDO
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -693,7 +699,8 @@ C--   Write data
       WRITE(ioUnit,ERR=899) (ioBuf_R8(I),I=1,lBuffer)
 
 C--   Now write meta information
-      IF ( metaDataStatus(fileHandle,myThid) .EQ. metaDataNotWritten ) THEN
+      IF ( metaDataStatus(fileHandle,myThid) .EQ. 
+     &                    metaDataNotWritten ) THEN
        ioUnit = mUnitNumber(fileHandle,myThid)
 
        WRITE(msgBuf,'(A)') '// START OF META DATA'
@@ -701,13 +708,15 @@ C--   Now write meta information
 
        WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., 
+     &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
        WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., 
+     &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
@@ -715,7 +724,8 @@ C--   Now write meta information
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, I.NE.nDims, .FALSE., ioUnit )
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, 
+     &                    I.NE.nDims, .FALSE., ioUnit )
        ENDDO
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)

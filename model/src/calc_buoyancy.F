@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.2 1998/09/06 14:47:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.3 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,7 +36,6 @@ C--   == Routine arguments ==
 C--   == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
-! ------------------------------------------------------------------------------
 
       IF    ( buoyancyRelation .eq. 'ATMOSPHERIC'  ) THEN
 
@@ -56,7 +55,8 @@ C--   == Local variables ==
 
       ELSE
 
-       STOP 'CALC_BUOANCY: variable "buoyancyRelation" has an illegal value'
+       STOP 
+     &'CALC_BUOANCY: variable "buoyancyRelation" has an illegal value'
 
       ENDIF
 

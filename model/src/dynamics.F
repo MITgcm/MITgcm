@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.35 1998/09/29 18:50:57 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.36 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -357,12 +357,6 @@ C--      Get temporary terms used by tendency routines
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
-CcnhDebugStarts
-C        IF ( K .EQ. 1 ) THEN
-C          CALL PLOT_FIELD_XYRL( rVel(1,1,1), 'K=1 Current rVel.1 ' , myIter, myThid )
-C          CALL PLOT_FIELD_XYRL( rVel(1,1,2), 'K=1 Current rVel.2 ' , myIter, myThid )
-C        ENDIF
-CcnhDebugEnds
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
@@ -456,6 +450,15 @@ C     write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(salt(1:sNx,1:sNy,:,:,:))
 C     write(0,*) 'dynamics: phiHyd ',minval(phiHyd/(Gravity*Rhonil),mask=phiHyd.NE.0.),
 C    &                           maxval(phiHyd/(Gravity*Rhonil))
+C     CALL PLOT_FIELD_XYZRL( gU, ' GU exiting dyanmics ' , 
+C    &Nr, 1, myThid )
+C     CALL PLOT_FIELD_XYZRL( gV, ' GV exiting dyanmics ' , 
+C    &Nr, 1, myThid )
+C     CALL PLOT_FIELD_XYZRL( gS, ' GS exiting dyanmics ' , 
+C    &Nr, 1, myThid )
+C     CALL PLOT_FIELD_XYZRL( gT, ' GT exiting dyanmics ' , 
+C    &Nr, 1, myThid )
+
 
       RETURN
       END

@@ -1,7 +1,8 @@
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE TIMEAVER_FINAL_XYZ( fldtave, timeave, bi, bj, K, myThid )
+      SUBROUTINE TIMEAVER_FINAL_XYZ( fldtave, timeave, 
+     &                               bi, bj, K, myThid )
 C     /==========================================================\
 C     | SUBROUTINE TIMEAVER_FINAL_XY                             |
 C     | o Get final average of field                             |
@@ -30,7 +31,8 @@ C      DO bi = myBxLo(myThid), myBxHi(myThid)
 C       DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-             fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj) / timeave(k,bi,bj)
+             fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj) / 
+     &                              timeave(k,bi,bj)
           ENDDO
          ENDDO
 C       ENDDO

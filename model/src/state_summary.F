@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.2 1998/04/24 02:05:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.3 1998/10/28 03:11:38 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -38,9 +38,11 @@ C     == Local variables ==
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// Model current state'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

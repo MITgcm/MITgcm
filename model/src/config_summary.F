@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.16 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.17 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -44,20 +44,26 @@ C     == Local variables ==
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// Model configuration'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// "Physical" paramters ( PARM01 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// "Physical" paramters ( PARM01 in namelist ) '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_1D_R8( tRef, Nr, INDEX_K,'tRef =',
      &'   /* Reference temperature profile ( oC or oK ) */')
       CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
@@ -93,11 +99,13 @@ C     == Local variables ==
       CALL WRITE_1D_R8( sBeta, 1, INDEX_NONE,'sBeta =',
      &'   /* Linear EOS haline contraction coefficient ( 1/ppt ) */')
       IF ( eosType .EQ. 'POLY3' ) THEN
-        WRITE(msgBuf,'(A)') '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
+        WRITE(msgBuf,'(A)') 
+     &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
         DO K = 1, Nr
          WRITE(msgBuf,'(I3,13F8.3)')
      &   K,eosRefT(K),eosRefS(K),eosSig0(K), (eosC(I,K),I=1,9)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
         ENDDO
       ENDIF
       CALL WRITE_1D_R8( rhonil,1, INDEX_NONE,'rhonil =',
@@ -129,7 +137,8 @@ C     == Local variables ==
       CALL WRITE_1D_L( momForcing,1, INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_1D_L( momPressureForcing,1, INDEX_NONE,
-     & 'momPressureForcing =', '  /* Momentum pressure term on/off flag */')
+     & 'momPressureForcing =',  
+     & '  /* Momentum pressure term on/off flag */')
       CALL WRITE_1D_L( tempStepping,1, INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
       CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
@@ -143,25 +152,34 @@ C     == Local variables ==
       CALL WRITE_1D_R8( GMkbackground,1, INDEX_NONE,'GMkbackground =',
      &'   /* background value of GM/Redi coefficient m^2/s */')
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A)') '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_1D_I( cg2dMaxIters,1, INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_1D_I( cg2dChkResFreq,1, INDEX_NONE,'cg2dChkResFreq =',
      &'   /* 2d con. grad convergence test frequency */')
-      CALL WRITE_1D_R8( cg2dTargetResidual,1, INDEX_NONE,'cg2dTargetResidual =',
+      CALL WRITE_1D_R8( cg2dTargetResidual,1, INDEX_NONE,
+     & 'cg2dTargetResidual =',
      &'   /* 2d con. grad target residual  */')
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// Time stepping paramters ( PARM03 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// Time stepping paramters ( PARM03 in namelist ) '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_1D_I( nIter0,1, INDEX_NONE,'nIter0 =',
      &'   /* Base timestep number  */')
       CALL WRITE_1D_I( nTimeSteps,1, INDEX_NONE,'nTimeSteps =',
@@ -192,14 +210,20 @@ C     == Local variables ==
      &'   /* Model state write out interval ( s ). */')
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// Gridding paramters ( PARM04 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// Gridding paramters ( PARM04 in namelist ) '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL WRITE_1D_L( usingCartesianGrid,1, INDEX_NONE,'usingCartesianGrid =',
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      CALL WRITE_1D_L( usingCartesianGrid,1, INDEX_NONE,
+     & 'usingCartesianGrid =',
      &'   /* Cartesian coordinates flag ( True / False ) */')
-      CALL WRITE_1D_L( usingSphericalPolarGrid,1, INDEX_NONE,'usingSphericalPolarGrid =',
+      CALL WRITE_1D_L( usingSphericalPolarGrid,1, INDEX_NONE,
+     & 'usingSphericalPolarGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
       CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
      &'   /* W spacing ( m ) */')
@@ -212,9 +236,9 @@ C     == Local variables ==
       CALL WRITE_1D_R8( delY, Ny, INDEX_J,'delY = ',
      &'   /* V spacing ( m - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( phiMin, 1, INDEX_NONE,'phiMin = ',
-     &'   /* Southern boundary ( ignored - cartesian, degrees - spherical ) */')
+     &'   /* South edge (ignored - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( thetaMin, 1, INDEX_NONE,'thetaMin = ',
-     &'   /* Western boundary ( ignored - cartesian, degrees - spherical ) */')
+     &'   /* West edge ( ignored - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( rSphere, 1, INDEX_NONE,'rSphere = ',
      &'   /* Radius ( ignored - cartesian, m - spherical ) */')
       DO bi=1,nSx
@@ -223,14 +247,14 @@ C     == Local variables ==
        ENDDO
       ENDDO
       CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,'xcoord = ',
-     &'   /* P-point X coordinate (  m - cartesian, degrees - spherical ) */')
+     &'   /* P-point X coord ( m - cartesian, degrees - spherical ) */')
       DO bj=1,nSy
        DO J=1,sNy
         ycoord((bj-1)*sNy+J) = yc(1,J,1,bj)
        ENDDO
       ENDDO
       CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,'ycoord = ',
-     &'   /* P-point Y coordinate (  m - cartesian, degrees - spherical ) */')
+     &'   /* P-point Y coord ( m - cartesian, degrees - spherical ) */')
       DO K=1,Nr
        rcoord(K) = rc(K)
       ENDDO

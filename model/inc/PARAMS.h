@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.32 1998/09/09 15:19:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.33 1998/10/28 03:11:36 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
 C     | o Header file defining model "parameters".               |
 C     |==========================================================|
-C     | The values from the model's standard input file are      |
+C     | The values from the model standard input file are        |
 C     | stored into the variables held here. Notes describing    |
 C     | the parameters can also be found here.                   |
 C     \==========================================================/
@@ -76,6 +76,10 @@ C     cg2dMaxIters        - Maximum number of iterations in the
 C                           two-dimensional con. grad solver.
 C     cg2dChkResFreq      - Frequency with which to check residual
 C                           in con. grad solver.
+C     cg3dMaxIters        - Maximum number of iterations in the
+C                           three-dimensional con. grad solver.
+C     cg3dChkResFreq      - Frequency with which to check residual
+C                           in con. grad solver.
 C     nIter0              - Start time-step number of for this run
 C     nTimeSteps          - Number of timesteps to execute
 C     numStepsPerPickup   - For offline setup. Frequency of pickup
@@ -87,12 +91,16 @@ C     nCheckLev           - Holds current checkpoint level
       COMMON /PARM_I/
      &        cg2dMaxIters,
      &        cg2dChkResFreq,
+     &        cg3dMaxIters,
+     &        cg3dChkResFreq,
      &        nIter0, nTimeSteps,
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
+      INTEGER cg3dMaxIters
+      INTEGER cg3dChkResFreq
       INTEGER nIter0
       INTEGER nTimeSteps
       INTEGER numStepsPerPickup
@@ -146,8 +154,8 @@ C                        coords.
 C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
-     & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
-     & tempDiffusion, tempAdvection, tempForcing,
+     & momViscosity, momAdvection, momForcing, useCoriolis, 
+     & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid,
      & momStepping, tempStepping, saltStepping,
@@ -188,6 +196,8 @@ C                        coords.
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
 C               - Target residual for cg2d solver.
+C     cg3dTargetResidual
+C               - Target residual for cg3d solver.
 C     cg2dpcOffDFac - Averaging weight for preconditioner off-diagonal.
 C     Note. 20th May 1998
 C           I made a weird discovery! In the model paper we argue
@@ -305,9 +315,10 @@ C     horiVertRatio      - Ratio on units in vertical to units in horizontal.
 C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
+     & cg3dTargetResidual,
      & delP, delZ, delR, delX, delY, 
-     & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
-     & thetaMin, rSphere, recip_RSphere, f0, fCori, beta, 
+     & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, 
+     & phiMin, thetaMin, rSphere, recip_RSphere, f0, fCori, beta, 
      & viscAh,  viscAz,  viscA4,  viscAr,
      & diffKhT, diffKzT, diffK4T, diffKrT,
      & diffKhS, diffKzS, diffK4S, diffKrS,
@@ -324,6 +335,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
      & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio
 
       _RL cg2dTargetResidual
+      _RL cg3dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nr)
       _RL delP(Nr)

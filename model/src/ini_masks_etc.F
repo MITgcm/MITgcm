@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.8 1998/09/29 18:50:57 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.9 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -59,8 +59,10 @@ C     Calculate lopping factor hFacC
           DO I=1,sNx
 C          Round depths within a small fraction of layer depth to that
 C          layer depth.
-           IF ( ABS(H(I,J,bi,bj)-rF(K)) .LT. 1. _d -6*ABS(rF(K)) .AND.
-     &          ABS(H(I,J,bi,bj)-rF(K)) .LT. 1. _d -6*ABS(H(I,J,bi,bj)) )THEN
+           IF ( ABS(H(I,J,bi,bj)-rF(K)) .LT. 
+     &          1. _d -6*ABS(rF(K)) .AND.
+     &          ABS(H(I,J,bi,bj)-rF(K)) .LT. 
+     &          1. _d -6*ABS(H(I,J,bi,bj)) )THEN
             H(I,J,bi,bj) = rF(K)
            ENDIF
            IF     ( H(I,J,bi,bj)*rkFac .GE. rF(K)*rkFac ) THEN
@@ -94,7 +96,8 @@ C Impose minimum size (dimensional)
              hFacC(I,J,K,bi,bj)=hFacMinDr*recip_drF(k)
             ENDIF
            ENDIF
-           depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) + hFacC(i,j,k,bi,bj)
+           depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) 
+     &                          +hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -106,7 +109,8 @@ C Impose minimum size (dimensional)
       _EXCH_XY_R4( depthInK, myThid )
 
       IF ( myThid .EQ. 1 ) WRITE(0,*) 'DDDD'
-      CALL PLOT_FIELD_XYRS( depthInK, 'Model Depths K Index' , 1, myThid )
+      CALL PLOT_FIELD_XYRS( depthInK, 
+     & 'Model Depths K Index' , 1, myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)

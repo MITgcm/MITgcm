@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.32 1998/09/09 15:04:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.33 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -15,7 +15,7 @@ C     | the bottom to the top. The vertically integrated         |
 C     | barotropic flow tendency term is evluated by summing the |
 C     | tendencies.                                              |
 C     | Notes:                                                   |
-C     | We haven't sorted out an entirely satisfactory formula   |
+C     | We have not sorted out an entirely satisfactory formula  |
 C     | for the diffusion equation bc with lopping. The present  |
 C     | form produces a diffusive flux that does not scale with  |
 C     | open-area. Need to do something to solidfy this and to   |
@@ -199,7 +199,9 @@ C--   Zonal flux (fZon is at east face of "u" cell)
 C     Mean flow component of zonal flux
 #define _XAatP(    i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
 #define _YAatUBY(  i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
-#define _RAatU(    i,j,k,bi,bj) ( rA(i,j,bi,bj)*maskC(i,j) + rA(i-1,j,bi,bj)*maskC(i-1,j) ) * 0.5 _d 0
+#define _RAatU1(    i,j,k,bi,bj) ( rA(i,j,bi,bj)*maskC(i,j)
+#define _RAatU2(    i,j,k,bi,bj) + rA(i-1,j,bi,bj)
+#define _RAatU3(    i,j,k,bi,bj) *maskC(i-1,j) ) * 0.5 _d 0
 #define _RAatU_Bot(i,j,k,bi,bj) ( rA(i,j,bi,bj) + rA(i-1,j,bi,bj) ) * 0.5 _d 0
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -209,13 +211,14 @@ C     Mean flow component of zonal flux
        ENDDO
       ENDDO
 C     Eddy component of zonal flux
-#ifdef 0
+#ifdef NEVER_DEFINE_THIS
 C     o Biharmonic terms
       DO j=jMin,jMax
        DO i=1-2, sNx+2
         v4F(i,j) =
      &   _XAatP(i,j,k,bi,bj)
-     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
+     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
+     &    *_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -239,7 +242,8 @@ C     o Laplacian terms
        DO i=iMin,iMax
         vF(i,j) =
      &   -viscAh*_XAatP(i,j,k,bi,bj)
-     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
+     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
+     &    *_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -266,7 +270,8 @@ C     Mean flow component of meridional flux
         af(i,j) =
      &   (vTrans(i,j)+vTrans(i-1,j))
      &  *(uVel(i,j,k,bi,bj)+uVel(i,j-1,k,bi,bj))*0.25 _d 0
-     &  *_maskW(i,j,k,bi,bj)*_maskW(i,j-1,k,bi,bj)
+     &  *_maskW(i,j,k,bi,bj)
+     &  *_maskW(i,j-1,k,bi,bj)
 C       Note!!!! The line "*maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -275,19 +280,25 @@ C       Note!!!! omitted.
       ENDDO
 C     Eddy component of meridional flux
 C     o Biharmonic term
-#ifdef 0
+#ifdef NEVER_DEFINE_THIS
       DO j=1-2,sNy+2
        DO i=iMin,iMax
-        hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-        hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacW(i,j,k,bi,bj),
+     &      _hFacW(i,j-1,k,bi,bj))
+        hFacROpen=
+     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
         v4F(i,j) =
      &  _YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
-     &     -(2.-_maskW(i,j,k,bi,bj))*_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
+     &   *( (2.-_maskW(i,j-1,k,bi,bj))
+     &      *_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
+     &     -(2.-_maskW(i,j,k,bi,bj))
+     &      *_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
      &    )*_recip_dyU(i,j,bi,bj)
 #else
         v4F(i,j) =
@@ -307,16 +318,22 @@ C     o Biharmonic term
       ENDDO
       DO j=1-2,sNy+2
        DO i=iMin,iMax
-        hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-        hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacW(i,j,k,bi,bj),
+     &      _hFacW(i,j-1,k,bi,bj))
+        hFacROpen=
+     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
         v4F(i,j) =
      &  viscA4*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*vF(i,j  )
-     &     -(2.-_maskW(i,j,k,bi,bj))*_maskW(i,j-1,k,bi,bj)*vF(i,j-1)
+     &   *( (2.-_maskW(i,j-1,k,bi,bj))
+     &      *_maskW(i,j,k,bi,bj)*vF(i,j  )
+     &     -(2.-_maskW(i,j,k,bi,bj))
+     &      *_maskW(i,j-1,k,bi,bj)*vF(i,j-1)
      &    )*_recip_dyU(i,j,bi,bj)
 #else
         v4F(i,j) =
@@ -330,16 +347,22 @@ C     o Biharmonic term
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-        hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacW(i,j,k,bi,bj),
+     &      _hFacW(i,j-1,k,bi,bj))
+        hFacROpen=
+     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
+        hFacROpen=
+     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
         vF(i,j) =
      &  -viscAh*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
-     &     -(2.-_maskW(i,j,k,bi,bj))*_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
+     &   *( (2.-_maskW(i,j-1,k,bi,bj))
+     &      *_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
+     &     -(2.-_maskW(i,j,k,bi,bj))
+     &      *_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
      &    )*_recip_dyU(i,j,bi,bj)
 #else
         vF(i,j) =
@@ -365,7 +388,8 @@ C     Mean flow component of vertical flux
      &   rVelMaskOverride*(rTrans(i,j)+rTrans(i-1,j))
      &  *( uVel(i,j,k,bi,bj)+uVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
-     &  *(_maskW(i,j,k,bi,bj)*_maskW(i,j,kM1,bi,bj))
+     &  *_maskW(i,j,k,bi,bj)
+     &  *_maskW(i,j,kM1,bi,bj)
 C       Note!!!! The line "*(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -377,8 +401,12 @@ C     Eddy component of vertical flux
        DO i=iMin,iMax
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
-     &   -viscAr*_RAatU(i,j,k,bi,bj)
-     &   *( ( 2.-_maskW(i,j,k,bi,bj) )*uVel(i,j,kM1,bi,bj) 
+     &   -viscAr
+     &   *_RAatU1(i,j,k,bi,bj)
+     &    _RAatU2(i,j,k,bi,bj)
+     &    _RAatU3(i,j,k,bi,bj)
+     &   *( ( 2.-_maskW(i,j,k,bi,bj) )
+     &      *uVel(i,j,kM1,bi,bj) 
      &      - uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
 #else
@@ -400,9 +428,11 @@ C     Bottom boundary condition
       IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         vf(i,j) =
-     &    -viscAr*_RAatU_Bot(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
-     &    *uVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
+        vf(i,j) =
+     &  -viscAr
+     &  *_RAatU_Bot(i,j,k,bi,bj)
+     &  *_maskW(i,j,k,bi,bj)
+     &  *uVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
         ENDDO
        ENDDO
        DO j=jMin,jMax
@@ -426,7 +456,9 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
-     &    ( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
+     &    ( 0.5 _d 0 
+     &      *( _rA(i,j,bi,bj)
+     &        +_rA(i-1,j,bi,bj)) )
      &  *(fZon(i,j  )          - fZon(i-1,j)
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
@@ -501,8 +533,11 @@ C--   Zonal flux (fZon is at west face of "v" cell)
 C     Mean flow component of zonal flux
 #define _XAatVBX(  i,j,k,bi,bj) ( XA(i,j)+XA(i,j-1) )* 0.5 _d 0
 #define _YAatP(    i,j,k,bi,bj) ( YA(i,j) + YA(i,j+1) ) *0.5 _d 0
-#define _RAatV(    i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j) + _rA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
-#define _RAatV_Bot(i,j,k,bi,bj) ( _rA(i,j,bi,bj) + _rA(i,j-1,bi,bj) ) * 0.5 _d 0
+#define _RAatV1(    i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j)
+#define _RAatV2(    i,j,k,bi,bj) + _rA(i,j-1,bi,bj)
+#define _RAatV3(    i,j,k,bi,bj) *maskC(i,j-1) ) * 0.5 _d 0
+#define _RAatV_Bot1(i,j,k,bi,bj) ( _rA(i,j,bi,bj)
+#define _RAatV_Bot2(i,j,k,bi,bj)  +_rA(i,j-1,bi,bj))*0.5 _d 0
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -517,12 +552,16 @@ C       Note!!!! omitted.
       ENDDO
 C     Eddy component of zonal flux
 C     o Biharmonic term
-#ifdef 0
+#ifdef NEVER_DEFINE_THIS
       DO j=jMin,jMax
        DO i=1-2, sNx+2
-         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-         hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacW(i,j,k,bi,bj),
+     &       _hFacW(i,j-1,k,bi,bj))
+         hFacROpen=
+     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
          hFacRClosed=1. _d 0 -hFacROpen
          hFacRClosed=1. _d 0
 #ifdef NO_LATERAL_SLIP
@@ -543,15 +582,21 @@ C     o Biharmonic term
        DO i=1-2, sNx+2
         vF(i,j)         =
      &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
+     &     ( 0.5 _d 0 *
+     &       ( _rA(i,j,bi,bj)
+     &        +_rA(i,j-1,bi,bj)) )
      &  *(v4F(i+1,j)          - v4F(i,j  ) )
        ENDDO
       ENDDO
       DO j=jMin,jMax
        DO i=iMin, iMax
-         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-         hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacW(i,j,k,bi,bj),
+     &       _hFacW(i,j-1,k,bi,bj))
+         hFacROpen=
+     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
          hFacRClosed=1. _d 0 -hFacROpen
          hFacRClosed=1. _d 0
 #ifdef NO_LATERAL_SLIP
@@ -572,16 +617,22 @@ C     o Biharmonic term
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
-         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-         hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacW(i,j,k,bi,bj),
+     &       _hFacW(i,j-1,k,bi,bj))
+         hFacROpen=
+     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
+         hFacROpen=
+     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
          hFacRClosed=1. _d 0 -hFacROpen
          hFacRClosed=1. _d 0
 #ifdef NO_LATERAL_SLIP
          vf(i,j) =
      &   -viscAh*_XAatVBX(i,j,k,bi,bj)*hFacRClosed*
-     &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
-     &    -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
+     &   ( (2.-_maskS(i-1,j,k,bi,bj))
+     &     *_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
+     &    -(2.-_maskS(i,j,k,bi,bj))
+     &     *_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
      &   )*_recip_dxV(i,j,bi,bj)
 #else
         vf(i,j) =
@@ -609,12 +660,13 @@ C     Mean flow component of meridional flux
       ENDDO
 C     Eddy component of meridional flux
 C     o Biharmonic term
-#ifdef 0
+#ifdef NEVER_DEFINE_THIS
       DO j=1-2, sNy+2
        DO i=iMin,iMax
         v4F(i,j) =
      &  _YAatP(i,j,k,bi,bj)
-     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*_recip_dyC(i,j,bi,bj)
+     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )
+     &   *_recip_dyC(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=1-2, sNy+2
@@ -638,7 +690,8 @@ C     o Laplacian term
        DO i=iMin,iMax
         vF(i,j) =
      &  -viscAh*_YAatP(i,j,k,bi,bj)
-     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*_recip_dyC(i,j,bi,bj)
+     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )
+     &   *_recip_dyC(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -670,9 +723,13 @@ C     Eddy component of vertical flux
        DO i=iMin,iMax
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
-     &   -viscAr*_RAatV(i,j,k,bi,bj)
+     &   -viscAr
+     &   *_RAatV1(i,j,k,bi,bj)
+     &    _RAatV2(i,j,k,bi,bj)
+     &    _RAatV3(i,j,k,bi,bj)
      &   *( ( 2.-_maskS(i,j,k,bi,bj) )
-     &     *vVel(i,j,kM1,bi,bj) - vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &     *vVel(i,j,kM1,bi,bj) 
+     &     - vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
 #else
         vf(i,j) =
@@ -691,18 +748,21 @@ C     Eddy component of vertical flux
 C     Bottom level boundary condition
 #ifdef NO_BOTTOM_SLIP
       IF ( k .EQ. Nr ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         vf(i,j) =
-     &    -viscAr*_RAatV_Bot(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
-     &    *vVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
-        ENDDO
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+       vf(i,j) =
+     & -viscAr
+     & *_RAatV_Bot1(i,j,k,bi,bj)
+     &  _RAatV_Bot2(i,j,k,bi,bj)
+     & *_maskS(i,j,k,bi,bj)
+     & *vVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
        ENDDO
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         fVerV(i,j,kDown) = ArDvdrFac * vf(i,j)
-        ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        fVerV(i,j,kDown) = ArDvdrFac * vf(i,j)
        ENDDO
+      ENDDO
       ENDIF
 #endif
 
@@ -719,7 +779,9 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
      &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
+     &     ( 0.5 _d 0 
+     &      *( _rA(i,j,bi,bj)
+     &        +_rA(i,j-1,bi,bj)) )
      &  *(fZon(i+1,j)          - fZon(i,j  )
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
@@ -807,7 +869,8 @@ C     Average to Vd point and add coriolis
      &    0.25 _d 0*( af(i  ,j)+af(i  ,j+1)
      &               +af(i-1,j)+af(i-1,j+1)
      &              )*_maskW(i,j,k,bi,bj)
-     &   -0.5  _d 0*(_fCori(i,j,bi,bj)+_fCori(i-1,j,bi,bj))
+     &   -0.5  _d 0*(_fCori(i,j,bi,bj)+
+     &               _fCori(i-1,j,bi,bj))
      &              *uVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
@@ -839,7 +902,8 @@ C     Calculate coriolis force on U
       DO j=jMin,jMax
        DO i=iMin,iMax
         guCD(i,j,k,bi,bj) = 
-     &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i-1,j,bi,bj)  )
+     &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + 
+     &                 _fCori(i-1,j,bi,bj)  )
      &   *vVelD(i,j,k,bi,bj)*fuFac
        ENDDO
       ENDDO
@@ -848,7 +912,8 @@ C--   No CD scheme support
       DO j=jMin,jMax
        DO i=iMin,iMax
         cf(i,j) = 
-     &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i-1,j,bi,bj)  )
+     &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + 
+     &                 _fCori(i-1,j,bi,bj)  )
      &   *0.25 _d 0 *(
      &     vVel(i  ,j,k,bi,bj)+vVel(i  ,j+1,k,bi,bj)
      &    +vVel(i-1,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj)
@@ -869,7 +934,8 @@ C--   Meridional velocity coriolis term
 C     gradx(p)+gU
       DO j=jMin,jMax
        DO i=iMin,iMax
-        af(i,j) = -_maskW(i,j,k,bi,bj)*_recip_dxC(i,j,bi,bj)*
+        af(i,j) = -_maskW(i,j,k,bi,bj)
+     &            *_recip_dxC(i,j,bi,bj)*
      &            (pf(i,j)-pf(i-1,j))
      &            +gU(i,j,k,bi,bj)
        ENDDO
@@ -881,7 +947,8 @@ C     Average to Ud point and add coriolis
      &    0.25 _d 0*( af(i  ,j)+af(i  ,j-1)
      &               +af(i+1,j)+af(i+1,j-1)
      &              )*_maskS(i,j,k,bi,bj)
-     &   +0.5  _d 0*(_fCori(i,j,bi,bj)+_fCori(i,j-1,bi,bj))
+     &   +0.5  _d 0*( _fCori(i,j,bi,bj)
+     &               +_fCori(i,j-1,bi,bj))
      &              *vVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
@@ -913,7 +980,8 @@ C     Calculate coriolis force on V
       DO j=jMin,jMax
        DO i=iMin,iMax
         gvCD(i,j,k,bi,bj) =
-     &    -0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i,j-1,bi,bj)  )
+     &    -0.5  _d 0 *( _fCori(i  ,j,bi,bj) 
+     &                 +_fCori(i,j-1,bi,bj)  )
      &   *uVelD(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)*fvFac
        ENDDO
       ENDDO

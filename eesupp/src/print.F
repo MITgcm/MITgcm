@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.11 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.12 1998/10/28 03:11:35 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -25,7 +25,7 @@ C     | SUBROUTINE PRINT_ERROR                                     |
 C     | o Write out error message using "standard" format.         |
 C     | Notes                                                      |
 C     | =====                                                      |
-C     | o Some system's I/O is not "thread-safe". For this reason  |
+C     | o Some system   I/O is not "thread-safe". For this reason  |
 C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
 C     |   critical region is defined around the write here. In some|
 C     |   cases  BEGIN_CRIT() is approximated by only doing writes |
@@ -60,7 +60,8 @@ C--    Write single process format
        IF ( message .EQ. ' ' ) THEN
         WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, ' '
        ELSE
-        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, message(iStart:iEnd)
+        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, 
+     &   message(iStart:iEnd)
        ENDIF
       ELSEIF ( pidIO .EQ. myProcId ) THEN
 C--    Write multi-process format
@@ -105,7 +106,8 @@ C
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, markEnd, compact, ioUnit )
+      SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, 
+     &                         markEnd, compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_I                                |
 C     |==========================================================|
@@ -181,7 +183,8 @@ C     K    - Loop counter
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,commClose
         ELSE
          WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
@@ -202,7 +205,8 @@ C     K    - Loop counter
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &  commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
@@ -215,7 +219,8 @@ C     K    - Loop counter
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, markEnd, compact, ioUnit )
+      SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, markEnd, 
+     &                         compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_L                                |
 C     |==========================================================|
@@ -286,12 +291,13 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. xNew .NEQV. xOld ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,commClose
         ELSE
          WRITE(msgBuf,'(I,'' '',A,L5,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
@@ -312,7 +318,8 @@ C     K    - Loop counter
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I,'' '',A,L5,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
@@ -325,7 +332,8 @@ C     K    - Loop counter
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, markEnd, compact, ioUnit )
+      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, 
+     &    markEnd, compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_R8                               |
 C     |==========================================================|
@@ -401,14 +409,16 @@ C     K    - Loop counter
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,commClose
         ELSE
-         WRITE(msgBuf,'(I,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
+         WRITE(msgBuf,'(I5,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
         iLo  = K
         iHi  = K
         xOld = xNew
@@ -422,14 +432,16 @@ C     K    - Loop counter
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
-       WRITE(msgBuf,'(I,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
+       WRITE(msgBuf,'(I5,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT , 1)
 
       RETURN
       END
@@ -581,7 +593,8 @@ C--   Calculate field range
       ENDIF
 
 C--   Write field title and statistics
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       iStrngLo = IFNBLNK(fldTitle)
@@ -639,7 +652,8 @@ C--   Write field title and statistics
      &  ':',kStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
 
@@ -740,7 +754,7 @@ C      Header
 C      Data
        DO bk=pltBlo, pltBhi, pltBstr
         DO K=pltMin,pltMax,pltStr
-         WRITE(plotBuf,'(A,I,I,I,I)') pltLab,
+         WRITE(plotBuf,'(A,I4,I4,I4,I4)') pltLab,
      &   pltBase-1+(bk-1)*pltStep+K
          CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
@@ -821,13 +835,16 @@ C      Data
        ENDDO
 C     ENDIF
 C--   Write delimiter
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// END OF FIELD                                          ='
+      msgBuf = 
+     & '// END OF FIELD                                          ='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       msgBuf = ' '
@@ -967,7 +984,8 @@ C--   Calculate field range
         DO K=kMin, kMax, kStr
          DO J=jMin, jMax, jStr
           DO I=iMin, iMax, iStr
-           IF ( printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0. ) THEN
+           IF ( printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0. ) 
+     &     THEN
             IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
      &       fMin = fld(I,J,K,bi,bj)
             IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
@@ -984,7 +1002,8 @@ C--   Calculate field range
       ENDIF
 
 C--   Write field title and statistics
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       iStrngLo = IFNBLNK(fldTitle)
@@ -1042,7 +1061,8 @@ C--   Write field title and statistics
      &  ':',kStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
 
@@ -1143,7 +1163,7 @@ C      Header
 C      Data
        DO bk=pltBlo, pltBhi, pltBstr
         DO K=pltMin,pltMax,pltStr
-         WRITE(plotBuf,'(A,I,I,I,I)') pltLab,
+         WRITE(plotBuf,'(A,I4,I4,I4,I4)') pltLab,
      &   pltBase-1+(bk-1)*pltStep+K
          CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
@@ -1221,13 +1241,16 @@ C      Data
        ENDDO
 C     ENDIF
 C--   Write delimiter
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// END OF FIELD                                          ='
+      msgBuf = 
+     & '// END OF FIELD                                          ='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = '// ======================================================='
+      msgBuf = 
+     & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
       msgBuf = ' '
@@ -1244,7 +1267,7 @@ C     | SUBROUTINE PRINT_MESSAGE                                   |
 C     | o Write out informational message using "standard" format. |
 C     | Notes                                                      |
 C     | =====                                                      |
-C     | o Some system's I/O is not "thread-safe". For this reason  |
+C     | o Some system   I/O is not "thread-safe". For this reason  |
 C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
 C     |   critical region is defined around the write here. In some|
 C     |   cases  BEGIN_CRIT() is approximated by only doing writes |

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.3 1998/09/29 18:50:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.4 1998/10/28 03:11:35 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -143,7 +143,8 @@ C
       tmpAction = action(ISTART:IEND)
       CALL UCASE( tmpAction )
 C
-      iTimer=TIMER_INDEX(tmpName,timerNames(1,myThreadId),maxTimers,nTimers(myThreadId))
+      iTimer=TIMER_INDEX(tmpName,timerNames(1,myThreadId),
+     &       maxTimers,nTimers(myThreadId))
 C
       IF     ( tmpAction .EQ. START ) THEN
         IF ( iTimer .EQ. 0 ) THEN
@@ -151,7 +152,8 @@ C
             nTimers(myThreadId) = nTimers(myThreadId) + 1
             iTimer  = nTimers(myThreadId)
             timerNames(iTimer,myThreadId)    = tmpName
-            timerNameLen(iTimer,myThreadId)  = ILNBLNK(tmpName)-IFNBLNK(tmpName)+1
+            timerNameLen(iTimer,myThreadId)  = 
+     &       ILNBLNK(tmpName)-IFNBLNK(tmpName)+1
             timerUser(iTimer,myThreadId)     = 0.
             timerSys (iTimer,myThreadId)     = 0.
             timerWall(iTimer,myThreadId)     = 0.
@@ -165,55 +167,84 @@ C
           timerT0Sys(iTimer,myThreadId)  = systemTime
           timerT0Wall(iTimer,myThreadId) = wallClockTime
           timerStatus(iTimer,myThreadId) = RUNNING
-          timerStarts(iTimer,myThreadId) = timerStarts(iTimer,myThreadId)+1
+          timerStarts(iTimer,myThreadId) = 
+     &       timerStarts(iTimer,myThreadId)+1
         ENDIF
       ELSEIF ( tmpAction .EQ. STOP ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
         IF ( timerStatus(iTimer,myThreadId) .EQ. RUNNING ) THEN
           CALL TIMER_GET_TIME( userTime, systemTime, wallClockTime )
-          timerUser(iTimer,myThreadId)    = timerUser(iTimer,myThreadId) + 
+          timerUser(iTimer,myThreadId)    = 
+     &       timerUser(iTimer,myThreadId) + 
      &                           userTime          -
      &                           timerT0User(iTimer,myThreadId)
-          timerSys (iTimer,myThreadId)    = timerSys(iTimer,myThreadId) + 
+          timerSys (iTimer,myThreadId)    = 
+     &       timerSys(iTimer,myThreadId) + 
      &                           systemTime -
      &                           timerT0Sys(iTimer,myThreadId)
-          timerWall(iTimer,myThreadId)    = timerWall(iTimer,myThreadId) + 
+          timerWall(iTimer,myThreadId)    = 
+     &       timerWall(iTimer,myThreadId) + 
      &                           wallClockTime -
      &                           timerT0Wall(iTimer,myThreadId)
           timerStatus(iTimer,myThreadId)  = STOPPED
-          timerStops (iTimer,myThreadId)  = timerStops (iTimer,myThreadId)+1
+          timerStops (iTimer,myThreadId)  = 
+     &    timerStops (iTimer,myThreadId)+1
         ENDIF
       ELSEIF ( tmpAction .EQ. PRINT ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
         WRITE(msgBuffer,*)
      &  ' Seconds in section "',
-     &  timerNames(iTimer,myThreadId)(1:timerNameLen(iTimer,myThreadId)),'":'
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-        WRITE(msgBuffer,*) '         User time:',timerUser(iTimer,myThreadId)
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-        WRITE(msgBuffer,*) '       System time:',timerSys(iTimer,myThreadId)
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-        WRITE(msgBuffer,*) '   Wall clock time:',timerWall(iTimer,myThreadId)
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-        WRITE(msgBuffer,*) '        No. starts:',timerStarts(iTimer,myThreadId)
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-        WRITE(msgBuffer,*) '         No. stops:',timerStops(iTimer,myThreadId)
-        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+     &  timerNames(iTimer,myThreadId)(1:timerNameLen(iTimer,myThreadId))
+     &  ,'":'
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+        WRITE(msgBuffer,*) '         User time:',
+     &  timerUser(iTimer,myThreadId)
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+        WRITE(msgBuffer,*) '       System time:',
+     &  timerSys(iTimer,myThreadId)
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+        WRITE(msgBuffer,*) '   Wall clock time:',
+     &  timerWall(iTimer,myThreadId)
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+        WRITE(msgBuffer,*) '        No. starts:',
+     &  timerStarts(iTimer,myThreadId)
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+        WRITE(msgBuffer,*) '         No. stops:',
+     &  timerStops(iTimer,myThreadId)
+        CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       ELSEIF ( tmpAction .EQ. PRINTALL ) THEN
         DO 10 I = 1, nTimers(myThreadId)
          WRITE(msgBuffer,*) ' Seconds in section "',
-     &            timerNames(I,myThreadId)(1:timerNameLen(I,myThreadId)),'":'
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-         WRITE(msgBuffer,*) '         User time:',timerUser(I,myThreadId)
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-         WRITE(msgBuffer,*) '       System time:',timerSys(I,myThreadId)
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-         WRITE(msgBuffer,*) '   Wall clock time:',timerWall(I,myThreadId)
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-         WRITE(msgBuffer,*) '        No. starts:',timerStarts(I,myThreadId)
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
-         WRITE(msgBuffer,*) '         No. stops:',timerStops(I,myThreadId)
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+     &            timerNames(I,myThreadId)(1:timerNameLen(I,myThreadId))
+     &  ,'":'
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+         WRITE(msgBuffer,*) '         User time:',
+     &  timerUser(I,myThreadId)
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+         WRITE(msgBuffer,*) '       System time:',
+     &  timerSys(I,myThreadId)
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+         WRITE(msgBuffer,*) '   Wall clock time:',
+     &  timerWall(I,myThreadId)
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+         WRITE(msgBuffer,*) '        No. starts:',
+     &  timerStarts(I,myThreadId)
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
+         WRITE(msgBuffer,*) '         No. stops:',
+     &  timerStops(I,myThreadId)
+         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
    10   CONTINUE
       ELSE
         GOTO 903
@@ -225,108 +256,140 @@ C
   901 CONTINUE
       WRITE(msgBuffer,'(A)')
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer name "',name(ISTART:IEND),'" is invalid.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Names must have fewer than',maxString+1,' characters.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   902 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' No timer action specified.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Valid actions are:'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' "START", "STOP", "PRINT" and "PRINTALL".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   903 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer action"',name(ISTART:IEND),'" is invalid.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Valid actions are:'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' "START", "STOP", "PRINT" and "PRINTALL".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   904 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer "',name(ISTART:IEND),'" cannot be created.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Only ',maxTimers,' timers are allowed.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   905 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer name is blank.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' A name must be used with "START", "STOP" or  "PRINT".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
       END
 
@@ -351,8 +414,8 @@ CEndOfInterface
       Real*4 ETIME, ACTUAL, TARRAY(2)
       EXTERNAL ETIME
       Real*8 wtime
-      Real*8 MPI_Wtime
-      EXTERNAL MPI_Wtime
+C     Real*8 MPI_Wtime
+C     EXTERNAL MPI_Wtime
 
       ACTUAL = ETIME(TARRAY)
     
@@ -384,7 +447,8 @@ C     \==========================================================/
 CEndOfInterface
 C     Print out value for every timer.
 C
-      CALL TIMER_CONTROL( ' ', 'PRINTALL', 'TIMER_PRINTALL' , myThreadId )
+      CALL TIMER_CONTROL( ' ', 'PRINTALL', 'TIMER_PRINTALL' , 
+     &                   myThreadId )
 C
       RETURN
       END

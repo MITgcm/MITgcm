@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.14 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.15 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -161,13 +161,17 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dSdx(i,j) = 0.5*( 
-     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,k,bi,bj)
+     &         *_recip_dxC(i+1,j,bi,bj)*
      &           (salt(i+1,j,k,bi,bj)-salt(i,j,k,bi,bj))
-     &        +_maskW(i,j,k,bi,bj)*_recip_dxC(i,j,bi,bj)*
+     &        +_maskW(i,j,k,bi,bj)
+     &         *_recip_dxC(i,j,bi,bj)*
      &           (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj)))
-     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,km1,bi,bj)
+     &         *_recip_dxC(i+1,j,bi,bj)*
      &           (salt(i+1,j,km1,bi,bj)-salt(i,j,km1,bi,bj))
-     &        +_maskW(i,j,km1,bi,bj)*_recip_dxC(i,j,bi,bj)*
+     &        +_maskW(i,j,km1,bi,bj)
+     &         *_recip_dxC(i,j,bi,bj)*
      &           (salt(i,j,km1,bi,bj)-salt(i-1,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -175,13 +179,17 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dSdy(i,j) = 0.5*(
-     &   +0.5*(_maskS(i,j,k,bi,bj)*_recip_dyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,k,bi,bj)
+     &         *_recip_dyC(i,j,bi,bj)*
      &           (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
-     &        +_maskS(i,j+1,k,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,k,bi,bj)
+     &         *_recip_dyC(i,j+1,bi,bj)*
      &           (salt(i,j+1,k,bi,bj)-salt(i,j,k,bi,bj)))
-     &   +0.5*(_maskS(i,j,km1,bi,bj)*_recip_dyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,km1,bi,bj)
+     &         *_recip_dyC(i,j,bi,bj)*
      &           (salt(i,j,km1,bi,bj)-salt(i,j-1,km1,bi,bj))
-     &        +_maskS(i,j+1,km1,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,km1,bi,bj)
+     &         *_recip_dyC(i,j+1,bi,bj)*
      &           (salt(i,j+1,km1,bi,bj)-salt(i,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -240,9 +248,11 @@ C           they are not algorithmically correct. These points
 C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _recip_VolS(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)/_rA(i,j,bi,bj)
+#define _recip_VolS1(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+#define _recip_VolS2(i,j,k,bi,bj) /_rA(i,j,bi,bj)
         gS(i,j,k,bi,bj)=
-     &   -_recip_VolS(i,j,k,bi,bj)
+     &   -_recip_VolS1(i,j,k,bi,bj)
+     &    _recip_VolS2(i,j,k,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )

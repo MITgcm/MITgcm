@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.1 1998/09/29 18:53:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.2 1998/10/28 03:11:35 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_Y( array,
@@ -29,6 +29,13 @@ C     exchWidthX - Width of data region exchanged.
 C     exchWidthY
 C     theSimulationMode - Forward or reverse mode exchange ( provides 
 C                         support for adjoint integration of code. )
+C                         Note - the reverse mode for an assignment 
+C                                is an accumulation. This means that 
+C                                put implementations that do leary things
+C                                like writing to overlap regions in a 
+C                                remote process need to be even more
+C                                careful. You need to be pretty careful
+C                                in forward mode too!
 C     theCornerMode     - Flag indicating whether corner updates are 
 C                         needed.
 C     myThid            - Thread number of this instance of S/R EXCH...
@@ -102,12 +109,11 @@ C
         bjS =  _tileBjS(bi,bj)
         biN =  _tileBiN(bi,bj)
         bjN =  _tileBjN(bi,bj)
+        iMin = 1
+        iMax = sNx
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
          iMax = sNx+exchWidthX
-        ELSE
-         iMin = 1
-         iMax = sNx
         ENDIF
 
 C       o Send or Put south edge
@@ -356,12 +362,11 @@ C
         bjS =  _tileBjS(bi,bj)
         biN =  _tileBiN(bi,bj)
         bjN =  _tileBjN(bi,bj)
+        iMin = 1
+        iMax = sNx
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
          iMax = sNx+exchWidthX
-        ELSE
-         iMin = 1
-         iMax = sNx
         ENDIF
 
 C       o Send or Put south edge

@@ -39,7 +39,8 @@ C     TimeAve - total time over average
  
 C     Final Time Averages and Dump Files if needed
       IF ( myIter.NE.nIter0 .AND. 
-     & DIFFERENT_MULTIPLE(taveFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     & DIFFERENT_MULTIPLE(taveFreq,myCurrentTime,
+     &                    myCurrentTime-deltaTClock)
      &   ) THEN
 
        WRITE(suff,'(I10.10)') myIter
@@ -96,10 +97,13 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  '// Time-average data written, t-step', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         WRITE(msgBuf,'(A,I10)')  
+     &    '// Time-average data written, t-step', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
        _END_MASTER( myThid )
@@ -131,8 +135,10 @@ C      Time Averages of single fields
           CALL TIMEAVER_1FLD_XYZ(vVel,  vVeltave,  DDTT, bi,bj,K,myThid)
 
 C      Time Averages of "double" fields
-          CALL TIMEAVER_2FLD_XYZ(theta, uVel, uttave, 1, DDTT, bi,bj,K,myThid)
-          CALL TIMEAVER_2FLD_XYZ(theta, vVel, vttave, 2, DDTT, bi,bj,K,myThid)
+          CALL TIMEAVER_2FLD_XYZ(theta, uVel, uttave, 1, DDTT, 
+     &         bi,bj,K,myThid)
+          CALL TIMEAVER_2FLD_XYZ(theta, vVel, vttave, 2, DDTT, 
+     &         bi,bj,K,myThid)
 
 C      Keep record of how much time has been integrated over
           TimeAve(k,bi,bj)=TimeAve(k,bi,bj)+DDTT

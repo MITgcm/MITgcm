@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.4 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.5 1998/10/28 03:11:35 cnh Exp $
 
 C--   Get C preprocessor options
 #include "CPP_OPTIONS.h"
@@ -53,7 +53,7 @@ C           found nThreads threads are running it flags an
 C           error. This traps the case in which the input 
 C           parameter nThreads is different from the actual 
 C           number of concurrent threads the OS gives us. This
-C           case causes a deadlock if we don't trap it here.
+C           case causes a deadlock if we do not trap it here.
 #include "MAIN_PDIRECTIVES1.h"
       DO I=1,nThreads
         myThid = I

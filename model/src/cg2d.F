@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.13 1998/09/29 18:50:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.14 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE CG2D(  
+     I                cg2d_b,
+     U                cg2d_x,
      I                myThid )
 C     /==========================================================\
 C     | SUBROUTINE CG2D                                          |
@@ -32,11 +34,14 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
+#include "CG2D_INTERNAL.h"
 
 C     === Routine arguments ===
 C     myThid - Thread on which I am working.
       INTEGER myThid
+      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 
 C     === Local variables ====
 C     actualIts      - Number of iterations taken
@@ -54,17 +59,17 @@ C                   or they converge at a non-zero residual.
 C     err         - Measure of residual of Ax - b, usually the norm.
 C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER actualIts
-      REAL    actualResidual
+      _RL    actualResidual
       INTEGER bi, bj              
       INTEGER I, J, it2d
-      REAL    err
-      REAL    etaN
-      REAL    etaNM1
-      REAL    cgBeta
-      REAL    alpha
-      REAL    sumRHS
-      REAL    rhsMax
-      REAL    rhsNorm
+      _RL    err
+      _RL    etaN
+      _RL    etaNM1
+      _RL    cgBeta
+      _RL    alpha
+      _RL    sumRHS
+      _RL    rhsMax
+      _RL    rhsNorm
 
       INTEGER OLw
       INTEGER OLe
@@ -91,6 +96,7 @@ C     _EXCH_XY_R8( cg2d_b, myThid )
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.0 CG2D_B' , 1, myThid )
 C     suff = 'unnormalised'
 C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
+C     STOP
 CcnhDebugEnds
 
 C--   Normalise RHS
@@ -191,21 +197,23 @@ C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       err    = errBuf(1,1)
       
       _BEGIN_MASTER( myThid )
-      write(0,*) 'cg2d: Sum(rhs) = ',sumRHS
+      write(0,'(A,1PE30.20)') 'cg2d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
       _BEGIN_MASTER( myThid )
-       WRITE(0,*) ' CG2D iters, err = ', actualIts, actualResidual
+       WRITE(0,'(A,I6,1PE30.20)') ' CG2D iters, err = ', 
+     & actualIts, actualResidual
       _END_MASTER( )
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it2d=1, cg2dMaxIters
 
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',actualResidual
+C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',
+C    &  actualResidual
 CcnhDebugEnds
        IF ( err .LT. cg2dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
@@ -247,7 +255,8 @@ CcnhDebugEnds
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           cg2d_s(I,J,bi,bj) = cg2d_q(I,J,bi,bj) + cgBeta*cg2d_s(I,J,bi,bj)
+           cg2d_s(I,J,bi,bj) = cg2d_q(I,J,bi,bj)
+     &                       + cgBeta*cg2d_s(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -354,7 +363,8 @@ C--   Un-normalise the answer
 
       _EXCH_XY_R8(cg2d_x, myThid )
       _BEGIN_MASTER( myThid )
-       WRITE(0,*) ' CG2D iters, err = ', actualIts, actualResidual
+       WRITE(0,'(A,I6,1PE30.20)') ' CG2D iters, err = ', 
+     & actualIts, actualResidual
       _END_MASTER( )
 
 CcnhDebugStarts

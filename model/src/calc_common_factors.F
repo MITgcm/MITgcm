@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.8 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.9 1998/10/28 03:11:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -18,8 +18,6 @@ C     | that are used at various points in the "RHS" subroutines.|
 C     | This reduces the amount of total work, total memory      |
 C     | and therefore execution time and is generally a good     |
 C     | idea.                                                    |
-C     | We also think lower taxes are a good idea but we doubt   |
-C     | whether we'll ever get them.                             |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -69,8 +67,10 @@ C                         into fluxUD.
 C--   Calculate tracer cell face open areas
       DO j=jMin,jMax
        DO i=iMin,iMax
-        xA(i,j) = _dyG(i,j,bi,bj)*drF(k)*_hFacW(i,j,k,bi,bj)
-        yA(i,j) = _dxG(i,j,bi,bj)*drF(k)*_hFacS(i,j,k,bi,bj)
+        xA(i,j) = _dyG(i,j,bi,bj)
+     &   *drF(k)*_hFacW(i,j,k,bi,bj)
+        yA(i,j) = _dxG(i,j,bi,bj)
+     &   *drF(k)*_hFacS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -87,9 +87,10 @@ C--   Calculate vertical "volume transport" through
 C--   tracer cell face *above* this level.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        rTrans(i,j) = uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*recip_rkFac
-     &               +vTrans(i,j)*recip_rkFac-vTrans(i,j+1)*recip_rkFac
-     &               +rTrans(i,j)
+        rTrans(i,j) = 
+     &   uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*recip_rkFac
+     &  +vTrans(i,j)*recip_rkFac-vTrans(i,j+1)*recip_rkFac
+     &  +rTrans(i,j)
        ENDDO
       ENDDO
 
@@ -106,7 +107,8 @@ C--    Calculate mask for tracer cells  (0 => land, 1 => water)
         maskC(i,j) = 1.
         if (_hFacC(i,j,k,bi,bj).eq.0.) maskC(i,j)=0.
         maskUp(i,j) = 1.
-        if (_hFacC(i,j,k,bi,bj).eq.0. .or. TOP_LAYER ) maskUp(i,j)=0.
+        if (_hFacC(i,j,k,bi,bj).eq.0. .or. TOP_LAYER ) 
+     &   maskUp(i,j)=0.
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.3 1998/10/28 03:11:34 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -25,7 +25,8 @@ C     === Local variables ===
       WRITE(msgBuf,'(A)') '                '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// ======================================================'
+      WRITE(msgBuf,'(A)') 
+     &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//                      MITgcm UV'
@@ -34,7 +35,8 @@ C     === Local variables ===
       WRITE(msgBuf,'(A)') '//                      ========='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// ======================================================'
+      WRITE(msgBuf,'(A)') 
+     &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// execution environment starting up...'

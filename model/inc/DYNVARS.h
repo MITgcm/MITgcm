@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.5 1998/08/22 17:51:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.6 1998/10/28 03:11:36 cnh Exp $
 C
 C     /==========================================================\
 C     | DYNVARS.h                                                |
@@ -17,7 +17,8 @@ C     uVelD  - D grid zonal velocity
 C     vVelD  - D grid meridional velocity
       COMMON /DYNVARS_R/ 
      &                   uVel,vVel,theta,salt,
-     &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
+     &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1,
+     &                   gw, gwnm1
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -30,15 +31,18 @@ C     vVelD  - D grid meridional velocity
       _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gwNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_CD
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
-     &                   cg2d_xNM1,
+     &                   cg2d_xNM1, cg3d_xnm1,
      &                   uNM1,  vNM1,
      &                   guCD, gvCD
       _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  cg2d_xNM1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg3d_xNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

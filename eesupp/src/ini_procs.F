@@ -54,7 +54,7 @@ C                        units.
       INTEGER myThid
 
 C--   Default values set to single processor case
-C     pid[W-SE] are the MPI process id's of the neighbor
+C     pid[W-SE] are the MPI process id of the neighbor
 C     processes. A process can be its own neighbor!
       myThid      = 1
       myPid       = 1
@@ -472,4 +472,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.6 1998/09/29 18:50:56 cnh Exp $
+C $Id: ini_procs.F,v 1.7 1998/10/28 03:11:35 cnh Exp $

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.1 1998/09/29 18:53:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_X( array,
@@ -172,9 +172,12 @@ C        Clear outstanding requests counter
 C        Update statistics
          IF ( exchCollectStatistics ) THEN
           exchRecvXExchCount(1,bi,bj) = exchRecvXExchCount(1,bi,bj)+1
-          exchRecvXSpinCount(1,bi,bj) = exchRecvXSpinCount(1,bi,bj)+spinCount
-          exchRecvXSpinMax(1,bi,bj) = MAX(exchRecvXSpinMax(1,bi,bj),spinCount)
-          exchRecvXSpinMin(1,bi,bj) = MIN(exchRecvXSpinMin(1,bi,bj),spinCount)
+          exchRecvXSpinCount(1,bi,bj) = 
+     &    exchRecvXSpinCount(1,bi,bj)+spinCount
+          exchRecvXSpinMax(1,bi,bj) = 
+     &    MAX(exchRecvXSpinMax(1,bi,bj),spinCount)
+          exchRecvXSpinMin(1,bi,bj) = 
+     &    MIN(exchRecvXSpinMin(1,bi,bj),spinCount)
          ENDIF
         ENDDO
        ENDDO
@@ -195,63 +198,111 @@ C--   Read from the buffers
          iMin = sNx+1
          iMax = sNx+exchWidthX
          iB0  = 0
+         IF (     eastCommMode .EQ. COMM_PUT
+     &       .OR. eastCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=1,sNy
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = eastRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           DO J=1,sNy
+            iB = iB0
+            DO I=iMin,iMax
+             iB = iB+1
+             array(I,J,K,bi,bj) = array(iB,J,K,biE,bjE)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          iMin = sNx-exchWidthX+1
          iMax = sNx
          iB0  = 1-exchWidthX-1
-        ENDIF
-        IF (     eastCommMode .EQ. COMM_PUT 
-     &      .OR. eastCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = eastRecvBuf_RL(iB,eBl,bi,bj)
+         IF (     eastCommMode .EQ. COMM_PUT 
+     &       .OR. eastCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=1,sNy
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+eastRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          DO J=1,sNy
-           iB = iB0
-           DO I=iMin,iMax
-            iB = iB+1
-            array(I,J,K,bi,bj) = array(iB,J,K,biE,bjE)
+         ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           DO J=1,sNy
+            iB = iB0
+            DO I=iMin,iMax
+             iB = iB+1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(iB,J,K,biE,bjE)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          iMin = 1-exchWidthX
          iMax = 0
          iB0  = sNx-exchWidthX
+         IF (      westCommMode .EQ. COMM_PUT
+     &        .OR. westCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=1,sNy
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = westRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           DO J=1,sNy
+            iB = iB0
+            DO I=iMin,iMax
+             iB = iB+1
+             array(I,J,K,bi,bj) = array(iB,J,K,biW,bjW)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          iMin = 1
          iMax = 1+exchWidthX-1
          iB0  = sNx
-        ENDIF
-        IF (      westCommMode .EQ. COMM_PUT 
-     &       .OR. westCommMode .EQ. COMM_MSG ) THEN
-         iB  = 0
-         DO K=1,myNz
-          DO J=1,sNy
-           DO I=iMin,iMax
-            iB = iB + 1
-            array(I,J,K,bi,bj) = westRecvBuf_RL(iB,eBl,bi,bj)
+         IF (      westCommMode .EQ. COMM_PUT 
+     &        .OR. westCommMode .EQ. COMM_MSG ) THEN
+          iB  = 0
+          DO K=1,myNz
+           DO J=1,sNy
+            DO I=iMin,iMax
+             iB = iB + 1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+westRecvBuf_RL(iB,eBl,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
-         DO K=1,myNz
-          DO J=1,sNy
-           iB = iB0
-           DO I=iMin,iMax
-            iB = iB+1
-            array(I,J,K,bi,bj) = array(iB,J,K,biW,bjW)
+         ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
+          DO K=1,myNz
+           DO J=1,sNy
+            iB = iB0
+            DO I=iMin,iMax
+             iB = iB+1
+             array(I,J,K,bi,bj) = 
+     &       array(I,J,K,bi,bj)+array(iB,J,K,biW,bjW)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
         ENDIF
 
        ENDDO
@@ -438,9 +489,12 @@ C        Clear outstanding requests counter
 C        Update statistics
          IF ( exchCollectStatistics ) THEN
           exchRecvXExchCount(1,bi,bj) = exchRecvXExchCount(1,bi,bj)+1
-          exchRecvXSpinCount(1,bi,bj) = exchRecvXSpinCount(1,bi,bj)+spinCount
-          exchRecvXSpinMax(1,bi,bj) = MAX(exchRecvXSpinMax(1,bi,bj),spinCount)
-          exchRecvXSpinMin(1,bi,bj) = MIN(exchRecvXSpinMin(1,bi,bj),spinCount)
+          exchRecvXSpinCount(1,bi,bj) = 
+     &    exchRecvXSpinCount(1,bi,bj)+spinCount
+          exchRecvXSpinMax(1,bi,bj) = 
+     &    MAX(exchRecvXSpinMax(1,bi,bj),spinCount)
+          exchRecvXSpinMin(1,bi,bj) = 
+     &    MIN(exchRecvXSpinMin(1,bi,bj),spinCount)
          ENDIF
         ENDDO
        ENDDO

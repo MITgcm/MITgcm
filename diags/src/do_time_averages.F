@@ -70,17 +70,22 @@ C     Time Averages of single fields
       CALL TIMEAVER_1FLD_XYZ(vVel,  vVeltave,  DDTT, bi, bj, K, myThid)
 
 C     Time Averages of "double" fields
-      CALL TIMEAVER_2FLD_XYZ(theta, uVel, uttave, 1, DDTT, bi, bj, K, myThid)
-      CALL TIMEAVER_2FLD_XYZ(theta, vVel, vttave, 2, DDTT, bi, bj, K, myThid)
+      CALL TIMEAVER_2FLD_XYZ(theta, uVel, uttave, 1, DDTT, 
+     & bi, bj, K, myThid)
+      CALL TIMEAVER_2FLD_XYZ(theta, vVel, vttave, 2, DDTT, 
+     & bi, bj, K, myThid)
 
 C     Keep record of how much time has been integrated over
       TimeAve(k,bi,bj)=TimeAve(k,bi,bj)+DDTT
 
 C     Time Averages of "intermediate" fields
       DDTT=deltaTclock
-      CALL TIMEAVER_INTER_XYZ(Nr, K13, k13tave, DDTT, bi, bj, K, K, myThid)
-      CALL TIMEAVER_INTER_XYZ(Nr, K23, k23tave, DDTT, bi, bj, K, K, myThid)
-      CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, bi, bj, K, kUp, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nr, K13, k13tave, DDTT, 
+     & bi, bj, K, K, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nr, K23, k23tave, DDTT, 
+     & bi, bj, K, K, myThid)
+      CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, 
+     & bi, bj, K, kUp, myThid)
       IF (TOP_LEVEL)
      &  CALL TIMEAVER_INTER_XY(KapGM, KapGMtave, DDTT, bi, bj, myThid)
       InterTimeAve(k,bi,bj)=InterTimeAve(k,bi,bj)+DDTT

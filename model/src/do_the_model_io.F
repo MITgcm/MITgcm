@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.9 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.10 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -13,19 +13,13 @@ C     | to lump everything together and do dumping of fields     |
 C     | and updating of forcing terms in a single place.         |
 C     | The approach to IO used here is that writes are only     |
 C     | performed by thread 1 and that a process only writes out |
-C     | its data ( since it doen't know about anyone elses data!)|
+C     | its data ( it does not know about anyone elses data!)    |
 C     | Reading on the other hand is assumed to be from a file   |
 C     | containing all the data for all the processes. Only the  |
 C     | portion of data of interest to this process is actually  |
 C     | loaded. To work well this assumes the existence of some  |
 C     | reliable tool to join datasets together at the end of a  |
-C     | run.                                                     |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | We allow thread 2-nThreads to continue whilst thread 1   |
-C     | does IO. The assumption is that the other threads won't  |
-C     | do anything to update their interior regions before      |
-C     | thread 1 has finished writing them out.                  |
+C     | run - see joinds.p                                       |
 C     \==========================================================/
 
 C     == Global variables ===
@@ -51,19 +45,24 @@ C     suff - Hold suffix part of a filename
       CHARACTER*(MAX_LEN_FNAM) suff
       
 
-C--   Generaly only thread 1 does IO here. It can't start until everyone's
-C--   fields are ready.
+C--   Generaly only thread 1 does IO here. It can not start until 
+C--   all threads fields are ready.
       IF (
-     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,myCurrentTime-deltaTClock)
+     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
+     &                     myCurrentTime-deltaTClock)
      & ) THEN
 
        _BARRIER
 
 C--    Write "text-plots" of certain fields
-       CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , Nr, myIter, myThid )
-       CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ' , Nr, myIter, myThid )
-       CALL PLOT_FIELD_XYZRL( theta, 'Current theta ' , Nr, myIter, myThid )
-       CALL PLOT_FIELD_XYRL( cg2d_x, 'Current cg2d_x ' , myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , 
+     &                        Nr, myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ' , 
+     &                        Nr, myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( theta, 'Current theta ' , 
+     &                        Nr, myIter, myThid )
+       CALL PLOT_FIELD_XYRL( cg2d_x, 'Current cg2d_x ' , 
+     &                        myIter, myThid )
 
       ENDIF
 

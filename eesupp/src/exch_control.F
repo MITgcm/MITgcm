@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.1 1998/09/29 18:53:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
 
 C      MITgcmUV Exchange routine
 C      -------------------------
@@ -192,10 +192,6 @@ C--    Error checks
      &      .AND. theCornerMode .NE. EXCH_UPDATE_CORNERS
      &    ) STOP ' S/R EXCH: Unrecognised cornerMode '
 
-C--    Corners are not significant in reverse mode
-       IF ( theSimulationMode .EQ. REVERSE_SIMULATION )
-     &  theCornerMode = EXCH_IGNORE_CORNERS 
-
 C--    Cycle edge buffer level
        CALL EXCH_CYCLE_EBL( myThid )
 
@@ -347,47 +343,74 @@ C--    Error checks
      &      .AND. theCornerMode .NE. EXCH_UPDATE_CORNERS
      &    ) STOP ' S/R EXCH: Unrecognised cornerMode '
 
-C--    Corners are not significant in reverse mode
-       IF ( theSimulationMode .EQ. REVERSE_SIMULATION )
-     &  theCornerMode = EXCH_IGNORE_CORNERS 
-
 C--    Cycle edge buffer level
        CALL EXCH_CYCLE_EBL( myThid )
 
-C--    "Put" east and west edges.
-       CALL EXCH_RS_SEND_PUT_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
-     I             exchWidthX, exchWidthY,
-     I             theSimulationMode, theCornerMode, myThid )
-
-C--    If corners are important then sync and update east and west edges 
-C--    before doing north and south exchanges.
-       IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
-        CALL EXCH_RS_RECV_GET_X( array,
+       IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
+C--     "Put" east and west edges.
+        CALL EXCH_RS_SEND_PUT_X( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     If corners are important then sync and update east and west edges 
+C--     before doing north and south exchanges.
+        IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RS_RECV_GET_X( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
+C       "Put" north and south edges.
+        CALL EXCH_RS_SEND_PUT_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     Sync and update north, south (and east, west if corner updating
+C--     not active).
+        IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RS_RECV_GET_X( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
+        CALL EXCH_RS_RECV_GET_Y( array,
      I             myOLw, myOLe, myOLs, myOLn, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
 
-C      "Put" north and south edges.
-       CALL EXCH_RS_SEND_PUT_Y( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
-     I             exchWidthX, exchWidthY,
-     I             theSimulationMode, theCornerMode, myThid )
-
-
-C--    Sync and update north, south (and east, west if corner updating
-C--    not active).
-       IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
+       IF ( theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
+C       "Put" north and south edges.
+        CALL EXCH_RS_SEND_PUT_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     If corners are important then sync and update east and west edges
+C--     before doing north and south exchanges.
+        IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RS_RECV_GET_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
+C--     "Put" east and west edges.
+        CALL EXCH_RS_SEND_PUT_X( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     Sync and update east, west (and north, south if corner updating
+C--     not active).
+        IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RS_RECV_GET_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
         CALL EXCH_RS_RECV_GET_X( array,
      I             myOLw, myOLe, myOLs, myOLn, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
-       CALL EXCH_RS_RECV_GET_Y( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            theSimulationMode, theCornerMode, myThid )
 
        RETURN
        END

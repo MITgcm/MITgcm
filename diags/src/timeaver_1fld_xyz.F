@@ -1,7 +1,8 @@
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE TIMEAVER_1FLD_XYZ( fld, fldtave, deltaT, bi, bj, K, myThid )
+      SUBROUTINE TIMEAVER_1FLD_XYZ( fld, fldtave, deltaT, 
+     &                              bi, bj, K, myThid )
 C     /==========================================================\
 C     | SUBROUTINE TIMEAVER_1FLD_XYZ                             |
 C     | o Sum over time a single array                           |

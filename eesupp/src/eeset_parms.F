@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.5 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.6 1998/10/28 03:11:34 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -79,12 +79,13 @@ C
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
-C     package - but we haven't written it yet.
+C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-      OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',err=1,IOSTAT=errIO)
+      OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
+     &     err=1,IOSTAT=errIO)
       IF ( errIO .GE. 0 ) GOTO 2
     1 CONTINUE
        WRITE(msgBuf,'(A)') 
@@ -109,11 +110,14 @@ C     Make scratch copies of input data file with and without comments
  1001 CONTINUE
       CLOSE(eeDataUnit)
 C--   Report contents of parameter file
-      WRITE(msgBuf,'(A)') '// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// Execution Environment parameter file "eedata"'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// ======================================================='
+      WRITE(msgBuf,'(A)') 
+     & '// ======================================================='
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// Execution Environment parameter file "eedata"'
+      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     & '// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
@@ -123,7 +127,7 @@ C--   Report contents of parameter file
        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
        WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT , 1)
       GOTO 2000
  2001 CONTINUE
       CLOSE(iUnit)

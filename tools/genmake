@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.5 1998/09/29 21:22:33 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.6 1998/10/28 03:11:38 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -43,8 +43,10 @@ while ($#allargs)
  endsw
  shift allargs
 end
- 
-if ($?platform == 0) set platform = (`uname -p`)
+
+if ($?platform == 0) then
+ set platform = (`uname`)
+endif
 if ($?mfile == 0) set mfile = ( Makefile.$platform )
 set mach  = ( `uname -a` )
 echo Operating system: $mach
@@ -91,8 +93,8 @@ endif
 
 # Platform specific options
 switch ($platform$USEMPI)
-  case alpha:
-  case alpha+mpi:
+  case OSF1:
+  case OSF1+mpi:
     echo "Configuring for DEC Alpha"
     set CPP        = ( '/usr/bin/cpp -P' )
     set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC' )
@@ -107,7 +109,7 @@ switch ($platform$USEMPI)
     set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
     set RMFILES    = ( '*.p.out' )
     breaksw
-  case mips+mpi:
+  case IRIX64+mpi:
     echo "Configuring for SGI Mips with MPI"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
@@ -117,7 +119,7 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O3' )
     set RMFILES    = ( 'rii_files' )
     breaksw
-  case mips:
+  case IRIX64:
     echo "Configuring for SGI Mips"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
@@ -128,20 +130,28 @@ switch ($platform$USEMPI)
                        'load_external_fields.F' )
     set RMFILES    = ( 'rii_files' )
     breaksw
-  case sparc:
+  case SunOS:
+    set LN         = ( '/usr/bin/ln -fs' )
+    set CPP        = ( '/usr/ccs/lib/cpp -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
+    set FOPTIM     = ( '-O5 -fast' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    breaksw
+  case SunOS+mpi:
     set LN         = ( '/usr/bin/ln -fs' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-O5' )
+    set FOPTIM     = ( '-O5 -fast' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
-                       '-lsocket -lnsl -fast' )
+                       '-lsocket -lnsl' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
     breaksw
-  case onyx:
-  case onyx+mpi:
+  case IRIX32:
     echo "Configuring for SGI ONYX running IRIX64"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
     set INCLUDES   = ( '-I/usr/include' )
@@ -152,8 +162,8 @@ switch ($platform$USEMPI)
                        'load_external_fields.F' )
     set LIBS       = ( '-lmpi' )
     breaksw
-  case exemplar:
-  case exemplar+mpi:
+  case HP-UX:
+  case HP-UX+mpi:
     echo "Configuring for HP Exemplar"
     set CPP        = ( '/usr/ccs/lbin/cpp -P' )
     set DEFINES    = ( ${DEFINES}  '-DTARGET_HP' )
@@ -163,9 +173,29 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '+es +U77 +Onoautopar +Oexemplar_model' \
                        '+Okernel_threads' )
     set FOPTIM     = ( '+O2' )
-    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFLAGS = ( '+O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F' \
                        'load_external_fields.F' )
+    breaksw
+  case Linux:
+    set LN         = ( '/bin/ln -fs' )
+    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -P' )
+    set INCLUDES   = ( '-I/usr/local/include' )
+    set FC         = ( 'g77' )
+    set FFLAGS     = ( ' ' )
+    set FOPTIM     = ( '  -O3 -funroll-loops ' )
+    set LINK       = ( 'g77' )
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    breaksw
+  case Linux+pgi:
+    set LN         = ( '/bin/ln -fs' )
+    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -P' )
+    set INCLUDES   = ( '-I/usr/local/include' )
+    set FC         = ( 'pgf77' )
+    set FFLAGS     = ( '-byteswapio' )
+    set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
+    set LINK       = ( 'pgf77' )
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich -Kieee' )
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
@@ -216,7 +246,7 @@ foreach inc ($INCLUDEDIRS)
 end
 set SRCSTARS = ( )
 foreach dr ($SOURCEDIRS)
- set SRCSTARS = ("${SRCSTARS}" $dr\*.F $dr\*.c )
+ set SRCSTARS = ("${SRCSTARS}" $dr\*.\[Fc\] )
 end
 
 set THISHOSTNAME = ( `hostname` )
@@ -262,7 +292,7 @@ EXECUTABLE = \$(EXEDIR)${EXECUTABLE}
 # Unix ln (link)
 LN = ${LN}
 # C preprocessor
-CPP = ${CPP}
+CPP = cat \$< | ../tools/set64bitConst.sh | ${CPP}
 # Special preprocessor (KAP on DECs, FPP on Crays)
 KPP = ${KPP}
 # Fortran compiler
@@ -308,16 +338,19 @@ depend:
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
 clean:
 	-rm -rf *.o *.f *.p ${RMFILES}
+Clean:
+	@make clean
+	-rm -rf *.[Fc]
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) \$< > \$@
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 
 # Special exceptions that use the ( .F - .p - .f - .o ) rule-chain
 .F.p:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) \$< > \$@
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .p.f:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
 EOF

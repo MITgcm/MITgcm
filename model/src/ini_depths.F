@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.14 1998/09/29 18:50:57 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.15 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -11,7 +11,7 @@ C     |==========================================================|
 C     | The depths of the bottom of the model is specified in    |
 C     | terms of an XY map with one depth for each column of     |
 C     | grid cells. Depths do not have to coincide with the      |
-C     | model levels. The model's lopping algorithm makes it     |
+C     | model levels. The model lopping algorithm makes it       |
 C     | possible to represent arbitrary depths.                  |
 C     | The mode depths map also influences the models topology  |
 C     | By default the model domain wraps around in X and Y.     |

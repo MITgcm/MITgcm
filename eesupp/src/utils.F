@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.4 1998/06/10 21:38:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.5 1998/10/28 03:11:35 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -40,22 +40,28 @@ C
   901 CONTINUE
       WRITE(msgBuffer,'(A)')
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,'(A)')
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,'(A)')
      &'procedure: "DATE".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,'(A)')
      &'Variable passed to S/R DATE is too small.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,'(A)')
      &' Argument must be at least',lDate,'characters long.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,'(A)')
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,SQUEEZE_RIGHT,myThreadId)
+      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
       END
 

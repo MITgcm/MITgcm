@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.3 1998/10/28 03:11:34 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -37,9 +37,9 @@ C--   Check that all the threads have ended
 C     No thread should reach this loop before all threads have set
 C     threadIsComplete to TRUE. If they do then either there is a bug
 C     in the code or the behaviour of the parallel compiler directives 
-C     are not right for this code. In the latter case different directives
-C     may be available or the compiler itself may have a bug or you may
-C     need a different parallel compiler for main.F
+C     are not right for this code. In the latter case different 
+C     directives may be available or the compiler itself may have a 
+C     bug or you may need a different parallel compiler for main.F
       nThreadsDone = 0
       DO I = 1, nThreads
        IF ( threadIsComplete(I) ) nThreadsDone = nThreadsDone+1
@@ -47,9 +47,11 @@ C     need a different parallel compiler for main.F
       IF ( nThreadsDone .LT. nThreads ) THEN
        WRITE(msgBuf,'(A,I,A,I,A)')
      & 'S/R EEDIE: Only ',nThreadsDone,
-     & ' threads have completed, ',nThreads,' are expected for this configuration!'
+     & ' threads have completed, ',nThreads,
+     & ' are expected for this configuration!'
        WRITE(0,*) msgBuf
-       WRITE(0,*) 'Possibly you have different values of setenv PARALLEL and nThreads?'
+       WRITE(0,*) 
+     & 'Possibly you have different setenv PARALLEL and nThreads?'
        eeEndError = .TRUE.
        fatalError = .TRUE.
       ENDIF

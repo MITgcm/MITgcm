@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.7 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.8 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -106,7 +106,8 @@ C
       _EXCH_XYZ_R8(gt , myThid )
       _EXCH_XYZ_R8(gtNM1 , myThid )
 
-      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , Nr, 1, myThid )
+      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , 
+     &                       Nr, 1, myThid )
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.9 1998/08/20 18:43:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.10 1998/10/28 03:11:37 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -46,10 +46,14 @@ C--   Check to see if should convect now
 C--    Calculate heat content of two level column
        DO j=jMin,jmax
         DO i=iMin,imax
-         tMix(i,j) = theta(i,j,k-1,bi,bj)*_hFacC(i,j,k-1,bi,bj)*drF(k-1)
-     &              +theta(i,j,k,bi,bj)*_hFacC(i,j,k,bi,bj)*drF(k)
-         sMix(i,j) = salt (i,j,k-1,bi,bj)*_hFacC(i,j,k-1,bi,bj)*drF(k-1)
-     &              +salt (i,j,k,bi,bj)*_hFacC(i,j,k,bi,bj)*drF(k)
+         tMix(i,j) = theta(i,j,k-1,bi,bj)
+     &               *_hFacC(i,j,k-1,bi,bj)*drF(k-1)
+     &              +theta(i,j,k,bi,bj)
+     &               *_hFacC(i,j,k,bi,bj)*drF(k)
+         sMix(i,j) = salt (i,j,k-1,bi,bj)
+     &               *_hFacC(i,j,k-1,bi,bj)*drF(k-1)
+     &              +salt (i,j,k,bi,bj)
+     &               *_hFacC(i,j,k,bi,bj)*drF(k)
          dSum(i,j) = _hFacC(i,j,k-1,bi,bj)*drF(k-1)
      &              +_hFacC(i,j,k,bi,bj)*drF(k)
         ENDDO

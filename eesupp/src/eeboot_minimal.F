@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.4 1998/10/28 03:11:34 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -47,7 +47,7 @@ C--   Default values set to single processor case
       myProcId      = 0
       pidIO         = myProcId 
       myProcessStr  = '??????'
-C     Set a dummy value for myThid because we aren't multi-threading
+C     Set a dummy value for myThid because we are not multi-threading
 C     yet.
       myThid        = 1
 #ifdef ALLOW_USE_MPI
@@ -92,7 +92,7 @@ C--    Get my process number
 
 C--    Synchronise all processes
 C      Strictly this is superfluous, but by using it we can guarantee to 
-C      find out about processes that didn't start up.
+C      find out about processes that did not start up.
        CALL MPI_BARRIER( MPI_COMM_WORLD, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
@@ -115,7 +115,7 @@ C--    Get number of MPI processes
        ENDIF
        numberOfProcs = mpiNProcs
 
-C--    Can't have more processes than compile time MAX_NO_PROCS
+C--    Can not have more processes than compile time MAX_NO_PROCS
        IF ( numberOfProcs .GT. MAX_NO_PROCS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A)')
