@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.40 1998/12/09 16:11:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.41 1999/05/03 21:45:57 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -432,7 +432,11 @@ C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       myThid)
+C--      Apply open boundary conditions
          IF (openBoundaries) CALL APPLY_OBCS2( bi, bj, K, myThid )
+C--      Freeze water
+         IF (allowFreezing)
+     &   CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, K, myThid )
 C--      Diagnose barotropic divergence of predicted fields
          CALL CALC_DIV_GHAT(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
