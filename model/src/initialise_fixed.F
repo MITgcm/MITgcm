@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.31 2004/07/06 01:58:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.32 2004/07/09 02:41:52 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,6 +28,8 @@ C     !CALLING SEQUENCE:
 C     INITIALISE_FIXED
 C      |
 C      |-- INI_PARMS
+C      |
+C      |-- MNC_INIT + MNC_CW_INIT
 C      |
 C      |-- MON_INIT
 C      |
@@ -66,13 +68,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-#else
-      integer Nrphys
-      parameter (Nrphys=0)
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
@@ -89,7 +84,7 @@ C     Initialize MNC look-up tables
       IF (useMNC) THEN
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
-     &       Nr,Nrphys,myThid)
+     &       Nr,myThid)
         IF ( mnc_echo_gvtypes ) THEN
           CALL MNC_CW_DUMP( myThid )
         ENDIF

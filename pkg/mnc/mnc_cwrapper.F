@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.16 2004/07/06 22:38:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.17 2004/07/09 02:41:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -237,7 +237,7 @@ C     !ROUTINE: MNC_CW_INIT
 
 C     !INTERFACE:
       SUBROUTINE MNC_CW_INIT( 
-     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, NrPhys, 
+     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -273,14 +273,13 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr
-      integer NrPhys
 CEOP
 
 C     !LOCAL VARIABLES:
       integer CW_MAX_LOC
       parameter ( CW_MAX_LOC = 5 )
       integer i, ihorz,ihsub,ivert,itime,ihalo, is,ih, n,ntot
-      integer ndim, ncomb, nvch, NrPh
+      integer ndim, ncomb, nvch
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) dn(CW_MAX_LOC)
       character*(5) horz_dat(CW_MAX_LOC), hsub_dat(CW_MAX_LOC),
@@ -300,15 +299,9 @@ C     ......12345....12345....12345....12345....12345...
       data halo_dat /
      &     'Hn   ', 'Hy   ', '--   ', '     ', '     '  /
       data vert_dat /
-     &     '-    ', 'C    ', 'I    ', 'Phys ', 'PhysI'  /
+     &     '-    ', 'C    ', 'I    ', '     ', '     '  /
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
-
-      if (NrPhys .lt. 1) then
-        NrPh = Nr
-      else
-        NrPh = NrPhys
-      endif
 
       ncomb = 0
       DO ihorz = 1,5
@@ -327,7 +320,7 @@ C           Loop just ONCE if the Horiz component is "-"
               ENDIF
             ENDIF
             
-            DO ivert = 1,5
+            DO ivert = 1,3
               DO itime = 1,2
                 
 C               horiz and hsub
@@ -430,20 +423,6 @@ C               Vertical dimension
                   dim(ndim) = Nr + 1
                   ib(ndim)  = 1
                   ie(ndim)  = Nr + 1
-                ENDIF
-                IF (vert_dat(ivert)(1:5) .EQ. 'Phys ') THEN
-                  ndim = ndim + 1
-                  dn(ndim)(1:5) = 'Zphys'
-                  dim(ndim) = NrPh
-                  ib(ndim)  = 1
-                  ie(ndim)  = NrPh
-                ENDIF
-                IF (vert_dat(ivert)(1:5) .EQ. 'PhysI') THEN
-                  ndim = ndim + 1
-                  dn(ndim)(1:7) = 'Zphysm1'
-                  dim(ndim) = NrPh - 1
-                  ib(ndim)  = 1
-                  ie(ndim)  = NrPh - 1
                 ENDIF
 
 C               Time dimension
