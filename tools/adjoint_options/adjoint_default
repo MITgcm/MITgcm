@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.5 2003/10/21 22:12:37 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.6 2003/11/06 22:13:55 heimbach Exp $
 #  $Name:  $
 #
 
@@ -30,6 +30,14 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_sflux_dummy       \
                     xx_tauu_dummy        \
                     xx_tauv_dummy        \
+                    xx_atemp_dummy       \
+                    xx_aqh_dummy         \
+                    xx_uwind_dummy       \
+                    xx_vwind_dummy       \
+                    xx_obcsn_dummy       \
+                    xx_obcss_dummy       \
+                    xx_obcsw_dummy       \
+                    xx_obcse_dummy       \
                     xx_sst_dummy         \
                     xx_sss_dummy         \
                     xx_diffkr_dummy      \
