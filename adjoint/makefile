@@ -69,7 +69,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_gt.f			\
 		$(SOURCE_CODE)/calc_gtr1.f			\
 		$(SOURCE_CODE)/calc_ivdc.f			\
-		$(SOURCE_CODE)/calc_mom_rhs.f			\
 		$(SOURCE_CODE)/calc_phi_hyd.f			\
 		$(SOURCE_CODE)/calc_viscosity.f			\
 		$(SOURCE_CODE)/comm_stats.f			\
@@ -88,7 +87,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/find_rho.f			\
 		$(SOURCE_CODE)/forward_step.f			\
 		$(SOURCE_CODE)/freeze.f				\
-		$(SOURCE_CODE)/get_offline_fields.f		\
 		$(SOURCE_CODE)/gad_biharm_x.f			\
 		$(SOURCE_CODE)/gad_biharm_y.f			\
 		$(SOURCE_CODE)/gad_c2_adv_r.f			\
@@ -138,6 +136,8 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/initialise_varia.f		\
 		$(SOURCE_CODE)/integrate_for_w.f		\
 		$(SOURCE_CODE)/modeldata_example.f		\
+		$(SOURCE_CODE)/mom_fluxform.f			\
+		$(SOURCE_CODE)/mom_vecinv.f			\
 		$(SOURCE_CODE)/mom_calc_hfacz.f			\
 		$(SOURCE_CODE)/mom_calc_ke.f			\
 		$(SOURCE_CODE)/mom_cdscheme.f			\
@@ -163,6 +163,19 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_v_sidedrag.f			\
 		$(SOURCE_CODE)/mom_v_xviscflux.f		\
 		$(SOURCE_CODE)/mom_v_yviscflux.f		\
+		$(SOURCE_CODE)/mom_vi_calc_absvort3.f		\
+		$(SOURCE_CODE)/mom_vi_calc_hdiv.f		\
+		$(SOURCE_CODE)/mom_vi_calc_ke.f			\
+		$(SOURCE_CODE)/mom_vi_calc_relvort3.f		\
+		$(SOURCE_CODE)/mom_vi_coriolis.f		\
+		$(SOURCE_CODE)/mom_vi_del2uv.f			\
+		$(SOURCE_CODE)/mom_vi_hdissip.f			\
+		$(SOURCE_CODE)/mom_vi_u_coriolis.f		\
+		$(SOURCE_CODE)/mom_vi_u_grad_ke.f		\
+		$(SOURCE_CODE)/mom_vi_u_vertshear.f		\
+		$(SOURCE_CODE)/mom_vi_v_coriolis.f		\
+		$(SOURCE_CODE)/mom_vi_v_grad_ke.f		\
+		$(SOURCE_CODE)/mom_vi_v_vertshear.f		\
 		$(SOURCE_CODE)/packages_init_variables.f	\
 		$(SOURCE_CODE)/plot_field.f			\
 		$(SOURCE_CODE)/solve_for_pressure.f		\

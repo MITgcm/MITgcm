@@ -52,3 +52,15 @@ C subroutine  write_fld_xyz_rl
 C----------------------------------------
 CADJ SUBROUTINE write_fld_xyz_rl  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE write_fld_xyz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_local_rl
+C----------------------------------------
+CADJ SUBROUTINE write_local_rl  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_local_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_local_rs
+C----------------------------------------
+CADJ SUBROUTINE write_local_rs  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_local_rs  OUTPUT =
