@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.50 2003/02/27 22:34:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.51 2003/02/28 03:01:28 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -459,6 +459,7 @@ C     myCurrentTime - Time counter for this thread
 C     myCurrentIter - Iteration counter for this thread
       INTEGER myCurrentIter
       _RL     myCurrentTime
+      logical  exst
 CEOP
 
 C--   This timer encompasses the whole code
@@ -479,9 +480,12 @@ C--   Set model configuration (fixed arrays)
 
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN
-         CALL TIMER_START('CTRL_UNPACK         [THE_MODEL_MAIN]',mythid)
-         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
-         CALL TIMER_STOP ('CTRL_UNPACK         [THE_MODEL_MAIN]',mythid)
+         inquire( file='divided.ctrl', exist=exst )
+         IF ( .NOT. exst) THEN
+            CALL TIMER_START('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
+            CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+            CALL TIMER_STOP ('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
+         ENDIF
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
