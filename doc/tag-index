@@ -1,10 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.221 2003/12/08 02:13:59 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.222 2003/12/10 19:37:25 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o change global_ocean.cs32x15 because of Pb with GM on CS-grid.
-o added useSingleCpuIO capability to mdsio_readfield.F and exf_interp.F
+o changes to permit hi-res, cubed-sphere, configuration
+  - added useSingleCpuIO capability to mdsio_readfield.F and exf_interp.F
+  - added "#undef ALLOW_USE_MPI" support to eesupp/src/scatter_2d.F
+  - added pkg/exf/exf_set_uv.F for on-the-fly interpolation and rotation
+    of surface winds for the cube
+  (A verification experiment, based on global_ocean.cs32x15, but with
+   pkg/seaice turned on and with on-the-fly interpolation from the NCEP
+   Gaussian grid is described in MITgcm_contrib/high_res_cube/README_ice,
+   complete with example surface forcing files and matlab scripts to look
+   at the output and compare it with that of global_ocean.cs32x15.)
 
 checkpoint52d_pre
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 

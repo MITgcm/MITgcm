@@ -76,14 +76,14 @@ C subroutine variables
 C local variables
       integer  ierr
       real*8   ne_fac,nw_fac,se_fac,sw_fac
-      integer  e_ind(snx),w_ind(snx)
-      integer  n_ind(sny),s_ind(sny)
+      integer  e_ind(snx,sny),w_ind(snx,sny)
+      integer  n_ind(snx,sny),s_ind(snx,sny)
       real*8   px_ind(4), py_ind(4), ew_val(4)
       external lagran
       real*8   lagran
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
-      integer  i, j, k, l, js, bi, bj, interp_unit, sp
+      integer  i, j, k, l, js, bi, bj, sp, interp_unit
       real*4   global(nx_in,ny_in)
 
       _BEGIN_MASTER( myThid )
@@ -177,23 +177,23 @@ C check validity of input/output coordinates
 
 C compute interpolation indices 
         do i=1,snx
-         if (xG(i,1,bi,bj)-x_in(1) .ge. 0.) then
-            w_ind(i) = int((xG(i,1,bi,bj)-x_in(1))/lon_inc) + 1
-         else
-            w_ind(i) = int((xG(i,1,bi,bj)-x_in(1))/lon_inc)
-         endif
-         e_ind(i) = w_ind(i) + 1
-        enddo
-        js = ny_in/2
-        do j=1,sny
-         do while (yG(1,j,bi,bj) .lt. y_in(js))
-            js = (js + 1)/2
+         do j=1,sny
+          if (xG(i,j,bi,bj)-x_in(1) .ge. 0.) then
+           w_ind(i,j) = int((xG(i,j,bi,bj)-x_in(1))/lon_inc) + 1
+          else
+           w_ind(i,j) = int((xG(i,j,bi,bj)-x_in(1))/lon_inc)
+          endif
+          e_ind(i,j) = w_ind(i,j) + 1
+          js = ny_in/2
+          do while (yG(i,j,bi,bj) .lt. y_in(js))
+           js = (js + 1)/2
+          enddo
+          do while (yG(i,j,bi,bj) .ge. y_in(js+1))
+           js = js + 1
+          enddo
+          s_ind(i,j) = js
+          n_ind(i,j) = js + 1
          enddo
-         do while (yG(1,j,bi,bj) .ge. y_in(js+1))
-            js = js + 1
-         enddo
-         s_ind(j) = js
-         n_ind(j) = js + 1
         enddo
 
         if (method .eq. 1) then
@@ -204,16 +204,16 @@ C bilinear interpolation
           do i=1,snx
            arrayout(i,j,bi,bj) = 0.
            do l=0,1
-            px_ind(l+1) = x_in(w_ind(i)+l)
-            py_ind(l+1) = y_in(s_ind(j)+l)
+            px_ind(l+1) = x_in(w_ind(i,j)+l)
+            py_ind(l+1) = y_in(s_ind(i,j)+l)
            enddo
            do k=1,2
-            ew_val(k) = arrayin(w_ind(i),s_ind(j)+k-1)
-     &             *lagran(1,xG(i,1,bi,bj),px_ind,sp)
-     &             +arrayin(e_ind(i),s_ind(j)+k-1)
-     &             *lagran(2,xG(i,1,bi,bj),px_ind,sp)
+            ew_val(k) = arrayin(w_ind(i,j),s_ind(i,j)+k-1)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j),s_ind(i,j)+k-1)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
             arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj)
-     &             +ew_val(k)*lagran(k,yG(1,j,bi,bj),py_ind,sp)
+     &             +ew_val(k)*lagran(k,yG(i,j,bi,bj),py_ind,sp)
            enddo
           enddo
          enddo
@@ -225,21 +225,21 @@ C bicubic interpolation
           do i=1,snx
            arrayout(i,j,bi,bj) = 0.
            do l=-1,2
-            px_ind(l+2) = x_in(w_ind(i)+l)
-            py_ind(l+2) = y_in(s_ind(j)+l)
+            px_ind(l+2) = x_in(w_ind(i,j)+l)
+            py_ind(l+2) = y_in(s_ind(i,j)+l)
            enddo
            do k=1,4
             ew_val(k) =
-     &             arrayin(w_ind(i)-1,s_ind(j)+k-2)
-     &             *lagran(1,xG(i,1,bi,bj),px_ind,sp)
-     &             +arrayin(w_ind(i)  ,s_ind(j)+k-2)
-     &             *lagran(2,xG(i,1,bi,bj),px_ind,sp)
-     &             +arrayin(e_ind(i)  ,s_ind(j)+k-2)
-     &             *lagran(3,xG(i,1,bi,bj),px_ind,sp) 
-     &             +arrayin(e_ind(i)+1,s_ind(j)+k-2)
-     &             *lagran(4,xG(i,1,bi,bj),px_ind,sp)
+     &             arrayin(w_ind(i,j)-1,s_ind(i,j)+k-2)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+k-2)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+k-2)
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp) 
+     &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+k-2)
+     &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
             arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj) 
-     &             +ew_val(k)*lagran(k,yG(1,j,bi,bj),py_ind,sp)
+     &             +ew_val(k)*lagran(k,yG(i,j,bi,bj),py_ind,sp)
            enddo
           enddo
          enddo

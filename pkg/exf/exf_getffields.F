@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.19 2003/11/06 22:11:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.20 2003/12/10 19:37:25 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,71 +47,85 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+      logical output_xC_yC
+
 c     == end of interface ==
 
 c--   read forcing fields from files and temporal interpolation
 
 #ifdef ALLOW_ATM_WIND
 
-c     Zonal wind.
-      call exf_set_gen( 
-     &     uwindfile, uwindstartdate, uwindperiod, 
-     &     exf_inscal_uwind,
-     &     uwind, uwind0, uwind1, uwindmask, 
-#ifdef USE_EXF_INTERPOLATION
-     &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
-     &     uwind_nlon, uwind_nlat, xC, yC,
-#endif
-     &     mycurrenttime, mycurrentiter, mythid )
+c     wind is defined on cell center points
+      output_xC_yC = .true.
 
-c     Meridional wind.
-      call exf_set_gen( 
-     &     vwindfile, vwindstartdate, vwindperiod, 
-     &     exf_inscal_vwind,
-     &     vwind, vwind0, vwind1, vwindmask, 
+c     Zonal and meridional wind.
 #ifdef USE_EXF_INTERPOLATION
+      call exf_set_uv(
+     &     uwindfile, uwindstartdate, uwindperiod,
+     &     exf_inscal_uwind, uwind, uwind0, uwind1, uwindmask,
+     &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
+     &     uwind_nlon, uwind_nlat,
+     &     vwindfile, vwindstartdate, vwindperiod,
+     &     exf_inscal_vwind, vwind, vwind0, vwind1, vwindmask,
      &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
-     &     vwind_nlon, vwind_nlat, xC, yC,
-#endif
+     &     vwind_nlon, vwind_nlat, output_xC_yC,
      &     mycurrenttime, mycurrentiter, mythid )
+#else /* ifndef USE_EXF_INTERPOLATION */
+      call exf_set_gen(
+     &     uwindfile, uwindstartdate, uwindperiod,
+     &     exf_inscal_uwind,
+     &     uwind, uwind0, uwind1, uwindmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+      call exf_set_gen(
+     &     vwindfile, vwindstartdate, vwindperiod,
+     &     exf_inscal_vwind,
+     &     vwind, vwind0, vwind1, vwindmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_UWIND_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskw, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
-#endif
+#endif /* ALLOW_UWIND_CONTROL */
 
 #ifdef ALLOW_VWIND_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
      &     masks, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
-#endif
+#endif /* ALLOW_VWIND_CONTROL */
 
 #else  /* ifndef ALLOW_ATM_WIND */
 
-c     Zonal wind stress.
-      call exf_set_gen( 
-     &     ustressfile, ustressstartdate, ustressperiod, 
-     &     exf_inscal_ustress,
-     &     ustress, ustress0, ustress1, ustressmask, 
-#ifdef USE_EXF_INTERPOLATION
-     &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
-     &     ustress_nlon, ustress_nlat, xG, yC,
-#endif
-     &     mycurrenttime, mycurrentiter, mythid )
+c     wind stress is defined on southwest c-grid velocity points
+      output_xC_yC = .false.
 
-c     Meridional wind stress.
-      call exf_set_gen( 
-     &     vstressfile, vstressstartdate, vstressperiod, 
-     &     exf_inscal_vstress,
-     &     vstress, vstress0, vstress1, vstressmask, 
+c     Zonal and meridional wind stress.
 #ifdef USE_EXF_INTERPOLATION
+      call exf_set_uv(
+     &     ustressfile, ustressstartdate, ustressperiod,
+     &     exf_inscal_ustress, ustress, ustress0, ustress1, ustressmask,
+     &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     &     ustress_nlon, ustress_nlat,
+     &     vstressfile, vstressstartdate, vstressperiod,
+     &     exf_inscal_vstress, vstress, vstress0, vstress1, vstressmask,
      &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
-     &     vstress_nlon, vstress_nlat, xC, yG,
-#endif
+     &     vstress_nlon, vstress_nlat, output_xC_yC,
      &     mycurrenttime, mycurrentiter, mythid )
+#else /* ifndef USE_EXF_INTERPOLATION */
+      call exf_set_gen( 
+     &     ustressfile, ustressstartdate, ustressperiod,
+     &     exf_inscal_ustress,
+     &     ustress, ustress0, ustress1, ustressmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+      call exf_set_gen(
+     &     vstressfile, vstressstartdate, vstressperiod,
+     &     exf_inscal_vstress,
+     &     vstress, vstress0, vstress1, vstressmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif /* USE_EXF_INTERPOLATION */
 
 #endif /* ifndef ALLOW_ATM_WIND */
 

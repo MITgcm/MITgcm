@@ -12,6 +12,7 @@ C     global,local - working arrays used to transfer 2-D fields
       Real*8  global(Nx,Ny)
       _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+      INTEGER iG,jG, i, j, bi, bj
 #ifdef ALLOW_USE_MPI
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)
@@ -20,11 +21,29 @@ C     global,local - working arrays used to transfer 2-D fields
       _RL     temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER isource, itag, npe
-      INTEGER iP, jP, iG,jG, i, j, bi, bj, lbuff
+      INTEGER iP, jP, lbuff
+#endif /* ALLOW_USE_MPI */
 
 C--   Make everyone wait except for master thread.
       _BARRIER
       _BEGIN_MASTER( myThid )
+
+#ifndef ALLOW_USE_MPI
+
+      DO bj=1,nSy
+         DO bi=1,nSx
+            DO j=1,sNy
+               DO i=1,sNx
+                  iG = myXGlobalLo-1+(bi-1)*sNx+i
+                  jG = myYGlobalLo-1+(bj-1)*sNy+j
+                  local(i,j,bi,bj) = global(iG,jG)
+               ENDDO
+            ENDDO
+         ENDDO
+      ENDDO
+
+#else /* ALLOW_USE_MPI */
+
       lbuff=(sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy
       isource = 0
       itag = 0
@@ -74,12 +93,13 @@ C--   All proceses except 0 receive local array from process 0
 
       ENDIF
 
+#endif /* ALLOW_USE_MPI */
+
       _END_MASTER( myThid )
       _BARRIER
 
 C--   Fill in edges.
       _EXCH_XY_R8( local, myThid )
 
-#endif /* ALLOW_USE_MPI */
       RETURN
       END

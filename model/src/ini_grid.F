@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.14 2003/11/23 04:19:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.15 2003/12/10 19:37:25 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,9 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     msgBuf - Used for informational I/O.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_EXF
+      INTEGER i, j, bi, bj
+#endif /* ALLOW_EXF */
 CEOP
 
 C--   Set up vertical grid and coordinate system
@@ -74,6 +77,24 @@ C--   Set up horizontal grid and coordinate system
          STOP 'ABNORMAL END: S/R INI_GRID'
        _END_MASTER(myThid)
       ENDIF
+
+#ifdef ALLOW_EXF
+C--   exf_interp assumes that 0 <= xG, xC <= 360
+C     This is a quick fix until this assumption is relaxed
+C     and the interpolation weights are pre-computed.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          IF ( xG(I,J,bi,bj) .LT. 0 )
+     &           xG(I,J,bi,bj) = xG(I,J,bi,bj) + 360
+          IF ( xC(I,J,bi,bj) .LT. 0 )
+     &           xC(I,J,bi,bj) = xC(I,J,bi,bj) + 360
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_EXF */
 
 C--   Write certain grid data to files (useful for creating netCDF
 C     and general post-analysis)
