@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/SIZE.h,v 1.1 2001/09/28 02:28:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/SIZE.h,v 1.2 2003/12/10 16:25:56 adcroft Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -36,11 +36,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  20,
+     &           sNx =  10,
      &           sNy =   1,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   1,
+     &           nSx =   2,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/SIZE.h,v 1.1 2001/09/13 20:06:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/SIZE.h,v 1.2 2003/12/10 16:25:56 adcroft Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -36,11 +36,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  20,
-     &           sNy =  20,
+     &           sNy =  10,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
-     &           nSy =   1,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,

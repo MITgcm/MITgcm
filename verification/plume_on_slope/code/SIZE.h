@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/plume_on_slope/code/Attic/SIZE.h,v 1.1 2001/11/27 15:16:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/plume_on_slope/code/Attic/SIZE.h,v 1.2 2003/12/10 16:25:57 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -36,11 +36,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx = 320,
+     &           sNx = 160,
      &           sNy =   1,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   1,
+     &           nSx =   2,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,

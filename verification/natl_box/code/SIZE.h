@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/SIZE.h,v 1.3 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/SIZE.h,v 1.4 2003/12/10 16:25:57 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -36,11 +36,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  20,
+     &           sNx =  10,
      &           sNy =  16,
      &           OLx =   4,
      &           OLy =   4,
-     &           nSx =   1,
+     &           nSx =   2,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,

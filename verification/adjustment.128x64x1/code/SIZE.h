@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjustment.128x64x1/code/SIZE.h,v 1.3 2003/02/11 14:10:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/adjustment.128x64x1/code/SIZE.h,v 1.4 2003/12/10 16:25:51 adcroft Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -36,12 +36,12 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx = 128,
-     &           sNy =  64,
+     &           sNx =  64,
+     &           sNy =  32,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   1,
-     &           nSy =   1,
+     &           nSx =   2,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,

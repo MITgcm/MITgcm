@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/SIZE.h_mpi,v 1.1 2003/09/10 02:25:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/SIZE.h_mpi,v 1.2 2003/12/10 16:25:57 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -36,11 +36,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  15,
+     &           sNx =  30,
      &           sNy =  30,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   2,
+     &           nSx =   1,
      &           nSy =   2,
      &           nPx =   2,
      &           nPy =   1,

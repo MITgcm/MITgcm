@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/SIZE.h_mpi,v 1.1 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/SIZE.h_mpi,v 1.2 2003/12/10 16:25:56 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -37,11 +37,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  45,
-     &           sNy =  40,
+     &           sNy =  20,
      &           OLx =   2,
      &           OLy =   2,
      &           nSx =   1,
-     &           nSy =   1,
+     &           nSy =   2,
      &           nPx =   2,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,

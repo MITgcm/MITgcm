@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.7 2003/10/31 20:35:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.8 2003/12/10 16:25:57 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,7 @@ c     CALL SRAND( J )
 C--    Initialise temperature field to Held & Suarez equilibrium theta
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+c        call seed_port_rand()
          DO K=1,Nr
           thetaLim = 200. _d 0/((rC(K)/atm_po)**atm_kappa)
           DO J=1,sNy
