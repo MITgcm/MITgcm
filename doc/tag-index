@@ -1,10 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.161 2003/05/26 19:03:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.162 2003/06/05 16:16:00 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o AIM: use true log-P extrapolation for near surface temp (= as in 
     F.Molteni paper) ; update aim.5l_cs output.
+o New variable in PARM03 for more flexible pickups
 
 checkpoint50g_post
 o merged with release1_p17 (pkg/seaice and verification/lab_sea)

@@ -4,7 +4,7 @@ C $Name:
 #include "OBCS_OPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE ORLANSKI_READ_CHECKPOINT( prec, myIt, myThid )
+      SUBROUTINE ORLANSKI_READ_CHECKPOINT( prec, myIt, suff, myThid )
 C     /==========================================================\
 C     | SUBROUTINE ORLANSKI_READ_CHECKPOINT                      |
 C     | o Read Orlanski open boundary checkpoint arrays          |
@@ -23,6 +23,7 @@ C     === Global variables ===
 C     == Routine arguments ==
       INTEGER prec
       INTEGER myIt
+      CHARACTER*(10) suff
       INTEGER myThid
 CEndofinterface
 
@@ -32,7 +33,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
 C     READ N and S OB storage and phase speed arrays
-      WRITE(fn,'(A,I10.10)') 'pickup_orlanskiNS.',myIt
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiNS.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_1,1,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_2,2,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_3,3,myThid)
@@ -89,7 +90,7 @@ C     READ N and S OB storage and phase speed arrays
 #endif
 
 C     READ E and W OB storage and phase speed arrays
-      WRITE(fn,'(A,I10.10)') 'pickup_orlanskiEW.',myIt
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiEW.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_1,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_2,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_3,3,myThid)
