@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.10 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.11 2001/06/05 15:30:53 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -97,6 +97,9 @@ C      o Special custom form
 C
 c     _EXCH_XY_R4(fCori,myThid)
 c     CALL EXCH_Z_XY_RS(fCoriG,myThid)
+
+      CALL MON_PRINTSTATS_RS(1,fCori,'fCori',myThid)
+      CALL MON_PRINTSTATS_RS(1,fCoriG,'fCoriG',myThid)
 
       RETURN
       END
