@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.28 2004/10/13 18:37:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.29 2004/10/13 20:42:30 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,7 +78,7 @@ C--   Initialise Float positions
 
 #ifdef ALLOW_TIMEAVE
 C     IF (useTIMEAVE) THEN
-      CALL timeave_init( myThid )
+      CALL TIMEAVE_INIT_FIXED( myThid )
 C     ENDIF
 #endif
 

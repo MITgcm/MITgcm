@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.4 2004/10/13 04:37:38 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.1 2004/10/13 20:42:30 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: TIMEAVE_INIT
+C     !ROUTINE: TIMEAVE_INIT_FIXED
 
 C     !INTERFACE:
-      SUBROUTINE TIMEAVE_INIT( myThid )
+      SUBROUTINE TIMEAVE_INIT_FIXED( myThid )
 
 C     !DESCRIPTION:
 C     At the end of average period, write the time-average
