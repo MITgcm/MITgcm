@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.4 2004/06/08 22:26:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.5 2004/06/09 16:23:43 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -119,11 +119,6 @@ C--------------------------------------------------------------------------
 
       _RL sice(idim1:idim2,jdim1:jdim2,nSx,nSy)
 
-c MPI Utilities
-c -------------
-      include 'mpif.h'
-      integer  ierror
-
 C Maximum number of dates in one year for the data
       integer 	ndmax
       parameter (ndmax = 370)
@@ -132,11 +127,10 @@ C Maximum number of dates in one year for the data
       character*80 cdscrip
       real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
-      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,ndatebc
-      integer nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
+      integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-C Define Allocatable Arrays
       real sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
@@ -145,7 +139,7 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc, jmbc, lat0, lon0, ndatebc, undef, nymdbc, nhmsbc
+      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
       save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
       save first
       save sicebc1, sicebc2
@@ -179,12 +173,13 @@ C---------- Read in Header file ----------------------------------
 
       if( iyear.ne.iyearbc ) then
 
-        close(iunit)
-        open (iunit, form='unformatted', access='direct',recl=im2*jm2*4)
-        nrec = 1
-        call bcheader (iunit, ndmax, nrec,
-     .                 cname, cdscrip, imbc, jmbc, lat0, lon0, 
-     .                 ndatebc, nymdbc, nhmsbc, undef, error)
+       close(iunit)
+       open (iunit,form='unformatted',access='direct',
+     .                                          recl=im2*jm2*nPx*nPy*4)
+       nrec = 1
+       call bcheader (iunit, ndmax, nrec,
+     .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
+     .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility ------------------------------
 
@@ -195,19 +190,19 @@ C Check for correct data in boundary condition file
        endif
 
 C Check Horizontal Resolution
-       if (.not.error .and. imbc*jmbc.ne.im2*jm2) then
+       if(.not.error .and. imbc*jmbc*npxbc*npybc.ne.im2*jm2*npx*npy)then
         write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
-        write(6,*) ' B.C. Resolution:  ',imbc*jmbc
-        write(6,*) 'Model Resolution:  ',im2*jm2
+        write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
+        write(6,*) 'Model Resolution:  ',im2*jm2*npx*npy
         error = .true.
        endif
 
 C Check Year 
        iyearbc = nymdbc(2)/10000
        if (.not.error .and. iyear.ne.iyearbc .and. iyearbc.ne.0) then
-        write(6,*) '     B.C. Year DOES NOT match REQUESTED Year!'
-        write(6,*) '     B.C. Year:  ', iyearbc
-        write(6,*) 'Requested Year:  ', iyear
+        write(6,*)'     B.C. Year DOES NOT match REQUESTED Year!'
+        write(6,*)'     B.C. Year:  ', iyearbc
+        write(6,*)'Requested Year:  ', iyear
         error = .true.
        endif
 
@@ -264,14 +259,14 @@ c  from previous call to getsice then read new data
        do while (.not.found .and. nd .le. ndatebc)
         timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
         if (timebc2 .gt. timemod) then	
-          nymdbc1 = nymdbc(nd-1)
-          nymdbc2 = nymdbc(nd)
-          nhmsbc1 = nhmsbc(nd-1)
-          nhmsbc2 = nhmsbc(nd)
-          call bcdata (iunit, imbc, jmbc, nd, nd+1, sicebc1, sicebc2)
-          found = .true.
+         nymdbc1 = nymdbc(nd-1)
+         nymdbc2 = nymdbc(nd)
+         nhmsbc1 = nhmsbc(nd-1)
+         nhmsbc2 = nhmsbc(nd)
+         call bcdata (iunit,imbc,jmbc,nPx,nPy,nd,nd+1,sicebc1,sicebc2)
+         found = .true.
         else
-          nd = nd + 1
+         nd = nd + 1
         endif
        enddo
 
@@ -319,29 +314,39 @@ C---------------------------------------------------------------------------
  
       return
       end
-      subroutine getsst ( iunit,nymd,nhms,sst,im,jm,lattice )
-C************************************************************************
-C!GETSST
+      subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
+     .            nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
 C************************************************************************
 C
 C!ROUTINE:	GETSST
-C!PROGRAMMER:	Sharon Nebuda
-C!DATE CODED:	May 8, 1996
 C!DESCRIPTION:	GETSST gets the SST data.
 C!		This routine is adaptable for any frequency
 C!		data upto a daily frequency.  
 C!		note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!		iunit   Unit number assigned to the sst data file
-C!		nymd	YYMMDD of the current model timestep
-C!		nhms	HHMMSS of the model time
-C!            im     Number of x points
-C!            jm     Number of y points
-C!       lattice     Grid Decomposition defined by Dynamics
+C!	iunit     Unit number assigned to the sice data file
+C!      idim1     Start dimension in x-direction
+C!      idim2     End dimension in x-direction
+C!      jdim1     Start dimension in y-direction
+C!      jdim2     End dimension in y-direction
+C!      im1       Begin of x-direction span for filling sice
+C!      im2       End of x-direction span for filling sice
+C!      jm1       Begin of y-direction span for filling sice
+C!      jm2       End of y-direction span for filling sice
+C!      nSx       Number of processors in x-direction (local processor)
+C!      nSy       Number of processors in y-direction (local processor)
+C!      nPx       Number of processors in x-direction (global)
+C!      nPy       Number of processors in y-direction (global)
+C!      bi        Processor number in x-direction (local to processor)
+C!      bj        Processor number in y-direction (local to processor)
+C!      biglobal  Processor number in x-direction (global)
+C!      bjglobal  Processor number in y-direction (global)
+C!	nymd	  YYMMDD of the current model timestep
+C!	nhms	  HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!		sst(im,jm)	Sea surface temperature in Kelvin
+C!	sst(idim1:idim2,jdim1:jdim2,nSx,nSy) Sea surface temperature (K)
 C
 C!ROUTINES CALLED:
 C
@@ -351,69 +356,27 @@ C!     interp_time   Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
 
-      use dynamics_lattice_module
       implicit none
-      type ( dynamics_lattice_type ) lattice
+#include "CPP_OPTIONS.h"
 
-c MPI Utilities
-c -------------
-      include 'mpif.h'
-      integer  ierror
+      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
+      integer bi,bj,biglobal.bjglobal,nymd,nhms
 
-C  Parameter statements
-      integer 	ndmax 	! Maximum number of dates in one year for the data
+      _RL sst(idim1:idim2,jdim1:jdim2,nSx,nSy)
+
+C Maximum number of dates in one year for the data
+      integer 	ndmax
       parameter (ndmax = 370)
 
-C  Variables passed to the routine:
-      integer 	iunit	! Unit number assigned to the SST data file
-      integer 	nymd	! YYMMDD of the current model timestep
-      integer 	nhms	! HHMMSS of the model time
-      integer        im     ! Number of x points
-      integer        jm     ! Number of y points
+      character*8  cname
+      character*80 cdscrip
+      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      logical first, found, error
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
+      integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
+      integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-C  Variables returned by the routine:
-      real 	sst(im,jm)	! Sea surface temperature in Kelvin
-
-C  Variables unique to the routine:
-      character*8  cname	! Name of the data in the file header
-      character*80 cdscrip	! Description of the data in the file header
-      real	fac1		! Weighted value (fraction) of the data
-				! before the model time
-      real	fac2		! Weighted value (fraction) of the data
-				! after the model time
-      logical	first		! True for first time using the dates for the
-				! BC data file.  Then read in the header file.
-      logical	found		! If false, then the data surrounding the model
-				! time was not found
-      logical error         ! TRUE if problem with data
-      integer 	i,j,n,nn	! DO loop counters
-      integer 	iyear		! Year of model 
-      integer 	iyearbc		! Year of boundary condition data 
-      real 	lat0		! Starting lat of the bc data set (future use)
-      real 	lon0		! Starting lon of the bc data set (future use)
-      integer 	nd		! Counter for record number of data to read
-      integer 	ndby3		! int(ndatebc/3) used for write statement
-      integer 	imbc  		! IM read from the BC data
-      integer 	jmbc		! JM read from the BC data
-      integer	ndatebc		! Number of dates in the BC file
-      integer	nhmsbc(ndmax)	       ! HHMMSS of the data time (not needed currently)
-      integer	nhmsbc1		! HHMMSS of the earlier data kept from last timestep
-      integer	nhmsbc2 	       ! HHMMSS of the later data kept from last timestep
-      integer nrec	              ! Record number of the header (set to 1)
-      integer	nymdbc(ndmax)	       ! YYYYMMDD of each data
-      integer	nymdbc1		! YYYYMMDD of the earlier data kept from last timestep
-      integer	nymdbc2 	       ! YYYYMMDD of the later data kept from last timestep
-      integer nymdmod	 	! YYYYMMDD of the current model timestep
-      real 	timebc1		! YYYYMMDD.HHMMSS of the earlier bc data 
-      real 	timebc2		! YYYYMMDD.HHMMSS of the later bc data 
-      real 	timemod		! YYYYMMDD.HHMMSS of the current timestep
-      real 	undef		! Undefined value for missing data
-
-C Define Allocatable Arrays
-      real, allocatable, save :: sstbc1(:,:)     ! Sea surface temperature (K) from bc data
-                                                 ! of the date before the model time
-      real, allocatable, save :: sstbc2(:,:)     ! Sea surface temperature (K) from bc data
-                                                 ! of the date after the model time
+      real sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -421,9 +384,10 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc, jmbc, lat0, lon0, ndatebc, undef, nymdbc, nhmsbc
-      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2, sstbc1
+      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
       save first
+      save sstbc1, sstbc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -438,8 +402,6 @@ c  initialize so that first time through they have values for the check
 c  these vaules make the iyear .ne. iyearbc true anyways for
 c  for the first time so first isnt checked below.
       if (first) then
-      allocate ( sstbc1(lattice%imglobal,lattice%jmglobal) )  ! Allocate Memory for sstbc1
-      allocate ( sstbc2(lattice%imglobal,lattice%jmglobal) )  ! Allocate Memory for sstbc2
         nymdbc(2) = 0
         nymdbc1   = 0
         nymdbc2   = 0
@@ -454,297 +416,239 @@ C---------- Read in Header file ----------------------------------
       iyearbc = nymdbc(2)/10000
 
       if( iyear.ne.iyearbc ) then
-        if( lattice%myid.eq.0 ) then  
 
-        close(iunit)
-        open (iunit, form='unformatted', access='direct',recl=lattice%imglobal*lattice%jmglobal*4)
-        nrec = 1
-        call bcheader (iunit, ndmax, nrec,
-     .                 cname, cdscrip, imbc, jmbc, lat0, lon0, 
-     .                 ndatebc, nymdbc, nhmsbc, undef, error)
+       close(iunit)
+       open (iunit,form='unformatted',access='direct',
+     .                                          recl=im2*jm2nPx*nPy*4)
+       nrec = 1
+       call bcheader (iunit, ndmax, nrec,
+     .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
+     .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility
 
 C Check for correct data in boundary condition file
        if (.not.error .and. cname.ne.'SST') then
-            write(6,*) 'Wrong data in SST boundary condition file => ',cname
-            error = .true.
+        write(6,*)'Wrong data in SST boundary condition file => ',cname
+        error = .true.
        endif
 
 C Check Horizontal Resolution
-       if (.not.error .and. imbc*jmbc.ne.lattice%imglobal*lattice%jmglobal) then
-            write(6,*) 'Boundary Condition Resolution DOES NOT match Model Resolution!'
-            write(6,*) 'Boundary Condition Resolution:  ',imbc*jmbc
-            write(6,*) '             Model Resolution:  ',lattice%imglobal*lattice%jmglobal
-            error = .true.
+       if(.not.error .and. imbc*jmbc*npxbc*npybc.ne.im2*jm2*npx*npy)then
+        write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
+        write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
+        write(6,*) 'Model Resolution:  ',im2*jm2*npx*npy
+        error = .true.
        endif
 
 C Check Year 
        iyearbc = nymdbc(2)/10000
        if (.not.error .and. iyear.ne.iyearbc .and. iyearbc.ne.0) then
-            write(6,*) 'Boundary Condition Year DOES NOT match REQUESTED Year!'
-            write(6,*) 'Boundary Condition Year:  ', iyearbc
-            write(6,*) '         Requested Year:  ', iyear
-            error = .true.
+        write(6,*)'     B.C. Year DOES NOT match REQUESTED Year!'
+        write(6,*)'     B.C. Year:  ', iyearbc
+        write(6,*)'Requested Year:  ', iyear
+        error = .true.
        endif
 
        if (.not.error)   then
 C if climatology, fill dates for data with current model year
-            if (iyearbc.eq.0) then		
-            write(6,*)
-            write(6,*) 'Climatological Dataset is being used.'  
-            write(6,*) 'Current model year will be used to fill Header Dates'
-              do n = 2, ndatebc-1
-               nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
-              enddo
+        if (iyearbc.eq.0) then		
+         write(6,*)
+         write(6,*) 'Climatological Dataset is being used.'  
+         write(6,*) 'Current model year will be used to fill Header Dates'
+         do n = 2, ndatebc-1
+          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
+         enddo
 C  For the first date subtract 1 year from the current model NYMD
-              n = 1
-              nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
+         n = 1
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
 C  For the last date add 1 year to the current model NYMD
-              n = ndatebc
-              nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
-            endif
+         n = ndatebc
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
+        endif
 
 C  Write out header info
-       write(6,*) ' Updated boundary condition data'
-       write(6,*) ' ---------------------------------'
-       write(6,*) ' Variable: ',cname
-       write(6,*) ' Description: ',cdscrip
-       write(6,*) ' Resolution: x= ',imbc,' y= ',jmbc,' Undefined value = ',undef
-       write(6,*) ' Starting latitude = ',lat0,' longitude =',lon0
-       write(6,*) ' Data valid at these times: '
-       ndby3 = ndatebc/3
-       do n = 1, ndby3*3,3
-        write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=n,n+2)
- 1000   format(3(2x,i3,':',i8,2x,i8))
-       enddo
-       write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
-      endif  ! End error  Check
+        write(6,*) ' Updated boundary condition data'
+        write(6,*) ' ---------------------------------'
+        write(6,*) ' Variable: ',cname
+        write(6,*) ' Description: ',cdscrip
+        write(6,*) ' Resolution: x= ',imbc,' y= ',jmbc,
+     .                                       ' Undefined value = ',undef
+        write(6,*) ' Starting latitude = ',lat0,' longitude =',lon0
+        write(6,*) ' Data valid at these times: '
+        ndby3 = ndatebc/3
+        do n = 1, ndby3*3,3
+         write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=n,n+2)
+ 1000    format(3(2x,i3,':',i8,2x,i8))
+        enddo
+        write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
+       endif  ! End error  Check
 
-      endif  ! End MYID=0 Check
-
-c Broadcast information to other PEs
-c ----------------------------------
-#if (mpi)
-       call mpi_bcast ( error,1,mpi_logical,0,lattice%comm,ierror )
-#endif
        if( error ) call my_exit (101)
-
-#if (mpi)
-       call mpi_bcast ( ndatebc,1     ,mpi_integer,0,lattice%comm,ierror )
-       call mpi_bcast ( nymdbc,ndatebc,mpi_integer,0,lattice%comm,ierror )
-       call mpi_bcast ( nhmsbc,ndatebc,mpi_integer,0,lattice%comm,ierror )
-#endif
 
       endif  ! New Year Info Check
 
 C---------- Read SST data if necessary -------------------------------
 
-        found = .false.
-        nd = 2
+      found = .false.
+      nd = 2
 
 c  If model time is not within the times of saved sst data 
 c  from previous call to getsst then read new data 
 
-        timemod = float(nymdmod) + float(nhms)   /1000000
-        timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
-        timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
-        if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
+      timemod = float(nymdmod) + float(nhms)   /1000000
+      timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
+      timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
+      if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
 
-        do while (.not.found .and. nd .le. ndatebc)
-          timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
-          if (timebc2 .gt. timemod) then	
-            nymdbc1 = nymdbc(nd-1)
-            nymdbc2 = nymdbc(nd)
-            nhmsbc1 = nhmsbc(nd-1)
-            nhmsbc2 = nhmsbc(nd)
-            if ( lattice%myid.eq.0 ) call bcdata (iunit, imbc, jmbc, nd, nd+1, sstbc1, sstbc2)
-#if (mpi)
-            call mpi_bcast ( sstbc1,lattice%imglobal*lattice%jmglobal,mpi_double_precision,0,lattice%comm,ierror )
-            call mpi_bcast ( sstbc2,lattice%imglobal*lattice%jmglobal,mpi_double_precision,0,lattice%comm,ierror )
-#endif
-            found = .true.
-          else
-            nd = nd + 1
-          endif
-        enddo
+       do while (.not.found .and. nd .le. ndatebc)
+        timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
+        if (timebc2 .gt. timemod) then	
+         nymdbc1 = nymdbc(nd-1)
+         nymdbc2 = nymdbc(nd)
+         nhmsbc1 = nhmsbc(nd-1)
+         nhmsbc2 = nhmsbc(nd)
+         call bcdata (iunit,imbc,jmbc,nPx,nPy,nd,nd+1,sstbc1,sstbc2)
+         found = .true.
+        else
+         nd = nd + 1
+        endif
+       enddo
 
 c  Otherwise the data from the last time in getsst surrounds the 
 c  current model time.
 
-        else
-          found = .true.
-        endif
+      else
+       found = .true.
+      endif
  
-        if (.not.found) then
-          if( lattice%myid.eq.0 ) print *, 'STOP: Could not find SST boundary condition dates surrounding the model time.'
-          call my_finalize
-          call my_exit (101)
-        endif
+      if (.not.found) then
+       print *, 'STOP: Could not find SST dates for model time.'
+       call my_finalize
+       call my_exit (101)
+      endif
 
 C---------- Interpolate SST data ------------------------------------
 
-          call interp_time ( nymdmod,nhms, nymdbc1,nhmsbc1, nymdbc2,nhmsbc2, fac1,fac2 )
+      call interp_time(nymdmod,nhms,nymdbc1,nhmsbc1,nymdbc2,nhmsbc2,
+     .                                                        fac1,fac2)
 
-          do j = 1, jm
-          do i = 1, im
-            sst(i,j) = sstbc1( lattice%iglobal(i),lattice%jglobal(j) )*fac1 
-     .               + sstbc2( lattice%iglobal(i),lattice%jglobal(j) )*fac2 
-          enddo
-          enddo
+      do j = jm1,jm2
+      do i = im1,im2
+       sst(i,j,bi,bj) = sstbc1(i,j,biglobal,bjglobal)*fac1 
+     .                + sstbc2(i,j,biglobal,bjglobal)*fac2 
+      enddo
+      enddo
  
       return
       end
 
-      subroutine bcdata (iunit, im, jm, nrec1, nrec2, field1, field2)
-C************************************************************************
-C!BCDATA
+      subroutine bcdata (iunit,im,jm,nPx,nPy,nrec1,nrec2,field1,field2)
 C************************************************************************
 C
-C!ROUTINE:	BCDATA
-C!PROGRAMMER:	Sharon Nebuda
-C!DATE CODED:	April 29, 1996
-C!DESCRIPTION:	BCDATA reads the data from the file assigned to the
-C!		passed unit number and returns data from the two times
-C!		surrounding the current model time.  The two record 
-C!		postitions are not assumed to be next to each other.
+C!ROUTINE:      BCDATA
+C!DESCRIPTION:  BCDATA reads the data from the file assigned to the
+C!              passed unit number and returns data from the two times
+C!              surrounding the current model time.  The two record 
+C!              postitions are not assumed to be next to each other.
 C
 C!INPUT PARAMETERS:
-C!	im	number of x points
-C!	jm	number of y points
-C!	nrec1	record number of the time before the model time
-C!	nrec2	record number of the time after the model time
+C!      im      number of x points
+C!      im      number of x points
+C!      nPx     number of faces in x-direction
+C!      nPy     number of faces in y-direction
+C!      nrec1   record number of the time before the model time
+C!      nrec2   record number of the time after the model time
 C
 C!OUTPUT PARAMETERS:
-C!	field1(im,jm)	data field before the model time
-C!	field2(im,jm)	data field after the model time
-C
-C!REVISION HISTORY:	
-C!	NEW
-C
-C!ROUTINES CALLED:
-C
-C!      none
+C!      field1(im,jm,nPx,nPy)  data field before the model time
+C!      field2(im,jm,nPx,nPy)  data field after the model time
 C
 C--------------------------------------------------------------------------
-
-
-C--------------- Variable Declaration -------------------------------------
       implicit none
 
-C  Variables passed to the routine:
-      integer 	iunit	! Unit number assigned to the data file
-      integer 	im	! Number of x points
-      integer 	jm	! Number of y points
-      integer 	nrec1	! Record number of the time before the model time
-      integer 	nrec2	! Record number of the time after the model time
+      integer iunit,im,jm,nPx,nPy,nrec1,nrec2
 
-C  Variables returned by the routine:
-      real  	field1(im,jm)	! Real*8 Data before the model time
-      real  	field2(im,jm)	! Real*8 Data after  the model time
+      real  field1(im,jm)
+      real  field2(im,jm)
 
-C  Variables unique to the routine:
-      integer i,j		! DO loop counters
-      real*4	f1(im,jm)	! Real*4 Data before the model time
-      real*4	f2(im,jm)	! Real*4 Data after  the model time
+      integer i,j,n1,n2
+      real*4 f1(im,jm,nPx,nPy), f1(im,jm,nPx,nPy)
 
 C--------- Read file -----------------------------------------------
-
       read(iunit,rec=nrec1) f1
       read(iunit,rec=nrec2) f2
 
+      do n2=1,nPy
+      do n1=1,nPx
       do j=1,jm
       do i=1,im
-      field1(i,j) = f1(i,j)
-      field2(i,j) = f2(i,j)
+       field1(i,j,n1,n2) = f1(i,j,n1,n2)
+       field2(i,j,n1,n2) = f2(i,j,n1,n2)
+      enddo
+      enddo
       enddo
       enddo
 
       return
       end
       subroutine bcheader (iunit, ndmax, nrec,
-     .                     cname, cdscrip, im, jm, lat0, lon0, ndatebc, 
-     .                     nymdbc, nhmsbc, undef, error)
-C************************************************************************
-C!BCHEADER
+     .           cname, cdscrip, im, jm, npx, npy, lat0, lon0, ndatebc, 
+     .           nymdbc, nhmsbc, undef, error)
 C************************************************************************
 C
-C!ROUTINE:	BCHEADER
-C!PROGRAMMER:	Sharon Nebuda
-C!DATE CODED:	April 29, 1996
-C!DESCRIPTION:	BCHEADER reads the header info from the file assigned to the
-C!		passed unit number and returns the info back.  
+C!ROUTINE:     BCHEADER
+C!DESCRIPTION: BCHEADER reads the header from a file and returns the info.  
 C
 C!INPUT PARAMETERS:
-C!	iunit   unit number assigned to the data file
-C!	ndmax	maximum number of date/times of the data
-C!	nrec	record number of the header info (or assume 1??)
+C!      iunit    unit number assigned to the data file
+C!      ndmax    maximum number of date/times of the data
+C!      nrec     record number of the header info (or assume 1??)
 C
 C!OUTPUT PARAMETERS:
-C!      cname		name of the data in the file header
-C!      cdscrip		description of the data in the file header
-C!	im		number of x points
-C!	jm		number of y points
-C!	lat0		starting latitude for the data grid
-C!	lon0		starting longitude for the data grid
-C!	ndatebc		number of date/times of the data in the file
-C!	nymdbc(ndmax)	array of dates for the data including century
-C!	nhmsbc(ndmax)	array of times for the data
-C!	undef		value for undefined values in the data
-C!	error		logical TRUE if dataset problem
-C
-C!REVISION HISTORY:	
-C!	NEW
-C
-C!ROUTINES CALLED:
-C!      none
+C!      cname         name of the data in the file header
+C!      cdscrip	      description of the data in the file header
+C!      im            number of x points
+C!      jm            number of y points
+C!      npx           number of faces (processors) in x-direction
+C!      npy           number of faces (processors) in x-direction
+C!      lat0          starting latitude for the data grid
+C!      lon0          starting longitude for the data grid
+C!      ndatebc	      number of date/times of the data in the file
+C!      nymdbc(ndmax) array of dates for the data including century
+C!      nhmsbc(ndmax) array of times for the data
+C!      undef         value for undefined values in the data
+C!      error         logical TRUE if dataset problem
 C
 C--------------------------------------------------------------------------
-
-C--------------- Variable Declaration -------------------------------------
       implicit none
 
-C  Variables passed to the routine:
-      integer 	iunit	! Unit number assigned to the data file
-      integer 	ndmax	! Maximum number of dates for a given field
-      integer 	nrec	! Record number of the header info (or assume 1??)
+      integer iunit, ndmax, nrec
 
-C  Variables returned by the routine:
-      character*8  cname	! Name of the data in the file header
-      character*80 cdscrip	! Description of the data in the file header
-      integer 	im     ! Number of x points
-      integer 	jm     ! Number of y points
-      real         lat0     ! Starting latitude of the data
-      real   	     lon0     ! Starting longitude of the data
-      integer	ndatebc	! Number of date/times of the data in the file
-      integer	nymdbc(ndmax)	! array of dates for the data including century
-      integer	nhmsbc(ndmax)	! array of times for the data
-      real 	undef		! value for undefined values in the data
-      logical error         ! logical TRUE if dataset problem
+      character*8  cname
+      character*80 cdscrip
+      integer im,jm,npx,npy,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
+      real lat0,lon0,undef
+      logical error
 
-C  Variables unique to the routine:
-      integer 	i		! DO loop counters
-      integer n
-      integer*4            im_32  ! Number of x points
-      integer*4 	      jm_32  ! Number of y points
-      real*4             lat0_32  ! Starting latitude of the data
-      real*4 	           lon0_32  ! Starting longitude of the data
-      integer*4       ndatebc_32  ! Number of date/times of the data in the file
-      integer*4 nymdbc_32(ndmax)  ! array of dates for the data including century
-      integer*4 nhmsbc_32(ndmax)  ! array of times for the data
-      real*4     undef_32         ! value for undefined values in the data
+      integer i,n
+      integer*4 im_32,jm_32,npx_32,npy_32
+      integer*4 ndatebc_32(ndmax),nhmsbc_32(ndmax)
+      real*4 lat0_32,lon0_32,undef_32
 
 C--------- Read file -----------------------------------------------
 
       read(iunit,rec=nrec,err=500) cname, cdscrip, 
-     .                     im_32, jm_32, lat0_32, lon0_32, 
-     .                     ndatebc_32, undef_32,
-     .                    (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
+     .     im_32, jm_32, npx_32, npy_32, lat0_32, lon0_32, 
+     .     ndatebc_32, undef_32,
+     .     (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
 
-      im    =    im_32
-      jm    =    jm_32
-      lat0  =  lat0_32
-      lon0  =  lon0_32
+      im = im_32
+      jm = jm_32
+      npx = npx_32
+      npy = npy_32
+      lat0 = lat0_32
+      lon0 = lon0_32
       undef = undef_32
 
       ndatebc = ndatebc_32
