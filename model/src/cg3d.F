@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.14 2004/12/14 16:54:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.15 2005/02/04 19:30:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,12 +90,12 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER bi, bj              
       INTEGER I, J, K, it3d
       INTEGER KM1, KP1
-      _RL    err
-      _RL    eta_qrN
+      _RL    err, errTile
+      _RL    eta_qrN, eta_qrNtile
       _RL    eta_qrNM1
       _RL    cgBeta
-      _RL    alpha
-      _RL    sumRHS
+      _RL    alpha , alphaTile
+      _RL    sumRHS, sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
 
@@ -154,6 +154,8 @@ C--   Initial residual calculation (with free-Surface term)
       sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        errTile    = 0. _d 0
+        sumRHStile = 0. _d 0
         DO K=1,Nr
          KM1 = K-1
          IF ( K .EQ. 1 ) KM1 = 1
@@ -180,13 +182,15 @@ C--   Initial residual calculation (with free-Surface term)
      &     -aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
      &     -topLevTerm*_rA(I,J,bi,bj)*cg3d_x(I,J,K,bi,bj)
      &     )
-           err = err
+           errTile = errTile
      &     +cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
-           sumRHS = sumRHS
+           sumRHStile = sumRHStile
      &     +cg3d_b(I,J,K,bi,bj)
           ENDDO
          ENDDO
         ENDDO
+        err    = err    + errTile
+        sumRHS = sumRHS + sumRHStile
        ENDDO
       ENDDO
 C     _EXCH_XYZ_R8( cg3d_r, myThid )
@@ -216,10 +220,12 @@ C     _EXCH_XYZ_R8( cg3d_s, myThid )
       _GLOBAL_SUM_R8( sumRHS, myThid )
       _GLOBAL_SUM_R8( err   , myThid )
       
-      _BEGIN_MASTER( myThid )
-      write(*,'(A,1P2E22.14)')
+      IF ( debugLevel .GE. debLevZero ) THEN
+        _BEGIN_MASTER( myThid )
+        write(*,'(A,1P2E22.14)')
      &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
-      _END_MASTER( myThid )
+        _END_MASTER( myThid )
+      ENDIF
 
       actualIts      = 0
       actualResidual = SQRT(err)
@@ -250,6 +256,7 @@ C            want eta_qrN for the interior points.
        eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         eta_qrNtile = 0. _d 0
          DO K=1,1
           DO J=1-1,sNy+1
            DO I=1-1,sNx+1
@@ -279,7 +286,7 @@ caja       ENDDO
 caja      ENDIF
           DO J=1,sNy
            DO I=1,sNx
-            eta_qrN = eta_qrN
+            eta_qrNtile = eta_qrNtile
      &      +cg3d_q(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
@@ -294,11 +301,12 @@ caja      ENDIF
           ENDDO
           DO J=1,sNy
            DO I=1,sNx
-            eta_qrN = eta_qrN
+            eta_qrNtile = eta_qrNtile
      &      +cg3d_q(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
          ENDDO
+         eta_qrN = eta_qrN + eta_qrNtile
         ENDDO
        ENDDO
 caja
@@ -347,6 +355,7 @@ C==    q = A.s
      &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         alphaTile = 0. _d 0
          IF ( Nr .GT. 1 ) THEN
           DO K=1,1
            DO J=1,sNy
@@ -363,7 +372,8 @@ C==    q = A.s
      &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
-             alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
+             alphaTile = alphaTile
+     &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -381,7 +391,8 @@ C==    q = A.s
      &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
-             alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
+             alphaTile = alphaTile
+     &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -402,7 +413,8 @@ C==    q = A.s
      &     -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &     -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &     -aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-            alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
+            alphaTile = alphaTile
+     &                +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -421,11 +433,13 @@ C==    q = A.s
      &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-             alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
+             alphaTile = alphaTile
+     &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDIF
+         alpha = alpha + alphaTile
         ENDDO
        ENDDO
        _GLOBAL_SUM_R8(alpha,myThid)
@@ -442,6 +456,7 @@ C      Now compute "interior" points.
        err = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+        errTile    = 0. _d 0
          DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
@@ -449,10 +464,12 @@ C      Now compute "interior" points.
      &            +alpha*cg3d_s(I,J,K,bi,bj)
             cg3d_r(I,J,K,bi,bj)=cg3d_r(I,J,K,bi,bj)
      &            -alpha*cg3d_q(I,J,K,bi,bj)
-            err = err+cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
+           errTile = errTile
+     &             +cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
          ENDDO
+         err = err + errTile
         ENDDO
        ENDDO
 
