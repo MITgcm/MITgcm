@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.13 2003/11/11 20:38:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.14 2003/11/14 16:22:37 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -467,12 +467,14 @@ C     wallClockTime :: Wall clock time returned
       Real*8 wallClockTime
 
 C     !USES:
-#ifndef HAVE_FDATE
+CEH3 This needs to be further cleaned up using a HAVE_CLOC define
+CEH3 that is diagnosed by genmake
+CEH3 #ifndef HAVE_FDATE
       Real*8 system_time, user_time, timenow
-#else
+CEH3 #else
       Real*4 ETIME
       EXTERNAL ETIME
-#endif
+CEH3 #endif
 
 C     !LOCAL VARIABLES:
 C     ACTUAL, TARRAY, :: Temps. to hold times
