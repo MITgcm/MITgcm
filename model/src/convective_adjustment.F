@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.8 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.9 2002/01/11 17:31:19 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,15 +72,11 @@ C-      Initialisation of Convection Counter
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
           act2 = bj - myByLo(myThid)
           max2 = myByHi(myThid) - myByLo(myThid) + 1
-
           act3 = myThid - 1
           max3 = nTx*nTy
-
           act4 = ikey_dynamics - 1
-
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
