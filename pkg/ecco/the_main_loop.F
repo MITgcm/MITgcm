@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.12 2004/10/14 05:22:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.13 2004/11/11 02:24:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -481,6 +481,12 @@ c
 CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
+ctest(
+CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics
+ctest)
+# ifdef ALLOW_PTRACERS
+CADJ STORE surfaceForcingPtr  = comlev1, key = ikey_dynamics
+# endif
 c
 # ifdef ALLOW_GMREDI
 CADJ STORE Kwx                = comlev1, key = ikey_dynamics
@@ -495,6 +501,8 @@ c
 # ifdef ALLOW_KPP
 CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
 CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
+CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics
+CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

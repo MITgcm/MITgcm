@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.104 2004/10/14 05:22:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.105 2004/11/11 02:24:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,6 +282,7 @@ CADJ STORE uvel               = comlev1, key = ikey_dynamics
 CADJ STORE vvel               = comlev1, key = ikey_dynamics
 # endif
 # ifdef EXACT_CONSERV
+CADJ STORE empmr              = comlev1, key = ikey_dynamics
 CADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -304,10 +305,11 @@ CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
 ctest(
-# ifdef EXACT_CONSERV
-CADJ STORE pmepr              = comlev1, key = ikey_dynamics
-# endif
+CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics
 ctest)
+# ifdef ALLOW_PTRACERS
+CADJ STORE surfaceForcingPtr  = comlev1, key = ikey_dynamics
+# endif
 c
 # ifdef ALLOW_GMREDI
 CADJ STORE Kwx                = comlev1, key = ikey_dynamics
@@ -322,10 +324,8 @@ c
 # ifdef ALLOW_KPP
 CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
 CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
-ctest(
-CADJ STORE KPPdiffKzS    = comlev1, key = ikey_dynamics
-CADJ STORE KPPdiffKzT    = comlev1, key = ikey_dynamics
-ctest) 
+CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics
+CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

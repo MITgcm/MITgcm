@@ -1,4 +1,5 @@
 ptracers_advection.f
+ptracers_calc_diff.f
 ptracers_convect.f
 ptracers_cycle.f	
 ptracers_fields_blocking_exchanges.f
