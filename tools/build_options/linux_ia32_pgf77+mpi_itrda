@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.5 2004/11/14 19:45:49 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.6 2004/11/17 04:29:27 edhill Exp $
 #  $Name:  $
 #
 
@@ -17,11 +17,11 @@ LIBS='-L/usr/local/pkg/mpich/mpich-pgi/lib -L/usr/local/pkg/pgi/pgi-5.2/linux86/
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
+    FOPTIM='-O2'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+    FOPTIM='-O2 -Kieee'
 fi
 
 
