@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.3 2001/06/06 14:49:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.4 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -17,6 +17,7 @@ C     \==========================================================/
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "MONITOR.h"
 
 C     === Routine arguments ===
       INTEGER myNr
@@ -35,16 +36,10 @@ C     === Local variables ====
      O                theMin,theMax,theMean,theSD,
      I                myThid )
 
-      _BEGIN_MASTER( myThid )
-      WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS_RS: ',arrName,'  min=',theMin
-      WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS_RS: ',arrName,'  max=',theMax
-      WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS_RS: ',arrName,' mean=',theMean
-      WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS_RS: ',arrName,' S.D.=',theSD
-      _END_MASTER( )
+      CALL MON_OUT_RS( arrName, theMax,  mon_foot_max  )
+      CALL MON_OUT_RS( arrName, theMin,  mon_foot_min  )
+      CALL MON_OUT_RS( arrName, theMean, mon_foot_mean )
+      CALL MON_OUT_RS( arrName, theSD,   mon_foot_sd   )
 
       RETURN
       END

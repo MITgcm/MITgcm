@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/dynamics.F,v 1.2 2001/05/29 14:01:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/dynamics.F,v 1.3 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,11 +33,14 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# include "FFIELDS.h"
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_KPP
-# include "KPP.h"
-#endif
 
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
@@ -119,16 +122,6 @@ c     LOGICAL  DIFFERENT_MULTIPLE
 c     EXTERNAL DIFFERENT_MULTIPLE
 Cjmc(end)
  
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER    isbyte
-      PARAMETER( isbyte = 4 )
-
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iikey, kkey
-      INTEGER maximpl
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C---    The algorithm...
 C
 C       "Correction Step"
@@ -271,13 +264,24 @@ C This is currently also used by IVDC and Diagnostics
         jMax = sNy+OLy
 
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Start of diagnostic loop
         DO k=Nr,1,-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
-         kkey = (ikey-1)*(Nr-2+1) + (k-2) + 1
+cph kkey formula corrected. 
+cph Needed for rhok, rhokm1, in the case useGMREDI.
+         kkey = (ikey-1)*Nr + k
+CADJ STORE rhokm1(:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhok  (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Integrate continuity vertically for vertical velocity
@@ -299,16 +303,26 @@ C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
 c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.) ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
      I        theta, salt,
      O        rhoK,
      I        myThid )
-            IF (k.GT.1) CALL FIND_RHO(
+            IF (k.GT.1) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k-1, k, eosType,
      I        theta, salt,
      O        rhoKm1,
      I        myThid )
+            ENDIF
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
      I             rhoK, rhoKm1, rhoK,
@@ -329,6 +343,11 @@ c ==> should use sigmaR !!!
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+cph avoids recomputation of integrate_for_w
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef  ALLOW_OBCS
 C--     Calculate future values on open boundaries
         IF (useOBCS) THEN
@@ -343,8 +362,25 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF( 
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+cph needed for KPP
+CADJ STORE surfacetendencyU(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyV(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyS(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyT(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_GMREDI
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sigmaX(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaY(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
           DO k=1,Nr
@@ -363,6 +399,13 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
           ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif  /* ALLOW_GMREDI */
 
 #ifdef  ALLOW_KPP
@@ -370,7 +413,22 @@ C--     Compute KPP mixing coefficients
         IF (useKPP) THEN
           CALL KPP_CALC(
      I                  bi, bj, myTime, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          CALL KPP_CALC_DUMMY(
+     I                  bi, bj, myTime, myThid )
+#endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KPPghat   (:,:,:,bi,bj)
+CADJ &   , KPPviscAz (:,:,:,bi,bj) 
+CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
+CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
+CADJ &   , KPPfrac   (:,:  ,bi,bj)
+CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -387,7 +445,7 @@ C       AIM - atmospheric intermediate model, physics package code.
 C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
         IF ( useAIM ) THEN
          CALL TIMER_START('AIM_DO_ATMOS_PHYS      [DYNAMICS]', myThid)
-         CALL AIM_DO_ATMOS_PHYSICS( phiHyd, myTime, myThid )
+         CALL AIM_DO_ATMOS_PHYSICS( phiHyd, bi, bj, myTime, myThid )
          CALL TIMER_STOP ('AIM_DO_ATMOS_PHYS      [DYNAMICS]', myThid)
         ENDIF
 #endif /* ALLOW_AIM */
@@ -395,6 +453,12 @@ C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
 
 C--     Start of thermodynamics loop
         DO k=Nr,1,-1
+#ifdef ALLOW_AUTODIFF_TAMC 
+C? Patrick Is this formula correct?
+cph Yes, but I rewrote it.
+cph Also, the KappaR? need the index and subscript k!
+         kkey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       km1    Points to level above k (=k-1)
 C--       kup    Cycles through 1,2 to point to layer above
@@ -409,19 +473,16 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMin = 1-OLy+2
           jMax = sNy+OLy-1
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-CPatrick Is this formula correct?
-         kkey = (ikey-1)*(Nr-1+1) + (k-1) + 1
-CADJ STORE rTrans(:,:)       = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRT(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRS(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      O        xA,yA,uTrans,vTrans,rTrans,maskUp,
      I        myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
@@ -455,7 +516,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         KappaRS,
      U         fVerS,
      I         myTime, myThid)
-c_jmc      tauAB = 0.5d0 + abEps
            tauAB = 0.
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
@@ -485,9 +545,13 @@ C--     end of thermodynamic k loop (Nr:1)
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CPatrick? What about this one?
-           maximpl = 6
-           iikey = (ikey-1)*maximpl
+C? Patrick? What about this one?
+cph Keys iikey and idkey don't seem to be needed
+cph since storing occurs on different tape for each
+cph impldiff call anyways.
+cph Thus, common block comlev1_impl isn't needed either.
+cph Storing below needed in the case useGMREDI.
+        iikey = (ikey-1)*maximpl
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Implicit diffusion
@@ -496,6 +560,7 @@ C--     Implicit diffusion
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
             idkey = iikey + 1
+CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -507,6 +572,7 @@ C--     Implicit diffusion
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 2
+CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -614,6 +680,7 @@ C--     Implicit viscosity
         IF (implicitViscosity.AND.momStepping) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 3
+CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -622,6 +689,7 @@ C--     Implicit viscosity
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 4
+CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -641,6 +709,7 @@ C--      Apply open boundary conditions
 #ifdef    INCLUDE_CD_CODE
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 5
+CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -649,6 +718,7 @@ C--      Apply open boundary conditions
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 6
+CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -669,10 +739,8 @@ Cjmc(end)
 
 #ifdef ALLOW_TIMEAVE
         IF (taveFreq.GT.0.) THEN 
-          IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
-           CALL TIMEAVE_CUMULATE(phiHydtave, phiHyd, Nr,
-     I                               deltaTclock, bi, bj, myThid)
-          ENDIF
+          CALL TIMEAVE_CUMUL_1T(phiHydtave, phiHyd, Nr,
+     I                              deltaTclock, bi, bj, myThid)
           IF (ivdc_kappa.NE.0.) THEN
             CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,
      I                              deltaTclock, bi, bj, myThid)
@@ -682,6 +750,24 @@ Cjmc(end)
 
        ENDDO
       ENDDO
+
+#ifndef EXCLUDE_DEBUGMODE
+      If (debugMode) THEN
+       CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,theta,'Theta (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,salt,'Salt (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gu,'Gu (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gv,'Gv (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gt,'Gt (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gs,'Gs (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GuNm1,'GuNm1 (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GvNm1,'GvNm1 (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GtNm1,'GtNm1 (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GsNm1,'GsNm1 (DYNAMICS)',myThid)
+      ENDIF
+#endif
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.1 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.2 2001/06/18 17:39:58 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,7 +55,7 @@ C     mnthNam
       INTEGER prevMnthIndex
       DATA    prevMnthIndex / 0 /
       SAVE    prevMnthIndex
-      CHARACTER*16 fNam
+      CHARACTER*17 fNam
       CHARACTER*3 mnthNam(12)
       DATA mnthNam /
      & 'jan', 'feb', 'mar', 'apr', 'may', 'jun',
@@ -80,32 +80,22 @@ C       Calculate offset into a year
 C        New month so load in data
          prevMnthIndex = mnthIndex
 C        o Albedo ( convert % to fraction )
-         WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
-         OPEN(1,FILE=fNam(1:14),STATUS='old',FORM='unformatted')  
-         READ(1) aim_albedo 
-         CLOSE(1)
-         DO J=1,aim_nyIo
-          DO I=1,aim_nxIo
-C          aim_albedo(I,J) = aim_albedo(I,J)/100.
-          ENDDO
-         ENDDO
+         WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.cs.bin'
+         CALL MDSREADFIELD(fNam(1:15),readBinaryPrec,'RS',1,
+     O    aim_albedo,  
+     I    1,myThid)
 
 C        o Surface temperature ( in kelvin )
-         WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.sun.b'
-         OPEN(1,FILE=fNam(1:15),STATUS='old',FORM='unformatted')
-         READ(1) aim_surfTemp
-         CLOSE(1)
+         WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.cs.bin'
+         CALL MDSREADFIELD(fNam(1:16),readBinaryPrec,'RS',1,
+     O    aim_surftemp,  
+     I    1,myThid)
 
 C        o Soil moisture ( convert to 20cm bucket fraction )
-         WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.sun.b'
-         OPEN(1,FILE=fNam(1:16),STATUS='old',FORM='unformatted')
-         READ(1) aim_soilMoisture
-         CLOSE(1)
-         DO J=1,aim_nyIo
-          DO I=1,aim_nxIo
-C          aim_soilMoisture(I,J) = aim_soilMoisture(I,J)/20.
-          ENDDO
-         ENDDO
+         WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.cs.bin'
+         CALL MDSREADFIELD(fNam(1:17),readBinaryPrec,'RS',1,
+     O    aim_soilMoisture,  
+     I    1,myThid)
 
         ENDIF
 

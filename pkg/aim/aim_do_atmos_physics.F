@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.4 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.5 2001/06/18 17:39:58 cnh Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -288,18 +288,16 @@ C      WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
 C      OPEN(1,FILE=fNam(1:14),STATUS='old',FORM='unformatted')
 C      READ(1) tmp4
 C      CLOSE(1)
-       DO J=1,nYio
-        DO I=1,nXio
-         tmp4(I,J) = aim_albedo(I,J)/100.
-        ENDDO
-       ENDDO
+C      DO J=1,nYio
+C       DO I=1,nXio
+C        tmp4(I,J) = aim_albedo(I,J)/100.
+C       ENDDO
+C      ENDDO
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          alb0(I2,myThid) = 0.
-         IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-          alb0(I2,myThid) = tmp4(IG0+I-1,JG0+J-1)
-         ENDIF
+         alb0(I2,myThid) = aim_albedo(I,J,bi,bj)/100.
         ENDDO
        ENDDO
 C      Read in surface temperature data (input is in absolute temperature)
@@ -312,10 +310,8 @@ C      CLOSE(1)
          I2 = (sNx)*(J-1)+I
          sst1(I2,myThid) = 300.
          stl1(I2,myThid) = 300.
-         IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-          sst1(I2,myThid) = aim_surfTemp(IG0+I-1,JG0+J-1)
-          stl1(I2,myThid) = aim_surfTemp(IG0+I-1,JG0+J-1)
-         ENDIF
+         sst1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
+         stl1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
         ENDDO
        ENDDO
 C
@@ -331,9 +327,7 @@ cdj       tmp4 = (tmp4*7.5/20.)*10.
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          soilq1(I2,myThid) = 0.
-         IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-          soilq1(I2,myThid) = aim_soilMoisture(IG0+I-1,JG0+J-1)/20.
-         ENDIF
+         soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)/20.
         ENDDO
        ENDDO
 C_cnh01      ENDIF
@@ -367,6 +361,7 @@ Caja     ENDIF
 Caja    ENDDO
 Caja   ENDDO
 Caja  ENDDO
+
 
       CALL PDRIVER( tYear, myThid )
 

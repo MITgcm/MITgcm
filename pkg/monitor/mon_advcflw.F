@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcflw.F,v 1.2 2001/06/06 14:50:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcflw.F,v 1.3 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -16,6 +16,7 @@ C     \==========================================================/
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "MONITOR.h"
 
 C     === Routine arguments ===
       CHARACTER*(*) label
@@ -44,10 +45,7 @@ C     === Local variables ====
       ENDDO
       _GLOBAL_MAX_R8(theMax,myThid)
 
-      _BEGIN_MASTER( myThid )
-      WRITE(*,'(A,A26,A,1PE22.14)')
-     &      'MON_ADVCFLW: ',label,'  max=',theMax
-      _END_MASTER( )
+      CALL MON_OUT_RL( label, theMax, mon_foot_max )
 
       RETURN
       END

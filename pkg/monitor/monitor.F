@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.3 2001/06/06 14:49:20 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.4 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,6 +18,7 @@ C     === Global data ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "MONITOR.h"
 
 C     === Routine arguments ===
       INTEGER myIter
@@ -29,30 +30,65 @@ C     === Functions ====
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     === Local variables ====
+      CHARACTER*(MAX_LEN_MBUF) msgBuf   
       _RL dT
+      INTEGER time_as_int
 
       dT=deltaTclock
 
       IF (DIFFERENT_MULTIPLE(monitorFreq,myTime,myTime-dT)) THEN
+
+C      Dynamics field monitor start 
+       _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)') '// Begin MONITOR dynamic field statistics'
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
+     &                    SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+       _END_MASTER(myThid)
+
 C      Print the time to make grepping the stdout easier
-       WRITE(*,'(A,A10,I10,A10,1PE14.4)')
-     &   'MON_TIME:','iter=',myIter,'time=',myTime
+       CALL MON_SET_PREF('time',myThid)
+       CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none)
+       CALL MON_OUT_RL('_secondsf', myTime,mon_string_none)
+       time_as_int = NINT( myTime )
+       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none)
 C      Print the basic statistics of model state variables
-       CALL MON_PRINTSTATS_RL(1,EtaN,'Eta',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,uVel,'Uvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,vVel,'Vvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,wVel,'Wvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,theta,'Theta',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,salt,'Salt',myThid)
+       CALL MON_SET_PREF('dynstat',myThid)
+       CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',myThid)
+       CALL MON_PRINTSTATS_RL(Nr,uVel,'_uvel',myThid)
+       CALL MON_PRINTSTATS_RL(Nr,vVel,'_vvel',myThid)
+       CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',myThid)
+       CALL MON_PRINTSTATS_RL(Nr,theta,'_theta',myThid)
+       CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',myThid)
 
 C      Print the numerical stablility parameters for current state
+       CALL MON_SET_PREF('advcfl',myThid)
        dT=max(deltaTtracer,deltaTmom)
-       CALL MON_ADVCFL('U',uVel,recip_dxc,dT,myThid)
-       CALL MON_ADVCFL('V',vVel,recip_dyc,dT,myThid)
-       CALL MON_ADVCFLW('W',wVel,recip_drc,dT,myThid)
+       CALL MON_ADVCFL('_uvel',uVel,recip_dxc,dT,myThid)
+       CALL MON_ADVCFL('_vvel',vVel,recip_dyc,dT,myThid)
+       CALL MON_ADVCFLW('_wvel',wVel,recip_drc,dT,myThid)
 
 C      Print stats for KE
+       CALL MON_SET_PREF('ke',myThid)
        CALL MON_KE(myThid)
+
+C      Dynamics field monitor finish
+       _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)') '// End MONITOR dynamic field statistics'
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
+     &                    SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+       _END_MASTER(myThid)
 
       ENDIF
 

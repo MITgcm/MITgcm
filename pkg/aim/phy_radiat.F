@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.4 2001/06/18 17:39:58 cnh Exp $
 C $Name:  $
 
       SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE,myThid)
@@ -26,7 +26,7 @@ C
 #include "atparam1.h"
 C
       INTEGER NLON, NLAT, NLEV, NGP
-      INTEGER I, J
+      INTEGER I, J, I2
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 C
 C     Constants + functions of sigma and latitude
@@ -46,14 +46,23 @@ C     COZ1= 0.2*SIN(ALPHA)
 
 C
       DO J=1,NLAT
-        FSOL(1,J)=
-     &   SOLC*MAX(0.,1.0+CSR1*FMU(J,1,myThid)+CSR2*FMU(J,2,myThid))
-        OZONE(1,J)=1.0+COZ1*FMU(J,1,myThid)+COZ2*FMU(J,2,myThid)
-        DO I=2,NLON
-          FSOL(I,J)=FSOL(1,J)
-          OZONE(I,J)=OZONE(1,J)
-        ENDDO
+       DO I=1,NLON
+        I2=J
+        I2=NLON*(J-1)+I
+        FSOL(I,J)=
+     &   SOLC*MAX(0.,1.0+CSR1*FMU(I2,1,myThid)+CSR2*FMU(I2,2,myThid))
+        OZONE(I,J)=1.0+COZ1*FMU(I2,1,myThid)+COZ2*FMU(I2,2,myThid)
+       ENDDO
       ENDDO
+C     DO J=1,NLAT
+C       FSOL(1,J)=
+C    &   SOLC*MAX(0.,1.0+CSR1*FMU(J,1,myThid)+CSR2*FMU(J,2,myThid))
+C       OZONE(1,J)=1.0+COZ1*FMU(J,1,myThid)+COZ2*FMU(J,2,myThid)
+C       DO I=2,NLON
+C         FSOL(I,J)=FSOL(1,J)
+C         OZONE(I,J)=OZONE(1,J)
+C       ENDDO
+C     ENDDO
 C
       RETURN
       END
@@ -449,10 +458,13 @@ C
       COR2=  24.
 C
       J0=0
-      DO JL=1,NLAT
-        CORR=COR0+COR1*FMU(JL,1,myThid)+COR2*FMU(JL,2,myThid)
+      DO JL=1,nlat
+C       CORR=COR0+COR1*FMU(JL,1,myThid)+COR2*FMU(JL,2,myThid)
         DO J=J0+1,J0+NLON
-          STCOR(J)=CORR
+          I2=JL
+          I2=J
+          STCOR(J)=COR0+COR1*FMU(I2,1,myThid)+COR2*FMU(I2,2,myThid)
+C         STCOR(J)=CORR
         ENDDO
         J0=J0+NLON
       ENDDO

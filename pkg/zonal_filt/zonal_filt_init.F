@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.4 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -55,6 +55,7 @@ C     nWv   - No. of waves that fit on grid.
      &      /(sin( PI*float(I)/float(Nx) ) )**zonal_filt_sinpow
      &   )
 
+      _BEGIN_MASTER(myThid)
 C     o Initialise specific library FFT package
       DO bj=1,nSy
 C      CALL R8FFTI( Nx, FFTPACKWS(1,bj) )
@@ -85,6 +86,8 @@ Cajatest
         ENDDO
        ENDDO
       ENDDO
+      _END_MASTER(myThid)
+      CALL BAR2(myThid)
 
       CALL WRITE_REC_XY_RL( 'ampFactor', ampFactor, 1, 0, myThid )
 

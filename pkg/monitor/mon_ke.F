@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.4 2001/06/06 14:50:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.5 2001/06/18 17:39:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -16,6 +16,7 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
+#include "MONITOR.h"
 
 C     === Routine arguments ===
       INTEGER myThid
@@ -54,12 +55,8 @@ C     === Local variables ====
       _GLOBAL_SUM_R8(tmpVal,myThid)
       IF (tmpVal.NE.0.) theMean=theMean*tmpVal
 
-      _BEGIN_MASTER( myThid )
-      WRITE(*,'(A,29x,A,1PE22.14)')
-     &      'MON_KE: ',' KE max=',theMax
-      WRITE(*,'(A,29x,A,1PE22.14)')
-     &      'MON_KE: ','KE mean=',theMean
-      _END_MASTER( )
+      CALL MON_OUT_RL( mon_string_none, theMax, mon_foot_max   )
+      CALL MON_OUT_RL( mon_string_none, theMean, mon_foot_mean )
 
       RETURN
       END

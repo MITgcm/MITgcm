@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.5 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.6 2001/06/18 17:39:58 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,13 @@ C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
       CALL INI_PARMS( myThid )
       _BARRIER
+
+#ifndef EXCLUDE_MONITOR
+C--   Initialise MONITOR I/O streams so we can report config. info
+      CALL MON_INIT( myThid )
+      _BARRIER
+#endif
+
 
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.

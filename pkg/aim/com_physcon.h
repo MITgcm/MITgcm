@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/com_physcon.h,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/com_physcon.h,v 1.4 2001/06/18 17:39:58 cnh Exp $
 C $Name:  $
 
 C--
@@ -25,4 +25,4 @@ C--    FMU    = legendre polinomials in sin(lat)
 
       COMMON /FSIGMU/ SIG(NLEV), SIGL(NLEV), SIGH(0:NLEV), DSIG(NLEV),
      *                POUT(NLEV), GRDSIG(NLEV), GRDSCP(NLEV), 
-     *                WVI(NLEV,2), FMU(NLAT,2,MAX_NO_THREADS)
+     *                WVI(NLEV,2), FMU(NGP,2,MAX_NO_THREADS)

@@ -42,7 +42,7 @@
 # Time stepping parameters
  &PARM03
  niter0=25920,
- nTimeSteps=24,
+ nTimeSteps=2400000,
 #endTime=31104000.,
  deltaT=300.0,
  abEps=0.1,
@@ -51,6 +51,7 @@
  chkptFreq=0.0,
  dumpFreq=2592000.0,
  taveFreq=2592000.0,
+ monitorFreq=2592000.0,
  &
 
 # Gridding parameters

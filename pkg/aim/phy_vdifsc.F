@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.4 2001/06/18 17:39:58 cnh Exp $
 C $Name:  $
 
 cch      SUBROUTINE VDIFSC (UA,VA,SE,RH,QA,QSAT,
@@ -84,18 +84,19 @@ C
           QTENVD(J,K) = 0.
         ENDDO
       ENDDO
+
 c
 C
 C *****************************************
 C *****************************************
 Cchdbg
-      if(ifirst) then
-        xindconv=0.
-        xindconv1=0.
-        npas=0
-        ifirst=.FALSE.
-      endif
-      npas = npas +1
+C     if(ifirst) then
+C       xindconv=0.
+C       xindconv1=0.
+C       npas=0
+C       ifirst=.FALSE.
+C     endif
+C     npas = npas +1
 Cchdbg
 C ******************************************
 C *****************************************
@@ -115,6 +116,7 @@ C
         RNL1(J) = -DSIG(NLEVxy(J,myThid))/DSIG(NL1(J))
        ENDIF
       ENDDO
+
 C
 C
 C New writing of the Conditional stability
@@ -128,6 +130,7 @@ C ----------------------------------------
       ENDDO
 C
       DO J=1,NGP
+       stab(J)=0.
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
         dThdp=(Th(J,NL1(J))-Th(J,NLEVxy(J,myThid)))
      &              *((Prefw(NLEVxy(J,myThid))/Pground)**(RD/CP))*CP
@@ -151,16 +154,16 @@ C
 C ***************************************************
 C ***************************************************
 C chdbg
-          if(J.ge.6336 .and. J.eq.6348) then
-             xindconv=xindconv+1./13.
-          endif
-          if(J.ge.4160 .and. J.eq.4172) then
-             xindconv1=xindconv1+1./13.
-          endif
-          if(npas.eq.960 .and. J.eq.1) then
-            write(0,*) 'xindconv=',xindconv
-            write(0,*) 'xindconv1=',xindconv1
-          endif
+C         if(J.ge.6336 .and. J.eq.6348) then
+C            xindconv=xindconv+1./13.
+C         endif
+C         if(J.ge.4160 .and. J.eq.4172) then
+C            xindconv1=xindconv1+1./13.
+C         endif
+C         if(npas.eq.960 .and. J.eq.1) then
+C           write(0,*) 'xindconv=',xindconv
+C           write(0,*) 'xindconv1=',xindconv1
+C         endif
 Cchdbg
 C ****************************************************
 C ****************************************************
