@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.76 2002/07/12 14:52:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.77 2002/07/12 21:00:23 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+checkpoint45d_post
+o import 2 fixes from release1_p5 (CG2D.h & packages_readparms.F)
 o use recip_dx*,recip_dy* instead of /dx*,/dy* in orlanski_E,W,N,S
   (affects plume_on_slope "cg2d" output)
+o add new parameter deltaTfreesurf for free-surface time stepping
+o exchange gT,gS when using staggerTimeStep & GM & Oly<4 
 o NONLIN_FRSURF: rescale gNm1 to get a better conservation with A-B
 o change phiMin in exp1 (to agree with documentation)
 o add new flags: 
