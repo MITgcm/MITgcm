@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.266 2004/03/11 14:10:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.267 2004/03/11 14:54:53 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52l_post
+o new land formulation:
+  a) use ground enthalpy as prognostic variable to ensure exact
+     energy conservation.
+  b) account for water temperature and for latent heat of freezing
+     in all processes (rain, run-off, ground storage)
+  c) compute surface and ground temperature implicitly.
+o aim_v23 modification for new land model:
+  a) Treat separately land / ocean / sea-ice surface fluxes
+     to allow implicit computation of land & sea-ice surface temp.
+  b) add snow precipitation.
 checkpoint52l_pre
 
 o fix problem (when 1 tile is empty) in min/max monitor.
