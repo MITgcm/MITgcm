@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.10 2003/12/19 19:56:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.11 2004/01/25 06:35:05 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -344,8 +344,11 @@ cph)
 cph 8001  CONTINUE
 C ITERATION END -----------------------------------------------------
 
-
-       write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
+      IF ( debugLevel .GE. debLevA ) THEN
+       _BEGIN_MASTER( myThid )
+        write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
+       _END_MASTER( )
+      ENDIF
 
 C NOW FOR VICE
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -565,8 +568,11 @@ cph)
 cph 9001  CONTINUE
 C ITERATION END -----------------------------------------------------
 
-
-      write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
+      IF ( debugLevel .GE. debLevA ) THEN
+       _BEGIN_MASTER( myThid )
+        write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
+       _END_MASTER( )
+      ENDIF
 
 C NOW END
 C NOW MAKE COROLIS TERM IMPLICIT
