@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.3 2005/02/20 05:28:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.4 2005/02/21 04:41:52 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,14 +41,17 @@ C     myThid  :: Number of this instance
 C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
-C     lgf     :: flag to write "global" files
 c     INTEGER prec, iChar, lChar, k
-      INTEGER prec, lChar, i
+      INTEGER prec, lChar, i, sn
       CHARACTER*(MAX_LEN_FNAM) fn
-      LOGICAL lgf
 
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+#ifdef ALLOW_MDSIO
+      LOGICAL lgf
+      INTEGER dUnit
+#endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_MNC
       INTEGER ii
@@ -82,7 +85,8 @@ C         Update the record dimension by writing the iteration number
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
           CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'T',myIter,myThid)
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
-          
+
+C         Write the qdiag() array
           d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
           DO ii = 1,CW_DIMS
             dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
@@ -96,7 +100,7 @@ C         Update the record dimension by writing the iteration number
           dim(2)     = sNy + 2*OLy
           ib(2)      = OLy + 1
           ie(2)      = OLy + sNy + 1
-          dn(3)(1:2) = 'Zd'
+          dn(3)(1:2) = 'Nd'
           dim(3)     = numdiags
           ib(3)      = 1
           ie(3)      = numdiags
@@ -117,22 +121,69 @@ C         Update the record dimension by writing the iteration number
           
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
           CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
+
+C         Write the ndiag() array
+          d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
+          DO ii = 1,CW_DIMS
+            dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
+          ENDDO
+          d_cw_name(1:10) = 'diag_count'
+          dn(1)(1:2) = 'Nd'
+          dim(1)     = numdiags
+          ib(1)      = 1
+          ie(1)      = numdiags
+          dn(2)(1:1) = 'T'
+          dim(2)     = -1
+          ib(2)      = 1
+          ie(2)      = 1
+
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 2, 
+     &         dim, dn, ib, ie, myThid)
+          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name, 
+     &         4,5, myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
+     &         'diagnostics state',myThid)
           
+          CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
+     &         d_cw_name, ndiag, myThid)
+          
+          CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
+          CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
+
+
         ENDIF
 #endif
         
-        DO i = 1,MAX_LEN_FNAM
-          fn(i:i) = ' '
-        ENDDO
-        lChar = ILNBLNK(suff)
-        WRITE(fn,'(A,A)') 'pickup_diagnostics.',suff(1:lChar)
-        prec = precFloat64
-        lgf = globalFiles
-        
+#ifdef ALLOW_MDSIO
         IF (diag_pickup_write_mdsio) THEN
+          _BEGIN_MASTER( myThid )
+
+          sn = ILNBLNK(suff)
+
+C         Write qdiag()
+          DO i = 1,80
+            fn(i:i) = ' '
+          ENDDO
+          write(fn,'(a,a)') 'pickup_qdiag.', suff(1:sn)
+          prec = precFloat64
+          lgf = globalFiles
           CALL MDSWRITEFIELD(fn,prec,lgf,'RL',numdiags,qdiag,
      &         1,myIter,myThid)
+
+C         Write ndiag()
+          DO i = 1,80
+            fn(i:i) = ' '
+          ENDDO
+          WRITE(fn,'(a,a)') 'pickup_ndiag.', suff(1:sn)
+          CALL MDSFINDUNIT( dUnit, mythid )
+          OPEN( dUnit, file=fn )
+          DO i = 1,numdiags
+            WRITE(dUnit,'(I10)') ndiag(i)
+          ENDDO
+          CLOSE( dUnit )
+          _END_MASTER( myThid )
         ENDIF
+#endif /* ALLOW_MDSIO */
 
       ENDIF
 
