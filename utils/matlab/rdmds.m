@@ -43,7 +43,7 @@ function [AA] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.9 2001/11/21 17:56:01 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.10 2001/11/27 18:39:14 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -70,12 +70,17 @@ for ind=1:size(varargin,2);
    error(['Optional argument ' arg ' is unknown'])
   end
  else
-  if arg>=9999999999
-   error(sprintf('Argument %i > 9999999999',arg))
-  end
   if isnan(arg)
    iters=scanforfiles(fname);
+   disp([ sprintf('Reading %i time levels:',size(iters,2)) sprintf(' %i',iters) ]);
+  elseif isinf(arg)
+   iters=scanforfiles(fname);
+   disp([ sprintf('Found %i time levels, reading %i',size(iters,2),iters(end)) ]);
+   iters=iters(end);
   elseif prod(arg>=0) & prod(round(arg)==arg)
+   if arg>=9999999999
+    error(sprintf('Argument %i > 9999999999',arg))
+   end
    iters=arg;
   else
    error(sprintf('Argument %i must be a positive integer',arg))
@@ -335,10 +340,15 @@ arr=reshape(arr,N);
 %
 function [iters] = scanforfiles(fname)
 
-allfiles=dir([fname '.*.meta']);
+allfiles=dir([fname '.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].meta']);
+if isempty(allfiles)
+ allfiles=dir([fname '.*.001.001.meta']);
+ ioff=8;
+else
+ ioff=0;
+end
 for k=1:size(allfiles,1);
  hh=allfiles(k).name;
- iters(k)=str2num( hh(end-14:end-5) );
+ iters(k)=str2num( hh(end-14-ioff:end-5-ioff) );
 end
 
-disp([ sprintf('Reading %i time levels:',size(allfiles,1)) sprintf(' %i',iters) ]);
