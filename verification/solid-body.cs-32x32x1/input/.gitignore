@@ -1,8 +1,10 @@
-*.o
-*.f
-mitgcmuv
-mfile*
-*.meta
-*.data
-STD*
 *akefile
+make.log
+*.f
+*.o
+*.data
+*.meta
+STD*
+output.txt
+mfile*
+mitgcmuv*
