@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.3 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.4 2004/03/04 19:49:47 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -148,11 +148,6 @@ c           MITgcm's estimation program.
 c     Do some printing for the protocol.
       _BEGIN_MASTER( mythid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' ctrl_getrec:                 thefield:  ',
-     &                                     thefield
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,2x,l2,2x,l2,2x,D15.8)')

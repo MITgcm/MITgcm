@@ -147,6 +147,8 @@ c--   Only the master thread will do I/O.
 
       nrec_nl=int(ncvarrecs(ivartype)/Nr)
       do irec = 1, nrec_nl
+	 print *, 'ph-pack nrec_nl = ', irec, nrec_nl, ivartype,
+     &          ncvarrecs(ivartype)
          do k = 1,Nr
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
@@ -207,6 +209,9 @@ c
       enddo
 
       do irec = nrec_nl*Nr+1,ncvarrecs(ivartype)
+         print  *, 'ph-pack nrec_nl+irec ', irec, nrec_nl, ivartype, 
+     &             ncvarrecs(ivartype) 
+
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &        then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.4 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.5 2004/03/04 19:49:47 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -114,7 +114,9 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH
-          call ctrl_smooth(xx_gen1,genmask)
+	if ( xx_gen_file .EQ. xx_tauu_file .OR.
+     &       xx_gen_file .EQ. xx_tauv_file )
+     &     call ctrl_smooth(xx_gen1,genmask)
 #endif
       endif
 
@@ -125,11 +127,19 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH
-          call ctrl_smooth(xx_gen1,genmask)
+	if ( xx_gen_file .EQ. xx_tauu_file .OR.
+     &       xx_gen_file .EQ. xx_tauv_file )
+     &     call ctrl_smooth(xx_gen1,genmask)
 #endif
       endif
 
 c--   Add control to model variable.
+cph(
+cph this flag ported from the SIO code (dont know why its here)
+      if ( gencount0 .GT. 2 .AND. 
+     &     ( xx_gen_file .EQ. xx_tauu_file .OR.
+     &       xx_gen_file .EQ. xx_tauv_file ) ) then
+cph)
       do bj = jtlo,jthi
         do bi = itlo,ithi
 c--       Calculate mask for tracer cells (0 => land, 1 => water).
@@ -144,6 +154,9 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
           enddo
         enddo
       enddo
+cph(
+      endif
+cph)
 
 #endif /* ALLOW_EXF */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.11 2003/07/18 21:10:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.12 2004/03/04 19:49:47 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -29,6 +29,9 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
@@ -59,6 +62,7 @@ c     == local variables ==
       character*( 80)   fnamebottomdrag
 
       _RL     fac
+      _RL tmptest
 
 c     == external ==
       integer  ilnblnk
@@ -101,15 +105,22 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_ECCO
+               IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
+     $          2.0/sqrt(wtheta(k,bi,bj)))
+     $          tmpfld3d(i,j,k,bi,bj)=
+     $          sign(2.0/sqrt(wtheta(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
+#endif
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
                 if(theta(i,j,k,bi,bj).lt.-2.0) 
-     &               theta(i,j,k,bi,bj)= -2.0  
+     &               theta(i,j,k,bi,bj)= -2.0 
               enddo
             enddo
           enddo
        enddo
       enddo
+
 #endif
 
 #ifdef ALLOW_SALT0_CONTROL
@@ -126,13 +137,20 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_ECCO
+               IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
+     $          2.0/sqrt(wsalt(k,bi,bj)))
+     $          tmpfld3d(i,j,k,bi,bj)=
+     $          sign(2.0/sqrt(wsalt(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
+#endif
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
+
               enddo
             enddo
           enddo
        enddo
-      enddo
+      enddO
 #endif
 
 #ifdef ALLOW_TR10_CONTROL
