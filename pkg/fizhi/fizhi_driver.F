@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.26 2004/09/30 19:45:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.27 2004/10/07 03:20:56 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -190,64 +190,6 @@ c --------------------------------
 C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
-
-      if(2.eq.1)then
-      print *,' In fizhi driver, before turb - bi = ',bi
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = radswt(i,j)
-      enddo
-      enddo
-      print *,' radswt ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = radswg(i,j)
-      enddo
-      enddo
-      print *,' radswg ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = st4(i,j)
-c     enddo
-c     enddo
-c     print *,' st4 ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = dst4(i,j)
-c     enddo
-c     enddo
-c     print *,' dst4 ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = radlwg(i,j)
-c     enddo
-c     enddo
-c     print *,' radlwg ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = fdifpar(i,j)
-c     enddo
-c     enddo
-c     print *,' fdifpar ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = fdirpar(i,j)
-c     enddo
-c     enddo
-c     print *,' fdirpar ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = tgz(i,j)
-c     enddo
-c     enddo
-c     print *,' tgz ',tempij
-c     do j = 1,jm
-c     do i = 1,im
-c      tempij(i,j) = tg0(i,j)
-c     enddo
-c     enddo
-c     print *,' tg0 ',tempij
-      endif
 
       call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,ndturb,
      .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,

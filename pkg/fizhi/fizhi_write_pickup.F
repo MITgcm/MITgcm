@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.6 2004/10/07 01:20:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.7 2004/10/07 03:20:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -81,25 +81,29 @@ C--   Write fields as consecutive records
      .                                                          myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_lw,7,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_sw,8,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,lwlz,8,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_sw,9,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_sw,9,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_sw,10,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_sw,10,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavelw,11,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_sw,11,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavesw,12,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,swlz,12,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavelw,13,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavelw,13,myIter,
      .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavesw,14,myIter,
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavesw,14,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavelw,15,myIter,
+     .                                                          myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavesw,16,myIter,
      .                                                          myThid)
 
       do bj = 1,Nsy
       do bi = 1,Nsx
-      do j = 1-OLy,sNy+OLy
-      do i = 1-OLx,sNx+OLx
+      do j = 1,sNy
+      do i = 1,sNx
        temp(i,j,1,bi,bj) = raincon(i,j,bi,bj)
        temp(i,j,2,bi,bj) = rainlsp(i,j,bi,bj)
        temp(i,j,3,bi,bj) = snowfall(i,j,bi,bj)
@@ -116,7 +120,7 @@ C--   Write fields as consecutive records
       temp(6,1,4,1,1) = float(imstturbsw)
       temp(7,1,4,1,1) = float(imstturblw)
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,temp,15,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,temp,17,myIter,myThid)
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.9 2004/10/07 01:20:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.10 2004/10/07 03:20:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -45,7 +45,7 @@ C     k       :: loop index
       INTEGER i, prec
       CHARACTER*(MAX_LEN_FNAM) fn
       _RL temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
-      integer i,j,bi,bj
+      integer j,bi,bj
 
       DO i = 1,MAX_LEN_FNAM
         fn(i:i) = ' '
@@ -61,17 +61,19 @@ C       Read fields as consecutive records
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,vphy,2,myThid)
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,thphy,3,myThid)
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,sphy,4,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_lw,5,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_lw,6,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_lw,7,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_sw,8,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_sw,9,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_sw,10,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavelw,11,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavesw,12,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavelw,13,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavesw,14,myIter,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,temp,15,myIter,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_lw,5,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_lw,6,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_lw,7,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,lwlz,8,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_sw,9,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_sw,10,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_sw,11,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,swlz,12,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavelw,13,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavesw,14,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavelw,15,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavesw,16,myThid)
+       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,temp,17,myThid)
 
        do bj = 1,Nsy 
        do bi = 1,Nsx 
@@ -85,11 +87,11 @@ C       Read fields as consecutive records
        enddo
        enddo
 
-       iras = nint(temp(1,1,4,1,1))
-       nlwcld = nint(temp(2,1,4,1,1))
-       nlwlz = nint(temp(3,1,4,1,1))
-       nswcld = nint(temp(4,1,4,1,1))
-       nswlz = nint(temp(5,1,4,1,1))
+       iras       = nint(temp(1,1,4,1,1))
+       nlwcld     = nint(temp(2,1,4,1,1))
+       nlwlz      = nint(temp(3,1,4,1,1))
+       nswcld     = nint(temp(4,1,4,1,1))
+       nswlz      = nint(temp(5,1,4,1,1))
        imstturbsw = nint(temp(6,1,4,1,1))
        imstturblw = nint(temp(7,1,4,1,1))
 
