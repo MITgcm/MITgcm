@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.21 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.22 2004/03/19 05:09:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,11 +48,11 @@ CEOP
 
 C--   Initialize MNC look-up tables
 #ifdef ALLOW_MNC
-CEH3 NEED RUN-TIME SWITCH:  IF (useMNC) THEN
-      CALL MNC_INIT(myThid)
-      CALL MNC_CW_INIT(sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, myThid)
-      CALL INI_MNC_IO(myThid)
-CEH3 NEED RUN-TIME SWITCH:  ENDIF
+      IF (useMNC) THEN
+        CALL MNC_INIT(myThid)
+        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
+        CALL INI_MNC_IO(myThid)
+      ENDIF
 #endif
 
 C--   Initialize fixed params for GAD

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.19 2004/02/26 22:47:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.20 2004/03/19 05:09:41 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,7 +62,8 @@ C     data.pkg namelists
      &          useThSIce,
      &          usefizhi,
      &          usegridalt,
-     &          usediagnostics
+     &          usediagnostics,
+     &          useMNC
 
 
 CEOP
@@ -98,7 +99,7 @@ C--   Default package configuration
       usefizhi=.FALSE.
       usegridalt=.FALSE.
       usediagnostics=.FALSE.
-
+      useMNC=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

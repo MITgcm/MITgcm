@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.7 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.8 2004/03/19 05:09:41 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -11,10 +11,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
       INTEGER myThid
 
 #ifdef ALLOW_MNC
+      IF (useMNC) THEN
 
 C     Write the grid information
       CALL MNC_CW_WRITE_GRID_INFO('grid', myThid)
@@ -125,6 +128,7 @@ C     Add coordinates
       CALL MNC_CW_RS_W_R('state',0,0,'RC',0,rC, myThid)
       CALL MNC_CW_RS_W_R('state',0,0,'RF',0,rF, myThid)
 
+      ENDIF
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

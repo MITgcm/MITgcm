@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.75 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.76 2004/03/19 05:09:41 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -635,10 +635,12 @@ C--   Final checkpoint (in case the in-loop checkpoint was missed)
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
 
 #ifdef ALLOW_MNC
-C     Close all open NetCDF files
-      _BEGIN_MASTER( mythid )
-      CALL MNC_FILE_CLOSE_ALL( myThid )
-      _END_MASTER( mythid )
+      IF (useMNC) THEN
+C       Close all open NetCDF files
+        _BEGIN_MASTER( mythid )
+        CALL MNC_FILE_CLOSE_ALL( myThid )
+        _END_MASTER( mythid )
+      ENDIF
 #endif
 
 C--   Write timer statistics

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.37 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.38 2004/03/19 05:09:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,79 +164,81 @@ c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
 
 
 #ifdef ALLOW_MNC
-      mnc_iter = myIter
+      IF (useMNC) THEN
+        mnc_iter = myIter
 
-C     Write dynvars using the MNC package
-      CALL MNC_CW_RL_W_D('pickup',0,0,'iter',-1,mnc_iter, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'U', 0, uVel, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'V', 0, vVel, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'T', 0, theta, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'S', 0, salt, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'Eta', 0, etaN, myThid)
+C       Write dynvars using the MNC package
+        CALL MNC_CW_RL_W_D('pickup',0,0,'iter',-1,mnc_iter, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'U', 0, uVel, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'V', 0, vVel, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'T', 0, theta, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'S', 0, salt, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'Eta', 0, etaN, myThid)
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GE.0)
-     &CALL MNC_CW_RL_W_D('pickup',0,0,'EtaNH', 0, etaH, myThid)
+        IF ( nonlinFreeSurf.GE.0)
+     &    CALL MNC_CW_RL_W_D('pickup',0,0,'EtaNH', 0, etaH, myThid)
 #endif
-      CALL MNC_CW_RL_W_D('pickup',0,0,'Unm1', 0, gUnm1, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'Vnm1', 0, gVnm1, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'Tnm1', 0, gTnm1, myThid)
-      CALL MNC_CW_RL_W_D('pickup',0,0,'Snm1', 0, gSnm1, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'Unm1', 0, gUnm1, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'Vnm1', 0, gVnm1, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'Tnm1', 0, gTnm1, myThid)
+        CALL MNC_CW_RL_W_D('pickup',0,0,'Snm1', 0, gSnm1, myThid)
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-            DO i=1,sNx
-              etaN(i,j,bi,bj) = 0.0D0
-              etaH(i,j,bi,bj) = 0.0D0
-            ENDDO
-          ENDDO
-          DO k=1,Nr
+        DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1,sNy
               DO i=1,sNx
-                uVel(i,j,k,bi,bj)  = 0.0D0
-                vVel(i,j,k,bi,bj)  = 0.0D0
-                theta(i,j,k,bi,bj) = 0.0D0
-                salt(i,j,k,bi,bj)  = 0.0D0
-C               g?nm1 variables
-                gUnm1(i,j,k,bi,bj) = 0.0D0
-                gVnm1(i,j,k,bi,bj) = 0.0D0
-                gTnm1(i,j,k,bi,bj) = 0.0D0
-                gSnm1(i,j,k,bi,bj) = 0.0D0
-C               g? variables
-                gU(i,j,k,bi,bj) = 0.0D0
-                gV(i,j,k,bi,bj) = 0.0D0
-                gT(i,j,k,bi,bj) = 0.0D0
-                gS(i,j,k,bi,bj) = 0.0D0
+                etaN(i,j,bi,bj) = 0.0D0
+                etaH(i,j,bi,bj) = 0.0D0
+              ENDDO
+            ENDDO
+            DO k=1,Nr
+              DO j=1,sNy
+                DO i=1,sNx
+                  uVel(i,j,k,bi,bj)  = 0.0D0
+                  vVel(i,j,k,bi,bj)  = 0.0D0
+                  theta(i,j,k,bi,bj) = 0.0D0
+                  salt(i,j,k,bi,bj)  = 0.0D0
+
+C                 g?nm1 variables
+                  gUnm1(i,j,k,bi,bj) = 0.0D0
+                  gVnm1(i,j,k,bi,bj) = 0.0D0
+                  gTnm1(i,j,k,bi,bj) = 0.0D0
+                  gSnm1(i,j,k,bi,bj) = 0.0D0
+
+C                 g? variables
+                  gU(i,j,k,bi,bj) = 0.0D0
+                  gV(i,j,k,bi,bj) = 0.0D0
+                  gT(i,j,k,bi,bj) = 0.0D0
+                  gS(i,j,k,bi,bj) = 0.0D0
+                ENDDO
               ENDDO
             ENDDO
           ENDDO
         ENDDO
-      ENDDO
-
-C     Read variables from the pickup file
-      CALL MNC_FILE_CLOSE_ALL_MATCHING('pickup', myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'iter',1,mnc_iter, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'U',1,uVel, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'V',1,vVel, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'T',1,theta, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'S',1,salt, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'Eta',1,etaN, myThid)
+        
+C       Read variables from the pickup file
+        CALL MNC_FILE_CLOSE_ALL_MATCHING('pickup', myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'iter',1,mnc_iter, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'U',1,uVel, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'V',1,vVel, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'T',1,theta, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'S',1,salt, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'Eta',1,etaN, myThid)
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GE.0)
-     &CALL MNC_CW_RL_R_D('pickup',0,0,'EtaNH', 1, etaH, myThid)
+        IF ( nonlinFreeSurf.GE.0)
+     &    CALL MNC_CW_RL_R_D('pickup',0,0,'EtaNH', 1, etaH, myThid)
 #endif
-      CALL MNC_CW_RL_R_D('pickup',0,0,'Unm1',1,gUnm1, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'Vnm1',1,gVnm1, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'Tnm1',1,gTnm1, myThid)
-      CALL MNC_CW_RL_R_D('pickup',0,0,'Snm1',1,gSnm1, myThid)
-
+        CALL MNC_CW_RL_R_D('pickup',0,0,'Unm1',1,gUnm1, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'Vnm1',1,gVnm1, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'Tnm1',1,gTnm1, myThid)
+        CALL MNC_CW_RL_R_D('pickup',0,0,'Snm1',1,gSnm1, myThid)
+      ENDIF
 #endif /* ALLOW_MNC */
 
+      _END_MASTER( myThid )
+      _BARRIER
 
-       _END_MASTER( myThid )
-       _BARRIER
-
-C--    Fill in edge regions
+C--   Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
@@ -445,11 +447,11 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
 
 
 #ifdef ALLOW_MNC
-      mnc_iter = myIter
+      IF (useMNC) THEN
+        mnc_iter = myIter
 
-C     Write dynvars using the MNC package
-C      CALL MNC_CW_RL_W_D('pickup',0,0,'iter',0,mnc_iter,myThid)
-C      CALL MNC_CW_RL_W_D('pickup',0,0,'U', 0, uVel,myThid)
+C       Need to add the pickups here...
+      ENDIF
 #endif /* ALLOW_MNC */
 
 
