@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.2 2004/11/23 20:20:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.3 2004/12/03 00:24:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_GCHEM
-#include "GCHEM_OPTIONS.h"
-#endif
 
 
 CBOP
