@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.2 1999/05/07 18:14:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.3 1999/05/17 14:40:36 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -409,8 +409,10 @@ C If we were writing to a tiled MDS file then we close it here
         endif
 C Create meta-file for each tile if we are tiling
         if (.NOT. globalFile) then
+         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
+         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',bi,'.',bj,'.meta'
+     &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
          dimList(3,1)=myXGlobalLo+bi*sNx-1
@@ -637,6 +639,7 @@ C=======================================================================
 
 C IN:
 C     mFileName	string  - complete name of meta-file
+C     dFileName	string  - complete name of data-file
 C     ndims	integer - number of dimensions
 C     dimList	integer - array of dimensions, etc.
 C     nrecords	integer - record number
@@ -1104,8 +1107,10 @@ C If we were writing to a tiled MDS file then we close it here
         endif
 C Create meta-file for each tile file
         if (.NOT. globalFile) then
+         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
+         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',bi,'.',bj,'.meta'
+     &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1) = nPx*nSx*narr
          dimList(2,1) = (int(myXGlobalLo/sNx)+(bi-1))*narr
          dimList(3,1) = (int(myXGlobalLo/sNx)+  bi  )*narr - 1
