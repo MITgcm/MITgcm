@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.24 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.25 2001/02/06 04:47:51 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -279,8 +279,10 @@ C           i=iMin+1:iMax-1, j=jMin+1:jMax-1. Edge points
 C           will contain valid floating point numbers but 
 C           they are not algorithmically correct. These points
 C           are not used.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+C     DO j=jMin,jMax
+C      DO i=iMin,iMax
+      DO j=1-1,OLy+1
+       DO i=1-1,OLx+1
 #define _recip_VolS1(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
 #define _recip_VolS2(i,j,k,bi,bj) /_rA(i,j,bi,bj)
         gS(i,j,k,bi,bj)=

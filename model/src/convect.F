@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.13 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.14 2001/02/06 04:47:51 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,7 +71,9 @@ C--    Where statically unstable, mix the heat and salt
           theta(i,j,k  ,bi,bj) = tMix(i,j)/dSum(i,j)
           salt(i,j,k-1,bi,bj)  = sMix(i,j)/dSum(i,j)
           salt(i,j,k  ,bi,bj)  = sMix(i,j)/dSum(i,j)
-          ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
+#ifdef INCLUDE_CONVECT_CALL
+C         ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
+#endif
          ENDIF
         ENDDO
        ENDDO
