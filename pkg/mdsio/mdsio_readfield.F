@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.3 2003/12/07 07:41:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.4 2003/12/08 02:13:59 dimitri Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -154,6 +154,9 @@ C master thread of process 0, only, opens a global file
           irec = k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
            read(dUnit,rec=irec) global_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
+#endif
            DO J=1,Ny
             DO I=1,Nx
              global(I,J) = global_r4(I,J)
