@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.10 2004/09/17 23:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.11 2004/09/27 14:56:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -332,7 +332,7 @@ C--     Calculate future values on open boundaries
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
-          CALL OBCS_CALC( bi, bj, myTime+deltaT, myIter+1,
+          CALL OBCS_CALC( bi, bj, myTime+deltaTclock, myIter+1,
      I            uVel, vVel, wVel, theta, salt,
      I            myThid )
         ENDIF
