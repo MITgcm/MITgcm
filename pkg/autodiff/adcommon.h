@@ -60,6 +60,14 @@ cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
      &                       addiffKr
       _RL  addiffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif 
+#if (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
+      double precision adeddytaux(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
+     $nsy)
+      double precision adeddytauy(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
+     $nsy)
+      common /adedtauffields/ adeddytaux, adeddytauy
+
+#endif
 
 #ifdef ALLOW_EXF
       _RL adhflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

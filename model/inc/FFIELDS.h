@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.27 2005/01/04 15:56:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.28 2005/02/28 17:35:38 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -70,6 +70,10 @@ C                Units are           meters (converted)
 C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation
+C     EddyTaux -Zonal Eddy stress       in N/m^2 used in external_forcing.F
+C     Eddytauy -Meridional Eddy stress  in N/m^2 used in external_forcing.F
+C     EfluxY - y-component of Eliassen-Palm flux vector
+C     EfluxP - p-component of Eliassen-Palm flux vector
 
       COMMON /FFIELDS/
      &                 fu
@@ -98,6 +102,18 @@ C              Note: only used with Sea-Ice & RealFreshWater formulation
 #ifdef ATMOSPHERIC_LOADING
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
+#ifdef ALLOW_EP_FLUX
+      COMMON /efluxFFIELDS/ EfluxY,EfluxP
+      _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+                                                                                          
+#ifdef ALLOW_TAU_EDDY
+      COMMON /edtauFFIELDS/ EddyTaux,EddyTauy
+      _RS  EddyTaux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  EddyTauy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 #ifndef ALLOW_EXF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.147 2005/02/20 11:46:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.148 2005/02/28 17:37:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -211,6 +211,7 @@ C--   Input files
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCylIn,tCylOut,
+     & eddyTauxFile, eddyTauyFile,
      & mdsioLocalDir,
      & the_run_name
 CEOP

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.144 2005/02/20 11:46:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.145 2005/02/28 17:35:38 heimbach Exp $
 C $Name:  $
 C
 
@@ -70,6 +70,8 @@ C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
+C     eddyTauxFile    :: File containing zonal Eddy stress data
+C     eddyTauyFile    :: File containing meridional Eddy stress data
 C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
 C     eosType         :: choose the equation of state:
@@ -84,6 +86,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                surfQfile, surfQnetFile, surfQswFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
+     &                eddyTauxFile, eddyTauyFile,
      &                eosType, pickupSuff,
      &                mdsioLocalDir, 
      &                the_run_name
@@ -106,6 +109,8 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
+      CHARACTER*(MAX_LEN_FNAM) eddyTauxFile
+      CHARACTER*(MAX_LEN_FNAM) eddyTauyFile
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(MAX_LEN_FNAM) the_run_name
       CHARACTER*(6) eosType

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.84 2005/02/20 11:46:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.85 2005/02/28 17:37:31 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -276,6 +276,8 @@ C--   Input files
       pSurfInitFile   = ' '
       dQdTFile        = ' '
       ploadFile       = ' '
+      eddyTauxFile    = ' '
+      eddyTauyFile    = ' '
       mdsioLocalDir   = ' '
 
 C
