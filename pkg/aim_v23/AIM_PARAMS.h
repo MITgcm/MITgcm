@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.5 2004/06/24 23:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.6 2004/11/14 19:54:01 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -28,8 +28,8 @@ C     aim_clrSkyDiag  :: compute clear-sky radiation for diagnostics
       LOGICAL aim_clrSkyDiag
 
 C--   COMMON /AIM_PARM_C/ Character valued parameters for AIM
+C     aim_LandFile :: file name for Land fraction
 C     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
-C     aim_LandFile :: file name for Land fraction       (F.M. surfBC)
 C     aim_albFile  :: file name for Albedo input file   (F.M. surfBC)
 C     aim_vegFile  :: file name for vegetation fraction (F.M. surfBC)
 C     aim_sstFile  :: file name for  Sea.Surf.Temp      (F.M. surfBC)
@@ -38,12 +38,12 @@ C     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
 C     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
       COMMON /AIM_PARM_C/
-     &  aim_MMsufx,
-     &  aim_LandFile, aim_albFile, aim_vegFile, 
+     &  aim_LandFile, aim_MMsufx,
+     &  aim_albFile, aim_vegFile, 
      &  aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
      &  aim_swcFile
-      CHARACTER*(MAX_LEN_FNAM) aim_MMsufx
       CHARACTER*(MAX_LEN_FNAM) aim_LandFile
+      CHARACTER*(MAX_LEN_FNAM) aim_MMsufx
       CHARACTER*(MAX_LEN_FNAM) aim_albFile
       CHARACTER*(MAX_LEN_FNAM) aim_vegFile
       CHARACTER*(MAX_LEN_FNAM) aim_sstFile

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.8 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.9 2004/11/14 19:54:01 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -59,25 +59,25 @@ C     i,j,k,I2,k   - Loop counters
       _RL RSD, alb_land, oceTfreez
 c     _RL DALB, alb_sea
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-    Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
+      DO j=1,sNy
+        DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          fMask1(I2,1,myThid) = aim_landFr(i,j,bi,bj)
+        ENDDO
+      ENDDO
+
       IF (aim_useFMsurfBC) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Compute surface forcing at present time (linear Interp in time)
 C     using F.Molteni surface BC form ; fields needed are:
-C     1. Land sea mask  
-C     2. Sea  Surface temperatures  (in situ Temp. [K])
-C     3. Land Surface temperatures  (in situ Temp. [K])
-C     4. Soil moisture         (between 0-1)
-C     5. Snow depth, Sea Ice : used to compute albedo (=> local arrays)
-C     6. Albedo                (between 0-1)
-
-C-     Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          fMask1(I2,1,myThid) = aim_landFr(i,j,bi,bj)
-         ENDDO
-        ENDDO
+C     1. Sea  Surface temperatures  (in situ Temp. [K])
+C     2. Land Surface temperatures  (in situ Temp. [K])
+C     3. Soil moisture         (between 0-1)
+C     4. Snow depth, Sea Ice : used to compute albedo (=> local arrays)
+C     5. Albedo                (between 0-1)
 
 C-    Surface Temperature: 
         DO j=1,sNy
@@ -177,7 +177,6 @@ C     1. Albedo                (between 0-1)
 C     2. Sea  Surface temperatures  (in situ Temp. [K])
 C     3. Land Surface temperatures  (in situ Temp. [K])
 C     4. Soil moisture         (between 0-1)
-C     5. Land sea mask  (infer from exact zeros in soil moisture)
 C        Snow depth, Sea Ice (<- no need for now)   
 
 C      Set surface albedo data (in [0,1]) from aim_albedo to alb1 :
@@ -234,23 +233,6 @@ C-     Set soil water availability (in [0,1]) from aim_soilWater to soilw1 :
          DO i=1,sNx
           I2 = i+(j-1)*sNx
           soilw1(I2,myThid) = 0.
-         ENDDO
-        ENDDO
-       ENDIF
-
-C-     Set Land-sea mask (in [0,1]) 
-C          from aim_landFr to fMask1 (aim_useFMsurfBC)
-C       or from where soil moisture is exactly zero (aim_useMMsurfFc)
-       IF (aim_useMMsurfFc) THEN
-        DO J=1,NGP
-          fMask1(J,1,myThid) = 1.
-          IF ( soilw1(J,myThid).EQ.0. ) fMask1(J,1,myThid) = 0.
-        ENDDO
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          fMask1(I2,1,myThid) = 0.
          ENDDO
         ENDDO
        ENDIF

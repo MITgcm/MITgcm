@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.7 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.8 2004/11/14 19:54:01 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -10,7 +10,6 @@ C     *==================================================================*
 C     | Initialisation of AIM atmospheric physics package :
 C     | 1) call iniphys (=> set parameters to default value)
 C     | 2) read AIM parameters 
-C     | 3) initialisation of AIM arrays (time-ave)
 C     *==================================================================*
       IMPLICIT NONE
 
@@ -113,52 +112,20 @@ C      of surface reference pressure Ro_surf that affects Surf.Temp.
        ENDDO
       ENDDO
       
-C--   Initialise surface forcing fields (in AIM_FFIELDS.h):
-c     DO bj = myByLo(myThid), myByHi(myThid)
-c      DO bi = myBxLo(myThid), myBxHi(myThid)
-c       DO j=1-Oly,sNy+Oly
-c        DO i=1-Olx,sNx+Olx  
-c         aim_surfTemp(i,j,bi,bj) = 300.
-c         aim_soilWater(i,j,bi,bj) = 0.
-c         aim_albedo   (i,j,bi,bj) = 0.
-c         aim_landFr   (i,j,bi,bj) = 0.
-c        ENDDO
-c       ENDDO
-c      ENDDO
-c     ENDDO
-
-#ifdef ALLOW_AIM_TAVE 
-C     Initialise diagnostic counters (these are cleared on model start
-C      i.e. not loaded from history file for now ).
+C--   Initialise Land Fraction (in AIM_FFIELDS.h):
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_RESET(USTRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(VSTRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(TSRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(OLRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(SSRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(SLRtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(SHFtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(EVAPtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(PRECNVtave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(PRECLStave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(CLOUDCtave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(CLTOPtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(CBMFtave,  1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(DRAGtave,  1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(aimV0tave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(aimT0tave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(aimQ0tave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(EnFxPrtave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(albedotave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(dTsurftave,1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
-        DO k=1,Nr
-          aim_timeAve(k,bi,bj) = 0.
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx  
+          aim_landFr   (i,j,bi,bj) = 0.
+         ENDDO
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_AIM_TAVE */
+
+      IF ( aim_LandFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS(aim_LandFile,aim_landFr,1,nIter0,myThid)
+      ENDIF
 
 #endif /* ALLOW_AIM */
 

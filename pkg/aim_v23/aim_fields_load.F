@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.2 2003/05/13 17:27:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.3 2004/11/14 19:54:01 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -185,7 +185,7 @@ C    of the F.Molteni SPEEDY code (ver23)
          DO bi = myBxLo(myThid), myBxHi(myThid) 
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            aim_landFr(i,j,bi,bj)= 0. 
+c           aim_landFr(i,j,bi,bj)= 0. 
             aim_albedo(i,j,bi,bj)= 0. 
             aim_veget(i,j,bi,bj) = 0. 
             aim_sst0(i,j,bi,bj) =300.
@@ -242,9 +242,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( myIter.EQ.nIter0 ) THEN 
 C--     Load Fixed Forcing only at the 1rst iter:
 
-         IF ( aim_LandFile .NE. ' '  ) THEN 
-          CALL READ_REC_XY_RS(aim_LandFile,aim_landFr,1,myIter,myThid)
-         ENDIF
+c        IF ( aim_LandFile .NE. ' '  ) THEN 
+c         CALL READ_REC_XY_RS(aim_LandFile,aim_landFr,1,myIter,myThid)
+c        ENDIF
          IF ( aim_albFile .NE. ' '  ) THEN 
           CALL READ_REC_XY_RS(aim_albFile,aim_albedo, 1,myIter,myThid)
          ENDIF
