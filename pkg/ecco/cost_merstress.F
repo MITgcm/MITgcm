@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_merstress.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_merstress.F,v 1.2 2004/01/20 16:59:16 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -153,7 +153,7 @@ c--         Determine the weights to be used.
             do j = jmin,jmax
               do i = imin,imax
                 xx_tauv_mean(i,j,bi,bj) = xx_tauv_mean(i,j,bi,bj)
-     &                                    + tmpfld2d(i,j,bi,bj)
+     &                 + tmpfld2d(i,j,bi,bj)*maskS(i,j,1,bi,bj)
               enddo
             enddo
           enddo
@@ -172,7 +172,7 @@ c--       Determine the weights to be used.
               xx_tauv_mean(i,j,bi,bj)
      &              = xx_tauv_mean(i,j,bi,bj)/float(nrec)
               tmpx = xx_tauv_mean(i,j,bi,bj)/0.1
-              if (maskw(i,j,kk,bi,bj) .ne. 0.) then
+              if (maskS(i,j,kk,bi,bj) .ne. 0.) then
                 fctilem = fctilem
      &                    + cosphi(i,j,bi,bj)
      &                    *tmpx*tmpx
@@ -182,6 +182,8 @@ c--       Determine the weights to be used.
 
           objf_tauvm(bi,bj) = objf_tauvm(bi,bj) + fctilem
           fcthread          = fcthread + fctilem
+
+          print *, 'ph-cost objf_tauvm ', objf_tauvm(bi,bj)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost function for each tile in each thread.
@@ -220,7 +222,7 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (masks(i,j,kk,bi,bj) .ne. 0.) then
+                if (maskS(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_tauv_mean(i,j,bi,bj)
                   fctile = fctile
      &                 + wtauv(i,j,bi,bj)*cosphi(i,j,bi,bj)
@@ -231,6 +233,8 @@ c--         Determine the weights to be used.
 
             objf_tauv(bi,bj) = objf_tauv(bi,bj) + fctile
             fcthread         = fcthread + fctile
+
+          print *, 'ph-cost objf_tauv ', objf_tauv(bi,bj)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost function for each tile in each thread.

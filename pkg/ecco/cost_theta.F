@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.2 2003/12/20 20:11:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.3 2004/01/20 16:59:16 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -132,6 +132,18 @@ c--   Read tiled data.
       fcthread = 0. _d 0
 
 #ifdef GENERIC_BAR_MONTH
+
+      do bj = jtlo,jthi
+         do bi = itlo,ithi
+            do k = 1,nr
+               do j = jmin,jmax
+                  do i = imin,imax
+                     tbar_gen(i,j,k,bi,bj) = 0.
+                  enddo
+               enddo
+            enddo
+         enddo
+      enddo
 
 c--   Loop over month
       if (nmonsrec.GT.12) then

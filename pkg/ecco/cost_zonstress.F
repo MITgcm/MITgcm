@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_zonstress.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_zonstress.F,v 1.2 2004/01/20 16:59:16 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -150,8 +150,13 @@ c--     Loop over this thread's tiles.
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
+cph(
+                if ( maskW(i,j,1,bi,bj) .NE. 0. .AND.
+     &               ABS(tmpfld2d(i,j,bi,bj)) .GT. 4. )
+     &               print *, 'ph-tau ', i,j,irec,tmpfld2d(i,j,bi,bj)
+cph)
                 xx_tauu_mean(i,j,bi,bj) = xx_tauu_mean(i,j,bi,bj) 
-     &                                    + tmpfld2d(i,j,bi,bj)
+     &                 + tmpfld2d(i,j,bi,bj)*maskW(i,j,1,bi,bj)
               enddo
             enddo
           enddo
@@ -170,7 +175,7 @@ c--       Determine the weights to be used.
               xx_tauu_mean(i,j,bi,bj)
      &              = xx_tauu_mean(i,j,bi,bj)/float(nrec)
               tmpx = xx_tauu_mean(i,j,bi,bj)/0.1
-              if (maskw(i,j,kk,bi,bj) .ne. 0.) then
+              if (maskW(i,j,kk,bi,bj) .ne. 0.) then
                 fctilem = fctilem
      &                    + cosphi(i,j,bi,bj)
      &                    *tmpx*tmpx
@@ -180,6 +185,8 @@ c--       Determine the weights to be used.
 
           objf_tauum(bi,bj) = objf_tauum(bi,bj) + fctilem
           fcthread          = fcthread + fctilem
+
+          print *, 'ph-cost objf_tauum ', objf_tauum(bi,bj)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost function for each tile in each thread.
@@ -218,7 +225,7 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (maskw(i,j,kk,bi,bj) .ne. 0.) then
+                if (maskW(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_tauu_mean(i,j,bi,bj)
                   fctile = fctile
      &                 + wtauu(i,j,bi,bj)*cosphi(i,j,bi,bj)
@@ -229,6 +236,8 @@ c--         Determine the weights to be used.
 
             objf_tauu(bi,bj) = objf_tauu(bi,bj) + fctile
             fcthread         = fcthread + fctile
+
+          print *, 'ph-cost objf_tauu ', objf_tauu(bi,bj)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost function for each tile in each thread.

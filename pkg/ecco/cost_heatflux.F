@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.2 2004/01/20 16:59:15 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -151,7 +151,7 @@ c--     Loop over this thread's tiles.
             do j = jmin,jmax
               do i = imin,imax
                 xx_hflux_mean(i,j,bi,bj) = xx_hflux_mean(i,j,bi,bj)
-     &                                     + tmpfld2d(i,j,bi,bj)
+     &                  + tmpfld2d(i,j,bi,bj)*maskC(i,j,1,bi,bj)
               enddo
             enddo
           enddo
