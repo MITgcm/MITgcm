@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.11 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.12 2004/05/03 06:09:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,10 +7,8 @@ CStartOfInterface
       SUBROUTINE dynsolver( myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE dynsolver                                     |
-C     | o Ice dynamics using either LSR or ADI solvers           |
-C     |  LSR: Zhang and Hibler,   JGR, 102, 8691-8702, 1997      |
-C     |  ADI: Zhang and Rothrock, JGR, 105, 3325-3338, 2000      |
-C     |  For parallel computing, LSR is preferred                |
+C     | o Ice dynamics using LSR solver                          |
+C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -167,28 +165,15 @@ CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C DO PSEUDO-TIMESTEPS TO OBTAIN AN ACCURATE VISCOUS-PLASTIC SOLUTION
-C 1 PSEUDO-TIMESTEP IS SUGGESTED FOR LSR SLOVER
-C A RANGE OF 5-200 PSEUDO-TIMESTEPS IS SUGGESTED FOR ADI SLOVER
-C DEPENDING ON ACCURACY REQUIREMENTS OF SPECIFIC APPLICATION
-C NPSEUDO is set in data.seaice input file
 C TIMESTEP FOR PSEUDO-TIMESTEPPING
-      SEAICE_DT = DELTAT/NPSEUDO
+      SEAICE_DT = DELTAT
 
 crg what about DWAIN,DRAGS,DRAGA,ETA,ZETA
 
 crg later c$taf loop = iteration uice,vice
 
-#ifndef ALLOW_AUTODIFF_TAMC
-      DO 5000 KII=1,NPSEUDO
-#else
-      IF ( NPSEUDO .GT. 1 ) THEN
-       STOP 'S/R DYNSOLVER: NPSEUDO NEEDS TO BE = 1 FOR ADJOINT'
-      ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 cdm c$taf store uice,vice = comlev1_seaice_ds,
-cdm c$taf&                key = kii + (ikey_dynamics-1)*NPSEUDO
+cdm c$taf&                key = kii + (ikey_dynamics-1)
 C NOW DO PREDICTOR TIME STEP
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -290,20 +275,11 @@ C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
       ENDDO
 
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-C OR  ADI SCHEME (ZHANG-J/ROTHROCK 1999)
-#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
       CALL LSR( 1, myThid )
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
-#else /* ALLOW_AUTODIFF_TAMC */
-      IF ( SEAICEuseADI ) THEN
-         CALL ADI( myThid )
-      ELSE
-         CALL LSR( 1, myThid )
-      ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW DO MODIFIED EULER STEP
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -405,35 +381,8 @@ C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
        ENDDO
       ENDDO
 
-C GET READY FOR SECOND CALL OF ADI
-      IF(SEAICEuseADI ) THEN
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          UICE(I,J,2,bi,bj)=UICEC(I,J,bi,bj)
-          VICE(I,J,2,bi,bj)=VICEC(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ENDIF
-
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-C OR  ADI SCHEME (ZHANG-J/ROTHROCK 1999)
-#ifdef ALLOW_AUTODIFF_TAMC
       CALL LSR( 2, myThid )
-#else /* ALLOW_AUTODIFF_TAMC */
-      IF ( SEAICEuseADI ) THEN
-         CALL ADI( myThid )
-      ELSE
-         CALL LSR( 2, myThid )
-      ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifndef ALLOW_AUTODIFF_TAMC
-5000  CONTINUE
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 

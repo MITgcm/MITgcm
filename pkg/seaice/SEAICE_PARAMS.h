@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.11 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.12 2004/05/03 06:09:39 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -16,24 +16,17 @@ C
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
 C
-C     SEAICEuseADI      - If true, use ADI rather than LSR solver;
-C                         default is LSR solver.
-C
-      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI
+      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS
       COMMON /SEAICE_PARM_L/
-     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI
+     &        SEAICEwriteState, SEAICEuseDYNAMICS
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
 C                  1 = LEAPFROG,  2 = BACKWARD EULER.
 C     IMAX_TICE  - number of iterations for ice heat budget   10
-C     NPSEUDO    - number of pseudo-timesteps used in dynsolver
-C DO PSEUDO-TIMESTEPS TO OBTAIN AN ACCURATE VISCOUS-PLASTIC SOLUTION
-C 10 PSEUDO-TIMESTEPS OR MORE ARE SUGGESTED FOR HIGH-RESOLUTION (~10KM)
-C 1 PSEUDO-TIMESTEP CAN BE USED FOR LOW-RESOLUTION GLOBAL MODELING
 C
-      INTEGER LAD, IMAX_TICE, NPSEUDO
-      COMMON /SEAICE_PARM_I/ LAD, IMAX_TICE, NPSEUDO
+      INTEGER LAD, IMAX_TICE
+      COMMON /SEAICE_PARM_I/ LAD, IMAX_TICE
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     uwindFile       - File containing uwind
