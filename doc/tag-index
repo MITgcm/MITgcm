@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.84 2002/09/05 21:06:14 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.85 2002/09/16 18:23:22 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46f_post
+o Enable tangent linear (forward mode) gradient checks:
+  - extended active file handling to g_... files
+  - added TANGENT_SIMULATION to theSimulationMode
+  - extended grdchk package accordingly
+o added tangent linear setup in verification/carbon/code_ftl
+o added adjoint setup in verification/front_relax/code_ad
 
 checkpoint46e_post
 o Added new equation of state -> MDJWF
