@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.3 2003/02/18 15:30:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.4 2003/02/26 03:16:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -136,11 +136,11 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
         DO j=jMin,jMax
          DO i=iMin,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
-     &     +factorP*(tFld(i-1,j,k,bi,bj)+tFld(i,j,k,bi,bj))
+     &     +factorP*(tFld(i-1,j,k,bi,bj)+tFld(i,j,k,bi,bj)-2.*tRef(k))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
      &             *rC(k)*recip_dxC(i,j,bi,bj)   
           dPhiHydY(i,j) = dPhiHydY(i,j)
-     &     +factorP*(tFld(i,j-1,k,bi,bj)+tFld(i,j,k,bi,bj))
+     &     +factorP*(tFld(i,j-1,k,bi,bj)+tFld(i,j,k,bi,bj)-2.*tRef(k))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
      &             *rC(k)*recip_dyC(i,j,bi,bj)   
          ENDDO
