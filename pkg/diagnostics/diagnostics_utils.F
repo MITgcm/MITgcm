@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.14 2004/07/26 21:16:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.15 2004/12/13 21:55:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,59 +8,57 @@ CBOP 0
 C     !ROUTINE: GETDIAG
 
 C     !INTERFACE:
-      SUBROUTINE GETDIAG (myThid,levreal,ipoint,undef,qtmp)
+      SUBROUTINE GETDIAG (levreal,ipoint,undef,qtmp,myThid)
 
 C     !DESCRIPTION:
 C     Retrieve averaged model diagnostic
-      
+
 C     !USES:
       implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 CEOP
 
-#ifdef ALLOW_FIZHI 
+#ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
 #else
       integer Nrphys
       parameter (Nrphys=0)
 #endif
 
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
-
 C     INPUT:
-C     lev    ..... Diagnostic LEVEL
-C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU                                     
-C     undef  ..... UNDEFINED VALUE                                                 
+C     levreal .... Diagnostic LEVEL
+C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU
+C     undef  ..... UNDEFINED VALUE
 C     bi     ..... X-direction process(or) number
 C     bj     ..... Y-direction process(or) number
+      _RL levreal
       integer myThid,ipoint
       _RL undef
-      
+
 C     OUTPUT:
 C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
-      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
-      _RL levreal
+      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
 
       _RL factor
       integer i,j,ipnt,klev
       integer bi,bj
       integer lev
 
-      lev = levreal
-      if (ipoint.lt.1) go to 999
+      if (ipoint.ge.1) then
+       lev = NINT(levreal)
 
-      klev = kdiag(ipoint)
-      if (klev.ge.lev) then
+       klev = kdiag(ipoint)
+       if (klev.ge.lev) then
         ipnt = idiag(ipoint) + lev - 1
         factor = 1.0
         if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
 
         do bj=myByLo(myThid), myByHi(myThid)
           do bi=myBxLo(myThid), myBxHi(myThid)
-            
+
             do j = 1,sNy
               do i = 1,sNx
                 if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
@@ -70,41 +68,43 @@ C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
                 endif
               enddo
             enddo
-            
+
           enddo
         enddo
-        
+
+       endif
       endif
 
- 999  return
-      end
+      RETURN
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C     !ROUTINE: GETDIAG2
 
 C     !INTERFACE:
-      SUBROUTINE GETDIAG2 (myThid,lev,ipoint,undef,qtmp)
+      SUBROUTINE GETDIAG2 (levreal,ipoint,undef,qtmp,myThid)
 
 C     !DESCRIPTION:
-C***********************************************************************        
-C  PURPOSE                                                                      
+C***********************************************************************
+C  PURPOSE
 C     Retrieve averaged model diagnostic
-C  INPUT:                                                                       
-C     lev ..... Diagnostic LEVEL
-C  ipoint ..... DIAGNOSTIC NUMBER FROM MENU                                     
-C   undef ..... UNDEFINED VALUE                                                 
-C                                                                               
-C  OUTPUT:                                                                      
+C  INPUT:
+C  levreal .... Diagnostic LEVEL
+C  ipoint ..... DIAGNOSTIC NUMBER FROM MENU
+C   undef ..... UNDEFINED VALUE
+C
+C  OUTPUT:
 C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
-C                                                                               
-C***********************************************************************        
-      
+C
+C***********************************************************************
+
 C     !USES:
       implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 CEOP
 
 #ifdef ALLOW_FIZHI
@@ -114,25 +114,25 @@ CEOP
        parameter (Nrphys=0)
 #endif
 
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
-
-      integer myThid,lev,ipoint
+      _RL levreal
+      integer myThid,ipoint
       _RL undef
-      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+      _RL qtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
 
       integer i,j,ipnt,klev
       integer bi,bj
+      integer lev
 
-      if (ipoint.lt.1) go to 999
+      if (ipoint.ge.1) then
+       lev = NINT(levreal)
 
-      klev = kdiag(ipoint)
-      if (klev.ge.lev) then
+       klev = kdiag(ipoint)
+       if (klev.ge.lev) then
         ipnt = idiag(ipoint) + lev - 1
-        
+
         do bj=myByLo(myThid), myByHi(myThid)
           do bi=myBxLo(myThid), myBxHi(myThid)
-            
+
             do j = 1,sNy
               do i = 1,sNx
                 if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
@@ -142,18 +142,19 @@ CEOP
                 endif
               enddo
             enddo
-            
+
           enddo
         enddo
-        
+
+       endif
       endif
 
- 999  return
-      end
+      RETURN
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine clrindx (myThid,listnum)
+      subroutine clrindx (listnum, myThid)
 C***********************************************************************
 C
 C  PURPOSE
@@ -166,155 +167,116 @@ C***********************************************************************
 
       implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 
       integer myThid, listnum
 
       integer m, n
       character*8 parms1
-      character*1 parse1(8)
       character*3 mate_index
       integer mate
-
-      equivalence (     parms1 , parse1(1) )
-      equivalence ( mate_index , parse1(6) )
 
       do n=1,nfields(listnum)
        do m=1,ndiagt
         if( flds(n,listnum).eq.cdiag(m) .and. idiag(m).ne.0 ) then
-         call clrdiag (myThid,m)
+         call clrdiag (m, myThid)
 
 c Check for Counter Diagnostic
 c ----------------------------
-         parms1 =  gdiag(m)
-         if( parse1(5).eq.'C' ) then
-          read (mate_index,100) mate
-          call clrdiag (myThid,mate)
+         parms1 =  gdiag(m)(1:8)
+         if ( parms1(5:5).eq.'C' ) then
+          mate_index = parms1(6:8)
+          read (mate_index,'(I3)') mate
+          call clrdiag (mate, myThid)
          endif
         endif
        enddo
       enddo
-                   
-  100 format(i3)
-      RETURN       
-      END          
+
+      RETURN
+      END
 
 
-      subroutine clrdiag (myThid,index)
-C***********************************************************************        
-C  PURPOSE                                                                      
+      subroutine clrdiag (index, myThid)
+C***********************************************************************
+C  PURPOSE
 C     ZERO OUT MODEL DIAGNOSTIC ARRAY ELEMENTS
-C***********************************************************************        
-                                                                                
+C***********************************************************************
+
       implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 
       integer myThid, index
 
       integer bi,bj
       integer i,j,k
 
-C **********************************************************************        
-C ****              SET DIAGNOSTIC AND COUNTER TO ZERO              ****        
-C **********************************************************************        
-                                                                                
+C **********************************************************************
+C ****              SET DIAGNOSTIC AND COUNTER TO ZERO              ****
+C **********************************************************************
+
       do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-       do k = 1,kdiag(index)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,idiag(index)+k-1,bi,bj) = 0.0
-        enddo
+       do bi=myBxLo(myThid), myBxHi(myThid)
+        do k = 1,kdiag(index)
+         do j = 1-OLy,sNy+OLy
+          do i = 1-OLx,sNx+OLx
+           qdiag(i,j,idiag(index)+k-1,bi,bj) = 0.0
+          enddo
+         enddo
         enddo
        enddo
-      enddo
       enddo
 
       ndiag(index) = 0
 
-      return
-      end
+      RETURN
+      END
 
-      subroutine setdiag (myThid,num,ndiagmx)
-C***********************************************************************
-C
-C  PURPOSE
-C     SET POINTER LOCATIONS, NAMES, LEVELS and TITLES FOR DIAGNOSTIC NUM
-C
-C***********************************************************************
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      implicit none
-#include "CPP_OPTIONS.h"
+CBOP 0
+C     !ROUTINE: DIAGNOSTICS_IS_ON
+
+C     !INTERFACE:
+      LOGICAL FUNCTION DIAGNOSTICS_IS_ON( diagName, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION DIAGNOSTIC_IS_ON
+C     | o Return TRUE if diagnostics "diagName" is Active
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
 #include "SIZE.h"
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 
-      integer num,myThid,ndiagmx
-      integer ipointer
+C     !INPUT PARAMETERS:
+C     diagName   ::  diagnostic identificator name (8 characters long)
+C     myThid     ::  my thread Id number
+      CHARACTER*8  diagName
+      INTEGER      myThid
+CEOP
 
-      DATA IPOINTER / 1 /
+C     !LOCAL VARIABLES:
+      INTEGER j,n,m
 
-      character*8 parms1
-      character*1 parse1(8)
-      character*3 mate_index
-      integer     mate
-
-      equivalence (     parms1 , parse1(1) )
-      equivalence ( mate_index , parse1(6) )
-
-C **********************************************************************
-C ****                SET POINTERS FOR DIAGNOSTIC NUM               ****
-C **********************************************************************
-
-      parms1 = gdiag(num)
-
-      IF( IDIAG(NUM).EQ.0 ) THEN
-        if(ndiagmx+kdiag(num).gt.numdiags) then
-          write(6,4000)num,cdiag(num)
-        else
-          IDIAG(NUM) = IPOINTER
-          IPOINTER   = IPOINTER + KDIAG(NUM)
-          ndiagmx    = ndiagmx  + KDIAG(NUM)
-          if(myThid.eq.1) WRITE(6,2000)KDIAG(NUM),NUM,CDIAG(NUM),ndiagmx
-        endif
-      ELSE
-          if(myThid.eq.1) WRITE(6,3000) NUM, CDIAG(NUM)
-      ENDIF
-
-c Check for Counter Diagnostic
-c ----------------------------
-      if( parse1(5).eq.'C') then
-      read (mate_index,100) mate
-
-      IF( IDIAG(mate).EQ.0 ) THEN
-       if(ndiagmx+kdiag(num).gt.numdiags) then
-        write(6,5000)num,cdiag(num)
-       else
-        IDIAG(mate) = IPOINTER
-        IPOINTER    = IPOINTER + KDIAG(mate)
-        ndiagmx     = ndiagmx  + KDIAG(mate)
-        if(myThid.eq.1)WRITE(6,2000)KDIAG(mate),mate,CDIAG(mate),ndiagmx
-       endif
-      ELSE
-          if(myThid.eq.1) WRITE(6,3000) mate, CDIAG(mate)
-      ENDIF
-      endif
+      DIAGNOSTICS_IS_ON = .FALSE.
+      DO n=1,nlists
+       DO m=1,nActive(n)
+        IF ( diagName.EQ.flds(m,n) ) THEN
+          j = jdiag(m,n)     
+          IF (idiag(j).NE.0 ) DIAGNOSTICS_IS_ON = .TRUE.
+        ENDIF
+       ENDDO
+      ENDDO
 
       RETURN
-
-  100 format(i3)
- 2000 FORMAT(1X,'Allocating ',I2,' Level(s) for Diagnostic # ',I3,
-     .          ' (',A8,'),  Total Number of Diagnostics: ',I5)
- 3000 FORMAT(1X,'Diagnostic # ',I3,' (',A8,') has already been set')
- 4000 FORMAT(1X,'Unable to allocate space for Diagnostic # ',I3,
-     .                      ' (',A8,')')
- 5000 FORMAT(1X,'Unable to allocate space for Counter Diagnostic # ',
-     .    I3,' (',A8,')',' WARNING - Diag will not accumulate properly')
       END

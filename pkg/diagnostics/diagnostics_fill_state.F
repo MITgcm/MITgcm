@@ -1,312 +1,354 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.12 2004/09/08 01:49:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.13 2004/12/13 21:55:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
-       subroutine diagnostics_fill_state(myThid)
+       SUBROUTINE DIAGNOSTICS_FILL_STATE( myThid )
 
-       implicit none
+       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
 
-      integer myThid 
+      INTEGER myThid 
 
 #ifdef ALLOW_DIAGNOSTICS
-      _RL dummy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL dummys(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      integer i,j,K,bi,bj
-      integer km1
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER i,j,K,bi,bj
+      INTEGER km1
       
-      call fill_diagnostics(myThid,'ETAN    ',0,1,0,1,1,etaN)
+      CALL DIAGNOSTICS_FILL(etaN,'ETAN    ',0,1,0,1,1,myThid)
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1,sNy
-            do i = 1,sNx
-              dummys(i,j,bi,bj) = etaN(i,j,bi,bj)*etaN(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'ETANSQ  ',0,1,0,1,1,dummys)
+      IF ( DIAGNOSTICS_IS_ON('ETANSQ  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = etaN(i,j,bi,bj)*etaN(i,j,bi,bj)
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmp1k,'ETANSQ  ',0,1,0,1,1,myThid)
+      ENDIF
       
 #ifdef EXACT_CONSERV
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1,sNy
-            do i = 1,sNx
-              dummys(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)*dEtaHdt(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'DETADT2 ',0,1,0,1,1,dummys)
+      IF ( DIAGNOSTICS_IS_ON('DETADT2 ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)*dEtaHdt(i,j,bi,bj)
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmp1k,'DETADT2 ',0,1,0,1,1,myThid)
+      ENDIF
 #endif
       
-      call fill_diagnostics(myThid,'UVEL    ',0,Nr,0,1,1,uVel)
-      call fill_diagnostics(myThid,'VVEL    ',0,Nr,0,1,1,vVel)
-      call fill_diagnostics(myThid,'WVEL    ',0,Nr,0,1,1,wVel)
-      call fill_diagnostics(myThid,'THETA   ',0,Nr,0,1,1,theta)
-      call fill_diagnostics(myThid,'SALT    ',0,Nr,0,1,1,salt)
+      CALL DIAGNOSTICS_FILL(uVel, 'UVEL    ',0,Nr,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(vVel, 'VVEL    ',0,Nr,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(wVel, 'WVEL    ',0,Nr,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(theta,'THETA   ',0,Nr,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(salt, 'SALT    ',0,Nr,0,1,1,myThid)
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*uVel(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UVELSQ  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('UVELSQ  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*uVel(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UVELSQ  ',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VVELSQ  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('VVELSQ  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VVELSQ  ',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*wVel(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'WVELSQ  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('WVELSQ  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*wVel(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'WVELSQ  ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) 
+      IF ( DIAGNOSTICS_IS_ON('THETASQ ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) 
      &               = theta(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'THETASQ ',0,Nr,0,1,1,dummy)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'THETASQ ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = salt(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'SALTSQ  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('SALTSQ  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = salt(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'SALTSQ  ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UVELVVEL',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('UVELVVEL',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UVELVVEL',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
-     &               0.5*(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UVELTH  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('UVELTH  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UVELTH  ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
-     &               0.5*(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VVELTH  ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('VVELTH  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VVELTH  ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
+      IF ( DIAGNOSTICS_IS_ON('WVELTH  ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
             km1 = MAX(k-1,1)
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
-     &               (theta(i,j,K,bi,bj)+theta(i,j,km1,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'WVELTH  ',0,Nr,0,1,1,dummy)
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(theta(i,j,K,bi,bj)+theta(i,j,km1,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'WVELTH  ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
-     &               0.5*(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UVELSLT ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('UVELSLT ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UVELSLT ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
-     &               0.5*(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VVELSLT ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('VVELSLT ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VVELSLT ',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
+      IF ( DIAGNOSTICS_IS_ON('WVELSLT ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
             km1 = MAX(k-1,1)
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
-     &               (salt(i,j,K,bi,bj)+salt(i,j,km1,bi,bj))
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'WVELSLT ',0,Nr,0,1,1,dummy)
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(salt(i,j,K,bi,bj)+salt(i,j,km1,bi,bj))
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'WVELSLT ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) 
+      IF ( DIAGNOSTICS_IS_ON('UVELMASS',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) 
      &               = uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UVELMASS',0,Nr,0,1,1,dummy)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UVELMASS',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) 
+      IF ( DIAGNOSTICS_IS_ON('VVELMASS',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) 
      &               = vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VVELMASS',0,Nr,0,1,1,dummy)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VVELMASS',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
-     &               0.5*(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
-     &               * hFacW(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'UTHMASS ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('UTHMASS ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
+     &                  * hFacW(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'UTHMASS ',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
-     &               0.5*(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
-     &               * hFacS(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VTHMASS ',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('VTHMASS ',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
+     &                  * hFacS(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VTHMASS ',0,Nr,0,1,1,myThid)
+      ENDIF
       
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
-     &               0.5*(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
-     &               * hFacW(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'USLTMASS',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('USLTMASS',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
+     &                  * hFacW(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'USLTMASS',0,Nr,0,1,1,myThid)
+      ENDIF
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do K=1,Nr
-            do j = 1,sNy
-              do i = 1,sNx
-                dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
-     &               0.5*(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
-     &               * hFacS(i,j,K,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-      call fill_diagnostics(myThid,'VSLTMASS',0,Nr,0,1,1,dummy)
+      IF ( DIAGNOSTICS_IS_ON('VSLTMASS',myThid) ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO K=1,Nr
+            DO j = 1,sNy
+              DO i = 1,sNx
+                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*0.5 _d 0
+     &                  *(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
+     &                  * hFacS(i,j,K,bi,bj)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpMk,'VSLTMASS',0,Nr,0,1,1,myThid)
+      ENDIF
       
       
 #endif /* ALLOW_DIAGNOSTICS */
       
-      return
-      end
+      RETURN 
+      END
