@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.32 2000/11/30 16:51:40 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.33 2001/01/29 20:16:43 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint34
+ o Modified exchange routines for correct reverse simulation.
+ o Added verification output to comply with bug fix in impldiff.F
+   as of c33 (exp2, natl_box).
+ o Corrected store directives in dynamics.F
+ o Corrected array boundaries in impldiff.F
+ o Corrected array dimensions in gmredi.
+   Added temporary scalars to avoid storage by TAMC (gmredi, kpp).
+ o Added mdsio_gl.F for ECCO purposes.
 
 checkpoint33
  o Fixed bug in lower BC in impldiff.F
