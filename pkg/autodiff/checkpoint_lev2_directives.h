@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.20 2004/06/30 23:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.21 2004/07/02 15:50:24 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -17,6 +17,7 @@ CADJ STORE wvel      = tapelev2, key = ilev_2
 CADJ STORE etan      = tapelev2, key = ilev_2
 CADJ STORE totphihyd = tapelev2, key = ilev_2
 CADJ STORE surfacetendencyTice = tapelev2, key = ilev_2
+CADJ STORE ivdconvcount        = tapelev2, key = ilev_2
 CADJ STORE empmr     = tapelev2, key = ilev_2
 
 #ifdef EXACT_CONSERV

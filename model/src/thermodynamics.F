@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.70 2004/07/01 21:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.71 2004/07/02 15:50:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -520,8 +520,6 @@ C--     Compute KPP mixing coefficients
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KPPghat   (:,:,:,bi,bj)
-CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
-CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
 CADJ &   , KPPfrac   (:,:  ,bi,bj)
 CADJ &                 = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
