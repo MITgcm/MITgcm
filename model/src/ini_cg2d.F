@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.7 1998/05/26 21:29:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.8 1998/05/27 05:18:39 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -57,7 +57,7 @@ C     aS2d: integral in Z Ay/dY
            faceArea = dyG(I,J,bi,bj)*dzF(K)*HFacW(I,J,K,bi,bj)
            aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
      &      gBaro*faceArea*rDxC(I,J,bi,bj)
-           faceArea = dxG(I,J,bi,bj)*dzF(K)*HFacS(I,J,K,bi,bj)
+           faceArea = _dxG(I,J,bi,bj)*dzF(K)*HFacS(I,J,K,bi,bj)
            aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
      &      gBaro*faceArea*rDyC(I,J,bi,bj)
           ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DXF_MACROS.h,v 1.1 1998/05/26 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DXF_MACROS.h,v 1.2 1998/05/27 05:18:38 cnh Exp $
 C
 C     /==========================================================\
 C     | DXF_MACROS.h                                             |
@@ -12,11 +12,11 @@ C     \==========================================================/
 #define  _dxF(i,j,bi,bj) dxF(1,1,1,1)
 #endif
 
-#ifdef DXF_FX_ONLY
+#ifdef DXF_FX
 #define  _dxF(i,j,bi,bj) dxF(i,1,bi,1)
 #endif
 
-#ifdef DXF_FY_ONLY
+#ifdef DXF_FY
 #define  _dxF(i,j,bi,bj) dxF(1,j,1,bj)
 #endif
 

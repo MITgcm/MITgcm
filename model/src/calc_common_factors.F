@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.2 1998/04/24 02:05:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.3 1998/05/27 05:18:39 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -65,7 +65,7 @@ C--    Calculate tracer cell face open areas
       DO j=jMin,jMax
        DO i=iMin,iMax
         xA(i,j) = dyG(i,j,bi,bj)*dzF(k)*hFacW(i,j,k,bi,bj)
-        yA(i,j) = dxG(i,j,bi,bj)*dzF(k)*hFacS(i,j,k,bi,bj)
+        yA(i,j) = _dxG(i,j,bi,bj)*dzF(k)*hFacS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

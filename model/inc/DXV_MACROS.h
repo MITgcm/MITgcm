@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DXV_MACROS.h,v 1.1 1998/05/26 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DXV_MACROS.h,v 1.2 1998/05/27 05:18:38 cnh Exp $
 C
 C     /==========================================================\
 C     | DXV_MACROS.h                                             |
@@ -12,11 +12,11 @@ C     \==========================================================/
 #define  _dxV(i,j,bi,bj) dxV(1,1,1,1)
 #endif
 
-#ifdef DXV_FX_ONLY
+#ifdef DXV_FX
 #define  _dxV(i,j,bi,bj) dxV(i,1,bi,1)
 #endif
 
-#ifdef DXV_FY_ONLY
+#ifdef DXV_FY
 #define  _dxV(i,j,bi,bj) dxV(1,j,1,bj)
 #endif
 
