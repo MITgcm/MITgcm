@@ -296,8 +296,12 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_diffkr_file
      &                    , xx_kapgm_file
      &                    , xx_tr1_file
+     &                    , xx_sst_file
+     &                    , xx_sss_file
+     &                    , xx_hfacc_file
      &                    , xx_efluxy_file
      &                    , xx_efluxp_file
+     &                    , xx_bottomdrag_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
@@ -316,8 +320,12 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_diffkr_file
       character*(MAX_LEN_FNAM) xx_kapgm_file
       character*(MAX_LEN_FNAM) xx_tr1_file
+      character*(MAX_LEN_FNAM) xx_sst_file
+      character*(MAX_LEN_FNAM) xx_sss_file
+      character*(MAX_LEN_FNAM) xx_hfacc_file
       character*(MAX_LEN_FNAM) xx_efluxy_file
       character*(MAX_LEN_FNAM) xx_efluxp_file
+      character*(MAX_LEN_FNAM) xx_bottomdrag_file
 
       common /packnames_c/
      &                      yadmark,

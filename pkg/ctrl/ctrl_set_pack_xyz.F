@@ -133,19 +133,9 @@ c--   Only the master thread will do I/O.
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
      &                       sqrt(weightfld(k,bi,bj))
                      else
-cph(
-                        print *, 'ph-nondim bef. ', k, j, i, 
-     &                       globfld3d(i,bi,ip,j,bj,jp,k),
-     &                       weightfld(k,bi,bj)
-cph)
                         cbuff(cbuffindex) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
      &                       sqrt(weightfld(k,bi,bj))
-cph(
-                        write(6,'(A,4I5,F10.2)'), 'ph-nondim aft. ', 
-     &                       k, j, i, cbuffindex,
-     &                       cbuff(cbuffindex)
-cph)
                      endif
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.5 2002/07/13 02:47:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.6 2002/11/29 13:38:37 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -129,8 +129,12 @@ c--   Read the namelist input.
      &  xx_diffkr_file,
      &  xx_kapgm_file,
      &  xx_tr1_file,
+     &  xx_sst_file,
+     &  xx_sss_file,
+     &  xx_hfacc_file,
      &  xx_efluxy_file,
-     &  xx_efluxp_file
+     &  xx_efluxp_file,
+     &  xx_bottomdrag_file
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid,
@@ -201,8 +205,13 @@ c--     Set default values.
         xx_diffkr_file      = ' '
         xx_kapgm_file       = ' '
         xx_tr1_file         = ' '
+        xx_sst_file         = ' '
+        xx_sss_file         = ' '
+        xx_hfacc_file       = ' '
         xx_efluxy_file      = ' '
         xx_efluxp_file      = ' '
+        xx_bottomdrag_file  = ' '
+
         yadmark             = 'ad'
         yctrlid             = 'MIT_CE_000'
         ctrlname            = ' '
@@ -336,9 +345,12 @@ cph    index 15-16 reserved for mixing coeff.
 cph    index 17    reserved for passive tracer TR1
 cph    index 18,19 reserved for sst, sss
 cph    index 20             for hFacC
-cph    index 21,22          for efluxy, efluxp
+cph    index 21-22          for efluxy, efluxp
+cph    index 23-24          for bottom drag
 cph)
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_THETA0_CONTROL
 c--   Initial state temperature contribution.
 
@@ -354,6 +366,8 @@ c--   Initial state temperature contribution.
 
 #endif /* ALLOW_THETA0_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_SALT0_CONTROL
 c--   Initial state salinity contribution.
 
@@ -373,6 +387,8 @@ c--   ===========================
 c--   Surface flux contributions.
 c--   ===========================
 
+c-------------------------------------------------------------------------------------------
+c--
 #if (defined (ALLOW_HFLUX_CONTROL))
 c--   Heat flux.
 
@@ -440,6 +456,8 @@ c--   initial forcing only
 
 #endif /* ALLOW_HFLUX_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #if (defined (ALLOW_SFLUX_CONTROL))
 c--   Salt flux.
 
@@ -507,6 +525,8 @@ c--   initial forcing only
 
 #endif /* ALLOW_SFLUX_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #if (defined (ALLOW_USTRESS_CONTROL))
 c--   Zonal wind stress.
 
@@ -574,6 +594,8 @@ c--   initial forcing only
 
 #endif /* ALLOW_USTRESS_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #if (defined (ALLOW_VSTRESS_CONTROL))
 c--   Meridional wind stress.
 
@@ -641,6 +663,8 @@ c--   initial forcing only
 
 #endif /* ALLOW_VSTRESS_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_OBCSN_CONTROL
 c--   Northern obc.
 
@@ -674,6 +698,8 @@ c--   Northern obc.
 c--   Southern obc.
 
       _BEGIN_MASTER( mythid )
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_CALENDAR
         call cal_TimePassed( xx_obcssstartdate, modelstartdate,
      &                       difftime, mythid )
@@ -699,6 +725,8 @@ c--   Southern obc.
 
 #endif /* ALLOW_OBCSS_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_OBCSW_CONTROL
 c--   Western obc.
 
@@ -728,6 +756,8 @@ c--   Western obc.
 
 #endif /* ALLOW_OBCSW_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_OBCSE_CONTROL
 c--   Eastern obc.
 
@@ -757,6 +787,8 @@ c--   Eastern obc.
 
 #endif /* ALLOW_OBCSE_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_DIFFKR_CONTROL
       _BEGIN_MASTER( mythid )
         ivarindex                = 15
@@ -769,6 +801,8 @@ c--   Eastern obc.
       _END_MASTER( mythid )
 #endif /* ALLOW_DIFFKR_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_KAPGM_CONTROL
       _BEGIN_MASTER( mythid )
         ivarindex                = 16
@@ -781,6 +815,8 @@ c--   Eastern obc.
       _END_MASTER( mythid )
 #endif /* ALLOW_KAPGM_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_TR10_CONTROL
       _BEGIN_MASTER( mythid )
         ivarindex                = 17
@@ -793,6 +829,54 @@ c--   Eastern obc.
       _END_MASTER( mythid )
 #endif /* ALLOW_TR10_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_SST0_CONTROL
+      _BEGIN_MASTER( mythid )
+        ivarindex                = 18
+        ncvarindex(ivarindex)    = 118
+        ncvarrecs (ivarindex)    =   1
+        ncvarxmax (ivarindex)    = snx
+        ncvarymax (ivarindex)    = sny
+        ncvarnrmax(ivarindex)    =   1
+        ncvargrd  (ivarindex)    = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_SST0_CONTROL */
+
+c-------------------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_SSS0_CONTROL
+      _BEGIN_MASTER( mythid )
+        ivarindex                = 19
+        ncvarindex(ivarindex)    = 119
+        ncvarrecs (ivarindex)    =   1
+        ncvarxmax (ivarindex)    = snx
+        ncvarymax (ivarindex)    = sny
+        ncvarnrmax(ivarindex)    =   1
+        ncvargrd  (ivarindex)    = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_SSS0_CONTROL */
+
+c-------------------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_HFACC_CONTROL
+      _BEGIN_MASTER( mythid )
+        ivarindex                = 20
+        ncvarindex(ivarindex)    = 120
+        ncvarrecs (ivarindex)    =   1
+        ncvarxmax (ivarindex)    = snx
+        ncvarymax (ivarindex)    = sny
+        ncvargrd  (ivarindex)    = 'c'
+#ifdef ALLOW_HFACC3D_CONTROL
+        ncvarnrmax(ivarindex)    =  nr
+#else
+        ncvarnrmax(ivarindex)    =   1
+#endif /*ALLOW_HFACC3D_CONTROL*/
+      _END_MASTER( mythid )
+#endif /* ALLOW_HFACC_CONTROL */
+
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_EFLUXY0_CONTROL
       _BEGIN_MASTER( mythid )
         ivarindex                = 21
@@ -805,6 +889,8 @@ c--   Eastern obc.
       _END_MASTER( mythid )
 #endif /* ALLOW_EFLUXY0_CONTROL */
 
+c-------------------------------------------------------------------------------------------
+c--
 #ifdef ALLOW_EFLUXP0_CONTROL
       _BEGIN_MASTER( mythid )
         ivarindex                = 22
@@ -816,6 +902,24 @@ c--   Eastern obc.
         ncvargrd(ivarindex)      = 'v'
       _END_MASTER( mythid )
 #endif /* ALLOW_EFLUXP0_CONTROL */
+
+c-------------------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      _BEGIN_MASTER( mythid )
+        ivarindex                = 23
+        ncvarindex(ivarindex)    = 123
+        ncvarrecs (ivarindex)    =   1
+        ncvarxmax (ivarindex)    = snx
+        ncvarymax (ivarindex)    = sny
+        ncvarnrmax(ivarindex)    =   1
+        ncvargrd  (ivarindex)    = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_BOTTOMDRAG_CONTROL */
+
+c-------------------------------------------------------------------------------------------
+c-------------------------------------------------------------------------------------------
+c-------------------------------------------------------------------------------------------
 
 c--   Determine the number of wet points in each tile:
 c--   maskc, masks, and maskw.

@@ -101,10 +101,18 @@ c     == local variables ==
       character*( 80) adfname_kapgm
       character*( 80)   fname_tr1
       character*( 80) adfname_tr1
+      character*( 80)   fname_sst
+      character*( 80) adfname_sst
+      character*( 80)   fname_sss
+      character*( 80) adfname_sss
+      character*( 80)   fname_hfacc
+      character*( 80) adfname_hfacc
       character*( 80)   fname_efluxy
       character*( 80) adfname_efluxy
       character*( 80)   fname_efluxp
       character*( 80) adfname_efluxp
+      character*( 80)   fname_bottomdrag
+      character*( 80) adfname_bottomdrag
 
       logical lxxadxx
 
@@ -164,9 +172,18 @@ c--   Assign file names.
       call ctrl_set_fname(
      I     xx_tr1_file, fname_tr1, adfname_tr1, mythid )
       call ctrl_set_fname(
+     I     xx_sst_file, fname_sst, adfname_sst, mythid )
+      call ctrl_set_fname(
+     I     xx_sss_file, fname_sss, adfname_sss, mythid )
+      call ctrl_set_fname(
+     I     xx_hfacc_file, fname_hfacc, adfname_hfacc, mythid )
+      call ctrl_set_fname(
      I     xx_efluxy_file, fname_efluxy, adfname_efluxy, mythid )
       call ctrl_set_fname(
      I     xx_efluxp_file, fname_efluxp, adfname_efluxp, mythid )
+      call ctrl_set_fname(
+     I     xx_bottomdrag_file, fname_bottomdrag, adfname_bottomdrag
+     I   , mythid )
 
 c
 c--     Only the master thread will do I/O.
@@ -365,32 +382,62 @@ c--       Header information.
      &         wunit, lxxadxx, mythid)
 #endif
 
-cph(
-          print *, 'ph-nondim bef. vor 21'
-          print *, 'ph-nondim aft. vor 21'
-cph)
+#ifdef ALLOW_SST0_CONTROL
+          ivartype = 18
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsst0"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, adfname_sst0, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+          ivartype = 19
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsss0"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, adfname_sss0, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_HFACC_CONTROL
+          ivartype = 20
+#ifdef ALLOW_HFACC3D_CONTROL
+          call ctrl_set_pack_xyz(
+     &         cunit, ivartype, adfname_hfacc, "hFacC",
+     &         wunit, lxxadxx, mythid)
+#else
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "whfacc"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, adfname_hfacc, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
           ivartype = 21
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_efluxy, "hFacS",
-     &         wefluxy, lxxadxx, mythid)
+     &         wunit, lxxadxx, mythid)
 #endif
 
-cph(
-          print *, 'ph-nondim bef. vor 22'
-          print *, 'ph-nondim aft. vor 22'
-cph)
 #ifdef ALLOW_EFLUXP0_CONTROL
           ivartype = 22
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_efluxp, "hFacV",
-     &         wefluxp, lxxadxx, mythid)
+     &         wunit, lxxadxx, mythid)
 #endif
 
-cph(
-          print *, 'ph-nondim bef. ende'
-          print *, 'ph-nondim aft. ende'
-cph)
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          ivartype = 23
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wbottomdrag"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, adfname_bottomdrag, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+
           close ( cunit )
 
         _END_MASTER( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.6 2002/07/13 02:47:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.7 2002/11/29 13:38:37 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -56,6 +56,7 @@ c     == local variables ==
       character*( 80)   fnamekapgm
       character*( 80)   fnameefluxy
       character*( 80)   fnameefluxp
+      character*( 80)   fnamebottomdrag
 
       _RL     fac
 
@@ -261,6 +262,26 @@ cph     &                                  *fac*tmpfld3d(i,j,k,bi,bj)
       enddo
 #endif
 
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+c--   bottom drag
+      il=ilnblnk( xx_bottomdrag_file )
+      write(fnamebottomdrag(1:80),'(2a,i10.10)')
+     &     xx_bottomdrag_file(1:il),'.',optimcycle
+      call active_read_xy ( fnamebottomdrag, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_bottomdrag_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj) 
+     &                                   + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 
 c--   Update the tile edges.
 
@@ -287,6 +308,9 @@ cph      _EXCH_XYZ_R8( gTr1Nm1, mythid )
 #endif
 #ifdef ALLOW_EFLUXP0_CONTROL
       _EXCH_XYZ_R8( EfluxP, mythid )
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      _EXCH_XY_R8( bottomdragfld, mythid )
 #endif
 
 

@@ -185,10 +185,18 @@ cgg)
       character*( 80) adfname_kapgm
       character*( 80)   fname_tr1
       character*( 80) adfname_tr1
+      character*( 80)   fname_sst
+      character*( 80) adfname_sst
+      character*( 80)   fname_sss
+      character*( 80) adfname_sss
+      character*( 80)   fname_hfacc
+      character*( 80) adfname_hfacc
       character*( 80)   fname_efluxy
       character*( 80) adfname_efluxy
       character*( 80)   fname_efluxp
       character*( 80) adfname_efluxp
+      character*( 80)   fname_bottomdrag
+      character*( 80) adfname_bottomdrag
 
 cgg(  Initialization of ecco_ctrl requires two new local var.
       _RL     tmpvar
@@ -363,6 +371,35 @@ c--     Only the master thread will do I/O.
      &       adfname_tr1, ivartype, mythid)
 #endif
 
+#ifdef ALLOW_SST0_CONTROL
+        ivartype = 18
+        call ctrl_set_fname(
+     I       xx_sst_file, fname_sst, adfname_sst, mythid )
+        call ctrl_set_globfld_xy(
+     &       adfname_sst, ivartype, mythid)
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+        ivartype = 19
+        call ctrl_set_fname(
+     I       xx_sss_file, fname_sss, adfname_sss, mythid )
+        call ctrl_set_globfld_xy(
+     &       adfname_sss, ivartype, mythid)
+#endif
+
+#ifdef ALLOW_HFACC_CONTROL
+        ivartype = 20
+        call ctrl_set_fname(
+     I       xx_hfacc_file, fname_hfacc, adfname_hfacc, mythid )
+#ifdef ALLOW_HFACC3D_CONTROL
+        call ctrl_set_globfld_xyz(
+     &       adfname_hfacc, ivartype, mythid)
+#else
+        call ctrl_set_globfld_xy(
+     &       adfname_hfacc, ivartype, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
         ivartype = 21
         call ctrl_set_fname(
@@ -378,6 +415,16 @@ c--     Only the master thread will do I/O.
         call ctrl_set_globfld_xyz(
      &       adfname_efluxp, ivartype, mythid)
 #endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+        ivartype = 23
+        call ctrl_set_fname(
+     I       xx_bottomdrag_file, fname_bottomdrag, adfname_bottomdrag
+     I     , mythid )
+        call ctrl_set_globfld_xy(
+     &       adfname_bottomdrag, ivartype, mythid)
+#endif
+
 
 c *********************************************************************
 c if NOT very first iteration of optimization
@@ -657,10 +704,41 @@ c----------------------------------------------------------------------
      &         wunit, nwetcglobal, mythid)
 #endif
 
+#ifdef ALLOW_SST0_CONTROL
+          ivartype    = 18
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsst"
+          call ctrl_set_unpack_xy(
+     &         cunit, ivartype, fname_sst, "hFacC", weighttype,
+     &         nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+          ivartype    = 19
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsss"
+          call ctrl_set_unpack_xy(
+     &         cunit, ivartype, fname_sss, "hFacC", weighttype,
+     &         nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_HFACC_CONTROL
+          ivartype    = 20
+#ifdef ALLOW_HFACC3D_CONTROL
+          call ctrl_set_unpack_xyz(
+     &         cunit, ivartype, fname_hfacc, "hFacC",
+     &         wunit, nwetcglobal, mythid)
+#else
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "whfacc"
+          call ctrl_set_unpack_xy(
+     &         cunit, ivartype, fname_hfacc, "hFacC", weighttype,
+     &         nwetcglobal, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
           ivartype    = 21
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wefluxy"
           call ctrl_set_unpack_xyz(
      &         cunit, ivartype, fname_efluxy, "hFacS",
      &         wefluxy, nwetsglobal, mythid)
@@ -668,11 +746,18 @@ c----------------------------------------------------------------------
 
 #ifdef ALLOW_EFLUXP0_CONTROL
           ivartype    = 22
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wefluxp"
           call ctrl_set_unpack_xyz(
      &         cunit, ivartype, fname_efluxp, "hFacV",
      &         wefluxp, nwetvglobal, mythid)
+#endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          ivartype    = 23
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wbottomdrag"
+          call ctrl_set_unpack_xy(
+     &         cunit, ivartype, fname_bottomdrag, "hFacC", weighttype,
+     &         nwetcglobal, mythid)
 #endif
 
          close ( cunit )
@@ -790,6 +875,29 @@ c--       Write zeroes to file.
      I          fname_tr1, ivartype, mythid )
 #endif
 
+#ifdef ALLOW_SST0_CONTROL
+           ivartype = 18
+           call ctrl_set_globfld_xy( 
+     I          fname_sst, ivartype, mythid )
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+           ivartype = 19
+           call ctrl_set_globfld_xy( 
+     I          fname_sss, ivartype, mythid )
+#endif
+
+#ifdef ALLOW_HFACC_CONTROL
+           ivartype = 20
+#ifdef ALLOW_HFACC3D_CONTROL
+           call ctrl_set_globfld_xyz( 
+     I          fname_hfacc, ivartype, mythid )
+#else
+           call ctrl_set_globfld_xy( 
+     I          fname_hfacc, ivartype, mythid )
+#endif
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
            ivartype = 21
            call ctrl_set_globfld_xyz( 
@@ -800,6 +908,12 @@ c--       Write zeroes to file.
            ivartype = 22
            call ctrl_set_globfld_xyz( 
      I          fname_efluxp, ivartype, mythid )
+#endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+           ivartype = 23
+           call ctrl_set_globfld_xy( 
+     I          fname_bottomdrag, ivartype, mythid )
 #endif
 
 cgg( For optimcycle = 0, we need to output ecco_ctrl file to disk with the
@@ -994,6 +1108,38 @@ cgg)
      &         wunit, lxxadxx, mythid)
 #endif
 
+#ifdef ALLOW_SST0_CONTROL
+          ivartype = 18
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsst"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_sst, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+          ivartype = 19
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsss"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_sss, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_HFACC_CONTROL
+          ivartype = 20
+#ifdef ALLOW_HFACC3D_CONTROL
+          call ctrl_set_pack_xyz(
+     &         cunit, ivartype, fname_hfacc, "hFacC",
+#else
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "whfacc"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_hfacc, "hFacC", weighttype,
+     &         lxxadxx, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
           ivartype = 21
           call ctrl_set_pack_xyz(
@@ -1006,6 +1152,15 @@ cgg)
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_efluxp, "hFacV",
      &         wunit, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          ivartype = 23
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wbottomdrag"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_bottomdrag, "hFacC", weighttype,
+     &         lxxadxx, mythid)
 #endif
 
           close ( cunit )
