@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.11 2004/11/21 15:57:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.12 2004/12/05 22:08:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -16,7 +16,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GMREDI.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instances
@@ -108,6 +110,7 @@ C     Make sure we are not trying to use some arrays that are unavailable
       ENDIF
 #endif
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C     Check size of overlap region
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
      &       .AND. GM_Visbeck_alpha.NE.0.
@@ -141,6 +144,7 @@ c    &     ) THEN
           STOP 'ABNORMAL END: S/R GMREDI_CHECK'
 c       ENDIF
       ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       _END_MASTER(myThid)
 
