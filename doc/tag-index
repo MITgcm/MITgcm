@@ -1,7 +1,45 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.142 2003/03/05 00:59:10 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.143 2003/03/06 00:48:52 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint49
+merged from ecco-branch:
+o exf:
+  - Enable initialisation of forcing fields to constant 
+    (runtime) values.
+  - in exf_getffields.F
+    Reduce i-/j-loop to interior domain, discarding overlaps.
+    That also fixes wrong TAF-key computations for key_1, key_2
+    with bulf formulae.
+  - exf_init.F modify #ifdef for exf_init_evap
+  - exf_getffieldrec.F, ctrl_getrec.F
+    The following INT-usages are not safe:
+      fldsecs  = int(fldsecs/fldperiod)*fldperiod
+      fldcount = int(fldsecs/fldperiod) + 1
+    and were modified.
+o autodiff: checkpoint_lev...
+  - updated storing for bulk formulae (some arrays were missing)
+  - added state for seaice package
+  - synchronized with main branch
+o DIVA:
+  Modif.s in
+  - ecco_the_main_loop.F
+  - ecco_the_model_main.F
+  and added cost_final_restore.F cost_final_store.F
+  o With these changes, it is possible to fully separate
+    the first forward run to compute the cost function (mdthe_main_loop)
+    and adjoint runs over individual DIVA intervals (adthe_main_loop)
+    into separate model executions.
+    This enables better tuning of DIVA to given queue sizes.
+  o Loss of cost function value in consecutive DIVA runs is
+    fixed by storing to 'costfinal' file.
+  o Appropriate call of ctrl_unpack/_pack,grdchk_main at 
+    beginning/end of adjoint integration is accounted for.
+  The current changes apply to TAF-1.4.26.
+  TAF has one remaining bug, requiring one manual change
+  (see MITgcm manual).
+o cal: synchronized between MAIN and ecco-branch
 
 checkpoint48i_post
 o Changes to restore differentiability of code w.r.t. previous tag
