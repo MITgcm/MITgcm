@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.25 2001/02/06 04:22:36 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.26 2001/02/07 03:37:46 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -118,9 +118,32 @@ echo Operating system: $mach
 # If -rootdir wasn't specified then assume script is being run from bin
 # but if it was supplied then we should place the executable in the build dir
 if (! $?ROOTDIR) then
-  set ROOTDIR = ( .. )
-else
-  if (! $?EXEDIR) set EXEDIR = ( . )
+  set pwd=`pwd`
+  if ($pwd:t == bin) then 
+    if (-d ../exe & -d ../model & -d ../eesupp & -d ../pkg) then
+      set ROOTDIR = ( .. )
+      if (! $?EXEDIR) set EXEDIR = ( ../exe )
+    else if (-d ../model & -d ../eesupp & -d ../pkg) then
+      echo In bin with no exe
+      if (! $?EXEDIR) set EXEDIR = ( . )
+    endif
+  endif
+endif
+# Scan for logical ROOTDIR
+if (! $?ROOTDIR) then
+  foreach dr (. .. ../.. ../../.. ../../../.. ../../../../..)
+    if (-d $dr/model & -d $dr/eesupp & -d $dr/pkg) then
+      set ROOTDIR = $dr
+      if (! $?EXEDIR) set EXEDIR = ( . )
+      echo ROOTDIR was not specified. Setting ROOTDIR = \"$ROOTDIR\"
+      break
+    endif
+  end
+endif
+if (! $?ROOTDIR) then
+  echo Root directory was not specified and could not be determined.
+  echo Specify the root location of the model source with -rootdir=dir
+  exit 1
 endif
 if (! -d $ROOTDIR) then
   echo Root directory $ROOTDIR not found.;exit 1
@@ -138,7 +161,6 @@ if (! $?BUILDDIR) set BUILDDIR = ( . )
 if (! -d $BUILDDIR) then
   echo Build directory $BUILDDIR not found.;exit 1
 endif
-if (! $?EXEDIR) set EXEDIR = ( $ROOTDIR/exe )
 if (! -d $EXEDIR) then
   echo Executable directory $EXEDIR not found.;exit 1
 endif
