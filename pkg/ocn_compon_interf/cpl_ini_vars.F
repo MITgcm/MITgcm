@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.1 2003/12/15 02:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,7 +23,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
+#include "CPL_PARAMS.h"
 #include "OCNCPL.h"
 #include "CPL_DIAGS.h"
 
@@ -32,70 +32,72 @@ C     myThid - Thread number for this instance of the routine
       INTEGER myThid
 CEndOfInterface
 
+#ifdef COMPONENT_MODULE
 C     == Local variables ==
-C     I,J,K,bi,bj - Loop counters
-      INTEGER prec
-      CHARACTER*(MAX_LEN_FNAM) fn
-      INTEGER I,J,K,bi,bj
+C     I,J,bi,bj - Loop counters
+      INTEGER I,J,bi,bj
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myByLo(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-C         Export field
+C.        Export fields
+          ocMxlD2cpl(I,J,bi,bj) = 0.
           SSTocn2cpl(I,J,bi,bj) = 0.
-C         Import field
+          SSSocn2cpl(I,J,bi,bj) = 0.
+          vSqocn2cpl(I,J,bi,bj) = 0.
+C-        Import fields
+          atmSLPr   (I,J,bi,bj)  = 0.
           HeatFlux  (I,J,bi,bj)  = 0.
+          qShortWave(I,J,bi,bj)  = 0.
+c         qLatent   (I,J,bi,bj)  = 0.
+c         qSensible (I,J,bi,bj)  = 0.
+c         qLongWave (I,J,bi,bj)  = 0.
+c         uVelGround(I,J,bi,bj)  = 0.
+c         vVelGround(I,J,bi,bj)  = 0.
           tauX      (I,J,bi,bj)  = 0.
           tauY      (I,J,bi,bj)  = 0.
           FWflux    (I,J,bi,bj)  = 0.
-          uVelGround(I,J,bi,bj)  = 0.
-          vVelGround(I,J,bi,bj)  = 0.
-          qLatent   (I,J,bi,bj)  = 0.
-          qSensible (I,J,bi,bj)  = 0.
-          qLongwave (I,J,bi,bj)  = 0.
-          qShortwave(I,J,bi,bj)  = 0.
+          iceSaltFlx(I,J,bi,bj)  = 0.
+          seaIceMass(I,J,bi,bj)  = 0.
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-      IF ( .FALSE. ) THEN
-       WRITE(fn,'(A,I10.10)') 'pickup_cpl.',nIter0
-       CALL MDSREADFIELD(fn,prec,'RL',1,SSTocn2cpl, 1,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,HeatFlux  , 2,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,tauX      , 3,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,tauY      , 4,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,FWFlux    , 5,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,uVelGround, 6,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,vVelGround, 7,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,qLatent   , 8,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,qSensible , 9,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,qLongwave ,10,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',1,qShortwave,11,myThid)
+      IF ( ( startTime.NE.0. .OR. nIter0.NE.0 )
+     &           .AND. .NOT. cpl_earlyExpImpCall ) THEN
+       CALL OCN_CPL_READ_PICKUP( nIter0, myThid )
       ENDIF
 
 #ifdef ALLOW_TIMEAVE
-C     Initialise diagnostic counters ( these are cleared on model starti i.e. not
-C     loaded from history file for now ).
+C     Initialise diagnostic counters ( these are cleared on model start
+C      i.e. not loaded from history file for now ).
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_RESET(HFtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(TXtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(TYtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(FWtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(UGtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(VGtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(QLTtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(QSNtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(QLWtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(QSWtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(SSTtave, 1, bi, bj, myThid)
-        CPL_TimeAve(1,bi,bj) = 0.
+         CALL TIMEAVE_RESET(SLPtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(HFtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(QSWtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLTtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QSNtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLWtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(UGtave , 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(VGtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TXtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TYtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(FWtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SFxtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SICtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(MXLtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SSTtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SSStave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(vSqtave, 1, bi, bj, myThid)
+         CPL_TimeAve(1,bi,bj) = 0.
        ENDDO
       ENDDO
 #endif /* ALLOW_TIMEAVE */
 
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END

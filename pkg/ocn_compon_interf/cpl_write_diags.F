@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.1 2003/12/15 02:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,17 +51,23 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(HFtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(TXtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(TYtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(FWtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(UGtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(VGtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(QLTtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(QSNtave, CPL_TimeAve, 1, bi, bj, myThid)
-         CALL TIMEAVE_NORMALIZ(QLWtave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(SLPtave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(HFtave , CPL_TimeAve, 1, bi, bj, myThid)
          CALL TIMEAVE_NORMALIZ(QSWtave, CPL_TimeAve, 1, bi, bj, myThid)
+c        CALL TIMEAVE_NORMALIZ(QLTtave, CPL_TimeAve, 1, bi, bj, myThid)
+c        CALL TIMEAVE_NORMALIZ(QSNtave, CPL_TimeAve, 1, bi, bj, myThid)
+c        CALL TIMEAVE_NORMALIZ(QLWtave, CPL_TimeAve, 1, bi, bj, myThid)
+c        CALL TIMEAVE_NORMALIZ(UGtave , CPL_TimeAve, 1, bi, bj, myThid)
+c        CALL TIMEAVE_NORMALIZ(VGtave , CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(TXtave , CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(TYtave , CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(FWtave , CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(SFxtave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(SICtave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(MXLtave, CPL_TimeAve, 1, bi, bj, myThid)
          CALL TIMEAVE_NORMALIZ(SSTtave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(SSStave, CPL_TimeAve, 1, bi, bj, myThid)
+         CALL TIMEAVE_NORMALIZ(vSqtave, CPL_TimeAve, 1, bi, bj, myThid)
         ENDDO
        ENDDO
 
@@ -69,28 +75,30 @@ C      Normalize by integrated time
        _BEGIN_MASTER( myThid )
          gf = globalFiles
          WRITE(fn,'(A,I10.10)') 'cplFldtave.',myIter
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,HFtave,   1,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,TXtave,   2,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,TYtave,   3,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,FWtave,   4,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,UGtave,   5,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,VGtave,   6,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,QLTtave,  7 ,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,QSNtave,  8 ,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,QLWtave,  9 ,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,QSWtave,  10,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,precFloat32,gf,
-     &        'RL',1,SSTtave,  11,myIter,myThid)
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, SLPtave ,  1, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, HFtave  ,  2, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, QSWtave ,  3, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, TXtave  ,  4, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, TYtave  ,  5, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, FWtave  ,  6, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, SFxtave ,  7, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, SICtave ,  8, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, MXLtave ,  9, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, SSTtave , 10, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, SSStave , 11, myIter, myThid )
+         CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &        1, vSqtave , 12, myIter, myThid )
 
        _END_MASTER( myThid )
        _BARRIER
@@ -98,17 +106,23 @@ C      Normalize by integrated time
 C      Reset diagnostic counters
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(HFtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(TXtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(TYtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(FWtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(UGtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(VGtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(QLTtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(QSNtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(QLWtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SLPtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(HFtave , 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(QSWtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLTtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QSNtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLWtave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(UGtave , 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(VGtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TXtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TYtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(FWtave , 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SFxtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SICtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(MXLtave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(SSTtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SSStave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(vSqtave, 1, bi, bj, myThid)
          CPL_TimeAve(1,bi,bj) = 0.
         ENDDO
        ENDDO
@@ -121,6 +135,3 @@ C      Reset diagnostic counters
 
       RETURN
       END
-
-
-

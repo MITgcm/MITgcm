@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.1 2003/12/15 02:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,17 +43,24 @@ C     fn          - Workspace for building file name
       ELSE
        WRITE(fn,'(A,A)') 'pickup_cpl.',checkPtSuff(nCheckLev)
       ENDIF
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSTocn2cpl, 1,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HeatFlux  , 2,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,tauX      , 3,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,tauY      , 4,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,FWFlux    , 5,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,uVelGround, 6,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vVelGround, 7,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qLatent   , 8,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qSensible , 9,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qLongwave ,10,myIter,myThid)
-c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qShortwave,11,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,atmSLPr   , 1,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HeatFlux  , 2,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qShortWave, 3,myIter,myThid)
+c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qLatent   , 3,myIter,myThid)
+c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qSensible , 3,myIter,myThid)
+c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,qLongWave , 3,myIter,myThid)
+c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,uVelGround, 3,myIter,myThid)
+c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vVelGround, 3,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,tauX      , 4,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,tauY      , 5,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,FWFlux    , 6,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceSaltFlx, 7,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,seaIceMass, 8,myIter,myThid)
+
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,ocMxlD2cpl, 9,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSTocn2cpl,10,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSSocn2cpl,11,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vSqocn2cpl,12,myIter,myThid)
 
       RETURN
       END

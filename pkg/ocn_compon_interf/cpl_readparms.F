@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.1 2003/12/15 02:49:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,20 +52,25 @@ C     iL         :: Work variable for length of file-name
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coupling parameters: 
+C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
 C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
+C     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
 C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
       NAMELIST /CPL_OCN_PARAM/
-     &    useImportHFlx, useImportFW, useImportTau,
+     &    cpl_earlyExpImpCall,
+     &    useImportHFlx, useImportFW, useImportTau, useImportSLP,
      &    cpl_taveFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
+      cpl_earlyExpImpCall = .FALSE. 
       useImportHFlx = .TRUE. 
       useImportFW   = .TRUE.
       useImportTau  = .TRUE.
+      useImportSLP  = .TRUE.
       cpl_taveFreq  = taveFreq
       
       _BEGIN_MASTER(myThid)
@@ -120,7 +125,10 @@ C--   Print out parameter values :
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
 
-C- namelist LAND_MODEL_PAR:
+C- namelist CPL_OCN_PARAM:
+       CALL WRITE_0D_L( cpl_earlyExpImpCall, INDEX_NONE,
+     &                 'cpl_earlyExpImpCall=',
+     &   ' /* call coupler early in the time-stepping */')       
        CALL WRITE_0D_L( useImportHFlx, INDEX_NONE,
      &                 'useImportHFlx=',
      &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')       
@@ -130,6 +138,9 @@ C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( useImportTau , INDEX_NONE,
      &                 'useImportTau =',
      &   ' /* use Imported Wind-Stress fr Cpl. on/off flag */')       
+       CALL WRITE_0D_L( useImportSLP , INDEX_NONE,
+     &                 'useImportSLP =',
+     &   ' /* use Imported Sea-level Atm Press on/off flag */')       
        CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
 
