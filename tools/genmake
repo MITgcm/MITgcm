@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.28 2001/02/07 16:49:20 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.29 2001/02/08 18:00:24 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -50,7 +50,6 @@ while ($#allargs)
     echo "***" Command line \"$arg\" will override this.
    endif
    set ROOTDIR = ( `echo $arg | sed 's/-rootdir=//' `)
-   if (! $?EXEDIR) set EXEDIR = ( . )
    breaksw
  case -mods:
  case -mods=:
@@ -120,14 +119,8 @@ echo Operating system: $mach
 # but if it was supplied then we should place the executable in the build dir
 if (! $?ROOTDIR) then
   set pwd=`pwd`
-  if ($pwd:t == bin) then 
-    if (-d ../exe & -d ../model & -d ../eesupp & -d ../pkg) then
-      set ROOTDIR = ( .. )
-      if (! $?EXEDIR) set EXEDIR = ( ../exe )
-    else if (-d ../model & -d ../eesupp & -d ../pkg) then
-      echo In bin with no exe
-      if (! $?EXEDIR) set EXEDIR = ( . )
-    endif
+  if ($pwd:t == bin & -d ../model & -d ../eesupp & -d ../pkg) then
+    set ROOTDIR = ( .. )
   endif
 endif
 # Scan for logical ROOTDIR
@@ -135,7 +128,6 @@ if (! $?ROOTDIR) then
   foreach dr (. .. ../.. ../../.. ../../../.. ../../../../..)
     if (-d $dr/model & -d $dr/eesupp & -d $dr/pkg) then
       set ROOTDIR = $dr
-      if (! $?EXEDIR) set EXEDIR = ( . )
       echo ROOTDIR was not specified. Setting ROOTDIR = \"$ROOTDIR\"
       break
     endif
@@ -161,6 +153,14 @@ endif
 if (! $?BUILDDIR) set BUILDDIR = ( . )
 if (! -d $BUILDDIR) then
   echo Build directory $BUILDDIR not found.;exit 1
+endif
+if (! $?EXEDIR) then
+  set pwd=`pwd`
+  if ($pwd:t == bin & -d ../exe & $ROOTDIR == ..) then
+   set EXEDIR = ( ../exe )
+  else
+   set EXEDIR = ( . )
+  endif
 endif
 if (! -d $EXEDIR) then
   echo Executable directory $EXEDIR not found.;exit 1
