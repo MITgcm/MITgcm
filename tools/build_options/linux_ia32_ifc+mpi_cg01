@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.7 2004/09/22 17:53:52 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.8 2004/10/09 20:12:35 jmc Exp $
 #  $Name:  $
 #
 
@@ -27,5 +27,5 @@ fi
 
 NOOPTFILES='mdsio_byteswapr8.F mdsio_byteswapr4.F'
 NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
-NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
 
