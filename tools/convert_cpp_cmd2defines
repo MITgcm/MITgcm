@@ -8,7 +8,7 @@
 #
 # usage: convert_cpp_cmd2defines [-Dmacro1|-Umacro1] [...]
 #
-# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.1 2003/11/24 14:54:12 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.2 2003/11/25 14:18:50 adcroft Exp $
 # $Name:  $
 
 cat << EOF
@@ -20,8 +20,15 @@ cat << EOF
 
 EOF
 
+BARRIER=
+
 for ac_option ; do
  case $ac_option in
+  -b*)
+	BARRIER=`echo $ac_option | sed 's/-b//'`
+	echo "#ifndef ${BARRIER}"
+	echo "#define ${BARRIER}"
+	;;
   -D*)
 	echo $ac_option | sed 's/-D/#define /' | sed 's/=/ /'
 	;;
@@ -33,3 +40,7 @@ for ac_option ; do
 	;;
  esac
 done
+
+if test ! "x${BARRIER}" = x ; then
+ echo "#endif /* ${BARRIER} */"
+fi
