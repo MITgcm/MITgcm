@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.18 2003/09/29 19:24:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.19 2004/11/21 15:55:38 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -46,10 +46,14 @@ C     == Local variables ==
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dSigmaDr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL maskp1, Kgm_tmp
+      _RL ldd97_LrhoC(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL ldd97_LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL Cspd, LrhoInf, LrhoSup, fCoriLoc
 
 #ifdef GM_VISBECK_VARIABLE_K
       _RL deltaH,zero_rs
@@ -57,6 +61,8 @@ C     == Local variables ==
       _RL N2,SN
       _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -79,6 +85,62 @@ C     == Local variables ==
       ENDDO
 #endif
 
+C--   set ldd97_Lrho (for tapering scheme ldd97):
+      IF (GM_taper_scheme.EQ.'ldd97') THEN
+       Cspd = 2. _d 0
+       LrhoInf = 15. _d 3
+       LrhoSup = 100. _d 3
+C-     Tracer point location (center):
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         IF (fCori(i,j,bi,bj).NE.0.) THEN
+           ldd97_LrhoC(i,j) = Cspd/ABS(fCori(i,j,bi,bj))
+         ELSE
+           ldd97_LrhoC(i,j) = LrhoSup
+         ENDIF
+         ldd97_LrhoC(i,j) = MAX(LrhoInf,MIN(ldd97_LrhoC(i,j),LrhoSup))
+        ENDDO
+       ENDDO
+C-     U point location (West):
+       DO j=1-Oly,sNy+Oly
+        ldd97_LrhoW(1-Olx,j) = LrhoSup
+        DO i=1-Olx+1,sNx+Olx
+         fCoriLoc = op5*(fCori(i-1,j,bi,bj)+fCori(i,j,bi,bj))
+         IF (fCoriLoc.NE.0.) THEN
+           ldd97_LrhoW(i,j) = Cspd/ABS(fCoriLoc)
+         ELSE
+           ldd97_LrhoW(i,j) = LrhoSup
+         ENDIF
+         ldd97_LrhoW(i,j) = MAX(LrhoInf,MIN(ldd97_LrhoW(i,j),LrhoSup))
+        ENDDO
+       ENDDO
+C-     V point location (South):
+       DO i=1-Olx+1,sNx+Olx
+         ldd97_LrhoS(i,1-Oly) = LrhoSup
+       ENDDO
+       DO j=1-Oly+1,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         fCoriLoc = op5*(fCori(i,j-1,bi,bj)+fCori(i,j,bi,bj))
+         IF (fCoriLoc.NE.0.) THEN
+           ldd97_LrhoS(i,j) = Cspd/ABS(fCoriLoc)
+         ELSE
+           ldd97_LrhoS(i,j) = LrhoSup
+         ENDIF
+         ldd97_LrhoS(i,j) = MAX(LrhoInf,MIN(ldd97_LrhoS(i,j),LrhoSup))
+        ENDDO
+       ENDDO
+      ELSE
+C-    Just initialize to zero (not use anyway)
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          ldd97_LrhoC(i,j) = 0. _d 0
+          ldd97_LrhoW(i,j) = 0. _d 0
+          ldd97_LrhoS(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       DO k=2,Nr
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
@@ -90,7 +152,7 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
          SlopeY(i,j)       = 0. _d 0
          dSigmaDx(i,j)     = 0. _d 0
          dSigmaDy(i,j)     = 0. _d 0
-         dSigmaDrReal(i,j) = 0. _d 0
+         dSigmaDr(i,j)     = 0. _d 0
          SlopeSqr(i,j)     = 0. _d 0
          taperFct(i,j)     = 0. _d 0
          Kwx(i,j,k,bi,bj)  = 0. _d 0
@@ -121,23 +183,23 @@ C      Gradient of Sigma at rVel points
         dSigmaDy(i,j)=op25*( sigmaY( i ,j+1,k-1) +sigmaY(i,j,k-1)
      &                    +sigmaY( i ,j+1, k ) +sigmaY(i,j, k ) )
      &                  *maskC(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=sigmaR(i,j,k)
+        dSigmaDr(i,j)=sigmaR(i,j,k)
        ENDDO
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dsigmadrreal(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
       CALL GMREDI_SLOPE_LIMIT(
-     U             dSigmadRReal,
-     I             rF(K),K,
-     U             SlopeX, SlopeY,
-     U             dSigmaDx, dSigmaDy,
+     O             SlopeX, SlopeY,
      O             SlopeSqr, taperFct,
+     U             dSigmaDr,
+     I             dSigmaDx, dSigmaDy,
+     I             ldd97_LrhoC,rF(k),k,
      I             bi, bj, myThid )
 
       DO j=1-Oly+1,sNy+Oly-1
@@ -155,8 +217,8 @@ C       Mask Iso-neutral slopes
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeSqr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dsigmadrreal(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE taperfct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-Oly+1,sNy+Oly-1
@@ -187,8 +249,8 @@ C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
         IF (K.eq.2) VisbeckK(i,j,bi,bj)=0.
-        IF ( Ssq(i,j).NE.0. .AND. dSigmaDrReal(i,j).NE.0. ) THEN
-         N2= -Gravity*recip_RhoConst*dSigmaDrReal(i,j)
+        IF ( Ssq(i,j).NE.0. .AND. dSigmaDr(i,j).NE.0. ) THEN
+         N2= -Gravity*recip_RhoConst*dSigmaDr(i,j)
          SN=sqrt(Ssq(i,j)*N2)
          VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
      &      *GM_Visbeck_alpha*GM_Visbeck_length*GM_Visbeck_length*SN
@@ -213,10 +275,6 @@ C-     Limit range that KapGM can take
         DO i=1-Olx+1,sNx+Olx-1
          VisbeckK(i,j,bi,bj)=
      &       MIN(VisbeckK(i,j,bi,bj),GM_Visbeck_maxval_K)
-#ifdef ALLOW_TIMEAVE
-         Visbeck_K_T(i,j,bi,bj)=Visbeck_K_T(i,j,bi,bj)
-     &                         +VisbeckK(i,j,bi,bj)*deltaTclock
-#endif
         ENDDO
        ENDDO
       ENDIF
@@ -273,7 +331,7 @@ C     Gradient of Sigma at U points
         dSigmaDy(i,j)=op25*( sigmaY(i-1,j+1,k) +sigmaY(i,j+1,k)
      &                      +sigmaY(i-1, j ,k) +sigmaY(i, j ,k) )
      &          *_maskW(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=op25*( sigmaR(i-1,j, k ) +sigmaR(i,j, k )
+        dSigmaDr(i,j)=op25*( sigmaR(i-1,j, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i-1,j,kp1) +sigmaR(i,j,kp1)) )
      &          *_maskW(i,j,k,bi,bj)
        ENDDO
@@ -283,23 +341,23 @@ C     Gradient of Sigma at U points
 CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dsigmadrreal(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
       CALL GMREDI_SLOPE_LIMIT(
-     U             dSigmadRReal,
-     I             rF(K),K,
-     U             SlopeX, SlopeY,
-     U             dSigmaDx, dSigmaDy,
+     O             SlopeX, SlopeY,
      O             SlopeSqr, taperFct,
+     U             dSigmaDr,
+     I             dSigmaDx, dSigmaDy,
+     I             ldd97_LrhoW,rC(k),k,
      I             bi, bj, myThid )
 
 cph( NEW
 #ifdef ALLOW_AUTODIFF_TAMC
 cph(
 CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE taperfct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 cph)
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -356,7 +414,7 @@ C     Gradient of Sigma at V points
      &          *_maskS(i,j,k,bi,bj)
         dSigmaDy(i,j)=sigmaY(i,j,k)
      &          *_maskS(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=op25*( sigmaR(i,j-1, k ) +sigmaR(i,j, k )
+        dSigmaDr(i,j)=op25*( sigmaR(i,j-1, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i,j-1,kp1) +sigmaR(i,j,kp1)) )
      &          *_maskS(i,j,k,bi,bj)
        ENDDO
@@ -365,16 +423,16 @@ C     Gradient of Sigma at V points
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dsigmadrreal(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
       CALL GMREDI_SLOPE_LIMIT(
-     U             dSigmadRReal,
-     I             rF(K),K,
-     U             SlopeX, SlopeY,
-     U             dSigmaDx, dSigmaDy,
+     O             SlopeX, SlopeY,
      O             SlopeSqr, taperFct,
+     U             dSigmaDr,
+     I             dSigmaDx, dSigmaDy,
+     I             ldd97_LrhoS,rC(k),k,
      I             bi, bj, myThid )
 
 cph(
@@ -431,21 +489,6 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
 
-#ifdef ALLOW_TIMEAVE
-C--   Time-average
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-        GM_Kwx_T(i,j,k,bi,bj)=GM_Kwx_T(i,j,k,bi,bj)
-     &                       +Kwx(i,j,k,bi,bj)*deltaTclock
-        GM_Kwy_T(i,j,k,bi,bj)=GM_Kwy_T(i,j,k,bi,bj)
-     &                       +Kwy(i,j,k,bi,bj)*deltaTclock
-        GM_Kwz_T(i,j,k,bi,bj)=GM_Kwz_T(i,j,k,bi,bj)
-     &                       +Kwz(i,j,k,bi,bj)*deltaTclock
-       ENDDO
-      ENDDO
-      GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
-#endif /* ALLOW_TIMEAVE */
-
 C-- end 2nd loop on vertical level index k
       ENDDO
 
@@ -455,9 +498,41 @@ C-- end 2nd loop on vertical level index k
         CALL GMREDI_CALC_PSI_B(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
+     I             ldd97_LrhoW, ldd97_LrhoS,
      I             myThid ) 
       ENDIF
 #endif
+
+#ifdef ALLOW_TIMEAVE
+C--   Time-average
+      IF ( taveFreq.GT.0. ) THEN
+
+         CALL TIMEAVE_CUMULATE( GM_Kwx_T, Kwx, Nr,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( GM_Kwy_T, Kwy, Nr,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( GM_Kwz_T, Kwz, Nr,
+     &                          deltaTclock, bi, bj, myThid )
+#ifdef GM_VISBECK_VARIABLE_K
+       IF ( GM_Visbeck_alpha.NE.0. ) THEN
+         CALL TIMEAVE_CUMULATE( Visbeck_K_T, VisbeckK, 1,
+     &                          deltaTclock, bi, bj, myThid )
+       ENDIF
+#endif
+#ifdef GM_BOLUS_ADVEC
+       IF ( GM_AdvForm ) THEN
+         CALL TIMEAVE_CUMULATE( GM_PsiXtave, GM_PsiX, Nr,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( GM_PsiYtave, GM_PsiY, Nr,
+     &                          deltaTclock, bi, bj, myThid )
+       ENDIF
+#endif
+       DO k=1,Nr
+         GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
+       ENDDO
+
+      ENDIF
+#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_GMREDI */
 
@@ -478,10 +553,7 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "GMREDI.h"
 
 C     == Routine arguments ==
