@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2land.F,v 1.2 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2land.F,v 1.3 2004/05/21 17:43:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -65,6 +65,7 @@ C--   Initialisation :
        DO j=1,sNy
         DO i=1,sNx
          land_Pr_m_Ev(i,j,bi,bj) = 0. _d 0
+         land_EnWFlux(i,j,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
       ENDIF
@@ -76,6 +77,43 @@ c     IF ( useLand ) THEN
 C      from g/m2/s to kg/m2/s :
        conv_Precip = 1. _d -3
 
+      IF ( land_calc_grT .AND. .NOT.land_impl_grT ) THEN
+C--   Surface heat flux to compute ground temperature explicitely:
+       k = 0
+       IF (aim_splitSIOsFx) k = 1 
+       DO j=1,sNy
+        DO i=1,sNx
+         I2 = i+(j-1)*sNx
+
+C-    total surface downward heat flux :
+         land_HeatFlx(i,j,bi,bj) = 
+     &                         SSR(I2,k,myThid)
+     &                       - SLR(I2,k,myThid)
+     &                       - SHF(I2,1,myThid)
+     &                       - EVAP(I2,1,myThid)*ALHC
+        ENDDO
+       ENDDO
+
+       IF ( land_calc_snow ) THEN
+C-     Evap of snow: substract Latent Heat of freezing from heatFlux
+        DO j=1,sNy
+         DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          IF ( land_skinT(i,j,bi,bj).LT. 0. _d 0 .OR.
+     &         land_hSnow(i,j,bi,bj).GT. 0. _d 0 ) THEN
+           land_HeatFlx(i,j,bi,bj) = land_HeatFlx(i,j,bi,bj)
+     &                       - EVAP(I2,1,myThid)*ALHF
+           land_EnWFlux(i,j,bi,bj) = 
+     &                         EVAP(I2,1,myThid)*ALHF
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
+
+C--   to compute ground temperature explicitely: end
+      ENDIF
+ 
+C--   Fresh water fluxes
        DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
@@ -97,46 +135,13 @@ C      Evap of snow: add Latent Heat of freezing
        DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
-         land_EnWFlux(i,j,bi,bj) = 
-     &      ( PRECNV(I2,myThid)+PRECLS(I2,myThid) )
-     &                            * EnPrec(I2,myThid)
-     &      - EVAP(I2,1,myThid)*MIN(EnPrec(I2,myThid),0. _d 0)
+         land_EnWFlux(i,j,bi,bj) = land_EnWFlux(i,j,bi,bj)
+     &       + EnPrec(I2,myThid)*( PRECNV(I2,myThid)
+     &                            +PRECLS(I2,myThid) )
         ENDDO
        ENDDO
       ENDIF
 
-
-      IF (land_calc_grT .AND. .NOT.land_impl_grT ) THEN
-       k = 0
-       IF (aim_splitSIOsFx) k = 1 
-       DO j=1,sNy
-        DO i=1,sNx
-         I2 = i+(j-1)*sNx
-
-C-    total surface downward heat flux :
-         land_HeatFLx(i,j,bi,bj) = 
-     &                         SSR(I2,k,myThid)
-     &                       - SLR(I2,k,myThid)
-     &                       - SHF(I2,1,myThid)
-     &                       - EVAP(I2,1,myThid)*ALHC
-        ENDDO
-       ENDDO
-
-       IF ( aim_energPrecip ) THEN
-C-     Evap of snow: substract Latent Heat of freezing from heatFlux
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          IF ( EnPrec(I2,myThid) .LT. 0. )
-     &     land_HeatFLx(i,j,bi,bj) = land_HeatFLx(i,j,bi,bj)
-     &                       - EVAP(I2,1,myThid)*ALHF
-         ENDDO
-        ENDDO
-       ENDIF
-
-C--   to compute ground temperature explicitely: end
-      ENDIF
- 
 C- end (if useLand)
 c     ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.4 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.5 2004/05/21 17:43:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -240,18 +240,17 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      I             PSG, FMASK1(1,1,myThid), EMISFC,
      I             STL1(1,myThid), dTskin,
      I             SOILW1(1,myThid), SSR(1,1,myThid), SLR(1,0,myThid),
-     I             T0(1,myThid), Q0(1,myThid), EnPrec(1,myThid), 
-     I             CDENVV(1,1),
+     I             T0(1,myThid), Q0(1,myThid), CDENVV(1,1),
      O             SHF(1,1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
      O             Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
 #ifdef ALLOW_LAND      
       CALL AIM_LAND_IMPL(
-     I             FMASK1(1,1,myThid), dTskin, sFlx,
+     I             FMASK1(1,1,myThid), dTskin,
      I             Evp0, dEvp, Slr0, dSlr,
+     U             sFlx,
      U             STL1(1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
-c    O             TS(1,myThid), TSKIN(1,myThid),
      I             bi, bj, myTime, myIter, myThid)
 #endif /* ALLOW_LAND */
 
@@ -268,8 +267,7 @@ c    O             TS(1,myThid), TSKIN(1,myThid),
      I             PSG, FMASK1(1,3,myThid), EMISFC,
      I             STI1(1,myThid), dTskin,
      I             SSR(1,3,myThid), SLR(1,0,myThid),
-     I             T0(1,myThid), Q0(1,myThid), EnPrec(1,myThid), 
-     I             CDENVV(1,3),
+     I             T0(1,myThid), Q0(1,myThid), CDENVV(1,3),
      O             SHF(1,3,myThid), EVAP(1,3,myThid), SLR(1,3,myThid),
      O             Evp0, dEvp, Slr0, dSlr, sFlx,
      O             TS(1,myThid), TSKIN(1,myThid),

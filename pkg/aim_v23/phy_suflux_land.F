@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_land.F,v 1.1 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_land.F,v 1.2 2004/05/21 17:43:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE SUFLUX_LAND(
      I                   PSA, FMASK, EMISloc,
      I                   Tsurf, dTskin, SWAV, SSR, SLRD,
-     I                   T0, Q0, EnPrec, CDENVV,
+     I                   T0, Q0, CDENVV,
      O                   SHF, EVAP, SLRU,
      O                   Evp0, dEvp, Slr0, dSlr, sFlx,
      O                   TSFC, TSKIN,
@@ -55,7 +55,6 @@ C    SSR    :: sfc sw radiation (net flux)     (2-dim)
 C    SLRD   :: sfc lw radiation (downward flux)(2-dim)
 C    T0     :: near-surface air temperature    (2-dim)
 C    Q0     :: near-surface sp. humidity [g/kg](2-dim)
-C    EnPrec :: energy of precipitation (snow, rain temp) [J/g]
 C    CDENVV :: sensible heat flux coefficient  (2-dim)
 C--   Output:
 C    SHF    :: sensible heat flux              (2-dim)
@@ -76,7 +75,7 @@ C--
       _RL  PSA(NGP), FMASK(NGP), EMISloc
       _RL  Tsurf(NGP), dTskin(NGP), SWAV(NGP)
       _RL  SSR(NGP), SLRD(NGP) 
-      _RL  T0(NGP), Q0(NGP), CDENVV(NGP), EnPrec(NGP)
+      _RL  T0(NGP), Q0(NGP), CDENVV(NGP)
 
       _RL  SHF(NGP), EVAP(NGP), SLRU(NGP)
       _RL  Evp0(NGP), dEvp(NGP), Slr0(NGP), dSlr(NGP), sFlx(NGP,0:2)
@@ -151,16 +150,6 @@ C--   Compute net surface heat flux (+=down) and its derivative ./. surf. temp.
         sFlx(J,2)= sFlx(J,2)
      &           - ALHC*dEvp(J) - EMISloc*dSlr(J)
       ENDDO
-      IF ( aim_energPrecip ) THEN
-C-     Evap of snow: substract Latent Heat of freezing from heatFlux
-       DO J=1,NGP
-        IF ( EnPrec(J) .LT. 0. ) THEN
-         sFlx(J,0) = sFlx(J,0) - ALHF*Evp0(J)
-         sFlx(J,1) = sFlx(J,1) - ALHF*EVAP(J)
-         sFlx(J,2) = sFlx(J,2) - ALHF*dEvp(J)
-        ENDIF
-       ENDDO
-      ENDIF
 
 C--   3. Adjustment of skin temperature and fluxes over land
 C--      based on energy balance (to be implemented)
