@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.6 2004/10/19 02:42:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.7 2004/11/11 01:29:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -42,8 +42,9 @@ CEOP
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER bi, bj
-      CHARACTER*(MAX_LEN_MBUF) suff
+      INTEGER bi, bj, kl
+      CHARACTER*(MAX_LEN_MBUF) suff, fn
+      LOGICAL gf
 
 #ifdef ALLOW_TIMEAVE
 
@@ -74,11 +75,11 @@ C     Dump files and restart average computation if needed
       ELSEIF ( 
      &  DIFFERENT_MULTIPLE(thSIce_taveFreq,myTime,myTime-deltaTClock)
      &     ) THEN
-         
-C      Normalize by integrated time
+
+C--    Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-C-- area weighted average (with ice-fraction)
+C-     area weighted average (with ice-fraction)
          CALL TIMEAVE_NORMA_2V( ice_iceH_Ave,
      &                          ice_fract_Ave, 1, bi, bj, myThid )
          CALL TIMEAVE_NORMA_2V( ice_snowH_Ave,
@@ -93,8 +94,8 @@ C-- area weighted average (with ice-fraction)
      &                          ice_fract_Ave, 1, bi, bj, myThid )
          CALL TIMEAVE_NORMA_2V( ice_albedo_Ave,
      &                          ice_fract_Ave, 1, bi, bj, myThid )
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--  simple time average :
+
+C-     simple time average :
          CALL TIMEAVE_NORMALIZ(ice_fract_Ave,ice_timeAve,1 ,
      &                 bi,bj,myThid)
 c        CALL TIMEAVE_NORMALIZ(ice_iceH_Ave,   ice_timeAve, 1 ,
@@ -130,45 +131,99 @@ c    &                 bi,bj,myThid)
         ENDDO
        ENDDO
          
-       WRITE(suff,'(I10.10)') myIter
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-       CALL WRITE_FLD_XY_RL('ICE_fract-T.',  suff,
-     &                       ice_fract_Ave,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_iceH-T.',   suff,
-     &                       ice_iceH_Ave,   myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_snowH-T.',  suff,
-     &                       ice_snowH_Ave,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_Tsrf-T.',   suff,
-     &                       ice_Tsrf_Ave,   myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_Tice1-T.',  suff,
-     &                       ice_Tice1_Ave,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_Tice2-T.',  suff,
-     &                       ice_Tice2_Ave,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_snowPr-T.', suff,
-     &                       ice_snowPr_Ave, myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_flx2oc-T.', suff,
-     &                       ice_flx2oc_Ave, myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_frw2oc-T.', suff,
-     &                       ice_frw2oc_Ave, myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_salFx-T.',  suff,
-     &                       ice_salFx_Ave,  myIter,myThid)
+C--    Write 1 file per time-average variable:
+c      WRITE(suff,'(I10.10)') myIter
+c      CALL WRITE_FLD_XY_RL('ICE_fract-T.',  suff,
+c    &                       ice_fract_Ave,  myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_iceH-T.',   suff,
+c    &                       ice_iceH_Ave,   myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_snowH-T.',  suff,
+c    &                       ice_snowH_Ave,  myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_Tsrf-T.',   suff,
+c    &                       ice_Tsrf_Ave,   myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_Tice1-T.',  suff,
+c    &                       ice_Tice1_Ave,  myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_Tice2-T.',  suff,
+c    &                       ice_Tice2_Ave,  myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_snowPr-T.', suff,
+c    &                       ice_snowPr_Ave, myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_albedo-T.', suff,
+c    &                       ice_albedo_Ave, myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_flx2oc-T.', suff,
+c    &                       ice_flx2oc_Ave, myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_frw2oc-T.', suff,
+c    &                       ice_frw2oc_Ave, myIter,myThid)
+c      CALL WRITE_FLD_XY_RL('ICE_salFx-T.',  suff,
+c    &                       ice_salFx_Ave,  myIter,myThid)
+c      IF ( fluidIsWater ) THEN
+c       CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
+c    &                       ice_flxAtm_Ave, myIter,myThid)
+c       CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
+c    &                       ice_frwAtm_Ave, myIter,myThid)
+c      ENDIF
+c      IF ( stepFwd_oceMxL ) THEN
+c       CALL WRITE_FLD_XY_RL('ICE_tMxL-T.', suff,
+c    &                       ice_tMxL_Ave, myIter,myThid)
+c       CALL WRITE_FLD_XY_RL('ICE_sMxL-T.', suff,
+c    &                       ice_sMxL_Ave, myIter,myThid)
+c      ENDIF
+
+
+C--    Write all time-average variables in 1 file :
+       _BARRIER
+       _BEGIN_MASTER( myThid )
+
+C-     find wether we are writing globalFile or tile-files:
+       CALL GET_WRITE_GLOBAL_FLD( gf )
+
+       WRITE(fn,'(A,I10.10)') 'thSIce_tave.', myIter
+
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_fract_Ave,  1, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_iceH_Ave,   2, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_snowH_Ave,  3, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_Tsrf_Ave,   4, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_Tice1_Ave,  5, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_Tice2_Ave,  6, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_snowPr_Ave, 7, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_albedo_Ave, 8, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_flx2oc_Ave, 9, myIter, myThid )
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_frw2oc_Ave,10, myIter, myThid )
+       kl = 11
+       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_salFx_Ave, kl, myIter, myThid )
        IF ( fluidIsWater ) THEN
-        CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
-     &                       ice_flxAtm_Ave, myIter,myThid)
-        CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
-     &                       ice_frwAtm_Ave, myIter,myThid)
+        kl = kl+1
+        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_flxAtm_Ave,kl, myIter, myThid )
+        kl = kl+1
+        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_frwAtm_Ave,kl, myIter, myThid )
        ENDIF
-       CALL WRITE_FLD_XY_RL('ICE_albedo-T.', suff,
-     &                       ice_albedo_Ave, myIter,myThid)
        IF ( stepFwd_oceMxL ) THEN
-        CALL WRITE_FLD_XY_RL('ICE_tMxL-T.', suff,
-     &                       ice_tMxL_Ave, myIter,myThid)
-        CALL WRITE_FLD_XY_RL('ICE_sMxL-T.', suff,
-     &                       ice_sMxL_Ave, myIter,myThid)
+        kl = kl+1
+        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_tMxL_Ave,  kl, myIter, myThid )
+        kl = kl+1
+        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
+     &                     ice_sMxL_Ave,  kl, myIter, myThid )
        ENDIF
 
+       _END_MASTER( myThid )
+       _BARRIER
          
-C      Reset averages to zero
+C--    Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_RESET(ice_fract_Ave,  1, bi,bj, myThid)
