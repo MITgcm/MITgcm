@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.5 2001/12/06 16:36:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.6 2003/07/13 18:44:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -141,38 +141,30 @@ cs-   end block
 cs-   this block needed by cubed sphere until we write more useful I/O routines
 C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
 cs!   this is not correct <= need paired exchange for dxv,dyu
-      CALL EXCH_Z_XY_RS(DXV,myThid)
-      CALL EXCH_Z_XY_RS(DYU,myThid)
+cs    CALL EXCH_Z_XY_RS(DXV,myThid)
+cs    CALL EXCH_Z_XY_RS(DYU,myThid)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DXV(sNx+1,1,bi,bj)=DXV(1,1,bi,bj)
-        DXV(1,sNy+1,bi,bj)=DXV(1,1,bi,bj)
-        DYU(sNx+1,1,bi,bj)=DYU(1,1,bi,bj)
-        DYU(1,sNy+1,bi,bj)=DYU(1,1,bi,bj)
 cs! fix overlaps:
         DO j=1,sNy
          DO i=1,Olx
           DXV(1-i,j,bi,bj)=DXV(1+i,j,bi,bj)
-          DXV(sNx+i,j,bi,bj)=DXV(sNx-i,j,bi,bj)
+          DXV(sNx+i,j,bi,bj)=DXV(i,j,bi,bj)
           DYU(1-i,j,bi,bj)=DYU(1+i,j,bi,bj)
-          DYU(sNx+i,j,bi,bj)=DYU(sNx-i,j,bi,bj)
+          DYU(sNx+i,j,bi,bj)=DYU(i,j,bi,bj)
          ENDDO
         ENDDO
         DO j=1,Oly
-         DO i=1,sNx
+         DO i=1-Olx,sNx+Olx
           DXV(i,1-j,bi,bj)=DXV(i,1+j,bi,bj)
-          DXV(i,sNy+j,bi,bj)=DXV(i,sNy-j,bi,bj)
+          DXV(i,sNy+j,bi,bj)=DXV(i,j,bi,bj)
           DYU(i,1-j,bi,bj)=DYU(i,1+j,bi,bj)
-          DYU(i,sNy+j,bi,bj)=DYU(i,sNy-j,bi,bj)
+          DYU(i,sNy+j,bi,bj)=DYU(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 cs-   end block
-C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
-cs!   this is not correct <= need paired exchange for dxv,dyu
-cs    CALL EXCH_Z_XY_RS(DXV,myThid)
-cs    CALL EXCH_Z_XY_RS(DYU,myThid)
 
       CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,RAZ,  1,myThid)
 cs-   this block needed by cubed sphere until we write more useful I/O routines
