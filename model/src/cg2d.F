@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.35 2002/05/30 02:26:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.36 2002/06/21 18:36:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -183,7 +183,7 @@ C--   Initial residual calculation
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
-     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
+     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
      &    )
           err            = err            + 
      &     cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
@@ -301,7 +301,7 @@ C==    q = A.s
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
-     &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
+     &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
           alpha = alpha+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO
          ENDDO

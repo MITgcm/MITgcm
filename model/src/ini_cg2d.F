@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.38 2002/02/10 20:04:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.39 2002/06/21 18:36:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -194,7 +194,7 @@ c       WRITE(*,*) ' mythid, sumArea = ', mythid, sumArea
         _GLOBAL_SUM_R8( sumArea, myThid )
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * sumArea / deltaTMom
+     &                           * sumArea / deltaTfreesurf
         WRITE(*,'(2A,1P2E22.14)') ' ini_cg2d: ',
      &          'sumArea,cg2dTolerance =', sumArea,cg2dTolerance
       ENDIF
@@ -222,19 +222,19 @@ C           defaults to 0.51 but can be set at runtime.
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
      &    +freeSurfFac*myNorm*recip_Bo(I,J,bi,bj)* 
-     &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
      &    +freeSurfFac*myNorm*recip_Bo(I,J-1,bi,bj)* 
-     &     rA(I,J-1,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I,J-1,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
      &    +freeSurfFac*myNorm*recip_Bo(I-1,J,bi,bj)* 
-     &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I-1,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           IF ( aC .EQ. 0. ) THEN
             pC(I,J,bi,bj) = 1. _d 0

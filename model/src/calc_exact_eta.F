@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.8 2002/02/10 00:44:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.9 2002/06/21 18:36:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,7 +119,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
      &      - implicDiv2Dflow*( EmPmR(i,j,bi,bj)
      &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &                        )*deltaTmom
+     &                        )*deltaTfreesurf
          ENDDO
         ENDDO
        ELSE
@@ -127,7 +127,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
          DO i=1,sNx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
      &      - implicDiv2Dflow*hDivFlow(i,j,bi,bj)
-     &                       *recip_rA(i,j,bi,bj)*deltaTmom
+     &                       *recip_rA(i,j,bi,bj)*deltaTfreesurf
          ENDDO
         ENDDO
        ENDIF
@@ -165,7 +165,7 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
             PmEpR(i,j,bi,bj) = 
      &        hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &      + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &       /(implicDiv2Dflow*deltaTmom)
+     &       /(implicDiv2Dflow*deltaTfreesurf)
            ENDDO
           ENDDO
         ENDIF
@@ -202,7 +202,7 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
      &      - (1. - implicDiv2Dflow)*( EmPmR(i,j,bi,bj)
      &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &                               )*deltaTmom
+     &                               )*deltaTfreesurf
          ENDDO
         ENDDO
 
@@ -211,7 +211,7 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
          DO i=1,sNx
            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
      &      - (1. - implicDiv2Dflow)*hDivFlow(i,j,bi,bj)
-     &                              *recip_rA(i,j,bi,bj)*deltaTmom
+     &                              *recip_rA(i,j,bi,bj)*deltaTfreesurf
          ENDDO
         ENDDO
        ENDIF

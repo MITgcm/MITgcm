@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.71 2002/06/15 03:26:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.72 2002/06/21 18:36:04 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -367,6 +367,7 @@ C                    Frequency of checkpointing and dumping of the model state
 C                    are referenced to this clock. ( s )
 C     deltaTMom    :: Timestep for momemtum equations ( s )
 C     deltaTtracer :: Timestep for tracer equations ( s )
+C     deltaTfreesurf :: Timestep for free-surface equation ( s )
 C     freesurfFac  :: Parameter to turn implicit free surface term on or off
 C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
@@ -427,7 +428,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit, 
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delP, delZ, delR, delRc, delX, delY,
-     & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, 
+     & deltaT, deltaTmom, deltaTtracer, deltaTfreesurf, deltaTClock,
+     & abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG,
      & viscAh,  viscAz,  viscA4,  viscAr, viscAstrain, viscAtension,
@@ -465,6 +467,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL deltaTClock
       _RL deltaTmom
       _RL deltaTtracer
+      _RL deltaTfreesurf
       _RL abeps
       _RL phiMin
       _RL thetaMin
