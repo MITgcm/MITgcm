@@ -1,25 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/dynamics.F,v 1.4 2001/08/01 20:31:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/thermodynamics.F,v 1.1 2001/08/03 19:06:11 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE DYNAMICS(myTime, myIter, myThid)
+      SUBROUTINE THERMODYNAMICS(myTime, myIter, myThid)
 C     /==========================================================\
-C     | SUBROUTINE DYNAMICS                                      |
-C     | o Controlling routine for the explicit part of the model |
-C     |   dynamics.                                              |
+C     | SUBROUTINE THERMODYNAMICS                                |
+C     | o Controlling routine for the prognostic part of the     |
+C     |   thermo-dynamics.                                       |
 C     |==========================================================|
-C     | This routine evaluates the "dynamics" terms for each     |
-C     | block of ocean in turn. Because the blocks of ocean have |
-C     | overlap regions they are independent of one another.     |
-C     | If terms involving lateral integrals are needed in this  |
-C     | routine care will be needed. Similarly finite-difference |
-C     | operations with stencils wider than the overlap region   |
-C     | require special consideration.                           |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | C*P* comments indicating place holders for which code is |
-C     |      presently being developed.                          |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -29,6 +18,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_PASSIVE_TRACER
+#include "TR1.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -91,6 +83,7 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -235,15 +228,17 @@ CHPF$&                  )
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          rTrans(i,j)   = 0. _d 0
-          fVerT (i,j,1) = 0. _d 0
-          fVerT (i,j,2) = 0. _d 0
-          fVerS (i,j,1) = 0. _d 0
-          fVerS (i,j,2) = 0. _d 0
-          fVerU (i,j,1) = 0. _d 0
-          fVerU (i,j,2) = 0. _d 0
-          fVerV (i,j,1) = 0. _d 0
-          fVerV (i,j,2) = 0. _d 0
+          rTrans (i,j)   = 0. _d 0
+          fVerT  (i,j,1) = 0. _d 0
+          fVerT  (i,j,2) = 0. _d 0
+          fVerS  (i,j,1) = 0. _d 0
+          fVerS  (i,j,2) = 0. _d 0
+          fVerTr1(i,j,1) = 0. _d 0
+          fVerTr1(i,j,2) = 0. _d 0
+          fVerU  (i,j,1) = 0. _d 0
+          fVerU  (i,j,2) = 0. _d 0
+          fVerV  (i,j,1) = 0. _d 0
+          fVerV  (i,j,2) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -269,6 +264,9 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#ifdef ALLOW_PASSIVE_TRACER
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of diagnostic loop
@@ -438,6 +436,9 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#ifdef ALLOW_PASSIVE_TRACER
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AIM
@@ -468,16 +469,16 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
 
-          iMin = 1-OLx+2
-          iMax = sNx+OLx-1
-          jMin = 1-OLy+2
-          jMax = sNy+OLy-1
+          iMin = 1-OLx
+          iMax = sNx+OLx
+          jMin = 1-OLy
+          jMax = sNy+OLy
 
-C--      Get temporary terms used by tendency routines
-         CALL CALC_COMMON_FACTORS (
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     O        xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I        myThid)
+C--       Get temporary terms used by tendency routines
+          CALL CALC_COMMON_FACTORS (
+     I         bi,bj,iMin,iMax,jMin,jMax,k,
+     O         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -492,6 +493,11 @@ C--      Calculate the total vertical diffusivity
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 #endif
+
+          iMin = 1-OLx+2
+          iMax = sNx+OLx-1
+          jMin = 1-OLy+2
+          jMax = sNy+OLy-1
 
 C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gTnm1, gSnm1, etc.
@@ -523,6 +529,22 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      U         gSnm1,
      I         myIter, myThid)
          ENDIF
+#ifdef ALLOW_PASSIVE_TRACER
+         IF ( tr1Stepping ) THEN
+           CALL CALC_GTR1(
+     I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
+     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         KappaRT,
+     U         fVerTr1,
+     I         myTime, myThid)
+           tauAB = 0.5d0 + abEps
+           CALL TIMESTEP_TRACER(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
+     I         Tr1, gTr1,
+     U         gTr1NM1,
+     I         myIter, myThid)
+         ENDIF
+#endif
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
@@ -543,19 +565,6 @@ CADJ &   , key = kkey, byte = isbyte
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
-       ENDDO
-      ENDDO
-#ifdef ALLOW_AIM
-      IF ( useAIM ) THEN
-       CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
-      ENDIF
-#endif /* ALLOW_AIM */
-c     IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
-       _EXCH_XYZ_R8(gTnm1,myThid)
-       _EXCH_XYZ_R8(gSnm1,myThid)
-c     ENDIF
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick? What about this one?
@@ -594,6 +603,19 @@ CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      I         myThid )
          ENDIF
 
+#ifdef ALLOW_PASSIVE_TRACER
+         IF (tr1Stepping) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          CALL IMPLDIFF(
+     I      bi, bj, iMin, iMax, jMin, jMax,
+     I      deltaTtracer, KappaRT, recip_HFacC,
+     U      gTr1Nm1,
+     I      myThid )
+         ENDIF
+#endif
+
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (useOBCS) THEN
@@ -606,181 +628,19 @@ C--      Apply open boundary conditions
 C--     End If implicitDiffusion
         ENDIF
 
-C--     Start computation of dynamics
-        iMin = 1-OLx+2
-        iMax = sNx+OLx-1
-        jMin = 1-OLy+2
-        jMax = sNy+OLy-1
-
-C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)
-C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
-        IF (implicSurfPress.NE.1.) THEN
-          CALL CALC_GRAD_PHI_SURF(
-     I         bi,bj,iMin,iMax,jMin,jMax,
-     I         etaN,
-     O         phiSurfX,phiSurfY,
-     I         myThid )                         
-        ENDIF
-
-C--     Start of dynamics loop
-        DO k=1,Nr
-
-C--       km1    Points to level above k (=k-1)
-C--       kup    Cycles through 1,2 to point to layer above
-C--       kDown  Cycles through 2,1 to point to current layer
-
-          km1  = MAX(1,k-1)
-          kup  = 1+MOD(k+1,2)
-          kDown= 1+MOD(k,2)
-
-C--      Integrate hydrostatic balance for phiHyd with BC of 
-C        phiHyd(z=0)=0
-C        distinguishe between Stagger and Non Stagger time stepping
-         IF (staggerTimeStep) THEN
-           CALL CALC_PHI_HYD(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        gTnm1, gSnm1,
-     U        phiHyd,
-     I        myThid )
-         ELSE
-           CALL CALC_PHI_HYD(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        theta, salt,
-     U        phiHyd,
-     I        myThid )
-         ENDIF
-
-C--      Calculate accelerations in the momentum equations (gU, gV, ...)
-C        and step forward storing the result in gUnm1, gVnm1, etc...
-         IF ( momStepping ) THEN
-           CALL CALC_MOM_RHS(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         phiHyd,KappaRU,KappaRV,
-     U         fVerU, fVerV,
-     I         myTime, myThid)
-           CALL TIMESTEP(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
-     I         phiHyd, phiSurfX, phiSurfY,
-     I         myIter, myThid)
-
-#ifdef   ALLOW_OBCS
-C--      Apply open boundary conditions
-         IF (useOBCS) THEN
-           CALL OBCS_APPLY_UV( bi, bj, k, gUnm1, gVnm1, myThid )
-         END IF
-#endif   /* ALLOW_OBCS */
-
-#ifdef   ALLOW_AUTODIFF_TAMC
-#ifdef   INCLUDE_CD_CODE
-         ELSE
-           DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-               guCD(i,j,k,bi,bj) = 0.0
-               gvCD(i,j,k,bi,bj) = 0.0
-             END DO
-           END DO
-#endif   /* INCLUDE_CD_CODE */
-#endif   /* ALLOW_AUTODIFF_TAMC */
-         ENDIF
-
-
-C--     end of dynamics k loop (1:Nr)
-        ENDDO
-
-
-
-C--     Implicit viscosity
-        IF (implicitViscosity.AND.momStepping) THEN
-#ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 3
-CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
-#endif    /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTmom, KappaRU,recip_HFacW,
-     U         gUNm1,
-     I         myThid )
-#ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 4
-CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
-#endif    /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTmom, KappaRV,recip_HFacS,
-     U         gVNm1,
-     I         myThid )
-
-#ifdef   ALLOW_OBCS
-C--      Apply open boundary conditions
-         IF (useOBCS) THEN
-           DO K=1,Nr
-             CALL OBCS_APPLY_UV( bi, bj, k, gUnm1, gVnm1, myThid )
-           ENDDO
-         END IF
-#endif   /* ALLOW_OBCS */
-
-#ifdef    INCLUDE_CD_CODE
-#ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 5
-CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
-#endif    /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTmom, KappaRU,recip_HFacW,
-     U         vVelD,
-     I         myThid )
-#ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 6
-CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
-#endif    /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTmom, KappaRV,recip_HFacS,
-     U         uVelD,
-     I         myThid )
-#endif    /* INCLUDE_CD_CODE */
-C--     End If implicitViscosity.AND.momStepping
-        ENDIF
- 
-Cjmc : add for phiHyd output <- but not working if multi tile per CPU
-c       IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime+deltaTClock,myTime) 
-c    &  .AND. buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-c         WRITE(suff,'(I10.10)') myIter+1
-c         CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid) 
-c       ENDIF
-Cjmc(end)
-
-#ifdef ALLOW_TIMEAVE
-        IF (taveFreq.GT.0.) THEN 
-          CALL TIMEAVE_CUMUL_1T(phiHydtave, phiHyd, Nr,
-     I                              deltaTclock, bi, bj, myThid)
-          IF (ivdc_kappa.NE.0.) THEN
-            CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,
-     I                              deltaTclock, bi, bj, myThid)
-          ENDIF
-        ENDIF
-#endif /* ALLOW_TIMEAVE */
-
+Ccs-
        ENDDO
       ENDDO
 
-#ifndef EXCLUDE_DEBUGMODE
-      If (debugMode) THEN
-       CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,theta,'Theta (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,salt,'Salt (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gu,'Gu (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gv,'Gv (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gt,'Gt (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gs,'Gs (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GuNm1,'GuNm1 (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GvNm1,'GvNm1 (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GtNm1,'GtNm1 (DYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GsNm1,'GsNm1 (DYNAMICS)',myThid)
+#ifdef ALLOW_AIM
+      IF ( useAIM ) THEN
+       CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_AIM */
+c     IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
+       _EXCH_XYZ_R8(gTnm1,myThid)
+       _EXCH_XYZ_R8(gSnm1,myThid)
+c     ENDIF
 
       RETURN
       END

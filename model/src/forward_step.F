@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.14 2001/08/01 22:12:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.15 2001/08/03 19:06:11 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,6 +72,11 @@ C       exf is disabled by default in genmake.
         CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
         CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
 #endif
+
+C--     Step forward fields and calculate time tendency terms.
+        CALL TIMER_START('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
+        CALL THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
 
 C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [THE_MAIN_LOOP]',mythid)
