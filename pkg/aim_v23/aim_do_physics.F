@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.5 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.6 2004/04/18 21:38:40 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -64,11 +64,9 @@ C     flxSW    :: net Short-Wave heat flux into the ocean (+=down) [W/m2]
       INTEGER I,J,K,I2
 c     INTEGER Katm
       _RL     tYear, yearLength
-#ifdef ALLOW_THSICE
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 C      ==> move water wapor from the stratos to the surface level.
@@ -140,12 +138,14 @@ C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
       ENDIF
 #endif /* ALLOW_LAND */
 
+C-    surface fluxes over ocean (ice-free & ice covered) 
+C       used for diagnostics, thsice package and coupler
+        CALL AIM_AIM2SIOCE( aim_landFr,
+     O                      prcAtm, evpAtm, flxSW, 
+     I                      bi, bj, myTime, myIter, myThid )
+
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
-C-    prepare Surface flux over sea-ice for thsice package
-        CALL AIM_AIM2SICE( aim_landFr,
-     O                     prcAtm, evpAtm, flxSW, 
-     I                     bi, bj, myTime, myIter, myThid )
 
 C-    Step forward sea-ice model
         CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,

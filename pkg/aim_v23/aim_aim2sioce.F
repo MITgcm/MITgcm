@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/aim_aim2sice.F,v 1.1 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.1 2004/04/18 21:38:40 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -7,17 +7,20 @@ C $Name:  $
 #endif
 
 CBOP
-C     !ROUTINE: AIM_AIM2SICE
+C     !ROUTINE: AIM_AIM2SIOCE
 C     !INTERFACE:
-      SUBROUTINE AIM_AIM2SICE(
+      SUBROUTINE AIM_AIM2SIOCE(
      I               land_frc, 
      O               prcAtm, evpAtm, flxSW,
      I               bi, bj, myTime, myIter, myThid)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R AIM_AIM2SICE
-C     | o Export sea-ice surface fluxes to thSIce package
+C     | S/R AIM_AIM2SIOCE
+C     | o Interface between AIM and thSIce pkg or (coupled) ocean
+C     *==========================================================*
+C     | o compute surface fluxes over ocean (ice-free + ice covered)
+C     |   for diagnostics, thsice package and (slab, coupled) ocean
 C     *==========================================================*
 C     \ev
 
@@ -62,11 +65,11 @@ C     myThid   :: Number of this instance of the routine
 CEOP
 
 #ifdef ALLOW_AIM
-#ifdef ALLOW_THSICE
 C     == Local variables ==
 C     i,j,I2       :: loop counters
 C     conv_precip  :: conversion factor for precip: from g/m2/s to kg/m2/s
-      _RL conv_precip
+C     conv_EmP     :: conversion factor for EmP : from g/m2/s to m/s
+      _RL conv_precip, conv_EmP
       _RL icFrac, opFrac
       INTEGER i,j,I2
 
@@ -79,13 +82,14 @@ c     IF ( useLand ) THEN
 C      from g/m2/s to kg/m2/s :
        conv_Precip = 1. _d -3
 C      from g/m2/s to m/s :
-c      conv_Precip = 1. _d -3 / rhofw 
+       conv_EmP = conv_Precip / rhoConstFresh 
+#ifdef ALLOW_THSICE
+       IF (useThSIce) conv_EmP = conv_Precip / rhofw 
+#endif
 
       DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
-C-    Mixed-Layer Ocean:
-         IF (land_frc(i,j,bi,bj).EQ.1. _d 0) hOceMxL(i,j,bi,bj) = 0.
 
 C-    Total Precip :
          prcAtm(i,j) = ( PRECNV(I2,myThid)
@@ -100,7 +104,7 @@ C-    Net surface heat flux over ice-free ocean (+=down)
 
 C-    E-P over ice-free ocean [m/s]:
          EmPmR(i,j,bi,bj) = ( EVAP(I2,2,myThid)
-     &                      - prcAtm(i,j) ) * conv_precip/rhofw
+     &                      - prcAtm(i,j) ) * conv_EmP
 
 C-    Net short wave (ice-free ocean) into the ocean (+=down)
          flxSW(i,j) = Qsw(i,j,bi,bj)
@@ -120,10 +124,13 @@ C--   Add energy flux related to Precip. (snow, T_rain) over ice-free ocean
         ENDDO
       ENDIF
 
+#ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
        DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
+C-    Mixed-Layer Ocean:
+         IF (land_frc(i,j,bi,bj).EQ.1. _d 0) hOceMxL(i,j,bi,bj) = 0.
 
 C-    Evaporation over sea-ice:
          evpAtm(i,j) = EVAP(I2,3,myThid)*conv_precip
@@ -155,6 +162,7 @@ C-    negative => make snow
         ENDDO
        ENDDO
       ENDIF
+#endif /* ALLOW_THSICE */
 
       DO j=1,sNy
         DO i=1,sNx
@@ -166,7 +174,6 @@ C-    Oceanic convention: Heat flux are > 0 upward ; reverse sign.
         ENDDO
       ENDDO
 
-#endif /* ALLOW_THSICE */
 #endif /* ALLOW_AIM */
 
       RETURN
