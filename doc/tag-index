@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.413 2004/12/14 23:00:53 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.414 2004/12/16 08:31:42 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o clean up build options files for SunOS, in particular change -xarch=v9
+  to -xarch=native
 o changes per discussion of AM, JMC, & EH3 today:
   - move redundant "grid" variables out of "state" -- in preparation of 
     creating proper CF-style coordinate variables and in recognition 
