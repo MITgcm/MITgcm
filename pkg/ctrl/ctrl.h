@@ -24,8 +24,12 @@ c                       south (s), and western (w) mask, resp. .
       integer     maxcvars
       parameter ( maxcvars = 30 )
 
+cph ctrlprec will be set to 32 for ECCO to reduce I/O
+cph but jeopardizes some gradient checks, so should be
+cph set to 64 by default.
+cph Need to put this in namelist at some point!
       integer     ctrlprec
-      parameter ( ctrlprec = 32 )
+      parameter ( ctrlprec = 64 )
 
       common /controlvars_i/
      &                       nvartype,
