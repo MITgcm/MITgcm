@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.21 2004/10/17 23:05:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.22 2005/02/10 05:41:44 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -784,9 +784,15 @@ c            evaluate diffusivities and viscosity
 c    mixing due to internal waves, and shear and static instability
 
 #ifndef EXCLUDE_KPP_SHEAR_MIX 
-            diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
-            diffus(i,ki,2) = diffKrNrS(ki)+ fcon*difscon + fRi*difs0
-            diffus(i,ki,3) = diffKrNrT(ki)+ fcon*difscon + fRi*difs0
+            if ( .NOT. inAdMode ) then
+               diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
+               diffus(i,ki,2) = diffKrNrS(ki)+ fcon*difscon + fRi*difs0
+               diffus(i,ki,3) = diffKrNrT(ki)+ fcon*difscon + fRi*difs0
+            else
+               diffus(i,ki,1) = viscAr
+               diffus(i,ki,2) = diffKrNrS(ki)
+               diffus(i,ki,3) = diffKrNrT(ki)
+            endif
 #else
             diffus(i,ki,1) = viscAr
             diffus(i,ki,2) = diffKrNrS(ki)
