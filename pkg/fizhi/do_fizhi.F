@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.40 2004/10/07 00:12:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.41 2004/10/07 01:20:47 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -13,6 +13,7 @@ C $Name:  $
      . iras,nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
      . nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      . imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw,
+     . raincon,rainlsp,snowfall,
      . duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - calls fizhi_driver.
@@ -79,6 +80,10 @@ C Argument list declarations
       _RL qliqavelw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL fccavesw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL fccavelw(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
+      _RL rainlsp(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RL raincon(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RL snowfall(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+
 
       _RL duphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL dvphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -118,9 +123,6 @@ c Local Variables
       _RL lwgclr(sNx,sNy,Nsx,Nsy),st4(sNx,sNy,Nsx,Nsy)
       _RL dst4(sNx,sNy,Nsx,Nsy),dlwdtg(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL qq(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL rainlsp(sNx,sNy,Nsx,Nsy),raincon(sNx,sNy,Nsx,Nsy)
-      _RL snowfall(sNx,sNy,Nsx,Nsy)
-
       integer i,j,L
       _RL getcon, kappa, p0kappa, s0, ra
       _RL cosz(sNx,sNy)
@@ -133,7 +135,7 @@ c Local Variables
       common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
       common /saver/ moistu,moistv,moistt,moistq
       common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
+      common /saver/ st4,dst4,dlwdtg
       common /saver/ qq
       common /saver/ pl,ple,dpres,pkle,pkl
  

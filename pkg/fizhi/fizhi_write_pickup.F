@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.5 2004/10/07 00:06:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.6 2004/10/07 01:20:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -42,7 +42,7 @@ C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 C     lgf     :: flag to write "global" files
-      INTEGER prec, iChar, lChar
+      INTEGER prec, iChara, lChar
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
       _RL temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
@@ -62,8 +62,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       enddo
 
       lChar = 0
-      DO iChar = 1,len(suff)
-       IF ( suff(iChar:iChar) .NE. ' ') lChar=iChar
+      DO iChara = 1,len(suff)
+       IF ( suff(iChara:iChara) .NE. ' ') lChar=iChara
       ENDDO
       WRITE(fn,'(A,A)') 'pickup_fizhi.',suff(1:lChar)
       prec = precFloat64
@@ -96,14 +96,27 @@ C--   Write fields as consecutive records
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavesw,14,myIter,
      .                                                          myThid)
 
-      temp(1,1,1,1,1) = float(iras)
-      temp(2,1,1,1,1) = float(nlwcld)
-      temp(3,1,1,1,1) = float(nlwlz)
-      temp(4,1,1,1,1) = float(nswcld)
-      temp(5,1,1,1,1) = float(nswlz)
-      temp(6,1,1,1,1) = float(imstturbsw)
-      temp(7,1,1,1,1) = float(imstturblw)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,temp,15,myIter,myThid)
+      do bj = 1,Nsy
+      do bi = 1,Nsx
+      do j = 1-OLy,sNy+OLy
+      do i = 1-OLx,sNx+OLx
+       temp(i,j,1,bi,bj) = raincon(i,j,bi,bj)
+       temp(i,j,2,bi,bj) = rainlsp(i,j,bi,bj)
+       temp(i,j,3,bi,bj) = snowfall(i,j,bi,bj)
+      enddo
+      enddo
+      enddo
+      enddo
+
+      temp(1,1,4,1,1) = float(iras)
+      temp(2,1,4,1,1) = float(nlwcld)
+      temp(3,1,4,1,1) = float(nlwlz)
+      temp(4,1,4,1,1) = float(nswcld)
+      temp(5,1,4,1,1) = float(nswlz)
+      temp(6,1,4,1,1) = float(imstturbsw)
+      temp(7,1,4,1,1) = float(imstturblw)
+
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,temp,15,myIter,myThid)
 
       RETURN
       END

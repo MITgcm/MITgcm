@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.8 2004/10/07 00:06:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.9 2004/10/07 01:20:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -45,6 +45,7 @@ C     k       :: loop index
       INTEGER i, prec
       CHARACTER*(MAX_LEN_FNAM) fn
       _RL temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      integer i,j,bi,bj
 
       DO i = 1,MAX_LEN_FNAM
         fn(i:i) = ' '
@@ -71,13 +72,26 @@ C       Read fields as consecutive records
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavelw,13,myIter,myThid)
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavesw,14,myIter,myThid)
        CALL MDSREADFIELD(fn,prec,'RL',Nrphys,temp,15,myIter,myThid)
-       iras = nint(temp(1,1,1,1,1))
-       nlwcld = nint(temp(2,1,1,1,1))
-       nlwlz = nint(temp(3,1,1,1,1))
-       nswcld = nint(temp(4,1,1,1,1))
-       nswlz = nint(temp(5,1,1,1,1))
-       imstturbsw = nint(temp(6,1,1,1,1))
-       imstturblw = nint(temp(7,1,1,1,1))
+
+       do bj = 1,Nsy 
+       do bi = 1,Nsx 
+       do j = 1-OLy,sNy+OLy
+       do i = 1-OLx,sNx+OLx
+        raincon(i,j,bi,bj) = temp(i,j,1,bi,bj)
+        rainlsp(i,j,bi,bj) = temp(i,j,2,bi,bj)
+        snowfall(i,j,bi,bj) = temp(i,j,3,bi,bj)
+       enddo
+       enddo
+       enddo
+       enddo
+
+       iras = nint(temp(1,1,4,1,1))
+       nlwcld = nint(temp(2,1,4,1,1))
+       nlwlz = nint(temp(3,1,4,1,1))
+       nswcld = nint(temp(4,1,4,1,1))
+       nswlz = nint(temp(5,1,4,1,1))
+       imstturbsw = nint(temp(6,1,4,1,1))
+       imstturblw = nint(temp(7,1,4,1,1))
 
       ENDIF
 
