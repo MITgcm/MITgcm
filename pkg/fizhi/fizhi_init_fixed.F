@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.3 2004/06/07 20:26:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.4 2004/06/07 21:36:45 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -60,9 +60,10 @@ C Compute pressure profile to get methane and n2o values (bottom-up)
        enddo
        enddo
 
-       call fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
-     . ozone,nwatlats,nwatlevs,watlats,watlevs,water,
-     . Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
+       call fizhi_init_chem(mythid,
+     .      nlatsoz,nlevsoz,ntimesoz,latsoz,levsoz,ozone,
+     .      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
+     .      Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
 
        return
        end
