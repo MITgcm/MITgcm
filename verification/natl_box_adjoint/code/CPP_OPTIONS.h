@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/CPP_OPTIONS.h,v 1.2 2003/11/06 22:30:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/CPP_OPTIONS.h,v 1.3 2004/05/11 20:57:08 heimbach Exp $
 C
 
 C 
@@ -9,6 +9,7 @@ C will be compiled.
 #define CPP_OPTIONS_H
 
 #include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP

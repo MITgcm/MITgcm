@@ -62,7 +62,12 @@ C   for saving storage space
 C o Include/exclude KPP non/local transport terms
 #define KPP_GHAT
 
-C o Set precision for KPP variables (Real*4 or Real*8)
+C o Exclude Interior shear instability mixing
+#undef EXCLUDE_KPP_SHEAR_MIX
+
+C o Avoid as many as possible AD recomputations
+C   usually not necessary, but useful for testing
+#undef KPP_AUTODIFF_EXCESSIVE_STORE
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */

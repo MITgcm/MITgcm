@@ -1,17 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.8 2003/10/24 05:52:05 edhill Exp $
-C $Name:  $
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
 C     | o CPP options file for KPP package.                      |
 C     |==========================================================|
 C     | Use this file for selecting options within the KPP       |
-C     | package.                                                 |
+C     | package.  KPP is enabled with ALLOW_KPP in CPP_OPTIONS.h |
 C     \==========================================================/
 
 #ifndef KPP_OPTIONS_H
 #define KPP_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 
 #ifdef ALLOW_KPP
 
@@ -50,9 +47,6 @@ C o When set, smooth vertical viscosity horizontally
 C o When set, smooth vertical diffusivity horizontally
 #undef KPP_SMOOTH_DIFF
 
-C o Switch on vertical smoothing, the number of sweeps is set in the namelist
-#undef ALLOW_KPP_VERTICALLY_SMOOTH
-
 C o Get rid of vertical resolution dependence of dVsq term by
 C   estimating a surface velocity that is independent of first
 C   level thickness in the model.
@@ -60,7 +54,7 @@ C   level thickness in the model.
 
 C o Include/exclude various time-averaged diagnostic output
 C   for saving storage space
-#ifdef  ALLOW_TIMEAVE
+#ifdef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 #define INCLUDE_DIAGNOSTICS_KPP
 #undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
 #endif
@@ -68,5 +62,13 @@ C   for saving storage space
 C o Include/exclude KPP non/local transport terms
 #define KPP_GHAT
 
+C o Exclude Interior shear instability mixing
+#undef EXCLUDE_KPP_SHEAR_MIX
+
+C o Avoid as many as possible AD recomputations
+C   usually not necessary, but useful for testing
+#undef KPP_AUTODIFF_EXCESSIVE_STORE
+
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
+

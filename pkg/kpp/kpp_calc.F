@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.26 2004/05/05 22:50:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.27 2004/05/11 20:57:08 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -250,7 +250,7 @@ c------------------------------------------------------------------------
 
       CALL TIMER_START('STATEKPP      [KPP_CALC]', myThid)
       CALL STATEKPP(
-     I       bi, bj, myThid
+     I       ikppkey, bi, bj, myThid
      O     , work2, dbloc, Ritop
      O     , vddiff(ibot,jbot,1,1), vddiff(ibot,jbot,1,2)
      &     )
@@ -326,7 +326,7 @@ c     so that the subroutine "bldepth" works correctly
 cph(
 cph  this avoids a single or double recomp./call of statekpp
 CADJ store work2              = comlev1_kpp, key = ikppkey
-#ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
+#ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ store dbloc, Ritop, ghat = comlev1_kpp, key = ikppkey
 CADJ store vddiff             = comlev1_kpp, key = ikppkey
 #endif
@@ -631,7 +631,7 @@ c     shsq computation
       END DO
 
 cph(
-#ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
+#ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ store dvsq, shsq = comlev1_kpp, key = ikppkey
 #endif
 cph)
