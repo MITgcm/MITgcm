@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.20 2004/12/22 07:27:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.21 2005/02/11 03:04:43 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -82,7 +82,7 @@ C Local variables
       Real*8 global   (Nx,Ny)
       _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_EXCH2
-      integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
+      integer domainHeight,domainLength,tgy,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)
@@ -180,18 +180,18 @@ cafe             call print_error( msgbuf, mythid )
 cafe             stop 'ABNORMAL END: S/R MDSREADFIELD'
 cafe        endif
         tn = W2_myTileList(bi)
-        tby = exch2_tbasey(tn)
+        tgy = exch2_tyglobalo(tn)
         tgx = exch2_txglobalo(tn)
         tny = exch2_tny(tn)
         tnx = exch2_tnx(tn)
         if (fileIsOpen) then
          do k=1,nNz
           do j=1,tNy
-cafe          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
+cafe          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tgy=', tgy,
 cafe     &        ', tgx=', tgx,
 cafe     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
             
-            irec = domainLength*tby + (tgx-1)/tnx + 1 +
+            irec = domainLength*(tgy-1) + (tgx-1)/tnx + 1 +
      &             domainLength*(j-1) + 
      &             domainLength*domainHeight*tny*(k-1) +
      &             domainLength*domainHeight*tny*nNz*(irecord-1) 

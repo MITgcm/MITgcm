@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.7 2005/02/09 03:22:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.8 2005/02/11 03:06:12 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -106,13 +106,13 @@ C Local variables
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
       _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#ifdef ALLOW_EXCH2
-      integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
-#endif /* ALLOW_EXCH2 */
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)
       INTEGER mpi_myYGlobalLo(nPx*nPy)
+#endif
+#ifdef ALLOW_EXCH2
+      integer domainHeight,domainLength,tgy,tgx,tny,tnx,tn
+#endif /* ALLOW_EXCH2 */
 
 C     ------------------------------------------------------------------
 
@@ -185,8 +185,8 @@ C Gather array and write it to file, one vertical level at a time
           irec=k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           DO J=1,Ny
-            DO I=1,Nx
+           DO J=1,y_size
+            DO I=1,x_size
              xy_buffer_r4(I,J) = 0.0
             ENDDO
            ENDDO
@@ -217,8 +217,8 @@ C Gather array and write it to file, one vertical level at a time
            write(dUnit,rec=irec) xy_buffer_r4
           elseif (filePrec .eq. precFloat64) then
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           DO J=1,Ny
-            DO I=1,Nx
+           DO J=1,y_size
+            DO I=1,x_size
              xy_buffer_r8(I,J) = 0.0
             ENDDO
            ENDDO
@@ -308,7 +308,7 @@ C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
         tn = W2_myTileList(bi)
-        tby = exch2_tbasey(tn)
+        tgy = exch2_tyglobalo(tn)
         tgx = exch2_txglobalo(tn)
         tny = exch2_tny(tn)
         tnx = exch2_tnx(tn)
@@ -316,7 +316,7 @@ C Loop over all tiles
          do k=1,nNz
           do j=1,tNy
 
-           irec = domainLength*tby + (tgx-1)/tnx + 1 +
+           irec = domainLength*(tgy-1) + (tgx-1)/tnx + 1 +
      &            domainLength*(j-1) + 
      &            domainLength*domainHeight*tny*(k-1) +
      &            domainLength*domainHeight*tny*nNz*(irecord-1) 
