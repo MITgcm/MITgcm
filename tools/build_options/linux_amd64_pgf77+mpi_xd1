@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.1 2005/03/16 15:27:26 mlosch Exp $
+#  $Name:  $
+#
+# tested on xd1.awi-bremerhaven.de
+# Linux xd1-420-6 2.4.21_H_01_01 #6 SMP Wed Nov 3 15:30:06 PST 2004 x86_64 unknownx
+# pgf77 5.2-4
+# Copyright 1989-2000, The Portland Group, Inc.  All Rights Reserved.
+# Copyright 2000-2004, STMicroelectronics, Inc.  All Rights Reserved.
+
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+
+FC='mpif77'
+CC='mpicc'
+LINK='mpif77'
+CPP='/usr/bin/cpp -P -traditional'
+
+MPI='true'
+DEFINES='-DWORDLENGTH=4'
+INCLUDES='-I/usr/mpich/mpich-1.2.5-pgi522/include' 
+LIBS='-Mmpi -Mfmpi'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp amd64 -O2 -Munroll'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp amd64 -O0 -Munroll -Kieee'
+fi
