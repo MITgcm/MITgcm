@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.3 2003/06/12 17:59:05 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -30,6 +30,7 @@ C-- MITgcm
 #include "SURFACE.h"
 
 C-- Physics package
+#include "AIM_PARAMS.h"
 #include "AIM_FFIELDS.h"
 #include "AIM_GRID.h"
 #include "com_physvar.h"
@@ -104,6 +105,23 @@ C-    AIM diagnostics : write snap-shot & cumulate for TimeAve output
       CALL AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
 
       CALL AIM_AIM2DYN( bi, bj, myTime, myIter, myThid )
+
+#ifdef ALLOW_LAND
+        IF (useLand) THEN
+C-    prepare Surface flux over land for land package
+        CALL AIM_AIM2LAND( aim_landFr, bi, bj, 
+     I                     myTime, myIter, myThid )
+
+C-    Step forward land model
+        CALL LAND_STEPFWD( aim_landFr, bi, bj, 
+     I                     myTime, myIter, myThid )
+
+C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
+      CALL LAND_DIAGNOSTICS( aim_landFr, bi, bj, 
+     I                       myTime, myIter, myThid )
+
+      ENDIF
+#endif /* ALLOW_LAND */
 
 #endif /* ALLOW_AIM */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_SIZE.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_SIZE.h,v 1.2 2003/06/12 17:59:06 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -10,6 +10,7 @@ C     Latitudinal extent is one less than MITgcm ( i.e. NY-1)
 C     because MITgcm has dummy layer of land at northern most
 C     edge.  <-- no longer the case now
 #include "SIZE.h"
+#define SIZE_IS_SET
 
 C- dimension for AIM Physics package   
       INTEGER NLON, NLAT, NLEV, NGP

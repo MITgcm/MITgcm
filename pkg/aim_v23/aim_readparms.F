@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.3 2003/01/03 03:51:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.4 2003/06/12 17:59:05 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -24,7 +24,7 @@ C     !USES:
 C     == Global variables ===
 #include "AIM_SIZE.h"
 #include "EEPARAMS.h"
-c #include "PARAMS.h"
+#include "PARAMS.h"
 #include "AIM_PARAMS.h"
 
 C-   Physical constants + functions of sigma and latitude
@@ -247,6 +247,10 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+       CALL WRITE_0D_L( useLand, INDEX_NONE,
+     &                 'useLand =',
+     &'   /* use Land package for surf.BC over land  */')       
 
 C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_useFMsurfBC, INDEX_NONE,

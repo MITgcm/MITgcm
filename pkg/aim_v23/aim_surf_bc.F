@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.1 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.2 2003/06/12 17:59:05 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -27,9 +27,9 @@ C-- MITgcm
 c #include "DYNVARS.h"
 c #include "GRID.h"
 c #include "SURFACE.h"
-#include "AIM_PARAMS.h"
 
 C-- Physics package
+#include "AIM_PARAMS.h"
 #include "AIM_FFIELDS.h"
 c #include "AIM_GRID.h"
 #include "com_forcon.h"
@@ -234,6 +234,13 @@ c       ENDDO
 
 C-- endif/else aim_useFMsurfBC
       ENDIF
+
+#ifdef ALLOW_LAND
+      IF (useLand) THEN
+C-    Use land model output instead of prescribed Temp & moisture
+        CALL AIM_LAND2AIM( myTime, myIter, bi, bj, myThid ) 
+      ENDIF
+#endif /* ALLOW_LAND */
 
 #endif /* ALLOW_AIM */
 
