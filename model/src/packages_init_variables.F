@@ -23,8 +23,6 @@ C       |-- KPP_OPEN_DIAGS
 C       |
 C       |-- OBCS_INIT_VARIABLES
 C       |
-C       |-- AIM_INIT
-C       |
 C       |-- CTRL_MAP_INI
 C       |
 C       |-- COST_INIT
@@ -64,10 +62,6 @@ C--   Open boundaries data
       IF (useOBCS) THEN
         CALL OBCS_INIT_VARIABLES( myThid )
       ENDIF
-#endif
-
-#ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_INIT( mythid )
 #endif
 
 #ifdef ALLOW_PTRACERS

@@ -35,7 +35,7 @@ C       |-- ZONAL_FILT_READPARMS
 C       |
 C       |-- OBCS_READPARMS
 C       |
-C       |-- AIM_READPARMS
+C       |-- AIM_INITIALISE
 C       |
 C       |-- COST_READPARMS
 C       |
@@ -86,9 +86,8 @@ C--   Initialize KPP parameters
 #endif
 
 #ifdef ALLOW_AIM
-c--   Read in AIM package parameters
-C     Currently AIM does not have any runtime parameters
-C     IF (useAIM) CALL AIM_READPARMS ( myThid )
+C--   Initialise & Read AIM physical parameters
+      IF (useAIM) CALL AIM_INITIALISE( myThid )
 #endif
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))

@@ -1,15 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_initialise.F,v 1.1 2002/10/09 01:01:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-      SUBROUTINE AIM_INIT( myThid )
-C     /==================================================================\
-C     | S/R AIM_INIT                                                     |
-C     |==================================================================|
-C     | Interface between AIM atmospheric physics package and the        |
-C     | dynamical model for initialisation.                              |
-C     \==================================================================/
+      SUBROUTINE AIM_INITIALISE( myThid )
+C     *==================================================================*
+C     | S/R AIM_INITIALISE
+C     *==================================================================*
+C     | Initialisation of AIM atmospheric physics package :
+C     | 1) call iniphys (=> set parameters to default value)
+C     | 2) read AIM parameters 
+C     | 3) initialisation of AIM arrays (time-ave)
+C     *==================================================================*
       IMPLICIT NONE
 
 C     -------------- Global variables ------------------------------------
@@ -57,6 +59,8 @@ C     J, K, bi,bj  - Loop counters
         CALL INPHYS( FSG, HSG, RLAT, myThid )
        ENDDO
       ENDDO
+
+      CALL AIM_READ_PHYSPARMS( myThid )
 
 #ifdef ALLOW_TIMEAVE 
 C     Initialise diagnostic counters ( these are cleared on model starti i.e. not

@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.10 2002/09/27 20:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.11 2002/10/09 01:01:24 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-      SUBROUTINE AIM_DO_ATMOS_PHYSICS( phi_hyd, 
-     I                                 bi, bj,
-     I                                 currentTime, myThid )
+      SUBROUTINE AIM_DO_ATMOS_PHYSICS( bi, bj, currentTime, myThid ) 
+                                      
 C     /==================================================================\
 C     | S/R AIM_DO_ATMOS_PHYSICS                                         |
 C     |==================================================================|
@@ -37,7 +36,7 @@ C-- Physics package
 #include "com_forcing1.h"
 
 C     -------------- Routine arguments -----------------------------------
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL currentTime
       INTEGER myThid
       INTEGER bi, bj

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/ini_inphys.F,v 1.4 2002/09/27 20:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_inphys.F,v 1.1 2002/10/09 01:01:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -94,9 +94,9 @@ C
 cchdbg
       WVI(NLEV,2)=-SIGL(NLEV)*WVI(NLEV-1,1)
 cchdbg
-C
+ 
 C---  2. Constants for boundary forcing (common FORCON):
-C
+ 
       SOLC   = 342. _d 0
 
       ALBSEA = 0.07 _d 0
@@ -105,109 +105,59 @@ C
       SDALB  = 60. _d 0
       SWCAP = 75. _d 0
       SWWIL =  0. _d 0
-C
+
 C---  3. Constants for surface fluxes (common SFLCON):
-C
+
+C- jmc: return to F.Molteni values (Clim Dim, 02):
+
       FWIND0 = 0.6 _d 0
-cchdbg *****************************************************
-      FWIND0 = 0.6 _d 0*0.7 _d 0
-cchdbg ******************************************************
-cchdbg      FTEMP0 = 1.
-cchdbg      FHUM0  = 1.
-      FTEMP0 = 0. _d 0
-      FHUM0  = 0.5 _d 0
+      FTEMP0 = 1. _d 0
       FHUM0  = 1. _d 0
 
-c      CDL = 3.0E-3
-c      CDS = 1.2E-3
-c      CHL = 1.2E-3
-c      CHS = 1.2E-3
       CDL = 1.8 _d -3
       CDS = 0.8 _d -3
-      CHL = 2.0 _d -3
-      CHS = 0.9 _d -3
-C
-      VGUST  = 4. _d 0
-c     DTHETAF = 3. _d 0
-c     FSTAB  = 0.67 _d 0
-C
+      CHL = 1.2 _d -3
+      CHS = 0.8 _d -3
+      VGUST  = 5. _d 0
+
 C---  4. Constants for convection (common CNVCON):
-C
+
       RHBL   = 0.8 _d 0
       TRCNV  = 6. _d 0
       ENTMAX = 0.5 _d 0
-C
+
 C---  5. Constants for large-scale condensation (common LSCCON):
-C
+
       RHLSC  = 0.9 _d 0
       TRLSC  = 4. _d 0
-C
+
 C---  6. Constants for radiation (common RADCON):
-C
+
       ABSSW = 0.06 _d 0
-cchdbg ********************
-      ABSSW = 0.04 _d 0
-      ABSSW = 0.06 _d 0
-cchdbg *********************
       ABSLW = 1.40 _d 0
-cchdbg ****************************************************
-cch      ABSLW = 1.00
-cchdbg ****************************************************
 
       ABWSW = 0.06 _d 0
       ABWLW = 0.55 _d 0
-cchdbg ****************************************************
-      ABWLW = 0.60 _d 0
-cchdbg      ABWLW = 0.65
-cchdbg      ABWLW = 0.90
-cchdbg ****************************************************
 
       ABCSW = 0.0 _d 0
       ABCLW = 0.15 _d 0
-      ABCLW = 0.15 _d 0
-cchdbg *******************************************
-c      ABCLW = 3.0
-c      ABCLW = 2.0
-cch      ABCLW = 3.5
-cch      ABCLW = 2.5
-cch      ABCLW = 2.8
-cchdbg ********************************************
 
       EPSSW = 0.03 _d 0
       EPSLW = 0.05 _d 0
 
-      ALBCL = 0.50 _d 0
-cchdbg *******************************************
-      ALBCL = 0.49 _d 0
-      ALBCL = 0.47 _d 0
+C- jmc: return to F.Molteni values (Clim Dim, 02):
       ALBCL = 0.40 _d 0
-      ALBCL = 0.35 _d 0
-      ALBCL = 0.33 _d 0
-      ALBCL = 0.36 _d 0
-      ALBCL = 0.34 _d 0
-cchdbg ********************************************
-cchdbg      RHCL1 = 0.45
-cchdbg      RHCL2 = 0.85
-cchdbg      QACL  = 1.00
-cchdbg *******************************************
-      RHCL1 = 0.50 _d 0
-      RHCL2 = 0.90 _d 0
-      QACL  = 0.50 _d 0
-cchdbg *******************************************
-C
-C     2.6 Constants for vertical diffusion and sh. conv. (common VDICON):
-C
-      TRVDI = 48. _d 0
-      TRSHC = 24. _d 0
-cchdbg *******************************************
-      TRSHC = 12. _d 0
-cchdbg *******************************************
-      ENDIF
+      RHCL1 = 0.45 _d 0
+      RHCL2 = 0.85 _d 0
+      QACL  = 1.00 _d 0
 
-CcnhDebugStarts
-C     write(0,*) 'MAXVAL(NLEVxy)=',MAXVAL(NLEVxy)
-C     write(0,*) 'MINVAL(NLEVxy)=',MINVAL(NLEVxy)
-CcnhDebugEnds
+C--   7. Constants for vertical diffusion and sh. conv. (common VDICON):
+ 
+C- jmc: return to F.Molteni values (Clim Dim, 02):
+      TRVDI = 40. _d 0
+      TRSHC = 24. _d 0
+
+      ENDIF
 
 #endif /* ALLOW_AIM */ 
 
