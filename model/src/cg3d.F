@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.3 1999/05/24 14:15:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.4 2000/03/27 22:25:43 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -41,6 +41,8 @@ C     === Routine arguments ===
 C     myThid - Thread on which I am working.
       INTEGER myThid
 
+#ifdef ALLOW_NONHYDROSTATIC
+
 C     === Local variables ====
 C     actualIts      - Number of iterations taken
 C     actualResidual - residual
@@ -78,13 +80,6 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER exchWidthY
       INTEGER myNz
       _RL     topLevFac
-
-
-CcnhDebugStarts
-      CHARACTER*(MAX_LEN_FNAM) suff
-CcnhDebugEnds
-
-#ifdef ALLOW_NONHYDROSTATIC
 
 C--   Initialise inverter
       etaNM1              = 1. D0

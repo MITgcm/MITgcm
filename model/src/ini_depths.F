@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.19 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.20 2000/03/27 22:25:44 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,12 +35,12 @@ CEndOfInterface
 C     == Local variables ==
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
-C     I,J,K
+C     I,J
 C     phi    - total depth of model
 C     oldPrec - Temporary used in controlling binary input dataset precision
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I,  J
       _RL phi
 
       _BARRIER

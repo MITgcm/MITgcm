@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.1 1999/05/05 18:32:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.2 2000/03/27 22:25:45 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.
@@ -47,11 +47,11 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -84,11 +84,11 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -121,11 +121,11 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -158,11 +158,11 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -195,14 +195,14 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Common
       COMMON /RD_WR_REC/ globalFile
       LOGICAL globalFile
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -236,14 +236,14 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Common
       COMMON /RD_WR_REC/ globalFile
       LOGICAL globalFile
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -277,14 +277,14 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Common
       COMMON /RD_WR_REC/ globalFile
       LOGICAL globalFile
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN
@@ -318,14 +318,14 @@ C Arguments
       INTEGER myIter
       INTEGER myThid
 C Functions
-      INTEGER ILNBLNK
+C     INTEGER ILNBLNK
 C Common
       COMMON /RD_WR_REC/ globalFile
       LOGICAL globalFile
 C Local
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER IL
+C     INTEGER IL
       CHARACTER*(80) fullName
 C
 C     IF (myIter.GE.0) THEN

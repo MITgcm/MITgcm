@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.16 1999/08/06 15:03:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.17 2000/03/27 22:25:45 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -65,13 +65,10 @@ C     === Local arrays ===
       _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     === Local variables ===
-C     msgBuf - Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) msgBuf
       INTEGER bi,bj,i,j,intime0,intime1
-      CHARACTER*(40) filename
 
       _RL aWght,bWght,rdt
-      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm,Imth,Iyr
+      INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 
       IF ( periodicExternalForcing ) THEN
 

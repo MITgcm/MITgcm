@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.12 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.13 2000/03/27 22:25:44 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -48,12 +48,8 @@ CEndOfInterface
 
 C     == Local variables ==
 C     xG, yG - Global coordinate location.
-C     zG
 C     xBase  - South-west corner location for process.
 C     yBase
-C     zUpper - Work arrays for upper and lower 
-C     zLower   cell-face heights.
-C     phi    - Temporary scalar
 C     xBase  - Temporaries for lower corner coordinate
 C     yBase
 C     iG, jG - Global coordinate index. Usually used to hold
@@ -62,13 +58,11 @@ C     bi,bj  - Loop counters
 C     zUpper - Temporary arrays holding z coordinates of
 C     zLower   upper and lower faces.
 C     I,J,K
-      _RL    xG, yG, zG
-      _RL    phi
-      _RL    zUpper(Nr), zLower(Nr)
+      _RL    xG, yG
       _RL    xBase, yBase
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I,  J
 
 C--   Simple example of inialisation on cartesian grid
 C--   First set coordinates of cell centers

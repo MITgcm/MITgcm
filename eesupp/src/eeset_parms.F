@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.8 1999/05/18 17:39:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.9 2000/03/27 22:25:40 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -23,10 +23,9 @@ C     === Global variables ===
 CEndOfInterface
 
 C     === Local variables ===
-C     K - Loop counter
 C     iUnit - Work variable for IO unit number
 C     errIO - IO unit error flag
-      INTEGER K, IL
+      INTEGER IL
       INTEGER errIO
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf

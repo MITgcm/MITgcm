@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.13 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.14 2000/03/27 22:25:44 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -45,9 +45,6 @@ C     myCurrentTime - Current time of simulation ( s )
       _RL    myCurrentTime
 
 C     == Local variables ==
-C     suff - Hold suffix part of a filename
-      CHARACTER*(MAX_LEN_FNAM) suff
-      
 
 C--   Generaly only thread 1 does IO here. It can not start until 
 C--   all threads fields are ready.

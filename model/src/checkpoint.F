@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.2 1999/07/30 15:42:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.3 2000/03/27 22:25:43 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -58,15 +58,6 @@ C     myIt - Iteration number
 CEndofinterface
 
 C     == Local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL permCheckPoint  
       INTEGER oldPrec
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER prec
@@ -245,15 +236,8 @@ C     == Common blocks ==
       LOGICAL globalFile
 
 C     == Local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
 C     permCheckPoint - Flag indicating whether a permanent checkpoint will
 C                      be written.
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL permCheckPoint  
       INTEGER oldPrec
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -310,7 +294,7 @@ C       Raw fields
         CALL WRITE_REC_XY_RL ('cg2d_x', cg2d_x,  1,myIter, myThid)
 #ifdef INCLUDE_CD_CODE
         CALL WRITE_REC_XY_RL
-     &   ( 'cg2d_xNM1',suff, cg2d_xNM1,  1,myIter, myThid)
+     &   ( 'cg2d_xNM1', cg2d_xNM1,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'uVelD', uVelD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'vVelD', vVelD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'uNM1',  uNM1,  1,myIter, myThid)

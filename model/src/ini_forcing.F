@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.16 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.17 2000/03/27 22:25:44 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -23,12 +23,10 @@ C     myThid -  Number of this instance of INI_FORCING
 CEndOfInterface
 
 C     == Local variables ==
-C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
-C     I,J,K
-      INTEGER iG, jG
+C     I,J
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I,  J
 
       _BARRIER
 

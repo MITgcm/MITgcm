@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.2 1999/07/30 15:43:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.3 2000/03/27 22:25:45 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -45,14 +45,7 @@ CEndofinterface
 
 C     == Local variables ==
 C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_MBUF) suff
-      CHARACTER*(80) fName
 
       IF ( 
      &  ( DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,

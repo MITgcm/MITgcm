@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.6 2000/03/14 20:28:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.7 2000/03/27 22:25:40 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -101,7 +101,6 @@ C
       SAVE    timerNameLen
       CHARACTER*(maxString) timerNames( maxTimers , MAX_NO_THREADS)
       SAVE                  timerNames
-      CHARACTER*(maxString) timerAction
       INTEGER nTimers(MAX_NO_THREADS)
       CHARACTER*(maxString) tmpName
       CHARACTER*(maxString) tmpAction

@@ -17,7 +17,6 @@ C     == Global variables ==
 C     == Local variables ==
       INTEGER bi, bj, I
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*8 orientation
     
 C      o For each tile print its excange statistics
        WRITE(msgBuf,'(A)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.13 1999/08/30 18:29:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.14 2000/03/27 22:25:45 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -32,7 +32,9 @@ C     == Routine arguments ==
 CEndOfInterface
 
 C     == Local variables ==
+#ifdef ALLOW_OBCS
       INTEGER bi,bj,K
+#endif
 
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from

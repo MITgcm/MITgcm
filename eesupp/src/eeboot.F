@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.7 2000/03/15 16:00:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.8 2000/03/27 22:25:40 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -22,10 +22,8 @@ C     == Global variables ==
 CEndOfInterface
 
 C     == Local variables ==
-C     msgBuf - Variable for building informational messages
 C     I - Loop counter
       INTEGER I
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Set error reporting flags and I/O streams
 C     fatalError is a flag used to indicate that the program

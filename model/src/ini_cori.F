@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.7 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.8 2000/03/27 22:25:44 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -23,11 +23,9 @@ C     myThid -  Number of this instance of INI_CORI
 CEndOfInterface
 
 C     == Local variables ==
-C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     I,J,K
 C     facGrid - Factor for grid to meter conversion
-      INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
       _RL facGrid

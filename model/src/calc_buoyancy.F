@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.5 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.6 2000/03/27 22:25:43 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -13,8 +13,6 @@ C     |   Calculates buoyancy for an XY slice of a tile.         |
 C     |==========================================================|
 C     |                                                          |
 C     | k - is the density level                                 |
-C     | kRef - determines pressure reference level               |
-C     |        (not used in 'LINEAR' mode)                       |
 C     |                                                          |
 C     \==========================================================/
       IMPLICIT NONE
@@ -28,14 +26,12 @@ C--   == Global data ==
 C--   == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k			
-      INTEGER kRef	
       _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL buoy  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
 C--   == Local variables ==
       INTEGER i,j
-      _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
 
       IF    ( buoyancyRelation .eq. 'ATMOSPHERIC'  ) THEN
 

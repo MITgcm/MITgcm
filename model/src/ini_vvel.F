@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.9 1999/08/30 18:29:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.10 2000/03/27 22:25:45 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,8 +33,6 @@ CEndOfInterface
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
-      INTEGER iC, jC, iD, jD
-      INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
 
