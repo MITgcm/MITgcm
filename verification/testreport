@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.2 2003/09/01 16:50:27 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.3 2003/09/02 21:06:21 edhill Exp $
 #
 
 usage()
@@ -315,7 +315,7 @@ EOFA
 	return 0
     else
 	echo
-	echo "createcodelet: failed to compile codelet" | tee 
+	echo "createcodelet: failed to compile codelet" 
 	exit 1
     fi
 }
@@ -505,6 +505,15 @@ for OPTFILE in $OPTFILES ; do
     
     #  ...and each test directory...
     for dir in $TESTDIRS ; do
+
+	#  Verify that the testdir exists and contains previous 
+	#  results in the correct location--or skip this directory!
+	if test ! -r $dir"/results/output.txt" ; then
+	    echo | tee -a $SUMMARY
+	    echo "can't read \"$dir/results/output.txt\" -- skipping $dir" \
+		| tee -a $SUMMARY
+	    continue
+	fi
 	
 	#  Create an output dir for each OPTFILE/tdir combination
 	CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
@@ -528,15 +537,6 @@ for OPTFILE in $OPTFILES ; do
 	    seperatebuilddir=0
 	    builddir=input
 	    rundir=input
-	fi
-
-	#  Verify that the testdir exists and contains previous 
-	#  results in the correct location--or skip this directory!
-	if test ! -r $dir"/results/output.txt" ; then
-	    echo | tee $SUMMARY
-	    echo "can't read \"$dir/results/output.txt\" -- skipping $dir" \
-		| tee $SUMMARY
-	    continue
 	fi
 
 	genmakemodel $dir/$builddir && genmake=Y \
