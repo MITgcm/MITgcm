@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.19 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.20 2004/04/06 00:31:54 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -28,7 +27,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.90 2004/03/30 18:26:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.91 2004/04/06 00:31:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,20 +38,21 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
-
-#ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
-#endif
 
 #ifdef ALLOW_SHAP_FILT
-#include "SHAP_FILT.h"
+# include "SHAP_FILT.h"
 #endif
 #ifdef ALLOW_ZONAL_FILT
-#include "ZONAL_FILT.h"
+# include "ZONAL_FILT.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
+# include "FFIELDS.h"
+
+# ifdef ALLOW_NONHYDROSTATIC
+#  include "CG3D.h"
+# endif
+
 # include "tamc.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
@@ -202,7 +203,7 @@ c--   Add control vector for forcing and parameter fields
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) THEN
+      IF ( useThSIce .AND. buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('THSICE_MAIN',myThid)
