@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_writevector.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_writevector.F,v 1.5 2004/06/18 16:59:00 edhill Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -63,7 +63,8 @@ C Functions
 
 C Local variables
 C filePrec	integer	number of bits per word in file (64)
-      integer filePrec / 64 /
+      integer filePrec
+      PARAMETER ( filePrec = 64 )
       character*(80) dataFName,metaFName
       integer dUnit,IL
       logical fileIsOpen

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.7 2004/05/05 07:15:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.8 2004/06/18 16:59:00 edhill Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -160,9 +160,10 @@ c     sbo_omega - earth s mean angular velocity (rad/s)
       integer bi, bj, I, J, K
       _RL lat, lat_deg, lon, radius, darea, dradius, dvolume, depth
       _RL s, t, u, v, density
-      _RL ae        /6.3710e6/
-      _RL grav      /9.8156/
-      _RL sbo_omega /7.292115e-5/
+      _RL ae, grav, sbo_omega
+      PARAMETER ( ae        = 6.3710 _d 6    )
+      PARAMETER ( grav      = 9.8156         )
+      PARAMETER ( sbo_omega = 7.292115 _d -5 )
 CEOP
 
 c     initialize variables to be computed
