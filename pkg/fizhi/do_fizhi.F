@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.46 2004/10/21 16:26:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.47 2004/10/21 16:35:23 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -99,7 +99,7 @@ c Local Variables
       parameter (ntracer = 1)
 
       _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy) 
-      _RL surfheight(sNx,sNy)
+      _RL surfZ(sNx,sNy)
       _RL p(sNx,sNy,Nsx,Nsy)
       _RL u(sNx,sNy,Nrphys),v(sNx,sNy,Nrphys),t(sNx,sNy,Nrphys)
       _RL q(sNx,sNy,Nrphys,ntracer)
@@ -219,7 +219,7 @@ C***********************************************************************
       do i = im1,im2
        xlats(i,j) = lats(i,j,bi,bj)
        xlons(i,j) = lons(i,j,bi,bj)
-       surfheight(i,j) = Zsurf(i,j,bi,bj)
+       surfZ(i,j) = Zsurf(i,j,bi,bj)
        raincon(i,j) = rainconin(i,j,bi,bj)
        rainlsp(i,j) = rainlspin(i,j,bi,bj)
        snowfall(i,j) = snowfallin(i,j,bi,bj)
@@ -281,7 +281,7 @@ C compute pressures - all pressure are converted here to hPa
 
       call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
      . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
-     . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
+     . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),surfZ,
      . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
      . chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
