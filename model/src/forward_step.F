@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.81 2004/02/02 14:45:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.82 2004/02/18 22:23:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,9 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS.h"
+# endif
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.65 2004/01/25 00:31:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.66 2004/02/18 22:23:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -435,7 +435,9 @@ C--     Calculate future values on open boundaries
         ENDIF
 #endif  /* ALLOW_OBCS */
 
+#ifndef ALLOW_AUTODIFF_TAMC
         IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+#endif
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
 #ifdef ALLOW_DEBUG
@@ -445,6 +447,9 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
+        ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
@@ -461,7 +466,6 @@ CADJ STORE surfacetendencyTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-        ENDIF
 
 C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
 C--     MOST of THERMODYNAMICS will be disabled
@@ -640,6 +644,9 @@ C--       kDown  Cycles through 2,1 to point to current layer
              rTransKp1(i,j) = kp1Msk*rTrans(i,j)
             ENDDO
            ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rTransKp1(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
 
 C--       Get temporary terms used by tendency routines
           CALL CALC_COMMON_FACTORS (
@@ -673,11 +680,11 @@ C--   Residual transp = Bolus transp + Eulerian transp
      &                    rTrans, bi, bj, k, myThid) 
           ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte 
 #ifdef GM_BOLUS_ADVEC
 CADJ STORE uTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.20 2004/01/02 23:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.21 2004/02/18 22:23:18 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,10 @@ C     == Local variables ==
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 CEOP
 
-      IF (Nr.LE.1) RETURN
+cph(
+cph Not good for TAF: may create irreducible control flow graph
+cph      IF (Nr.LE.1) RETURN
+cph)
 
 C--   Initialise
       DO k=1,Nr
