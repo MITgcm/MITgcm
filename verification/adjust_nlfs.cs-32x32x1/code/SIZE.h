@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjust_nlfs.cs-32x32x1/code/Attic/SIZE.h,v 1.1 2001/09/28 16:03:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/adjust_nlfs.cs-32x32x1/code/Attic/SIZE.h,v 1.2 2003/02/11 14:09:29 jmc Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -37,8 +37,8 @@ C     Nr  - No. points in Z for full process domain.
       PARAMETER (
      &           sNx =  32,
      &           sNy =  32,
-     &           OLx =   3,
-     &           OLy =   3,
+     &           OLx =   2,
+     &           OLy =   2,
      &           nSx =   6,
      &           nSy =   1,
      &           nPx =   1,
