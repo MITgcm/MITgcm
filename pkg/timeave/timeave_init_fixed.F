@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.1 2004/10/13 20:42:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.2 2005/01/05 00:35:18 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -106,11 +106,11 @@ CEOP
       CALL MNC_CW_ADD_VNAME('tFluxtave', 'Cen_xy_Hn__-__t',3,4,myThid)
       CALL MNC_CW_ADD_VNAME('sFluxtave', 'Cen_xy_Hn__-__t',3,4,myThid)
 
-      CALL MNC_CW_ADD_VNAME('hUtave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('hVtave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('hFacCtave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('hFacWtave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('hFacStave', 'Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('hUtave', 'U_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hVtave', 'V_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacCtave', 'Cen_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacWtave', 'U_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacStave', 'V_xy_Hn__C__t',4,5,myThid)
 
       ENDIF
 #endif /* ALLOW_MNC */
