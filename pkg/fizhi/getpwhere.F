@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.3 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.4 2004/07/27 04:10:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -50,48 +50,54 @@ c    Counting from bottom to top, the dp's are:
      .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/
 c
 c define the mid pressure for the levels that are specified - bottom 300 mb.
-       dptry_pedge(1) = 100000.
-       do L = 2,ntry+1
-        dptry_pedge(L) = dptry_pedge(L-1) - dptry(L)
-       enddo
-       do L = 1,ntry
-        pref(L) = (dptry_pedge(L) + dptry_pedge(L+1))/2.
-       enddo
+c      dptry_pedge(1) = 100000.
+c      do L = 2,ntry+1
+c       dptry_pedge(L) = dptry_pedge(L-1) - dptry(L)
+c      enddo
+c      do L = 1,ntry
+c       pref(L) = (dptry_pedge(L) + dptry_pedge(L+1))/2.
+c      enddo
 
 c define the rest of the mid pressures from the dynamics levels
-       drF_accum(1) = drF(1)
-       do L = 2,Nr
-        drF_accum(L) = drF_accum(L-1) + drF(L)
-       enddo
-       do L = 1,Nr
-        drF_pmid(L) = (drF_pedge(L) + drF_pedge(L+1))/2.
-       enddo
+c      drF_accum(1) = drF(1)
+c      do L = 2,Nr
+c       drF_accum(L) = drF_accum(L-1) + drF(L)
+c      enddo
+c      do L = 1,Nr
+c       drF_pmid(L) = (drF_pedge(L) + drF_pedge(L+1))/2.
+c      enddo
 
-       do L = 1,Nr
-        if(drF_pmid(L).ge.pref(ntry)) dynlev = L
-       enddo
-       if(drF_pmid(dynlev).ge.pref(ntry)-2500.) then
-        do L = ntry+1,Nrphys
-         pref(L) = drF_pmid(dynlev+L-ntry)
-        enddo
-       else
-        pref(ntry) = drF_pmid(dynlev)
-        do L = ntry+1,Nrphys
-         pref(L) = drF_pmid(dynlev+L-ntry+1)
-        enddo
-       endif
+c      do L = 1,Nr
+c       if(drF_pmid(L).ge.pref(ntry)) dynlev = L
+c      enddo
+c      if(drF_pmid(dynlev).ge.pref(ntry)-2500.) then
+c       do L = ntry+1,Nrphys
+c        pref(L) = drF_pmid(dynlev+L-ntry)
+c       enddo
+c      else
+c       pref(ntry) = drF_pmid(dynlev)
+c       do L = ntry+1,Nrphys
+c        pref(L) = drF_pmid(dynlev+L-ntry+1)
+c       enddo
+c      endif
 c
-       do n = 1,numpress
-        do L = 1,Nrphys
-         if(pref(L).ge.pressures(n)) plevref(n) = L
-        enddo
+c      do n = 1,numpress
+c       do L = 1,Nrphys
+c        if(pref(L).ge.pressures(n)) plevref(n) = L
+c       enddo
 c
 c and now flip the level numbers for the top down counting in fizhi
 c
-        do L = 1,Nrphys
-         levpressures(n) = Nrphys+1-plevref(n)
-        enddo
-       enddo
+c       do L = 1,Nrphys
+c        levpressures(n) = Nrphys+1-plevref(n)
+c       enddo
+c      enddo
+
+       levpressures(1) = 16
+       levpressures(2) = 7
+       levpressures(3) = 6
+       levpressures(4) = 3
+       levpressures(5) = 1
 
        return
        end

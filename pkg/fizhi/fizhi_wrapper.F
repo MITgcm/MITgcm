@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.14 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.15 2004/07/27 04:10:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -119,6 +119,7 @@ c Compute physics increments
      .  duphy,dvphy,dthphy,dsphy)
        enddo
        enddo
+
        CALL TIMER_STOP ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
 
        CALL TIMER_START ('PHYS2DYN          [FIZHI_WRAPPER]',mythid)

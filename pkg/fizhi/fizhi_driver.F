@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.14 2004/07/26 19:51:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.15 2004/07/27 04:10:56 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -114,8 +114,8 @@ c ---------------
       _RL ptop
       logical lpnt
 
-      istrip = min( im*jm,71 )
-      npcs   = ((im*jm-1)/istrip) + 1
+      istrip = im*jm
+      npcs   = 1
 
       ptop   =  0.
       akap = getcon('KAPPA')
@@ -134,6 +134,7 @@ C **********************************************************************
 C Fill array of model levels closest to a given pressure value
 
       call getpwhere(myid,numpcheck,pcheckpress,pchecklevs)
+
       low_level = pchecklevs(3)
       mid_level = pchecklevs(4)
       nltop = pchecklevs(5)
@@ -160,6 +161,7 @@ C ====================
 
       ENDIF
                                                                                 
+
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
@@ -174,7 +176,7 @@ c --------------------------------
 
       call lwrio ( nymd,nhms,bi,bj,istrip,npcs,
      .   low_level,mid_level,
-     .   p,pl,ple,dpres,pkht,pkl,t,chemq,pkht,chemo3,co2,
+     .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
      .   lwdt,dlwdtg,lwdtclr,lwgclr,im,jm,lm,ptop,
      .   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
@@ -182,6 +184,9 @@ c --------------------------------
      .   fccavelw,landtype )
 
       ENDIF
+
+      print *,' Done with radiation '
+      stop
                                                                                 
 C TURBULENCE
 C ==========

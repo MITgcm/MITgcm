@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.24 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.25 2004/07/27 04:10:56 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -131,6 +131,16 @@ c Local Variables
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
+
+      if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+       imstturblw = 0
+       imstturbsw = 0
+       iras = 0
+       nlwcld = 0
+       nlwlz = 0
+       nswcld = 0
+       nswlz = 0
+      endif
 
       kappa = getcon('KAPPA')
       p0kappa = 1000.0 ** kappa

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.19 2004/07/26 20:28:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.20 2004/07/27 04:10:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -99,7 +99,6 @@ C **********************************************************************
      .    albvisdr,albvisdf,albnirdr,albnirdf )
        endif
 
-
 C **********************************************************************
 C                      Compute Surface Emissivity
 C **********************************************************************
@@ -109,7 +108,6 @@ C **********************************************************************
         call getemiss(fracl,im2,jm2,nchp,nchptot,nSx,nSy,bi,bj,
      .   igrd,ityp,chfr,snodep,ficetile,emiss)
        endif
-
 
 C*********************************************************************
 C            Ground Temperature Over Ocean is from SST array,
@@ -121,7 +119,7 @@ C*********************************************************************
         tmpij(i,j) = 0.
        enddo
        enddo
-       do i = 1,nchp
+       do i = 1,nchptot
         tmpchp(i) = tcanopy(i,bi,bj)
        enddo
        call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.10 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.11 2004/07/27 04:10:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1223,7 +1223,6 @@ c-----initialize fluxes
        enddo
       enddo
 
-
       do 2000 k1=1,np
 
 c-----initialize fclr, th2o, tcon, tco2, and tranal
@@ -1404,7 +1403,6 @@ c-----compute water vapor transmittance using table look-up
           if (ib.eq.1) then
            call tablup(k1,k2,m,n,np,nx,nh,nt,sh2o,swpre,swtem,
      *                 w1,p1,dwe,dpe,h11,h12,h13,trant)
-
           endif
           if (ib.eq.2) then
            call tablup(k1,k2,m,n,np,nx,nh,nt,sh2o,swpre,swtem,
@@ -1439,6 +1437,7 @@ c-----compute co2 transmittance using table look-up method
           dpe=0.2
           call tablup(k1,k2,m,n,np,nx,nc,nt,sco3,scopre,scotem,
      *                w1,p1,dwe,dpe,c1,c2,c3,trant)
+
        else
 
 c-----compute co2 transmittance using k-distribution method
