@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_calc_strain.F,v 1.2 2001/11/27 15:39:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_calc_strain.F,v 1.3 2001/11/27 15:45:06 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -17,7 +17,7 @@ C !DESCRIPTION:
 C Calculates the strain of the horizontal flow field (at vorticity points):
 C \begin{equation*}
 C D_S = \frac{\Delta y_u}{\Delta x_v} \delta_i \frac{v}{\Delta y_c}
-C       \frac{\Delta x_v}{\Delta y_u} \delta_j \frac{u}{\Delta x_c}
+C     + \frac{\Delta x_v}{\Delta y_u} \delta_j \frac{u}{\Delta x_c}
 C \end{equation*}
 C assuming free-slip boundaries.
 
