@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env sh
 #
 # Converts -Dmacro to #define macro
 #      and -Umacro to #undef macro 
@@ -8,7 +8,7 @@
 #
 # usage: convert_cpp_cmd2defines [-Dmacro1|-Umacro1] [...]
 #
-# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.3 2003/11/25 15:31:47 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.4 2003/11/25 17:22:47 edhill Exp $
 # $Name:  $
 
 cat << EOF

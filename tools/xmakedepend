@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env sh
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
 #

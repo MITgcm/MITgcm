@@ -1,6 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.18 2003/11/18 04:33:01 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.19 2003/11/25 17:22:47 edhill Exp $
 #  $Name:  $
 #
 
