@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.54 2001/06/06 14:55:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.55 2001/07/06 21:31:20 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -47,6 +47,8 @@ C--   COMMON /PARM_C/ Character valued parameters used by the model.
 C     checkPtSuff - List of checkpoint file suffices
 C     bathyFile   - File containing bathymetry. If not defined bathymetry
 C                   is taken from inline function.
+C     topoFile    - File containing the topography of the surface (unit=m)
+C                   (mainly used for the atmosphere = ground height).
 C     hydrogThetaFile - File containing initial hydrographic data for potential
 C                       temperature.
 C     hydrogSaltFile  - File containing initial hydrographic data for salinity.
@@ -63,14 +65,15 @@ C     EmPmRfile       - File containing surface fresh water flux
 C     buoyancyRelation - Flag used to indicate which relation to use to
 C                        get buoyancy.
       COMMON /PARM_C/ checkPtSuff,
-     &                bathyFile, hydrogThetaFile, hydrogSaltFile,
+     &                bathyFile, topoFile,
+     &                hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, surfQfile, surfQswfile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
-      CHARACTER*(MAX_LEN_FNAM) bathyFile
+      CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
       CHARACTER*(MAX_LEN_FNAM) hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
@@ -103,6 +106,8 @@ C     writeStatePrec      - Precision used for writing model state.
 C     writeBinaryPrec     - Precision used for writing binary files
 C     readBinaryPrec      - Precision used for reading binary files
 C     nCheckLev           - Holds current checkpoint level
+C     nonlinFreeSurf      - option related to non-linear free surface
+C                           =0 Linear free surface ; >0 Non-linear
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
@@ -113,6 +118,7 @@ C     nCheckLev           - Holds current checkpoint level
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
+     &        nonlinFreeSurf,
      &        zonal_filt_sinpow, zonal_filt_cospow
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -126,6 +132,7 @@ C     nCheckLev           - Holds current checkpoint level
       INTEGER writeBinaryPrec
       INTEGER readBinaryPrec
       INTEGER nCheckLev
+      INTEGER nonlinFreeSurf
       INTEGER zonal_filt_sinpow
       INTEGER zonal_filt_cospow
 
@@ -160,8 +167,9 @@ C     saltForcing   - Flag which turns external forcing of salinit on
 C                     and off.
 C     rigidLid            - Set to true to use rigid lid
 C     implicitFreeSurface - Set to true to use implcit free surface
-C     exactConserv   -   Set to true to conserve exactly the total Volume
-C     nonlinFreeSurf -   Set to true to use non-linear free surface
+C     exactConserv        - Set to true to conserve exactly the total Volume
+C     uniformLin_PhiSurf  - Set to true to use a uniform Bo_surf in the
+C                           linear relation Phi_surf = Bo_surf*eta
 C     momStepping   - Turns momentum equation time-stepping off
 C     tempStepping  - Turns temperature equation time-stepping off
 C     saltStepping  - Turns salinity equation time-stepping off
@@ -190,7 +198,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & rigidLid, implicitFreeSurface, exactConserv, nonlinFreeSurf,
+     & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
@@ -221,7 +229,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
-      LOGICAL nonlinFreeSurf
+      LOGICAL uniformLin_PhiSurf
       LOGICAL momStepping
       LOGICAL tempStepping
       LOGICAL saltStepping
@@ -504,6 +512,17 @@ C     sBeta     - Linear EOS haline contraction coefficient.
       _RL tAlpha
       _RL sBeta
       character*(6) eosType
+
+C Atmospheric physical parameters (Ideal Gas EOS, ...)
+C     atm_po    - standard reference pressure
+C     atm_cp    - specific heat (Cp) of the (dry) air at constant pressure
+C     atm_kappa - kappa = R/Cp (R: constant of Ideal Gas EOS)
+C     Integr_GeoPot - option to select the way we integrate the geopotential
+C                     (still a subject of discussions ...) 
+      COMMON /PARM_ATM/ atm_cp, atm_kappa, atm_po,
+     &                  Integr_GeoPot
+      _RL atm_cp, atm_kappa, atm_po
+      INTEGER Integr_GeoPot
 
 C Logical flags for selecting packages
       LOGICAL useKPP
