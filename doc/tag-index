@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.21 1999/05/18 18:31:31 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.22 1999/05/26 23:01:16 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint23
+ o Added del^4 diffusion for salt and temperature
+ o Multiple minor fixes (implicit none's, arguments to global_sum, etc.)
 
 checkpoint22
  o Made many small changes: implicit none, format(i5), etc...
