@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.5 2004/04/03 04:57:11 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.6 2004/05/05 07:15:41 dimitri Exp $
 #
 #
 #  The following is a list of directories to search in for *.[chF] files 
@@ -50,7 +50,9 @@ pkg/gmredi
 
 #  pkg/grdchk
 #  pkg/gridalt
-#  pkg/kpp
+
+pkg/kpp
+
 #  pkg/land
 #  pkg/mdsio
 
@@ -65,8 +67,10 @@ pkg/monitor
 #  pkg/ocn_compon_interf
 #  pkg/ptracers
 #  pkg/rw
-#  pkg/sbo
-#  pkg/seaice
+
+pkg/sbo
+pkg/seaice
+
 #  pkg/shap_filt
 #  pkg/thsice
 #  pkg/timeave

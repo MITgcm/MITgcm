@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.11 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.12 2004/05/05 07:15:41 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -59,7 +59,7 @@ C GAD_TEMPERATURE :: temperature
 C GAD_SALINITY :: salinity
       INTEGER GAD_SALINITY
       PARAMETER(GAD_SALINITY=2)
-C GAD_TR1 :: pssive tracer 1
+C GAD_TR1 :: passive tracer 1
       INTEGER GAD_TR1
       PARAMETER(GAD_TR1=3)
 CEOP

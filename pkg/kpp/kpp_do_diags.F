@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.7 2003/05/13 13:30:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.8 2004/05/05 07:15:41 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -38,7 +38,7 @@ C     |         but needs new code and parameters in this new method)
 C     *==========================================================*
 C     \ev
 
-C     !USES
+C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
@@ -66,6 +66,7 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
+CEOP
 
 C----------------------------------------------------------------
 C     Dump snapshot of KPP variables.

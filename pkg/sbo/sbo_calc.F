@@ -1,9 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.6 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.7 2004/05/05 07:15:41 dimitri Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
 
+CBOP
+C !ROUTINE: SBO_CALC
+
+C !INTERFACE: ==========================================================
       SUBROUTINE SBO_CALC( myCurrentTime, myIter, myThid )
+
+C !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SUBROUTINE SBO_CALC                                      |
 C     | o Do SBO diagnostic output.                              |
@@ -104,7 +110,9 @@ c           Pasadena, Ca 91109-8099
 c           USA
 c
 c=======================================================================
+c \ev
 
+C !USES: ===============================================================
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -114,6 +122,7 @@ C     === Global variables ===
 #include "CG2D.h"
 #include "SBO.h"
 
+C !INPUT PARAMETERS: ===================================================
 C     == Routine arguments ==
 C     myCurrentTime - Current time of simulation ( s )
 C     myIter        - Iteration number
@@ -123,6 +132,7 @@ C     myThid        - Number of this instance of SBO_CALC
 
 #ifdef ALLOW_SBO
 
+C !LOCAL VARIABLES: ====================================================
 c     external function called by calc_sbo
 c     returns density of sea water
       _RL sbo_rho
@@ -153,6 +163,7 @@ c     sbo_omega - earth s mean angular velocity (rad/s)
       _RL ae        /6.3710e6/
       _RL grav      /9.8156/
       _RL sbo_omega /7.292115e-5/
+CEOP
 
 c     initialize variables to be computed
       xoamc = 0.0

@@ -1,10 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.24 2004/05/01 04:21:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.25 2004/05/05 07:15:41 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: KPP_CALC
+
+C !INTERFACE: ==========================================================
       subroutine KPP_CALC(
      I     bi, bj, myTime, myThid )
+
+C !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SUBROUTINE KPP_CALC                                      |
 C     | o Compute all KPP fields defined in KPP.h                |
@@ -90,7 +97,9 @@ c     Hence overlap region needs to be set OLx=4, OLy=4.
 c     When option FRUGAL_KPP is used, computation in overlap regions
 c     is replaced with exchange calls hence reducing overlap requirements
 c     to OLx=1, OLy=1.
+c \ev
 
+C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -99,7 +108,6 @@ c     to OLx=1, OLy=1.
 #include "KPP_PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
-
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -110,6 +118,7 @@ c     to OLx=1, OLy=1.
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 
+C !INPUT PARAMETERS: ===================================================
 c Routine arguments
 c     bi, bj - array indices on which to apply calculations
 c     myTime - Current time in simulation
@@ -120,6 +129,7 @@ c     myTime - Current time in simulation
 
 #ifdef ALLOW_KPP
 
+C !LOCAL VARIABLES: ====================================================
 c Local constants
 c     minusone, p0, p5, p25, p125, p0625
 c     imin, imax, jmin, jmax  - array computation indices
@@ -199,6 +209,7 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
+CEOP
 
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,myTime-deltaTClock) .OR.

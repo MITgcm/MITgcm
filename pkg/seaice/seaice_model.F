@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.22 2004/05/05 02:50:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.23 2004/05/05 07:15:41 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
  
-CStartOfInterface
+CBOP
+C !ROUTINE: SEAICE_MODEL
+
+C !INTERFACE: ==========================================================
       SUBROUTINE seaice_model( myTime, myIter, myThid )
+
+C !DESCRIPTION: \bv
 C     /===========================================================\
 C     | SUBROUTINE SEAICE_MODEL                                   |
 C     | o Time stepping of a dynamic/thermodynamic sea ice model. |
@@ -18,7 +23,9 @@ C     |  zhang@apl.washington.edu / menemenlis@jpl.nasa.gov       |
 C     |===========================================================|
 C     \===========================================================/
       IMPLICIT NONE
+c \ev
  
+C !USES: ===============================================================
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -37,6 +44,7 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
+C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
@@ -48,11 +56,13 @@ CEndOfInterface
 
 #ifdef ALLOW_SEAICE
 
+C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+CEOP
 
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
