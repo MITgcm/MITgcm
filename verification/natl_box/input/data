@@ -43,6 +43,7 @@
  rigidLid           = .FALSE.,
  implicitFreeSurface= .TRUE.,
  implicitDiffusion  = .TRUE.,
+ useCDscheme        = .TRUE.,
  eosType            = 'POLY3',
  momAdvection       = .TRUE.,
  momViscosity       = .TRUE.,

@@ -25,6 +25,7 @@
  gravity=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
+ useCDscheme=.TRUE.,
  eosType='POLY3',
  readBinaryPrec=32,
  usePickupBeforeC35=.FALSE.,

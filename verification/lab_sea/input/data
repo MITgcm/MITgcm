@@ -49,6 +49,7 @@
  sBeta =7.4E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
+ useCDscheme=.TRUE.,
  eosType='POLY3',
  readBinaryPrec=32,
  writeBinaryPrec=32,
