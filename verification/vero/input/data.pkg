@@ -1,9 +1,0 @@
-#
-# ********
-# Packages
-# ********
- &PACKAGES
- useGMRedi    = .FALSE.,
- useKPP       = .FALSE.,
- useECCO      = .TRUE.,
- &
