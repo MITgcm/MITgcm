@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.5 2004/12/01 21:30:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.6 2004/12/01 22:54:02 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -54,7 +54,7 @@ CEOP
 
       dT=deltaTclock
 
-      IF (myIter.LE.nIter0+1.OR.DIFFERENT_MULTIPLE(
+      IF (DIFFERENT_MULTIPLE(
      &     PTRACERS_monitorFreq,myTime,myTime-dT)) THEN
 
 C     Ptracers field monitor start 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.7 2004/10/10 06:08:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.8 2004/12/01 22:54:02 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,8 @@ CBOP
 C     !ROUTINE: PTRACERS_WRITE_STATE
 
 C     !INTERFACE:
-      SUBROUTINE PTRACERS_WRITE_STATE( myIter,myTime,myThid )
+      SUBROUTINE PTRACERS_WRITE_STATE( 
+     I     myIter, myTime, myThid )
 
 C     !DESCRIPTION:
 C     Calculates tendancy for passive tracers and integrates forward in
@@ -39,59 +40,82 @@ C     iRec      :: record number
       INTEGER iTracer
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
-#ifdef ALLOW_MNC
-      INTEGER ii
 
-      IF (useMNC .AND. PTRACERS_write_mnc) THEN
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
+
+      IF (
+     &     DIFFERENT_MULTIPLE(PTRACERS_dumpFreq,myTime,
+     &     myTime-deltaTClock) .OR. 
+     &     myTime.EQ.endTime .OR.
+     &     myTime.EQ.startTime
+     &     ) THEN
+       
+C     Write to files
+       _BARRIER
+       _BEGIN_MASTER( myThid )
+
+#ifdef ALLOW_MNC
+       IF (useMNC .AND. PTRACERS_write_mnc) THEN
         CALL MNC_CW_SET_UDIM('ptracers', -1, myThid)
         CALL MNC_CW_I_W_S('I','ptracers',0,0,'iter',myIter,myThid)
         CALL MNC_CW_SET_UDIM('ptracers', 0, myThid)
-        DO ii = 1,PTRACERS_numInUse
-          CALL MNC_CW_RL_W('D','ptracers',0,0,PTRACERS_names(ii),
-     &         pTracer(1-OLx,1-OLy,1,1,1,ii),myThid)
+        DO iTracer = 1,PTRACERS_numInUse
+         CALL MNC_CW_RL_W('D','ptracers',0,0,PTRACERS_names(iTracer),
+     &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
-      ENDIF
+       ENDIF
 #endif /*  ALLOW_MNC  */
 
-      IF (PTRACERS_write_mdsio) THEN
+       IF (PTRACERS_write_mdsio) THEN
 
 C       Loop over tracers
         DO iTracer=1,PTRACERS_numInUse
 
 #ifdef MULTIPLE_RECORD_STATE_FILES
-C         Write each snap-shot as a record in a time-history file
-          IF (PTRACERS_useRecords) THEN
-C           Write each passive tracer as a record
-            WRITE(suff,'(A)') 'PTRACERS'
-            iRec = int ( (myCurrentTime-startTime) / dumpFreq +1.5 )
-            iRec = (iRec-1)*PTRACERS_num + iTracer + 1
-          ELSE
-C           Write each passive tracer in its own file
-            WRITE(pref,'(A7,I2.2)') 'PTRACER',iTracer
-            iRec = int ( (myCurrentTime-startTime) / dumpFreq +1.5 )
-          ENDIF
-#else
+C     Write each snap-shot as a record in a time-history file
+         IF (PTRACERS_useRecords) THEN
+C     Write each passive tracer as a record
+          WRITE(suff,'(A)') 'PTRACERS'
+          iRec = int ( (myCurrentTime-startTime) 
+     &         / PTRACERS_dumpFreq + 1.5 )
+          iRec = (iRec-1)*PTRACERS_num + iTracer + 1
+         ELSE
+C     Write each passive tracer in its own file
+          WRITE(pref,'(A7,I2.2)') 'PTRACER',iTracer
+          iRec = int ( (myCurrentTime-startTime) 
+     &         / PTRACERS_dumpFreq + 1.5 )
+         ENDIF
+#else 
 C         Write each snap-shot as a new file with a 10-digit suffix to
-C         indicate time-step number
-          IF (PTRACERS_useRecords) THEN
-C           Write each passive tracer as a record
-            WRITE(suff,'(A,I10.10)') 'PTRACERS',myIter
-            iRec=iTracer
-          ELSE
-C           Write each passive tracer in its own file
-            WRITE(suff,'(A7,I2.2,A1,I10.10)') 
-     &           'PTRACER',iTracer,'.',myIter
-            iRec=1
-          ENDIF
+C     indicate time-step number
+         IF (PTRACERS_useRecords) THEN
+C     Write each passive tracer as a record
+          WRITE(suff,'(A,I10.10)') 'PTRACERS',myIter
+          iRec=iTracer
+         ELSE
+C     Write each passive tracer in its own file
+          WRITE(suff,'(A7,I2.2,A1,I10.10)') 
+     &         'PTRACER',iTracer,'.',myIter
+          iRec=1
+         ENDIF
 #endif /* MULTIPLE_RECORD_STATE_FILES */
-
-          CALL WRITE_REC_XYZ_RL(suff,
-     &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
-          
-C         End of tracer loop
+         
+         CALL WRITE_REC_XYZ_RL(suff,
+     &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
+         
+C     End of tracer loop
         ENDDO
         
+       ENDIF
+
+       _END_MASTER( myThid )
+       _BARRIER
+C     DIFFERENT_MULTIPLE
       ENDIF
+
 #endif /* ALLOW_PTRACERS */
 
       RETURN

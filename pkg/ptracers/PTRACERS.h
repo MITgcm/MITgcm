@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.12 2004/11/28 23:50:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.13 2004/12/01 22:54:02 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -19,6 +19,7 @@ C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
 
 C     PTRACERS parameters
+      _RL PTRACERS_dumpFreq
       _RL PTRACERS_taveFreq
       _RL PTRACERS_monitorFreq
       _RL PTRACERS_diffKh(PTRACERS_num)
@@ -38,6 +39,7 @@ C     PTRACERS parameters
       LOGICAL PTRACERS_write_mdsio
       LOGICAL PTRACERS_write_mnc
       COMMON /PTRACERS_PARAMS/
+     &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
      &     PTRACERS_diffKh,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.13 2004/11/28 23:50:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.14 2004/12/01 22:54:02 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -40,6 +40,7 @@ C     msgBuf     :: message buffer
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
       NAMELIST /PTRACERS_PARM01/
+     &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
      &     PTRACERS_advScheme,
@@ -63,6 +64,7 @@ C     internal flag to indicate we are in business
       PTRACERSisON=.TRUE.
 
 C     Set defaults values for parameters in PTRACERS.h
+      PTRACERS_taveFreq    = dumpFreq
       PTRACERS_taveFreq    = taveFreq
       PTRACERS_monitorFreq = monitorFreq
       PTRACERS_numInUse=-1
@@ -176,6 +178,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_numInUse, INDEX_NONE,
      &   'PTRACERS_numInUse =',
      &   ' /* number of tracers */')
+      CALL WRITE_0D_R8(PTRACERS_dumpFreq, INDEX_NONE,
+     &   'PTRACERS_dumpFreq =',
+     &   ' /* Frequency^-1 for snapshot output (s) */')
       CALL WRITE_0D_R8(PTRACERS_taveFreq, INDEX_NONE,
      &   'PTRACERS_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
