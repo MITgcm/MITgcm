@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.17 2004/07/26 20:15:05 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.18 2004/07/26 20:23:16 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -106,8 +106,8 @@ C **********************************************************************
 
        if( alarm('radlw') ) then
         call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchp)
-        call getemiss(fracl,im2,jm2,nchp,nSx,nSy,bi,bj,igrd,ityp,chfr,
-     .      snodep,ficetile,emiss)
+        call getemiss(fracl,im2,jm2,nchp,nchptot,nSx,nSy,bi,bj,
+     .   igrd,ityp,chfr,snodep,ficetile,emiss)
        endif
 
 
@@ -948,8 +948,8 @@ C finally some transformations back to grid space for albedos
       return
       end
 
-      subroutine getemiss(fracg,im,jm,nchp,nSx,nSy,bi,bj,igrd,ityp,
-     .                                         chfr,snowdep,fraci,emiss)
+      subroutine getemiss(fracg,im,jm,nchp,nchptot,nSx,nSy,bi,bj,
+     .   igrd,ityp,chfr,snowdep,fraci,emiss)
 C***********************************************************************
 C  PURPOSE
 C     To act as an interface to routine to emissivity, which calculates
@@ -979,7 +979,7 @@ C emiss    - real array [im,jm,10,nSx,nSy] - surface emissivity (frac)
 C
 C***********************************************************************
       implicit none
-      integer im,jm,nchp,nSx,nSy,bi,bj
+      integer im,jm,nchp,nchptot,nSx,nSy,bi,bj
       _RL fracg(im,jm)
       _RL chfr(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
@@ -992,14 +992,14 @@ C***********************************************************************
       integer i,j,k,n
 
       do i = 1,10
-      do n = 1,nchp
+      do n = 1,nchptot
          emisstile(n,i) = 1.
       enddo
       enddo
 
 c call emissivity to get values in tile space
 c -------------------------------------------
-      call emissivity(snowdep(1,bi,bj),fraci,nchp,ityp(1,bi,bj),
+      call emissivity(snowdep(1,bi,bj),fraci,nchp,nchptot,ityp(1,bi,bj),
      .                                                    emisstile)
 
 c transform back to grid space for emissivities
@@ -1010,8 +1010,8 @@ c ---------------------------------------------
        tmpij(i,j) = 0.0
       enddo
       enddo
-      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),emisstile(1,k),nchp,nchp,
-     .      fracg,tmpij,im,jm)
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),emisstile(1,k),nchp,
+     .  nchptot,fracg,tmpij,im,jm)
       do j = 1,jm
       do i = 1,im
        emiss(i,j,k,bi,bj) = tmpij(i,j)
@@ -1022,13 +1022,13 @@ c ---------------------------------------------
       return
       end
 
-      subroutine emissivity (snowdepth,fraci,numpts,ityp,newemis)
+      subroutine emissivity (snowdepth,fraci,nchp,numpts,ityp,newemis)
       implicit none
-      integer numpts
-      integer   ityp(numpts)
-      _RL snowdepth(numpts)
-      _RL fraci(numpts)
-      _RL newemis(numpts,10)
+      integer nchp,numpts
+      integer   ityp(nchp)
+      _RL snowdepth(nchp)
+      _RL fraci(nchp)
+      _RL newemis(nchp,10)
 
       _RL emis(12,11)
       _RL fac
