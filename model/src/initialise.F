@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.10 1999/03/22 15:54:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.11 1999/05/18 18:01:13 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -55,11 +55,17 @@ C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
       _BARRIER
 
-C--   Latitude circle filter initialisation
 #ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+C--   Latitude circle filter initialisation
       CALL FILTER_LATCIRC_FFT_INIT(myThid)
-#endif
       _BARRIER
+#endif
+
+#ifdef ALLOW_KPP
+C--   Initialize kppmix vertical mixing scheme.
+      CALL KMIXINIT( myThid )
+      _BARRIER
+#endif
 
 C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms

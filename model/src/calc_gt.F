@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.19 1998/11/06 22:44:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.20 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,6 +43,10 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_KPP
+#include "KPPMIX.h"
+#endif
+
 
 C     == Routine arguments ==
 C     fZon    - Work array for flux of temperature in the east-west 
@@ -92,6 +96,11 @@ C     I, J, K - Loop counters
       _RL afFacT, dfFacT
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_KPP
+      _RL hbl  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
+      _RL frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
+      integer jwtype 				! index for Jerlov water type
+#endif
 
       afFacT = 1. _d 0
       dfFacT = 1. _d 0
@@ -244,6 +253,53 @@ C           boundary condition.
        ENDDO
       ENDIF
 #endif /* INCLUDE_T_DIFFUSION_CODE */
+
+#ifdef ALLOW_KPP
+      IF (usingKPPmixing) THEN
+C--   Compute fraction of solar short-wave flux penetrating to
+C     the bottom of the mixing layer
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         hbl(i,j) = KPPhbl(i,j,bi,bj)
+        ENDDO
+       ENDDO
+       j=(sNx+2*OLx)*(sNy+2*OLy)
+       jwtype = 3
+       CALL SWFRAC(
+     I     j, -1., hbl, jwtype,
+     O     frac )
+
+C     Add non local transport coefficient (ghat term) to right-hand-side
+C     The nonlocal transport term is noNrero only for scalars in unstable
+C     (convective) forcing conditions.
+C     Note: -[Qnet * delZ(1) + Qsw * (1-frac) / KPPhbl] * 4000 * rho
+C     is the total heat flux
+C     penetrating the mixed layer from the surface in (deg C / s)
+       IF ( TOP_LAYER ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) + _rA(i,j,bi,bj) *
+     &           ( Qnet(i,j,bi,bj) * delZ(1) +
+     &           Qsw(i,j,bi,bj) * (1.-frac(i,j))
+     &           / KPPhbl(i,j,bi,bj) ) *
+     &           ( KappaRT(i,j,k) * KPPghat(i,j,k,  bi,bj) )
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) + _rA(i,j,bi,bj) *
+     &           ( Qnet(i,j,bi,bj) * delZ(1) +
+     &           Qsw(i,j,bi,bj)  * (1.-frac(i,j))
+     &           / KPPhbl(i,j,bi,bj) ) *
+     &           ( KappaRT(i,j,k)   * KPPghat(i,j,k,  bi,bj)
+     &           - KappaRT(i,j,k-1) * KPPghat(i,j,k-1,bi,bj) )
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_KPP */
+
 C     o Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax

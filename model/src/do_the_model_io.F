@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.12 1998/12/09 16:11:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.13 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -29,6 +29,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_KPP
+#include "KPPMIX.h"
+#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -39,7 +42,7 @@ C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter
-      REAL    myCurrentTime
+      _RL    myCurrentTime
 
 C     == Local variables ==
 C     suff - Hold suffix part of a filename
@@ -64,6 +67,19 @@ C--    Write "text-plots" of certain fields
      &                        Nr, myIter, myThid )
        CALL PLOT_FIELD_XYRL( cg2d_x, 'Current cg2d_x ' , 
      &                        myIter, myThid )
+
+#ifdef ALLOW_KPP
+       IF (KPPmixingMaps) THEN
+        CALL PLOT_FIELD_XYRL  ( KPPhbl    , 'KPPhbl'    ,
+     &                          myIter, myThid )
+        CALL PLOT_FIELD_XYZRL ( KPPviscAz , 'KPPviscAz' ,
+     &                          Nr, myIter, myThid )
+        CALL PLOT_FIELD_XYZRL ( KPPdiffKzT, 'KPPdiffKzT',
+     &                          Nr, myIter, myThid )
+        CALL PLOT_FIELD_XYZRL ( KPPghat   , 'KPPghat'   ,
+     &                          Nr, myIter, myThid )
+       ENDIF
+#endif
 
       ENDIF
 

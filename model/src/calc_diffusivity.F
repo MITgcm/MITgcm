@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.7 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.8 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -6,7 +6,7 @@ CStartOfInterFace
       SUBROUTINE CALC_DIFFUSIVITY( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
-     O        KappaRT,KappaRS,
+     O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 
 C     /==========================================================\
@@ -20,6 +20,10 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
+#ifdef ALLOW_KPP
+#include "KPPMIX.h"
+#endif
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -34,6 +38,8 @@ C
       _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
 CEndOfInterface
 
@@ -44,14 +50,54 @@ C     I, J, K - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRT(i,j,k) = maskC(i,j)*maskUp(i,j)*
-     &      ( diffKrT + KapGM(i,j)*K33(i,j,k) )
+     &      (
+#ifdef ALLOW_KPP
+     &         KPPdiffKzT(i,j,k,bi,bj)
+#else
+     &         diffKrT
+#endif
+     &       + KapGM(i,j)*K33(i,j,k)
+     &      )
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRS(i,j,k) = maskC(i,j)*maskUp(i,j)*
-     &      ( diffKrS + KapGM(i,j)*K33(i,j,k) )
+     &      (
+#ifdef ALLOW_KPP
+     &         KPPdiffKzS(i,j,k,bi,bj)
+#else
+     &         diffKrS
+#endif
+     &       + KapGM(i,j)*K33(i,j,k)
+     &      )
+       ENDDO
+      ENDDO
+
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+#ifdef ALLOW_KPP
+Ckpp  interpolate KPPviscAz from "t-grid" to "u-grid"
+               KappaRU(i,j,k) =
+     &         _maskW(i,j,k,bi,bj)*maskUp(i,j)*maskUp(i-1,j)*
+     &         ( KPPviscAz(i,j,k,bi,bj) + KPPviscAz(i-1,j,k,bi,bj) )*0.5
+#else
+        KappaRU(i,j,k) = viscAr
+#endif
+       ENDDO
+      ENDDO
+
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+#ifdef ALLOW_KPP
+Ckpp  interpolate KPPviscAz from "t-grid" to "v-grid"
+               KappaRV(i,j,k) =
+     &         _maskS(i,j,k,bi,bj)*maskUp(i,j)*maskUp(i,j-1)*
+     &         ( KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i,j-1,k,bi,bj) )*0.5
+#else
+        KappaRV(i,j,k) = viscAr
+#endif
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.9 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.10 1999/05/18 18:01:13 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,8 +35,6 @@ CEndOfInterface
 C     == Local variables ==
 C     iC, jC - Center of domain
 C     iD, jD - Disitance from domain center.
-C     rad    - Radius of initial patch
-C     rD     - Radial displacement of point I,J
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     I,J,K
@@ -44,7 +42,6 @@ C     I,J,K
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
-      REAL rad, rD
 
       _BARRIER
 

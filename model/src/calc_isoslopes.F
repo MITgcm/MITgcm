@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.12 1998/11/06 22:44:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.13 1999/05/18 18:01:12 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -41,7 +41,7 @@ CEndOfInterface
 C     == Local variables ==
       INTEGER i,j
       _RL dSigmaDx,dSigmaDy,dSigmaDr,SlopeX,SlopeY,dRdSigma,N2
-      _RL gradSmod,stratLimit,rMaxSlope,rRhonil
+      _RL gradSmod,stratLimit,rMaxSlope
       _RL Small_Number
       PARAMETER(Small_Number=1. _d -12)
       _RS deltaH,zero_rs
@@ -60,7 +60,6 @@ C     Now we convert deltaH to a non-dimensional fraction
 
       rMaxSlope=0.
       if (GMmaxSlope.ne.0.) rMaxSlope=1. _d 0 / GMmaxSlope
-      rRhonil=1. _d 0 / Rhonil
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1

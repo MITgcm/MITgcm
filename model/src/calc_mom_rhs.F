@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.38 1999/05/03 14:37:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.39 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -20,7 +20,7 @@ C     \==========================================================/
       SUBROUTINE CALC_MOM_RHS( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,
-     I        phi_hyd,
+     I        phi_hyd,KappaRU,KappaRV,
      U        aFArg,vFArg,cFArg,mTArg,pFArg,
      U        fZonArg, fMerArg, fVerU, fVerV,
      I        myCurrentTime, myThid)
@@ -55,7 +55,6 @@ C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown, kM1                - Index for upper and lower layers.
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
-      _RL      phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS      xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS      yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -65,6 +64,9 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RS   maskC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL   fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL   fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL      phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL      KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL      KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL      aFArg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vFArg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      cFArg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -142,6 +144,7 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacV
 C     ab05, ab15 - Adams-Bashforth time-stepping weights.
       _RL  ab05, ab15
+      _RL cosfac(sNy)
 
       rVelMaskOverride=1.
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
@@ -236,7 +239,7 @@ C     del^2 U
        ENDDO
       ENDDO
       IF (no_slip_sides) THEN
-C-- No-slip BC's impose a drag at walls...
+C-- No-slip BCs impose a drag at walls...
       DO j=0,sNy+1
        DO i=0,sNx+2
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
@@ -244,8 +247,8 @@ C-- No-slip BC's impose a drag at walls...
         v4F(i,j) = v4F(i,j)
      &  - _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   /rAw(i,j,bi,bj)
-     &   *( hFacZClosedS*dxV(i, j ,bi,bj)*recip_dyU(i, j ,bi,bj)
-     &     +hFacZClosedN*dxV(i,j+1,bi,bj)*recip_dyU(i,j+1,bi,bj)
+     &   *( hFacZClosedS*dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
+     &     +hFacZClosedN*dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj)
      &    )*drF(k)*2.*uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
@@ -367,17 +370,17 @@ C       Note!!!! omitted.
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #ifdef OLD_UV_GEOMETRY
-#define _RA_AT_W *(RA(i,j,bi,bj)*maskC(i,j)+RA(i-1,j,bi,bj)*maskC(i-1,j))*.5
+#define _RA_AT_W (RA(i,j,bi,bj)*maskC(i,j)+RA(i-1,j,bi,bj)*maskC(i-1,j))*.5
 #else
-#define _RA_AT_W *rAw(i,j,bi,bj)
+#define _RA_AT_W rAw(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
 C     Eddy component of vertical flux
       IF (no_slip_bottom) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &   -viscAr
-     & _RA_AT_W
+     &   -KappaRU(i,j,k)
+     & *_RA_AT_W
      &   *( ( 2.-_maskW(i,j,k,bi,bj) )*uVel(i,j,kM1,bi,bj)
      &     -     _maskW(i,j,k,bi,bj)  *uVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
@@ -387,8 +390,8 @@ C     Eddy component of vertical flux
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &   -viscAr
-     & _RA_AT_W
+     &   -KappaRU(i,j,k)
+     & *_RA_AT_W
      &   *( uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
      &    *_maskW(i,j,k,bi,bj)*rVelMaskOverride
@@ -405,17 +408,17 @@ C     Eddy component of vertical flux
       ENDDO
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #ifdef OLD_UV_GEOMETRY
-#define _RA_AT_W2 *(RA(i,j,bi,bj)+RA(i-1,j,bi,bj))*0.5 _d 0
+#define _RA_AT_W2 (RA(i,j,bi,bj)+RA(i-1,j,bi,bj))*0.5 _d 0
 #else
-#define _RA_AT_W2 *rAw(i,j,bi,bj)
+#define _RA_AT_W2 rAw(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
 C     Bottom boundary condition
       IF ( no_slip_bottom .AND. k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAr
-     & _RA_AT_W2
+     &    -KappaRU(i,j,k)
+     & *_RA_AT_W2
      &    *_maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*rkFac*recip_DrF(k)*2. _d 0
         ENDDO
@@ -460,7 +463,7 @@ C--   term
 
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
       IF (no_slip_sides) THEN
-C-- No-slip BC's impose a drag at walls...
+C-- No-slip BCs impose a drag at walls...
       DO j=jMin,jMax
        DO i=iMin,iMax
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
@@ -490,7 +493,7 @@ C--   Metric terms for curvilinear grid systems
 C      o Spherical polar grid metric terms
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = -1.* uVel(i,j,k,bi,bj)*recip_rSphere
+         mT(i,j) = -1.* uVel(i,j,k,bi,bj)*recip_RSphere
      &    *0.25 _d 0*( rVel(i-1,j,kUp  )+rVel(i  ,j,kUp  )
      &                +rVel(i-1,j,KDown)+rVel(i  ,j,KDown)
      &              )*rkFac*recip_horiVertRatio
@@ -498,7 +501,7 @@ C      o Spherical polar grid metric terms
        ENDDO
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = mT(i,j)+uVel(i,j,k,bi,bj)*recip_rSphere
+         mT(i,j) = mT(i,j)+uVel(i,j,k,bi,bj)*recip_RSphere
      &    *0.25 _d 0*( vVel(i,j  ,k,bi,bj)+vVel(i-1,j  ,k,bi,bj)
      &                +vVel(i,j+1,k,bi,bj)+vVel(i-1,j+1,k,bi,bj)
      &              )*_tanPhiAtU(i,j,bi,bj)
@@ -553,7 +556,7 @@ C     del^2 U
        ENDDO
       ENDDO
       IF (no_slip_sides) THEN
-C-- No-slip BC's impose a drag at walls...
+C-- No-slip BCs impose a drag at walls...
       DO j=0,sNy+2
        DO i=0,sNx+1
         hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
@@ -561,8 +564,8 @@ C-- No-slip BC's impose a drag at walls...
         v4F(i,j) = v4F(i,j)
      &  -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &  /rAs(i,j,bi,bj)
-     &   *( hFacZClosedW*dyU( i ,j,bi,bj)*recip_dxV( i ,j,bi,bj)
-     &     +hFacZClosedE*dyU(i+1,j,bi,bj)*recip_dxV(i+1,j,bi,bj)
+     &   *( hFacZClosedW*dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj)
      &    )*drF(k)*2.*vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
@@ -680,17 +683,17 @@ C       Note!!!! Is rVelMaskOverridde right for implicit free-surface?
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #ifdef OLD_UV_GEOMETRY
-#define _RA_AT_S *(RA(i,j,bi,bj)*maskC(i,j)+RA(i,j-1,bi,bj)*maskC(i,j-1))*.5
+#define _RA_AT_S (RA(i,j,bi,bj)*maskC(i,j)+RA(i,j-1,bi,bj)*maskC(i,j-1))*.5
 #else
-#define _RA_AT_S *rAs(i,j,bi,bj)
+#define _RA_AT_S rAs(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
 C     Eddy component of vertical flux
       IF (no_slip_bottom) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &   -viscAr
-     & _RA_AT_S
+     &   -KappaRV(i,j,k)
+     & *_RA_AT_S
      &   *( ( 2.-_maskS(i,j,k,bi,bj) )*vVel(i,j,kM1,bi,bj)
      &     -     _maskS(i,j,k,bi,bj)  *vVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
@@ -700,8 +703,8 @@ C     Eddy component of vertical flux
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &   -viscAr
-     & _RA_AT_S
+     &   -KappaRV(i,j,k)
+     & *_RA_AT_S
      &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))
      &   *rkFac*recip_drC(k)
      &   *_maskS(i,j,k,bi,bj)*rVelMaskOverride
@@ -718,16 +721,16 @@ C     Eddy component of vertical flux
 C     Bottom level boundary condition
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #ifdef OLD_UV_GEOMETRY
-#define _RA_AT_S2 *(RA(i,j,bi,bj)+RA(i,j-1,bi,bj))*0.5 _d 0
+#define _RA_AT_S2 (RA(i,j,bi,bj)+RA(i,j-1,bi,bj))*0.5 _d 0
 #else
-#define _RA_AT_S2 *rAs(i,j,bi,bj)
+#define _RA_AT_S2 rAs(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
       IF ( no_slip_bottom .AND. k .EQ. Nr ) THEN
       DO j=jMin,jMax
        DO i=iMin,iMax
        vf(i,j) =
-     & -viscAr
-     & _RA_AT_S2
+     & -KappaRV(i,j,k)
+     & *_RA_AT_S2
      & *_maskS(i,j,k,bi,bj)
      & *vVel(i,j,k,bi,bj)*rkFac*recip_drF(k)*2. _d 0
        ENDDO
@@ -744,7 +747,7 @@ C     Bottom level boundary condition
 C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pF(i,j) = -recip_dyC(i,j,bi,bj)
+        pF(i,j) = -_recip_dyC(i,j,bi,bj)
      &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))*recip_rhoConst
        ENDDO
       ENDDO
@@ -771,7 +774,7 @@ C--   term
       ENDDO
 
       IF (no_slip_sides) THEN
-C-- No-slip BC's impose a drag at walls...
+C-- No-slip BCs impose a drag at walls...
       DO j=jMin,jMax
        DO i=iMin,iMax
         hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
@@ -800,7 +803,7 @@ C--   Metric terms for curvilinear grid systems
 C      o Spherical polar grid metric terms
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = -vVel(i,j,k,bi,bj)*recip_rSphere
+         mT(i,j) = -vVel(i,j,k,bi,bj)*recip_RSphere
      &    *0.25 _d 0*( rVel(i,j,kUp  )+rVel(i,j-1,kUp  )
      &               + rVel(i,j,KDown)+rVel(i,j-1,KDown)
      &              )*rkFac*recip_horiVertRatio
@@ -808,7 +811,7 @@ C      o Spherical polar grid metric terms
        ENDDO
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = mT(i,j)-recip_rSphere
+         mT(i,j) = mT(i,j)-recip_RSphere
      &    *0.25 _d 0*( uVel(i,j  ,k,bi,bj)+uVel(i+1,j  ,k,bi,bj)
      &                +uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj)
      &              )
@@ -853,7 +856,7 @@ C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
       DO j=jMin,jMax
        DO i=iMin,iMax
-        af(i,j) = -_maskS(i,j,k,bi,bj)*recip_dyC(i,j,bi,bj)
+        af(i,j) = -_maskS(i,j,k,bi,bj)*_recip_dyC(i,j,bi,bj)
      &            *(pf(i,j)-pf(i,j-1))
      &            +gV(i,j,k,bi,bj)
        ENDDO
@@ -1017,8 +1020,10 @@ C--   Set dv/dt on boundaries to zero
       ENDDO
 
 #ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
-      CALL FILTER_LATCIRCS_FFT_APPLY( gU, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
-      CALL FILTER_LATCIRCS_FFT_APPLY( gV, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
+      CALL FILTER_LATCIRCS_FFT_APPLY(
+     &    gU, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
+      CALL FILTER_LATCIRCS_FFT_APPLY(
+     &    gV, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
 #endif
 
 

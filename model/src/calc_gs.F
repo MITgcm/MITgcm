@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.17 1998/11/06 22:44:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.18 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,6 +43,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_KPP
+#include "KPPMIX.h"
+#endif
 
 C     == Routine arguments ==
 C     fZon    - Work array for flux of temperature in the east-west 
@@ -57,7 +60,7 @@ C     xA      - Tracer cell face area normal to X
 C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
-C     wTrans  - Vertical volume transport through cell face
+C     rTrans  - Vertical volume transport through cell face
 C     af      - Advective flux component work array
 C     df      - Diffusive flux component work array
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -81,8 +84,8 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER myThid
       _RL     myCurrentTime
+      INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -227,6 +230,32 @@ C           boundary condition.
         ENDDO
        ENDDO
       ENDIF
+#ifdef ALLOW_KPP
+      IF (usingKPPmixing) THEN
+C--   Add non local transport coefficient (ghat term) to right-hand-side
+C     The nonlocal transport term is noNrero only for scalars in unstable
+C     (convective) forcing conditions.
+       IF ( TOP_LAYER ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
+     &              EmPmR(i,j,bi,bj) * delZ(1) *
+     &              ( KappaRS(i,j,k)   * KPPghat(i,j,k,bi,bj)   )
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
+     &              EmPmR(i,j,bi,bj) * delZ(1) *
+     &              ( KappaRS(i,j,k)   * KPPghat(i,j,k,bi,bj)
+     &              - KappaRS(i,j,k-1) * KPPghat(i,j,k-1,bi,bj) )
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_KPP */
+
 C     Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.7 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.8 1999/05/18 18:01:13 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -8,7 +8,8 @@ C     | o Solve implicit diffusion equation for vertical         |
 C     |   diffusivity.                                           |
 C     \==========================================================/
       SUBROUTINE IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                     KappaRT,KappaRS,
+     I                     deltaTX,KappaRX,recip_hFac,
+     U                     gXNm1,
      I                     myThid )
       IMPLICIT NONE
 C     == Global data ==
@@ -20,8 +21,10 @@ C     == Global data ==
 
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL deltaTX
+      _RL KappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL gXnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER myThid
 
 C     == Local variables ==
@@ -33,30 +36,16 @@ C     == Local variables ==
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
-C ***************************************************************
-C *****************                              ****************
-C *****************           N O T E            ****************
-C *****************                              ****************
-C ***************************************************************
-C
-C The implicit diffusion of SALT currently uses the diffusivity
-C of the THETA.
-C                  ie. KappaRS is ignored.
-C
-C ***************************************************************
-C ***************************************************************
-
       IF (Nr.GT.1) THEN		! Only need do anything if Nr>1
 C--    Beginning of forward sweep (top level)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         c(i,j)=-deltaTtracer*recip_hFacC(i,j,1,bi,bj)*recip_drF(1)
-     &         *KappaRT(i,j,2)*recip_drC(2)
+         c(i,j)=-deltaTX*recip_hFac(i,j,1,bi,bj)*recip_drF(1)
+     &         *KappaRX(i,j,2)*recip_drC(2)
          b(i,j)=1.-c(i,j)
          bet(i,j)=0.
          IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
-         gTnm1(i,j,1,bi,bj)=gTnm1(i,j,1,bi,bj)*bet(i,j)
-         gSnm1(i,j,1,bi,bj)=gSnm1(i,j,1,bi,bj)*bet(i,j)
+         gXnm1(i,j,1,bi,bj)=gXnm1(i,j,1,bi,bj)*bet(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -66,10 +55,10 @@ C--   Middle of forward sweep
         DO j=jMin,jMax
          DO i=iMin,iMax
           ckm1(i,j)=c(i,j)
-          a(i,j)=-deltaTtracer*recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &         *KappaRT(i,j, k )*recip_drC( k )
-          c(i,j)=-deltaTtracer*recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &         *KappaRT(i,j,k+1)*recip_drC(k+1)
+          a(i,j)=-deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &         *KappaRX(i,j, k )*recip_drC( k )
+          c(i,j)=-deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &         *KappaRX(i,j,k+1)*recip_drC(k+1)
           b(i,j)=1.-c(i,j)-a(i,j)
          ENDDO
         ENDDO
@@ -78,10 +67,8 @@ C--   Middle of forward sweep
           gam(i,j,k)=ckm1(i,j)*bet(i,j)
           bet(i,j)=b(i,j)-a(i,j)*gam(i,j,k)
           IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-          gTnm1(i,j,k,bi,bj)=(gTnm1(i,j,k,bi,bj)
-     &       -a(i,j)*gTnm1(i,j,k-1,bi,bj))*bet(i,j)
-          gSnm1(i,j,k,bi,bj)=(gSnm1(i,j,k,bi,bj)
-     &       -a(i,j)*gSnm1(i,j,k-1,bi,bj))*bet(i,j)
+          gXnm1(i,j,k,bi,bj)=(gXnm1(i,j,k,bi,bj)
+     &       -a(i,j)*gXnm1(i,j,k-1,bi,bj))*bet(i,j)
          ENDDO
         ENDDO
        ENDDO
@@ -91,8 +78,8 @@ C--    End of forward sweep (bottom level)
        DO j=jMin,jMax
         DO i=iMin,iMax
          ckm1(i,j)=c(i,j)
-         a(i,j)=-deltaTtracer*recip_hFacC(i,j,Nr,bi,bj)*recip_drF(Nr)
-     &        *KappaRT(i,j, Nr )*recip_drC( Nr )
+         a(i,j)=-deltaTX*recip_hFac(i,j,Nr,bi,bj)*recip_drF(Nr)
+     &        *KappaRX(i,j, Nr )*recip_drC( Nr )
          b(i,j)=1.-a(i,j)
         ENDDO
        ENDDO
@@ -101,20 +88,16 @@ C--    End of forward sweep (bottom level)
          gam(i,j,Nr)=ckm1(i,j)*bet(i,j)
          bet(i,j)=b(i,j)-a(i,j)*gam(i,j,Nr)
          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-         gTnm1(i,j,Nr,bi,bj)=(gTnm1(i,j,Nr,bi,bj)
-     &      -a(i,j)*gTnm1(i,j,Nr-1,bi,bj))*bet(i,j)
-         gSnm1(i,j,Nr,bi,bj)=(gSnm1(i,j,Nr,bi,bj)
-     &      -a(i,j)*gSnm1(i,j,Nr-1,bi,bj))*bet(i,j)
+         gXnm1(i,j,Nr,bi,bj)=(gXnm1(i,j,Nr,bi,bj)
+     &      -a(i,j)*gXnm1(i,j,Nr-1,bi,bj))*bet(i,j)
         ENDDO
        ENDDO
 C--    Backward sweep
        DO k=Nr-1,1,-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gTnm1(i,j,k,bi,bj)=gTnm1(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*gTnm1(i,j,k+1,bi,bj)
-          gSnm1(i,j,k,bi,bj)=gSnm1(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*gSnm1(i,j,k+1,bi,bj)
+          gXnm1(i,j,k,bi,bj)=gXnm1(i,j,k,bi,bj)
+     &              -gam(i,j,k+1)*gXnm1(i,j,k+1,bi,bj)
          ENDDO
         ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.41 1999/05/03 21:45:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.42 1999/05/18 18:01:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -28,6 +28,10 @@ C     == Global variables ===
 #include "CG2D.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
+#ifdef ALLOW_KPP
+#include "KPPMIX.h"
+#endif
 
 C     == Routine arguments ==
 C     myTime - Current time in simulation
@@ -118,6 +122,8 @@ C                      index into fVerTerm.
       _RL KapGM   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -269,7 +275,11 @@ C--     Density of 1st level (below W(1)) reference to level 1
      I     myThid )
 #endif
 
-        IF ( .NOT. BOTTOM_LAYER ) THEN
+        IF (       (.NOT. BOTTOM_LAYER)
+#ifdef ALLOW_KPP
+     &       .AND. (.NOT.usingKPPmixing) ! CONVECT not needed with KPP mixing
+#endif
+     &     ) THEN
 C--      Check static stability with layer below
 C--      and mix as needed.
 #ifdef  INCLUDE_FIND_RHO_CALL
@@ -321,7 +331,11 @@ C--      Density of K level (below W(K)) reference to K level
      O      rhoK,
      I      myThid )
 #endif
-         IF ( .NOT. BOTTOM_LAYER ) THEN
+         IF (       (.NOT. BOTTOM_LAYER)
+#ifdef ALLOW_KPP
+     &       .AND. (.NOT.usingKPPmixing) ! CONVECT not needed with KPP mixing
+#endif
+     &      ) THEN
 C--       Check static stability with layer below and mix as needed.
 C--       Density of K+1 level (below W(K+1)) reference to K level.
 #ifdef  INCLUDE_FIND_RHO_CALL
@@ -378,6 +392,18 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
          ENDDO
         ENDDO ! K
 
+#ifdef ALLOW_KPP
+C--     Compute KPP mixing coefficients
+        IF (usingKPPmixing) THEN
+         CALL TIMER_START('KVMIX (FIND KPP COEFFICIENTS) [DYNAMICS]'
+     I          , myThid)
+         CALL KVMIX(
+     I               bi, bj, myTime, myThid )
+         CALL TIMER_STOP ('KVMIX (FIND KPP COEFFICIENTS) [DYNAMICS]'
+     I        , myThid)
+        ENDIF
+#endif
+
         DO K = Nr, 1, -1
 
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
@@ -398,7 +424,7 @@ C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
-     O        KappaRT,KappaRS,
+     O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 #endif
 C--      Calculate accelerations in the momentum equations
@@ -406,7 +432,7 @@ C--      Calculate accelerations in the momentum equations
           CALL CALC_MOM_RHS(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rVel,maskC,
-     I         phiHyd,
+     I         phiHyd,KappaRU,KappaRV,
      U         aTerm,xTerm,cTerm,mTerm,pTerm,
      U         fZon, fMer, fVerU, fVerV,
      I         myTime, myThid)
@@ -457,10 +483,41 @@ C--      Cumulative diagnostic calculations (ie. time-averaging)
 
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN
-         CALL IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                  KappaRT,KappaRS,
-     I                  myThid )
-        ENDIF
+         IF (tempStepping) CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTtracer, KappaRT,recip_HFacC,
+     U         gTNm1,
+     I         myThid )
+         IF (saltStepping) CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTtracer, KappaRS,recip_HFacC,
+     U         gSNm1,
+     I         myThid )
+         IF (momStepping) THEN
+          CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTmom, KappaRU,recip_HFacW,
+     U         gUNm1,
+     I         myThid )
+          CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTmom, KappaRV,recip_HFacS,
+     U         gVNm1,
+     I         myThid )
+#ifdef INCLUDE_CD_CODE
+          CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTmom, KappaRU,recip_HFacW,
+     U         vVelD,
+     I         myThid )
+          CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         deltaTmom, KappaRV,recip_HFacS,
+     U         uVelD,
+     I         myThid )
+#endif
+         ENDIF ! momStepping
+        ENDIF ! implicitDiffusion
  
        ENDDO
       ENDDO
