@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.64 2004/01/25 00:22:57 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.65 2004/02/16 16:24:41 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -982,7 +982,7 @@ if test "x${TOOLSDIR}" = x ; then
     TOOLSDIR="$ROOTDIR/tools"
 fi
 if test ! -d ${TOOLSDIR} ; then
-    echo "Error: the specified $TOOLSDIR (\"$TOOLSDIR\") does not exist!"
+    echo "Error: the specified TOOLSDIR (\"$TOOLSDIR\") does not exist!"
     exit 1
 fi
 if test "x$S64" = x ; then
