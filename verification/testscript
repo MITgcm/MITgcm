@@ -286,6 +286,7 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -debug     Produce even more output which will mean nothing to most
  -clean     Do "make CLEAN" before compiling. This forces a complete rebuild.
  -longtest  Compare numeric output for mean and s.d. of variables.
+ -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
 
 Normal usage:
  $0 *       Configure, compile, run and analyze in all experiment directories
@@ -313,7 +314,7 @@ debug=0
 verbose=1
 quick=0
 clean=0
-ieee=0
+ieee=1
 longtest=0
 expts=''
 
@@ -325,7 +326,7 @@ do
    -verbose) verbose=2;;
    -debug) debug=1;;
    -clean) clean=1;;
-   -ieee) ieee=1;;
+   -noieee) ieee=0;;
    -longtest) longtest=1;;
    -quiet) verbose=0;;
    -help) show_help; exit 0;;
