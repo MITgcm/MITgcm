@@ -6,6 +6,6 @@
      s/call adread(/call adread ( mythid,\
      \&           /g
      s/call adwrite(/call adwrite( mythid,\
-     \&           /g' < tamc_code_ecco_ad.f
+     \&           /g' < tamc_code_ad.f
 
 

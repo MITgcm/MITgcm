@@ -8,10 +8,17 @@ SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
 PKG		= $(BASE)/pkg
-ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
-ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad -nonew_arg
-TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
-TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_ -nonew_arg
+#
+ADTAMCFLAGS      = -reverse -admark ad -i4 -r4
+ADTAFFLAGS       = -reverse -admark ad -i4 -r4 \
+			-flow taf_flow.log -nonew_arg
+FTLTAMCFLAGS     = -forward -ftlmark g_ -i4 -r4
+FTLTAFFLAGS      = -forward -ftlmark g_ -i4 -r4 \
+			-flow taf_flow.log -nonew_arg
+SVDTAMCFLAGS     = -reverse -forward -pure -i4 -r4
+SVDTAFFLAGS      = -reverse -forward -pure -i4 -r4 \
+			-flow taf_flow.log -nonew_arg
+#
 # -warn_step -flow taf_flow.log
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
@@ -27,12 +34,18 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_diffkr_dummy		\
 				xx_kapgm_dummy'		\
                    -output 'fc'
+#
+#                   -output 'objf_vector'
+#                   -output 'fc'
 
 ADTAMCFLAG         = $(ADTAMCFLAGS) $(DIFF_FLAGS)
 ADTAFFLAG          = $(ADTAFFLAGS)  $(DIFF_FLAGS)
 
-TLTAMCFLAG         = $(TLTAMCFLAGS) $(DIFF_FLAGS)
-TLTAFFLAG          = $(TLTAFFLAGS)  $(DIFF_FLAGS)
+FTLTAMCFLAG         = $(FTLTAMCFLAGS) $(DIFF_FLAGS)
+FTLTAFFLAG          = $(FTLTAFFLAGS)  $(DIFF_FLAGS)
+
+SVDTAMCFLAG         = $(SVDTAMCFLAGS) $(DIFF_FLAGS)
+SVDTAFFLAG          = $(SVDTAFFLAGS)  $(DIFF_FLAGS)
 
 # Source files for the MITgcmUV
 SRC_MODEL	= \
@@ -233,8 +246,11 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_tile.f			\
 		$(SOURCE_CODE)/cost_test.f			\
 		$(SOURCE_CODE)/cost_tracer.f			\
+		$(SOURCE_CODE)/cost_atlantic_heat.f		\
+		$(SOURCE_CODE)/cost_vector.f			\
 		  						\
 		$(SOURCE_CODE)/shap_filt_apply_ts.f		\
+		$(SOURCE_CODE)/shap_filt_apply_uv.f		\
 		$(SOURCE_CODE)/shap_filt_tracer_s1.f		\
 		$(SOURCE_CODE)/shap_filt_tracer_s2.f		\
 		$(SOURCE_CODE)/shap_filt_tracer_s2g.f		\
@@ -245,42 +261,63 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/shap_filt_uv_s4.f		\
 		  						\
 
+#		$(SOURCE_CODE)/calc_ep_forcing.f		\
+#		$(SOURCE_CODE)/cost_entropy.f			\
+#		$(SOURCE_CODE)/ini_ep.f				\
+		  						\
+
 
 #--------------------------------------------------------
 # rules
 #--------------------------------------------------------
 
 allcode:
-	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code_ecco.f
+	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code.f
 
 admodeltamc:
-	cd $(DEST) ; $(TAMC) $(ADTAMCFLAG) tamc_code_ecco.f	\
-           >! tamc_code_ecco_ad.prot
+	cd $(DEST) ; $(TAMC) $(ADTAMCFLAG) tamc_code.f	\
+           >! tamc_code_ad.prot
 
 admodeltaf:
-	cd $(DEST) ; $(TAF) $(ADTAFFLAG) tamc_code_ecco.f
+	cd $(DEST) ; $(TAF) $(ADTAFFLAG) tamc_code.f
 
-tlmodeltamc:
-	cd $(DEST) ; $(TAMC) $(TLTAMCFLAG) tamc_code_ecco.f	\
-           >! tamc_code_ecco_tl.prot
+ftlmodeltamc:
+	cd $(DEST) ; $(TAMC) $(FTLTAMCFLAG) tamc_code.f	\
+           >! tamc_code_ftl.prot
 
-tlmodeltaf:
-	cd $(DEST) ; $(TAF) $(TLTAFFLAG) tamc_code_ecco.f
+ftlmodeltaf:
+	cd $(DEST) ; $(TAF) $(FTLTAFFLAG) tamc_code.f
+
+svdmodeltaf:
+	cd $(DEST) ; $(TAF) $(SVDTAFFLAG) tamc_code.f
 
 adchange:
-	${ADJOINT_SCRIPT}/adjoint_ecco_sed.com \
-           >! tamc_code_ecco_sed_ad.f ;  \
+	${ADJOINT_SCRIPT}/adjoint_sed.com \
+           >! tamc_code_sed_ad.f ;  \
         cp $(PKG)/autodiff/adjoint_model.F		\
            $(PKG)/autodiff/adjoint_model.F_old ;	\
-        cat tamc_code_ecco_sed_ad.f >> $(PKG)/autodiff/adjoint_model.F
+        cat tamc_code_sed_ad.f >> $(PKG)/autodiff/adjoint_model.F
+
+ftlchange:
+	cp $(PKG)/autodiff/tangentlinear_model.F		\
+           $(PKG)/autodiff/tangentlinear_model.F_old ;	\
+        cat tamc_code_ftl.f >> $(PKG)/autodiff/tangentlinear_model.F
+
 adrestore:
 	cp $(PKG)/autodiff/adjoint_model.F_template	\
            $(PKG)/autodiff/adjoint_model.F
 
-tltamc:  allcode tlmodeltamc
+ftlrestore:
+	cp $(PKG)/autodiff/tangentlinear_model.F_template	\
+           $(PKG)/autodiff/tangentlinear_model.F
 
-tltaf:  allcode tlmodeltaf
+adtamc:  adrestore ftlrestore allcode admodeltamc
 
-adtamc:  adrestore allcode admodeltamc
+adtaf:  adrestore ftlrestore allcode admodeltaf
 
-adtaf:  adrestore allcode admodeltaf
+ftltamc:  adrestore ftlrestore allcode ftlmodeltamc
+
+ftltaf:  adrestore ftlrestore allcode ftlmodeltaf
+
+svdtaf:  adrestore ftlrestore allcode svdmodeltaf
+

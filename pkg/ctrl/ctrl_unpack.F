@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.4 2001/09/28 15:56:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.5 2002/01/17 16:55:25 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -171,7 +171,11 @@ c     Initialise temporary files
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
+#ifdef ALLOW_ADJOINT_RUN
                            globfld3d(i,bi,ip,j,bj,jp,k) = 0.0
+#else
+                           globfld3d(i,bi,ip,j,bj,jp,k) = 1.0
+#endif
                         enddo
                      enddo
                   enddo
@@ -185,7 +189,11 @@ c     Initialise temporary files
                do ip = 1,nPx
                   do bi = itlo,ithi
                      do i = imin,imax
+#ifdef ALLOW_ADJOINT_RUN
                         globfld2d(i,bi,ip,j,bj,jp) = 0.0
+#else
+                        globfld2d(i,bi,ip,j,bj,jp) = 1.0
+#endif
                      enddo
                   enddo
                enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.43 2001/09/28 16:49:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.44 2002/01/17 16:55:25 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -437,8 +437,6 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "cost.h"
-#include "adcost.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -455,13 +453,14 @@ C           impose additional synchronisation points when they are
 C           updated.
 C     myCurrentTime - Time counter for this thread
 C     myCurrentIter - Iteration counter for this thread
+      INTEGER I
+      INTEGER bi,bj
       INTEGER myCurrentIter
       _RL     myCurrentTime
 CEOP
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                [THE_MODEL_MAIN]',myThid)
-
 
 C--   Set model configuration (fixed arrays)
       CALL TIMER_START('INITIALISE_FIXED   [THE_MODEL_MAIN]',myThid)
@@ -482,8 +481,9 @@ C--   Set model configuration (fixed arrays)
       _END_MASTER( mythid )
       _BARRIER
 
-      fc   = 0.0
-      adfc = 1.0
+      CALL COST_DEPENDENT_INIT ( mythid )
+      _BARRIER
+
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
       CALL ADTHE_MAIN_LOOP ( mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
@@ -505,11 +505,35 @@ C--   Set model configuration (fixed arrays)
       end if
 #endif
 
+#elif (defined (ALLOW_TANGENTLINEAR_RUN))
+
+      _BEGIN_MASTER( mythid )
+      IF (myProcId .eq. 0) THEN
+         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+
+      CALL COST_DEPENDENT_INIT ( mythid )
+      _BARRIER
+
+      CALL TIMER_START('G_THE_MAIN_LOOP          [FTL RUN]', mythid)
+      CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('G_THE_MAIN_LOOP          [FTL RUN]', mythid)
+      _BARRIER
+
+      _BEGIN_MASTER( mythid )
+      IF (myProcId .eq. 0) THEN
+         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+
 #else /* ALLOW_ADJOINT_RUN undef */
 
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
-      CALL THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
+      CALL THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
 
 #endif /* ALLOW_ADJOINT_RUN */

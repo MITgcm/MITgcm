@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.8 2001/12/11 14:57:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.9 2002/01/17 16:55:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -89,7 +89,7 @@ C     Currently AIM does not have any runtime parameters
 C     IF (useAIM) CALL AIM_READPARMS ( myThid )
 #endif
 
-#ifdef ALLOW_ADJOINT_RUN
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
 
 C--   Initialise the cost function.
       call cost_readparms( mythid )
