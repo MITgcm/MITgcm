@@ -1,15 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.156 2003/05/15 16:15:57 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.157 2003/05/22 03:24:12 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+ o AIM: near surface temp evaluated from Pot.Temp: fixed for Part Cell ;
+      + change Evap over land. (update aim.5l_cs output)
  o added missing .cvsignores and made uniform across expts
  o changed configuration of tidal_basin_2d expt
  o added pkg/debug functions for tracing code in fatal crashes
  o tidied pkg/monitor to use MONITOR_OPTIONS.h
  o new fn in pkg/monitor to stop model if solution grows too big
  o removed lots of single quotes from comments
- o fixed gather/scatter inital MPI dialogue in ini_procs.F
 
 checkpoint50e_post
 o make KPP work with PTRACERS
