@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.20 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.21 2003/10/28 22:23:25 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -777,9 +777,9 @@ c Local constants
             KPPfrac(i,j,bi,bj) = 0.0
             DO k = 1,Nr
                KPPghat   (i,j,k,bi,bj) = 0.0
-               KPPviscAz (i,j,k,bi,bj) = viscAz
-               KPPdiffKzT(i,j,k,bi,bj) = diffKzT
-               KPPdiffKzS(i,j,k,bi,bj) = diffKzS
+               KPPviscAz (i,j,k,bi,bj) = viscAr
+               KPPdiffKzT(i,j,k,bi,bj) = diffKrT
+               KPPdiffKzS(i,j,k,bi,bj) = diffKrS
             ENDDO
          ENDDO
       ENDDO
