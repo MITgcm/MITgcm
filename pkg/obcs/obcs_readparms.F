@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.7 2004/09/20 23:22:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.8 2004/09/22 06:30:56 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -33,7 +33,7 @@ C     === Routine arguments ===
      &          OBSuFile,OBSvFile,OBStFile,OBSsFile,
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,
      &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,
-     &          useOBCSsponge
+     &          useOBCSsponge, useOBCSbalance
 
 #ifdef ALLOW_ORLANSKI
       NAMELIST /OBCS_PARM02/
@@ -83,6 +83,7 @@ C--   Default flags and values for OBCS
       useOrlanskiEast =.FALSE.
       useOrlanskiWest =.FALSE.
       useOBCSsponge   =.FALSE.
+      useOBCSbalance  =.FALSE.
 
       OBNuFile = ' '
       OBNvFile = ' '
