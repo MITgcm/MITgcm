@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.2 2004/03/03 14:16:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -72,8 +72,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
         
 C-- Ice area and Ice thickness :
-        CALL  MON_STATS_LATBND_RL(
-     I                1, 2, yBand,
+        CALL MON_STATS_LATBND_RL(
+     I                1, 1, 1, 2, yBand,
      I                iceheight, iceMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
@@ -94,8 +94,8 @@ C-- Ice area and Ice thickness :
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
 C-- Snow thickness :
-        CALL  MON_STATS_LATBND_RL(
-     I                1, 2, yBand,
+        CALL MON_STATS_LATBND_RL(
+     I                1, 1, 1, 2, yBand,
      I                snowheight, iceMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
@@ -126,8 +126,8 @@ C-- Total Energy :
         CALL MON_OUT_RL(mon_var, theEnergy, mon_sufx(0), myThid)
 
 C-- Surface Temp. :
-        CALL  MON_STATS_LATBND_RL(
-     I                1, 2, yBand,
+        CALL MON_STATS_LATBND_RL(
+     I                1, 1, 1, 2, yBand,
      I                Tsrf, iceMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
@@ -147,8 +147,8 @@ C-- Surface Temp. :
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
 C-- 1rst level (volume-mean) Temp. :
-        CALL  MON_STATS_LATBND_RL(
-     I                1, 2, yBand,
+        CALL MON_STATS_LATBND_RL(
+     I                1, 1, 1, 2, yBand,
      I                Tice1, iceMask, iceheight, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
@@ -172,8 +172,8 @@ c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
          
 C-- 2nd  level (volume-mean) Temp. :
-        CALL  MON_STATS_LATBND_RL(
-     I                1, 2, yBand,
+        CALL MON_STATS_LATBND_RL(
+     I                1, 1, 1, 2, yBand,
      I                Tice2, iceMask, iceheight, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
