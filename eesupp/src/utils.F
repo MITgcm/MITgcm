@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.11 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.12 2003/07/14 21:34:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -141,7 +141,8 @@ C     L, LS :: Temps. used in scanning string
 CEOP
 C
       LS      = LEN(string)
-      ILNBLNK = LS
+c     ILNBLNK = LS
+      ILNBLNK = 0
       DO 10 L = LS, 1, -1
         IF ( string(L:L) .EQ. ' ' ) GOTO 10
          ILNBLNK = L
