@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.1 2004/10/27 23:19:43 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.2 2004/11/17 02:50:11 edhill Exp $
 # $Name:  $
 
 Np=3
@@ -55,8 +55,8 @@ fi
 if test $kpr = 1
 then
 
- #cp -p ~/linux_ia32_ifc+mpi_itrda genmake_optfile
- ln -s optfile_g77_itrda genmake_optfile
+ # cp -p ~/linux_ia32_ifc+mpi_itrda genmake_optfile
+ # ln -s optfile_g77_itrda genmake_optfile
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
