@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.16 2003/02/18 05:33:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.17 2003/10/16 23:48:14 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -32,6 +32,13 @@ C     EmPmR :: Net upward freshwater flux in m/s
 C              EmPmR = Evaporation - precipitation - runoff
 C              > 0 for increase in salt (ocean salinity)
 C              Typical range: -1e-7 < EmPmR < 1e-7
+C              Southwest C-grid tracer point
+C
+C  saltFlux :: Net upward salt flux in g/m^2/s
+C              mass of Salt taken out of the ocean per time unit (second).
+C              Note: a) only used when salty sea-ice forms or melts.
+C                    b) units: not in kg/m^2/s because salinity [g/kg]
+C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C
 C     Qnet  :: Net upward surface heat flux excluding shortwave in W/m^2
@@ -70,6 +77,7 @@ C                Units are           meters (converted)
      &               , Qsw
      &               , dQdT
      &               , EmPmR
+     &               , saltFlux
      &               , SST
      &               , SSS
 #ifdef ATMOSPHERIC_LOADING
@@ -86,6 +94,7 @@ C                Units are           meters (converted)
 #endif
       _RS  dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
