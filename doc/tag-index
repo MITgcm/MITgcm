@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.368 2004/10/14 06:00:06 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.369 2004/10/17 23:29:14 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o allow to set a vertical profile of vertical diffusivity for T & S
 
 checkpoint55g_post
 o Renaming carbon AD experiments to comply with testreport conventions
