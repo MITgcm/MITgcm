@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.3 2003/05/01 22:17:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.4 2003/08/03 03:01:51 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -18,6 +18,7 @@ C     \==========================================================*
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GRID.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -42,6 +43,7 @@ C     i,j,k,bi,bj  - Loop counters
       INTEGER i, j, k
  
       IF ( dir.eq.0 ) THEN 
+c-    both fields at the same location :
 
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -57,6 +59,7 @@ C      ENDDO
 C     ENDDO
 
       ELSEIF ( dir.eq.1 )  THEN
+c-    2nd field shifted by -dX/2 (e.g.: 1=T, 2=U) :
  
         DO k=1,Ksize
          DO j=1,sNy
@@ -70,6 +73,7 @@ C     ENDDO
         ENDDO
 
       ELSEIF ( dir.eq.2 ) THEN
+c-    2nd field shifted by -dY/2 (e.g.: 1=T, 2=V) :
  
         DO k=1,Ksize
          DO j=1,sNy
@@ -83,6 +87,7 @@ C     ENDDO
         ENDDO
 
       ELSEIF ( dir.eq.3 ) THEN
+c-    2nd field shifted by -dR/2 (e.g.: 1=T, 2=W) :
  
         DO k=2,Ksize
          DO j=1,sNy
@@ -96,6 +101,8 @@ C     ENDDO
         ENDDO
 
       ELSEIF ( dir.eq.12 ) THEN
+c-    1rst & 2nd fields shifted by -dY/2 & -dX/2 
+c           (e.g.: 1=U, 2=V, product at the corner) :
  
         DO k=1,Ksize
          DO j=1,sNy
@@ -103,6 +110,72 @@ C     ENDDO
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
      &      + .25 _d 0*( fld1(i,j-1,k,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *( fld2(i-1,j,k,bi,bj) + fld2(i,j,k,bi,bj) )
+     &                * deltaT
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSEIF ( dir.eq.13 ) THEN
+c-    1rst & 2nd fields shifted by -dR/2 & -dX/2 (e.g.: 1=U, 2=W):
+ 
+        DO k=2,Ksize
+         DO j=1,sNy
+          DO i=1,sNx
+           fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
+     &      + .25 _d 0*( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
+     &                *( fld2(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
+     &                  +fld2( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
+     &                 )*recip_rAw(i,j,bi,bj)
+     &                * deltaT
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSEIF ( dir.eq.23 ) THEN
+c-    1rst & 2nd fields shifted by -dR/2 & -dY/2 (e.g.: 1=V, 2=W):
+ 
+        DO k=2,Ksize
+         DO j=1,sNy
+          DO i=1,sNx
+           fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
+     &      + .25 _d 0*( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
+     &                *( fld2(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
+     &                  +fld2(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
+     &                 )*recip_rAs(i,j,bi,bj)
+     &                * deltaT
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSEIF ( dir.eq.-13 ) THEN
+c-    gradient of the 1rst field * 2nd fields, shifted by -dR/2 & -dX/2 resp.
+c-    (e.g.: used for advective form of vertical advection: w.du/dr)
+ 
+        DO k=2,Ksize
+         DO j=1,sNy
+          DO i=1,sNx
+           fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
+     &       + .5 _d 0*( fld1(i,j,k-1,bi,bj) - fld1(i,j,k,bi,bj) )
+     &                *( fld2(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
+     &                  +fld2( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
+     &                 )*recip_rAw(i,j,bi,bj)
+     &                * deltaT
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSEIF ( dir.eq.-23 ) THEN
+c-    gradient of the 1rst field * 2nd fields, shifted by -dR/2 & -dY/2 resp.
+c-    (e.g.: used for advective form of vertical advection: w.dv/dr)
+ 
+        DO k=2,Ksize
+         DO j=1,sNy
+          DO i=1,sNx
+           fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
+     &       + .5 _d 0*( fld1(i,j,k-1,bi,bj) - fld1(i,j,k,bi,bj) )
+     &                *( fld2(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
+     &                  +fld2(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
+     &                 )*recip_rAs(i,j,bi,bj)
      &                * deltaT
           ENDDO
          ENDDO
