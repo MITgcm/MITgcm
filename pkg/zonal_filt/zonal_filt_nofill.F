@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_nofill.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_nofill.F,v 1.4 2001/04/10 22:35:27 heimbach Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -63,7 +63,7 @@ C     o Apply amplitude filter and normalize
           phi(i)=phi(i)*ampFactorV(i,j,bi,bj)/float(Nx)
          ENDDO
         ELSE
-         WRITE(0,*) 'Error: gridLoc = ',gridLoc
+         WRITE(*,*) 'Error: gridLoc = ',gridLoc
          STOP 'Error: gridLoc has illegal value'
         ENDIF
 

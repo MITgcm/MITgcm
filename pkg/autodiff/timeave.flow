@@ -1,0 +1,19 @@
+
+C----------------------------------------
+C subroutine  TIMEAVE_CUMULATE
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMULATE  INPUT  =   2,3,4,5,6,7
+CADJ SUBROUTINE TIMEAVE_CUMULATE  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_STATVARS
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_STATVARS  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE TIMEAVE_STATVARS  OUTPUT = 
+
+C----------------------------------------
+C subroutine  TIMEAVE_STATV_WRITE
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_STATV_WRITE  INPUT  = 1,2,3
+CADJ SUBROUTINE TIMEAVE_STATV_WRITE  OUTPUT = 
+

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.30 2001/03/09 20:45:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.31 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -217,14 +217,14 @@ C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       _GLOBAL_SUM_R8( err   , myThid )
       
       _BEGIN_MASTER( myThid )
-      write(0,'(A,1PE30.14)') ' cg2d: Sum(rhs) = ',sumRHS
+      write(*,'(A,1PE30.14)') ' cg2d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
 c     _BEGIN_MASTER( myThid )
-c      WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
+c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
 c    & actualIts, actualResidual
 c     _END_MASTER( )
       initialResidual=actualResidual
@@ -233,7 +233,7 @@ C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it2d=1, numIters
 
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' residual = ',
+C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' residual = ',
 C    &  actualResidual
 CcnhDebugEnds
        IF ( err .LT. tolerance ) GOTO 11
@@ -262,11 +262,11 @@ CcnhDebugEnds
 
        _GLOBAL_SUM_R8(eta_qrN, myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' eta_qrN = ',eta_qrN
+C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
        cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' beta = ',cgBeta
+C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' beta = ',cgBeta
 CcnhDebugEnds
        eta_qrNM1 = eta_qrN
 
@@ -325,11 +325,11 @@ C==    q = A.s
        ENDDO
        _GLOBAL_SUM_R8(alpha,myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' SUM(s*q)= ',alpha
+C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
        alpha = eta_qrN/alpha
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' alpha= ',alpha
+C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' alpha= ',alpha
 CcnhDebugEnds
      
 C==    Update solution and residual vectors
@@ -387,7 +387,7 @@ C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
 C     _EXCH_XY_R8(cg2d_x, myThid )
 c     _BEGIN_MASTER( myThid )
-c      WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
+c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
 c    & actualIts, actualResidual
 c     _END_MASTER( )
 
@@ -419,7 +419,7 @@ C       ENDDO
 C      ENDDO
 C     ENDDO
 C     _GLOBAL_SUM_R8( err   , myThid )
-C     write(0,*) 'cg2d: Ax - b = ',SQRT(err)
+C     write(*,*) 'cg2d: Ax - b = ',SQRT(err)
 CcnhDebugEnds
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.10 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.11 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,14 +41,15 @@ C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
 
+      IF ( usePickupBeforeC35 ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from 
 C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
-C     IF ( startTime .NE. 0. ) THEN
-C       CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
-C     ENDIF
+      IF ( startTime .NE. 0. ) THEN
+       CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
+      ENDIF
+      ENDIF
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
-#ifndef ALLOW_AUTODIFF_TAMC
       IF ( startTime .EQ. 0. ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -56,14 +57,13 @@ C--   Initial conditions are convectively adjusted (for historical reasons)
            iMax=sNx+Olx
            jMin=1-Oly
            jMax=sNy+Oly
-           CALL CONVECTIVE_ADJUSTMENT(
+           CALL CONVECTIVE_ADJUSTMENT_INI(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       startTime, nIter0, myThid )
          ENDDO
         ENDDO
         _BARRIER
       END IF
-#endif
 
 C--   Initialize variable data for packages
       CALL PACKAGES_INIT_VARIABLES( myThid )

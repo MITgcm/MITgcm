@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.17 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.18 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -118,6 +118,7 @@ C--   Set default "physical" parameters
       zonal_filt_cospow   = 2
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
+      usePickupBeforeC35  = .FALSE.
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150

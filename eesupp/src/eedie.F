@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.6 2001/04/10 22:35:24 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -51,8 +51,8 @@ C     bug or you may need a different parallel compiler for main.F
      & 'S/R EEDIE: Only ',nThreadsDone,
      & ' threads have completed, ',nThreads,
      & ' are expected for this configuration!'
-       WRITE(0,*) msgBuf
-       WRITE(0,*) 
+       WRITE(*,*) msgBuf
+       WRITE(*,*) 
      & 'Possibly you have different setenv PARALLEL and nThreads?'
        eeEndError = .TRUE.
        fatalError = .TRUE.

@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.10 2001/02/04 14:38:47 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.11 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -170,7 +170,7 @@ C Penetrating SW radiation
        DO i=iMin,iMax
         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
      &    -maskC(i,j)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
-     &    *recip_Cp*recip_rhoNil*recip_dRf(1)
+     &    *recip_Cp*recip_rhoNil*recip_dRf(klev)
        ENDDO
       ENDDO
 #endif

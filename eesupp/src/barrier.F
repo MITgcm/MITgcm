@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.7 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.8 2001/04/10 22:35:24 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -86,16 +86,16 @@ CcnhDebugEnds
 
 C--   Check that thread number is expected range
       IF ( myThid .LT. 1 .OR. myThid .GT. nThreads ) THEN
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
      &  myThid, ' nThreads = ', nThreads
        STOP 'ABNROMAL END: S/R BARRIER'
       ENDIF
 
 C--   When every threads key1 is valid thread 1 will open door1.
       IF ( key1(1,myThid) .EQ. VALID ) THEN
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
      &  myThid, ' key1 already validated'
        STOP 'ABNROMAL END: S/R BARRIER'
       ENDIF
@@ -120,7 +120,7 @@ C--   Invalidate keys for door1 here as it is now open
 
 CcnhDebugStarts
 C     IF ( myThid .EQ. 1 ) THEN
-C      WRITE(0,*) ' DOOR1 Opened '
+C      WRITE(*,*) ' DOOR1 Opened '
 C     ENDIF
 CcnhDebugEnds
 
@@ -140,8 +140,8 @@ C     partial store, total store) the variables key1, key2 and key3
 C     might need to be set to invalid by thread 1.
 C     
       IF ( key2(1,myThid) .EQ. VALID ) THEN
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
      &  myThid, ' key2 already validated'
        STOP 'ABNROMAL END: S/R BARRIER'
       ENDIF
@@ -176,8 +176,8 @@ C--   door1 because they have to go through door3 first.
      
 C--   When every threads key3 is valid thread 1 will open door3.
       IF ( key3(1,myThid) .EQ. VALID ) THEN
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
-       WRITE(0,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! CATASTROPHIC ERROR'
+       WRITE(*,*) '!!!!!!! PANIC !!!!!!! in S/R BARRIER  myThid = ', 
      &  myThid, ' key3 already validated'
        STOP 'ABNROMAL END: S/R BARRIER'
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_presmooth.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_presmooth.F,v 1.4 2001/04/10 22:35:27 heimbach Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -91,10 +91,10 @@ C
       ENDIF
 
 CcnhDebugStarts
-C     WRITE(0,*) 'Before FFT pre-smooth'
-C     WRITE(0,'(A,A)') 'Mask ', 'Data'
+C     WRITE(*,*) 'Before FFT pre-smooth'
+C     WRITE(*,'(A,A)') 'Mask ', 'Data'
 C     DO I=1,lField
-C      WRITE(0,'(A,I4,1X,F3.1,1X,1PE35.25)') 'I= ',I,holeMask(I), field(I)
+C      WRITE(*,'(A,I4,1X,F3.1,1X,1PE35.25)') 'I= ',I,holeMask(I), field(I)
 C     ENDDO
 CcnhDebugEnds
 
@@ -158,10 +158,10 @@ C        Data
        ENDDO
 
 CcnhDebugStarts
-C     WRITE(0,*) 'During FFT pre-smooth'
-C     WRITE(0,'(A,A,A,A,A,A)') 'I   ','mask(I)','hHi(I)','hLo(I)','hBase(I)','hHead(I)'
+C     WRITE(*,*) 'During FFT pre-smooth'
+C     WRITE(*,'(A,A,A,A,A,A)') 'I   ','mask(I)','hHi(I)','hLo(I)','hBase(I)','hHead(I)'
 C     DO I=1,lField
-C      WRITE(0,'(6(I4,1X))')
+C      WRITE(*,'(6(I4,1X))')
 C    & I,INT(holeMask(I)),hHi(I),hLo(I),hBase(I),hHead(I)
 C     ENDDO
 CcnhDebugEnds
@@ -175,7 +175,7 @@ C        A hole
          dist = I-hBase(I)
          len  = hHead(I) - hBase(I)
 CcnhDebugStarts
-C        WRITE(0,'(A,1X,I4,1X,1PE35.25,1X,1PE35.25,)') 'I= ',I,dist, len
+C        WRITE(*,'(A,1X,I4,1X,1PE35.25,1X,1PE35.25,)') 'I= ',I,dist, len
 C        IF ( dist .LT. 0      ) STOP ' DIST .LT. 0 '
 C        IF ( len  .LT. 0      ) STOP ' LEN  .LT. 0 '
 C        IF ( dist .GT. lField ) STOP ' dist .GT. lField '
@@ -189,10 +189,10 @@ CcnhDebugStarts
        ENDDO
 
 CcnhDebugStarts
-C     WRITE(0,*) 'After FFT pre-smooth'
-C     WRITE(0,'(A,A)') 'Mask ', 'Data'
+C     WRITE(*,*) 'After FFT pre-smooth'
+C     WRITE(*,'(A,A)') 'Mask ', 'Data'
 C     DO I=1,lField
-C      WRITE(0,'(A,I4,1X,F3.1,1X,1PE35.25)') 'I= ',I,holeMask(I), field(I)
+C      WRITE(*,'(A,I4,1X,F3.1,1X,1PE35.25)') 'I= ',I,holeMask(I), field(I)
 C     ENDDO
 CcnhDebugEnds
 

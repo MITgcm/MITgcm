@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.1 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.2 2001/04/10 22:35:26 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -46,7 +46,7 @@ C     msgBuf - Error message buffer
      &                     mytime-deltaTClock)
      & ) THEN
 
-         write(0,*) 'myIter= ',myiter
+         write(*,*) 'myIter= ',myiter
 
        _BARRIER
        _BEGIN_MASTER( myThid )

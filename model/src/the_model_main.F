@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.37 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.38 2001/04/10 22:35:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,9 +149,9 @@ C--   Set model configuration (fixed arrays)
 
       fc   = 0.0
       adfc = 1.0
-      CALL TIMER_START('ADTHE_MAIN_SENS          [ADJOINT RUN]', mythid)
-      call ADTHE_MAIN_SENS ( mythid )
-      call TIMER_STOP ('ADTHE_MAIN_SENS          [ADJOINT RUN]', mythid)
+      CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
+      call ADTHE_MAIN_LOOP ( mythid )
+      call TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
       _BARRIER
 
       _BEGIN_MASTER( mythid )
@@ -165,10 +165,16 @@ C--   Set model configuration (fixed arrays)
 
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
-      CALL THE_MAIN_SENS(myCurrentTime, myCurrentIter, myThid )
+      CALL THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
 
 #endif /* ALLOW_MIT_ADJOINT_RUN */
+
+C--   Final checkpoint (incase the in-loop checkpoint was missed)
+      CALL TIMER_START('WRITE_CHECKPOINT   [THE_MODEL_MAIN]',myThid)
+      CALL WRITE_CHECKPOINT(
+     &        .TRUE., myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('WRITE_CHECKPOINT   [THE_MODEL_MAIN]',myThid)
 
       CALL TIMER_STOP ('ALL                [THE_MODEL_MAIN]',myThid)
 

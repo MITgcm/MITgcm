@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.1 2001/03/25 22:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.2 2001/04/10 22:35:26 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,8 +73,8 @@ C--   Calculate cost function on tile of this instance
             ig = myXGlobalLo-1+(bi-1)*sNx+i
 
             if ((ig .eq. iLocOut) .and. (jg .eq. jLocOut)) then
-cph               write(0,'(a,3(x,i4),a,4(x,i4))')
-cph     &              'COST    ',ig,jg,kLocOut,' TILE ',i,j,bi,bj
+               write(*,'(a,3(x,i4),a,4(x,i4))')
+     &              'COST    ',ig,jg,kLocOut,' TILE ',i,j,bi,bj
                objf_test(bi,bj) = theta(i,j,kLocOut,bi,bj)
             endif
 

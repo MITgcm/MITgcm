@@ -9,7 +9,7 @@ BASE             = ..
 TAMCFLAGS        = -adjoint -i4 -r4
 PKG		= $(BASE)/pkg
 
-DIFF_FLAGS       = -module the_main_sens		\
+DIFF_FLAGS       = -module the_main_loop		\
 		   -input  '    xx_theta_dummy		\
 				xx_salt_dummy		\
 				xx_hflux_dummy		\
@@ -43,6 +43,7 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		$(PKG)/autodiff/checkpoint.flow		\
 		$(PKG)/autodiff/print_message.flow	\
 		$(PKG)/autodiff/open_copy_data_file.flow\
+		$(PKG)/autodiff/timeave.flow		\
 		  		  				\
 		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/calc_buoyancy.f			\
@@ -58,6 +59,7 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		$(SOURCE_CODE)/comm_stats.f			\
 		$(SOURCE_CODE)/convect.f			\
 		$(SOURCE_CODE)/convective_adjustment.f		\
+		$(SOURCE_CODE)/convective_adjustment_ini.f	\
 		$(SOURCE_CODE)/correction_step.f		\
 		$(SOURCE_CODE)/cycle_tracer.f			\
 		$(SOURCE_CODE)/different_multiple.f		\
@@ -99,7 +101,7 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		$(SOURCE_CODE)/state_summary.f			\
 		$(SOURCE_CODE)/timestep.f			\
 		$(SOURCE_CODE)/the_correction_step.f		\
-		$(SOURCE_CODE)/the_main_sens.f			\
+		$(SOURCE_CODE)/the_main_loop.f			\
 		$(SOURCE_CODE)/timestep_tracer.f		\
 		$(SOURCE_CODE)/swfrac.f				\
 		  						\

@@ -37,23 +37,23 @@
 
 # Time stepping parameters
  &PARM03
- startTime = 0.,
- endTime   = 186624000000.,
+ startTime = 132503040000.,
+ endTime   = 132627456000.,
 # startTime = 186624000000.,
 # endTime   = 186748416000.,
  deltaTmom=2400.0,
  tauCD=321428.,
 # deltaTtracer=86400.0,
 # deltaTClock =86400.0,
- deltaTtracer=21600.0,
- deltaTClock =21600.0,
+ deltaTtracer=5400.0,
+ deltaTClock =5400.0,
  cAdjFreq=-1.,
  abEps=0.1,
 #
- pChkptFreq = 186624000000.,
- chkptFreq  = 186624000000.,
- dumpFreq         = 5184000.0,
- taveFreq         = 5184000.0,
+ pChkptFreq = 124416000.,
+ chkptFreq  = 124416000.,
+ dumpFreq         = 31104000.0,
+ taveFreq         = 31104000.0,
 #
 #tauThetaClimRelax=2592000.0,
 #tauSaltClimRelax=2592000.0,

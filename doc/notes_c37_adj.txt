@@ -89,3 +89,12 @@ store directives are up to now in
 - the_main_sens
 - kpp_calc
 - kpp_routines
+
+Further changes:
+###############
+
+- added pkg/autodiff/timeave.flow
+
+- forward_step no longer exist.
+  Is inlined into the_main_loop
+

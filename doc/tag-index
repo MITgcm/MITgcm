@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.37 2001/03/13 01:15:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.38 2001/04/10 22:35:24 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+checkpoint38
+ o see notes_c37_adj.txt
+ o corrected wrong layer index in external_forcing_t
+ o replaced the_main_loop/forward_step by the_main_loop
+ o removed forceoutput from write_state
+   (replaced criteria for initial/final state)
+ o added runtime flag for pre-C35 pickups: usePickupBeforeC35
 
 checkpoint37
  o mdsio.F routine split and packaged in pkg/mdsio

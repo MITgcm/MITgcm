@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/vero/code/Attic/CPP_OPTIONS.h,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/vero/code/Attic/CPP_OPTIONS.h,v 1.2 2001/04/10 22:35:27 heimbach Exp $
 C
 
 C 
@@ -6,7 +6,7 @@ C CPP flags controlling which code in included in the files that
 C will be compiled.
 C
 C o Include/exclude code for GM/Redi parameterization
-#define  ALLOW_GMREDI
+#undef  ALLOW_GMREDI
 
 C o Include/exclude code for KPP mixing scheme
 #undef  ALLOW_KPP
@@ -141,6 +141,9 @@ C          because the old code did not have no-slip BCs
 
 C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
+
+C o 
+#define ALLOW_TIMEAVE
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.6 2001/04/10 22:35:24 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -147,7 +147,7 @@ C        i.e. we only lock waiting for data that we need.
           CALL FOOL_THE_COMPILER
           spinCount = spinCount+1
 C         IF ( myThid .EQ. 1 .AND. spinCount .GT. _EXCH_SPIN_LIMIT ) THEN
-C          WRITE(0,*) ' eBl = ', ebl
+C          WRITE(*,*) ' eBl = ', ebl
 C          STOP ' S/R EXCH_RECV_GET_X: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
           IF ( westRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10
@@ -464,7 +464,7 @@ C        i.e. we only lock waiting for data that we need.
           CALL FOOL_THE_COMPILER
           spinCount = spinCount+1
 C         IF ( myThid .EQ. 1 .AND. spinCount .GT. _EXCH_SPIN_LIMIT ) THEN
-C          WRITE(0,*) ' eBl = ', ebl
+C          WRITE(*,*) ' eBl = ', ebl
 C          STOP ' S/R EXCH_RECV_GET_X: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
           IF ( westRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10

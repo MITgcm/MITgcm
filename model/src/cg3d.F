@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.7 2001/03/08 20:45:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.8 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -187,14 +187,14 @@ C     _EXCH_XYZ_R8( cg3d_s, myThid )
       _GLOBAL_SUM_R8( err   , myThid )
       
       _BEGIN_MASTER( myThid )
-      write(0,'(A,1PE30.14)') ' cg3d: Sum(rhs) = ',sumRHS
+      write(*,'(A,1PE30.14)') ' cg3d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
       _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
+       WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
      &  actualIts, actualResidual
       _END_MASTER( )
 
@@ -204,7 +204,7 @@ C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 CcnhDebugStarts
 #ifdef VERBOSE
        IF ( mod(it3d-1,10).EQ.0)
-     &   WRITE(0,*) ' CG3D: Iteration ',it3d-1,
+     &   WRITE(*,*) ' CG3D: Iteration ',it3d-1,
      &      ' residual = ',actualResidual
 #endif
 CcnhDebugEnds
@@ -287,11 +287,11 @@ caja
 
        _GLOBAL_SUM_R8(eta_qrN, myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' eta_qrN = ',eta_qrN
+C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
        cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
-C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' beta = ',cgBeta
+C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' beta = ',cgBeta
 CcnhDebugEnds
        eta_qrNM1 = eta_qrN
 
@@ -398,11 +398,11 @@ C==    q = A.s
        ENDDO
        _GLOBAL_SUM_R8(alpha,myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
+C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
        alpha = eta_qrN/alpha
 CcnhDebugStarts
-C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' alpha= ',alpha
+C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' alpha= ',alpha
 CcnhDebugEnds
      
 C==    Update solution and residual vectors
@@ -460,7 +460,7 @@ C--   Un-normalise the answer
 
 Cadj  _EXCH_XYZ_R8(cg3d_x, myThid )
       _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
+       WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
      &  actualIts, actualResidual
       _END_MASTER( )
 

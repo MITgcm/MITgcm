@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/chksum_tiled.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/chksum_tiled.F,v 1.3 2001/04/10 22:35:27 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,7 +42,7 @@ C     Local
       ENDDO
       Frms=sqrt(Frms/float(cnt))
 
-      write(0,'(a,1p4e12.5,1x,a)')
+      write(*,'(a,1p4e12.5,1x,a)')
      &      'CHKSUM_TILED: ',Fmin,Fmax,Fmn,Frms,str
 
       RETURN

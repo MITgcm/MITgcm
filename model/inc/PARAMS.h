@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.50 2001/03/25 22:33:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.51 2001/04/10 22:35:25 heimbach Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -202,7 +202,8 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
      & doThetaClimRelax, doSaltClimRelax,
      & periodicExternalForcing, usingPCoords, usingZCoords,
      & nonHydrostatic, globalFiles,
-     & allowFreezing, groundAtK1
+     & allowFreezing, groundAtK1,
+     & usePickupBeforeC35
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -240,6 +241,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL globalFiles
       LOGICAL allowFreezing
       LOGICAL groundAtK1
+      LOGICAL usePickupBeforeC35
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
