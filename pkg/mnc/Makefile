@@ -27,6 +27,8 @@ FILES = \
 TEST_OBJECTS = $(TEST_FILES:.F=.o)
 OBJECTS = $(FILES:.F=.o)
 
+ALL_TEST = $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
+
 noexe: $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(FILES) $(OBJECTS)
 	echo "compiled"
 
@@ -37,13 +39,13 @@ utils.F:
 
 test: mnc_test_001
 	echo "running mnc_test_001 ..."
-	./mnc_test_001
-	echo "... done"
+	./mnc_test_001 && ncdump test_001.nc | head -50
 
-mnc_test_001: $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS) $(FILES) $(OBJECTS) mnc_test_001.o
+
+mnc_test_001: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_001.o
 	$(FC) -o mnc_test_001 mnc_test_001.o $(OBJECTS) $(TEST_OBJECTS) -lnetcdf
 
 
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
-	-rm -f mnc_test_???.F mnc_test_???
+	-rm -f mnc_test_???.F mnc_test_??? test_???.nc

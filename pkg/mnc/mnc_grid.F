@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.2 2004/01/06 23:19:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.3 2004/01/07 07:29:13 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -28,20 +28,23 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,k, n, indf,indg,indd, id, fid, ngrid, ng_ind, ds_off
-      integer idd, err
+      integer i,j,k, n, indf,indg,indd, id, fid, ngrid, ng_ind, ds_last
+      integer idd, err, dn,dnpn
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
+      character*(3*MNC_MAX_CHAR) dim_names
+      character*(MNC_MAX_CHAR) file_name
+      character*(MNC_MAX_CHAR) grid_name
 
 C     Get the file ID and indicies
-      name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+      file_name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
       n = ILNBLNK(fname)
       IF (n .GT. MNC_MAX_CHAR) n = MNC_MAX_CHAR
-      name(1:n) = fname(1:n)
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_f_names, indf)
+      file_name(1:n) = fname(1:n)
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, file_name, mnc_f_names, indf)
       IF (indf .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       name, '''does not exist--must be previously initialized'
+        write(msgbuf,'(3a)') 'MNC ERROR: file ''', file_name, 
+     &       '''does not exist--must be previously initialized'
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_GRID_INIT'
       ENDIF
@@ -49,15 +52,15 @@ C     Get the file ID and indicies
       ngrid = mnc_f_info(indf,3)
       ng_ind = 4 + 3*ngrid
       IF (ngrid .EQ. 0) THEN
-        ds_off = 0
+        ds_last = 0
       ELSE
-        i = 6 + (ngrid - 1)*3
-        ds_off = mnc_f_info(indf,i)
+        ds_last = mnc_f_info(indf,(ng_ind+2))
       ENDIF
 
-C     Check for sufficient space
-      i = ds_off + ndim
-      IF ((i .GE. MNC_MAX_INFO) .OR. (ng_ind .GE. MNC_MAX_INFO)) THEN
+C     Check for sufficient space in memory
+      i = ds_last + ndim
+      j = 3 + 3*(ngrid + 1)
+      IF ((i .GE. MNC_MAX_INFO) .OR. (j .GE. MNC_MAX_INFO)) THEN
         write(msgbuf,'(2a)') 'MNC ERROR: insufficient space--',
      &       'please increase MNC_MAX_INFO'
         CALL print_error( msgbuf, mythid )
@@ -67,7 +70,7 @@ C     Check for sufficient space
 C     Get the grid index [check for re-definition]
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, gname, mnc_g_names, indg)
       IF ( indg .GT. 0 ) THEN
-        write(msgbuf,'(3a)') 'MNC WARNING: grid ''',
+        write(msgbuf,'(3a)') 'MNC ERROR: grid ''',
      &       gname, '''was previously defined'
       ELSE
         CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_g_names,
@@ -76,18 +79,25 @@ C     Get the grid index [check for re-definition]
      &       mnc_blank_name(1:MNC_MAX_CHAR)
         n = ILNBLNK(gname)
         mnc_g_names(indg)(1:n) = gname(1:n)
+        grid_name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+        grid_name(1:9) = 'mncgrid__'
+        k = 10 + n - 1
+        grid_name(10:k) = gname(1:n)
       ENDIF
 
-C     Add the dimension refs
+C     Add the dimensions
+      dn = 1
+      DO i = 1,3*MNC_MAX_CHAR
+        dim_names(i:i) = ' '
+      ENDDO
       DO i = 1,ndim
 
-        id = ds_off + i
-
+        j = ds_last + i
         name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
         n = ILNBLNK(dnames(i))
         name(1:n) = dnames(i)(1:n)
         CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_d_names, indd)
-        IF (indd .EQ. -1) THEN
+        IF (indd .LT. 1) THEN
           write(msgbuf,'(3a)') 'MNC ERROR: dimension ''',
      &         name, ''' does not exist'
           CALL print_error( msgbuf, mythid )
@@ -109,15 +119,28 @@ C     Add the dimension refs
         write(msgbuf,'(5a)') 'creating dim in grid ''', gname,
      &       ''' in file ''', fname, ''''
         CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
-        mnc_fg_ids(indf,id) = idd
-        mnc_fd_ind(indf,id) = indd
+        mnc_fg_ids(indf,j) = idd
+        mnc_fd_ind(indf,j) = indd
 
+C       Accumulate the dimension names
+        n = ILNBLNK(name)
+        dnpn = dn + n - 1
+        dim_names(dn:dnpn) = name(1:n)
+        dn = dn + 2
+        
       ENDDO
+
+C     Add attributes to aid in later parsing
+      CALL MNC_FILE_ADD_ATTR_STR(myThid, file_name, grid_name, 
+     &     dim_names)
+      write(msgbuf,'(5a)') 'creating attribute for grid ''', gname,
+     &     ''' in file ''', fname, ''''
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
 C     Grid successfully added, so update file table
       mnc_f_info(indf,ng_ind) = indg
-      mnc_f_info(indf,ng_ind+1) = ds_off + 1
-      mnc_f_info(indf,ng_ind+2) = ds_off + ndim
+      mnc_f_info(indf,ng_ind+1) = ds_last + 1
+      mnc_f_info(indf,ng_ind+2) = ds_last + ndim
       mnc_f_info(indf,3) = ngrid + 1
       
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.3 2004/01/06 23:19:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.4 2004/01/07 07:29:12 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -109,10 +109,11 @@ C     Local Variables
       integer i, err, fid, ind, n1,n2
       character*(MNC_MAX_CHAR) s1, s2
       character*(MAX_LEN_MBUF) msgbuf
+      character*(MAX_LEN_MBUF) name
 
 C     Is the file open?
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF ( ind .GT. 0 ) THEN
+      IF (ind .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
      &       fname, ''' must be opened first'
         CALL print_error( msgbuf, mythid )
@@ -121,9 +122,7 @@ C     Is the file open?
       fid = mnc_f_info(ind,2)
 
 C     Enter define mode
-      err = NF_REDEF(fid)
-      CALL MNC_HANDLE_ERR(myThid, err, 
-     &     'redefining in S/R MNC_FILE_ADD_ATTR_STR')
+      CALL MNC_FILE_REDEF(myThid, fname)
 
       s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
       s2(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
@@ -176,9 +175,7 @@ C     Is the file open?
       fid = mnc_f_info(ind,2)
 
 C     Enter define mode
-      err = NF_REDEF(fid)
-      CALL MNC_HANDLE_ERR(myThid, err, 
-     &     'redefining in S/R MNC_FILE_ADD_ATTR_INT')
+      CALL MNC_FILE_REDEF(myThid, fname)
 
       s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
       n1 = ILNBLNK(atname)
@@ -216,10 +213,9 @@ C     Local Variables
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
       
-
-C     Is the file open?
+C     Verify that the file is open
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF (ind .GT. 0) THEN
+      IF (ind .LT. 0) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
      &       fname, ''' must be opened first'
         CALL print_error( msgbuf, mythid )
@@ -228,9 +224,7 @@ C     Is the file open?
       fid = mnc_f_info(ind,2)
 
 C     Enter define mode
-      err = NF_REDEF(fid)
-      CALL MNC_HANDLE_ERR(myThid, err, 
-     &     'redefining in S/R MNC_FILE_ADD_ATTR_DBL')
+      CALL MNC_FILE_REDEF(myThid, fname)
 
       s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
       n1 = ILNBLNK(atname)
@@ -282,13 +276,100 @@ C     Clear all the file, grid, and variable names and refs
           j = 2*i
           k = mnc_fv_ids(ind,j)
           mnc_v_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
-          mnc_v_units(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
         ENDDO
       ENDIF
       DO i = 1,3
         mnc_f_info(ind,i) = 0
       ENDDO
       mnc_f_names(ind)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_REDEF( 
+     I     myThid,
+     I     fname )
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer ind, fid, def, err
+      character*(MAX_LEN_MBUF) msgbuf
+
+C     Verify that the file is open
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
+      IF (ind .LT. 0) THEN
+        write(msgbuf,'(3a)') 'MNC ERROR: file ''',
+     &       fname, ''' must be opened first'
+        CALL print_error( msgbuf, mythid )
+        stop 'ABNORMAL END: S/R MNC_FILE_REDEF'
+      ENDIF
+      def = mnc_f_info(ind,1)
+      fid = mnc_f_info(ind,2)
+
+      IF (def .NE. 1) THEN
+C       Enter define mode
+        err = NF_REDEF(fid)
+        CALL MNC_HANDLE_ERR(myThid, err, 
+     &       'entering define mode in S/R MNC_FILE_REDEF')
+        mnc_f_info(ind,1) = 1
+      ENDIF
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_ENDDEF( 
+     I     myThid,
+     I     fname )
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer ind, fid, def, err
+      character*(MAX_LEN_MBUF) msgbuf
+
+C     Verify that the file is open
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
+      IF (ind .LT. 0) THEN
+        write(msgbuf,'(3a)') 'MNC ERROR: file ''',
+     &       fname, ''' must be opened first'
+        CALL print_error( msgbuf, mythid )
+        stop 'ABNORMAL END: S/R MNC_FILE_REDEF'
+      ENDIF
+      def = mnc_f_info(ind,1)
+      fid = mnc_f_info(ind,2)
+
+      IF (def .NE. 2) THEN
+C       Enter define mode
+        err = NF_ENDDEF(fid)
+        CALL MNC_HANDLE_ERR(myThid, err, 
+     &       'ending define mode in S/R MNC_FILE_ENDDEF')
+        mnc_f_info(ind,1) = 2
+      ENDIF
 
       RETURN
       END

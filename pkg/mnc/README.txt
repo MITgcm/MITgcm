@@ -51,13 +51,13 @@ using a simple interface such as:
   MNC_GRID_INIT(	 myThid, fname, gname, ndim, dnames )
   MNC_GRID_SET_LL(	 myThid, fname, gname, type, lats, lons )
 
-  MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, fillval )
-  MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, fillval )
-  MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, fillval )
-  MNC_VAR_ADD_ATTR_STR(	 myThid, vname, name, sval )
-  MNC_VAR_ADD_ATTR_INT(	 myThid, vname, name, ival )
-  MNC_VAR_ADD_ATTR_DBL(	 myThid, vname, name, dval )
-  MNC_VAR_WRITE(	 myThid, vname, var )
+  MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, units, fillval )
+  MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units, fillval )
+  MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units, fillval )
+  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, name, atname, sval )
+  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, name, atname, ival )
+  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, name, atname, dval )
+  MNC_VAR_WRITE(	 myThid, fname, vname, var )
   ...
   MNC_VAR_READ(          myThid, vname, var )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.2 2004/01/06 23:19:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.3 2004/01/07 07:29:12 edhill Exp $
 C $Name:  $
 
 C     ==========================================
@@ -42,12 +42,12 @@ C
 C     mnc_blank_name    : (convenience) just MNC_MAX_CHAR spaces
 C
 C     mnc_f_names (fi)  : file names
-C     mnc_g_names (gi)  : grid names    <---+-----------+
-C     .                                     |           |
-C     mnc_f_info (fi,-) : open, fID, Ngrid, g1,ds1,de1, g2,ds2,de2, ...
-C     .                                        |   |       |   |
-C     mnc_fg_ids (fi,-) : dim IDs       <------+---+-------+---+
-C     mnc_fd_ind (fi,-) : dim indicies  <------+---+-------+---+
+C     mnc_g_names (gi)  : grid names    <----+-----------+
+C     .                                      |           |
+C     mnc_f_info (fi,-) : isDEF, fID, Ngrid, g1,ds1,de1, g2,ds2,de2,...
+C     .                                         |   |       |   |
+C     mnc_fg_ids (fi,-) : dim IDs       <-------+---+-------+---+
+C     mnc_fd_ind (fi,-) : dim indicies  <-------+---+-------+---+
 C     .                             |
 C     mnc_d_names (di)  : name   <--+
 C     mnc_d_units (di)  : units  <--+
@@ -56,7 +56,6 @@ C     .
 C     mnc_fv_ids (fi,-) : nVar, n1,ID1, n2,ID2, ...
 C     .                         |       |
 C     mnc_v_names (vi)  :   <---+-------+
-C     mnc_v_units (vi)  :   <---+-------+
 C
 C     fi  :  file index
 C     vi  :  variable index
@@ -69,7 +68,7 @@ C     di  :  dimension index
 
       COMMON /MNC_VARS/
      &     mnc_blank_name, 
-     &     mnc_f_names, mnc_g_names, mnc_v_names, mnc_v_units, 
+     &     mnc_f_names, mnc_g_names, mnc_v_names, 
      &     mnc_d_names, mnc_d_units, mnc_d_size, 
      &     mnc_f_info,  mnc_fg_ids,  mnc_fd_ind,  mnc_fv_ids
 
@@ -77,7 +76,6 @@ C     di  :  dimension index
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_g_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_v_names(MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_v_units(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_d_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_d_units(MNC_MAX_ID)
       integer mnc_f_info(MNC_MAX_ID,MNC_MAX_INFO)
