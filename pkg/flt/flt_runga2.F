@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.5 2004/09/13 16:13:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.6 2005/03/01 16:52:27 jmc Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -62,8 +62,10 @@ c     == local variables ==
 #undef _USE_INTEGERS
 #ifdef _USE_INTEGERS
       integer seed
+      seed = -1
 #else
       Real*8 seed
+      seed = -1.d0
 #endif
 #endif
 
