@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.4 2004/12/04 23:22:28 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -386,7 +386,8 @@ c--   Each process has calculated the global part for itself.
       taveFreq   = 0.
       dumpFreq   = 0.
       pChkptFreq = 0.
-      
+      monitorFreq = 0.
+
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')
      &  ' cost_Final: final cost function = ',fc

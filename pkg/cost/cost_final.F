@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.9 2004/02/23 19:15:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.10 2004/12/04 23:22:28 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -95,9 +95,10 @@ c--   Do global summation.
 
 c--   set averaging freq. to zero to avoid re-write of
 c--   averaged fields in reverse checkpointing loops
-      taveFreq   = 0.
-      dumpFreq   = 0.
-      pChkptFreq = 0.
+      taveFreq    = 0.
+      dumpFreq    = 0.
+      pChkptFreq  = 0.
+      monitorFreq = 0.
 
 #endif /* ALLOW_COST */
 
