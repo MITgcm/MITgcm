@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.2 2001/05/29 14:01:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.3 2001/06/06 19:46:43 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,15 +54,15 @@ C--    Initialise temperature field to Held & Saurez equilibrium theta
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO K=1,Nr
-          Ro_SeaLevel=1.E5
-          thKappa = 2./7.
-          thetaLim = 200. / ((rC(K)/Ro_SeaLevel)**thKappa)
+          Ro_SeaLevel=1. _d 5
+          thKappa = 2. _d 0/7. _d 0
+          thetaLim = 200. _d 0/((rC(K)/Ro_SeaLevel)**thKappa)
           DO J=1,sNy
            DO I=1,sNx
-           term1=60.*(sin(yC(I,J,bi,bj)*deg2rad)**2)
-           term2=10.*log((rC(K)/Ro_SeaLevel))
+           term1=60. _d 0*(sin(yC(I,J,bi,bj)*deg2rad)**2)
+           term2=10. _d 0*log((rC(K)/Ro_SeaLevel))
      &              *(cos(yC(I,J,bi,bj)*deg2rad)**2)
-           thetaEq=315.-term1-term2
+           thetaEq=315. _d 0-term1-term2
             theta(I,J,K,bi,bj) = MAX( thetaLim, thetaEq )
 c    &                          + 0.01*(RAND()-0.5)
 c    &                          + 0.01*(PORT_RAND()-0.5)
