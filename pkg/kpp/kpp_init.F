@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.1 2000/06/21 19:45:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.2 2000/06/29 17:39:57 adcroft Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -47,7 +47,7 @@ C     zeta        - Stability parameter d/l
 
 C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
-     & kpp_freq,
+     & kpp_freq, kpp_dumpFreq, kpp_taveFreq,
      & KPPmixingMaps, KPPwriteState,
      & minKPPviscAz, maxKPPviscAz, minKPPghat, maxKPPghat,
      & minKPPdiffKzT, maxKPPdiffKzT, minKPPdiffKzS, maxKPPdiffKzS,
@@ -77,6 +77,8 @@ C--   KPP vertical mixing parameters
 
 C--   set default KPP vertical mixing parameters
       kpp_freq      = deltaTClock
+      kpp_dumpFreq  = 0.
+      kpp_taveFreq  = 0.
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
       minKPPghat    = 0.

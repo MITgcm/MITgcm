@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.1 2000/06/21 19:45:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.2 2000/06/29 17:39:57 adcroft Exp $
 
 C     /==========================================================\
 C     | KPP_PARAMS.h                                             |
@@ -34,19 +34,22 @@ C                       1. if P point is in water.
 C     zgrid (0:Nr+1)  - vertical levels of tracers (<=0)                (m)
 C     hwide (0:Nr+1)  - layer thicknesses          (>=0)                (m)
 C     kpp_freq        - Re-computation frequency for KPP parameters     (s)
-
+C     kpp_dumpFreq    - KPP dump frequency.                             (s)
+C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
 
       INTEGER nzmax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RS pMask      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS zgrid      (0:Nr+1)
       _RS hwide      (0:Nr+1)
       _RL kpp_freq
+      _RL kpp_dumpFreq
+      _RL kpp_taveFreq
 
       COMMON /kpp_i/ nzmax
 
       COMMON /kpp_RS/ pMask, zgrid, hwide
 
-      COMMON /kpp_RL/ kpp_freq
+      COMMON /kpp_RL/ kpp_freq, kpp_dumpFreq, kpp_taveFreq
 
 
 C-----------------------------------------------------------------------
