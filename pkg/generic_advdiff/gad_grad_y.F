@@ -1,0 +1,45 @@
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Name:  $
+
+#include "GAD_OPTIONS.h"
+
+      SUBROUTINE GAD_GRAD_Y( 
+     I           bi,bj,k,
+     I           yA,
+     I           tracer,
+     O           dTdy,
+     I           myThid )
+      IMPLICIT NONE
+
+C     == GLobal variables ==
+#include "SIZE.h"
+#include "GRID.h"
+
+C     == Routine arguments ==
+      INTEGER bi,bj,k
+      _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER myThid
+
+C     == Local variables ==
+      INTEGER i,j
+
+C     o Meridional tracer gradient
+      DO i=1-Olx,sNx+Olx
+       dTdy(I,1-Oly)=0.
+      ENDDO
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        dTdy(i,j) = _recip_dyC(i,j,bi,bj)*yA(i,j)
+     &               *(tracer(i,j)-tracer(i,j-1))
+#ifdef ISOTROPIC_COS_SCALING
+#ifdef COSINEMETH_III
+     &   *sqCosFacV(j,bi,bj)
+#endif
+#endif
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
