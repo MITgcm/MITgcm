@@ -1,8 +1,11 @@
 # Example "data.mnc" file
 # Lines beginning "#" are comments
  &MNC_01
- useMNC = .TRUE.,
- mnc_echo_gtypes = .TRUE.,
+ useMNC=.TRUE.,
+ mnc_echo_gvtypes=.TRUE.,
+ mnc_use_outdir=.TRUE.,
+ mnc_outdir_date=.TRUE.,
+ mnc_outdir_str='test_mnc_'
  &
 # Note: Some systems use & as the
 # namelist terminator. Other systems

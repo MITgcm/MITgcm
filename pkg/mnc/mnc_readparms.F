@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.3 2004/03/22 05:10:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.4 2004/03/23 05:24:44 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -27,17 +27,26 @@ C     Local Variables
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
      &     useMNC,
-     &     mnc_echo_gtypes,
-     &     mnc_pickup_create,
-     &     mnc_pickup_read
+     &     mnc_use_outdir, mnc_outdir_date, 
+     &     mnc_outdir_str, mnc_indir_str, 
+     &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read
       LOGICAL  exst
 
-C     Default values MNC
-      useMNC             =  .FALSE.
-      mnc_echo_gtypes    =  .FALSE.
-      mnc_pickup_create  =  .FALSE.
-      mnc_pickup_read    =  .FALSE.
-      
+C     Set default values for MNC run-time parameters
+      DO i = 1,MAX_LEN_FNAM
+        mnc_outdir_str(i:i) = ' '
+        mnc_indir_str(i:i)  = ' '
+      ENDDO
+      useMNC                =  .FALSE.
+      mnc_echo_gvtypes      =  .FALSE.
+      mnc_use_outdir        =  .FALSE.
+        mnc_outdir_str(1:4) =  'mnc_'
+        mnc_outdir_date     =  .FALSE.
+      mnc_pickup_create     =  .FALSE.
+      mnc_pickup_read       =  .FALSE.
+      mnc_use_indir         =  .FALSE.
+        mnc_indir_str(1:4)  =  '    '
+
 C     Set the file name
       DO i=1,MAX_LEN_MBUF
         data_file(i:i) = ' '
@@ -133,7 +142,10 @@ C--   Report contents of model parameter file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
-      CALL MNC_SET_OUTDIR(myThid)
+C     Create the MNC output directory
+      IF (mnc_use_outdir) THEN
+        CALL MNC_SET_OUTDIR(myThid)
+      ENDIF
 
       RETURN
       END
@@ -144,8 +156,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       implicit none
 
-#include "SIZE.h"
 #include "mnc_common.h"
+#include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
@@ -156,27 +168,68 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i, nstr, iodate, ioseq, num
+      integer i,j,k, ntot, npathd, idate
+      character*(100) pathd
+      character*(100) cenc
+      integer ienc(100)
+      integer ncenc
+
+      cenc(1:26)  = 'abcdefghijklmnopqrstuvwxyz'
+      cenc(27:52) = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      cenc(53:70) = '0123456789_.,+-=/~'
+      ncenc = 70
+      npathd = 100
+      IF (mnc_outdir_date) THEN
+        idate = 1
+      ELSE
+        idate = 0
+      ENDIF
+      DO i = 1,100
+        pathd(i:i) = ' '
+      ENDDO
+      k = ILNBLNK(mnc_outdir_str)
+      IF (k .GT. 80)  k = 80
+      pathd(1:k) = mnc_outdir_str(1:k)
+      ntot = 0
+      DO i = 1,k
+        DO j = 1,ncenc
+          IF (pathd(i:i) .EQ. cenc(j:j)) THEN
+            ntot = ntot + 1
+            ienc(ntot) = j
+            GOTO 20
+          ENDIF
+        ENDDO
+ 20     CONTINUE
+      ENDDO
+C      write(*,*) 'ntot,k = ', ntot, ',',k
+C      DO i = 1,ntot
+C        write(*,*) 'ienc = ', ienc(i)
+C      ENDDO
 
 #define HAVE_MNCCDIR
 #ifdef HAVE_MNCCDIR
-      CALL mnccdir(iodate, ioseq)
+      CALL mnccdir(ntot, ienc, idate)
 #else
-      iodate = 1
-      ioseq = 1
+      npathd = 0
 #endif
 
       DO i = 1,MNC_MAX_CHAR
         mnc_out_path(i:i) = ' '
       ENDDO
-      WRITE(mnc_out_path,'(a4,i8,a1,i4,a1)') 
-     &     'mnc_', iodate, '_', ioseq, '/'
-      nstr = ILNBLNK(mnc_out_path)
-      DO i = 1,nstr
-        IF (mnc_out_path(i:i) .EQ. ' ')  mnc_out_path(i:i) = '0'
-      ENDDO
-      num = ILNBLNK(mnc_out_path)
-      write(*,*) 'mnc_out_path = ', mnc_out_path(1:num)
+      IF (ntot .GT. 0) THEN
+        IF (ntot .GT. (MNC_MAX_CHAR-40)) THEN
+          ntot = MNC_MAX_CHAR - 40
+        ENDIF
+        DO i = 1,ntot
+          j = ienc(i)
+          mnc_out_path(i:i) = cenc(j:j)
+        ENDDO
+        mnc_out_path((ntot+1):(ntot+1)) = '/'
+      ENDIF
+
+C      k = ILNBLNK(mnc_out_path)
+C      write(*,*) 'mnc_out_path = ''', mnc_out_path(1:k), ''''
+C      STOP 'yoyoyo'
 
       RETURN
       END

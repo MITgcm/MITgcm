@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.11 2004/03/22 05:10:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.12 2004/03/23 05:24:44 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -15,8 +15,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "netcdf.inc"
 #include "mnc_common.h"
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
 #define mnc_rtype_YY
 
@@ -110,11 +111,14 @@ C         Create the file name
           nfname = ntot+9
 
 C         Add the path to the file name
-c          path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-c          npath = ILNBLNK(mnc_out_path)
-c          path_fname(1:npath) = mnc_out_path(1:npath)
-c          path_fname((npath+1):(npath+1+nfname)) = fname(1:nfname)
-c          fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
+          IF (mnc_use_outdir) THEN
+            path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+            npath = ILNBLNK(mnc_out_path)
+            path_fname(1:npath) = mnc_out_path(1:npath)
+            path_fname((npath+1):(npath+1+nfname)) = fname(1:nfname)
+            fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
+            nfname = npath + 1 + nfname
+          ENDIF
 
 C         Append to an existing or create a new file
           CALL MNC_CW_FILE_AORC(fname, indf, myThid)

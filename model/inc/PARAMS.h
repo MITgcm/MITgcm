@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.105 2004/03/20 20:35:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.106 2004/03/23 05:24:43 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -655,11 +655,15 @@ C Logical flags for selecting packages
 C     Run-time flags for early-initialization of MNC
       LOGICAL
      &     useMNC,
-     &     mnc_echo_gtypes, mnc_pickup_create, mnc_pickup_read
+     &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
+     &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read
+      CHARACTER*(MAX_LEN_FNAM) mnc_outdir_str
+      CHARACTER*(MAX_LEN_FNAM) mnc_indir_str
       COMMON /PARM_MNC/
      &     useMNC,
-     &     mnc_echo_gtypes, mnc_pickup_create, mnc_pickup_read
-
+     &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date, 
+     &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read, 
+     &     mnc_outdir_str, mnc_indir_str 
 
 
 CEH3 ;;; Local Variables: ***

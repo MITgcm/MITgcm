@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.27 2004/03/21 03:44:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.28 2004/03/23 05:24:43 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,7 +83,7 @@ C     Initialize MNC look-up tables
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
         CALL INI_MNC_IO(myThid)
-        IF ( mnc_echo_gtypes ) THEN
+        IF ( mnc_echo_gvtypes ) THEN
           CALL MNC_CW_DUMP( myThid )
         ENDIF
       ENDIF
