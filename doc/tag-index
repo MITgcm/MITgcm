@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.248 2004/01/23 21:26:55 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.249 2004/01/25 00:31:52 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -7,6 +7,7 @@ o globalFile now works with exch2
 o merged mom_vi_calc_relvort3.F, mom_vi_del2uv.F and 
   mon_vort3.F to make exch2 friendly with >1 tile per cube
   face
+o limit timeave output for hi-res integrations
 
 checkpoint52i_post
 o removed CPP_EEOPTIONS.h from verification/*/code

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.11 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.12 2004/01/25 00:31:52 dimitri Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -61,44 +61,47 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL TimeAve_full(Nr,nSx,nSy)
 
       COMMON /TAVE_STATEVARS/
-     &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave,
-     &                  etatave,Eta2tave,
-     &                  uVeltave,vVeltave,wVeltave,
-     &                  thetatave,salttave,
-     &                  TTtave,UUtave,VVtave,UVtave,
-     &                  UTtave,VTtave,WTtave,TdiffRtave,
-     &                  phiHydtave,
-     &                  phiHydLowtave,phiHydLow2Tave,
-     &                  ConvectCountTave
+     &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave
+     &                 ,etatave,uVeltave,vVeltave,wVeltave
+     &                 ,thetatave,salttave
+     &                 ,UTtave,VTtave,WTtave
+#ifndef HRCUBE
+     &                 ,Eta2tave,TTtave,UUtave,VVtave,UVtave
+     &                 ,TdiffRtave,phiHydtave
+     &                 ,phiHydLowtave,phiHydLow2Tave
+     &                 ,ConvectCountTave
 c    &                 ,KEtave
+#endif /* ndef HRCUBE */
       _RL  uFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  tFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  sFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etatave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  eta2Tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifndef HRCUBE
+      _RL  eta2Tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  TTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UUtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  KEtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL TdiffRtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_MOM_VECINV
       _RL uZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
+#endif /* ALLOW_MOM_VECINV */
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ConvectCountTave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ndef HRCUBE */
 
 #ifdef NONLIN_FRSURF
 C     hUtave       :: average zonal flow (=hFacW*uVel) (still in m/s !)
@@ -107,6 +110,7 @@ C     hFacCtave    :: average thickness fraction of open water, Center
 C     hFacWtave    :: average thickness fraction of open water, West side
 C     hFacStave    :: average thickness fraction of open water, South side
 
+#ifndef HRCUBE
       COMMON /TAVE_THICKNESS/ 
      &              hUtave, hVtave
 c    &            , hFacCtave, hFacWtave, hFacStave 
@@ -115,6 +119,7 @@ c    &            , hFacCtave, hFacWtave, hFacStave
 c     _RL  hFacCtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacWtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacStave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ndef HRCUBE */
 #endif /* NONLIN_FRSURF */
 
 #endif /* ALLOW_TIMEAVE */ 

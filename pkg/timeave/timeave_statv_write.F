@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.14 2003/12/30 02:37:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.15 2004/01/25 00:31:52 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -64,6 +64,10 @@ C-     Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(uVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
+#ifndef HRCUBE
           CALL TIMEAVE_NORMALIZ(Eta2tave, TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
@@ -78,9 +82,6 @@ c         CALL TIMEAVE_NORMALIZ(hFacCtave,TimeAve_half,Nr,bi,bj,myThid)
 c         CALL TIMEAVE_NORMALIZ(hFacWtave,TimeAve_half,Nr,bi,bj,myThid)
 c         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
 #endif /* NONLIN_FRSURF */ 
-          CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
 
           CALL TIMEAVE_NORMALIZ(TdiffRtave,TimeAve_full,Nr,
      &                            bi,bj,myThid)
@@ -96,6 +97,7 @@ c         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
      &                            bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(ConvectCountTave,TimeAve_full,Nr,
      &                            bi,bj,myThid)
+#endif /* ndef HRCUBE */
         ENDDO
        ENDDO
 
@@ -113,21 +115,24 @@ C--    Read IO error counter
 c      prevPrec = writeBinaryPrec
 c      writeBinaryPrec = precFloat32
        CALL WRITE_FLD_XY_RL('ETAtave.'  ,suff,etatave  ,myIter,myThid)
+#ifndef HRCUBE
        CALL WRITE_FLD_XY_RL('Eta2tave.' ,suff,Eta2tave ,myIter,myThid)
+#endif /* ndef HRCUBE */
 
        CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('uVeltave.',suff,uVeltave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('wVeltave.',suff,wVeltave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
+#ifndef HRCUBE
        CALL WRITE_FLD_XYZ_RL('TTtave.',suff,TTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UUtave.',suff,UUtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('VVtave.',suff,VVtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UVtave.',suff,UVtave,myIter,myThid)
 c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
 
        IF (useVariableK)
      & CALL WRITE_FLD_XYZ_RL('Tdiftave.',suff,TdiffRtave,myIter,myThid)
@@ -136,21 +141,25 @@ c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('uZtave.',suff,uZetatave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('vZtave.',suff,vZetatave,myIter,myThid)
        ENDIF
-#endif
+#endif /* ALLOW_MOM_VECINV */
        CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,myIter,myThid)
+#endif /* ndef HRCUBE */
        IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+#ifndef HRCUBE
         CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
      &       myIter,myThid)
         CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
      &       myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
      &                        myIter,myThid)
+#endif /* ndef HRCUBE */
         CALL WRITE_FLD_XY_RL('uFluxtave.',suff,uFluxtave,myIter,myThid)
         CALL WRITE_FLD_XY_RL('vFluxtave.',suff,vFluxtave,myIter,myThid)
         CALL WRITE_FLD_XY_RL('tFluxtave.',suff,tFluxtave,myIter,myThid)
         CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,myIter,myThid)
        ENDIF
 
+#ifndef HRCUBE
 #ifdef NONLIN_FRSURF
        CALL WRITE_FLD_XYZ_RL('hUtave.',suff,hUtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('hVtave.',suff,hVtave,myIter,myThid)
@@ -158,6 +167,7 @@ c      CALL WRITE_FLD_XYZ_RL('hFacCtave.',suff,hFacCtave,myIter,myThid)
 c      CALL WRITE_FLD_XYZ_RL('hFacWtave.',suff,hFacWtave,myIter,myThid)
 c      CALL WRITE_FLD_XYZ_RL('hFacStave.',suff,hFacStave,myIter,myThid)
 #endif /* NONLIN_FRSURF */ 
+#endif /* ndef HRCUBE */
 
 c      writeBinaryPrec = prevPrec
 C--    Reread IO error counter

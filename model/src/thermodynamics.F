@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.64 2004/01/07 21:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.65 2004/01/25 00:31:52 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -858,6 +858,7 @@ C--      Apply open boundary conditions
 #endif   /* ALLOW_OBCS */
 
 #ifdef ALLOW_TIMEAVE
+#ifndef HRCUBE
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
@@ -872,6 +873,7 @@ C--      Apply open boundary conditions
      I                        Nr, 3, deltaTclock, bi, bj, myThid)
          ENDIF
         ENDIF
+#endif /* ndef HRCUBE */
 #endif /* ALLOW_TIMEAVE */ 
 
 #endif /* SINGLE_LAYER_MODE */
