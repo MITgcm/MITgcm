@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.31 2004/11/10 03:05:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.32 2004/12/04 05:59:50 dimitri Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -445,14 +445,14 @@ c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
        ENDIF
 
 #ifdef ALLOW_TIMEAVE
-#ifndef HRCUBE
+#ifndef MINIMAL_TAVE_OUTPUT
        IF (taveFreq.GT.0.) THEN
          CALL TIMEAVE_CUMUL_1K1T(uZetatave,vCf,deltaTClock,
      &                           Nr, k, bi, bj, myThid)
          CALL TIMEAVE_CUMUL_1K1T(vZetatave,uCf,deltaTClock,
      &                           Nr, k, bi, bj, myThid)
        ENDIF
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)

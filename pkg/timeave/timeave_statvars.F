@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.17 2004/04/29 16:02:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.18 2004/12/04 05:59:50 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -49,13 +49,14 @@ C-    Initialize fields for the first call ever
         CALL TIMEAVE_RESET(uVeltave,  Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(vVeltave,  Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(wVeltave,  Nr, bi, bj, myThid)
+        CALL TIMEAVE_RESET(phiHydLowtave,1, bi, bj, myThid)
+#ifndef MINIMAL_TAVE_OUTPUT
         CALL TIMEAVE_RESET(UTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(WTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(UStave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VStave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(WStave,    Nr, bi, bj, myThid)
-#ifndef HRCUBE
         CALL TIMEAVE_RESET(Eta2tave,  1,  bi, bj, myThid)
         CALL TIMEAVE_RESET(TTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(UUtave,    Nr, bi, bj, myThid)
@@ -68,7 +69,6 @@ c       CALL TIMEAVE_RESET(KEtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(vZetatave, Nr, bi, bj, myThid)
 #endif
         CALL TIMEAVE_RESET(phiHydtave,Nr, bi, bj, myThid)
-        CALL TIMEAVE_RESET(phiHydLowtave,1, bi, bj, myThid)
         CALL TIMEAVE_RESET(phiHydLow2Tave,1, bi, bj, myThid)
         CALL TIMEAVE_RESET(ConvectCountTave,Nr,bi,bj,myThid)
 #ifdef NONLIN_FRSURF
@@ -78,7 +78,7 @@ c       CALL TIMEAVE_RESET(hFacCtave, Nr, bi, bj, myThid)
 c       CALL TIMEAVE_RESET(hFacWtave, Nr, bi, bj, myThid)
 c       CALL TIMEAVE_RESET(hFacStave, Nr, bi, bj, myThid)
 #endif /* NONLIN_FRSURF */
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
         DO K=1,Nr
          TimeAve_half(k,bi,bj)=0.
          TimeAve_full(k,bi,bj)=0.
@@ -105,8 +105,8 @@ C-    Time Averages of single fields (no hFactor)
       CALL TIMEAVE_CUMULATE(vVeltave, vVel,  Nr, DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMULATE(wVeltave, wVel,  Nr, DDTT, bi, bj, myThid)
 
+#ifndef MINIMAL_TAVE_OUTPUT
 C-    Time Averages of "double" fields (no hFactor)
-#ifndef HRCUBE
       CALL TIMEAVE_CUMUL_2V(Eta2tave, etaN,etaN, 1,  0,
      &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_2V(TTtave, theta,theta, Nr, 0,
@@ -117,7 +117,6 @@ C-    Time Averages of "double" fields (no hFactor)
      &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_2V(UVtave, uVel,  vVel, Nr, 12,
      &     DDTT, bi, bj, myThid)
-#endif /* ndef HRCUBE */
 c     CALL TIMEAVE_CUMUL_KE(KEtave, uVel,  vVel, Nr,
 c    &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_2V(WTtave, theta, wVel, Nr, 3,
@@ -132,12 +131,10 @@ c     CALL TIMEAVE_CUMUL_FC(hFacWtave,hFacW, Nr, DDTT, bi, bj, myThid)
 c     CALL TIMEAVE_CUMUL_FC(hFacStave,hFacS, Nr, DDTT, bi, bj, myThid)
 
 C-    Time Averages of single fields (* hFactor)
-#ifndef HRCUBE
       CALL TIMEAVE_CUMUL_1VFC(hUtave,  uVel,  hFacW, Nr,
      &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_1VFC(hVtave,  vVel,  hFacS, Nr,
      &     DDTT, bi, bj, myThid)
-#endif /* ndef HRCUBE */
 
 #endif /* NONLIN_FRSURF */
 
@@ -160,7 +157,7 @@ c     CALL TIMEAVE_CUMUL_2V(UStave, salt, uVel, Nr, 1,
 c    &     DDTT, bi, bj, myThid)
 c     CALL TIMEAVE_CUMUL_2V(VStave, salt, vVel, Nr, 2,
 c    &     DDTT, bi, bj, myThid)
-
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
 
 C-    Keep record of how much time has been integrated over
       DO K=1,Nr
@@ -176,14 +173,14 @@ C-    Time Averages of "intermediate" fields (no hFactor)
 C-    Time Averages of surface fluxes
 C     <- moved to external_forcing_surf
 
-#ifndef HRCUBE
-        CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr, 
-     &                                   deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1,
+     &                                   deltaTclock, bi, bj, myThid)
+#ifndef MINIMAL_TAVE_OUTPUT
+        CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr, 
      &                                   deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave, 
      &       phiHydLow,phiHydLow, 1,  0, deltaTclock, bi, bj, myThid)
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
         DO K=1,Nr
          TimeAve_full(k,bi,bj)=TimeAve_full(k,bi,bj)+deltaTclock
         ENDDO

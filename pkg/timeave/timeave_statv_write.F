@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.24 2004/10/19 02:41:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.25 2004/12/04 05:59:50 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -72,13 +72,15 @@ C         Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(uVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
+     &         bi,bj,myThid)
+#ifndef MINIMAL_TAVE_OUTPUT
           CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(UStave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VStave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(WStave,   TimeAve_half,Nr,bi,bj,myThid)
-#ifndef HRCUBE
           CALL TIMEAVE_NORMALIZ(Eta2tave, TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
@@ -102,13 +104,11 @@ C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
 #endif
           CALL TIMEAVE_NORMALIZ(phiHydtave,TimeAve_full,Nr,
      &         bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
-     &         bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydLow2Tave,TimeAve_full,1,
      &         bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(ConvectCountTave,TimeAve_full,Nr,
      &         bi,bj,myThid)
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
         ENDDO
         ENDDO
 
@@ -128,22 +128,19 @@ C         Read IO error counter
 c         prevPrec = writeBinaryPrec
 c         writeBinaryPrec = precFloat32
           CALL WRITE_FLD_XY_RL('ETAtave.' ,suff,etatave  ,myIter,myThid)
-#ifndef HRCUBE
-          CALL WRITE_FLD_XY_RL('Eta2tave.',suff,Eta2tave ,myIter,myThid)
-#endif /* ndef HRCUBE */
-
           CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('uVeltave.',suff,uVeltave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('wVeltave.',suff,wVeltave,myIter,myThid)
+#ifndef MINIMAL_TAVE_OUTPUT
+          CALL WRITE_FLD_XY_RL('Eta2tave.',suff,Eta2tave ,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('UStave.',suff,UStave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('VStave.',suff,VStave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('WStave.',suff,WStave,myIter,myThid)
-#ifndef HRCUBE
           CALL WRITE_FLD_XYZ_RL('TTtave.',suff,TTtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('UUtave.',suff,UUtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('VVtave.',suff,VVtave,myIter,myThid)
@@ -163,16 +160,10 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
 #endif /* ALLOW_MOM_VECINV */
           CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,
      &         myIter,myThid)
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
           IF ( fluidIsWater ) THEN
-#ifndef HRCUBE
             CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
      &           myIter,myThid)
-            CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
-     &           myIter,myThid)
-            CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
-     &           myIter,myThid)
-#endif /* ndef HRCUBE */
             CALL WRITE_FLD_XY_RL('uFluxtave.',suff,uFluxtave,
      &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('vFluxtave.',suff,vFluxtave,
@@ -181,9 +172,15 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
      &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,
      &           myIter,myThid)
+#ifndef MINIMAL_TAVE_OUTPUT
+            CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
+     &           myIter,myThid)
+            CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
+     &           myIter,myThid)
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
           ENDIF
           
-#ifndef HRCUBE
+#ifndef MINIMAL_TAVE_OUTPUT
 #ifdef NONLIN_FRSURF
           CALL WRITE_FLD_XYZ_RL('hUtave.',suff,hUtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('hVtave.',suff,hVtave,myIter,myThid)
@@ -191,7 +188,7 @@ C         CALL WRITE_FLD_XYZ_RL('hFacCtave.',suff,hFacCtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacWtave.',suff,hFacWtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacStave.',suff,hFacStave,myIter,myThid)
 #endif /* NONLIN_FRSURF */ 
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
           
 C         writeBinaryPrec = prevPrec
 C         Reread IO error counter
@@ -225,10 +222,8 @@ C         Check for IO errors
           CALL MNC_CW_SET_UDIM('tave', 0, myThid)
           CALL MNC_CW_RL_W_S('D','tave',0,0,'model_time',myTime,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'ETAtave',etatave,myThid)
-#ifndef HRCUBE
-C         EH3: something is wriong here...
+C         EH3: something is wrong here...
 C         CALL MNC_CW_RL_W('D','tave',0,0,'Eta2tave',Eta2tave,myThid)
-#endif /* ndef HRCUBE */
           CALL MNC_CW_RL_W('D','tave',0,0,'Ttave',thetatave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'Stave',salttave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'uVeltave',uVeltave,myThid)
@@ -240,7 +235,6 @@ C         CALL MNC_CW_RL_W('D','tave',0,0,'Eta2tave',Eta2tave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'UStave',UStave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'VStave',VStave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'WStave',WStave,myThid)
-#ifndef HRCUBE
           CALL MNC_CW_RL_W('D','tave',0,0,'TTtave',TTtave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'UUtave',UUtave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'VVtave',VVtave,myThid)
@@ -258,16 +252,13 @@ C         CALL MNC_CW_RL_W('D','tave',0,0,'KEtave',KEtave,myThid)
 #endif /* ALLOW_MOM_VECINV */
           CALL MNC_CW_RL_W('D','tave',0,0,'PhHytave',
      &         phiHydtave,myThid)
-#endif /* ndef HRCUBE */
           IF ( fluidIsWater ) THEN
-#ifndef HRCUBE
             CALL MNC_CW_RL_W('D','tave',0,0,'PHLtave',
      &           phiHydLowtave,myThid)
             CALL MNC_CW_RL_W('D','tave',0,0,'PHL2tave',
      &           phiHydLow2tave,myThid)
             CALL MNC_CW_RL_W('D','tave',0,0,'Convtave',
      &           ConvectCountTave,myThid)
-#endif /* ndef HRCUBE */
             CALL MNC_CW_RL_W('D','tave',0,0,'uFluxtave',
      &           uFluxtave,myThid)
             CALL MNC_CW_RL_W('D','tave',0,0,'vFluxtave',
@@ -278,7 +269,6 @@ C         CALL MNC_CW_RL_W('D','tave',0,0,'KEtave',KEtave,myThid)
      &           sFluxtave,myThid)
           ENDIF
 
-#ifndef HRCUBE
 #ifdef NONLIN_FRSURF
           CALL MNC_CW_RL_W('D','tave',0,0,'hUtave',hUtave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'hVtave',hVtave,myThid)
@@ -286,7 +276,6 @@ C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacCtave',hFacCtave,myThid)
 C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacWtave',hFacWtave,myThid)
 C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacStave',hFacStave,myThid)
 #endif /* NONLIN_FRSURF */ 
-#endif /* ndef HRCUBE */
 
         ENDIF
 #endif /* ALLOW_MNC */

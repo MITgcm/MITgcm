@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.23 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.24 2004/12/04 05:59:50 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -171,13 +171,13 @@ C--       End DO K=1,Nr
           ENDDO
        
 #ifdef ALLOW_TIMEAVE 
-#ifndef HRCUBE
+#ifndef MINIMAL_TAVE_OUTPUT
 ceh3 needs an IF ( useTIMEAVE ) THEN
           IF (myIter.ne.nIter0 .AND. taveFreq.GT.0.) THEN
             CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
      I                            Nr, deltaTclock, bi, bj, myThid)
           ENDIF
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */
 
 C--   End IF (DIFFERENT_MULTIPLE)
