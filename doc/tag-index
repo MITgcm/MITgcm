@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.229 2003/12/17 05:39:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.230 2003/12/17 14:22:38 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -8,6 +8,10 @@ o fix deltaTfreesurf in update_cg2d.F (left from c45d_post): affects 2
 o added exf_offset_atemp for Celsius to Kelvin conversion of atemp
 
 checkpoint52d_post
+o re-tiled many expts to allow comparison in multi-processor mode
+  - updated output accordingly
+  - changed hs94.128x64x5 to use intial T from file rather than use the
+    random number generator
 o add infrastructure in model routines for fizhi and gridalt packages
 o change global_ocean.cs32x15 because of Pb with GM on CS-grid.
 o changes to permit hi-res, cubed-sphere, configuration
