@@ -1,8 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.120 2003/01/17 14:21:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.121 2003/01/21 19:44:45 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47j_post
 o add new exp. (ideal_2D_oce) to test "exotic" parameters and options.
+o moved adexch from forward_step to addummy_in_stepping
+o added exch in ctrl_map_...
+o aveFreq.=0. at end of cost_final to avoid overwrite in
+  reverse checkpointing loop
+o Yet more changes in gmredi:
+  * adgmredi_calc_tensor
+    avoiding all recomputation of gmredi_slope_limit
+  * adgmredi_x/y/rtransport
+    added flag for excessive storing to avoid recomp. of
+    u/v/rtans, dTdx/y/z
+    -> this is not really necessary and very memory-consuming
+  * adgmredi_slope_psi:
+    consistency with gmredi_slope_limit in treatment of GM_slopeSqCutoff
+  * gmredi_slope_limit
+    re-activated full calculation of taperfct for case 'ac02'
+o updating verification/ adjoints of carbon, global_ocean.90x40x15
 
 checkpoint47i_post
 o GM_EXCLUDE_() replace GM_TAPER_(): by default, all the code is compiled.
