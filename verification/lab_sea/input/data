@@ -150,6 +150,3 @@
  hydrogSaltFile  = 'LevCli_salt.labsea',
  &
 
-# Open-boundaries
- &PARM06
- &
