@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_div_g.F,v 1.1 1998/08/20 18:44:24 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.1 1998/08/20 20:21:23 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 C     /==========================================================\
-C     | S/R CALC_DIV_G                                           |
+C     | S/R CALC_DIV_GHAT                                        |
 C     | o Form the right hand-side of the surface pressure eqn.  |
 C     \==========================================================/
-      SUBROUTINE CALC_DIV_G( 
+      SUBROUTINE CALC_DIV_GHAT( 
      I        bi,bj,iMin,iMax,jMin,jMax,
      I        K,
      I        xA,yA,
@@ -49,10 +49,10 @@ C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax
 C        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) 
-C    &    -freeSurfFac*_zA(i,j,bi,bj)*
+C    &    -freeSurfFac*_rA(i,j,bi,bj)*
 C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
          cg2d_b(i,j,bi,bj) =
-     &    -freeSurfFac*_zA(i,j,bi,bj)*
+     &    -freeSurfFac*_rA(i,j,bi,bj)*
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
         ENDDO
        ENDDO
