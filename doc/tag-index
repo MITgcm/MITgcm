@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.196 2003/10/27 22:56:29 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.197 2003/10/27 23:00:59 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -27,6 +27,10 @@ o Replacing delZ by delR in pkg/ctrl/
 checkpoint51o_pre
 
 o undid all of cp51 pending some cleanups and discussion
+o added the [#include "AD_CONFIG.h"] statement to all files that need 
+   it for adjoint/tl #defines
+ o re-worked the build logic in genmake2 to support AD_CONFIG.h
+ o removed tools/genmake since it no longer works
 
 checkpoint51n_post
 o modifications to make FREEZE flux visible to pkg/kpp
