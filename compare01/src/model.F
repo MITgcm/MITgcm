@@ -1,4 +1,4 @@
-C $Id: model.F,v 1.3 1998/06/12 19:33:32 cnh Exp $
+C $Id: model.F,v 1.4 1998/06/15 05:13:54 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -107,6 +107,13 @@ C
       TIM1 = ETIME(TARR1)
 #endif
 C     IF ( pickupRun ) THEN
+       DO K =1,nz
+        LEV=K
+        CALL CADJ(
+     I             LEV,
+     U             T, S)
+       ENDDO
+
 CMIC$  PARALLEL
 CMIC$&  SHARED(T,S,rPrm)
 CMIC$&  PRIVATE(LEV,K)
@@ -124,6 +131,7 @@ CMIC$  END PARALLEL
         rPrmBz(_I3(K,:,:)) = ( rPrm(_I3(K,:,:))+rPrm(_I3(K-1,:,:)) )*0.5
        ENDDO
 C     ENDIF
+
 C     /----------------------------------------------------------------\
 C     | Load wind stress data                                          |
 C     \----------------------------------------------------------------/
@@ -202,10 +210,18 @@ Caja from 4x4 working model
      I      U,V,W,
      U      T,gWk,GTNM1,
      I      Kredigm,K31,K32,K33,
-     I      Tsurf,.TRUE.,.TRUE.,.TRUE.,
+     I      Heat,.TRUE.,.TRUE.,.TRUE.,
      I      .TRUE.,.TRUE.,
      I      a4TempXY,a2TempXY,a2TempZ)
          GTNM1=gWk
+       CALL INC_TRACER (
+     I      U,V,W,
+     U      S,gWk,GSNM1,
+     I      Kredigm,K31,K32,K33,
+     I      Ssurf,.TRUE.,.TRUE.,.TRUE.,
+     I      .TRUE.,.TRUE.,
+     I      a4SaltXY,a2SaltXY,a2SaltZ)
+         GsNM1=gWk
 Caja end from 4x4 working model
 
 CMIC$  GUARD
@@ -323,8 +339,8 @@ C    O               GS )
 C      ENDDO
 CMIC$  END DO
 CMIC$  END PARALLEL
-       T = T + GT*DELT*asyncFac
-C      S = S + GS*DELT*asyncFac
+       T = T + GT*DELT*asyncFac*0.
+       S = S + GS*DELT*asyncFac*0.
 #endif
 CcnhDebugStarts
        WRITE(0,*) ' T K=1 at t = ', currentTime
@@ -341,21 +357,21 @@ CMIC$  PARALLEL
 CMIC$&  SHARED(T,S,rPrm)
 CMIC$&  PRIVATE(LEV,K)
 CMIC$  DO PARALLEL
-       DO K =1,nz,2
+       DO K =1,nz
         LEV=K
         CALL CADJ(
      I             LEV,
      U             T, S)
        ENDDO
 CMIC$  END DO
-CMIC$  DO PARALLEL
-       DO K =2,nz,2
-        LEV=K
-        CALL CADJ(
-     I             LEV,
-     U             T, S)
-       ENDDO
-CMIC$  END DO
+C  CMIC$  DO PARALLEL
+C         DO K =2,nz,2
+C          LEV=K
+C          CALL CADJ(
+C       I             LEV,
+C       U             T, S)
+C         ENDDO
+C  CMIC$  END DO
 CMIC$  END PARALLEL
 CMIC$  PARALLEL
 CMIC$&  SHARED(T,S,rPrm)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.17 1998/06/12 19:33:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.18 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -72,7 +72,7 @@ C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, deltaTClock, pChkPtFreq,
-     & cAdjFreq
+     & cAdjFreq, tauThetaClimRelax, tauSaltClimRelax
 
 C--   Gridding parameters
       NAMELIST /PARM04/
@@ -83,7 +83,8 @@ C--   Gridding parameters
 C--   Input files
       NAMELIST /PARM05/
      & bathyFile, hydrogThetaFile, hydrogSaltFile, 
-     & zonalWindFile, meridWindFile
+     & zonalWindFile, meridWindFile, thetaClimFile,
+     & saltClimFile
 
 C
       _BEGIN_MASTER(myThid)
@@ -170,7 +171,7 @@ C--   Set default "physical" parameters
       GMdepth=1000.
       GMkbackground=0.
       tAlpha=2.d-4
-      sBeta=1.d-5
+      sBeta=7.4d-4
       eosType='LINEAR'
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
@@ -287,6 +288,10 @@ C--   Time stepping parameters
       cAdjFreq       = -1. _d 0
       rCD            = -1. _d 0
       tauCD          = 0. _d 0
+      tauThetaClimRelax = 0. _d 0
+      doThetaClimRelax  = .FALSE.
+      tauSaltClimRelax  = 0. _d 0
+      doSaltClimRelax   = .FALSE.
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO,err=7)
       IF ( errIO .GE. 0 ) GOTO 8
     7 CONTINUE
@@ -322,6 +327,22 @@ C     o CD coupling
       ENDIF
       IF ( rCD .LT. 0. ) THEN
        rCD = 1. - deltaTMom/tauCD
+      ENDIF
+C     o Temperature climatology relaxation time scale
+      IF ( tauThetaClimRelax .EQ. 0. _d 0 ) THEN
+       doThetaClimRelax     = .FALSE.
+       lambdaThetaClimRelax = 0. _d 0
+      ELSE
+       doThetaClimRelax     = .TRUE.
+       lambdaThetaClimRelax = 1./tauThetaClimRelax
+      ENDIF
+C     o Salinity climatology relaxation time scale
+      IF ( tauSaltClimRelax .EQ. 0. _d 0 ) THEN
+       doSaltClimRelax     = .FALSE.
+       lambdaSaltClimRelax = 0. _d 0
+      ELSE
+       doSaltClimRelax     = .TRUE.
+       lambdaSaltClimRelax = 1./tauSaltClimRelax
       ENDIF
 C     o Time step count
       IF ( endTime .NE. 0 ) THEN
@@ -419,14 +440,7 @@ C     Initialize EOS coefficients (3rd order polynomial)
        usingSphericalPolarMterms = .FALSE.
        metricTerms = .FALSE.
        mTFacMom = 0
-
-       useConstantF  = .FALSE.
-       useBetaPlaneF = .FALSE.
-       useSphereF    = .TRUE.
-       omega         = 2. _d 0 * PI / ( 3600. _d 0 * 24. _d 0 )
-       usingSphericalPolarMterms = .TRUE.
-       metricTerms = .TRUE.
-       mTFacMom = 1
+       useBetaPlaneF = .TRUE.
       ENDIF
       IF ( usingSphericalPolarGrid ) THEN
        useConstantF  = .FALSE.
@@ -436,7 +450,6 @@ C     Initialize EOS coefficients (3rd order polynomial)
        usingSphericalPolarMterms = .TRUE.
        metricTerms = .TRUE.
        mTFacMom = 1
-
       ENDIF
 
 C--   Input files
@@ -445,6 +458,7 @@ C--   Input files
       hydrogThetaFile = ' '
       zonalWindFile   = ' '
       meridWindFile   = ' '
+      thetaClimFile   = ' '
       READ(UNIT=iUnit,NML=PARM05,IOSTAT=errIO,err=11)
       IF ( errIO .GE. 0 ) GOTO 12
    11 CONTINUE

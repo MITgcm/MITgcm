@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.17 1998/06/10 16:05:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.18 1998/06/15 05:13:55 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -40,15 +40,22 @@ C                       temperature.
 C     hydrogSaltFile  - File containing initial hydrographic data for salinity.
 C     zonalWindFile   - File containing zonal wind data
 C     meridWindFile   - File containing meridional wind data
+C     thetaClimFile   - File containing theta climataology used
+C                       in relaxation term -lambda(theta-theta*)
+C     saltClimFile    - File containing salt climataology used
+C                       in relaxation term -lambda(salt-salt*)
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, hydrogThetaFile, hydrogSaltFile,
-     &                zonalWindFile, meridWindFile
+     &                zonalWindFile, meridWindFile, thetaClimFile,
+     &                saltClimFile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
       CHARACTER*(MAX_LEN_FNAM) hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
       CHARACTER*(MAX_LEN_FNAM) meridWindFile
+      CHARACTER*(MAX_LEN_FNAM) thetaClimFile
+      CHARACTER*(MAX_LEN_FNAM) saltClimFile
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        - Maximum number of iterations in the
@@ -115,6 +122,10 @@ C     useConstantF  - Coriolis parameter set to f0
 C     useBetaPlaneF - Coriolis parameter set to f0 + beta.y
 C     useSphereF    - Coriolis parameter set to 2.omega.sin(phi)
 C     implicitDiffusion - Turns implicit vertical diffusion on
+C     doThetaClimRelax - Set true if relaxation to temperature
+C                        climatology is required.
+C     doSaltClimRelax  - Set true if relaxation to salinity
+C                        climatology is required.
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
@@ -123,7 +134,7 @@ C     implicitDiffusion - Turns implicit vertical diffusion on
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
-     & implicitDiffusion
+     & implicitDiffusion, doThetaClimRelax, doSaltClimRelax
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -148,6 +159,8 @@ C     implicitDiffusion - Turns implicit vertical diffusion on
       LOGICAL useBetaPlaneF
       LOGICAL useSphereF
       LOGICAL implicitDiffusion
+      LOGICAL doThetaClimRelax
+      LOGICAL doSaltClimRelax
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -234,6 +247,10 @@ C     cfFacMom  - Coriolis term scaling parameter
 C     foFacMom  - Momentum forcing scaling parameter
 C     mtFacMom  - Metric terms scaling parameter
 C     cAdjFreq  - Frequency of convective adjustment
+C     tauThetaClimRelax - Relaxation to climatology time scale ( s ).
+C     lambdaThetaClimRelax - Inverse time scale for relaxation ( 1/s ).
+C     tauSaltClimRelax - Relaxation to climatology time scale ( s ).
+C     lambdaSaltClimRelax - Inverse time scale for relaxation ( 1/s ).
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
@@ -243,7 +260,8 @@ C     cAdjFreq  - Frequency of convective adjustment
      & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
-     & cAdjFreq, omega
+     & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
+     & tauSaltClimRelax, lambdaSaltClimRelax
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nz)
@@ -297,6 +315,10 @@ C     cAdjFreq  - Frequency of convective adjustment
       _RL mTFacMom
       _RL cAdjFreq
       _RL omega
+      _RL tauThetaClimRelax
+      _RL lambdaThetaClimRelax
+      _RL tauSaltClimRelax
+      _RL lambdaSaltClimRelax
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta

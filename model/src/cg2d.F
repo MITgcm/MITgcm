@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.6 1998/06/12 19:33:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.7 1998/06/15 05:13:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -104,7 +104,7 @@ C--   Update overlaps
       _EXCH_XY_R8( cg2d_b, myThid )
       _EXCH_XY_R8( cg2d_x, myThid )
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYR8( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
+C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initial residual calculation
@@ -286,7 +286,7 @@ C--   Un-normalise the answer
       _END_MASTER( )
 
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYR8( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )
+C     CALL PLOT_FIELD_XYRL( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )
 C     err    = 0. _d 0
 C     DO bj=myByLo(myThid),myByHi(myThid)
 C      DO bi=myBxLo(myThid),myBxHi(myThid)

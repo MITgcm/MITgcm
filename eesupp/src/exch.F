@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.4 1998/06/15 05:13:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -222,6 +222,10 @@ C       posting north-south transactions. We have to do this so that
 C       the north-south transactions will send out the correct overlap
 C       region values into the corner sections of our neighbors.
         CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
+
+CcnhDebugStarts
+        RETURN
+CcnhDebugEnds
 
 C--     North-south messaging communication
         nReqs = 0
@@ -559,6 +563,10 @@ C       posting north-south transactions. We have to do this so that
 C       the north-south transactions will send out the correct overlap
 C       region values into the corner sections of our neighbors.
         CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
+CcnhDebugStarts
+        RETURN
+CcnhDebugEnds
+
  
 C--     North-south messaging communication
         nReqs = 0
@@ -900,6 +908,11 @@ C       the north-south transactions will send out the correct overlap
 C       region values into the corner sections of our neighbors.
         CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
 
+CcnhDebugStarts
+        RETURN
+CcnhDebugEnds
+
+
 C--     North-south messaging communication
         nReqs = 0
         bN = myByLo(myTHid)
@@ -1169,8 +1182,9 @@ C      the moment we aren't careful!
        _BARRIER
 
 C--    East-west messaging communication
-       nReqs = 0
        bE = myBxLo(myThid)
+       bW = myBxHi(myThid)
+       nReqs = 0
        IF ( bE .EQ. 1 .AND. commW(myThid) .EQ. COMM_MPI ) THEN
 C       My west face uses MPI. Get ready to receive data from 
 C       west and post that we are ready to send data to the west.
@@ -1187,18 +1201,22 @@ C       and the send direction.
      I                 elCount, elType, toPid,
      I                 tagSend,MPI_COMM_WORLD,
      I                 reqIds(nReqs),mpiRC)
+       ENDIF
+       IF ( bW .EQ. nSx .AND. commE(MyThid) .EQ. COMM_MPI ) THEN
         nReqs = nReqs+1
-        tagRecv = mpiTagE*nThreads+myThrW(myThid)
-        fromPid = mpiPidW
+        tagRecv = mpiTagW*nThreads+myThrE(myThid)
+        fromPid = mpiPidE
         elCount = 1
         elType  = mpiTypeXFaceThread_xyz_R8(myThid)
         CALL MPI_Irecv(
-     U                 phi(1-OLx,1-OLy,1,bE,myByLo(myThid)),
+     U                 phi(sNx+1,1-OLy,1,bW,myByLo(myThid)),
      I                 elCount, elType, fromPid,
      I                 tagRecv,MPI_COMM_WORLD,
      I                 reqIds(nReqs),mpiRC)
        ENDIF
-       bW = myBxHi(myThid)
+       CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
+
+       nReqs = 0
        IF ( bW .EQ. nSx .AND. commE(MyThid) .EQ. COMM_MPI ) THEN
 C       My east face uses MPI. Get ready to receive data from 
 C       east and post that we are ready to send data to the east.
@@ -1214,26 +1232,36 @@ C       sending from our west, data we send is tagged with our thread id.
      I                 elCount, elType, toPid,
      I                 tagSend,MPI_COMM_WORLD,
      I                 reqIds(nReqs),mpiRC)
+       ENDIF
+       IF ( bE .EQ. 1 .AND. commW(myThid) .EQ. COMM_MPI ) THEN
         nReqs = nReqs+1
-        tagRecv = mpiTagW*nThreads+myThrE(myThid)
-        fromPid = mpiPidE
+        tagRecv = mpiTagE*nThreads+myThrW(myThid)
+        fromPid = mpiPidW
         elCount = 1
         elType  = mpiTypeXFaceThread_xyz_R8(myThid)
         CALL MPI_Irecv(
-     U                 phi(sNx+1,1-OLy,1,bW,myByLo(myThid)),
+     U                 phi(1-OLx,1-OLy,1,bE,myByLo(myThid)),
      I                 elCount, elType, fromPid,
      I                 tagRecv,MPI_COMM_WORLD,
      I                 reqIds(nReqs),mpiRC)
        ENDIF
+
 C      Wait for this threads east-west transactions to finish before
 C      posting north-south transactions. We have to do this so that
 C      the north-south transactions will send out the correct overlap
 C      region values into the corner sections of our neighbors.
        CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
 
+CcnhDebugStarts
+C       RETURN
+CcnhDebugEnds
+
+
 C--    North-south messaging communication
        nReqs = 0
        bN = myByLo(myTHid)
+       bS = myByHi(myTHid)
+
        IF ( bN .EQ. 1 .AND. commS(myThid) .EQ. COMM_MPI ) THEN
 C       My south face uses MPI. Get ready to receive data from
 C       south and post that I am ready to send data to the south.
@@ -1247,20 +1275,24 @@ C       south and post that I am ready to send data to the south.
      I                 elCount, elType, toPid,
      I                 tagSend,MPI_COMM_WORLD,
      I                 reqIds(nReqs), mpiRC )
+       ENDIF
+       IF ( bS .EQ. nSy .AND. commN(myThid) .EQ. COMM_MPI ) THEN
         nReqs = nReqs + 1
-        tagRecv = mpiTagN*nThreads+myThrS(myThid)
-        fromPid = mpiPidS
+        tagRecv = mpiTagS*nThreads+myThrN(myThid)
+        fromPid = mpiPidN
         elCount = 1
         elType  = mpiTypeYFaceThread_xyz_R8(myThid)
         CALL MPI_Irecv(
-     I                 phi(1-OLx,1-OLy,1,myBxLo(myThid),bN),
+     I                 phi(1-OLx,sNy+1,1,myBxLo(myThid),bS),
      I                 elCount, elType, fromPid,
      I                 tagRecv,MPI_COMM_WORLD,
      I                 reqIds(nReqs), mpiRC )
        ENDIF
+C      Wait for this threads north-south transactions to finish.
+       CALL MPI_Waitall( nReqs, reqIds, mpiStatArr, mpiRC )
 C
-       bS = myByHi(myTHid)
-       IF ( bN .EQ. 1 .AND. commS(myThid) .EQ. COMM_MPI ) THEN
+       nReqs = 0
+       IF ( bS .EQ. nSy .AND. commN(myThid) .EQ. COMM_MPI ) THEN
 C       My north face uses MPI. Get ready to receive data from
 C       north and post that I am ready to send data to the north.
         nReqs = nReqs + 1
@@ -1273,13 +1305,15 @@ C       north and post that I am ready to send data to the north.
      I                 elCount, elType, toPid,                      
      I                 tagSend,MPI_COMM_WORLD,
      I                 reqIds(nReqs), mpiRC )
+       ENDIF
+       IF ( bN .EQ. 1 .AND. commS(myThid) .EQ. COMM_MPI ) THEN
         nReqs = nReqs + 1
-        tagRecv = mpiTagS*nThreads+myThrN(myThid)
-        fromPid = mpiPidN
+        tagRecv = mpiTagN*nThreads+myThrS(myThid)
+        fromPid = mpiPidS
         elCount = 1
         elType  = mpiTypeYFaceThread_xyz_R8(myThid)
         CALL MPI_Irecv(
-     I                 phi(1-OLx,sNy+1,1,myBxLo(myThid),bS),
+     I                 phi(1-OLx,1-OLy,1,myBxLo(myThid),bN),
      I                 elCount, elType, fromPid,
      I                 tagRecv,MPI_COMM_WORLD,
      I                 reqIds(nReqs), mpiRC )

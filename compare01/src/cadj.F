@@ -1,4 +1,4 @@
-C $Id: cadj.F,v 1.1 1998/05/25 20:21:04 cnh Exp $
+C $Id: cadj.F,v 1.2 1998/06/15 05:13:54 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C===================================================================
@@ -42,7 +42,7 @@ C     Flags
 C
 CcnhDebugStarts
 C     Richard turned off convective adjustment!
-      RETURN
+C     RETURN
 CcnhDebugEnds
 C
       BOTTOM_LAYER = K .EQ. Nz

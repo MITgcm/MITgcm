@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.10 1998/06/10 02:41:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.11 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -111,14 +111,8 @@ C--   Set model initial conditions
 C--   Begin time stepping loop
       DO I=1, nTimeSteps
 
-C--    Load offline tracer fields
-       IF ( MOD(myCurrentIter,numStepsPerPickup) .EQ. 1 ) THEN
-C       I/O 
-C       o Writes to arrays are performed by their own thread (to ensure
-C         physical memory allocation will pair with thread).
-C       o Thread 1 reads into a buffer.
-C       CALL LOAD_OFFLINE_FIELDS( myCurrentTime, myCurrentIter, myThid )
-       ENDIF
+C--    Load forcing/external data fields
+       CALL LOAD_EXTERNAL_FIELDS( myCurrentTime, myCurrentIter, myThid )
 
 C--    Step forward fields and calculate time tendency terms
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )

@@ -1,4 +1,7 @@
-# Model parameters
+# ====================
+# | Model parameters |
+# ====================
+#
 # Continuous equation parameters
 &PARM01
 tRef= 16.0 , 15.2 , 14.5 , 13.9 , 13.3 ,
@@ -9,14 +12,16 @@ sRef= 34.65, 34.75, 34.82, 34.87, 34.90,
       34.90, 34.86, 34.78, 34.69, 34.60,
       34.58, 34.62, 34.68, 34.72, 34.73,
       34.74, 34.73, 34.73, 34.72, 34.72,
-viscAz=1.E-2,
-viscAh=4.E2,
-diffKhT=4.E2,
-diffKzT=1.E-2,
+viscAz=1.E-3,
+viscAh=5.E5,
+diffKhT=1.E3,
+diffKzT=3.E-5,
+diffKhS=1.E3,
+diffKzS=3.E-5,
 beta=1.E-11,
 f0=1.e-4,
 tAlpha=2.E-4,
-sBeta =0.,
+sBeta =7.4E-4,
 gravity=9.81,
 gBaro=9.81,
 rigidLid=.FALSE.,
@@ -25,27 +30,30 @@ eosType='LINEAR',
 GMkBackground=0000.d0,
 momAdvection=.TRUE.
 momViscosity=.TRUE.
-tempAdvection=.TRUE.,
-tempDiffusion=.TRUE.,
 /
+
 # Elliptic solver parameters
 &PARM02
 cg2dMaxIters=1000,
 cg2dTargetResidual=1.E-13,
 /
+
 # Time stepping parameters
 &PARM03
  startTime=0,
- endTime=12000, 
- deltaTmom=1200.0,
- tauCD=172800.,
-#tauCD=1200.,
- deltaTtracer=1200.0,
+ endTime=3110400000,
+ deltaTmom=3600.0,
+tauCD=321428.,
+ deltaTtracer=108000.0,
+ deltaTClock =108000.0,
  abEps=0.1,
  pChkptFreq=0.0,
  chkptFreq=0.0,
- dumpFreq=2592000.0,
+ dumpFreq=2592000.,
+ tauThetaClimRelax=2592000.0,
+ tauSaltClimRelax=2592000.0,
 /
+
 # Gridding parameters
 &PARM04
 usingCartesianGrid=.FALSE.,
@@ -59,11 +67,14 @@ phiMin=-80.,
 delY=41*4,
 delX=90*4,
 /
+
+# Input datasets
 &PARM05
  bathyFile='topog',
  hydrogThetaFile='thetaLevCli',
-#hydrogThetaFile='',
  hydrogSaltFile='saltLevCli',
  zonalWindFile='windx',
  meridWindFile='windy',
+ thetaClimFile='thetaLevCli'
+ saltClimFile='saltLevCli'
 /

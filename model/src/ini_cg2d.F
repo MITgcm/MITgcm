@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.13 1998/06/09 15:58:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.14 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -101,14 +101,14 @@ CcnhDebugEnds
       
 C--   Update overlap regions
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYR8( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
-C     CALL PLOT_FIELD_XYR8( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
 CcnhDebugEnds
       _EXCH_XY_R4(aW2d, myThid)
       _EXCH_XY_R4(aS2d, myThid)
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYR8( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
-C     CALL PLOT_FIELD_XYR8( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
+C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initialise preconditioner

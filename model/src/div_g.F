@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/div_g.F,v 1.2 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/div_g.F,v 1.3 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -49,7 +49,10 @@ C     pulls div(U) + dh/dt back toward zero.
 C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax
-         cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) 
+C        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) 
+C    &    -freeSurfFac*_zA(i,j,bi,bj)*
+C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
+         cg2d_b(i,j,bi,bj) =
      &    -freeSurfFac*_zA(i,j,bi,bj)*
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.7 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.8 1998/06/15 05:13:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -414,7 +414,7 @@ C     K    - Loop counter
       END
 
 CStartOfInterface
-      SUBROUTINE PRINT_MAPR4 ( fld, fldTitle, plotMode,
+      SUBROUTINE PRINT_MAPRS ( fld, fldTitle, plotMode,
      I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
      I       iMin,  iMax,  iStr,
      I       jMin,  jMax,  jStr,
@@ -469,7 +469,7 @@ C     kStr
       INTEGER jLo, jHi
       INTEGER kLo, kHi
       INTEGER nBx, nBy
-      Real*4 fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
+      _RS fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
       INTEGER iMin, iMax, iStr
       INTEGER jMin, jMax, jStr
       INTEGER kMin, kMax, kStr
@@ -808,7 +808,7 @@ C--   Write delimiter
       END
 
 CStartOfInterface
-      SUBROUTINE PRINT_MAPR8 ( fld, fldTitle, plotMode,
+      SUBROUTINE PRINT_MAPRL ( fld, fldTitle, plotMode,
      I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
      I       iMin,  iMax,  iStr,
      I       jMin,  jMax,  jStr,
@@ -816,7 +816,7 @@ CStartOfInterface
      I      bxMin, bxMax,  bxStr,
      I      byMin, byMax,  byStr )
 C     /==========================================================\
-C     | SUBROUTINE PRINT_MAPR8                                   |
+C     | SUBROUTINE PRINT_MAPRL                                   |
 C     | o Does textual mapping printing of a field.              |
 C     |==========================================================|
 C     | This routine does the actual formatting of the data      |
@@ -863,7 +863,7 @@ C     kStr
       INTEGER jLo, jHi
       INTEGER kLo, kHi
       INTEGER nBx, nBy
-      Real*8 fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
+      _RL fld(iLo:iHi,jLo:jHi,kLo:kHi,nBx,nBy)
       INTEGER iMin, iMax, iStr
       INTEGER jMin, jMax, jStr
       INTEGER kMin, kMax, kStr

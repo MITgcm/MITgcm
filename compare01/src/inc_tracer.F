@@ -1,4 +1,4 @@
-C $Id: inc_tracer.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Id: inc_tracer.F,v 1.3 1998/06/15 05:13:54 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C     Procedure name: INC_TRACER
@@ -34,7 +34,7 @@ C     ======== Routine arguments ======================
       REAL K31 (_I3(Nz,Nx,Ny))
       REAL K32 (_I3(Nz,Nx,Ny))
       REAL K33 (_I3(Nz,Nx,Ny))
-      REAL surfProf(Nx,Ny,2)
+      REAL surfProf(Nx,Ny)
       LOGICAL tracerStepping
       LOGICAL tracerDiffusion
       LOGICAL tracerBhDiffusion
@@ -63,6 +63,7 @@ C     qYM1 - Q shifted -1 in Y.
       qYM1 = Cshift(Q,DIM=_I3Y,SHIFT=-1)
       qZM1 = Cshift(Q,DIM=_I3Z,SHIFT=-1)
       qT        = 0.
+
       fluxWest  = 0.
       fluxSouth = 0.
       fluxUpper = 0.
@@ -147,11 +148,12 @@ C      Include transport of temperature by flow field.
       ENDIF
       qT(_I3(1,:,:)) = qT(_I3(1,:,:))
      &               + freeSurfFac*W(_I3(1,:,:))*Q(_I3(1,:,:))/delps(1)
+
       IF(tracerForcing)THEN
 C     Include external forcing ( e.g. surface heat fluxes, boundary fluxes )
 C      Switch in the appropriate tracer forcing module 
-c      qT(_I3(1,:,:)) = qT(_I3(1,:,:)) 
-c    & - 1./(30.*oneDay)*(Q(_I3(1,:,:))-surfProf(_I3(1,:,:)))
+       qT(_I3(1,:,:)) = qT(_I3(1,:,:)) 
+     & - 1./(30.*oneDay)*(Q(_I3(1,:,:))-surfProf(:,:))
 c    & - surfProf(_I3(2,:,:))
       ENDIF
       qT = qT*PMASK

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.18 1998/06/10 16:05:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.19 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -87,6 +87,7 @@ C                          into fVerTerm
       _RL pH    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL rhokm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhok  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhotmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -102,6 +103,7 @@ C                          into fVerTerm
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, kM1, kUp, kDown
+      LOGICAL BOTTOM_LAYER
 
 C---    The algorithm...
 C
@@ -173,6 +175,7 @@ C     uninitialised but inert locations.
          KappaZT(i,j,k) = 0. _d 0
         ENDDO
         rhokm1(i,j)  = 0. _d 0
+        rhok  (i,j)  = 0. _d 0
         rhokp1(i,j)  = 0. _d 0
         rhotmp(i,j)  = 0. _d 0
         maskC (i,j)  = 0. _d 0
@@ -209,6 +212,9 @@ C--     Set up work arrays that need valid initial values
         jMin = 1-OLy+1
         jMax = sNy+OLy
 
+        K = 1
+        BOTTOM_LAYER = K .EQ. Nz
+
 C--     Calculate gradient of surface pressure
         CALL GRAD_PSURF(
      I       bi,bj,iMin,iMax,jMin,jMax,
@@ -217,83 +223,88 @@ C--     Calculate gradient of surface pressure
 
 C--     Update fields in top level according to tendency terms
         CALL CORRECTION_STEP(
-     I       bi,bj,iMin,iMax,jMin,jMax,1,pSurfX,pSurfY,myThid)
+     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
 
 C--     Density of 1st level (below W(1)) reference to level 1
         CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax, 1, 1, eosType,
+     I     bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
      O     rhoKm1,
      I     myThid )
+
+        IF ( .NOT. BOTTOM_LAYER ) THEN
+C--      Check static stability with layer below
+C        and mix as needed.
+         CALL FIND_RHO(
+     I      bi, bj, iMin, iMax, jMin, jMax, K+1, K, eosType,
+     O      rhoKp1,
+     I      myThid )
+         CALL CONVECT(
+     I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
+     I       myTime,myIter,myThid)
+C--      Recompute density after mixing
+         CALL FIND_RHO(
+     I      bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
+     O      rhoKm1,
+     I      myThid )
+        ENDIF
+
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
         CALL CALC_PH(
-     I      bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKm1,
      U      pH,
      I      myThid )
-        DO J=jMin,jMax
-         DO I=iMin,iMax
-          rhoKp1(I,J)=rhoKm1(I,J)
-         ENDDO
-        ENDDO
 
         DO K=2,Nz
-C--     Update fields in Kth level according to tendency terms
-        CALL CORRECTION_STEP(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
-C--     Density of K-1 level (above W(K)) reference to K-1 level
-copt    CALL FIND_RHO(
-copt I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, eosType,
-copt O     rhoKm1,
-copt I     myThid )
-C       rhoKm1=rhoKp1
-        DO J=jMin,jMax
-         DO I=iMin,iMax
-          rhoKm1(I,J)=rhoKp1(I,J)
-         ENDDO
-        ENDDO
-C--     Density of K level (below W(K)) reference to K level
-        CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
-     O     rhoKp1,
-     I     myThid )
-C--     Density of K-1 level (above W(K)) reference to K level
-        CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K, eosType,
-     O     rhotmp,
-     I     myThid )
-C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
-        CALL CALC_ISOSLOPES(
-     I            bi, bj, iMin, iMax, jMin, jMax, K,
-     I            rhoKm1, rhoKp1, rhotmp,
-     O            K13, K23, K33, KapGM,
-     I            myThid )
-C--     Calculate static stability and mix where convectively unstable
-        CALL CONVECT(
-     I      bi,bj,iMin,iMax,jMin,jMax,K,rhotmp,rhoKp1,
-     I      myTime,myIter,myThid)
-C--     Density of K-1 level (above W(K)) reference to K-1 level
-        CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, eosType,
-     O     rhoKm1,
-     I     myThid )
-C--     Density of K level (below W(K)) referenced to K level
-        CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
-     O     rhoKp1,
-     I     myThid )
-C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-        CALL CALC_PH(
-     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
-     U      pH,
+
+         BOTTOM_LAYER = K .EQ. Nz
+
+C--      Update fields in Kth level according to tendency terms
+         CALL CORRECTION_STEP(
+     I        bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
+C--      Density of K level (below W(K)) reference to K level
+         CALL FIND_RHO(
+     I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
+     O      rhoK,
      I      myThid )
+         IF ( .NOT. BOTTOM_LAYER ) THEN
+C--       Check static stability with layer below
+C         and mix as needed.
+C--       Density of K+1 level (below W(K+1)) reference to K level
+          CALL FIND_RHO(
+     I       bi, bj, iMin, iMax, jMin, jMax,  K+1, K, eosType,
+     O       rhoKp1,
+     I       myThid )
+          CALL CONVECT(
+     I        bi,bj,iMin,iMax,jMin,jMax,K+1,rhoK,rhoKp1,
+     I        myTime,myIter,myThid)
+C--       Recompute density after mixing
+          CALL FIND_RHO(
+     I       bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
+     O       rhoK,
+     I       myThid )
+         ENDIF
+C--      Integrate hydrostatic balance for pH with BC of pH(z=0)=0
+         CALL CALC_PH(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoK,
+     U       pH,
+     I       myThid )
+C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
+         CALL FIND_RHO(
+     I      bi, bj, iMin, iMax, jMin, jMax, K-1, K, eosType,
+     O      rhoTmp,
+     I      myThid )
+         CALL CALC_ISOSLOPES(
+     I             bi, bj, iMin, iMax, jMin, jMax, K,
+     I             rhoKm1, rhoK, rhotmp,
+     O             K13, K23, K33, KapGM,
+     I             myThid )
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           rhoKm1(I,J)=rhoK(I,J)
+          ENDDO
+         ENDDO
 
         ENDDO ! K
-
-C--     Initial boundary condition on barotropic divergence integral
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          cg2d_b(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
 
         DO K = Nz, 1, -1
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
@@ -369,28 +380,34 @@ C--     Implicit diffusion
        ENDDO
       ENDDO
 
-      write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
-     &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
-      write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(uVel(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(vVel(1:sNx,1:sNy,:,:,:))
+C     write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
+C    &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
+      write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,1,:,:),mask=uVel(1:sNx,1:sNy,1,:,:).NE.0.),
+     &                           maxval(uVel(1:sNx,1:sNy,1,:,:))
+      write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,1,:,:),mask=vVel(1:sNx,1:sNy,1,:,:).NE.0.),
+     &                           maxval(vVel(1:sNx,1:sNy,1,:,:))
+      write(0,*) 'dynamics: wVel(1) ',
+     &            minval(wVel(1:sNx,1:sNy,1),mask=wVel(1:sNx,1:sNy,1).NE.0.),
+     &            maxval(wVel(1:sNx,1:sNy,1))
+      write(0,*) 'dynamics: wVel(2) ',
+     &            minval(wVel(1:sNx,1:sNy,2),mask=wVel(1:sNx,1:sNy,2).NE.0.),
+     &            maxval(wVel(1:sNx,1:sNy,2))
 cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
 cblk &                           maxval(K13(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
 cblk &                           maxval(K23(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
 cblk &                           maxval(K33(1:sNx,1:sNy,:))
-      write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(gT(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(Theta(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: gS ',minval(gS(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(gS(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
-     &                           maxval(salt(1:sNx,1:sNy,:,:,:))
-cblk  write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil)),
-cblk &                           maxval(pH/(Gravity*Rhonil))
+C     write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
+C    &                           maxval(gT(1:sNx,1:sNy,:,:,:))
+C     write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
+C    &                           maxval(Theta(1:sNx,1:sNy,:,:,:))
+C     write(0,*) 'dynamics: gS ',minval(gS(1:sNx,1:sNy,:,:,:)),
+C    &                           maxval(gS(1:sNx,1:sNy,:,:,:))
+C     write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
+C    &                           maxval(salt(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil),mask=ph.NE.0.),
+     &                           maxval(pH/(Gravity*Rhonil))
 
       RETURN
       END

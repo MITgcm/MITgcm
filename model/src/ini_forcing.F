@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.8 1998/06/12 19:33:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.9 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -79,6 +79,7 @@ C          fu(i,j,bi,bj) = -tauMax
          DO j=1,sNy
           DO i=1,sNx
            fu(i,j,bi,bj) = fu(i,j,bi,bj)/(delZ(1)*rhonil)*0.1
+           fu(i,j,bi,bj) = 0.1/(delZ(1)*rhonil)
           ENDDO
          ENDDO
         ENDDO
@@ -105,7 +106,7 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)*0.1
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)*0.
           ENDDO
          ENDDO
         ENDDO
@@ -116,14 +117,8 @@ C
       _EXCH_XY_R4(fu  , myThid )
       _EXCH_XY_R4(fv  , myThid )
 
-CcnhDebugStarts
-Cdbg  WRITE(0,*) ' distY = ', distY
-Cdbg  WRITE(0,*) '    ly = ', lY
-Cdbg  WRITE(0,*) ' tauMax= ', tauMax
-      CALL PLOT_FIELD_XYR8( fu, 'INI_FORCING FU',1,myThid)
-      CALL PLOT_FIELD_XYR8( fv, 'INI_FORCING FV',1,myThid)
-Cdbg  STOP 'INI_FORCING'
-CcnhDebugEnds
+      CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
+      CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Id: update_t.F,v 1.1 1998/05/25 20:21:06 cnh Exp $
+C $Id: update_t.F,v 1.2 1998/06/15 05:13:55 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 
@@ -334,13 +334,15 @@ C     _D(( ' S/R UPDATE_T (GtDiff+GtAdv): MINVAL(Gt  )', MINVAL(Gt)))
 C     /---------------------------------------------------------------\
 C     | gT <- gT + GtForcing                                          |
 C     \---------------------------------------------------------------/
-      IF ( TOP_LAYER ) THEN
-       DO J =1,Ny
-        DO I=1, Nx
+C     IF ( TOP_LAYER ) THEN
+C      DO J =1,Ny
+C       DO I=1, Nx
 Cdbg     gT(_I3(K,I,J)) = gT(_I3(K,I,J)) + HEAT(I,J)
-        ENDDO
-       ENDDO
-      ENDIF
+C        gT(_I3(K,I,J)) = gT(_I3(K,I,J)) -
+C    &                    1./(30.*oneDay)*( T(_I3(K,I,J)) - Tsurf(I,J,K) )
+C       ENDDO
+C      ENDDO
+C     ENDIF
 
 C     Final time derivative from AB2.
       gt(_I3(K,1:Nx,1:Ny)) = Gt(_I3(K,1:Nx,1:Ny))*pMask(_I3(K,:,:))

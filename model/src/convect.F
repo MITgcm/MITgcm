@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.7 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.8 1998/06/15 05:13:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -50,8 +50,8 @@ C--    Calculate heat content of two level column
         DO i=iMin,imax
          tMix(i,j) = theta(i,j,k-1,bi,bj)*_hFacC(i,j,k-1,bi,bj)*dzF(k-1)
      &              +theta(i,j,k,bi,bj)*_hFacC(i,j,k,bi,bj)*dzF(k)
-         sMix(i,j) = salt(i,j,k-1,bi,bj)*_hFacC(i,j,k-1,bi,bj)*dzF(k-1)
-     &              +salt(i,j,k,bi,bj)*_hFacC(i,j,k,bi,bj)*dzF(k)
+         sMix(i,j) = salt (i,j,k-1,bi,bj)*_hFacC(i,j,k-1,bi,bj)*dzF(k-1)
+     &              +salt (i,j,k,bi,bj)*_hFacC(i,j,k,bi,bj)*dzF(k)
          dSum(i,j) = _hFacC(i,j,k-1,bi,bj)*dzF(k-1)
      &              +_hFacC(i,j,k,bi,bj)*dzF(k)
         ENDDO
@@ -64,8 +64,8 @@ C--    Where statically unstable, mix the heat and salt
      &        rhokm1(i,j) .GT. rhokp1(i,j) ) THEN
           theta(i,j,k-1,bi,bj) = tMix(i,j)/dSum(i,j)
           theta(i,j,k  ,bi,bj) = tMix(i,j)/dSum(i,j)
-c         salt(i,j,k-1,bi,bj) = sMix(i,j)/dSum(i,j)
-c         salt(i,j,k  ,bi,bj) = sMix(i,j)/dSum(i,j)
+          salt(i,j,k-1,bi,bj)  = sMix(i,j)/dSum(i,j)
+          salt(i,j,k  ,bi,bj)  = sMix(i,j)/dSum(i,j)
          ENDIF
         ENDDO
        ENDDO

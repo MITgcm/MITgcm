@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.4 1998/06/08 22:38:51 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.5 1998/06/15 05:13:55 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint7
+ Created by cnh
+ Simple 4 degree global simulation 
+ configuration.
+ Includes climatological wind, 
+ hydrography, bathymetry etc
+ Does not include Heat Flux and E-P
 
 checkpoint6
  Created by cnh

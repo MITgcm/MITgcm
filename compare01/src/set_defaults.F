@@ -1,4 +1,4 @@
-C $Id: set_defaults.F,v 1.3 1998/06/12 19:33:32 cnh Exp $
+C $Id: set_defaults.F,v 1.4 1998/06/15 05:13:54 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -85,7 +85,8 @@ C     \-------------------------------------------------------------------------
       INTEGER K
 
       REAL TAUMAX, DISTY, LY
-      Real*4 tmpXY(Nx,Ny)
+      Real*4  tmpXY(Nx,Ny)
+      Real*4 tmpXYZ( _I3(Nz,Nx,Ny) )
 C
 C     /-------------------------------------------------------------------------\
 C     | Parameter settings for small double gyre beta-plane experiment.         |
@@ -96,7 +97,7 @@ C
       CP          = 3900.D0
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
-       delT       = 1200.D0
+       delT       = 3600.D0
       freeSurfFac = 1.D0
        startTime  = 0.
       endTime     = startTime+10.*delT
@@ -110,13 +111,20 @@ CSTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORE
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
-      a2MomXY     = 4.D2
-      a2MomZ      = 1.D-2*G*RONIL*G*RONIL
+      a2MomXY     = 5.0D5
+      a2MomZ      = 1.D-3*G*RONIL*G*RONIL
+C     a2MomXY     = 0.0D5
+C     a2MomZ      = 0.D-3*G*RONIL*G*RONIL
       a4MomXY     = 0.D0
-      a2TempXY    = 4.D2
-      a2TempZ     = 1.D-2*G*RONIL*G*RONIL
+      a2TempXY    = 1.D3
+      a2TempZ     = 3.D-5*G*RONIL*G*RONIL
+      a2SaltXY    = 1.D3
+      a2SaltZ     = 3.D-5*G*RONIL*G*RONIL
+C     a2SaltXY    = 0.D3
+C     a2SaltZ     = 0.D-5*G*RONIL*G*RONIL
 C     a2TempZ     = 1.D-5*G*RONIL*G*RONIL
       a4TempXy    = 0.D0
+      a4SaltXy    = 0.D0
 
 
 CSTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORE
@@ -130,7 +138,7 @@ CSTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORE
       WRITE(20,*) ' a2TempZ',a2TempZ
 C********* GMGS *******************
 C     Ratio of time step
-      asyncfac            = 1.0
+      asyncfac            = 30.0
 C     Scale dependent mixing scheme parameters
       difref               =        a2tempXY
       difmin               = 0.1  * a2tempXY
@@ -397,6 +405,7 @@ C end NOBETACODE
 
 CBEGINIGNOREBEGINIGNOREBEGINIGNOREBEGINIGNOREBEGINIGNOREBEGINIGNOREBEGINIGNORE
       sBeta     = 0.
+      sBeta     = 7.4E-4
       WRITE(20,*) ' sBeta',sBeta
        tAlpha     = 2.D-4
 C      tAlpha     = 0.D-4
@@ -405,7 +414,7 @@ C      tAlpha     = 0.D-4
 
 C     Numerics parameters
       abEps     = 0.1
-      rAja      = 9.930555555555556D-1
+      rAja      = 9.887999800888535E-01
 C     rAja      = 0.
       dUnit               = 10
       scrUnit1            = 11
@@ -455,12 +464,13 @@ C       fu(i,j) = -tauMax
       READ (11) tmpXY
 C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
       Fu = tmpXY/DELPS(1)*G*0.1
+      Fu = 0.1/DELPS(1)*G
       CLOSE(11)
 
       OPEN ( 11, FILE='windy', STATUS='old' , FORM='unformatted')
       READ (11) tmpXY
 C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
-      Fv = tmpXY/DELPS(1)*G*0.1
+      Fv = tmpXY/DELPS(1)*G*0.
       CLOSE(11)
 
 C
@@ -474,5 +484,16 @@ Cdbg  WRITE(0,*) ' tauMax = ', tauMax
       CALL PLOT_FIELD(fv,Nx,Ny)
 C     STOP
 CcnhDebugEnds
+
+C     T and S profiles
+      OPEN ( 11, FILE='LevCli.ptmp.sun.b', STATUS='old' , FORM='unformatted')
+      READ (11) tmpXYZ
+      Heat = tmpXYZ(_I3(1,:,:))
+      CLOSE(11)
+C     T and S profiles
+      OPEN ( 11, FILE='LevCli.salt.sun.b', STATUS='old' , FORM='unformatted')
+      READ (11) tmpXYZ
+      SSurf = tmpXYZ(_I3(1,:,:))
+      CLOSE(11)
 C
       END
