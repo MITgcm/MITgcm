@@ -86,17 +86,17 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr, myIter, myThid)
 c
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jgtnm1.',suff, g_gtnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jgsnm1.',suff, g_gsnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jgunm1.',suff, g_gunm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jgvnm1.',suff, g_gvnm1, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL( 
+cph     &       'G_Jgtnm1.',suff, g_gtnm1, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL( 
+cph     &       'G_Jgsnm1.',suff, g_gsnm1, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL( 
+cph     &       'G_Jgunm1.',suff, g_gunm1, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL( 
+cph     &       'G_Jgvnm1.',suff, g_gvnm1, myIter, myThid)
 #ifdef ALLOW_PASSIVE_TRACER
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jgtr1nm1. ',suff, g_gtr1nm1, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL( 
+cph     &       'G_Jgtr1nm1. ',suff, g_gtr1nm1, myIter, myThid)
 #endif
 c
         CALL WRITE_FLD_XYZ_RL( 
@@ -107,6 +107,10 @@ c
      &       'G_Juvel.',suff, g_uvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'G_Jvvel.',suff, g_vvel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL(
+     &       'G_Jwvel.',suff, g_vvel, myIter, myThid)
+        CALL WRITE_FLD_XY_RL(
+     &       'G_Jetan.',suff, g_vvel, myIter, myThid)
 
 #ifdef ALLOW_PASSIVE_TRACER
         CALL WRITE_FLD_XYZ_RL( 

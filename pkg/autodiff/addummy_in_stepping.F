@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.11 2004/03/04 04:00:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.12 2004/04/27 15:54:14 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -119,6 +119,10 @@ C--     Read IO error counter
      &       'ADJuvel.',suff, aduvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJvvel.',suff, advvel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL(
+     &       'ADJwvel.',suff, advvel, myIter, myThid)
+        CALL WRITE_FLD_XY_RL(
+     &       'ADJetan.',suff, advvel, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
