@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.279 2004/04/18 22:31:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.280 2004/04/19 22:30:46 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o small modifications in exf-package to increase flexibility:
+  - change climtempfreeze from a constant to a runtime parameter that
+    is specified in data.exf_clim (default = -1.9)
+  - introduce runtime parameter windstressmax (default = 2.0) that is
+    specified in data.exf
 o fix in pkg/thsice:
   - update Evap (Tsf changes) to be consistent with Latent heat flux
   - maintain snow precipitation unchanged (even if Tsf >=0).

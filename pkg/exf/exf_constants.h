@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.3 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.4 2004/04/19 22:30:46 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -47,9 +47,6 @@ c     needs to be marmonized through common constants.h file
 #endif
 
 c     3. empirical parameters
-
-      _RL         climtempfreeze
-      parameter ( climtempfreeze = -1.9 _d 0 )
 
 #ifdef ALLOW_BULKFORMULAE
 

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_param.h,v 1.5 2003/10/20 06:25:16 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_param.h,v 1.6 2004/04/19 22:30:46 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -48,6 +48,11 @@ c     Calendar data.
       _RL climsstconst
       _RL climsssconst
 
+c     freezing temperature is the minimum temperature allowed, used
+c     to reset climatological temperatures fields where they have
+c     values below climtempfreeze
+      _RL climtempfreeze
+
       common /exf_clim_i/
      &                        climtempstartdate1, climtempstartdate2,
      &                        climsaltstartdate1, climsaltstartdate2,
@@ -61,6 +66,7 @@ c     Calendar data.
      &                        climsssfile
 
       common /exf_clim_r/
+     &                        climtempfreeze,
      &                        climtempperiod,     climtempstartdate,
      &                        climsaltperiod,     climsaltstartdate,
      &                        climsstperiod,      climsststartdate,

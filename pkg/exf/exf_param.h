@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.15 2004/03/24 21:46:20 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.16 2004/04/19 22:30:46 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -35,6 +35,10 @@ c     Calendar data.
 
 c     Sea-water albedo
       _RL     exf_albedo
+
+c     Maximum absolute windstress, used to reset unreastically high
+c     data values
+      _RL     windstressmax
 
       integer hfluxstartdate1
       integer hfluxstartdate2
@@ -225,6 +229,7 @@ c     File names.
      &                          apressurestartdate1,apressurestartdate2
 
       common /exf_param_r/
+     &                          windstressmax,
      &                          repeatPeriod,      exf_albedo,
      &                          hfluxperiod,       hfluxstartdate,
      &                          atempperiod,       atempstartdate,

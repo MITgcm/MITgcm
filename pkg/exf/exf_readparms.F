@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.16 2004/03/03 05:17:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.17 2004/04/19 22:30:46 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -73,7 +73,7 @@ c     == end of interface ==
 
 c     Surface flux data.
       namelist /exf_nml/
-     &       repeatPeriod,         exf_albedo,
+     &      windstressmax,       repeatPeriod,    exf_albedo,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -267,6 +267,7 @@ c     Calendar data.
 
       repeatPeriod           = 0.0 _d 0
       exf_albedo             = 0.1 _d 0
+      windstressmax          = 2.0 _d 0
 
 c     Data files.
       hfluxfile          = ' '
