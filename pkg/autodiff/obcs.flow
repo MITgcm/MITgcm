@@ -1,6 +1,0 @@
-
-C----------------------------------------
-C subroutine  OBCS_DIAGS
-C----------------------------------------
-CADJ SUBROUTINE OBCS_DIAGS INPUT  = 1,2,3
-CADJ SUBROUTINE OBCS_DIAGS OUTPUT =
