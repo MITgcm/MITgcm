@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.7 2004/02/06 20:52:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.8 2004/02/25 21:13:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -127,14 +127,17 @@ C                                      U(1,-1)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
+        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -vFld(I-2,J)*dyc(I-2,J,bi,bj)
      &     -uFld(I-1,J)*dxc(I-1,J,bi,bj)
-c    &     +uFld(I-1,J-1)*dxc(I-1,J-1,bi,bj)
      &     +vFld(I+0,J-1)*dyc(I+0,J-1,bi,bj)
      &                             )
+     &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
+     &     *maskW(i-1,j,k,bi,bj)*maskS(i,j-1,k,bi,bj)
+c    &     +uFld(I-1,J-1)*dxc(I-1,J-1,bi,bj)
         vort3(I,J-1)=vort3(I-1,J)
        ENDIF
 C
@@ -157,14 +160,17 @@ C              U(N+1,-1)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
+        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
      &     -vFld(I-0,J)*dyc(I-0,J,bi,bj)
      &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
-c    &     +uFld(I+1,J-1)*dxc(I+1,J-1,bi,bj)
      &     -vFld(I-1,J-1)*dyc(I-1,J-1,bi,bj)
      &                           )
+     &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
+     &     *maskW(i+1,j,k,bi,bj)*maskS(i-1,j-1,k,bi,bj)
+c    &     +uFld(I+1,J-1)*dxc(I+1,J-1,bi,bj)
         vort3(I,J-1)=vort3(I+1,J)
        ENDIF
 C
@@ -187,18 +193,21 @@ C                 U(0,N)       D(0,N)        U(1,N)       TILE
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
+        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -vFld(I-2,J)*dyc(I-2,J,bi,bj)
-c    &     -uFld(I-1,J)*dxc(I-1,J,bi,bj)
      &     +vFld(I-0,J+1)*dyc(I-0,J+1,bi,bj)
      &     +uFld(I-1,J-1)*dxc(I-1,J-1,bi,bj)
      &                           )
+     &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
+     &     *maskS(i,j+1,k,bi,bj)*maskW(i-1,j-1,k,bi,bj)
+c    &     -uFld(I-1,J)*dxc(I-1,J,bi,bj)
         vort3(I,J+1)=vort3(I-1,J)
-        ENDIF
+       ENDIF
 C
-        IF ( northEastCorner ) THEN
+       IF ( northEastCorner ) THEN
 C                U(N+1,N+2)
 C                 |                              |
 C   V(N,N+2) --- Z(N+1,N+2) --- V(N+1,N+2) ---
@@ -217,17 +226,20 @@ C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
+        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
      &     -vFld(I-0,J)*dyc(I-0,J,bi,bj)
-c    &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
      &     -vFld(I-1,J+1)*dyc(I-1,J+1,bi,bj)
      &     +uFld(I+1,J-1)*dxc(I+1,J-1,bi,bj)
      &                           )
+     &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
+     &     *maskS(i-1,j+1,k,bi,bj)*maskW(i+1,j-1,k,bi,bj)
+c    &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
         vort3(I,J+1)=vort3(I+1,J)
-        ENDIF
        ENDIF
+      ENDIF
 
       RETURN
       END
