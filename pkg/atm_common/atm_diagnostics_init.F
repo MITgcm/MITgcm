@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/atm_common/atm_diagnostics_init.F,v 1.1 2004/12/19 00:10:08 jmc Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/atm_common/atm_diagnostics_init.F,v 1.2 2005/01/28 01:07:15 jmc Exp $
 C$Name:  $
 
 #include "ATM_COMMON_OPTIONS.h"
@@ -34,14 +34,14 @@ C     Define diagnostics Names :
 
       diagName  = 'DTCONV  '
       diagTitle = 'Temp Change due to Convection (K/sec)'
-      diagUnits = 'k/sec           '
+      diagUnits = 'K/s             '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DQCONV  '
       diagTitle = 'Humidity Change due to Convection (g/kg/sec)'
-      diagUnits = 'g/kg/sec        '
+      diagUnits = 'g/kg/s          '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
@@ -55,7 +55,7 @@ C     Define diagnostics Names :
 
       diagName  = 'PRECLS  '
       diagTitle = 'Large Scale Precipitation (g/m2/sec)'
-      diagUnits = 'g/m2/sec        '
+      diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
