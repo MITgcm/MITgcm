@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.30 1998/09/06 17:35:19 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.31 1998/09/09 15:04:43 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -301,7 +301,7 @@ C     externForcingCycle - Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
 C     horiVertRatio      - Ratio on units in vertical to units in horizontal.
-C                          ( 1 if horiz in m and vertical in m ).
+C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
      & delP, delZ, delR, delX, delY, 
@@ -320,7 +320,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
-     & theta_S, specVol_S, horiVertRatio
+     & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio
 
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
@@ -401,6 +401,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
       _RL externForcingCycle
       _RL externForcingPeriod
       _RL horiVertRatio
+      _RL recip_horiVertRatio
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta

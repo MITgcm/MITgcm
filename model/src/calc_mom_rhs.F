@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.31 1998/09/08 16:25:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.32 1998/09/09 15:04:44 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -174,7 +174,7 @@ C     o U momentum equation
       ArDudrFac    = vfFacMom*1.D0
       mTFacU       = mtFacMom*1.D0
       fuFac        = cfFacMom*1.D0
-      phxFac       = pfFacMom*0.D0
+      phxFac       = pfFacMom*1.D0
       uForcFac     = foFacMom*1.D0
 C     o V momentum equation
       uDvdxFac     = afFacMom*1.D0
@@ -185,9 +185,9 @@ C     o V momentum equation
       A4DvyydyFac  = vfFacMom*0.D0
       rVelDvdrFac  = afFacMom*1.D0
       ArDvdrFac    = vfFacMom*1.D0
-      mTFacV       = mtFacMom*0.D0
+      mTFacV       = mtFacMom*1.D0
       fvFac        = cfFacMom*1.D0
-      phyFac       = pfFacMom*0.D0
+      phyFac       = pfFacMom*1.D0
       vForcFac     = foFacMom*1.D0
 
 C--   Adams-Bashforth weighting factors
@@ -467,10 +467,10 @@ C--   Metric terms for curvilinear grid systems
 C      o Spherical polar grid metric terms
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = -1.* uVel(i,j,k,bi,bj)*recip_rSphere*rkFac/horiVertRatio
+         mT(i,j) = -1.* uVel(i,j,k,bi,bj)*recip_rSphere
      &    *0.25 _d 0*( rVel(i-1,j,kUp  )+rVel(i  ,j,kUp  )
      &                +rVel(i-1,j,KDown)+rVel(i  ,j,KDown)
-     &              )
+     &              )*rkFac*recip_horiVertRatio
         ENDDO
        ENDDO
        DO j=jMin,jMax
@@ -743,10 +743,10 @@ C--   Metric terms for curvilinear grid systems
 C      o Spherical polar grid metric terms
        DO j=jMin,jMax
         DO i=iMin,iMax
-         mT(i,j) = -vVel(i,j,k,bi,bj)*recip_rSphere*horiVertRatio
+         mT(i,j) = -vVel(i,j,k,bi,bj)*recip_rSphere
      &    *0.25 _d 0*( rVel(i,j,kUp  )+rVel(i,j-1,kUp  )
      &               + rVel(i,j,KDown)+rVel(i,j-1,KDown)
-     &              )
+     &              )*rkFac*recip_horiVertRatio
         ENDDO
        ENDDO
        DO j=jMin,jMax

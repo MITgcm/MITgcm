@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.3 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.4 1998/09/09 15:04:44 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -39,9 +39,9 @@ C     (This is now the actual hydrostatic pressure|height at the T/S points)
       DO j=jMin,jMax
        DO i=iMin,iMax
         phiHyd(i,j,K)=phiHyd(i,j,Km1)-rhoConst*halfLayer
-     &  *0.5 _d 0*(drF(Km1)+drF(K))
+     &  *0.5 _d 0*( drF(Km1)+drF(K) )*recip_HoriVertRatio
      &  *0.5 _d 0*( buoyKM1(i,j)+buoyKP1(i,j) )
-     &  *rkFac
+C    &  *rkFac
        ENDDO
       ENDDO
 

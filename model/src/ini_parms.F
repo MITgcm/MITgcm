@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.31 1998/09/08 01:37:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.32 1998/09/09 15:04:44 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -683,6 +683,7 @@ C     being combined and a single frame of reference is needed.
        horiVertRatio = 1.D0
       ENDIF
       recip_rkFac = 1.D0 / rkFac
+      recip_horiVertRatio = 1./horiVertRatio
       IF ( zCoordInputData ) usingZCoords = .TRUE.
       IF ( pCoordInputData ) usingPCoords = .TRUE.
 C
