@@ -1,4 +1,4 @@
-      subroutine getdiag (lev,ipoint,bi,bj,undef,qtmp)
+      subroutine getdiag (myThid,lev,ipoint,undef,qtmp)
 C***********************************************************************        
 C  PURPOSE                                                                      
 C     Retrieve averaged model diagnostic
@@ -15,95 +15,119 @@ C
 C***********************************************************************        
       implicit none
 
+#include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+
+#ifdef ALLOW_FIZHI 
 #include "fizhi_SIZE.h"
+#else
+       integer Nrphys
+       parameter (Nrphys=1)
+#endif
+
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
-      integer bi,bj
-      integer lev,ipoint
+      integer myThid,lev,ipoint
+      _RL undef
+      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+
+      _RL factor
       integer i,j,ipnt,klev
-      _RL undef, factor
-      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nsx,Nsy)
+      integer bi,bj
+
+      if (ipoint.lt.1) go to 999
+
+      klev = kdiag(ipoint)
+      if(klev.ge.lev) then
+      ipnt = idiag(ipoint) + lev - 1
+      factor = 1.0
+      if(ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
+
+      do bj=myByLo(myThid), myByHi(myThid)
+      do bi=myBxLo(myThid), myBxHi(myThid)
 
       do j = 1,sNy
       do i = 1,sNx
-       qtmp(i,j,bi,bj) = undef
+       if( qdiag(i,j,ipnt,bi,bj).ne.undef ) then
+        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
+       else
+        qtmp(i,j,lev,bi,bj) = undef
+       endif
       enddo
       enddo
 
-      IF (IPOINT.LT.1) GO TO 999
-
-      KLEV = KDIAG(IPOINT)
-      IF(KLEV.GE.LEV) THEN
-      IPNT = IDIAG(IPOINT) + LEV - 1
-                                FACTOR = 1.0
-      IF( NDIAG(IPOINT).NE.0 )  FACTOR = 1.0   / NDIAG(IPOINT)
-      do j = 1,sNy
-      do i = 1,sNx
-      if( qdiag(i,j,ipnt,bi,bj).ne.undef ) 
-     .     qtmp(i,j,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
       enddo
       enddo
-      ENDIF
 
- 999  RETURN
-      END
+      endif
 
-      subroutine getdiag2 (lev,ipoint,bi,bj,undef,qtmp)
+ 999  return
+      end
+
+      subroutine getdiag2 (myThid,lev,ipoint,undef,qtmp)
 C***********************************************************************        
-C                                                                               
 C  PURPOSE                                                                      
-C     Retrieve model diagnostic (No Averaging)
+C     Retrieve averaged model diagnostic
 C  INPUT:                                                                       
-C     lev ..... Model LEVEL                                                     
+C     lev ..... Diagnostic LEVEL
 C  ipoint ..... DIAGNOSTIC NUMBER FROM MENU                                     
 C   undef ..... UNDEFINED VALUE                                                 
-C      im ..... X-DIMENSION
-C      jm ..... Y-DIMENSION
-C      nd ..... Number of 2-D Diagnostics
 C                                                                               
 C  OUTPUT:                                                                      
-C    qtmp ..... DIAGNOSTIC QUANTITY                                             
+C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
 C                                                                               
 C***********************************************************************        
       implicit none
 
+#include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+
+#ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
+#else
+       integer Nrphys
+       parameter (Nrphys=1)
+#endif
+
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
+      integer myThid,lev,ipoint
+      _RL undef
+      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+
+      integer i,j,ipnt,klev
       integer bi,bj
 
-      integer lev,ipoint
-      integer i,j,ipnt,klev
-      _RL undef
-      _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nsx,Nsy)
+      if (ipoint.lt.1) go to 999
+
+      klev = kdiag(ipoint)
+      if(klev.ge.lev) then
+      ipnt = idiag(ipoint) + lev - 1
+
+      do bj=myByLo(myThid), myByHi(myThid)
+      do bi=myBxLo(myThid), myBxHi(myThid)
 
       do j = 1,sNy
       do i = 1,sNx
-       qtmp(i,j,bi,bj) = undef
+       if( qdiag(i,j,ipnt,bi,bj).ne.undef ) then
+        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
+       else
+        qtmp(i,j,lev,bi,bj) = undef
+       endif
       enddo
       enddo
 
-      IF (IPOINT.LT.1) GO TO 999
-
-      KLEV = KDIAG(IPOINT)
-      IF(KLEV.GE.LEV) THEN
-      IPNT = IDIAG(IPOINT) + LEV - 1
-      do j = 1,sNy
-      do i = 1,sNx
-       qtmp(i,j,bi,bj) = qdiag(i,j,ipnt,bi,bj)
       enddo
       enddo
-      ENDIF
 
- 999  RETURN
-      END
-                                                                                
+      endif
+
+ 999  return
+      end
       subroutine clrindx (myThid,listnum)
 C***********************************************************************
 C

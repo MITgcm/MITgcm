@@ -15,7 +15,7 @@ C***********************************************************************
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 
-#ifdef(ALLOW_FIZHI)then
+#ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
 #else
        integer Nrphys
@@ -25,17 +25,22 @@ C***********************************************************************
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
-      integer m, n
+      integer myThid, listnum
+
+      integer k, m, n
       character*8 parms1
       character*1 parse1(8)
       character*3 mate_index
       integer mate
-      _RL qtmp1(sNx,sNy,Nrphys)
-      _RL qtmp2(sNx,sNy,Nrphys)
-                                                                                
+      _RL qtmp1(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+      _RL qtmp2(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
+      _RL undef, getcon
+
       equivalence (     parms1 , parse1(1) )
       equivalence ( mate_index , parse1(6) )
 
+
+      undef = getcon('UNDEF')
 
       do n=1,nfields(listnum)
        do m=1,ndiagt
@@ -46,7 +51,7 @@ C***********************************************************************
           if( myThid.eq.0 ) write(6,2000) n,cdiag(n),ndiag(n),gdiag(n)
            if(parse1(5).ne.'C') then
             do k=1,kdiag(n)
-             call getdiag ( k,n,bi,bj,undef,qtmp1(1,1,k))
+             call getdiag ( myThid,k,n,undef,qtmp1)
             enddo
 
 c Check for Vector Diagnostic and Mate
@@ -62,7 +67,7 @@ c ------------------------------------
      .                              'Diagnostic # ',i3,2x,a8)
           endif
           do k=1,kdiag(mate)
-          CALL GETDIAG ( k,mate,bi,bj,undef,qtmp1(1,1,k))
+          CALL GETDIAG ( myThid,k,mate,undef,qtmp1(1,1,k))
           enddo
           parms2 =  gdiag(mate)
         else
@@ -79,8 +84,8 @@ c ------------------------------------
                                                                                    
       read (mate_index,100) mate
       do k=1,kdiag(n)
-       call getdiag2 ( k,n,bi,bj,undef,qtmp1(1,1,k))
-       call getdiag2 ( k,mate,bi,bj,undef,qtmp1(1,1,k))
+       call getdiag2 ( myThid,k,n,undef,qtmp1(1,1,k))
+       call getdiag2 ( myThid,k,mate,undef,qtmp1(1,1,k))
        do j = 1,jm
         do i = 1,im
          if(qtmp2(i,j,k).ne.0.) then
