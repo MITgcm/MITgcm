@@ -41,21 +41,33 @@ C     fn      :: character buffer for creating filename
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(80) fn
       logical glf
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
+      IF (
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,
+     &     myTime-deltaTClock) .OR.
+     &     myTime.EQ.endTime .OR.
+     &     myTime.EQ.startTime
+     &     ) THEN
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Write fields as consecutive records
-      glf = .FALSE.
-      WRITE(suff,'(I10.10)') myIter
-      pref = 'fizhi_U.'
-      WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-      call mdswritefield(fn,64,glf,'RL',Nrphys,uphy,1,myIter,myThid)
-      pref = 'fizhi_V.'
-      WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-      call mdswritefield(fn,64,glf,'RL',Nrphys,vphy,1,myIter,myThid)
-      pref = 'fizhi_T.'
-      WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-      call mdswritefield(fn,64,glf,'RL',Nrphys,thphy,1,myIter,myThid)
+       glf = .FALSE.
+       WRITE(suff,'(I10.10)') myIter
+       pref = 'fizhi_U.'
+       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
+       call mdswritefield(fn,64,glf,'RL',Nrphys,uphy,1,myIter,myThid)
+       pref = 'fizhi_V.'
+       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
+       call mdswritefield(fn,64,glf,'RL',Nrphys,vphy,1,myIter,myThid)
+       pref = 'fizhi_T.'
+       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
+       call mdswritefield(fn,64,glf,'RL',Nrphys,thphy,1,myIter,myThid)
+
+      ENDIF
 
       RETURN
       END

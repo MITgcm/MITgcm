@@ -86,6 +86,12 @@ c Do not use a zero field as the top edge pressure for interpolation
      .                               pedyn(i,j,Nr+1,bi,bj) = 1.e-5
         enddo
         enddo
+       enddo
+       enddo
+
+       CALL TIMER_START ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
 c
 c Compute physics increments
         call do_fizhi(uphy,vphy,thphy,sphy,pephy,
@@ -93,6 +99,13 @@ c Compute physics increments
      .                  xC,yC,
      .            im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,nchp,
      .                                         duphy,dvphy,dthphy,dsphy)
+       enddo
+       enddo
+       CALL TIMER_STOP ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
+
+       CALL TIMER_START ('PHYS2DYN          [FIZHI_WRAPPER]',mythid)
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
 c Interpolate (A-Grid) physics increments to dynamics grid
         call phys2dyn(duphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,guphy)
@@ -105,11 +118,15 @@ c Interpolate (A-Grid) physics increments to dynamics grid
 
        enddo
        enddo
+       CALL TIMER_STOP ('PHYS2DYN          [FIZHI_WRAPPER]',mythid)
 
 c Convert guphy and gvphy from A-grid to C-grid for use by dynamics
+       CALL TIMER_START ('ATOC              [FIZHI_WRAPPER]',mythid)
        call AtoC(myThid,guphy,gvphy,maskC,im1,im2,jm1,jm2,Nr,
      .                      Nsx,Nsy,1,sNx,1,sNy,guphy,gvphy)
+       CALL TIMER_STOP ('ATOC              [FIZHI_WRAPPER]',mythid)
 
+       CALL TIMER_START ('EXCHANGES         [FIZHI_WRAPPER]',mythid)
 c Call the c-grid exchange routine to fill in the halo regions (du,dv)
        call exch_uv_xyz_RL(guphy,gvphy,.TRUE.,myThid)
 c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
@@ -117,6 +134,7 @@ c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
      .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        call exch_RL_cube(gsphy,OLx, OLx, OLy, OLy, Nr,OLx, OLy,
      .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       CALL TIMER_STOP ('EXCHANGES         [FIZHI_WRAPPER]',mythid)
 
       return
       end
