@@ -38,7 +38,7 @@ C ***********************************************************************
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 
-#ifdef(ALLOW_FIZHI)then
+#ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
 #else
        integer Nrphys

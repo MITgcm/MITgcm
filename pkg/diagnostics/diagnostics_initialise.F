@@ -13,7 +13,14 @@ C***********************************************************************
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+
+#ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
+#else
+       integer Nrphys
+       parameter (Nrphys=1)
+#endif
+
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
