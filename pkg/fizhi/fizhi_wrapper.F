@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.10 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.11 2004/07/06 19:47:49 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,8 +59,7 @@ C  Note: Need one array to send to fizhi (top-down) and another
 C        For the interpolations between physics and dynamics (bottom-up)
         do j = 1,sNy
         do i = 1,sNx
-         pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
-     .                       rstarExpC(i,j,bi,bj)
+         pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))
          do L = 2,Nrphys+1
           pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys(i,j,L-1,bi,bj)
          enddo
@@ -84,8 +83,7 @@ C Build pressures on dynamics grid
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
          if(Lbotij.ne.0.) 
-     . pedyn(i,j,Lbotij,bi,bj) = (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
-     .                         rstarExpC(i,j,bi,bj)
+     . pedyn(i,j,Lbotij,bi,bj) = (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))
         enddo
         enddo
         do j = 1,sNy
