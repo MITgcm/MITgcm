@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.6 2004/04/19 22:30:46 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.7 2004/07/07 19:59:41 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -138,35 +138,43 @@ c     check for consistency
       end if           
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
-        call cal_FullDate( climtempstartdate1, climtempstartdate2,
-     &                     date_array,                    mythid )
-        call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-        call cal_ToSeconds (difftime,      climtempstartdate  ,mythid)
-        climtempstartdate=modelstart+climtempstartdate
+      if ( climtempfile .NE. ' ' ) then
+         call cal_FullDate( climtempstartdate1, climtempstartdate2,
+     &        date_array,                    mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds (difftime,      climtempstartdate  ,mythid)
+         climtempstartdate=modelstart+climtempstartdate
+      endif
 #endif
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
+      if ( climsaltfile .NE. ' ' ) then      
         call cal_FullDate( climsaltstartdate1, climsaltstartdate2,
      &                     date_array,                    mythid )
         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
         call cal_ToSeconds (difftime,      climsaltstartdate  ,mythid)
         climsaltstartdate=modelstart+climsaltstartdate
+      endif
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-        call cal_FullDate( climsststartdate1, climsststartdate2,
-     &                     date_array,                  mythid )
-        call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-        call cal_ToSeconds (difftime,       climsststartdate  ,mythid)
-        climsststartdate=modelstart+climsststartdate
+      if ( climsstfile .NE. ' ' ) then
+         call cal_FullDate( climsststartdate1, climsststartdate2,
+     &        date_array,                  mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds (difftime,       climsststartdate  ,mythid)
+         climsststartdate=modelstart+climsststartdate
+      endif
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-        call cal_FullDate( climsssstartdate1, climsssstartdate2,
-     &                     date_array,                  mythid )
-        call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-        call cal_ToSeconds (difftime,       climsssstartdate  ,mythid)
-        climsssstartdate=modelstart+climsssstartdate
+      if ( climsssfile .NE. ' ' ) then
+         call cal_FullDate( climsssstartdate1, climsssstartdate2,
+     &        date_array,                  mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds (difftime,       climsssstartdate  ,mythid)
+         climsssstartdate=modelstart+climsssstartdate
+      endif
 #endif
 
       _END_MASTER( mythid )
