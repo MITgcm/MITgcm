@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.19 1999/03/22 17:40:01 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.20 1999/05/18 15:43:59 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint21
+ o Introduced new I/O package that supports direct-access records (mdsio.F)
+ o Split-up mid-level I/O routines
+ o Updated input data for experiments 0,1,2,4 and 5
+ o Finally removed the genmake.* scripts (everyone seems happy with genmake)
 
 checkpoint20
  o Tidied up open-boundaries some more
