@@ -3,7 +3,6 @@
 
       SUBROUTINE KPP_CALC_VISC( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
-     I        maskUp,
      U        KappaRU,KappaRV,
      I        myThid)
 
@@ -22,11 +21,9 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C     maskUp  - land/water mask for Wvel points (above tracer level)
 C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
-      _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid

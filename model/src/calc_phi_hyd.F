@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.14 2001/07/06 21:47:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.15 2001/08/13 23:27:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"

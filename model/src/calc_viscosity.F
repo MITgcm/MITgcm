@@ -4,7 +4,6 @@
 CStartOfInterFace
       SUBROUTINE CALC_VISCOSITY( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
-     I        maskUp,
      O        KappaRU,KappaRV,
      I        myThid)
 
@@ -23,11 +22,9 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C     maskUp  - land/water mask for Wvel points (above tracer level)
 C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
-      _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
@@ -52,7 +49,6 @@ C     I, J, K - Loop counters
 #ifdef ALLOW_KPP
       IF (useKPP) CALL KPP_CALC_VISC(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
-     I        maskUp,
      O        KappaRU,KappaRV,
      I        myThid)
 #endif
