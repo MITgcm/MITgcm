@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.2 2003/05/26 18:57:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -209,7 +209,10 @@ C     Fsurf = Ffull(nlev)+WVS*(Ffull(nlev)-Ffull(nlev-1))
         WVSurf(I2,myThid) = 0.
         K = kGrd(I2)
         IF (K.GT.1) THEN
-          WVSurf(I2,myThid) = (LOG(SIGH(K))-SIGL(K))*WVI(K-1,2)
+C- full cell version of Franco Molteni formula:
+c         WVSurf(I2,myThid) = (LOG(SIGH(K))-SIGL(K))*WVI(K-1,2)
+C- partial cell version using true log-P extrapolation:
+          WVSurf(I2,myThid) = (LOG(PSA(I2))-SIGL(K))*WVI(K-1,1)
 C- like in the old code:
 c         WVSurf(I2,myThid) = WVI(K,2)
         ENDIF
