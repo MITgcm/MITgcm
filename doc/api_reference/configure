@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.7 2004/04/02 05:13:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.8 2004/04/06 21:01:45 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -136,6 +136,12 @@ all_protex: api_main.pdf
 distclean:
 	@make clean
 	-rm -f Makefile
+
+install: all
+	-rm -rf ./api_ref
+	mkdir ./api_ref
+	-cp api_main.pdf ./api_ref/api_ref.pdf
+	scp -r ./api_ref mitgcm.org:/u/u0/httpd/html/
 
 clean:
 	-rm -f *.aux *.dvi *.log *.toc *.out
