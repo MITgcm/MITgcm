@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.16 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.17 2004/07/28 20:38:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -259,6 +259,10 @@ cfpp$ expand (qsat)
 
 c   compute variables that do not change
 c
+
+       print *,' Just inside turb '
+       stop
+
        pi = 4.*atan(1.)
        secday   = getcon('SDAY')
        sdayopi2 = getcon('SDAY') / (pi*2.)

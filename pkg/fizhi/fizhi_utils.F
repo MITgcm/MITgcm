@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.11 2004/07/26 20:28:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.12 2004/07/28 20:38:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -865,7 +865,7 @@ C*********************************************************************
       return
       end
 
-      subroutine pkappa (ple,pkle,im,jm,lm,pkz)
+      subroutine pkappa (im,jm,lm,ple,pkle,pkz)
 C***********************************************************************
 C  Purpose
 C     Calculate Phillips P**Kappa

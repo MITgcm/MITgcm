@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.26 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.27 2004/07/28 20:38:53 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -102,11 +102,11 @@ c Local Variables
       _RL rainlsp(sNx,sNy,Nsx,Nsy),raincon(sNx,sNy,Nsx,Nsy)
       _RL snowfall(sNx,sNy,Nsx,Nsy)
       _RL cldtot_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL clras_lw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL cldras_lw(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL cldlsp_lw(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL lwlz(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL cldtot_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      _RL clras_sw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL cldras_sw(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL cldlsp_sw(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL swlz(sNx,sNy,Nrphys,Nsx,Nsy)
       _RL qliqavesw(sNx,sNy,Nrphys,Nsx,Nsy)
@@ -126,8 +126,8 @@ c Local Variables
       save moistu,moistv,moistt,moistq
       save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
       save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
-      save nlwcld,cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz
-      save nswcld,cldtot_sw,clras_sw,cldlsp_sw,nswlz,swlz
+      save nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz
+      save nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz
       save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
       save qq
       save pl,ple,dpres,pkle,pkl
@@ -144,6 +144,24 @@ C***********************************************************************
        nlwlz = 0
        nswcld = 0
        nswlz = 0
+       do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        swlz(i,j,L,bi,bj) = 0.
+        lwlz(i,j,L,bi,bj) = 0.
+        qliqavesw(i,j,L,bi,bj) = 0.
+        qliqavelw(i,j,L,bi,bj) = 0.
+        fccavesw(i,j,L,bi,bj) = 0.
+        fccavelw(i,j,L,bi,bj) = 0.
+        cldtot_sw(i,j,L,bi,bj) = 0.
+        cldras_sw(i,j,L,bi,bj) = 0.
+        cldlsp_sw(i,j,L,bi,bj) = 0.
+        cldtot_lw(i,j,L,bi,bj) = 0.
+        cldras_lw(i,j,L,bi,bj) = 0.
+        cldlsp_lw(i,j,L,bi,bj) = 0.
+       enddo
+       enddo
+       enddo
       endif
 
       kappa = getcon('KAPPA')
@@ -186,12 +204,12 @@ C compute pressures - all pressure are converted here to hPa
        pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
        dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
        ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
-       pkle(i,j,L,bi,bj) = (ple(i,j,L,bi,bj) /100.) **kappa
+       pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
       enddo
       enddo
       enddo
 
-      call pkappa (ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),im2,jm2,Nrphys,
+      call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
 
       call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
@@ -219,9 +237,9 @@ C compute pressures - all pressure are converted here to hPa
      . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
      . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
      . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
-     . nlwcld,cldtot_lw(1,1,1,bi,bj),clras_lw(1,1,1,bi,bj),
+     . nlwcld,cldtot_lw(1,1,1,bi,bj),cldras_lw(1,1,1,bi,bj),
      . cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
-     . nswcld,cldtot_sw(1,1,1,bi,bj),clras_sw(1,1,1,bi,bj),
+     . nswcld,cldtot_sw(1,1,1,bi,bj),cldras_sw(1,1,1,bi,bj),
      . cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
      . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
      . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),

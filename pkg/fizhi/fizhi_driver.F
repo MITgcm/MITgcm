@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.16 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.17 2004/07/28 20:38:53 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -109,11 +109,13 @@ c ---------------
       integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
-      integer i,j
+      integer i,j,L
       integer ndum,ndpnt
       _RL akap,getcon
       _RL ptop
       logical lpnt
+
+      _RL tempij(im,jm)
 
       istrip = im*jm
       npcs   = 1
@@ -146,26 +148,23 @@ C Fill array of model levels closest to a given pressure value
 C **********************************************************************        
 C ****                  Call Physics Mini-Drivers                   ****        
 C **********************************************************************        
-                                                                                
+
 C SHORT WAVE RADIATION
 C ====================
       IF ( alarm('radsw') ) THEN
 
       call swrio ( nymd,nhms,bi,bj,ndsw,myid,istrip,npcs,
-     .   low_level,mid_level,
+     .   low_level,mid_level,im,jm,lm,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
-     .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
+     .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,
      .   ptop,nswcld,cldtot_sw,cldras_sw,nswlz,swlz,
      .   .false.,imstturbsw,qliqavesw,
      .   fccavesw,landtype,xlats,xlons )
 
-
-       print *,' In fizhi driver - Done with sw radiation '
-       stop
-
       ENDIF
                                                                                 
+       stop
 
 C LONG WAVE RADIATION
 C ===================
@@ -180,10 +179,10 @@ c --------------------------------
       enddo
 
       call lwrio ( nymd,nhms,bi,bj,istrip,npcs,
-     .   low_level,mid_level,
+     .   low_level,mid_level,im,jm,lm,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
-     .   lwdt,dlwdtg,lwdtclr,lwgclr,im,jm,lm,ptop,
+     .   lwdt,dlwdtg,lwdtclr,lwgclr,ptop,
      .   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
      .   .false.,imstturblw,qliqavelw,
      .   fccavelw,landtype )
@@ -193,6 +192,8 @@ c --------------------------------
 C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
+
+       print *,' In fizhi driver - about to call turb '
 
       call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
      .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
@@ -214,6 +215,10 @@ C Need to see how to get zonal wavelengths on the cube.
 c     call gwdrag (myid,p,pl,ple,dpres,pkht,pkl,u,v,t,q,phis_var,
 c    .   turbu,turbv,turbt,im,jm,lm,ptop,istrip,npcs,
 c    .   imglobal)
+
+
+       print *,' In fizhi driver - Done with turb '
+       stop
 
       endif
                                                                                 
