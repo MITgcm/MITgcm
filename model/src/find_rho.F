@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.26 2003/09/29 19:24:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.27 2005/01/19 01:16:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -240,12 +240,12 @@ C     k    :: Level of Theta/Salt slice
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rfresh, rsalt
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
+      _RL rfresh, rsalt
       _RL t, t2, t3, t4, s, s3o2
 CEOP
 
@@ -329,17 +329,16 @@ C     == Routine arguments ==
 C     k    :: Level of Theta/Salt slice
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k	
-      INTEGER kRef
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bMfresh, bMsalt, bMpres
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
+      _RL bMfresh, bMsalt, bMpres
       _RL t, t2, t3, t4, s, s3o2, p, p2
 CEOP
 
