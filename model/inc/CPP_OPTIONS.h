@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.24 2003/10/09 21:35:56 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.25 2003/10/15 14:00:40 edhill Exp $
 C $Name:  $
+
+#ifndef CPP_OPTIONS_H
+#define CPP_OPTIONS_H
 
 #include "PACKAGES_CONFIG.h"
 
@@ -65,3 +68,6 @@ C o Include/exclude code specific to the ECCO/SEALION version.
 #ifdef INCLUDE_ECCO_PACKAGE
 #include "ECCO_CPPOPTIONS.h"
 #endif
+
+#endif /* CPP_OPTIONS_H */
+
