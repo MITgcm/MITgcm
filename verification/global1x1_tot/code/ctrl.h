@@ -41,9 +41,15 @@ cph Need to put this in namelist at some point!
     
       common /controlvars_l /
      &                       doInitXX,
-     &                       doAdmTlm
+     &                       doAdmTlm,
+     &                       doPackDiag,
+     &                       doZscaleUnpack,
+     &                       doZscalePack
       logical doInitXX
       logical doAdmTlm
+      logical doPackDiag
+      logical doZscaleUnpack
+      logical doZscalePack
 
       common /controlvars_i/
      &                       nvartype,
