@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.2 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.3 2004/12/04 18:50:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -40,7 +40,7 @@ C     c3d           :: upper diagonal of the tridiagonal matrix
 C     myThid        :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
-      _RL deltaTarg
+      _RL deltaTarg(Nr)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL a3d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b3d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -54,27 +54,30 @@ C     rCenter       :: centered contribution
       _RL rCenter
 CEOP
 
-      IF ( k.GT.Nr .OR. k.LT.2 ) RETURN
+C--   process interior interface only:
+      IF ( k.GT.1 .AND. k.LE.Nr ) THEN
 
 C--    Add centered contribution
        DO j=jMin,jMax
          DO i=iMin,iMax
-           rCenter = 0.5 _d 0 *deltaTarg*rTrans(i,j)
-     &                        *recip_rA(i,j,bi,bj)*rkFac
+           rCenter = 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkFac
            a3d(i,j,k)   = a3d(i,j,k)
-     &                  + rCenter
+     &                  + rCenter*deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k)   = b3d(i,j,k)
-     &                  + rCenter
+     &                  + rCenter*deltaTarg(k)
      &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k-1) = b3d(i,j,k-1)
-     &                  - rCenter
+     &                  - rCenter*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c3d(i,j,k-1) = c3d(i,j,k-1)
-     &                  - rCenter
+     &                  - rCenter*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
+
+C--   process interior interface only: end
+      ENDIF
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.6 2004/12/04 00:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.7 2004/12/04 18:50:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -74,7 +74,8 @@ C errCode   :: > 0 if singular matrix
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 CEOP
 
-      IF (Nr.LE.1) RETURN
+C--   no need to solve anything with only 1 level:
+      IF (Nr.GT.1) THEN
 
 C--   Initialise
       iMin = 1
@@ -123,8 +124,7 @@ C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskC(i,j,k-1,bi,bj).EQ.1.) 
-     &     b5d(i,j,k) = -dTtracerLev(1)
+           b5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k-1,bi,bj)
      &                  *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                  *kappaRX(i,j, k )*recip_drC( k )
          ENDDO
@@ -134,8 +134,7 @@ C-     1rst upper diagonal :
        DO k=1,Nr-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskC(i,j,k+1,bi,bj).EQ.1.) 
-     &     d5d(i,j,k) = -dTtracerLev(1)
+           d5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k+1,bi,bj)
      &                 *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRX(i,j,k+1)*recip_drC(k+1)
          ENDDO
@@ -214,20 +213,20 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
          IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
           diagonalNumber = 3
           CALL GAD_C2_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        dTtracerLev(1), rTrans,
+     I                        dTtracerLev, rTrans,
      U                        b5d, c5d, d5d,
      I                        myThid)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           diagonalNumber = 3
           CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        dTtracerLev(1), rTrans, localTijk,
+     I                        dTtracerLev, rTrans, localTijk,
      U                        b5d, c5d, d5d,
      I                        myThid)
          ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
      &           advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
           diagonalNumber = 5
           CALL GAD_U3C4_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        advectionScheme, dTtracerLev(1), rTrans,
+     I                        advectionScheme, dTtracerLev, rTrans,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid)
          ELSE
@@ -264,6 +263,9 @@ C--   Solve penta-diagonal system :
         ENDIF
       ELSEIF ( diagonalNumber .NE. 1 ) THEN
         STOP 'GAD_IMPLICIT_R: no solver available'
+      ENDIF
+
+C--   end if Nr > 1
       ENDIF
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.3 2004/12/04 00:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.4 2004/12/04 18:50:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -51,7 +51,7 @@ C myThid          :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
       INTEGER advectionScheme
-      _RL deltaTarg
+      _RL deltaTarg(Nr)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL a5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -73,7 +73,8 @@ C rUpwind         :: upwind   contribution
       _RL mskM, mskP, maskM2, maskP1
 CEOP
 
-      IF ( k.GT.Nr .OR. k.LT.2 ) RETURN
+C--   process interior interface only:
+      IF ( k.GT.1 .AND. k.LE.Nr ) THEN
 
       km2=MAX(1,k-2)
       kp1=MIN(Nr,k+1)
@@ -87,8 +88,7 @@ CEOP
 C--    Add centered & upwind contributions
        DO j=jMin,jMax
          DO i=iMin,iMax
-           rCenter= 0.5 _d 0 *deltaTarg*rTrans(i,j)
-     &                        *recip_rA(i,j,bi,bj)*rkFac
+           rCenter= 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkFac
            mskM   = maskC(i,j,km2,bi,bj)*maskM2
            mskP   = maskC(i,j,kp1,bi,bj)*maskP1
            rC4km  = oneSixth*rCenter*mskM
@@ -105,30 +105,41 @@ C--    Add centered & upwind contributions
            ENDIF
            a5d(i,j,k)   = a5d(i,j,k)
      &                  - (rC4km - rU3km)
+     &                   *deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  + (rCenter + rC4km - rUpwind - rU3km)
+     &                   *deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  + (rCenter + rC4kp + rUpwind + rU3kp)
+     &                   *deltaTarg(k)
      &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  - (rC4kp + rU3kp)
+     &                   *deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  + (rC4km - rU3km)
+     &                   *deltaTarg(k-1)
      &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  - (rCenter + rC4km - rUpwind - rU3km)
+     &                   *deltaTarg(k-1)
      &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  - (rCenter + rC4kp + rUpwind + rU3kp)
+     &                   *deltaTarg(k-1)
      &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  + (rC4kp + rU3kp)
+     &                   *deltaTarg(k-1)
      &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
+
+C--   process interior interface only: end
+      ENDIF
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.4 2004/12/04 00:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.5 2004/12/04 18:50:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -42,7 +42,7 @@ C     c3d          :: upper diagonal of the tridiagonal matrix
 C     myThid       :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
-      _RL deltaTarg
+      _RL deltaTarg(Nr)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL a3d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -65,6 +65,7 @@ C     rUpwind      :: upwind   contribution
       _RL Cr,Rjm,Rj,Rjp, w_CFL
       _RL upwindFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter, rUpwind
+      _RL deltaTcfl
 
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
@@ -74,12 +75,14 @@ CEOP
       km1=MAX(1,k-1)
       kp1=MIN(Nr,k+1)
 
-      IF ( k.GT.Nr .OR. k.LT.2 ) RETURN
+C--   process interior interface only:
+      IF ( k.GT.1 .AND. k.LE.Nr ) THEN
 
 C--   Compute the upwind fraction:
+       deltaTcfl = deltaTarg(k)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         w_CFL = rTrans(i,j)*recip_rA(i,j,bi,bj)*deltaTarg*recip_drC(k)
+         w_CFL = deltaTcfl*rTrans(i,j)*recip_rA(i,j,bi,bj)*recip_drC(k)
          Rjp=(tFld(i,j,kp1)-tFld(i,j,k)  )*maskC(i,j,kp1,bi,bj)
          Rj =(tFld(i,j,k)  -tFld(i,j,km1))
          Rjm=(tFld(i,j,km1)-tFld(i,j,km2))*maskC(i,j,km2,bi,bj)
@@ -102,23 +105,25 @@ C--   Compute the upwind fraction:
 C--    Add centered & upwind contributions
        DO j=jMin,jMax
          DO i=iMin,iMax
-           rCenter = 0.5 _d 0 *deltaTarg*rTrans(i,j)
-     &                        *recip_rA(i,j,bi,bj)*rkFac
+           rCenter = 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkFac
            rUpwind = abs(rCenter)*upwindFac(i,j)
            a3d(i,j,k)   = a3d(i,j,k)
-     &                  + (rCenter-rUpwind)
+     &                  + (rCenter-rUpwind)*deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k)   = b3d(i,j,k)
-     &                  + (rCenter+rUpwind)
+     &                  + (rCenter+rUpwind)*deltaTarg(k)
      &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k-1) = b3d(i,j,k-1)
-     &                  - (rCenter-rUpwind)
+     &                  - (rCenter-rUpwind)*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c3d(i,j,k-1) = c3d(i,j,k-1)
-     &                  - (rCenter+rUpwind)
+     &                  - (rCenter+rUpwind)*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
+
+C--   process interior interface only: end
+      ENDIF
 
       RETURN
       END
