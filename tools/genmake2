@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.35 2003/11/13 22:03:39 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.36 2003/11/14 02:48:18 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -864,7 +864,7 @@ EXECUTABLE=${EXECUTABLE:-mitgcmuv}
 #  they appear as regular source code
 if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
     echo "  Making source files in eesupp from templates"
-    $MAKE -C $ROOTDIR"/eesupp/src/" > make_eesupp.errors 2>&1
+    ( cd $ROOTDIR"/eesupp/src/" && $MAKE ) > make_eesupp.errors 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
 	rm -f make_eesupp.errors
