@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.17 2004/07/28 20:38:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.18 2004/07/28 21:57:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -234,11 +234,6 @@ C Set fmu and ed to zero for no background diffusion
       parameter ( ndlsm = 40)
       _RL qdiaglsm(nchp,ndlsm)
 
-      integer n,nsecf,nmonf,ndayf
-      nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
-      nmonf(n) = mod(n,10000)/100
-      ndayf(n) = mod(n,100)
-
       _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
       _RL faceps,grav,caltoj,virtcon,getcon
       _RL heatw,undef,timstp,delttrb,dttrb,ra
@@ -251,6 +246,11 @@ C Set fmu and ed to zero for no background diffusion
 C logical begin flag - set to true to indicate a cold start
       logical qbeg    
 
+      integer n,nsecf,nmonf,ndayf
+      nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
+      nmonf(n) = mod(n,10000)/100
+      ndayf(n) = mod(n,100)
+
 #ifdef CRAY
 #ifdef f77
 cfpp$ expand (qsat)
@@ -259,9 +259,6 @@ cfpp$ expand (qsat)
 
 c   compute variables that do not change
 c
-
-       print *,' Just inside turb '
-       stop
 
        pi = 4.*atan(1.)
        secday   = getcon('SDAY')
@@ -351,12 +348,6 @@ c        (ocean points appended to tile space land point arrays)
 c **********************************************************************
 
       numstrips   = ((nchptot-1)/istrip) + 1
-
-      print *,' In turb - about to call grd2msc for ',nchptot,' tiles '
-      print *,' im ',im,' jm ',jm,' nchp ',nchp,' ijall ',ijall
-      print *,' igrd ',(igrd(i),i=1,nchptot)
-      print *,' pz ',(pz(i,1),i=1,ijall)
-      stop
 
       call grd2msc(pz(1,1),im,jm,igrd,pmsc,nchp,nchptot)
 
@@ -471,8 +462,6 @@ c -----------------------------------
       nqice = nqice + 1
       endif
 
-      print *,' In turb - did all initialization - ready for regions '
-      stop
 c**********************************************************************
 c                        loop over regions
 c**********************************************************************

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.15 2004/07/28 20:38:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.16 2004/07/28 21:57:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -95,133 +95,12 @@ c ---------------
       _RL taua   (istrip,lm)
       _RL tstrip (istrip)
 
-      _RL tempij(im,jm)
-      _RL tempstrip(istrip)
-
       logical first
       data first /.true./
 
 C **********************************************************************
 C ****                       INITIALIZATION                         ****
 C **********************************************************************
-
-      print *,' Just inside sw '
-      print *,'nymd,nhms,bi,bj,ndswr,myid,istrip,npcs ',
-     .nymd,' ',nhms,' ',bi,' ',bj,' ',ndswr,' ',myid,' ',istrip,' ',npcs
-      print *,'low_level,mid_level ',low_level,' ',mid_level
-      print *,' im,jm,lm ',im,' ',jm,' ',lm,' ptop ',ptop
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = pz(i,j)
-      enddo
-      enddo
-      print *,' pz ',tempij
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = plz(i,j,l)
-       enddo
-       enddo
-       print *,' plz level ',L,' ',tempij
-      enddo
-      do L = 1,lm+1
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = plze(i,j,l)
-       enddo
-       enddo
-      print *,' plze level ',L,' ',tempij
-      enddo
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = dpres(i,j,l)
-       enddo
-       enddo
-      print *,' dpres level ',L,' ',tempij
-      enddo
-      do L = 1,lm+1
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = pkht(i,j,l)
-       enddo
-       enddo
-      print *,' pkht level ',L,' ',tempij
-      enddo
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = pkz(i,j,l)
-       enddo
-       enddo
-      print *,' pkz level ',L,' ',tempij
-      enddo
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = tz(i,j,l)
-       enddo
-       enddo
-      print *,' tz level ',L,' ',tempij
-      enddo
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = qz(i,j,l)
-       enddo
-       enddo
-      print *,' qz level ',L,' ',tempij
-      enddo
-      do L = 1,lm
-       do j = 1,jm
-       do i = 1,im
-        tempij(i,j) = oz(i,j,l)
-       enddo
-       enddo
-      print *,' oz level ',L,' ',tempij
-      enddo
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = albvisdr(i,j)
-      enddo
-      enddo
-      print *,' albvisdr ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = albvisdf(i,j)
-      enddo
-      enddo
-      print *,' albvisdf ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = albnirdr(i,j)
-      enddo
-      enddo
-      print *,' albnirdr ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = albnirdf(i,j)
-      enddo
-      enddo
-      print *,' albnirdf ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = landtype(i,j)
-      enddo
-      enddo
-      print *,' landtype ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = xlats(i,j)
-      enddo
-      enddo
-      print *,' xlats ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = xlons(i,j)
-      enddo
-      enddo
-      print *,' xlons ',tempij
 
       grav  = getcon('GRAVITY')
       cp    = getcon('CP')
@@ -598,92 +477,6 @@ c ---------------------------------------------
       reff(i,L,2) = reffw
       enddo
       enddo
-
-      print *,' About to call sorad '
-      print *,' istrip, lm, co2, mid_level,low_level ',
-     .      istrip,' ',lm,' ',co2,' ',mid_level,' ',low_level
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = ple(i,l)
-       enddo
-      print *,' ple level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = tzl(i,l)
-       enddo
-      print *,' tzl level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = qzl(i,l)
-       enddo
-      print *,' qzl level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = ozl(i,l)
-       enddo
-      print *,' ozl level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = tauc(i,l,1)
-       enddo
-      print *,' tauc 1 level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = tauc(i,l,2)
-       enddo
-      print *,' tauc 2 level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = reff(i,l,1)
-       enddo
-      print *,' reff 1 level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = reff(i,l,2)
-       enddo
-      print *,' reff 2 level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = taua(i,l)
-       enddo
-      print *,' taua level ',L,' ',tempstrip
-      enddo
-      do L = 1,lm
-       do i = 1,istrip
-        tempstrip(i) = clro(i,l)
-       enddo
-      print *,' clro level ',L,' ',tempstrip
-      enddo
-      do i = 1,istrip
-       tempstrip(i) = albirdr(i)
-      enddo
-      print *,' albirdr ',tempstrip
-      do i = 1,istrip
-       tempstrip(i) = albirdf(i)
-      enddo
-      print *,' albirdf ',tempstrip
-      do i = 1,istrip
-       tempstrip(i) = albuvdr(i)
-      enddo
-      print *,' albuvdr ',tempstrip
-      do i = 1,istrip
-       tempstrip(i) = albuvdf(i)
-      enddo
-      print *,' albuvdf ',tempstrip
-      do i = 1,istrip
-       tempstrip(i) = cosz(i)
-      enddo
-      print *,' cosz ',tempstrip
-
-      stop
 
       call sorad ( istrip,1,1,lm,ple,tzl,qzl,ozl,co2,
      .             tauc,reff,clro,mid_level,low_level,taua,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.27 2004/07/28 20:38:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.28 2004/07/28 21:57:51 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -137,6 +137,7 @@ C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
 
       if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+       if(myid.eq.1) print *,' Initializing fizhi arrays '
        imstturblw = 0
        imstturbsw = 0
        iras = 0
@@ -159,7 +160,24 @@ C***********************************************************************
         cldtot_lw(i,j,L,bi,bj) = 0.
         cldras_lw(i,j,L,bi,bj) = 0.
         cldlsp_lw(i,j,L,bi,bj) = 0.
+        lwdt(i,j,L,bi,bj) = 0.
+        swdt(i,j,L,bi,bj) = 0.
+        turbt(i,j,L,bi,bj) = 0.
+        moistt(i,j,L,bi,bj) = 0.
+        turbq(i,j,L,1,bi,bj) = 0.
+        moistq(i,j,L,1,bi,bj) = 0.
+        turbu(i,j,L,bi,bj) = 0.
+        moistu(i,j,L,bi,bj) = 0.
+        turbv(i,j,L,bi,bj) = 0.
+        moistv(i,j,L,bi,bj) = 0.
        enddo
+       enddo
+       enddo
+       do j = jm1,jm2
+       do i = im1,im2
+        rainlsp(i,j,bi,bj) = 0.
+        raincon(i,j,bi,bj) = 0.
+        snowfall(i,j,bi,bj) = 0.
        enddo
        enddo
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.17 2004/07/28 20:38:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.18 2004/07/28 21:57:51 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -164,8 +164,6 @@ C ====================
 
       ENDIF
                                                                                 
-       stop
-
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
@@ -193,19 +191,17 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-       print *,' In fizhi driver - about to call turb '
-
-      call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
-     .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
-     .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .  tgz,fracland,landtype,
-     .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-     .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
-     .  alai,agrn,sea_ice,lpnt,
-     .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
-     .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
-     .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-     .  myid)
+c     call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
+c    .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
+c    .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+c    .  tgz,fracland,landtype,
+c    .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
+c    .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
+c    .  alai,agrn,sea_ice,lpnt,
+c    .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
+c    .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
+c    .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
+c    .  myid)
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
@@ -215,10 +211,6 @@ C Need to see how to get zonal wavelengths on the cube.
 c     call gwdrag (myid,p,pl,ple,dpres,pkht,pkl,u,v,t,q,phis_var,
 c    .   turbu,turbv,turbt,im,jm,lm,ptop,istrip,npcs,
 c    .   imglobal)
-
-
-       print *,' In fizhi driver - Done with turb '
-       stop
 
       endif
                                                                                 
