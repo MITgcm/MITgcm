@@ -60,8 +60,8 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_2
       integer    nchklev_3
       parameter( nchklev_1      =  48 )
-      parameter( nchklev_2      =  366 )
-      parameter( nchklev_3      =  5 )
+      parameter( nchklev_2      = 183 )
+      parameter( nchklev_3      =  12 )
 c  change to these values for very short test runs:
 cph      parameter( nchklev_1      =  24 )
 cph      parameter( nchklev_2      =  4 )

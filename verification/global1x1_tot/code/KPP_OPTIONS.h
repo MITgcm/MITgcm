@@ -29,11 +29,11 @@ C   same whether FRUGAL_KPP is turned on or off.
 
 C o When set, smooth zonal shear meridionally and
 C   meridional shear zonally with 121 filters
-#define KPP_SMOOTH_SHSQ
+#undef KPP_SMOOTH_SHSQ
 #undef KPP_SMOOTH_DVSQ
 
 C o When set, smooth dbloc KPP variable horizontally
-#define KPP_SMOOTH_DBLOC
+#undef KPP_SMOOTH_DBLOC
 
 C o When set, smooth all KPP density variables horizontally
 #undef KPP_SMOOTH_DENS
@@ -60,9 +60,11 @@ C   for saving storage space
 #endif
 
 C o Include/exclude KPP non/local transport terms
-#define KPP_GHAT
+#undef KPP_GHAT
 
-C o Set precision for KPP variables (Real*4 or Real*8)
+cph(
+#undef EXCLUDE_KPP_SHEAR_MIX
+cph)
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/GMREDI_OPTIONS.h,v 1.2 2003/11/06 22:28:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/GMREDI_OPTIONS.h,v 1.3 2004/10/12 15:14:16 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -24,7 +24,7 @@ C This allows to use Visbeck et al formulation to compute K_GM+Redi
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
-#undef  GM_NON_UNITY_DIAGONAL
+#define  GM_NON_UNITY_DIAGONAL
 
 C Allows to use different values of K_GM and K_Redi ; also to
 C be used with the advective form (Bolus velocity) of GM

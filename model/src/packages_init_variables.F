@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.37 2004/10/08 17:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.38 2004/10/12 15:14:15 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,11 +147,15 @@ cph#endif
 #endif
 
 #ifdef ALLOW_AUTODIFF
-CADJ STORE theta = tapelev_ini_bibj_k, key = 1
+CADJ STORE theta = tapelev_init, key = 1
 c--   Initialise auxiliary xx_ fields
       CALL CTRL_INIT_VARIABLES ( mythid )
 c--   Map the control variables onto the model state.
+#ifdef ALLOW_ECCO
+      CALL CTRL_MAP_INI_ECCO( mythid )
+#else
       CALL CTRL_MAP_INI( mythid )
+#endif
       _BARRIER
 #endif
 
@@ -164,7 +168,7 @@ cph#endif
 
 #ifdef ALLOW_EBM
 # ifdef ALLOW_AUTODIFF
-CADJ STORE theta = tapelev3, key = 1
+CADJ STORE theta = tapelev_init, key = 1
 # endif
       IF (useEBM) CALL EBM_INI_VARS( mythid )
 #endif

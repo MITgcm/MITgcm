@@ -42,8 +42,8 @@ C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
 C
 C o use divided adjoint to split adjoint computations
-#define ALLOW_DIVIDED_ADJOINT
-#define ALLOW_DIVIDED_ADJOINT_MPI
+#undef ALLOW_DIVIDED_ADJOINT
+#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C ********************************************************************
 C ***                     Calender Package                         ***
@@ -62,17 +62,12 @@ C
 
 #ifdef ALLOW_COST
 C       >>> Use the EGM-96 geoid error covariance.
-cph# define  ALLOW_EGM96_ERROR_DIAG
-cph needs more testing
-# undef  ALLOW_EGM96_ERROR_DIAG
+# define  ALLOW_EGM96_ERROR_DIAG
 # undef  ALLOW_EGM96_ERROR_COV
 # undef  ALLOW_SPH_PROJECTION
 
 C       >>> Use NSCAT data.
-# undef ALLOW_SCAT_COST_CONTRIBUTION
-
-C       >>> Use NSCAT data.
-# undef ALLOW_SCAT_COST_CONTRIBUTION
+# define ALLOW_SCAT_COST_CONTRIBUTION
 
 C       >>> Cost function contributions
 # define ALLOW_HFLUX_COST_CONTRIBUTION
@@ -81,18 +76,21 @@ C       >>> Cost function contributions
 # define ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 # define ALLOW_USTRESS_COST_CONTRIBUTION
 # define ALLOW_VSTRESS_COST_CONTRIBUTION
+# undef ALLOW_STRESS_MEAN_COST_CONTRIBUTION
 
 # undef ALLOW_ATEMP_COST_CONTRIBUTION
 # undef ALLOW_AQH_COST_CONTRIBUTION
 # undef ALLOW_UWIND_COST_CONTRIBUTION
 # undef ALLOW_VWIND_COST_CONTRIBUTION
 
+# define GENERIC_BAR_MONTH
 # define ALLOW_THETA_COST_CONTRIBUTION
 # define ALLOW_SALT_COST_CONTRIBUTION
 # define ALLOW_THETA0_COST_CONTRIBUTION
 # define ALLOW_SALT0_COST_CONTRIBUTION
 # define ALLOW_SST_COST_CONTRIBUTION
 # define ALLOW_SSS_COST_CONTRIBUTION
+# define ALLOW_TMI_SST_COST_CONTRIBUTION
 
 # define ALLOW_SSH_MEAN_COST_CONTRIBUTION
 # define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
@@ -110,9 +108,8 @@ C       >>> Cost function contributions
 # undef ALLOW_DRIFT_COST_CONTRIBUTION
 # undef ALLOW_DRIFTW_COST_CONTRIBUTION
 C
-cph problem with ARGO files
-# undef ALLOW_ARGO_THETA_COST_CONTRIBUTION
-# undef ALLOW_ARGO_SALT_COST_CONTRIBUTION
+# define ALLOW_ARGO_THETA_COST_CONTRIBUTION
+# define ALLOW_ARGO_SALT_COST_CONTRIBUTION
 C
 c       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined!

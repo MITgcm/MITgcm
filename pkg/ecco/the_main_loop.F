@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.9 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.10 2004/10/12 15:14:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,6 +163,7 @@ c--   Initialize storage for the initialisations.
 CADJ  INIT tapelev3 = USER
 c--   Some more initialisations to please TAMC
 CADJ INIT tapelev_ini_bibj_k   = USER
+CADJ INIT tapelev_init = USER
 # ifdef ALLOW_DIVIDED_ADJOINT
 CADJ INIT onetape = user
 cphCADJ INIT onetape = common, 1
