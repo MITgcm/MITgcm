@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.25 2003/11/12 00:02:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.26 2004/07/24 01:26:26 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -368,6 +368,8 @@ C                 metric term in V equation.
       INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GRID_R/
+     &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
+     &  gravitySign,rkFac, recip_rkFac,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,HFacC,HFacW,HFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
@@ -379,10 +381,15 @@ C                 metric term in V equation.
      &  maskH, maskC,maskW,maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  tanPhiAtU, tanPhiAtV,
-     &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
-     &  gravitySign,
-     &  rkFac, recip_rkFac, xC0, yC0
+     &  xC0, yC0
+      _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqcosfacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqcosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL gravitySign
+      _RL rkFac
+      _RL recip_rkFac
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -426,10 +433,6 @@ C                 metric term in V equation.
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
-      _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqcosfacU(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqcosfacV(1-Oly:sNy+Oly,nSx,nSy)
       _RS drC            (1:Nr)
       _RS drF            (1:Nr)
       _RS recip_drC      (1:Nr)
@@ -437,9 +440,6 @@ C                 metric term in V equation.
       _RS saFac          (1:Nr)
       _RS rC             (1:Nr)
       _RS rF             (1:Nr+1)
-      _RL gravitySign
-      _RL rkFac
-      _RL recip_rkFac
       _RS xC0
       _RS yC0
 
