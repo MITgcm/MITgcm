@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.10 1999/05/05 18:32:35 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.11 1999/05/07 18:12:29 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -110,49 +110,49 @@ switch ($platform$USEMPI)
     breaksw
   case IRIX64+mpi:
     echo "Configuring for SGI Mips with MPI"
-    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FC         = ( 'mpif77' )
     set LINK       = ( 'mpif77' )
-    set FFLAGS     = ( '-extend_source -bytereclen -r10000' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000 -mips4' )
     set FOPTIM     = ( '-O3' )
     set RMFILES    = ( 'rii_files' )
     breaksw
   case IRIX64:
     echo "Configuring for SGI Mips"
-    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
-    set FOPTIM     = ( '-O2' )
-    set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
-                       'load_external_fields.F' )
+    set FOPTIM     = ( '-O3' )
+#   set NOOPTFLAGS = ( '-O0' )
+#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+#                      'load_external_fields.F' )
     set RMFILES    = ( 'rii_files' )
     breaksw
   case SunOS:
     set LN         = ( '/usr/bin/ln -fs' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
-    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-O5 -fast' )
+    set FOPTIM     = ( '-fast -O4' )
     set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F ini_vertical_grid.F')
     breaksw
   case SunOS+mpi:
     set LN         = ( '/usr/bin/ln -fs' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
-    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-O5 -fast' )
+    set FOPTIM     = ( '-fast -O4' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
                        '-lsocket -lnsl' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F ini_vertical_grid.F')
     breaksw
   case IRIX32:
     echo "Configuring for SGI ONYX running IRIX64"
-    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/include' )
     set FFLAGS     = ( '-extend_source -bytereclen -r10000 -64' )
     set FOPTIM     = ( '-O2' )
@@ -161,14 +161,14 @@ switch ($platform$USEMPI)
                        'load_external_fields.F' )
     set LIBS       = ( '-lmpi' )
     breaksw
-  case HP-UX:
   case HP-UX+mpi:
-    echo "Configuring for HP Exemplar"
-    set CPP        = ( '/usr/ccs/lbin/cpp -P' )
-    set DEFINES    = ( ${DEFINES}  '-DTARGET_HP' )
-    set INCLUDES   = ( '-I/opt/mpi/include' )
     set FC         = ( 'mpif77' )
     set LINK       = ( 'mpif77' )
+    set INCLUDES   = ( '-I/opt/mpi/include' )
+  case HP-UX:
+    echo "Configuring for HP Exemplar"
+    set CPP        = ( '/usr/ccs/lbin/cpp -P' )
+    set DEFINES    = ( ${DEFINES}  '-DTARGET_HP -DWORDLENGTH=4' )
     set FFLAGS     = ( '+es +U77 +Onoautopar +Oexemplar_model' \
                        '+Okernel_threads' )
     set FOPTIM     = ( '+O2' )
@@ -181,7 +181,7 @@ switch ($platform$USEMPI)
   case Linux:
     set LN         = ( '/bin/ln -fs' )
     set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp  -traditional -P' )
-    set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
+    set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'g77' )
     set FFLAGS     = ( ' ' )
