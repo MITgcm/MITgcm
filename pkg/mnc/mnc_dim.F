@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.9 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.10 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_DIM_INIT
 
 C     !INTERFACE:
@@ -29,7 +29,7 @@ CEOP
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_DIM_INIT_ALL
 
 C     !INTERFACE:
@@ -53,12 +53,13 @@ C     !INPUT PARAMETERS:
       integer myThid, dlen
       character*(*) fname, dname
       character*(1) doWrite
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j, indf,indd, n,nf, dnf,dnl
       integer ntmp, idd, err, tlen
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK, IFNBLNK
 
@@ -129,7 +130,7 @@ C     Add to tables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_DIM_UNLIM_SIZE
 
 C     !INTERFACE:
@@ -150,11 +151,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, unlim_sz
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j, nf, indf, fid, unlimid, err
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK, IFNBLNK
 

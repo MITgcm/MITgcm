@@ -1,28 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.13 2004/03/29 03:33:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.14 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_INIT
 
 C     !INTERFACE:
       SUBROUTINE MNC_INIT( myThid )
 
 C     !DESCRIPTION:
-C     Initialize (zero) the look-up tables.
+C     Initialize (zero) the look-up tables.  This routine should
+C     \textbf{always} be run before any other MNC subroutines to ensure
+C     that the lookup tables start in a well-defined state.
       
 C     !USES:
 #include "mnc_common.h"
 
 C     !INPUT PARAMETERS:
       integer myThid
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j, g, v
       character blank*(MNC_MAX_CHAR)
-CEOP
 
 C     Write blanks or zeros to all the internal names and ID tables
       DO i = 1,MNC_MAX_CHAR
@@ -76,14 +78,15 @@ C     The outer tables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_DUMP
 
 C     !INTERFACE:
       SUBROUTINE MNC_DUMP( myThid )
 
 C     !DESCRIPTION:
-C     Create a short summary of the look-up tables.
+C     Create a short (usually incomplete) summary of the current state
+C     of the MNC lookup tables.  This can be helpful for debugging MNC.
       
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -93,24 +96,25 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_DUMP_ALL
 
 C     !INTERFACE:
       SUBROUTINE MNC_DUMP_ALL( n_id, n_items, myThid )
 
 C     !DESCRIPTION:
-C     Create a short summary of the look-up tables.
-      
+C     Create a summary of a specified portion of the current state of
+C     the MNC lookup tables.  This can be helpful for debugging MNC.
+
 C     !USES:
 #include "mnc_common.h"
 
 C     !INPUT PARAMETERS:
       integer n_id, n_items, myThid
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j
-CEOP
 
       write(*,*) 'mnc_f_names :'
       DO i = 1,n_id

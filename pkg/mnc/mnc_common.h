@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.18 2004/04/02 05:13:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.19 2004/04/02 16:12:47 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -38,7 +38,7 @@ C     - contains: [ name, 0+ attr, 0+ grid-ref, 0+ var-ref ]
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-CBOP
+CBOP 1
 C     !ROUTINE: mnc_common.h
 
 C     !INTERFACE:

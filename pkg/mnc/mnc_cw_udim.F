@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.3 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.4 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C !ROUTINE: MNC_CW_SET_UDIM
 
 C !INTERFACE:
@@ -15,8 +15,18 @@ C !INTERFACE:
 
 C     !DESCRIPTION:
 C     For a specified file group name, set the size of the NetCDF
-C     unlimited (or record) dimension.
-      
+C     unlimited (or record) dimension.  The options are:
+C     \begin{equation}
+C       \label{eq:yo}
+C       \mbox{\bf nudim} = \left\{
+C         \begin{array}[htb]{cl}
+C           >0,  &  \mbox{\small use the specified value} \\
+C           0,   &  \mbox{\small use the largest currently defined value} \\
+C           -1,  &  \mbox{\small increment the largest value and then use it} \\
+C         \end{array}
+C         \right.
+C     \end{equation}
+
 C     !USES:
       implicit none
 #include "mnc_common.h"
@@ -25,11 +35,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer nudim, myThid
       character*(*) fgname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer fgf,fgl, indfg
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -48,7 +59,7 @@ C     Check that this name is not already defined
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C !ROUTINE: MNC_CW_GET_UDIM
 
 C !INTERFACE:
@@ -69,11 +80,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer nudim, myThid
       character*(*) fgname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer fgf,fgl, indfg
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 

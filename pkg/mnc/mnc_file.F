@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.15 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.16 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_CREATE
 
 C     !INTERFACE:
@@ -21,10 +21,10 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer indf
-CEOP
 
       CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
 
@@ -32,7 +32,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_OPEN
 
 C     !INTERFACE:
@@ -56,11 +56,12 @@ C     !INPUT PARAMETERS:
       character*(*) fname
       integer itype
 C     itype => [ 0=new | 1=append | 2=read-only ]
+CEOP
 
 C     !LOCAL VARIABLES:
       integer n, err, fid, nf
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -107,7 +108,7 @@ C       Error
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_ADD_ATTR_STR
 
 C     !INTERFACE:
@@ -134,7 +135,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_ADD_ATTR_DBL
 
 C     !INTERFACE:
@@ -163,7 +164,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_ADD_ATTR_REAL
 
 C     !INTERFACE:
@@ -192,7 +193,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_ADD_ATTR_INT
 
 C     !INTERFACE:
@@ -220,7 +221,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_FILE_ADD_ATTR_ANY
 
 C     !INTERFACE:
@@ -244,12 +245,13 @@ C     !INPUT PARAMETERS:
       character*(*) fname, atname, sv
       REAL*8 dv
       REAL*4 rv
-      
+CEOP
+
 C     !LOCAL VARIABLES:
       integer n, err, fid, ind, n1, lens
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -303,7 +305,7 @@ C     Enter define mode
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_FILE_CLOSE
 
 C     !INTERFACE:
@@ -323,11 +325,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k,n, err, fid, indf, nf
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -389,7 +392,7 @@ C     file name
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_CLOSE_ALL_MATCHING
 
 C     !INTERFACE:
@@ -409,10 +412,11 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,n
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -430,7 +434,7 @@ C       Check that the file is open
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_CLOSE_ALL
 
 C     !INTERFACE:
@@ -448,10 +452,10 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
       integer myThid
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i
-CEOP
 
       DO i = 1,MNC_MAX_ID
 
@@ -467,7 +471,7 @@ C       Check that the file is open
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_REDEF
 
 C     !INTERFACE:
@@ -487,11 +491,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -519,7 +524,7 @@ C       Enter define mode
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_FILE_ENDDEF
 
 C     !INTERFACE:
@@ -539,11 +544,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -571,11 +577,18 @@ C       Enter define mode
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 1
+C     !ROUTINE: MNC_FILE_TRY_READ
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_READALL( 
      I     fname, 
      I     myThid ) 
 
+C     !DESCRIPTION:
+C     Try to open and read a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "EEPARAMS.h"
@@ -583,6 +596,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
+CEOP
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -602,7 +616,7 @@ C     Local Variables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_FILE_TRY_READ
 
 C     !INTERFACE:
@@ -721,3 +735,4 @@ C       Update the tables
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

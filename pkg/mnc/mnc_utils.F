@@ -1,17 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.11 2004/03/29 03:33:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.12 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_HANDLE_ERR
 
 C     !INTERFACE:
       SUBROUTINE MNC_HANDLE_ERR( status, msg, myThid )
 
 C     !DESCRIPTION:
-C     Handle all MNC and NetCDF library errors.
+C     Convenience function for handling all MNC and NetCDF library
+C     errors.
       
 C     !USES:
       implicit none
@@ -24,11 +25,12 @@ C     Create an MNC grid within a NetCDF file context.
 C     !USES:
       INTEGER  myThid, status
       character*(*) msg
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,lenm
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -51,7 +53,7 @@ C     Functions
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GET_IND
 
 C     !INTERFACE:
@@ -73,11 +75,12 @@ C     !INPUT PARAMETERS:
       integer myThid, nt
       character*(*) aname
       character*(*) name_list(NT)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer n, i, nf, ind, lenm
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -107,7 +110,7 @@ C     Search for the index
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GET_NEXT_EMPTY_IND
 
 C     !INTERFACE:
@@ -127,11 +130,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, nt
       character*(*) name_list(NT)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer n, i, ind
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -157,7 +161,7 @@ C     If this is code is reached, we have exceeded the array size
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GET_FVINDS
 
 C     !INTERFACE:
@@ -180,10 +184,11 @@ C     !INPUT PARAMETERS:
       INTEGER  myThid, fid, indf, ind_fv_ids
       character*(*) fname
       character*(*) vname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, n, lenv
-CEOP
+
 C     Functions
       integer ILNBLNK
 

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.15 2004/04/02 05:13:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.16 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_INIT_DBL
 
 C     !INTERFACE:
@@ -32,7 +32,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_INIT_REAL
 
 C     !INTERFACE:
@@ -60,7 +60,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_INIT_INT
 
 C     !INTERFACE:
@@ -87,7 +87,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_INIT_ANY
 
 C     !INTERFACE:
@@ -112,6 +112,7 @@ C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,gname,vname
       integer vtype
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
@@ -119,7 +120,7 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgbuf
       integer ids(20)
       integer lenf,leng,lenv
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -219,7 +220,7 @@ C     Success, so save the variable info
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_ADD_ATTR_STR
 
 C     !INTERFACE:
@@ -247,7 +248,7 @@ CEOP
       RETURN
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_ADD_ATTR_DBL
 
 C     !INTERFACE:
@@ -278,7 +279,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_ADD_ATTR_REAL
 
 C     !INTERFACE:
@@ -309,7 +310,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_ADD_ATTR_INT
 
 C     !INTERFACE:
@@ -340,7 +341,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_VAR_ADD_ATTR_ANY
 
 C     !INTERFACE:
@@ -367,12 +368,13 @@ C     !INPUT PARAMETERS:
       REAL*8 dv(*)
       REAL*4 rv(*)
       integer iv(*)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer n, indf,ind_fv_ids, fid,vid, err
       character*(MAX_LEN_MBUF) msgbuf
       integer lenf,lenv,lenat,lens
-CEOP
+
 C     Functions
       integer ILNBLNK
 

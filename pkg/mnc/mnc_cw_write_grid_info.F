@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.7 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.8 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C !ROUTINE: MNC_CW_WRITE_GRID_INFO
 
 C !INTERFACE:
@@ -29,10 +29,11 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) bfname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer nf,nl
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 

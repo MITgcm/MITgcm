@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.11 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.12 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_CW_ADD_GNAME
 
 C     !INTERFACE:
@@ -29,11 +29,12 @@ C     !INPUT PARAMETERS:
       character*(*) name
       integer dlens(*), inds_beg(*), inds_end(*)
       character*(*) dnames(*)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i, nnf,nnl, indg
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -69,7 +70,7 @@ C     Check that this name is not already defined
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_CW_DUMP
 
 C     !INTERFACE:
@@ -88,13 +89,13 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
       integer myThid
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j, ntot
       integer NBLNK
       parameter ( NBLNK = 150 )
       character s1*(NBLNK), blnk*(NBLNK)
-CEOP
 
       _BEGIN_MASTER(myThid)
       
@@ -188,7 +189,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_CW_INIT
 
 C     !INTERFACE:
@@ -197,8 +198,30 @@ C     !INTERFACE:
      I     myThid )
 
 C     !DESCRIPTION:
-C     Create the pre-defined grid types and variable types
-      
+C     Create the pre-defined grid types and variable types.
+
+C     The grid type is a character string that encodes the presence and
+C     types associated with the four possible dimensions.  The character
+C     string follows the format
+C     \begin{center}
+C       \texttt{H0\_H1\_H2\_\_V\_\_T}
+C     \end{center}
+C     where the terms \textit{H0}, \textit{H1}, \textit{H2}, \textit{V},
+C     \textit{T} can be almost any combination of the following:
+C     \begin{center}
+C       \begin{tabular}[h]{|ccc|c|c|}\hline
+C         \multicolumn{3}{|c|}{Horizontal} & Vertical & Time \\
+C         \textit{H0}: location & \textit{H1}: dimensions & \textit{H2}: halo 
+C               & \textit{V}: location & \textit{T}: level  \\\hline
+C         \texttt{-} & xy & Hn & \texttt{-} & \texttt{-} \\
+C         U  &  x  &  Hy  &  i  &  t  \\
+C         V  &  y  &      &  c  &     \\
+C         Cen  &   &      &     &     \\
+C         Cor  &   &      &     &     \\\hline
+C       \end{tabular}
+C     \end{center}
+
+
 C     !USES:
       implicit none
 #include "mnc_common.h"
@@ -207,6 +230,7 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr
+CEOP
 
 C     !LOCAL VARIABLES:
       integer CW_MAX_LOC
@@ -220,7 +244,7 @@ C     !LOCAL VARIABLES:
      &     vert_dat(CW_MAX_LOC), time_dat(CW_MAX_LOC), 
      &     halo_dat(CW_MAX_LOC)
       integer dim(CW_MAX_LOC), ib(CW_MAX_LOC), ie(CW_MAX_LOC)
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -391,7 +415,7 @@ C               Time dimension
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_CW_ADD_VNAME
 
 C     !INTERFACE:
@@ -401,9 +425,17 @@ C     !INTERFACE:
      I     bi_dim, bj_dim, 
      I     myThid )
 
-C     !DESCRIPTION:
-C     Add a variable type.
-      
+C     !DESCRIPTION: Add a variable type to the MNC CW layer.  The
+C     variable type is an association between a variable type name and
+C     the following items:
+C     \begin{center}
+C       \begin{tabular}[h]{|ll|}\hline
+C         \textbf{Item}  & \textbf{Purpose}  \\\hline
+C         grid type  &  defines the in-memory arrangement  \\
+C         \texttt{bi,bj} dimensions  &  tiling indices, if present  \\\hline
+C       \end{tabular}
+C     \end{center}
+  
 C     !USES:
       implicit none
 #include "mnc_common.h"
@@ -412,11 +444,12 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, bi_dim, bj_dim
       character*(*) vname, gname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i, nvf,nvl, ngf,ngl, indv,indg
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -460,7 +493,7 @@ C     Check that gname exists
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C     !ROUTINE: MNC_CW_ADD_VATTR_TEXT
 
 C     !INTERFACE:
@@ -522,7 +555,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C !ROUTINE: MNC_CW_ADD_VATTR_DBL
 
 C !INTERFACE:
@@ -553,7 +586,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
 
 C     !INTERFACE:
@@ -578,11 +611,12 @@ C     !INPUT PARAMETERS:
       character*(*) tvals(*)
       integer ivals(*)
       REAL*8 dvals(*)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i, n, nvf,nvl, n1,n2, indv
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -634,7 +668,7 @@ C     Double Attributes
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_CW_GET_TILE_NUM
 
 C     !INTERFACE:
@@ -656,10 +690,10 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
       integer myThid, bi,bj, uniq_tnum
+CEOP
 
 C     !LOCAL VARIABLES:
       integer iG,jG
-CEOP
 
       iG = 0
       jG = 0
@@ -684,7 +718,7 @@ CEH3      write(*,*) 'iG,jG,uniq_tnum :', iG,jG,uniq_tnum
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_CW_FILE_AORC
       
 C     !INTERFACE:
@@ -704,11 +738,11 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, indf
       character*(*) fname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i, ierr
       character*(MAX_LEN_MBUF) msgbuf
-CEOP
 
 C     Check if the file is already open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)

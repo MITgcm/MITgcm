@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.16 2004/03/29 22:12:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.17 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C !ROUTINE: MNC_CW_RX_W
 
 C !INTERFACE:
@@ -31,6 +31,7 @@ C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu
       character*(*) stype, fbname, vtype
       __V var(*)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot
@@ -47,7 +48,7 @@ C     !LOCAL VARIABLES:
       REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
       REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
       INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 
@@ -337,7 +338,7 @@ C         Sync the file
       
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 0
 C !ROUTINE: MNC_CW_RX_R
 
 C !INTERFACE:
@@ -348,13 +349,12 @@ C !INTERFACE:
      I     var, 
      I     myThid )
 
-      implicit none
-
 C     !DESCRIPTION:
 C     This subroutine reads one variable from a file or a file group,
 C     depending upon the tile indicies.
       
 C     !USES:
+      implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "SIZE.h"
@@ -365,6 +365,7 @@ C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu
       character*(*) stype, fbname, vtype
       __V var(*)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,k, nvf,nvl, n1,n2, igrid, ntot
@@ -381,7 +382,7 @@ C     !LOCAL VARIABLES:
       REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
       REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
       INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
-CEOP
+
 C     Functions
       integer IFNBLNK, ILNBLNK
 

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.12 2004/03/29 03:33:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.13 2004/04/02 16:12:48 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GRID_INIT
 
 C     !INTERFACE:
@@ -25,10 +25,10 @@ C     !INPUT PARAMETERS:
       integer myThid, ndim
       character*(*) fname,gname
       character*(*) dnames(ndim)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer ind
-CEOP
 
       CALL MNC_GRID_INIT_ALL(fname, gname, ndim, dnames, ind, myThid)
 
@@ -36,7 +36,7 @@ CEOP
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GRID_INIT_ALL
 
 C     !INTERFACE:
@@ -61,6 +61,7 @@ C     !INPUT PARAMETERS:
       integer myThid, ndim, ind
       character*(*) fname,gname
       character*(*) dnames(ndim)
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k,ii,jj,kk, n,nf, indf,indg,indd, fid, ngrid
@@ -68,7 +69,7 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) file_name
-CEOP
+
 C     Functions
       integer ILNBLNK
 
@@ -195,7 +196,7 @@ C     Grid successfully added, so update file table
       END
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
+CBOP 1
 C     !ROUTINE: MNC_GRID_GET_DIMIND
 
 C     !INTERFACE:
@@ -206,7 +207,7 @@ C     !INTERFACE:
      I     myThid )
 
 C     !DESCRIPTION:
-C     ...
+C     Get the dimension ID (index) for the named dimension.
       
 C     !USES:
       implicit none
@@ -215,10 +216,11 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer indf, ind_fg_ids, myThid
       character*(*) dname
+CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k,l, n,n1, ngrid, ds,de
-CEOP
+
 C     Functions
       integer ILNBLNK
 
