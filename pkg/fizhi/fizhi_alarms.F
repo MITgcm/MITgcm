@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.11 2004/10/26 01:03:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.12 2005/03/08 19:54:26 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -50,9 +50,9 @@ c -------------------
       if( ndt.ne.0 ) then
 
 C Longwave  Radiation Frequency
-      ndlw = 030000   
+      ndlw = 003000   
 C Shortwave Radiation Frequency
-      ndsw = 010000   
+      ndsw = 003000   
 
 c Turbulence
 c ----------
@@ -117,11 +117,6 @@ C Moist Processes     Frequency
 
 c Set Alarm Clocks
 c ----------------
-
-      ndlw = 003000
-      ndsw = 003000
-      ndmoist = 003000
-      ndturb = 001000
 
       call set_alarm ( 'radsw',nymdb,nhmsb,ndsw    )
       call set_alarm ( 'radlw',nymdb,nhmsb,ndlw    )
