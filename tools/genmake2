@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.112 2004/12/10 13:07:47 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.113 2004/12/26 16:38:20 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -718,10 +718,18 @@ EOF
 
 
 check_netcdf_libs()  {
+    if test ! "x$SKIP_NETCDF_CHECK" = x ; then
+	return
+    fi
     echo "" > genmake_tnc.log
     cat <<EOF > genmake_tnc.for
       program fgennc
 #include "netcdf.inc"
+EOF
+    if test ! "x$MPI" = x ; then
+	echo '#include "mpif.h"' >> genmake_tnc.for
+    fi
+    cat <<EOF >> genmake_tnc.for
       integer iret, ncid, xid
       iret = nf_create('genmake_tnc.nc', NF_CLOBBER, ncid)
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
