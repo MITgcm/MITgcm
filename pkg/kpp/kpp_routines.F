@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.9 2001/09/18 20:30:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.10 2002/07/13 03:12:30 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -385,7 +385,14 @@ c
 
          end do
       end do
-      
+
+cph(
+cph  without this store, there's a recomputation error for
+cph  rib in adbldepth (probably partial recomputation problem)    
+CADJ store Rib = comlev1_kpp
+CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
+cph)
+
       do kl = 2, Nr
          do i = 1, imt
             if (kbl(i).eq.kmtj(i) .and. Rib(i,kl).gt.Ricr) kbl(i) = kl
@@ -432,8 +439,11 @@ c--   ensure bfsfc is never 0
          bfsfc(i) = sign(eins,bfsfc(i))*max(phepsi,abs(bfsfc(i)))
       end do
 
-CADJ store bfsfc = comlev1_kpp
+cph(
+cph  added stable to store list to avoid extensive recomp.
+CADJ store bfsfc, stable = comlev1_kpp
 CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+cph)
 
 c-----------------------------------------------------------------------
 c check hbl limits for hekman or hmonob

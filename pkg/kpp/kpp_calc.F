@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.10 2002/03/07 14:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.11 2002/07/13 03:12:30 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -162,6 +162,7 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _RL     worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       integer work1 ( ibot:itop    , jbot:jtop                    )
       _KPP_RL work2 ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL work3 ( ibot:itop    , jbot:jtop                    )
       _KPP_RL ustar ( ibot:itop    , jbot:jtop                    )
       _KPP_RL bo    ( ibot:itop    , jbot:jtop                    )
       _KPP_RL bosol ( ibot:itop    , jbot:jtop                    )
@@ -299,6 +300,15 @@ c     so that the subroutine "bldepth" works correctly
          END DO
       END DO
 
+cph(
+cph  this avoids a single or double recomp./call of statekpp
+CADJ store work2              = comlev1_kpp, key = ikey
+#ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
+CADJ store dbloc, Ritop, ghat = comlev1_kpp, key = ikey
+CADJ store vddiff             = comlev1_kpp, key = ikey
+#endif
+cph)
+
 c------------------------------------------------------------------------
 c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
@@ -323,15 +333,24 @@ c initialize arrays to zero
        jp1 = j + 1
        DO i = imin, imax
         ip1 = i+1
-        tempVar1 =
+        work3(i,j) =
      &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) *
      &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) +
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj)) *
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj))
-        if ( tempVar1 .lt. (phepsi*phepsi) ) then
+       END DO
+      END DO
+cph(
+CADJ store work3 = comlev1_kpp, key = ikey
+cph)
+      DO j = jmin, jmax
+       jp1 = j + 1
+       DO i = imin, imax
+        ip1 = i+1
+        if ( work3(i,j) .lt. (phepsi*phepsi) ) then
            ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
         else
-           tempVar2 =  SQRT( tempVar1 ) * p5 * drF(1)
+           tempVar2 =  SQRT( work3(i,j) ) * p5 * drF(1)
            ustar(i,j) = SQRT( tempVar2 )
         endif
         bo(I,J) = - gravity *
@@ -344,6 +363,10 @@ c initialize arrays to zero
      &       drF(1) / work2(I,J)
        END DO
       END DO
+
+cph(
+CADJ store ustar = comlev1_kpp, key = ikey
+cph)
 
 c------------------------------------------------------------------------
 c     velocity shear
@@ -580,6 +603,12 @@ c     shsq computation
          END DO
       END DO
 
+cph(
+#ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
+CADJ store dvsq, shsq = comlev1_kpp, key = ikey
+#endif
+cph)
+
 c-----------------------------------------------------------------------
 c     solve for viscosity, diffusivity, ghat, and hbl on "t-grid"
 c-----------------------------------------------------------------------
@@ -601,12 +630,6 @@ c-----------------------------------------------------------------------
      O     , hbl )
 
       CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cph( storing not necessary
-cphCADJ STORE vddiff, ghat  = comlev1_kpp, key = ikey
-cph)
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
@@ -654,6 +677,11 @@ c     horizontal smoothing of vertical diffusivity
       _EXCH_XYZ_R8(KPPdiffKzS , myThid )
       _EXCH_XYZ_R8(KPPdiffKzT , myThid )
 #endif /* KPP_SMOOTH_DIFF */
+
+cph(
+cph  crucial: this avoids full recomp./call of kppmix
+CADJ store KPPhbl = comlev1_kpp, key = ikey
+cph)
 
 C     Compute fraction of solar short-wave flux penetrating to
 C     the bottom of the mixing layer.
