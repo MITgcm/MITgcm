@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.4 2001/09/19 02:43:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.5 2001/09/20 18:00:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,7 +78,7 @@ C--   External thermal forcing term(s)
      & .OR.tracerAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, K,
-     U                        gT, gTnm1,
+     U                        gTr1, gTr1nm1,
      I                        myIter, myThid )
       ENDIF
 
