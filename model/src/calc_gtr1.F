@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.8 2002/06/20 23:45:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.9 2002/07/18 23:17:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,9 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GAD.h"
+#ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

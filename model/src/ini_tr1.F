@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.2 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.3 2002/07/18 23:17:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,12 +25,16 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_TR1
       INTEGER myThid
+
+#ifdef ALLOW_PASSIVE_TRACER
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -88,6 +92,8 @@ C
 
       CALL PLOT_FIELD_XYZRL( tr1, 'Initial TR1' , 
      &                       Nr, 1, myThid )
+
+#endif /*  ALLOW_PASSIVE_TRACER */
 
       RETURN
       END
