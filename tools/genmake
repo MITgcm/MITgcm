@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.17 2000/06/21 19:57:55 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.18 2000/06/21 20:42:30 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -216,6 +216,30 @@ switch ($platform$USEMPI)
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
     set FFLAGS     = ( '-O 2,fusion' )
+    breaksw
+  case T90:
+  case sn7113:
+    set FC         = ( 'f90' )
+    set LINK       = ( 'f90' )
+    set LN         = ( '/bin/ln -fs' )
+    set CPP        = ( '/opt/ctl/bin/cpp -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DCRAY_TS -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-Rabc -N 132')
+    set FOPTIM     = ( '-O0' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    breaksw
+  case SV1:
+  case sn3002:
+    set FC         = ( 'f90' )
+    set LINK       = ( 'f90' )
+    set LN         = ( '/bin/ln -fs' )
+    set CPP        = ( '/opt/ctl/bin/cpp -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DCRAY_TS -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-m2 -ea -Rabc -N 132')
+    set FOPTIM     = ( '-O0' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
