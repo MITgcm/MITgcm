@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.49 2000/06/09 02:45:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.50 2000/06/21 19:13:11 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,10 +35,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-
-#ifdef ALLOW_KPP
-#include "KPPMIX.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -89,9 +85,6 @@ C                      surface height
 C                      anomaly.
 C     etaSurfX,      - Holds surface elevation gradient in X and Y.
 C     etaSurfY
-C     K13, K23, K33  - Non-zero elements of small-angle approximation 
-C                      diffusion tensor.
-C     KapGM          - Spatially varying Visbeck et. al mixing coeff.
 C     KappaRT,       - Total diffusion in vertical for T and S.
 C     KappaRS          (background + spatially varying, isopycnal term).
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
@@ -128,14 +121,13 @@ C                      index into fVerTerm.
       _RL rhotmp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL etaSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL etaSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL K13     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL K23     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL K33     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KapGM   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef INCLUDE_CONVECT_CALL
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -228,11 +220,11 @@ C     uninitialised but inert locations.
         fMer(i,j)    = 0. _d 0
         DO K=1,Nr
          phiHyd (i,j,k)  = 0. _d 0
-         K13(i,j,k)  = 0. _d 0
-         K23(i,j,k)  = 0. _d 0
-         K33(i,j,k)  = 0. _d 0
          KappaRU(i,j,k) = 0. _d 0
          KappaRV(i,j,k) = 0. _d 0
+         sigmaX(i,j,k) = 0. _d 0
+         sigmaY(i,j,k) = 0. _d 0
+         sigmaR(i,j,k) = 0. _d 0
         ENDDO
         rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
@@ -255,7 +247,7 @@ C--   HPF directive to help TAMC
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 !HPF$  INDEPENDENT, NEW (rTrans,rVel,fVerT,fVerS,fVerU,fVerV
-!HPF$&                  ,phiHyd,K13,K23,K33,KapGM
+!HPF$&                  ,phiHyd,
 !HPF$&                  ,utrans,vtrans,maskc,xA,yA
 !HPF$&                  ,KappaRT,KappaRS,KappaRU,KappaRV
 !HPF$&                  )
@@ -295,10 +287,6 @@ C--     Set up work arrays that need valid initial values
           fVerV (i,j,1) = 0. _d 0
           fVerV (i,j,2) = 0. _d 0
           phiHyd(i,j,1) = 0. _d 0
-          K13   (i,j,1) = 0. _d 0
-          K23   (i,j,1) = 0. _d 0
-          K33   (i,j,1) = 0. _d 0
-          KapGM (i,j)   = GMkbackground
          ENDDO
         ENDDO
 
@@ -377,9 +365,6 @@ CADJ STORE salt (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
 #endif
 
         IF (       (.NOT. BOTTOM_LAYER)
-#ifdef ALLOW_KPP
-     &       .AND. (.NOT.usingKPPmixing) ! CONVECT not needed with KPP mixing
-#endif
      &     ) THEN
 C--      Check static stability with layer below
 C--      and mix as needed.
@@ -439,10 +424,13 @@ C--     phiHyd(z=0)=0
      I      bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyKm1,
      U      phiHyd,
      I      myThid )
+        CALL GRAD_SIGMA(
+     I            bi, bj, iMin, iMax, jMin, jMax, K,
+     I            rhoKm1, rhoKm1, rhoKm1,
+     O            sigmaX, sigmaY, sigmaR,
+     I            myThid )
 
-C----------------------------------------------
-C--     start of downward loop
-C----------------------------------------------
+C--     Start of downward loop
         DO K=2,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -483,9 +471,6 @@ CADJ STORE salt (:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
      I      myThid )
 #endif
          IF (       (.NOT. BOTTOM_LAYER)
-#ifdef ALLOW_KPP
-     &       .AND. (.NOT.usingKPPmixing) ! CONVECT not needed with KPP mixing
-#endif
      &      ) THEN
 C--       Check static stability with layer below and mix as needed.
 C--       Density of K+1 level (below W(K+1)) reference to K level.
@@ -554,20 +539,12 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
      O        rhoTmp,
      I        myThid )
 #endif
+         CALL GRAD_SIGMA(
+     I             bi, bj, iMin, iMax, jMin, jMax, K,
+     I             rhoK, rhotmp, rhoK,
+     O             sigmaX, sigmaY, sigmaR,
+     I             myThid )
 
-#ifdef  INCLUDE_CALC_ISOSLOPES_CALL
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoTmp(:,:)  = comlev1_3d, key = kkey, byte = isbyte
-CADJ STORE rhok  (:,:)  = comlev1_3d, key = kkey, byte = isbyte
-CADJ STORE rhoKm1(:,:)  = comlev1_3d, key = kkey, byte = isbyte
-CADJ STORE kapgm (:,:)  = comlev1_3d, key = kkey, byte = isbyte
-#endif
-         CALL CALC_ISOSLOPES(
-     I        bi, bj, iMin, iMax, jMin, jMax, K,
-     I        rhoKm1, rhoK, rhotmp,
-     O        K13, K23, K33, KapGM,
-     I        myThid )
-#endif
 
          DO J=jMin,jMax
           DO I=iMin,iMax
@@ -580,6 +557,20 @@ CADJ STORE kapgm (:,:)  = comlev1_3d, key = kkey, byte = isbyte
         ENDDO
 C--     end of k loop
 
+#ifdef ALLOW_GMREDI
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhoTmp(:,:)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhok  (:,:)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhoKm1(:,:)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
+        DO K=1, Nr
+         IF (use_GMRedi) CALL GMREDI_CALC_TENSOR(
+     I             bi, bj, iMin, iMax, jMin, jMax, K,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+        ENDDO
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
@@ -588,26 +579,14 @@ CADJ STORE vvel (:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
 #endif
 
 #ifdef ALLOW_KPP
-C----------------------------------------------
 C--     Compute KPP mixing coefficients
-C----------------------------------------------
-        IF (usingKPPmixing) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fu  (:,:  ,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
-CADJ STORE fv  (:,:  ,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
-#endif
-         CALL TIMER_START('KVMIX (FIND KPP COEFFICIENTS) [DYNAMICS]'
-     I          , myThid)
-         CALL KVMIX(
+        CALL TIMER_START('KPP_CALC               [DYNAMICS]', myThid)
+        CALL KPP_CALC(
      I               bi, bj, myTime, myThid )
-         CALL TIMER_STOP ('KVMIX (FIND KPP COEFFICIENTS) [DYNAMICS]'
-     I        , myThid)
-        ENDIF
+        CALL TIMER_STOP ('KPP_CALC               [DYNAMICS]', myThid)
 #endif
 
-C----------------------------------------------
-C--     start of upward loop
-C----------------------------------------------
+C--     Start of upward loop
         DO K = Nr, 1, -1
 
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
@@ -646,7 +625,7 @@ C--      Get temporary terms used by tendency routines
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
-     I        maskC,maskUp,KapGM,K33,
+     I        maskC,maskUp,
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 #endif
@@ -676,7 +655,7 @@ C--      Calculate active tracer tendencies
           CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
-     I         K13,K23,KappaRT,KapGM,
+     I         KappaRT,
      U         aTerm,xTerm,fZon,fMer,fVerT,
      I         myTime, myThid)
          ENDIF
@@ -684,7 +663,7 @@ C--      Calculate active tracer tendencies
           CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
-     I         K13,K23,KappaRS,KapGM,
+     I         KappaRS,
      U         aTerm,xTerm,fZon,fMer,fVerS,
      I         myTime, myThid)
          ENDIF
@@ -731,7 +710,7 @@ C--      Cumulative diagnostic calculations (ie. time-averaging)
          IF (taveFreq.GT.0.) THEN
           CALL DO_TIME_AVERAGES(
      I                           myTime, myIter, bi, bj, K, kUp, kDown,
-     I                           K13, K23, rVel, KapGM, ConvectCount,
+     I                           rVel, ConvectCount,
      I                           myThid )
          ENDIF
 #endif
@@ -831,12 +810,6 @@ C    &            maxval(rVel(1:sNx,1:sNy,1),mask=rVel(1:sNx,1:sNy,1).NE.0.)
 C     write(0,*) 'dynamics: rVel(2) ',
 C    &            minval(rVel(1:sNx,1:sNy,2),mask=rVel(1:sNx,1:sNy,2).NE.0.),
 C    &            maxval(rVel(1:sNx,1:sNy,2),mask=rVel(1:sNx,1:sNy,2).NE.0.)
-cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
-cblk &                           maxval(K13(1:sNx,1:sNy,:))
-cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
-cblk &                           maxval(K23(1:sNx,1:sNy,:))
-cblk  write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
-cblk &                           maxval(K33(1:sNx,1:sNy,:))
 C     write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(gT(1:sNx,1:sNy,:,:,:))
 C     write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
