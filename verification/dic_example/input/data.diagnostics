@@ -7,7 +7,7 @@
   frequency(2) = 0,
    fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
                  'UVELMASS','VVELMASS',
-                 'UVELSQ  ','VVELSQ  ','UVELVVEL','THETASQ ',
+                 'UVELSQ  ','VVELSQ  ','UV_VEL_C','THETASQ ',
                  'THETA   ','UTHMASS ','VTHMASS ','WVELTH  ',
                  'SALT    ','USLTMASS','VSLTMASS','WVELSLT ',
    filename(2) = 'dynDiag',

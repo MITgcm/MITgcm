@@ -7,7 +7,7 @@
   frequency(2) = 10,
    levels(1,2) = 1.,2.,3.,4.,5.,
    fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SALT    ',
-                 'UVELSQ  ','VVELSQ  ','THETASQ ','UVELVVEL',
+                 'UVELSQ  ','VVELSQ  ','THETASQ ','UV_VEL_Z',
                  'UVELMASS','VVELMASS',
                  'UTHMASS ','VTHMASS ','WVELTH  ',
                  'USLTMASS','VSLTMASS','WVELSLT ',
