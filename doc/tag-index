@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.193 2003/10/23 04:41:40 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.194 2003/10/23 07:14:48 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-untagged
+
+
+checkpoint51n_post
+o modifications to make FREEZE flux visible to pkg/kpp
+  - moved surfaceTendencyTice from pkg/seaice to main code
+  - FREEZE & EXTERNAL_FORCING_SURF moved to FORWARD_STEP
+  - subroutine FREEZE now limits only surface temperature
+    (this means new output.txt for global_ocean.90x40x15,
+     global_ocean.cs32x15, and global_with_exf)
+o added surface flux output variables to TIMEAVE_STATVARS
+
+checkpoint51n_pre
 o added "#undef ALLOW_USE_MPI" support to eesupp/src/gather_2d.F
 o added [#include "AD_CONFIG.h"] to all files that use the following
   defines:

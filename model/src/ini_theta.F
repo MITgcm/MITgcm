@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.16 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.17 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,7 +51,7 @@ C     I,J,K
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER I, J, K, localWarnings
-      _RL     rad, rD
+      _RL     rad, rD, Tfreezing
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -75,7 +75,7 @@ C--   Initialise temperature field to the vertical reference profile
        _EXCH_XYZ_R8(theta,myThid)
       ENDIF
 
-C     Apply mask and test consistancy
+C--   Apply mask and test consistancy
       localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -98,6 +98,24 @@ C     Apply mask and test consistancy
      &  'you will need to edit ini_theta.F to avoid this safety check'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_THETA'
+      ENDIF
+
+C--   Check that there are no values of temperature below freezing point.
+      Tfreezing=-1.9
+      IF ( allowFreezing ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+            IF (theta(I,J,k,bi,bj) .LT. Tfreezing) THEN
+               theta(I,J,K,bi,bj) = Tfreezing
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 
       CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , 

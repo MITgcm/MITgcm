@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.10 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.11 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,7 +21,6 @@ C     === Global variables ===
 #include "SEAICE_GRID.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_EXTERNAL.h"
 
 #ifdef ALLOW_COST
 # include "cost.h"
@@ -225,7 +224,6 @@ C---  Complete initialization
          DO i=1-OLx,sNx+OLx
           ZETA(I,J,bi,bj)=HEFF(I,J,1,bi,bj)*(1.0 _d 11)
           ETA(I,J,bi,bj)=ZETA(I,J,bi,bj)/4.0 _d 0
-          surfaceTendencyTice(i,j,bi,bj) = ZERO
          ENDDO
         ENDDO
        ENDDO

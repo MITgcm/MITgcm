@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.52 2003/10/10 22:56:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.53 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -418,7 +418,6 @@ C--     Calculate future values on open boundaries
         ENDIF
 #endif  /* ALLOW_OBCS */
 
-
 #ifdef ALLOW_THERM_SEAICE
        IF (useThermSeaIce) THEN
 #ifndef DISABLE_DEBUGMODE
@@ -430,21 +429,6 @@ C       including effects from ice
         CALL ICE_FORCING(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
-       ELSE
-#endif /* ALLOW_THERM_SEAICE */
-
-C--     Determines forcing terms based on external fields
-C       relaxation terms, etc.
-#ifndef DISABLE_DEBUGMODE
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
-#endif
-        CALL EXTERNAL_FORCING_SURF(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             myTime, myIter, myThid )
-
-#ifdef ALLOW_THERM_SEAICE
-C--    end of if/else block useThermSeaIce --
        ENDIF
 #endif /* ALLOW_THERM_SEAICE */
 
@@ -734,16 +718,6 @@ C--      Apply open boundary conditions
            CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
          END IF
 #endif   /* ALLOW_OBCS */
-
-C--      Freeze water
-         IF ( allowFreezing .AND. .NOT. useSEAICE
-     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-         ENDIF
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO

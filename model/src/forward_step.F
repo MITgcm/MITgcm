@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.65 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.66 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -235,6 +235,21 @@ C     theta is dumped or time-averaged.
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
       ENDIF
 # endif /* ALLOW_SEAICE */
+
+C--   Freeze water at the surface
+      IF ( allowFreezing .AND. .NOT. useSEAICE
+     &                   .AND. .NOT. useThermSeaIce )
+     &   CALL FREEZE( myThid )
+
+C--     Determines forcing terms based on external fields
+C       relaxation terms, etc.
+       IF ( .NOT. useThermSeaIce ) THEN
+#ifndef DISABLE_DEBUGMODE
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
+#endif
+        CALL EXTERNAL_FORCING_SURF( myTime, myIter, myThid )
+       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.9 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.10 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -54,6 +54,10 @@ C-    Final Time Averages and Dump Files if needed
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 C-     Normalize by integrated time
+          CALL TIMEAVE_NORMALIZ(uFluxtave,TimeAve_half,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(vFluxtave,TimeAve_half,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(tFluxtave,TimeAve_half,1 ,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(sFluxtave,TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(etatave,  TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(thetatave,TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(salttave, TimeAve_half,Nr,bi,bj,myThid)
@@ -108,8 +112,12 @@ C--    Read IO error counter
        beginIOErrCount = IO_ERRCOUNT(myThid)
 c      prevPrec = writeBinaryPrec
 c      writeBinaryPrec = precFloat32
-       CALL WRITE_FLD_XY_RL('ETAtave.',suff,etatave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('Eta2tave.',suff,Eta2tave,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('uFluxtave.',suff,uFluxtave,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('vFluxtave.',suff,vFluxtave,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('tFluxtave.',suff,tFluxtave,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ETAtave.'  ,suff,etatave  ,myIter,myThid)
+       CALL WRITE_FLD_XY_RL('Eta2tave.' ,suff,Eta2tave ,myIter,myThid)
 
        CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)

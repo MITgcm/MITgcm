@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.61 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.62 2003/10/23 07:14:49 dimitri Exp $
 C $Name:  $
 
 CBOI
@@ -174,19 +174,19 @@ C    | | | |-FIND_RHO  :: Find adjacent densities.
 C    | | | |-CONVECT   :: Mix static instability.
 C    | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
 C    | | |
-C    | | |-PACKAGES_INIT_VARIABLES :: Does initialisation of time evolving 
-C    | | | |                       :: package data.
+C    | | |-PACKAGES_INIT_VARIABLES:: Does initialisation of time evolving 
+C    | | | |                         package data.
 C    | | | |
-C    | | | |-GMREDI_INIT          :: GM package. ( see pkg/gmredi )
-C    | | | |-KPP_INIT             :: KPP package. ( see pkg/kpp )
+C    | | | |-GMREDI_INIT          :: GM package ( see pkg/gmredi ).
+C    | | | |-KPP_INIT             :: KPP package ( see pkg/kpp ).
 C    | | | |-KPP_OPEN_DIAGS    
-C    | | | |-OBCS_INIT_VARIABLES  :: Open bndy. package. ( see pkg/obcs )
-C    | | | |-PTRACERS_INIT        :: multi. tracer package,(see pkg/ptracers)
-C    | | | |-GCHEM_INIT           : : tracer interface pkg (see pkh/gchem)
-C    | | | |-AIM_INIT             :: Interm. atmos package. ( see pkg/aim )
-C    | | | |-CTRL_MAP_INI         :: Control vector package.( see pkg/ctrl )
-C    | | | |-COST_INIT            :: Cost function package. ( see pkg/cost )
-C    | | | |-ECCO_INIT            :: ECCO support package. ( see pkg/ecco )
+C    | | | |-OBCS_INIT_VARIABLES  :: Open bndy. package ( see pkg/obcs ).
+C    | | | |-PTRACERS_INIT        :: Multi tracer package ( see pkg/ptracers ).
+C    | | | |-GCHEM_INIT           :: Tracer interface pkg ( see pkh/gchem ).
+C    | | | |-AIM_INIT             :: Interm. atmos package ( see pkg/aim ).
+C    | | | |-CTRL_MAP_INI         :: Control vector package( see pkg/ctrl ).
+C    | | | |-COST_INIT            :: Cost function package ( see pkg/cost ).
+C    | | | |-ECCO_INIT            :: ECCO support package ( see pkg/ecco ).
 C    | | | |-INI_FORCING          :: Set model initial forcing fields.
 C    | | |   |                    :: Either set in-line or from file as shown.
 C    | | |   |-READ_FLD_XY_RS(zonalWindFile)
@@ -214,32 +214,32 @@ C====|>| ****************************
 C====|>| BEGIN MAIN TIMESTEPPING LOOP
 C====|>| ****************************
 C====|>| 
-C/\  | |-FORWARD_STEP     :: Step forward a time-step ( AT LAST !!! )
+C/\  | |-FORWARD_STEP             :: Step forward a time-step ( AT LAST !!! ).
 C/\  | | |
-C/\  | | |-DUMMY_IN_STEPPING :: autodiff package ( pkg/autoduff ).
-C/\  | | |-CALC_EXACT_ETA :: Change SSH to flow divergence.
-C/\  | | |-CALC_SURF_DR   :: Calculate the new surface level thickness.
-C/\  | | |-EXF_GETFORCING :: External forcing package. ( pkg/exf )
-C/\  | | |-EXTERNAL_FIELDS_LOAD :: Control loading time dep. external data.
-C/\  | | | |                    :: Simple interpolcation between end-points 
-C/\  | | | |                    :: for forcing datasets.
-C/\  | | | |                  
-C/\  | | | |-EXCH :: Sync forcing. in overlap regions.
-C/\  | | |-SEAICE_MODEL   :: Compute sea-ice terms. ( pkg/seaice )
-C/\  | | |-GCHEM_FIELD_LOAD :: load tracer forcing fields (pkg/gchem)
+C/\  | | |-DUMMY_IN_STEPPING      :: Autodiff package ( pkg/autoduff ).
+C/\  | | |-CALC_EXACT_ETA         :: Change SSH to flow divergence.
+C/\  | | |-CALC_SURF_DR           :: Calculate the new surface level thickness.
+C/\  | | |-EXF_GETFORCING         :: External forcing package ( pkg/exf ).
+C/\  | | |-EXTERNAL_FIELDS_LOAD   :: Control loading time dep. external data.
+C/\  | | | |                         Simple interpolcation between end-points
+C/\  | | | |                         for forcing datasets.
+C/\  | | | |-EXCH                 :: Sync forcing in overlap regions.
+C/\  | | |-SEAICE_MODEL           :: Compute sea-ice terms ( pkg/seaice ).
+C/\  | | |-FREEZE                 :: Limit surface temperature.
+C/\  | | |-EXTERNAL_FORCING_SURF  :: Accumulates appropriately dimensioned 
+C/\  | | | |                         forcing terms.
+C/\  | | | |-PTRACERS_FORCING_SURF:: Tracer package ( see pkg/ptracers ).
+C/\  | | |-GCHEM_FIELD_LOAD       :: Load tracer forcing fields ( pkg/gchem ).
 C/\  | | |
-C/\  | | |-THERMODYNAMICS :: theta, salt + tracer equations driver.
+C/\  | | |-THERMODYNAMICS         :: theta, salt + tracer equations driver.
 C/\  | | | |
-C/\  | | | |-INTEGRATE_FOR_W :: Integrate for vertical velocity.
-C/\  | | | |-OBCS_APPLY_W    :: Open bndy. package ( see pkg/obcs ).
-C/\  | | | |-FIND_RHO        :: Calculates [rho(S,T,z)-RhoConst] of a slice
-C/\  | | | |-GRAD_SIGMA      :: Calculate isoneutral gradients
-C/\  | | | |-CALC_IVDC       :: Set Implicit Vertical Diffusivity for Convection
+C/\  | | | |-INTEGRATE_FOR_W      :: Integrate for vertical velocity.
+C/\  | | | |-OBCS_APPLY_W         :: Open bndy. package ( see pkg/obcs ).
+C/\  | | | |-FIND_RHO             :: Calculates [rho(S,T,z)-RhoConst] of a slice
+C/\  | | | |-GRAD_SIGMA           :: Calculate isoneutral gradients
+C/\  | | | |-CALC_IVDC            :: Set Implicit Vertical Diffusivity for Convection
 C/\  | | | |
 C/\  | | | |-OBCS_CALC            :: Open bndy. package ( see pkg/obcs ).
-C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned 
-C/\  | | | | |                    :: forcing terms.
-C/\  | | | | |-PTRACERS_FORCING_SURF :: Tracer package ( see pkg/ptracers ).
 C/\  | | | |
 C/\  | | | |-GMREDI_CALC_TENSOR   :: GM package ( see pkg/gmredi ).
 C/\  | | | |-GMREDI_CALC_TENSOR_DUMMY :: GM package ( see pkg/gmredi ). 
@@ -289,7 +289,7 @@ C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | |
 C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
 C/\  | | | |
-C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) ( see pkg/ptracers ).
+C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) ( pkg/ptracers ).
 C/\  | | | | |
 C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
 C/\  | | | | | |                  :: ( see pkg/gad )
@@ -303,15 +303,14 @@ C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | | |-TIMESTEP_TRACER    :: Step tracer field forward in time
 C/\  | | | |
 C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ).
-C/\  | | | |-FREEZE               :: Limit range of temperature.
 C/\  | | | |
 C/\  | | | |-IMPLDIFF             :: Solve vertical implicit diffusion equation.
 C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ). 
 C/\  | | | |
-C/\  | | | |-AIM_AIM2DYN_EXCHANGES :: Inetermed. atmos (see pkg/aim).
+C/\  | | | |-AIM_AIM2DYN_EXCHANGES:: Intermediate atmosphere (see pkg/aim).
 C/\  | | | |-EXCH                 :: Update overlaps
 C/\  | | |
-C/\  | | |-DYNAMICS       :: Momentum equations driver.
+C/\  | | |-DYNAMICS             :: Momentum equations driver.
 C/\  | | | |
 C/\  | | | |-CALC_GRAD_PHI_SURF :: Calculate the gradient of the surface 
 C/\  | | | |                       Potential anomaly.
