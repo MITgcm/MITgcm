@@ -1,17 +1,18 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.7 2004/09/21 19:51:10 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.8 2004/11/16 18:59:30 edhill Exp $
 #  $Name:  $
 #
 # adapted to itrda.acesgrid.org
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
-CPP='/lib/cpp  -traditional -P'
+CPP='cpp  -traditional -P'
 
-FC='/usr/local/pkg/mpich-gm/mpich-1.2.6..13-gm/g77/bin/mpif77'
-LINK='/usr/local/pkg/mpich-gm/mpich-1.2.6..13-gm/g77/bin/mpif77'
-LIBS='-L/usr/local/pkg/mpich-gm/mpich-1.2.6..13-gm/g77/lib -lfmpich -lmpich'
-INCLUDEDIRS='-I/usr/local/pkg/mpich-gm/mpich-1.2.6..13-gm/g77/include'
+FC='mpif77'
+CC='mpicc'
+LINK='mpif77'
+LIBS='-L/usr/local/pkg/mpich/mpich-gcc/lib '
+INCLUDES='-I/usr/local/pkg/mpich/mpich-gcc/include '
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
@@ -24,5 +25,3 @@ else
 fi
 NOOPTFLAGS='-O0'
 
-# netcdf
-#LIBS="-lnetcdf"
