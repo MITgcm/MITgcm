@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.9 1998/07/08 15:24:05 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.10 1998/07/08 15:29:22 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -32,7 +32,7 @@ o Installing
 
      cd bin
      ../tools/genmake 
-     cp Makefile.alpha Makefile
+     cp Makefile.alpha Makefile                  ( On Alpha machine)
 
   3. Now create header file dependency entries
      make depend
@@ -45,7 +45,9 @@ o Installing
   
   6. Run baseline test case
      setenv PARALLEL 1
-     dmpirun -np 2 ../exe/mitgcmuv
+     dmpirun -np 2 ../exe/mitgcmuv        ( Under Digital UNIX   )
+     mpirun.p4shmem ../exe/mitgcmuv -np 2 ( Under Solaris + mpich)
+                                                      
 
      This runs a 4 degree global ocean climatological simulation.
      By default this code is set to use two porcessors splitting
