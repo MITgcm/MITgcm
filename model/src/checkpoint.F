@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.41 2004/04/06 01:44:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.42 2004/07/02 17:43:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -141,18 +141,21 @@ C       Read variables from the pickup file
         CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
 #ifdef NONLIN_FRSURF
         IF ( nonlinFreeSurf.GE.0)
-     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaNH', etaH, myThid)
+     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
 #endif
-        CALL MNC_CW_RL_R('D',fn,0,0,'Unm1',gUnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'Vnm1',gVnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'Tnm1',gTnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'Snm1',gSnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',gUnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gVnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gTnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gSnm1, myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
         ENDIF
 #endif
+        IF ( useDynP_inEos_Zc ) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
+        ENDIF
       ELSE
 #endif /*  ALLOW_MNC  */
 
@@ -366,12 +369,12 @@ C         Write dynvars using the MNC package
           CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
 #ifdef NONLIN_FRSURF
           IF ( nonlinFreeSurf .GE. 0)
-     &      CALL MNC_CW_RL_W('D',fn,0,0,'EtaNH', etaH, myThid)
+     &      CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaH, myThid)
 #endif
-          CALL MNC_CW_RL_W('D',fn,0,0,'Unm1', gUnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'Vnm1', gVnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'Tnm1', gTnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'Snm1', gSnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gVnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gTnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gSnm1, myThid)
 #ifdef ALLOW_NONHYDROSTATIC
           IF ( nonHydrostatic ) THEN
             CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
@@ -379,7 +382,7 @@ C         Write dynvars using the MNC package
           ENDIF
 #endif
           IF ( useDynP_inEos_Zc ) THEN
-            CALL MNC_CW_RL_W('D',fn,0,0,'totPhiHyd', totPhiHyd, myThid)
+            CALL MNC_CW_RL_W('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
           ENDIF
         ELSE
 #endif /*  ALLOW_MNC  */

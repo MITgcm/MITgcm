@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.1 2004/05/13 15:40:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.2 2004/07/02 17:43:04 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -153,10 +153,10 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VATTR_TEXT('S',1,
      &     'coordinates','XC YC RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('Unm1', 'U_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('Vnm1', 'V_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('Tnm1', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('Snm1', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gUnm1', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gVnm1', 'V_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gTnm1', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gSnm1', 'Cen_xy_Hn__C__t', 4,5, myThid)
 
       CALL MNC_CW_ADD_VNAME('Eta', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Eta',1,'long_name',
@@ -165,11 +165,11 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VATTR_TEXT('Eta',1,
      &     'coordinates','XC YC RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('EtaNH', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('EtaNH',1,'long_name',
-     &     'NLFS_r-anomaly', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('EtaNH',1,'units','m', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('EtaNH',1,
+      CALL MNC_CW_ADD_VNAME('EtaH', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EtaH',1,'long_name',
+     &     'column-thickness_r-anomaly', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EtaH',1,'units','m', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EtaH',1,
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__C__t', 4,5, myThid)
@@ -177,7 +177,7 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VATTR_TEXT('W',1,
      &     'coordinates','XC YC RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('totPhiHyd', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('phiHyd', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('phiHydLow', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('phi_nh', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__C__t', 4,5, myThid)
