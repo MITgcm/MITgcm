@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.6 2002/02/10 20:04:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.7 2002/08/09 22:55:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,13 +50,17 @@ C     i,j,k,bi,bj  :: loop counter
 C     rSurftmp     :: free surface r-position that is used to compute hFac_surf
 C     adjust_nb_pt :: Nb of grid points where rSurf is adjusted (hFactInf)
 C     adjust_volum :: adjustment effect on the volume (domain size)
+C     numbWrite    :: count the Number of warning written on STD-ERR file
+C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,bi,bj
-      INTEGER ks
+      INTEGER ks, numbWrite, numbWrMax
       _RL hFacInfMOM, Rmin_tmp, hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
       CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
+      DATA numbWrite / 0 /
+      numbWrMax = Nx*Ny
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -128,20 +132,26 @@ C-- Compute the new fractional thickness of surface level (ksurfC):
           IF (ks.LE.Nr) THEN
            IF (rSurftmp(i,j) .LT. Rmin_surf(i,j,bi,bj)) THEN
 C-- Needs to do something :
+            IF (numbWrite.LE.numbWrMax) THEN
+             numbWrite = numbWrite + 1 
              hFactmp = ( rSurftmp(i,j)-MAX(rF(ks+1),R_low(i,j,bi,bj))
      &                 )*recip_drF(ks)
              IF (hFactmp.LT.hFacInf) THEN
-              write(0,'(2A,6I4,I10)') 'WARNING: hFacC < hFacInf at:',
+              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+     &         'WARNING: hFacC < hFacInf at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ELSE
-              write(0,'(2A,6I4,I10)') 'WARNING: hFac < hFacInf near:',
+              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+     &         'WARNING: hFac < hFacInf near:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ENDIF
-              write(0,'(A,2F10.6,1PE14.6)') 'hFac_n-1,hFac_n,eta =',
+              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
+     &         'hFac_n-1,hFac_n,eta =',
      &          hfacC(i,j,ks,bi,bj), hFactmp, etaFld(i,j,bi,bj)
+            ENDIF
 C-- Decide to STOP :
-c             write(0,'(2A)') 'STOP in CALC_SURF_DR :',
-c    &                        ' too SMALL hFac !'
+c             WRITE(errorMessageUnit,'(A)') 
+c    &        'STOP in CALC_SURF_DR : too SMALL hFac !'
 c             STOP 'ABNORMAL END: S/R CALC_SURF_DR' 
 C----------
 
@@ -163,14 +173,15 @@ C-- Set hFac_surfC :
 
            IF (hFac_surfC(i,j,bi,bj).GT.hFacSup) THEN
 C-- Usefull warning when hFac becomes very large:
-              write(0,'(2A,6I4,I10)') 'WARNING: hFacC > hFacSup at:',
+              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+     &         'WARNING: hFacC > hFacSup at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
-              write(0,'(A,2F10.6,1PE14.6)') 'hFac_n-1,hFac_n,eta =',
-     &          hfacC(i,j,ks,bi,bj), hFac_surfC(i,j,bi,bj), 
-     &          etaFld(i,j,bi,bj)
+              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)') 
+     &         'hFac_n-1,hFac_n,eta =', hfacC(i,j,ks,bi,bj),
+     &          hFac_surfC(i,j,bi,bj), etaFld(i,j,bi,bj)
 C-- Decide to STOP :
-c             write(0,'(2A)') 'STOP in CALC_SURF_DR :',
-c    &                        ' too LARGE hFac !'
+c             WRITE(errorMessageUnit,'(A)') 
+c    &         'STOP in CALC_SURF_DR : too LARGE hFac !'
 c             STOP 'ABNORMAL END: S/R CALC_SURF_DR' 
 C----------
            ENDIF
@@ -225,9 +236,10 @@ C-- Global diagnostic :
       _GLOBAL_SUM_R8( adjust_volum , myThid ) 
       IF (adjust_nb_pt .GE.1.) THEN
         _BEGIN_MASTER( myThid ) 
-        write(*,'(2(A,I10),1PE16.8)') ' SURF_ADJUSTMENT: Iter=',
-     &   myIter, ' Nb_pts,Vol=', nint(adjust_nb_pt), adjust_volum
-        _END_MASTER( )
+        WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)') 
+     &    ' SURF_ADJUSTMENT: Iter=', myIter,
+     &    ' Nb_pts,Vol=', nint(adjust_nb_pt), adjust_volum
+        _END_MASTER( myThid )
       ENDIF
 
       _EXCH_XY_R4(hFac_surfC, myThid ) 
