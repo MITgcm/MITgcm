@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.19 2005/03/23 17:04:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.20 2005/03/23 18:21:06 adcroft Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -47,7 +47,7 @@ C     == Local variables ==
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
       _RL Alin,AlinMin,AlinMax,Alth2,Alth4,grdVrt,grdDiv
       _RL vg2,vg2Min,vg2Max,vg4,vg4Min,vg4Max
-      _RL L2,L3,L4,L5
+      _RL recip_dt,L2,L3,L4,L5
       LOGICAL useVariableViscosity
 
       useVariableViscosity=
@@ -59,20 +59,17 @@ C     == Local variables ==
      &  .OR.(viscC4leithD.NE.0.)
 
       IF (deltaTmom.NE.0.) THEN
-       vg2=viscAhGrid/deltaTmom
-       vg2Min=viscAhGridMin/deltaTmom
-       vg2Max=viscAhGridMax/deltaTmom
-       vg4=viscA4Grid/deltaTmom
-       vg4Min=viscA4GridMin/deltaTmom
-       vg4Max=viscA4GridMax/deltaTmom
+       recip_dt=1./deltaTmom
       ELSE
-       vg2=0.
-       vg2Min=0.
-       vg2Max=0.
-       vg4=0.
-       vg4Min=0.
-       vg4Max=0.
+       recip_dt=0.
       ENDIF
+
+      vg2=viscAhGrid*recip_dt
+      vg2Min=viscAhGridMin*recip_dt
+      vg2Max=viscAhGridMax*recip_dt
+      vg4=viscA4Grid*recip_dt
+      vg4Min=viscA4GridMin*recip_dt
+      vg4Max=viscA4GridMax*recip_dt
 
 C     - Viscosity
       IF (useVariableViscosity) THEN
@@ -83,6 +80,7 @@ C These are (powers of) length scales used in the Leith viscosity calculation
          L3=(L2**1.5)
          L4=(L2**2)
          L5=0.125*(L2**2.5)
+
 
          IF (useFullLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
