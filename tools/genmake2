@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.59 2004/01/11 17:02:47 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.60 2004/01/14 03:44:48 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -437,6 +437,33 @@ EOF
 }
 
 
+check_netcdf_libs()  {
+    cat <<EOF > genmake_tnc.F
+      program fgennc
+#include "netcdf.inc"
+      integer iret, ncid, xid
+      iret = nf_create('genmake_tnc.nc', NF_CLOBBER, ncid)
+      IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
+      iret = nf_def_dim(ncid, 'X', 11, xid)
+      IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
+      iret = nf_close(ncid)
+      IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
+      end
+EOF
+    $CPP genmake_tnc.F > genmake_tnc.f  \
+	&&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f $LIBS >> genmake_tnc.log 2>&1
+    RET_COMPILE=$?
+    test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
+    RETVAL=$?
+    if test "x$RET_COMPILE" = x0 -a "x$RETVAL" = x0 ; then
+	HAVE_NETCDF=t
+    else
+	cat genmake_tnc.log >> genmake_warnings
+    fi
+    rm -f genmake_tnc*
+}
+
+
 #  Set defaults here
 COMMANDL="$0 $@"
 
@@ -445,6 +472,7 @@ LN=
 S64=
 KPP=
 FC=
+CPP=
 LINK=
 # DEFINES="-DWORDLENGTH=4"
 DEFINES=
@@ -473,6 +501,7 @@ HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
 HAVE_CLOC=
+HAVE_NETCDF=
 
 MODS=
 TOOLSDIR=
@@ -512,7 +541,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC IEEE MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
@@ -897,6 +926,14 @@ else
 fi
 rm -f genmake_t*
 
+echo -n "  Can we create NetCDF-enabled binaries...  "
+check_netcdf_libs
+if test "x$HAVE_NETCDF" != x ; then
+    echo "yes"
+else
+    echo "no"
+fi
+
 
 printf "\n===  Setting defaults  ===\n"
 echo -n "  Adding MODS directories:  "
@@ -1159,6 +1196,21 @@ for i in $PACKAGES ; do
     fi
 done
 
+#  Check for ability to build and use NetCDF
+echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 -a "x$HAVE_NETCDF" != xt ; then
+    cat <<EOF
+
+WARNING: the "mnc" package has been enabled but tests failed to 
+  compile and/or execute NetCDF applications.  Please check that:
+
+  1) NetCDF is installed for your compiler and
+  2) the LIBS variable (within the 'optfile") specifies the correct 
+       NetCDF library to link against.
+  
+EOF
+fi
 
 # Create a list of #define and #undef to enable/disable packages
 PACKAGES_DOT_H=PACKAGES_CONFIG.h
@@ -1270,6 +1322,7 @@ for i in $SOURCEDIRS ; do
 	cat $i/$j >> ad_files
     done
 done
+
 
 echo
 echo "===  Creating the Makefile  ==="
