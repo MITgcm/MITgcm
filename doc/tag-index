@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.270 2004/03/22 05:10:10 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.271 2004/03/23 19:47:05 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -12,6 +12,8 @@ o MNC:
   - write all MNC output to a freshly-created directory
 o thermodynamics sea-ice (thsice) is now tested with testreport.
 o test exp. advect_cs: use the standard cs32 grid ; update output.
+o Added functionality to grdchk:
+  pick global i,j,k position (or nearest wet) where to perform check.
 
 checkpoint52l_post
 o new land formulation:
