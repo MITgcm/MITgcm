@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.42 2003/11/20 18:29:07 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.43 2003/11/23 20:01:50 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -324,7 +324,7 @@ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
 EOF
 	return 1
     fi
-    c_tcall=`nm genmake_test.o | grep tcall | cut -d ' ' -f 3`
+    c_tcall=`nm genmake_test.o | grep 'T ' | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
@@ -354,7 +354,7 @@ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
 EOF
 	return 1
     fi
-    f_tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
+    f_tcall=`nm genmake_tcomp.o | grep 'T ' | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
