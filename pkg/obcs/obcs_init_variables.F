@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.7 2003/12/15 20:22:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.8 2004/07/06 18:25:52 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -28,8 +28,6 @@ C     myThid -  Number of this instance of INI_DEPTHS
 C     == Local variables ==
       INTEGER bi, bj
       INTEGER I, J, K
-      CHARACTER*(10) suff
-      INTEGER prec
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -85,21 +83,6 @@ C     == Local variables ==
 
        ENDDO
       ENDDO     
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C jmc: here is the logical place to read OBCS-pickup files
-C      but a) without Orlanski: pass the test 1+1=2 without reading pickup.
-C          b) with Orlanski: 1+1=2 fail even with this bit of code
-      IF ( nIter0.NE.0 ) THEN
-        prec = precFloat64
-        IF (pickupSuff.EQ.' ') THEN
-         WRITE(suff,'(I10.10)') nIter0
-        ELSE
-         WRITE(suff,'(A10)') pickupSuff
-        ENDIF
-c       CALL OBCS_READ_CHECKPOINT(prec, nIter0, suff, myThid)
-      ENDIF
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Apply OBCS values to initial conditions for consistancy
       DO bj = myByLo(myThid), myByHi(myThid)

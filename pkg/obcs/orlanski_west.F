@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.4 2002/07/11 16:22:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.5 2004/07/06 18:25:52 adcroft Exp $
 C $Name:  $
+cc
 
 #include "OBCS_OPTIONS.h"
 
@@ -64,6 +65,16 @@ C              duration of the singular period in the unfiltered case. Thus,
 C              for a plane wave cvelTimeScale might be the time take for the 
 C              wave to travel a distance DX, where DX is the width of the region
 C              near which d(phi)/dx is small.
+C
+C JBG 3/24/03: Fixed phase speed at western boundary (as suggested by
+C	       Dale Durran's MWR paper). Fixed value (in m/s) is
+C              passed in as variable CFIX in data.obcs.
+C
+C JBG 4/10/03: allow choice of Orlanski or fixed wavespeed (by means of new
+C              booleans useFixedCEast and useFixedCWest) without
+C              having to recompile each time
+c SAL 1/7/03:  Fixed bug: implementation for salinity was incomplete
+C
 
 C     == Routine arguments ==
       INTEGER bi, bj
@@ -108,11 +119,17 @@ C              uVel (to be applied at I_obc+1)
                ELSEIF (CL.gt.CMAX) THEN
                   CL=CMAX
                ENDIF
-               CVEL_UW(J,K,bi,bj) = f1*(CL*dxF(I_obc+2,J,bi,bj)/deltaT)+
+               IF (useFixedCWest) THEN
+C	         Fixed phase speed (ignoring all of that painstakingly
+C		  saved data...)
+                 CVEL_UW(J,K,bi,bj) = CFIX
+               ELSE
+                 CVEL_UW(J,K,bi,bj) = f1*(CL*dxF(I_obc+2,J,bi,bj)/deltaT)+
      &                f2*CVEL_UW(J,K,bi,bj)
+               ENDIF
 C              update OBC to next timestep
                OBWu(J,K,bi,bj)=uVel(I_obc+1,J,K,bi,bj)+
-     &          CVEL_UW(J,K,bi,bj)*deltaT*recip_dxF(I_obc+1,J,bi,bj)*
+     &          CVEL_UW(J,K,bi,bj)*(deltaT/dxF(I_obc+1,J,bi,bj))*
      &          (ab1*(uVel(I_obc+2,J,K,bi,bj)-uVel(I_obc+1,J,K,bi,bj))+
      &          ab2*(UW_STORE_1(J,K,bi,bj)-UW_STORE_4(J,K,bi,bj)))
 C              vVel
@@ -128,11 +145,17 @@ C              vVel
                ELSEIF (CL.gt.CMAX) THEN
                   CL=CMAX
                ENDIF
-               CVEL_VW(J,K,bi,bj) = f1*(CL*dxV(I_obc+2,J,bi,bj)/deltaT)+
+               IF (useFixedCWest) THEN
+C	         Fixed phase speed (ignoring all of that painstakingly
+C		  saved data...)
+                 CVEL_VW(J,K,bi,bj) = CFIX
+               ELSE
+                 CVEL_VW(J,K,bi,bj) = f1*(CL*dxV(I_obc+2,J,bi,bj)/deltaT)+
      &                f2*CVEL_VW(J,K,bi,bj)
+               ENDIF
 C              update OBC to next timestep
                OBWv(J,K,bi,bj)=vVel(I_obc,J,K,bi,bj)+
-     &           CVEL_VW(J,K,bi,bj)*deltaT*recip_dxV(I_obc+1,J,bi,bj)*
+     &           CVEL_VW(J,K,bi,bj)*(deltaT/dxV(I_obc+1,J,bi,bj))*
      &           (ab1*(vVel(I_obc+1,J,K,bi,bj)-vVel(I_obc,J,K,bi,bj))+
      &           ab2*(VW_STORE_1(J,K,bi,bj)-VW_STORE_4(J,K,bi,bj)))
 C              Temperature
@@ -148,11 +171,17 @@ C              Temperature
                ELSEIF (CL.gt.CMAX) THEN
                   CL=CMAX
                ENDIF
-               CVEL_TW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
+               IF (useFixedCWest) THEN
+C	         Fixed phase speed (ignoring all of that painstakingly
+C		  saved data...)
+                 CVEL_TW(J,K,bi,bj) = CFIX
+               ELSE
+                 CVEL_TW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
      &                f2*CVEL_TW(J,K,bi,bj)
+               ENDIF
 C              update OBC to next timestep
                OBWt(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)+
-     &          CVEL_TW(J,K,bi,bj)*deltaT*recip_dxC(I_obc+1,J,bi,bj)*
+     &          CVEL_TW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
      &          (ab1*(theta(I_obc+1,J,K,bi,bj)-theta(I_obc,J,K,bi,bj))+
      &          ab2*(TW_STORE_1(J,K,bi,bj)-TW_STORE_4(J,K,bi,bj)))
 C              Salinity
@@ -168,11 +197,17 @@ C              Salinity
                ELSEIF (CL.gt.CMAX) THEN
                   CL=CMAX
                ENDIF
-               CVEL_SW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
+               IF (useFixedCWest) THEN
+C  	         Fixed phase speed (ignoring all of that painstakingly
+C		  saved data...)
+                 CVEL_SW(J,K,bi,bj) = CFIX
+               ELSE
+                 CVEL_SW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
      &                f2*CVEL_SW(J,K,bi,bj)
+               ENDIF
 C              update OBC to next timestep
                OBWs(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)+
-     &           CVEL_SW(J,K,bi,bj)*deltaT*recip_dxC(I_obc+1,J,bi,bj)*
+     &           CVEL_SW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
      &           (ab1*(salt(I_obc+1,J,K,bi,bj)-salt(I_obc,J,K,bi,bj))+
      &           ab2*(SW_STORE_1(J,K,bi,bj)-SW_STORE_4(J,K,bi,bj)))
 C              wVel
@@ -189,11 +224,17 @@ C              wVel
                   ELSEIF (CL.gt.CMAX) THEN
                      CL=CMAX
                   ENDIF
-                  CVEL_WW(J,K,bi,bj)=f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)
+               IF (useFixedCWest) THEN
+C	         Fixed phase speed (ignoring all of that painstakingly
+C		  saved data...)
+                 CVEL_WW(J,K,bi,bj) = CFIX
+               ELSE
+                 CVEL_WW(J,K,bi,bj)=f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)
      &                   + f2*CVEL_WW(J,K,bi,bj)
+               ENDIF
 C                 update OBC to next timestep
                   OBWw(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)+
-     &            CVEL_WW(J,K,bi,bj)*deltaT*recip_dxC(I_obc+1,J,bi,bj)*
+     &             CVEL_WW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
      &            (ab1*(wVel(I_obc+1,J,K,bi,bj)-wVel(I_obc,J,K,bi,bj))+
      &            ab2*(WW_STORE_1(J,K,bi,bj)-WW_STORE_4(J,K,bi,bj)))
 #endif
@@ -222,6 +263,14 @@ C              copy (current time) t to t-1 arrays
      &         theta(I_obc+1,J,K,bi,bj)
                TW_STORE_1(J,K,bi,bj)=theta(I_obc+1,J,K,bi,bj)
                TW_STORE_4(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)
+c              Salinity
+C              copy t-1 to t-2 array
+	       SW_STORE_3(J,K,bi,bj)=SW_STORE_2(J,K,bi,bj)
+C              copy (current time) t to t-1 arrays
+               SW_STORE_2(J,K,bi,bj)=salt(I_obc+2,J,K,bi,bj) -
+     &         salt(I_obc+1,J,K,bi,bj)
+               SW_STORE_1(J,K,bi,bj)=salt(I_obc+1,J,K,bi,bj)
+	       SW_STORE_4(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)
 C              wVel
 #ifdef ALLOW_NONHYDROSTATIC
 C              copy t-1 to t-2 array

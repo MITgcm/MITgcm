@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/ORLANSKI.h,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/ORLANSKI.h,v 1.3 2004/07/06 18:25:52 adcroft Exp $
 C $Name:  $
 
 C SPK 6/2/00: Added storage arrays for salinity. Removed some 
@@ -7,12 +7,14 @@ C
 C SPK 7/18/00: Added dimensional phase speed arrays CVEL_**, 
 C              where **=Variable(U,V,T,S,W)Boundary(E,W,N,S). 
 C
+cc
 
 #ifdef ALLOW_ORLANSKI
 
       COMMON /ORLANSKI_PARAMS/
-     &      CMax, cVelTimeScale
-      _RL   CMax, cVelTimeScale
+     &      CMax, cVelTimeScale, CFix, useFixedCEast, useFixedCWest
+      _RL   CMax, cVelTimeScale, CFix
+      LOGICAL useFixedCEast, useFixedCWest
 
 C     Storage arrays
       COMMON /ORLANSKI_STORE/ 
