@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.13 1998/09/09 15:24:19 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.14 1998/09/29 18:57:53 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint15
+ Rewrote exchange routines to allow
+ o General tile <-> tile connectivity.
+ o TAMC reverse mode flag ( is this really needed? )
+ o Variable width overlap and exchange region widths.
+ o Hooks for sharing data via DMA, Arctic, Memory Channel, 
+   shmput/shmget, VIA, SYSV shmem and every other cool 
+   communication method.
 
 checkpoint14
  Consistent isomorphism chages made. These allow dynamical core
