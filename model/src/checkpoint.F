@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.45 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.46 2004/09/27 17:50:48 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -198,7 +198,7 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'T',theta, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',gUnm1, myThid)
@@ -492,7 +492,7 @@ C         &    myIter,myThid)
         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'T', theta, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'Temp', theta, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)

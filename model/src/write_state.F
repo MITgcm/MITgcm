@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.43 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.44 2004/09/27 17:50:48 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,7 +165,7 @@ C         Write dynvars using the MNC package
           CALL MNC_CW_RL_W('D','state',0,0,'model_time',myTime,myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'U', uVel, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'V', vVel, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'T', theta, myThid)
+          CALL MNC_CW_RL_W('D','state',0,0,'Temp', theta, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'S', salt, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'Eta', etaN, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'W', wVel, myThid)
