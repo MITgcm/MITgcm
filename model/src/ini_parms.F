@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.39 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.40 1999/03/12 16:41:57 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,7 +95,7 @@ C--   Continuous equation parameters
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation,
-     & writeStatePrec, readBinaryPrec, writeStatePrec,
+     & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & openBoundaries
 
 C--   Elliptic solver parameters
