@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.16 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.17 2004/07/26 20:15:05 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -902,9 +902,6 @@ C finally some transformations back to grid space for albedos
       ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdr,nchp,nchpland,
      .                                     fracg,tmpij,im,jm)
-
-      print *,' back from first msc2grd call '
-      stop
 
       DO I=1,IM
       DO J=1,JM
