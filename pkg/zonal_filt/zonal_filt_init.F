@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.4 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.5 2001/12/11 14:50:14 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -76,13 +76,16 @@ C         IF (ampFactor(2*I,J,bi,bj).LE..9) ampFactor(2*I,J,bi,bj)=0.
 C         IF (ampFactorV(2*I,J,bi,bj).LE..9) ampFactorV(2*I,J,bi,bj)=0.
           ampFactorV(2*I+1,J,bi,bj) = ampFactorV(2*I,J,bi,bj)
          ENDDO
+
          I=Nx/2
-Cajatest
-         ampFactor(Nx,J,bi,bj) = 0.
-         ampFactorV(Nx,J,bi,bj) = 0.
-C        ampFactor(Nx,J,bi,bj) = ampfact( yC(1,J,bi,bj) , I )
-C        ampFactorV(Nx,J,bi,bj) = ampfact( yG(1,J,bi,bj) , I )
-Cajatest
+         IF ( zonal_filt_mode2dx.EQ.0 ) THEN
+           ampFactor(Nx,J,bi,bj) = ampfact( yC(1,J,bi,bj) , I )
+           ampFactorV(Nx,J,bi,bj) = ampfact( yG(1,J,bi,bj) , I )
+         ELSE
+           ampFactor(Nx,J,bi,bj) = 0.
+           ampFactorV(Nx,J,bi,bj) = 0.
+         ENDIF
+
         ENDDO
        ENDDO
       ENDDO
