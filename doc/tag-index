@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.20 1999/05/18 15:43:59 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.21 1999/05/18 18:31:31 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint22
+ o Made many small changes: implicit none, format(i5), etc...
+ o Introduced KPP mixing scheme (compiles and runs but *not* tested)
 
 checkpoint21
  o Introduced new I/O package that supports direct-access records (mdsio.F)
