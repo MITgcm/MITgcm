@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.1 2000/06/21 19:25:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.2 2000/09/11 20:42:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE PACKAGE_CHECK( myThid )
+      SUBROUTINE PACKAGES_CHECK( myThid )
 C     /==========================================================\
-C     | SUBROUTINE PACKAGE_CHECK                                 |
+C     | SUBROUTINE PACKAGES_CHECK                                |
 C     | o Check dependances between selected packages            |
 C     |==========================================================|
 C     \==========================================================/
@@ -25,8 +25,8 @@ C     msgBuf      - Informational/error meesage buffer
 
 
 #ifndef ALLOW_KPP
-      IF (use_KPPmixing) THEN
-       WRITE(msgBuf,'(A)') '#define ALLOW_KPP to use use_KPPmixing'
+      IF (useKPP) THEN
+       WRITE(msgBuf,'(A)') '#define ALLOW_KPP to use useKPP'
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
       ENDIF
@@ -35,15 +35,20 @@ C     msgBuf      - Informational/error meesage buffer
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 C     KPP needs convection turned off (will be packaged later)
-      IF (use_KPPmixing) THEN
+      IF (useKPP) THEN
        IF (cAdjFreq.NE.0.  .OR.
      &     ivdc_kappa.NE.0.) THEN
         WRITE(msgBuf,'(A)') 'Some form of convection has been enabled'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
        ENDIF
-       IF (.NOT.implicitDiffusion) THEN
+       IF (.NOT.implicitDiffusion ) THEN
         WRITE(msgBuf,'(A)') 'KPP needs implicitDiffusion to be enabled'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
+       ENDIF
+       IF (.NOT.implicitViscosity) THEN
+        WRITE(msgBuf,'(A)') 'KPP needs implicitViscosity to be enabled'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
        ENDIF
@@ -51,23 +56,10 @@ C     KPP needs convection turned off (will be packaged later)
 #endif
 
 #ifndef ALLOW_GMREDI
-      IF (use_GMRedi) THEN
-       WRITE(msgBuf,'(A)') '#define ALLOW_GMREDI to use use_GMRedi'
-       CALL PRINT_ERROR( msgBuf , 1)
-       STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
-      ENDIF
+      IF (useGMRedi) CALL PACKAGES_CHECK_ERROR('GMREDI')
 #else
-      WRITE(msgBuf,'(A)') 'PACKAGE_CHECK: #define GMREDI'
-C     GM/Redi needs implicit diffusion (will be packaged later)
-      IF (use_GMRedi) THEN
-       IF (.NOT.implicitDiffusion) THEN
-        WRITE(msgBuf,'(A)') 'GM/Redi needs implicitDiffusion=.true.'
-        CALL PRINT_ERROR( msgBuf , 1)
-cTemp   STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
-       ENDIF
-      ENDIF
+      IF (useGMRedi) CALL GMREDI_CHECK( myThid )
 #endif
-
 
       return
       end

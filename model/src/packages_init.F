@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_init.F,v 1.1 2000/06/21 19:25:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_init.F,v 1.2 2000/09/11 20:42:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE PACKAGE_INIT( myThid )
+      SUBROUTINE PACKAGES_INIT( myThid )
 C     /==========================================================\
-C     | SUBROUTINE PACKAGE_INIT                                  |
-C     | o Routine to initialize package configuration            |
+C     | SUBROUTINE PACKAGES_INIT                                 |
+C     | o Does initialisation of package-related fields          |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -19,48 +19,30 @@ C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
 
-C--   data.pkg namelists
-      NAMELIST /PACKAGES/
-     &          use_KPPmixing,
-     &          use_GMRedi
+#ifdef ALLOW_GMREDI
+C--   Initialize GM/Redi parameterization
+      IF (useGMRedi) CALL GMREDI_INIT( myThid )
+#endif
 
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
+#ifdef ALLOW_KPP
+C--   Initialize KPP vertical mixing scheme.
+      IF (useKPP) THEN
+       CALL KPP_INIT( myThid )
+       CALL KPP_OPEN_DIAGS( myThid )
+      ENDIF
+#endif
 
-      _BEGIN_MASTER(myThid)
+#ifdef INCLUDE_ECCO_PACKAGE
 
-      WRITE(msgBuf,'(A)') ' PACKAGE_INIT: opening data.pkg'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-    
+      IF (useECCO) THEN
+       CALL ECCO_INIT( myThid )
+      ENDIF
 
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.pkg', 'PACKAGE_INIT',
-     O                          iUnit,
-     I                          myThid )
+#endif
 
-C--   Default package configuration
-      use_GMRedi=.FALSE.
-      use_KPPmixing=.FALSE.
-
-
-C--   Read parameters from open data file
-      READ(UNIT=iUnit,NML=PACKAGES)
-
-
-      WRITE(msgBuf,'(A)') ' PACKAGE_INIT: finished reading data.pkg'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
-C--   Close the open data file
-      CLOSE(iUnit)
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait for the parameters to be loaded
-      _BARRIER
+#ifndef INCLUDE_ECCO_PACKAGE
+      call ini_forcing( mythid )
+#endif
 
       return
       end
