@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.49 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.50 2003/02/27 22:34:38 dimitri Exp $
 C $Name:  $
 
 CBOI
@@ -529,18 +529,18 @@ C--   Call time stepping loop of full model
       end if
 #endif
 
-C--   Final checkpoint (in case the in-loop checkpoint was missed)
-      CALL TIMER_START('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
-      CALL WRITE_CHECKPOINT(
-     &        .TRUE., myCurrentTime, myCurrentIter, myThid )
-      CALL TIMER_STOP ('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
-
 C--   Sea-ice checkpoint (in case the in-loop checkpoint was missed)
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE )
      &     CALL SEAICE_WRITE_PICKUP(
      &     .TRUE., myCurrentTime, myCurrentIter, myThid )
 #endif
+
+C--   Final checkpoint (in case the in-loop checkpoint was missed)
+      CALL TIMER_START('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
+      CALL WRITE_CHECKPOINT(
+     &        .TRUE., myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
 
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
 
