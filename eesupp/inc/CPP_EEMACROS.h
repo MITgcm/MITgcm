@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.5 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.6 2003/11/12 00:02:44 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -97,11 +97,13 @@ C     performance.
 #define RS_IS_REAL8
 #define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 ( a, b)
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R8 ( a, b )
+#define _MPI_TYPE_RS MPI_DOUBLE_PRECISION
 #else
 #define _RS Real*4
 #define RS_IS_REAL4
 #define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b )
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
+#define _MPI_TYPE_RS MPI_REAL
 #endif
 #define _EXCH_XY_R4(a,b) CALL EXCH_XY_RS ( a, b )
 #define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RS ( a, b )
@@ -111,6 +113,7 @@ C     performance.
 #define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
 #define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_R8(a,b) CALL GLOBAL_MAX_R8 ( a, b )
+#define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
 
 #define _EXCH_XY_RS(a,b) CALL EXCH_XY_RS ( a, b )
 #define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.24 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.25 2003/11/12 00:02:44 dimitri Exp $
 C $Name:  $
 C
 CBOP
@@ -438,8 +438,8 @@ C                 metric term in V equation.
       _RS rC             (1:Nr)
       _RS rF             (1:Nr+1)
       _RL gravitySign
-      _RS rkFac
-      _RS recip_rkFac
+      _RL rkFac
+      _RL recip_rkFac
       _RS xC0
       _RS yC0
 

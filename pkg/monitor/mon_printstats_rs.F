@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.6 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.7 2003/11/12 00:02:44 dimitri Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -36,10 +36,10 @@ C     === Local variables ====
      O                theMin,theMax,theMean,theSD,
      I                myThid )
 
-      CALL MON_OUT_RS( arrName, theMax,  mon_foot_max  ,myThid)
-      CALL MON_OUT_RS( arrName, theMin,  mon_foot_min  ,myThid)
-      CALL MON_OUT_RS( arrName, theMean, mon_foot_mean ,myThid)
-      CALL MON_OUT_RS( arrName, theSD,   mon_foot_sd   ,myThid)
+      CALL MON_OUT_RL( arrName, theMax,  mon_foot_max  ,myThid)
+      CALL MON_OUT_RL( arrName, theMin,  mon_foot_min  ,myThid)
+      CALL MON_OUT_RL( arrName, theMean, mon_foot_mean ,myThid)
+      CALL MON_OUT_RL( arrName, theSD,   mon_foot_sd   ,myThid)
 
       RETURN
       END

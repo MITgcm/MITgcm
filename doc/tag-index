@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.205 2003/11/07 05:24:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.206 2003/11/12 00:02:44 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+
+untagged
+o some bug fixes for #undef REAL4_IS_SLOW
 
 checkpoint52 = ecco_c52_e35
 o after testing adjoints of checkpoint51u_post

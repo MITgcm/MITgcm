@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.20 2003/09/29 19:24:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.21 2003/11/12 00:02:44 dimitri Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -48,7 +48,7 @@ C
       _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL depthZ
+      _RS depthZ
       INTEGER bi,bj,K,myThid
 CEndOfInterface
 
