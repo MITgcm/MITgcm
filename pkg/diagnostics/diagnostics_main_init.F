@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.4 2004/12/16 22:26:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.5 2004/12/17 19:17:57 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -102,6 +102,55 @@ C----------------------------------------------------------------------
       diagTitle = 'Square of Eta (Surf.P,SSH) Tendency ((r_unit/s)^2)'
       diagUnits = 'm2 or Pa2 /sec2 '
       diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TAUX    '
+      diagTitle = 'zonal surface wind stress, >0 increases uVel    '
+      diagUnits = 'N/m2            '
+      diagCode  = 'SU      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TAUY    '
+      diagTitle = 'meridional surf. wind stress, >0 increases vVel '
+      diagUnits = 'N/m2            '
+      diagCode  = 'SV      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TFLUX   '
+      diagTitle = 'net surface heat flux, >0 increases theta       '
+      diagUnits = 'W/m2            '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TRELAX  '
+      diagTitle = 'surface temperature relaxation, >0 increases theta'
+      diagUnits = 'W/m2            '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TICE    '
+      diagTitle = 'heat from melt/freeze of sea-ice, >0 increases theta'
+      diagUnits = 'W/m2            '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SFLUX   '
+      diagTitle = 'net surface salt flux, >0 increases salt        '
+      diagUnits = 'g/m2/s          '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SRELAX  '
+      diagTitle = 'surface salinity relaxation, >0 increases salt  '
+      diagUnits = 'g/m2/s          '
+      diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
