@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.6 2003/02/18 15:36:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.7 2003/04/17 13:44:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,8 +8,9 @@ C !ROUTINE: MOM_CDSCHEME
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CDSCHEME( 
-     I        bi,bj,k,dPhiHydX,dPhiHydY,
-     I        myThid)
+     I        bi,bj,k, dPhiHydX,dPhiHydY, guFld,gvFld,
+     O        guCor,gvCor,
+     I        myTime, myIter, myThid)
 
 C !DESCRIPTION:
 C The C-D scheme. The less said the better :-)
@@ -28,10 +29,21 @@ C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
 C     dPhiHydX,Y        :: Gradient (X & Y dir.) of Hydrostatic Potential
+C  guFld,gvFld          :: Acceleration (U & V compon.) from the C grid
+C  guCor,gvCor          :: Coriolis terms (2 compon.) computed on C grid
+C  myTime               :: current time
+C  myIter               :: current time-step number
 C  myThid               :: thread number
+
       INTEGER bi,bj,k
       _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL    guFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL    gvFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL    guCor(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL    gvCor(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 
@@ -68,6 +80,14 @@ C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
         phyFac = 0.
       ENDIF
 
+C-    Initialize output (dummy) arrays:
+c     DO j=1-Oly,sNy+Oly
+c      DO i=1-Olx,sNx+Olx
+c       guCor(i,j) = 0. _d 0
+c       gvCor(i,j) = 0. _d 0
+c      ENDDO
+c     ENDDO
+
 C     Pressure extrapolated forward in time
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
@@ -86,7 +106,7 @@ C     grady(p) + gV
         af(i,j) = -_maskS(i,j,k,bi,bj)*(
      &            _recip_dyC(i,j,bi,bj)*(pf(i,j)-pf(i,j-1))
      &           +phyFac*dPhiHydY(i,j) )
-     &          + gV(i,j,k,bi,bj)
+     &          + gvFld(i,j)
        ENDDO
       ENDDO
 C     Average to Vd point and add coriolis
@@ -104,31 +124,29 @@ C     Average to Vd point and add coriolis
 C     Step forward Vd
       DO j=jMin,jMax
        DO i=iMin,iMax
-        vVelD(i,j,k,bi,bj) = vVelD(i,j,k,bi,bj) +
-     &                        deltaTmom*vf(i,j)
+        vVelD(i,j,k,bi,bj) = vVelD(i,j,k,bi,bj) + deltaTmom*vf(i,j)
        ENDDO
       ENDDO
 C     Relax D grid V to C grid V
       DO j=jMin,jMax
        DO i=iMin,iMax
-         vVelD(i,j,k,bi,bj) = rCD*vVelD(i,j,k,bi,bj)
+         vVelD(i,j,k,bi,bj) = ( rCD*vVelD(i,j,k,bi,bj)
      &   +(1. - rCD)*(
-     &    ab15*0.25*( 
+     &            ab15*( 
      &                vVel(i  ,j  ,k,bi,bj)+vVel(i  ,j+1,k,bi,bj)
      &               +vVel(i-1,j  ,k,bi,bj)+vVel(i-1,j+1,k,bi,bj)
-     &              )*_maskW(i,j,k,bi,bj)
-     &     +
-     &    ab05*0.25*( 
+     &                 )*0.25
+     &           +ab05*( 
      &                vNM1(i  ,j  ,k,bi,bj)+vNM1(i  ,j+1,k,bi,bj)
      &               +vNM1(i-1,j  ,k,bi,bj)+vNM1(i-1,j+1,k,bi,bj)
-     &              )*_maskW(i,j,k,bi,bj)
-     &   )
+     &                 )*0.25
+     &               )        )*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Calculate coriolis force on U
       DO j=jMin,jMax
        DO i=iMin,iMax
-        guCD(i,j,k,bi,bj) = 
+        guCor(i,j) = 
      &    0.5*( _fCori(i  ,j,bi,bj) + 
      &          _fCori(i-1,j,bi,bj)  )
      &   *vVelD(i,j,k,bi,bj)*cfFacMom
@@ -142,7 +160,7 @@ C     gradx(p)+gU
         af(i,j) = -_maskW(i,j,k,bi,bj)*(
      &            _recip_dxC(i,j,bi,bj)*(pf(i,j)-pf(i-1,j))
      &           +phxFac*dPhiHydX(i,j) )
-     &          + gU(i,j,k,bi,bj)
+     &          + guFld(i,j)
        ENDDO
       ENDDO
 C     Average to Ud point and add coriolis
@@ -160,34 +178,32 @@ C     Average to Ud point and add coriolis
 C     Step forward Ud
       DO j=jMin,jMax
        DO i=iMin,iMax
-        uVelD(i,j,k,bi,bj) = uVelD(i,j,k,bi,bj) +
-     &   deltaTmom*vf(i,j)*_maskS(i,j,k,bi,bj)
+        uVelD(i,j,k,bi,bj) = uVelD(i,j,k,bi,bj) + deltaTmom*vf(i,j)
        ENDDO
       ENDDO
 C     Relax D grid U to C grid U
       DO j=jMin,jMax
        DO i=iMin,iMax
-        uVelD(i,j,k,bi,bj) = rCD*uVelD(i,j,k,bi,bj) 
+         uVelD(i,j,k,bi,bj) = ( rCD*uVelD(i,j,k,bi,bj) 
      &   +(1. - rCD)*(
-     &    ab15*0.25*( 
+     &            ab15*( 
      &                uVel(i,j  ,k,bi,bj)+uVel(i+1,j  ,k,bi,bj)
      &               +uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj)
-     &              )*_maskS(i,j,k,bi,bj)
-     &     +
-     &    ab05*0.25*( 
+     &                 )*0.25
+     &           +ab05*( 
      &                uNM1(i,j  ,k,bi,bj)+uNM1(i+1,j  ,k,bi,bj)
      &               +uNM1(i,j-1,k,bi,bj)+uNM1(i+1,j-1,k,bi,bj)
-     &              )*_maskS(i,j,k,bi,bj)
-     &   )
+     &                 )*0.25
+     &               )        )*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Calculate coriolis force on V
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gvCD(i,j,k,bi,bj) =
+        gvCor(i,j) =
      &    -0.5*( _fCori(i  ,j,bi,bj) 
      &          +_fCori(i,j-1,bi,bj)  )
-     &   *uVelD(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)*cfFacMom
+     &   *uVelD(i,j,k,bi,bj)*cfFacMom
        ENDDO
       ENDDO
 

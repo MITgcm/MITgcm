@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.11 2003/02/18 15:36:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.12 2003/04/17 13:44:10 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -409,11 +409,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     &  CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    &  CALL EXTERNAL_FORCING_U(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
@@ -561,11 +561,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     & CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    & CALL EXTERNAL_FORCING_V(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
@@ -595,22 +595,24 @@ C--   Set dv/dt on boundaries to zero
 
 C--   Coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
-#ifdef INCLUDE_CD_CODE
-      CALL MOM_CDSCHEME(bi,bj,k,dPhiHydX,dPhiHydY,myThid)
-#else
-      CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+fuFac*cf(i,j)
-       ENDDO
-      ENDDO
-      CALL MOM_V_CORIOLIS(bi,bj,k,uFld,cf,myThid)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+fvFac*cf(i,j)
-       ENDDO
-      ENDDO
-#endif /* INCLUDE_CD_CODE */
+c     IF (useCDscheme) THEN
+c       CALL MOM_CDSCHEME(bi,bj,k,dPhiHydX,dPhiHydY,myThid)
+c     ELSE
+      IF (.NOT.useCDscheme) THEN
+        CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+fuFac*cf(i,j)
+         ENDDO
+        ENDDO
+        CALL MOM_V_CORIOLIS(bi,bj,k,uFld,cf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+fvFac*cf(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+
       IF (nonHydrostatic.OR.quasiHydrostatic) THEN
        CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
        DO j=jMin,jMax
