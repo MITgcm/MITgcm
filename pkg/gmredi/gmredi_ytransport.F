@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.1 2000/06/21 19:42:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.2 2000/11/13 16:35:28 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -40,7 +40,7 @@ C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
 
-      IF (use_GMRedi) THEN
+      IF (useGMRedi) THEN
 
 C--   Area integrated meridional flux
       DO j=jMin,jMax

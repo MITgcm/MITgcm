@@ -1,6 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.1 2000/06/21 19:42:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.2 2000/11/13 16:35:28 heimbach Exp $
 
 #ifdef ALLOW_GMREDI
+
+C     Package flag
+      logical gmrediIsOn
 
 C     GM/Redi parameters
       _RL GM_background_K

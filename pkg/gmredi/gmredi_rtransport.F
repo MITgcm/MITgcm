@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.1 2000/06/21 19:42:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.2 2000/11/13 16:35:28 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -42,7 +42,7 @@ C     I, J - Loop counters
       _RL dTdx,dTdy
 
 C     Surface flux is zero
-      IF (use_GMRedi .AND. K.GT.1) THEN
+      IF (useGMRedi .AND. K.GT.1) THEN
 
       DO j=jMin,jMax
        DO i=iMin,iMax
