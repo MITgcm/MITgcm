@@ -1,13 +1,9 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2003/10/24 05:52:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2003/10/26 01:22:24 heimbach Exp $
 C $Name:  $
 
-cph#include "AD_CONFIG.h"
-
-C 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
@@ -16,7 +12,6 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-cph#define INCLUDE_AUTODIFF_PACKAGE
 C
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC

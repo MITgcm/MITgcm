@@ -1,19 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/GMREDI_OPTIONS.h,v 1.2 2003/10/24 05:52:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/GMREDI_OPTIONS.h,v 1.3 2003/10/26 01:22:24 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package
 C
-C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
-
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 
-#include "CPP_OPTIONS.h"
-
 #ifdef ALLOW_GMREDI
+
+#include "CPP_OPTIONS.h"
 
 C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
@@ -34,8 +32,7 @@ C be used with the advective form (Bolus velocity) of GM
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
-#define  GM_BOLUS_ADVEC
-
+#undef  GM_BOLUS_ADVEC
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */

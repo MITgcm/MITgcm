@@ -1,9 +1,0 @@
-# $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/Attic/.genmakerc,v 1.5 2003/01/10 17:21:26 heimbach Exp $
-# $Name:  $
-
-set DISABLE=( $DISABLE obcs zonal_filt shap_filt )
-
-# Enable packages that are needed but are disabled by default
-set ENABLE=( $ENABLE autodiff cost ctrl grdchk ecco gmredi )
-
-# We can also specify other defaults

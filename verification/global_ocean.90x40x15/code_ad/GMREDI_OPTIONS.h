@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.7 2003/10/24 05:52:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.8 2003/10/26 01:22:24 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -8,12 +8,10 @@ C
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 
 #ifdef ALLOW_GMREDI
 
 #include "CPP_OPTIONS.h"
- 
 
 C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
