@@ -412,8 +412,9 @@ expts=`scandirs $expts`
 
 createcodelet
 
+date > summary.txt
 if [ $longtest -gt 0 ]; then
-cat << EOF > summary.txt
+cat << EOF >> summary.txt
                 T           S           U           V
 C D M    c        m  s        m  s        m  s        m  s
 n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
@@ -422,7 +423,7 @@ g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
 
 EOF
 else
-cat << EOF > summary.txt
+cat << EOF >> summary.txt
               T     S     U     V
 C D M    c                        
 n p a R  g  m  m  m  m  m  m  m  m
@@ -476,4 +477,5 @@ rm tmp_cmpnum.f a.out
 
 echo -------------------------------------------------------------------------------
 echo 
+date >> summary.txt
 cat summary.txt
