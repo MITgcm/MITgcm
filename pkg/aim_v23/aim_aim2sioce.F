@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.1 2004/04/18 21:38:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.2 2004/05/21 17:34:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: AIM_AIM2SIOCE
 C     !INTERFACE:
       SUBROUTINE AIM_AIM2SIOCE(
-     I               land_frc, 
+     I               land_frc, siceFrac,
      O               prcAtm, evpAtm, flxSW,
      I               bi, bj, myTime, myIter, myThid)
 
@@ -49,6 +49,7 @@ C-- Physics package
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
+C     siceFrac :: sea-ice fraction (relative to full grid-cell) [0-1]
 C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
 C     evpAtm   :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
 C     flxSW    :: net heat flux from the ice to the ocean
@@ -57,6 +58,7 @@ C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
 C     myThid   :: Number of this instance of the routine
       _RS land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL siceFrac(sNx,sNy)
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -77,14 +79,12 @@ C--   Initialisation :
 
 C--   Atmospheric Physics Fluxes
 
-c     IF ( useLand ) THEN
-
-C      from g/m2/s to kg/m2/s :
-       conv_Precip = 1. _d -3
-C      from g/m2/s to m/s :
-       conv_EmP = conv_Precip / rhoConstFresh 
+C     from g/m2/s to kg/m2/s :
+      conv_Precip = 1. _d -3
+C     from g/m2/s to m/s :
+      conv_EmP = conv_Precip / rhoConstFresh 
 #ifdef ALLOW_THSICE
-       IF (useThSIce) conv_EmP = conv_Precip / rhofw 
+      IF (useThSIce) conv_EmP = conv_Precip / rhofw 
 #endif
 
       DO j=1,sNy
@@ -112,17 +112,6 @@ C-    Net short wave (ice-free ocean) into the ocean (+=down)
 
         ENDDO
       ENDDO
-
-      IF ( aim_energPrecip ) THEN
-C--   Add energy flux related to Precip. (snow, T_rain) over ice-free ocean
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
-     &                    + EnPrec(I2,myThid)*prcAtm(i,j)
-         ENDDO
-        ENDDO
-      ENDIF
 
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
@@ -154,15 +143,59 @@ C--   Add energy flux related to Precip. (snow, T_rain) over sea-ice
 C-    positive => add to surface heating
             sHeating(i,j,bi,bj) = sHeating(i,j,bi,bj)
      &                          + EnPrec(I2,myThid)*prcAtm(i,j)
+            snowPrc(i,j,bi,bj) = 0. _d 0
           ELSE
 C-    negative => make snow
             snowPrc(i,j,bi,bj) = prcAtm(i,j)*conv_precip
           ENDIF
+         ELSE
+            snowPrc(i,j,bi,bj) = 0. _d 0
          ENDIF
         ENDDO
        ENDDO
-      ENDIF
+      ELSEIF ( aim_splitSIOsFx ) THEN
+#else /* ALLOW_THSICE */
+      IF ( aim_splitSIOsFx ) THEN
 #endif /* ALLOW_THSICE */
+       DO j=1,sNy
+        DO i=1,sNx
+         I2 = i+(j-1)*sNx
+         IF ( siceFrac(i,j) .GT. 0. ) THEN
+          icFrac = siceFrac(i,j)/(1. _d 0 - land_frc(i,j,bi,bj))
+          opFrac = 1. _d 0 - icFrac
+
+C-    Net surface heat flux over sea-ice + ice-free ocean (+=down)
+          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)*opFrac
+     &                    + (  SSR(I2,3,myThid)
+     &                       - SLR(I2,3,myThid)
+     &                       - SHF(I2,3,myThid)
+     &                       - EVAP(I2,3,myThid)*ALHC
+     &                      )*icFrac
+C-    E-P over sea-ice + ice-free ocean [m/s]:
+          EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*opFrac
+     &                     + ( EVAP(I2,3,myThid)
+     &                       - prcAtm(i,j) ) * conv_EmP * icFrac
+
+C-    Net short wave (ice-free ocean) into the ocean (+=down)
+          Qsw(i,j,bi,bj) = opFrac*Qsw(i,j,bi,bj)
+     &                   + icFrac*SSR(I2,3,myThid)
+
+         ENDIF
+        ENDDO
+       ENDDO
+C-- 
+      ENDIF
+
+      IF ( aim_energPrecip ) THEN
+C--   Add energy flux related to Precip. (snow, T_rain) over ice-free ocean
+        DO j=1,sNy
+         DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &                    + EnPrec(I2,myThid)*prcAtm(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
 
       DO j=1,sNy
         DO i=1,sNx
