@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.12 2004/03/10 03:46:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.13 2004/04/02 00:53:18 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -106,6 +106,7 @@ C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
 cs!   this is not correct! <= need paired exchange for DXF,DYF
       _EXCH_XY_R4(DXF,myThid)
       _EXCH_XY_R4(DYF,myThid)
+      IF (useCubedSphereExchange) THEN
 cs! fix overlaps:
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -127,6 +128,7 @@ cs! fix overlaps:
         ENDDO
        ENDDO
       ENDDO
+      ENDIF
 cs
 
       CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,RA,  1,myThid)
@@ -136,6 +138,7 @@ C-    Corner quantities
 C       *********** this are not degbugged ************
       CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,XG,  1,myThid)
       CALL MDSREADFIELD('LATG.bin',readBinaryPrec,'RS',1,YG,  1,myThid)
+      IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       bi=3
       bj=1
@@ -152,6 +155,7 @@ cs-   this block needed by cubed sphere until we write more useful I/O routines
       bj=bj+2
       YG(sNx+1,1,bj,1)=YG(1,1,bi,1)
 cs-   end block
+      ENDIF
       CALL EXCH_Z_XY_RS(XG,myThid)
       CALL EXCH_Z_XY_RS(YG,myThid)
 
@@ -160,8 +164,10 @@ cs-   end block
 cs-   this block needed by cubed sphere until we write more useful I/O routines
 C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
 cs!   this is not correct <= need paired exchange for dxv,dyu
-cs    CALL EXCH_Z_XY_RS(DXV,myThid)
-cs    CALL EXCH_Z_XY_RS(DYU,myThid)
+      IF (.NOT.useCubedSphereExchange) THEN
+      CALL EXCH_Z_XY_RS(DXV,myThid)
+      CALL EXCH_Z_XY_RS(DYU,myThid)
+      ELSE
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 cs! fix overlaps:
@@ -184,8 +190,10 @@ cs! fix overlaps:
        ENDDO
       ENDDO
 cs-   end block
+      ENDIF
 
       CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,RAZ,  1,myThid)
+      IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       CALL EXCH_Z_XY_RS(RAZ , myThid )
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -195,6 +203,7 @@ cs-   this block needed by cubed sphere until we write more useful I/O routines
        ENDDO
       ENDDO
 cs-   end block
+      ENDIF
       CALL EXCH_Z_XY_RS(RAZ,myThid)
 
 C-    Staggered (u,v pairs) quantities
@@ -204,6 +213,7 @@ C-    Staggered (u,v pairs) quantities
 
       CALL MDSREADFIELD('RAW.bin',readBinaryPrec,'RS',1,RAW,  1,myThid)
       CALL MDSREADFIELD('RAS.bin',readBinaryPrec,'RS',1,RAS,  1,myThid)
+      IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -214,10 +224,12 @@ c        RAS(J,sNy+1,bi,bj)=RAS(J,1,bi,bj)
        ENDDO
       ENDDO
 cs-   end block
+      ENDIF
       CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
 
       CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,DXG,  1,myThid)
       CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,DYG,  1,myThid)
+      IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -228,6 +240,7 @@ c        DXG(J,sNy+1,bi,bj)=DXG(J,1,bi,bj)
        ENDDO
       ENDDO
 cs-   end block
+      ENDIF
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
 
 c     write(10) XC
