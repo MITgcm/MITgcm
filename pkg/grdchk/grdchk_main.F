@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.11 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.12 2003/11/04 20:47:42 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -128,6 +128,8 @@ c     == local variables ==
       _RL tmpplot2(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tmpplot3(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
 c     == end of interface ==
 CEOP
 
@@ -178,17 +180,17 @@ cphadmtlm)
          grdchk_epsfac = 1. _d 0
       end if
 
-      print *, 'ph-grd 3 -------------------------------'
+      print *, 'grad-res -------------------------------'
       print ('(2a)'), 
-     &     ' ph-grd 3  proc    #    i    j    k            fc ref',
+     &     ' grad-res  proc    #    i    j    k            fc ref',
      &     '        fc + eps        fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
       print ('(2a)'), 
-     &     ' ph-grd 3  proc    #    i    j    k          tlm grad',
+     &     ' grad-res  proc    #    i    j    k          tlm grad',
      &     '         fd grad      1 - fd/tlm'
 #else
       print ('(2a)'), 
-     &     ' ph-grd 3  proc    #    i    j    k          adj grad',
+     &     ' grad-res  proc    #    i    j    k          adj grad',
      &     '         fd grad      1 - fd/adj'
 #endif
 
@@ -407,20 +409,28 @@ c******************************************************
                itestmem  ( ichknum ) = itest
                ierrmem   ( ichknum ) = ierr
                   
-               print *, 'ph-grd 3 -------------------------------'
-               print '(a,5I5,2x,3(1x,E15.9))', ' ph-grd 3 ',
+               print *, 'grad-res -------------------------------'
+               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
      &              myprocid,ichknum,itilepos,jtilepos,layer,
      &              fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-               print '(a,5I5,2x,3(1x,E15.9))', ' ph-grd 3 ',
+               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              ftlxxmemo, gfd, ratio_ftl
+               WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
+     &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
-               print '(a,5I5,2x,3(1x,E15.9))', ' ph-grd 3 ',
+               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              adxxmemo, gfd, ratio_ad
+               WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
+     &              'precision_grdchk_result ADM ', fcref, adxxmemo
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
 
             endif

@@ -80,6 +80,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer ierrmem ( maxgrdchecks )
 
 #ifdef ALLOW_OBCS_CONTROL
+      common /grdchk_obcs_mask_r/
+     &                            grdchk_maskxz, grdchk_maskyz
       _RL     grdchk_maskxz(1-olx:snx+olx,nr,nsx,nsy,nobcs)
       _RL     grdchk_maskyz(1-oly:sny+oly,nr,nsx,nsy,nobcs)
 #endif
