@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.4 2002/09/05 20:49:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.5 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -202,7 +202,7 @@ C     5. secant bulk modulus K of sea water at p
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             write(msgBuf,'(a)') 
-     &           'WARNING: (see Jackett and McDougall 1995, JPO)'
+     &           'WARNING: (see Jackett and McDougall 1995, JAOT)'
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             write(msgBuf,'(a)') 
@@ -414,14 +414,12 @@ C     check nonlinear EOS
          
             call find_rho(
      &           bi, bj, iMin, iMax, jMin, jMax,  k, k,
-     &           equationOfState,
      &           tFld, sFld, rholoc, myThid )
 
             call find_bulkmod(
      &           bi, bj, imin, imax, jmin, jmax, k, k, 
      &           tFld, sFld, bulkMod, myThid )
-            
-      
+
             write(msgBuf,
      &           '(a4,f4.1,a5,f4.1,a6,f5.0,a5,a3,f10.5,1x,f11.5)')
      &           'rho(', sFld(i,j,k,bi,bj), ' PSU,',
@@ -430,8 +428,18 @@ C     check nonlinear EOS
      &           rloc(kcheck), bloc(kcheck)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
-            write(msgBuf,'(a4,a32,f10.5,1x,f11.5)')
-     &           'rho ', ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
+            write(msgBuf,'(a14,a22,f10.5,1x,f11.5)')
+     &           'rho(find_rho) ',
+     &           ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &           SQUEEZE_RIGHT , 1)
+
+            call find_rho_scalar( tFld(i,j,k,bi,bj), sLoc(kcheck),
+     &           pLoc(kcheck), rhoLoc(i,j), myThid )
+            bulkMod(i,j) = 0. _d 0
+            write(msgBuf,'(a21,a15,f10.5,1x,f11.5)')
+     &           'rho(find_rho_scalar) ',
+     &           ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             

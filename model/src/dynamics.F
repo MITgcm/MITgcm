@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.89 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.90 2002/09/18 16:38:01 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -160,9 +160,9 @@ C                      index into fVerTerm.
       INTEGER k, km1, kp1, kup, kDown
 
 Cjmc : add for phiHyd output <- but not working if multi tile per CPU
-c     CHARACTER*(MAX_LEN_MBUF) suff 
-c     LOGICAL  DIFFERENT_MULTIPLE
-c     EXTERNAL DIFFERENT_MULTIPLE
+c      CHARACTER*(MAX_LEN_MBUF) suff 
+c      LOGICAL  DIFFERENT_MULTIPLE
+c      EXTERNAL DIFFERENT_MULTIPLE
 Cjmc(end)
  
 C---    The algorithm...
@@ -449,11 +449,11 @@ C--     End If implicitViscosity.AND.momStepping
         ENDIF
  
 Cjmc : add for phiHyd output <- but not working if multi tile per CPU
-c       IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime+deltaTClock,myTime) 
-c    &  .AND. buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-c         WRITE(suff,'(I10.10)') myIter+1
-c         CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid) 
-c       ENDIF
+c        IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime+deltaTClock,myTime) 
+c     &       .AND. buoyancyRelation .ne. 'OCEANIC' ) THEN
+c           WRITE(suff,'(I10.10)') myIter+1
+c           CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid) 
+c        ENDIF
 Cjmc(end)
 
 #ifdef ALLOW_TIMEAVE
@@ -465,6 +465,14 @@ Cjmc(end)
 
        ENDDO
       ENDDO
+
+Cml(
+C     In order to compare the variance of phiHydLow of a p/z-coordinate
+C     run with etaH of a z/p-coordinate run the drift of phiHydLow
+C     has to be removed by something like the following subroutine:
+C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskH, maskH, rA, drF,
+C     &                'phiHydLow', myThid )
+Cml)
 
 #ifndef DISABLE_DEBUGMODE
       If (debugMode) THEN

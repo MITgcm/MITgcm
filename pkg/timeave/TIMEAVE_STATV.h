@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.3 2002/01/03 16:25:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.4 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_TIMEAVE
@@ -39,6 +39,9 @@ C     UTtave       :: uVel * theta (* hFacW)
 C     VTtave       :: vVel * theta (* hFacS)
 C     WTtave       :: wVel * theta
 C     phiHydtave   :: Hydrostatic (ocean) pressure / (atmos) geo- Potential
+C     phiHydLowtave:: Hydrostatic (ocean) pressure / (atmos) geo- Potential
+C                     at the fixed boundary: (ocean) bottom pressure
+C                     (atmos) geo- Potential
 C     ConvectCountTave :: Average number of convective adjustment event
 
       COMMON /TAVE_TIME/ TimeAve_half,TimeAve_full
@@ -51,7 +54,9 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                  thetatave,salttave,
      &                  TTtave,UUtave,VVtave,
      &                  UTtave,VTtave,WTtave,
-     &                  phiHydtave,ConvectCountTave
+     &                  phiHydtave,
+     &                  phiHydLowtave,phiHydLow2Tave,
+     &                  ConvectCountTave
 c    &                 ,KEtave
       _RL  etatave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  eta2Tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -68,6 +73,8 @@ c     _RL  KEtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ConvectCountTave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef NONLIN_FRSURF

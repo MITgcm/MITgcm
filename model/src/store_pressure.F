@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.4 2002/09/05 20:49:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.5 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -40,6 +40,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I,J
       INTEGER  I,  J
+CEOP
 
 C
 C     compute the pressure for use in the equation of state

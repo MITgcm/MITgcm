@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.8 2002/05/30 22:48:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.9 2002/09/18 16:38:01 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,7 +111,7 @@ CADJ &     key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
             CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K-1,K-1,eosType,
+     I           bi,bj,iMin,iMax,jMin,jMax,K-1,K-1,
      I           theta,salt,
      O           rhoKm1,
      I           myThid )
@@ -124,7 +124,7 @@ CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,K-1,eosType,
+     I           bi,bj,iMin,iMax,jMin,jMax,K,K-1,
      I           theta,salt,
      O           rhoK,
      I           myThid )

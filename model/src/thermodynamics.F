@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.25 2002/07/13 04:59:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.26 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -315,7 +315,7 @@ CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
-     I        bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
+     I        bi, bj, iMin, iMax, jMin, jMax, k, k,
      I        theta, salt,
      O        rhoK,
      I        myThid )
@@ -325,7 +325,7 @@ CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
              CALL FIND_RHO(
-     I        bi, bj, iMin, iMax, jMin, jMax, k-1, k, eosType,
+     I        bi, bj, iMin, iMax, jMin, jMax, k-1, k,
      I        theta, salt,
      O        rhoKm1,
      I        myThid )

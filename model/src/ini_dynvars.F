@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.6 2001/11/08 20:57:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.7 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,6 +92,7 @@ C-      2D arrays
 #ifdef INCLUDE_CD_CODE
           etaNm1(I,J,bi,bj)=0. _d 0
 #endif
+          phiHydLow(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 

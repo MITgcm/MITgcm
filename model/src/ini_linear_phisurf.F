@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.3 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.4 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,6 +40,7 @@ C     I,J,K
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER I, J, K
+      _RL     rhoLoc
       _RL     dPIdp
 CEOP
 
@@ -79,7 +80,32 @@ C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
           ENDDO
          ENDDO
         ENDDO
-      ELSE
+      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+            IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0 
+     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
+             k = ksurfC(I,J,bi,bj)
+             CALL FIND_RHO_SCALAR( 
+     &            tRef(k), sRef(k), Ro_surf(I,J,bi,bj),
+     &            rhoLoc, myThid )
+             if ( rhoLoc+rhoNil .eq. 0. _d 0 ) then
+              Bo_surf(I,J,bi,bj) = 0. _d 0
+             else
+              Bo_surf(I,J,bi,bj) = 1./(rhoLoc+rhoNil)
+             endif
+             recip_Bo(I,J,bi,bj) =  rhoLoc+rhoNil
+            ELSE
+              Bo_surf(I,J,bi,bj)  = 0. _d 0
+              recip_Bo(I,J,bi,bj) = 0. _d 0
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
 C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
 C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -100,6 +126,8 @@ C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
           ENDDO
          ENDDO
         ENDDO
+      ELSE
+        STOP 'INI_LINEAR_PHISURF: We should never reach this point!'
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -108,8 +136,9 @@ C--   Update overlap regions
       _EXCH_XY_R8(Bo_surf, myThid)
       _EXCH_XY_R8(recip_Bo, myThid)
 
-      IF ( buoyancyRelation .eq. 'ATMOSPHERIC' .AND. 
-     &     .NOT.uniformLin_PhiSurf ) THEN
+      IF ( ( buoyancyRelation .eq. 'ATMOSPHERIC' .OR. 
+     &       buoyancyRelation .eq. 'OCEANICP'         ) 
+     &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid) 
       ENDIF
 

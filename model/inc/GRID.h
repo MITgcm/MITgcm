@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.19 2002/08/15 17:25:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.20 2002/09/18 16:38:01 mlosch Exp $
 C $Name:  $
 C
 CBOP
@@ -314,6 +314,7 @@ C     drF    - Cell face separation along Z axis ( units of r ).
 C     Rcolumn  -Total thickness (in r_unit) of the fluid column
 C     R_low  - base of fluid in r_unit (Depth(m) / Pressure(Pa) at top Atmos.)
 C     Ro_surf- surface reference (at rest) position, r_unit.
+C     klowC  - index of the lowest ``wet cell'' (2D)
 C     hFac   - Fraction of cell in vertical which is open i.e how 
 C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
@@ -366,6 +367,9 @@ C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar
 C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
+      COMMON /GRID_I/ klowC
+      INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
       COMMON /GRID_R/
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,HFacC,HFacW,HFacS,

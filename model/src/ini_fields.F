@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.13 2002/07/13 04:59:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.14 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,7 @@ C--   Set model variables to initial/restart conditions
        CALL INI_THETA( myThid )
        CALL INI_SALT( myThid )
        CALL INI_PSURF( myThid )
+       CALL INI_PRESSURE( myThid )
 #ifdef INCLUDE_EP_FORCING_CODE
        CALL INI_EP( myThid )
 #endif

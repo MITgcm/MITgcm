@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.19 2002/08/15 17:25:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.20 2002/09/18 16:38:01 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: CALC_PHI_HYD
 C     !INTERFACE:
       SUBROUTINE CALC_PHI_HYD(
      I                         bi, bj, iMin, iMax, jMin, jMax, K,
-     I                         theta, salt,
+     I                         tFld, sFld,
      U                         phiHyd,
      I                         myThid)
 C     !DESCRIPTION: \bv
@@ -18,7 +18,7 @@ C     | o Integrate the hydrostatic relation to find the Hydros. |
 C     *==========================================================*
 C     |    Potential (ocean: Pressure/rho ; atmos = geopotential)|
 C     | On entry:                                                |
-C     |   theta,salt    are the current thermodynamics quantities|
+C     |   tFld,sFld     are the current thermodynamics quantities|
 C     |                 (unchanged on exit)                      |
 C     |   phiHyd(i,j,1:k-1) is the hydrostatic Potential         |
 C     |                 at cell centers (tracer points)          |
@@ -51,12 +51,13 @@ C     == Global variables ==
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 #include "SURFACE.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
-      _RL theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL salt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
       
@@ -132,11 +133,11 @@ C       P(z=eta) = P(atmospheric_loading)
 C       Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE tFld(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
-     &                 theta, salt,
+        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
+     &                 tFld, sFld,
      &                 alphaRho, myThid)
 
 C       Hydrostatic pressure at cell centers
@@ -163,11 +164,25 @@ C-----------------------------------------------------------------------
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 C
+             
             phiHyd(i,j,k)=phiHyd(i,j,k)+
      &          0.5*dRloc*gravity*alphaRho(i,j)*recip_rhoConst
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
      &          0.5*dRlocKp1*gravity*alphaRho(i,j)*recip_rhoConst
 C-----------------------------------------------------------------------
+
+C---------- Compute bottom pressure deviation from gravity*rho0*H
+C           This has to be done starting from phiHyd at the current
+C           tracer point and .5 of the cell's thickness has to be
+C           substracted from hFacC
+            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+     &              + (hFacC(i,j,k,bi,bj)-0.5)*drF(K)
+     &                   *gravity*alphaRho(i,j)*recip_rhoConst
+     &              + gravity*etaN(i,j,bi,bj)
+            ENDIF
+C-----------------------------------------------------------------------
+
           ENDDO
         ENDDO
         
@@ -199,11 +214,11 @@ c    &  -(Ro_surf(i,j,bi,bj)-.5*drF( kSurfC(i,j,bi,bj) ))*recip_rhoNil
 C       Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE tFld(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
-     &                 theta, salt,
+        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
+     &                 tFld, sFld,
      &                 alphaRho, myThid)
 
 C       Hydrostatic pressure at cell centers
@@ -230,6 +245,18 @@ C
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
      &          0.5*dRlocKp1*locAlpha
 C-----------------------------------------------------------------------
+
+C---------- Compute gravity*(sea surface elevation)
+C           This has to be done starting from phiHyd at the current
+C           tracer point and .5 of the cell's thickness has to be
+C           substracted from hFacC
+            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+     &              + (hFacC(i,j,k,bi,bj)-0.5)*drF(k)*locAlpha
+     &              + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+            ENDIF
+C-----------------------------------------------------------------------
+
           ENDDO
         ENDDO
 
@@ -256,7 +283,7 @@ C-----------------------------------------------------------------------
            DO i=iMin,iMax
              phiHyd(i,j,K)=
      &          ddPIp*maskC(i,j,K,bi,bj)
-     &               *(theta(I,J,K,bi,bj)-tRef(K))
+     &               *(tFld(I,J,K,bi,bj)-tRef(K))
            ENDDO
           ENDDO
         ELSE
@@ -267,12 +294,12 @@ C-------- This discretization is the energy conserving form
            DO i=iMin,iMax
               phiHyd(i,j,K)=phiHyd(i,j,K-1)
      &           +ddPI*maskC(i,j,K-1,bi,bj)
-     &                *(theta(I,J,K-1,bi,bj)-tRef(K-1))
+     &                *(tFld(I,J,K-1,bi,bj)-tRef(K-1))
      &           +ddPI*maskC(i,j, K ,bi,bj)
-     &                *(theta(I,J, K ,bi,bj)-tRef( K ))
+     &                *(tFld(I,J, K ,bi,bj)-tRef( K ))
 C             Old code (atmos-exact) looked like this
 Cold          phiHyd(i,j,K)=phiHyd(i,j,K-1) - ddPI*
-Cold &      (theta(I,J,K-1,bi,bj)+theta(I,J,K,bi,bj)-2.*tRef(K))
+Cold &      (tFld(I,J,K-1,bi,bj)+tFld(I,J,K,bi,bj)-2.*tRef(K))
            ENDDO
           ENDDO
         ENDIF
@@ -296,7 +323,7 @@ C---------
            DO i=iMin,iMax
              phiHyd(i,j,K) =
      &          ddPIp*_hFacC(I,J, K ,bi,bj)
-     &               *(theta(I,J, K ,bi,bj)-tRef( K ))
+     &               *(tFld(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
           ENDDO
         ELSE
@@ -308,9 +335,9 @@ C---------
            DO i=iMin,iMax
              phiHyd(i,j,K) = phiHyd(i,j,K-1)
      &         +ddPIm*_hFacC(I,J,K-1,bi,bj)
-     &               *(theta(I,J,K-1,bi,bj)-tRef(K-1))
+     &               *(tFld(I,J,K-1,bi,bj)-tRef(K-1))
      &         +ddPIp*_hFacC(I,J, K ,bi,bj)
-     &               *(theta(I,J, K ,bi,bj)-tRef( K ))
+     &               *(tFld(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
           ENDDO
         ENDIF
@@ -335,7 +362,7 @@ C---------
              phiHyd(i,j,K) =
      &        ( ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
-     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
           ENDDO
@@ -348,11 +375,11 @@ C---------
            DO i=iMin,iMax
              phiHyd(i,j,K) = phiHyd(i,j,K-1)
      &        + ddPIm*0.5
-     &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
+     &               *(tFld(i,j,K-1,bi,bj)-tRef(K-1))
      &               * maskC(i,j,K-1,bi,bj)
      &        +(ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
-     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
           ENDDO
@@ -380,7 +407,7 @@ C---------
              phiHyd(i,j,K) =
      &        ( ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
-     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
           ENDDO
@@ -395,11 +422,11 @@ C---------
            DO i=iMin,iMax
              phiHyd(i,j,K) = phiHyd(i,j,K-1)
      &        + ddPIm*0.5
-     &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
+     &               *(tFld(i,j,K-1,bi,bj)-tRef(K-1))
      &               * maskC(i,j,K-1,bi,bj)
      &        +(ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
-     &               *(theta(i,j, K ,bi,bj)-tRef( K ))
+     &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
           ENDDO

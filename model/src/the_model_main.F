@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.45 2002/09/16 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.46 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 CBOI
@@ -142,6 +142,7 @@ C    | | | |-INI_VEL    :: Initialize 3D flow field.
 C    | | | |-INI_THETA  :: Set model initial temperature field.
 C    | | | |-INI_SALT   :: Set model initial salinity field.
 C    | | | |-INI_PSURF  :: Set model initial free-surface height/pressure.
+C    | | | |-INI_PRESSURE :: Compute model initial hydrostatic pressure
 C    | | |
 C    | | |-INI_TR1      :: Set initial tracer 1 distribution.
 C    | | |

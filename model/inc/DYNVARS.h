@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.17 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.18 2002/09/18 16:38:01 mlosch Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: DYNVARS.h
@@ -81,3 +81,8 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
      &                       kapgm
       _RL  kapgm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+
+C     diagnostic variable: holds phiHyd at the rigid surface
+C     (bottom in z-coordinates, top in p-coordinates)
+      COMMON /DYNVARS_R_DIAG/ phiHydLow     
+      _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

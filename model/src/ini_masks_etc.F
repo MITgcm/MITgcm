@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.25 2001/11/08 16:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.26 2002/09/18 16:38:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -137,6 +137,12 @@ C       Note: if no fluid (continent) ==> ksurf = Nr+1
             ksurfC(I,J,bi,bj) = k
             maskH(i,j,bi,bj) = 1.
             tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
+           ENDIF
+          ENDDO
+          kLowC(I,J,bi,bj) = 0
+          DO K= 1, Nr
+           IF (hFacC(I,J,K,bi,bj).NE.0) THEN
+              kLowC(I,J,bi,bj) = K
            ENDIF
           ENDDO
          ENDDO

@@ -1,7 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.85 2002/09/16 18:23:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.86 2002/09/18 16:38:01 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46g_post
+o Include a new diagnostic variable phiHydLow for the ocean model
+  - in z-coordinates, it is the bottom pressure anomaly
+  - in p-coordinates, it is the sea surface elevation
+  - in both cases, these variable have global drift, reflecting the mass
+    drift in z-coordinates and the volume drift in p-coordinates
+  - included time averaging for phiHydLow, be aware of the drift!
+o depth-dependent computation of Bo_surf for pressure coordinates 
+  in the ocean (buoyancyRelation='OCEANICP')
+  - requires a new routine (FIND_RHO_SCALAR) to compute density with only 
+    Theta, Salinity, and Pressure in the parameter list. This routine is 
+    presently contained in find_rho.F. This routine does not give the
+    correct density for 'POLY3', which would be a z-dependent reference
+    density.
+o cleaned up find_rho
+  - removed obsolete 'eqn' from the parameter list.
+o added two new verification experiments: gop and goz
+  (4x4 degree global ocean, 15 layers in pressure and height coordinates)
+checkpoint46g_pre
 
 checkpoint46f_post
 o Enable tangent linear (forward mode) gradient checks:
