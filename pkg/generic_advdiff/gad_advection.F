@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.15 2003/06/27 01:57:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.16 2003/11/25 23:31:44 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -28,7 +28,11 @@ C  time-stepping.
 C  \end{itemize}
 CEOI
 
+#include "PACKAGES_CONFIG.h"
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "CPP_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GAD_ADVECTION
@@ -390,7 +394,7 @@ C--   End of K loop for horizontal fluxes
 C--   Start of k loop for vertical flux
       DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC 
-         kkey = (ikey-1)*Nr + k
+         kkey = (igadkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   kup    Cycles through 1,2 to point to w-layer above
@@ -400,13 +404,6 @@ C--   kDown  Cycles through 2,1 to point to w-layer below
 c     kp1=min(Nr,k+1)
       kp1Msk=1.
       if (k.EQ.Nr) kp1Msk=0.
-
-#ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE localTijk(:,:,k)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE rTrans(:,:)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C-- Compute Vertical transport
 C     Note: wVel needs to be masked 
@@ -419,6 +416,7 @@ C- Surface interface :
          rTransKp1(i,j) = rTrans(i,j)
          rTrans(i,j) = 0.
          fVerT(i,j,kUp) = 0.
+         af(i,j) = 0.
         ENDDO
        ENDDO
 
@@ -439,6 +437,13 @@ C--   Residual transp = Bolus transp + Eulerian transp
      &   CALL GMREDI_CALC_WFLOW(
      &                    rTrans, bi, bj, k, myThid)
 #endif /* ALLOW_GMREDI */
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE localTijk(:,:,k)  
+CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ STORE rTrans(:,:)  
+CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Compute vertical advective flux in the interior:
        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -462,6 +467,13 @@ C-    add the advective flux to fVerT
 
 C- end Surface/Interior if bloc
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE rTrans(:,:)  
+CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ STORE rTranskp1(:,:)  
+CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of fluxes
       DO j=1-Oly,sNy+Oly
