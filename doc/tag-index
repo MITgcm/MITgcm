@@ -1,7 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.51 2001/09/27 14:25:32 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.52 2001/09/27 20:13:58 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint42
+  Fixed AD-related problems:
+o Store directives up-to-date with re-arranged Adams-Bashforth
+  (mainly thermodynamics.F)
+o New store directives for multi-dim. advection schemes
+  * new CPP flag ALLOW_MULTI_DIM_ADVECTION
+  * new common block and key passkey
+  (mainly gad_advection.F)
+o Modified store directives for split of dynamics/thermodynamics
+  for the case ALLOW_KPP
+o Cleaned argument list for timestep_tracer.F
 
 checkpoint41
 o re-formatted/added comments in prologues of key subroutines
