@@ -1,0 +1,6 @@
+
+C----------------------------------------
+C subroutine exf_check_range 
+C----------------------------------------
+CADJ SUBROUTINE exf_check_range  INPUT  = 1,2,3
+CADJ SUBROUTINE exf_check_range  OUTPUT =
