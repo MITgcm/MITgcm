@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.18 2004/09/01 02:43:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.19 2004/09/22 21:19:44 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -27,8 +27,8 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, ndim
       character*(*) name
-      integer dlens(*), inds_beg(*), inds_end(*)
-      character*(*) dnames(*)
+      integer dlens(ndim), inds_beg(ndim), inds_end(ndim)
+      character*(*) dnames(ndim)
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -624,9 +624,8 @@ C     !ROUTINE: MNC_CW_ADD_VATTR_TEXT
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
      I     vname, 
-     I     ntat, 
-     I     tnames, 
-     I     tvals, 
+     I     tname, 
+     I     tval, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -636,14 +635,13 @@ C     !USES:
       implicit none
 
 C     !INPUT PARAMETERS:
-      integer myThid, ntat
-      character*(*) vname, tnames(*), tvals(*)
+      integer myThid
+      character*(*) vname, tname, tval
 CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     ntat, 0, 0, 
-     &     tnames, ' ', ' ', 
-     &     tvals, 0, 0.0D0, myThid )
+     &     tname, ' ', ' ', 
+     &     tval, 0, 0.0D0, myThid )
 
       RETURN
       END
@@ -655,9 +653,8 @@ C     !ROUTINE: MNC_CW_ADD_VATTR_INT
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_INT( 
      I     vname, 
-     I     niat, 
-     I     inames, 
-     I     ivals, 
+     I     iname, 
+     I     ival, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -666,15 +663,14 @@ C     !USES:
       implicit none
 
 C     !INPUT PARAMETERS:
-      integer myThid, niat
-      character*(*) vname, inames(*)
-      integer ivals(*)
+      integer myThid
+      character*(*) vname, iname
+      integer ival
 CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     0, niat, 0, 
-     &     ' ', inames, ' ', 
-     &     ' ', ivals, 0.0D0, myThid )
+     &     ' ', iname, ' ', 
+     &     ' ', ival, 0.0D0, myThid )
 
       RETURN
       END
@@ -686,9 +682,8 @@ C !ROUTINE: MNC_CW_ADD_VATTR_DBL
 C !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
      I     vname, 
-     I     ndat, 
-     I     dnames, 
-     I     dvals, 
+     I     dname, 
+     I     dval, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -697,15 +692,14 @@ C     !USES:
       implicit none
 
 C     !INPUT PARAMETERS:
-      integer myThid, ndat
-      character*(*) vname, dnames(*)
-      REAL*8 dvals(*)
+      integer myThid
+      character*(*) vname, dname
+      REAL*8 dval
 CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     0, 0, ndat, 
-     &     ' ', ' ', dnames, 
-     &     ' ', 0, dvals, myThid )
+     &     ' ', ' ', dname, 
+     &     ' ', 0, dval, myThid )
 
       RETURN
       END
@@ -717,9 +711,8 @@ C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
      I     vname, 
-     I     ntat,   niat,   ndat,
-     I     tnames, inames, dnames,
-     I     tvals,  ivals,  dvals, 
+     I     tname, iname, dname,
+     I     tval,  ival,  dval, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -730,16 +723,16 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid, ntat, niat, ndat
+      integer myThid
       character*(*) vname
-      character*(*) tnames(*), inames(*), dnames(*)
-      character*(*) tvals(*)
-      integer ivals(*)
-      REAL*8 dvals(*)
+      character*(*) tname, iname, dname
+      character*(*) tval
+      integer ival
+      REAL*8 dval
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i, n, nvf,nvl, n1,n2, indv
+      integer n, nvf,nvl, n1,n2, indv
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Functions
@@ -759,40 +752,34 @@ C     Check that vname is defined
 
 C     Text Attributes
       n = mnc_cw_vnat(1,indv)
-      DO i = 1,ntat
-        n1 = IFNBLNK(tnames(i))
-        n2 = ILNBLNK(tnames(i))
-        mnc_cw_vtnm(n+i,indv)(1:MNC_MAX_CHAR) =
+      n1 = IFNBLNK(tname)
+      n2 = ILNBLNK(tname)
+      mnc_cw_vtnm(n+1,indv)(1:MNC_MAX_CHAR) =
+     &     mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_cw_vtnm(n+1,indv)(1:(n2-n1+1)) = tname(n1:n2)
+      n1 = IFNBLNK(tval)
+      n2 = ILNBLNK(tval)
+      mnc_cw_vtat(n+1,indv)(1:MNC_MAX_CHAR) =
      &       mnc_blank_name(1:MNC_MAX_CHAR)
-        mnc_cw_vtnm(n+i,indv)(1:(n2-n1+1)) = tnames(i)(n1:n2)
-        n1 = IFNBLNK(tvals(i))
-        n2 = ILNBLNK(tvals(i))
-        mnc_cw_vtat(n+i,indv)(1:MNC_MAX_CHAR) =
-     &       mnc_blank_name(1:MNC_MAX_CHAR)
-        mnc_cw_vtat(n+i,indv)(1:(n2-n1+1)) = tvals(i)(n1:n2)
-      ENDDO
-      mnc_cw_vnat(1,indv) = n + ntat
-
+      mnc_cw_vtat(n+1,indv)(1:(n2-n1+1)) = tval(n1:n2)
+      mnc_cw_vnat(1,indv) = n + 1
+      
 C     Integer Attributes
       n = mnc_cw_vnat(2,indv)
-      DO i = 1,niat
-        n1 = IFNBLNK(inames(i))
-        n2 = ILNBLNK(inames(i))
-        mnc_cw_vinm(n+i,indv)(1:(n2-n1+1)) = inames(i)(n1:n2)
-        mnc_cw_viat(n+i,indv) = ivals(i)
-      ENDDO
-      mnc_cw_vnat(2,indv) = n + niat
+      n1 = IFNBLNK(iname)
+      n2 = ILNBLNK(iname)
+      mnc_cw_vinm(n+1,indv)(1:(n2-n1+1)) = iname(n1:n2)
+      mnc_cw_viat(n+1,indv) = ival
+      mnc_cw_vnat(2,indv) = n + 1
 
 C     Double Attributes
       n = mnc_cw_vnat(3,indv)
-      DO i = 1,ndat
-        n1 = IFNBLNK(dnames(i))
-        n2 = ILNBLNK(dnames(i))
-        mnc_cw_vdnm(n+i,indv)(1:(n2-n1+1)) = dnames(i)(n1:n2)
-        mnc_cw_vdat(n+i,indv) = dvals(i)
-      ENDDO
-      mnc_cw_vnat(3,indv) = n + ndat
-
+      n1 = IFNBLNK(dname)
+      n2 = ILNBLNK(dname)
+      mnc_cw_vdnm(n+1,indv)(1:(n2-n1+1)) = dname(n1:n2)
+      mnc_cw_vdat(n+1,indv) = dval
+      mnc_cw_vnat(3,indv) = n + 1
+      
       RETURN
       END
 

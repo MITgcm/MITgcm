@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.2 2004/09/10 12:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.3 2004/09/22 21:19:44 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -115,51 +115,51 @@ C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('HFacW', 'Cen_xy_Hn__C__-', 4,5,myThid)
         CALL MNC_CW_ADD_VNAME('HFacS', 'Cen_xy_Hn__C__-', 4,5,myThid)
         
-        CALL MNC_CW_ADD_VATTR_TEXT('drC',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('drC','description',
      &       'r cell center separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('drF',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
      &       'r cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('saFac',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('saFac','description',
      &       'shallow atmosphere factor',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dxC',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dxC','description',
      &       'x cell center separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dyC',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dyC','description',
      &       'y cell center separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dxF',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dxF','description',
      &       'x cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dyF',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dyF','description',
      &     'y cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dxG',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dxG','description',
      &     'x cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dyG',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dyG','description',
      &       'y cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dxV',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dxV','description',
      &       'x v-velocity separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('dyU',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('dyU','description',
      &       'y u-velocity separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('rA',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('rA','description',
      &       'r-face area',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('rAw',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('rAw','description',
      &       '',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('rAs',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('rAs','description',
      &       '',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('rAz',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
      &       '',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('fCori',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('fCori','description',
      &       'Coriolis f',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('fCoriG',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('fCoriG','description',
      &       'Coriolis f',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('R_low',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('R_low','description',
      &       'base of fluid in r-units',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('Ro_surf',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('Ro_surf','description',
      &       'surface reference (at rest) position',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('Depth',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('Depth','description',
      &       'fluid thickness in r coordinates (at rest)',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('HFacC',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('HFacC','description',
      &       'C-facing vertical fraction of open cell',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('HFacW',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('HFacW','description',
      &       'W-facing vertical fraction of open cell',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('HFacS',1,'description',
+        CALL MNC_CW_ADD_VATTR_TEXT('HFacS','description',
      &       'S-facing vertical fraction of open cell',myThid)
         
 C       Write the GRID.h variables to a file

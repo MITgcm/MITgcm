@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.350 2004/09/22 15:55:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.351 2004/09/22 21:19:44 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o make the MNC_CW_ADD_VATTR_* subroutines all take scalar arguments
+  which simplifies the calls and passes the ifc check-bounds test
 
 checkpoint55b_post
 o add a 2D scalar, Z location, exchange_2 routine.
