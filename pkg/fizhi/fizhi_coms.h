@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_coms.h,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
 
 C The physics state uses the dynamics dimensions in the horizontal
 C     and the land dimensions in the horizontal for turbulence variables

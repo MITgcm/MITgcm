@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.6 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
        subroutine diagnostics_fill_state(myThid)
        implicit none
 #include "PACKAGES_CONFIG.h"

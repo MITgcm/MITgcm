@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.5 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
        subroutine gridalt_update(myThid)
 c***********************************************************************
 c subroutine gridalt_update

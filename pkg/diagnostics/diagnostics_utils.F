@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.8 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
       subroutine getdiag (myThid,lev,ipoint,undef,qtmp)
 C***********************************************************************        
 C  PURPOSE                                                                      

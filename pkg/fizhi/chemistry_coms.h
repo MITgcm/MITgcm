@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/chemistry_coms.h,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
 c Chemistry Variables Dimensions
 c -------------------------------
       integer nlatsoz, nlevsoz, ntimesoz, nlatsq, nlevsq, ntimesq,

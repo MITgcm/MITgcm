@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
      . Nsx,Nsy,i1,i2,j1,j2,bi,bj,Nrphys,Lbot,dpphys,numlevphys,nlperdyn)
 c***********************************************************************

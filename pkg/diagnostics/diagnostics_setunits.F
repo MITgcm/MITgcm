@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
       subroutine diagnostics_setunits (myThid, chardiag, diagunits)
 C***********************************************************************
 C  Purpose

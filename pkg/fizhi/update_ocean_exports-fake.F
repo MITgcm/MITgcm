@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/update_ocean_exports-fake.F,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
        subroutine update_ocean_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_ocean_exports - 'Wrapper' routine to update

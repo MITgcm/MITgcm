@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_mapping.h,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
 c Alternate grid Mapping Common
 c ------------------------------
       common /gridalt_mapping/ nlperdyn,dpphys0,dpphys,

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.10 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
       subroutine  diagout (myThid,myIter,listnum)
 C***********************************************************************
 C

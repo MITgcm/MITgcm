@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.4 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
       subroutine dyn2phys(qdyn,pedyn,im1,im2,jm1,jm2,lmdyn,Nsx,Nsy,
      . idim1,idim2,jdim1,jdim2,bi,bj,windphy,pephy,Lbot,lmphy,nlperdyn,
      . flg,qphy)

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
        subroutine AtoC(myThid,fieldin1,fieldin2,mask,im1,im2,jm1,jm2,
      .  numlevs,Nsx,Nsy,idim1,idim2,jdim1,jdim2,fieldout1,fieldout2)
 c----------------------------------------------------------------------

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Name:  $
+
 CBOP
 C     !ROUTINE: FIZHI_WRITE_STATE 
 C     !INTERFACE:
