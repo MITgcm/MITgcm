@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.75 2003/02/28 02:52:49 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.76 2003/03/19 23:25:53 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -363,8 +363,8 @@ set KFLAGS1    = (  )
 set KFLAGS2    = (  )
 set LIBS       = (  )
 set KPPFILES   = (  )
-set NOOPTFILES = (  )
-set NOOPTFLAGS = (  )
+if (! $?NOOPTFILES ) set NOOPTFILES = (  )
+if (! $?NOOPTFLAGS ) set NOOPTFLAGS = (  )
 set RMFILES    = (  )
 
 # We often want to use different compile/link options is using MPI
@@ -579,6 +579,7 @@ switch ($platform$USEMPI)
       set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
       if ($?IEEE) set FFLAGS = ( $FFLAGS '-ffloat-store' )
       set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
+      set NOOPTFLAGS = ( '-O0' )
       breaksw
      case pgf77:
       set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
