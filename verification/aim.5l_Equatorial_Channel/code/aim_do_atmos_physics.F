@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.8 2001/09/27 23:42:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.9 2002/09/27 20:07:48 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -17,30 +17,24 @@ C     | which can be included as external forcing terms in the dynamical |
 C     | tendency routines. Packages should communicate this information  |
 C     | through common blocks.                                           |
 C     \==================================================================/
-      IMPLICIT rEAL*8 (A-H,O-Z)
+      IMPLICIT NONE
 
 C     -------------- Global variables ------------------------------------
-C     Physics package
-#include "atparam.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h"
 
-C     MITgcm
+C-- MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "AIM_FFIELDS.h"
 
-C     Physics package
+C-- Physics package
+#include "AIM_FFIELDS.h"
+#include "AIM_GRID.h"
 #include "com_physvar.h"
 #include "com_forcing1.h"
-#include "Lev_def.h"
 
 C     -------------- Routine arguments -----------------------------------
       _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -50,83 +44,46 @@ C     -------------- Routine arguments -----------------------------------
 
 #ifdef ALLOW_AIM
 C     -------------- Local variables -------------------------------------
-C     I,J,K,I2,J2   - Loop counters
+C     I,J,K,I2      - Loop counters
 C     tYear         - Fraction into year
-C     mnthIndex     - Current month
-C     prevMnthIndex - Month last time this routine was called.
-C     tmp4          - I/O buffer ( 32-bit precision )
-C     fNam          - Work space for file names
-C     mnthNam       - Month strings
 C     hInital       - Initial height of pressure surfaces (m)
 C     pSurfs        - Pressure surfaces (Pa)
 C     Katm          - Atmospheric K index
       INTEGER I
       INTEGER I2
       INTEGER J
-      INTEGER J2
       INTEGER K
-      INTEGER IG0
-      INTEGER JG0
-      REAL    tYear
-      INTEGER mnthIndex
-      INTEGER prevMnthIndex
-      DATA    prevMnthIndex / 0 /
-      SAVE    prevMnthIndex
-      LOGICAL FirstCall
-      DATA    FirstCall /.TRUE./
-      SAVE    FirstCall
-      LOGICAL CALLFirst
-      DATA    CALLFirst /.TRUE./
-      SAVE    CALLFirst
-      INTEGER nxIo 
-      INTEGER nyIo
-      PARAMETER ( nxIo = 128, nyIo = 64 )
-      Real*4  tmp4(nxIo,nyIo)
-      CHARACTER*16 fNam
-      CHARACTER*3 mnthNam(12)
-      DATA mnthNam /
-     & 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 
-     & 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' /
-      SAVE mnthNam
-      REAL    hInitial(Nr)
-      REAL    hInitialW(Nr)
+      _RL     tYear
+      _RL     hInitial(Nr)
+      _RL     hInitialW(Nr)
       DATA    hInitial / 17338.0,10090.02,5296.88,2038.54,418.038/
       SAVE    hInitial
       DATA    hInitialW / 15090.4, 8050.96, 4087.75, 1657.54, 0. /
-      REAL    pSurfs(Nr)
+      _RL     pSurfs(Nr)
       DATA    pSurfs   / 75.D2, 250.D2, 500.D2, 775.D2, 950.D2 /
       SAVE    pSurfs
-      REAL    pSurfw(Nr)
+      _RL     pSurfw(Nr)
       DATA    pSurfw / 150.D2, 350.D2, 650.D2, 900.D2, 1000.D2 /
       SAVE    pSurfw
-      REAL    RD
-      REAL    CPAIR
-      REAL    RhoG1(sNx*sNy,Nr)
-      INTEGER npasdt
-      DATA npasdt /0/
-      SAVE npasdt
-      REAL Soilqmax
-      REAL phiTotal(sNx,sNy,Nr)
-      _RL  phiTCount
-      _RL  phiTSum
-      _RL  ans
-      real pvoltotNiv5
-      SAVE pvoltotNiv5
-      real ptotalNiv5
+      _RL     RD
+      _RL     CPAIR
+      _RL     pGround
+      _RL     RhoG1(sNx*sNy,Nr)
+c     _RL  phiTotal(sNx,sNy,Nr)
+c     _RL  phiTCount
+c     _RL  phiTSum
+c     _RL  ans
+c     _RL  pvoltotNiv5
+c     SAVE pvoltotNiv5
+c     _RL  ptotalNiv5
       INTEGER Katm
 
-C
       pGround = 1.D5
       CPAIR   = 1004
       RD      =  287
 
       CALL AIM_DYN2AIM( bi, bj, currentTime, myThid )
 
-C     Assume only one tile per proc. for now
-      IG0 = myXGlobalLo+(bi-1)*sNx
-      JG0 = myYGlobalLo+(bj-1)*sNy
-
-C      
 C     Physics package works with sub-domains 1:sNx,1:sNy,1:Nr.
 C     Internal index mapping is linear in X and Y with a second
 C     dimension for the vertical.
@@ -136,46 +93,47 @@ C     ( I don't think the old formula was strictly "correct" for orography
 C       but I have implemented it as was for now. As implemented
 C       the mean heave of the bottom (K=Nr) level is calculated rather than
 C       the mean heave of the base of the atmosphere. )
-      phiTCount = 0.
-      phiTSum   = 0.
-      DO K=1,Nr
-      DO J=1,sNy
-       DO I=1,sNx
-        phiTotal(I,J,K)  = etaN(i,j,bi,bj)
-        phiTCount        = phiTCount + hFacC(i,j,Nr,bi,bj)
-       ENDDO
-      ENDDO
-      ENDDO
-      DO K=1,Nr
-       DO J=1,sNy
-        DO I=1,sNx
-         phiTotal(I,J,K) = phiTotal(I,J,K) +
-     &   recip_rhoConst*(phi_hyd(i,j,k))
-        ENDDO
-       ENDDO
-      ENDDO
-      DO J=1,sNy
-       DO I=1,sNx
-        phiTSum = phiTSum + phiTotal(I,J,Nr)
-       ENDDO
-      ENDDO
-      ans = phiTCount
+c     phiTCount = 0.
+c     phiTSum   = 0.
+c     DO K=1,Nr
+c     DO J=1,sNy
+c      DO I=1,sNx
+c       phiTotal(I,J,K)  = etaN(i,j,bi,bj)
+c       phiTCount        = phiTCount + hFacC(i,j,Nr,bi,bj)
+c      ENDDO
+c     ENDDO
+c     ENDDO
+c     DO K=1,Nr
+c      DO J=1,sNy
+c       DO I=1,sNx
+c        phiTotal(I,J,K) = phiTotal(I,J,K) +
+c    &   recip_rhoConst*(phi_hyd(i,j,k))
+c       ENDDO
+c      ENDDO
+c     ENDDO
+c     DO J=1,sNy
+c      DO I=1,sNx
+c       phiTSum = phiTSum + phiTotal(I,J,Nr)
+c      ENDDO
+c     ENDDO
+c     ans = phiTCount
 C     _GLOBAL_SUM_R8( phiTCount, myThid )
-      phiTcount = ans
-      ans = phiTSum
+c     phiTcount = ans
+c     ans = phiTSum
 C     _GLOBAL_SUM_R8( phiTSum, myThid )
-      phiTSum = ans
+c     phiTSum = ans
 C     ptotalniv5=phiTSum/phiTCount
-      ptotalniv5=0.
+c     ptotalniv5=0.
 
 #ifndef OLD_AIM_INTERFACE
-c_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
-c      ==> move water wapor from the stratos to the surface level.
+C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
+C      ==> move water wapor from the stratos to the surface level.
       DO J = 1-Oly, sNy+Oly
        DO I = 1-Olx, sNx+Olx
-c       k = k_surf(i,j,bi,bj)
-c       salt(I,J,k,bi,bj) = salt(I,J,k,bi,bj)
-c    &   + maskC(i,j,Nr,bi,bj)*salt(I,J,Nr,bi,bj)*drF(Nr)*recip_drF(k)
+        k = ksurfC(i,j,bi,bj)
+cEqCh   IF (k.LE.Nr)
+cEqCh&    salt(I,J,k,bi,bj) = salt(I,J,k,bi,bj)
+cEqCh&                      + salt(I,J,Nr,bi,bj)*drF(Nr)*recip_drF(k)
         salt(I,J,Nr,bi,bj) = 0.
        ENDDO
       ENDDO
@@ -198,9 +156,8 @@ C        Physics works with temperature - not potential temp.
 #else
          QG1(I2,Katm,myThid)   = MAX(salt(I,J,K,bi,bj), 0. _d 0)
 #endif
-         PHIG1(I2,Katm,myThid) = (phiTotal(I,J,K)- ptotalniv5 ) 
-     &                  + gravity*Hinitial(Katm)
-C *NOTE* Fix me for lopped cells <== done !
+         PHIG1(I2,Katm,myThid) = gravity*Hinitial(Katm)
+c    &                         +(phiTotal(I,J,K)- ptotalniv5 )
          IF (maskC(i,j,k,bi,bj).EQ.1.) THEN
            RHOG1(I2,Katm) = pSurfs(Katm)/RD/TG1(I2,Katm,myThid)
          ELSE
@@ -211,7 +168,7 @@ C *NOTE* Fix me for lopped cells <== done !
       ENDDO
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
+C_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
       DO J = 1, sNy
        DO I = 1, sNx
         I2 = I+(J-1)*sNx
@@ -272,85 +229,57 @@ C        Dummy value for land
         PSLG1(I2,myThid) = 0.
        ENDDO
       ENDDO
-cch      write(0,*)  '(PNLEVW(I2),I2=257,384)'
-cch      write(0,*)  (PNLEVW(I2),I2=257,384)
 C
 C
 C     Physics package needs to know time of year as a fraction
       tYear = currentTime/(86400.*360.) -
      &        FLOAT(INT(currentTime/(86400.*360.)))
 C_EqCh: Fix solar insolation with Sun directly overhead on Equator
-      tYear = 0.25
+      tYear = 0.25 _d 0
 
 C
 C     Load external data needed by physics package
-C     1. Albedo
-C     2. Soil moisture
-C     3. Surface temperatures
+C     1. Albedo                (between 0-1)
+C     2. Soil moisture         (between 0-1)
+C     3. Surface temperatures  (in situ Temp. [K])
 C     4. Snow depth            - assume no snow for now
 C     5. Sea ice               - assume no sea ice for now
 C     6. Land sea mask         - infer from exact zeros in soil moisture dataset
 C     7. Surface geopotential  - to be done when orography is in
 C                                dynamical kernel. Assume 0. for now.
-      mnthIndex = INT(tYear*12.)+1
-C_cnh01      IF ( mnthIndex .NE. prevMnthIndex .OR.
-C_cnh01     &     FirstCall ) THEN
-C_cnh01       prevMnthIndex = mnthIndex
-C      Read in surface albedo data (input is in % 0-100 )
-C      scale to give fraction between 0-1 for Francos package.
-C      WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
-C      OPEN(1,FILE=fNam(1:14),STATUS='old',FORM='unformatted')
-C      READ(1) tmp4
-C      CLOSE(1)
-C      DO J=1,nYio
-C       DO I=1,nXio
-C        tmp4(I,J) = aim_albedo(I,J)/100.
-C       ENDDO
-C      ENDDO
+
+C      Load in surface albedo data (in [0,1]) from aim_albedo to alb0 :
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          alb0(I2,myThid) = 0.
-c_EqCh   alb0(I2,myThid) = aim_albedo(I,J,bi,bj)/100.
+cEqCh    alb0(I2,myThid) = aim_albedo(I,J,bi,bj)
         ENDDO
        ENDDO
-C      Read in surface temperature data (input is in absolute temperature)
-C      WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.sun.b'
-C      OPEN(1,FILE=fNam(1:15),STATUS='old',FORM='unformatted')
-C      READ(1) tmp4
-C      CLOSE(1)
+C      Load in surface temperature data from aim_surfTemp to stl1 & sst1 :
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          sst1(I2,myThid) = 300.
          stl1(I2,myThid) = 300.
-c_EqCh   sst1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
-c_EqCh   stl1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
+cEqCh    sst1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
+cEqCh    stl1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
          sst1(I2,myThid) = 300.
-     &    +10.*exp( -((float(I)-64.5)/25.)**2 )
-     &    +10.*exp( -((float(J)-12.5)/25.)**2 )
+     &    +10. _d 0 *exp( -((float(I)-64.5 _d 0)/25. _d 0)**2 )
+     &    +10. _d 0 *exp( -((float(J)-12.5 _d 0)/25. _d 0)**2 )
          stl1(I2,myThid) = sst1(I2,myThid)
         ENDDO
        ENDDO
 C
-C      Read in soil moisture data (input is in cm in bucket of depth 20cm. )
+C      Load in soil moisture data (in [0,1]) from aim_soilMoisture to soilq1 :
 C??? NOT CLEAR  scale for bucket depth of 75mm which is what Franco uses.
-C      WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.sun.b'
-C      OPEN(1,FILE=fNam(1:16),STATUS='old',FORM='unformatted')
-C      READ(1) tmp4
-C      CLOSE(1)
-C      WRITE(0,*) ' Read file ', fNam(1:16), IG0, JG0
-cdj       tmp4 = (tmp4*7.5/20.)*10.
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          soilq1(I2,myThid) = 0.
-c_EqCh   soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)/20.
+cEqCh    soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)
         ENDDO
        ENDDO
-C_cnh01      ENDIF
-C
-C_cnh01      IF ( FirstCall ) THEN
 C      Set snow depth, sea ice to zero for now
 C      Land-sea mask ( figure this out from where 
 C                      soil moisture is exactly zero ).
@@ -366,8 +295,7 @@ C                      soil moisture is exactly zero ).
 C      open(77,file='lsmask',form='unformatted')
 C      write(77) fmask1
 C      close(77)
-C_cnh01      ENDIF
-C
+
 C Addition may 15 . Reset humidity to 0. if negative
 C ---------------------------------------------------
 #ifdef OLD_AIM_INTERFACE
@@ -388,11 +316,9 @@ C ---------------------------------------------------
 C     Calculate diagnostics for AIM
       CALL AIM_CALC_DIAGS( bi, bj, currentTime, myThid )
 #endif /* ALLOW_TIMEAVE */
-C
-      FirstCall = .FALSE.
 
       CALL AIM_AIM2DYN( bi, bj, currentTime, myThid )
-C
+
 #endif /* ALLOW_AIM */
 
       RETURN
