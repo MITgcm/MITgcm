@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.25 2004/12/14 19:56:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.26 2005/03/01 15:25:11 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1400,6 +1400,8 @@ c ---------------------------------------------------------
 
 c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
 c ----------------------------------------------------------------------------
+c     print *,' RNDCLOUD: first ',first,' iras ',iras,' iras0 ',iras0
+c     print *,' RNDCLOUD: irm,nrnd,mcheck=',irm,nrnd,mcheck
       if( first.and.(iras.gt.1) .or. iras.ne.iras0+1 )then
        print *,' first ',first,' iras ',iras,' iras0 ',iras0
        if( myid.eq.1 ) print *, 'Recreating Rand Numb Array in RNDCLOUD'
@@ -1445,7 +1447,6 @@ c --------------------------------------------------------------------
       integer iseed
       real *8 seed,port_rand
       _RL random_numbx
-      random_numbx = 0
 #ifdef CRAY
       _RL ranf
       random_numbx = ranf()
@@ -1453,8 +1454,10 @@ c --------------------------------------------------------------------
 #ifdef SGI
       _RL rand
       random_numbx = rand()
-#endif
+#else
+      seed = iseed
       random_numbx = port_rand(seed)
+#endif
 #endif
       return
       end
