@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.72 2004/07/06 00:58:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.73 2004/07/07 01:32:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -609,6 +609,10 @@ C--      Apply open boundary conditions
 #endif   /* ALLOW_OBCS */
 
 #ifdef ALLOW_TIMEAVE
+        IF ( taveFreq.GT. 0. _d 0 .AND.
+     &       buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+          CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
+        ENDIF
 #ifndef HRCUBE
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
