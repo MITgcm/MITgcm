@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.6 2004/07/13 21:18:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.7 2004/07/13 21:26:32 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -770,9 +770,9 @@ c     o3 (band 5), and h2o (bands 1, 2, and 7) transmission functions.
       logical first
       data first /.true./
 
-#include "h2o.tran3"
-#include "co2.tran3"
-#include "o3.tran3"
+#include "h2o-tran3.h"
+#include "co2-tran3.h"
+#include "o3-tran3.h"
 
       save c1,c2,c3,o1,o2,o3
       save h11,h12,h13,h21,h22,h23,h81,h82,h83
