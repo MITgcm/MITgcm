@@ -69,9 +69,7 @@ c     == local variables ==
       character*(128)   cfile
       character*(80) weightname
 
-#ifdef CTRL_DELZNORM
       _RL delZnorm
-#endif
       integer reclen, irectrue
       integer cunit2, cunit3
       character*(80) cfile2, cfile3
@@ -150,10 +148,10 @@ c--   Only the master thread will do I/O.
 
          reclen = FLOAT(snx*nsx*npx*sny*nsy*npy*4)
          call mdsfindunit( cunit2, mythid )
-         open( cunit2, file=cfile2, status='new',
+         open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
          call mdsfindunit( cunit3, mythid )
-         open( cunit3, file=cfile3, status='new',
+         open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
 
@@ -183,6 +181,11 @@ c--   Only the master thread will do I/O.
          read(cunit) filei
          do k = 1, Nr
          irectrue = (irec-1)*nr + k
+            if ( doZscaleUnpack ) then
+               delZnorm = SQRT(delR(1)/delR(k))
+            else
+               delZnorm = 1. _d 0
+            endif
             cbuffindex = nwetglobal(k)
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
@@ -214,16 +217,16 @@ cph(
 cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
-                        globfld3d(i,bi,ip,j,bj,jp,k) = 
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+                        globfld3d(i,bi,ip,j,bj,jp,k) = delZnorm
+     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
 # ifdef CTRL_UNPACK_PRECISE
-     &                    / sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
+     &                       / sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
 # else
-     &                    / sqrt(weightfld(k,bi,bj))
+     &                       / sqrt(weightfld(k,bi,bj))
 # endif
                      else
-                        globfld3d(i,bi,ip,j,bj,jp,k) = 
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+                        globfld3d(i,bi,ip,j,bj,jp,k) = delZnorm
+     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
 # ifdef CTRL_UNPACK_PRECISE
      &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
 # else

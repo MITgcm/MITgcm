@@ -133,10 +133,10 @@ c--   Only the master thread will do I/O.
 
          reclen = FLOAT(snx*nsx*npx*sny*nsy*npy*4)
          call mdsfindunit( cunit2, mythid )
-         open( cunit2, file=cfile2, status='new',
+         open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
          call mdsfindunit( cunit3, mythid )
-         open( cunit3, file=cfile3, status='new',
+         open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
 
