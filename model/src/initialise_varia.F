@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.28 2002/12/28 10:11:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.29 2003/01/26 21:07:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -158,15 +158,21 @@ CADJ loop = parallel
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
 C     and modify hFac(C,W,S) accordingly :
+      IF ( select_rStar.NE.0 )
+     &  CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
       IF (nonlinFreeSurf.GT.0) THEN
+       IF ( select_rStar.GT.0 ) THEN
+        CALL UPDATE_R_STAR( startTime, nIter0, myThid )
+       ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )
         CALL UPDATE_SURF_DR( startTime, nIter0, myThid )
+       ENDIF
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
       IF ( nonlinFreeSurf.GT.2) THEN
         CALL UPDATE_CG2D( startTime, nIter0, myThid )
       ENDIF
-#endif
+#endif /* NONLIN_FRSURF */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
