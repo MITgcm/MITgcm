@@ -21,6 +21,8 @@ C       |
 C       |-- KPP_INIT
 C       |-- KPP_OPEN_DIAGS
 C       |
+C       |-- SEAICE_INIT
+C       |
 C       |-- OBCS_INIT_VARIABLES
 C       |
 C       |-- CTRL_MAP_INI
@@ -55,6 +57,11 @@ C--   Initialize KPP vertical mixing scheme.
        CALL KPP_INIT( myThid )
        CALL KPP_OPEN_DIAGS( myThid )
       ENDIF
+#endif
+
+#ifdef ALLOW_SEAICE
+C--   Initialize SEAICE model.
+      IF (useSEAICE) CALL SEAICE_INIT( myThid )
 #endif
 
 #ifdef ALLOW_OBCS
