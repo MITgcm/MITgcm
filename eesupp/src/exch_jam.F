@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_jam.F,v 1.2 2000/03/14 20:28:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_jam.F,v 1.3 2000/03/24 19:24:02 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -1216,7 +1216,8 @@ C
        farProc1 = northProc
        farProc2 = southProc
        IF ( farProc1 .NE. myProcId ) THEN
-        CALL JAM_EXCHANGE(farProc1,arr(1,sNy),arr(1,sNy+1),sNx*8,jam_exchKey)
+        CALL JAM_EXCHANGE(farProc1,arr(1,sNy),arr(1,sNy+1),
+     &                    sNx*8,jam_exchKey)
         jam_exchKey = jam_exchKey+1
        ENDIF
    10  CONTINUE
@@ -1250,7 +1251,8 @@ C
          GOTO 20
    21  CONTINUE
        IF ( farProc2 .NE. myProcId ) THEN
-        CALL JAM_EXCHANGE(farProc2,arr(1,sNy),arr(1,sNy+1),sNx*8,jam_exchKey)
+        CALL JAM_EXCHANGE(farProc2,arr(1,sNy),arr(1,sNy+1),
+     &                    sNx*8,jam_exchKey)
         jam_exchKey = jam_exchKey+1
        ENDIF
        CALL JAM_EXCHANGE_MARK
