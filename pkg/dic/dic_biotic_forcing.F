@@ -147,13 +147,11 @@ c add all tendencies for PO4, DOP, ALK, DIC
      &         - maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
            GALK(i,j,k)=+2.d0*car(i,j,k)-R_NP*bio(i,j,k)
            GDIC(i,j,k)=car(i,j,k)+R_CP*bio(i,j,k)
-cQQchange start
            if (PTR_O2(i,j,k).gt.o2crit) then
              GO2(i,j,k)=R_OP*bio(i,j,k)
            else
              GO2(i,j,k)=0.d0
            endif
-cQQchange end
 #ifdef ALLOW_FE
            GFE(i,j,k)=R_FeP*bio(i,j,k)
      &             -Kscav*freefe(i,j,k)
@@ -190,9 +188,6 @@ C update
            PTR_FE(i,j,k)=
      &      PTR_FE(i,j,k)+GFE(i,j,k)*deltaTtracer
 #endif
-cQQchange start
-cQQ        PTR_O2(i,j,k)=max(PTR_O2(i,j,k),O2crit)
-cQQchange end
           ENDDO
          ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.1 2003/06/25 21:00:36 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.2 2003/10/06 20:11:10 stephd Exp $
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CC     Modified from calc_gs.F, 27/8/98, Mick       CC
@@ -149,9 +149,9 @@ c bracketing values (for bracket/bisection)
         phhi = 10.0
         phlo = 5.0
 c convert to [H+]...
-        xguess = 10.0**-phguess
-        xlo = 10.0**-phhi
-        xhi = 10.0**-phlo
+        xguess = 10.0**(-phguess)
+        xlo = 10.0**(-phhi)
+        xhi = 10.0**(-phlo)
         xmid = (xlo + xhi)*0.5
 
 
@@ -216,8 +216,8 @@ cdiags
      &        2.0*pt*k123p*da/a2 -
      &        sit/ksilocal/(1.0+x/ksilocal)**2. +
      &        1.0/c +
-     &        stlocal*(1.0 + kslocal/x/c)**-2.0*(kslocal/c/x2) +
-     &        ftlocal*(1.0 + kflocal/x)**-2.*kflocal/x2 -
+     &        stlocal*(1.0 + kslocal/x/c)**(-2.0)*(kslocal/c/x2) +
+     &        ftlocal*(1.0 + kflocal/x)**(-2.)*kflocal/x2 -
      &        pt*x2*(3.0*a-x*da)/a2
 c evaluate increment in [H+]
             deltax = - fn/df
@@ -408,7 +408,7 @@ c first guess (for newton-raphson)
 cmick - new approx method
 cmick - make estimate of htotal (hydrogen ion conc) using
 cmick   appromate estimate of CA, carbonate alkalinity
-        hguess = 10.0**-phguess
+        hguess = 10.0**(-phguess)
 cmick - first estimate borate contribution using guess for [H+]
         bohg = btlocal*kblocal/(hguess+kblocal)
 

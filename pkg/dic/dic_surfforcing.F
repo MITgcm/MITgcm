@@ -34,13 +34,9 @@ C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax, bi, bj
 
 #ifdef ALLOW_PTRACERS
-#ifdef DIC_ABIOTIC
 C     == Local variables ==
        INTEGER I,J, kLev, it
 C Number of iterations for pCO2 solvers...
-      INTEGER inewtonmax
-      INTEGER ibrackmax
-      INTEGER donewt
 C Solubility relation coefficients
       _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pCO2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -80,7 +76,7 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = 5.1225e-4 * maskC(i,j,kLev,bi,bj)
 #endif
 C FOR NON-INTERACTIVE Si
-             surfsi(i,j)   = 7.6838e-3 * maskC(i,j,kLev,bi,bj)
+             surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
           ENDDO
          ENDDO
 
@@ -89,61 +85,13 @@ C FOR NON-INTERACTIVE Si
      I                       bi,bj,iMin,iMax,jMin,jMax)
 C====================================================================
 
-#define PH_APPROX
-c set number of iterations for [H+] solvers
-#ifdef PH_APPROX
-       inewtonmax = 1
-#else
-       inewtonmax = 10
-#endif
-       ibrackmax = 30
-C determine pCO2 in surface ocean
-C set guess of pH for first step here
-C IF first step THEN use bracket-bisection for first step, 
-C and determine carbon coefficients for safety
-C ELSE use newton-raphson with previous H+(x,y) as first guess
-
-       donewt=1
-
-c for first few timesteps
-       IF(myIter .le. (nIter0+inewtonmax) )then
-          donewt=0
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-                  pH(i,j,bi,bj) = 8.0
-           ENDDO
-          ENDDO
-#ifdef PH_APPROX
-          print*,'QQ: pCO2 approximation method'
-c first approxmation
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         do it=1,10
-          CALL CALC_PCO2_APPROX(
-     I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
-     I        PTR_CO2(i,j,kLev), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
-     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
-     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
-         enddo
-        ENDDO
-       ENDDO
-#else
-          print*,'QQ: pCO2 full method'
-#endif
-       ENDIF
-
-
 c pCO2 solver...
+C$TAF LOOP = parallel
        DO j=1-OLy,sNy+OLy
+C$TAF LOOP = parallel
         DO i=1-OLx,sNx+OLx
 
           IF(maskC(i,j,kLev,bi,bj) .NE. 0.)THEN
-#ifdef PH_APPROX
             CALL CALC_PCO2_APPROX(
      I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
      I        PTR_CO2(i,j,kLev), surfphos(i,j),
@@ -154,18 +102,6 @@ c pCO2 solver...
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
-#else
-            CALL CALC_PCO2(donewt,inewtonmax,ibrackmax,
-     I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
-     I        PTR_CO2(i,j,kLev), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
-     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
-     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
-#endif
           ELSE
              pCO2(i,j,bi,bj)=0. _d 0
           END IF
@@ -243,7 +179,6 @@ C update tendency
           ENDDO
          ENDDO
 
-#endif
 #endif
         RETURN
         END

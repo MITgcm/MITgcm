@@ -2,7 +2,7 @@
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE TRACER_MEANAREA(myIter,myTime,myThid,tracer, kLev,
+      SUBROUTINE TRACER_MEANAREA(myThid,tracer, kLev,
      &                    gsm_tracer)
       IMPLICIT NONE
 #include "SIZE.h"
@@ -10,13 +10,9 @@ C !INTERFACE: ==========================================================
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef DIC_ABIOTIC
-#include "DIC_ABIOTIC.h"
-#endif
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
-      INTEGER myThid, myIter
-      _RL myTime
+      INTEGER myThid
       INTEGER kLev
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL gsm_tracer

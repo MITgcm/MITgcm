@@ -22,9 +22,7 @@ C     == GLobal variables ==
 #include "DIC_ABIOTIC.h"
 #ifdef DIC_BIOTIC
 #include "DIC_BIOTIC.h"
-#endif
-#ifdef ALLOW_SEAICE
-#include "ICE.h"
+#include "DIC_LOAD.h"
 #endif
 
 C     == Routine arguments ==
@@ -34,36 +32,12 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
-      COMMON /dic_load/
-     &    wspeed0, wspeed1, ice0, ice1, atmosp0,
-     &    atmosp1, silica0, silica1
-#ifdef DIC_BIOTIC
-     &    ,feinput0,feinput1
-#endif
-      _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS silica0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS silica1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef DIC_BIOTIC
-      _RS feinput0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS feinput1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
        INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
-c
-      IF ( periodicExternalForcing ) THEN
-
-
 C First call requires that we initialize everything to zero for safety
-cQQQ need to check timing
-       IF ( myIter .EQ. nIter0+1 ) THEN
+       IF (myIter .EQ. nIter0) THEN
          CALL LEF_ZERO( wspeed0,myThid )
          CALL LEF_ZERO( wspeed1,myThid )
          CALL LEF_ZERO( atmosp0,myThid )
@@ -72,11 +46,13 @@ cQQQ need to check timing
          CALL LEF_ZERO( silica1,myThid )
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_FE
          CALL LEF_ZERO( feinput0,myThid )
          CALL LEF_ZERO( feinput1,myThid )
 #endif
        ENDIF
+c
+      IF ( periodicExternalForcing ) THEN
 
 
 C Now calculate whether it is time to update the forcing arrays
@@ -99,10 +75,9 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
        intime1=intime1+1
 
 
-cswd QQ  need nIter0+1 since chem forcing after time step
        IF (
      &   Iftm-Ifprd*(intime0-1).EQ. 0
-     &   .OR. myIter .EQ. nIter0+1
+     &   .OR. myIter .EQ. nIter0
      &    ) THEN
 
 
@@ -132,15 +107,13 @@ C      data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
      &        myIter,myThid )
        ENDIF
-#ifndef ALLOW_SEAICE
        IF ( IceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IceFile,ice0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( IceFile,ice1,intime1,
      &       myIter,myThid )
        ENDIF
-#endif
-#ifdef DIC_BIOTIC   
+#ifdef ALLOW_FE
        IF ( IronFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IronFile,feinput0,intime0,
      &       myIter,myThid )
@@ -158,11 +131,9 @@ C
        _EXCH_XY_R4(atmosp1, myThid )
        _EXCH_XY_R4(silica0, myThid )
        _EXCH_XY_R4(silica1, myThid )
-#ifndef ALLOW_SEAICE
        _EXCH_XY_R4(ice0, myThid )
        _EXCH_XY_R4(ice1, myThid )
-#endif
-#ifdef DIC_BIOTIC  
+#ifdef ALLOW_FE
        _EXCH_XY_R4(feinput0, myThid )
        _EXCH_XY_R4(feinput1, myThid )
 #endif
@@ -196,20 +167,16 @@ c QQ         also need to check units, and conversion factors
            ELSE
              SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
            ENDIF
-#ifndef ALLOW_SEAICE
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
            ELSE
             FIce(i,j,bi,bj) =0.d0
            ENDIF
-#else
-           FIce(i,j,bi,bj) = IceMask(i,j,bi,bj)
-#endif
            if (FIce(i,j,bi,bj).lt.1d-2) then
               FIce(i,j,bi,bj) = 0.d0
            endif
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_FE
            IF ( IronFile .NE. ' '  ) THEN
             InputFe(i,j,bi,bj)   = bWght*feinput0(i,j,bi,bj)
      &                          +aWght*feinput1(i,j,bi,bj)

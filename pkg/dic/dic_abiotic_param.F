@@ -18,9 +18,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef DIC_ABIOTIC
 #include "DIC_ABIOTIC.h"
-#endif
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_TR1
@@ -30,7 +28,6 @@ CEndOfInterface
 
 C     == Local variables ==
 
-#ifdef DIC_ABIOTIC
 
       _BARRIER
 
@@ -87,9 +84,6 @@ c
         ENDDO
        ENDDO
       ENDDO
-
-#endif
-
 
 
       RETURN

@@ -24,6 +24,7 @@ C     == GLobal variables ==
 #ifdef DIC_BIOTIC
 #include "DIC_BIOTIC.h"
 #include "DIC_DIAGS.h"
+#include "DIC_COST.h"
 #endif
 #ifdef ALLOW_SEAICE
 #include "ICE.h"
@@ -41,17 +42,18 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, bi, bj, k, it
 c
-      _RL po4cost, o2cost, sumvol, totcost
+      _RL po4cost, o2cost, sumvol
       _RL po4costm, o2costm, sumvolm
 c
 c calculate costfunction
 
-       _BEGIN_MASTER(myThid)
+        _BEGIN_MASTER(myThid)
 
        sumvol= 0. _d 0
        po4cost= 0. _d 0
        o2cost=0.d0
 cswdmonth-add--
+       sumvolm=0.d0
        po4costm=0.d0
        o2costm=0.d0
 cswdmonth -- end add --
@@ -121,7 +123,7 @@ cswdmonth-end
 
         print*,'COST ',totcost, po4cost, o2cost,po4costm,o2costm
 
-      _END_MASTER(myThid)
+       _END_MASTER(myThid)
 c
 #endif
       RETURN

@@ -46,8 +46,15 @@ c
         call insol(myTime,sfac,bj)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+C Fortran-90
+CRG C$TAF INIT bio_export = static, nlev
+C FORTRAN-77 dynamic memory uses adstore adresto
+CRG C$TAF INIT bio_export = memory
+C FORTRAN-77 with know max of nlev
+C$TAF INIT bio_export = static, 10
            lit=sfac(j)
            DO k=1,nlev
+C$TAF STORE lit = bio_export
              atten=(k0*delz(k)*.5)
              if (k.gt.1) atten=(k0*delz(k-1)*.5)
              lit=lit*exp(-atten)*(1.d0-Fice(i,j,bi,bj))
