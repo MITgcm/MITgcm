@@ -1,23 +1,30 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.3 2004/08/07 02:49:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.4 2004/09/02 14:09:19 jmc Exp $
 #
 
+FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/bin/mpif77'
+LINK='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/bin/mpif77'
+INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/include'
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='/lib/cpp  -traditional -P'
+NOOPTFLAGS='-O0'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
+#P3 FOPTIM= ( $FOPTIM '-tpp6 -xWKM' )
+#P4 FOPTIM= ( $FOPTIM '-tpp7 -xWKM' )
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
 else
+#   FOPTIM='-O0 -noalign'
+    FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
 
 LIBS='-lPEPCF90 -lnetcdf'
-NOOPTFLAGS='-O0'
-FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/bin/mpif77'
-LINK='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/bin/mpif77'
-INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/intel/include'
 
+NOOPTFILES='mdsio_byteswapr8.F mdsio_byteswapr4.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F'
