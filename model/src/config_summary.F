@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.25 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.26 2001/02/04 16:46:44 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -39,6 +39,8 @@ C     == Local variables ==
       _RL                     xcoord(Nx)
       _RL                     ycoord(Ny)
       _RL                     rcoord(Nr)
+      INTEGER coordLine
+      INTEGER tileLine
 
 
       _BARRIER
@@ -271,7 +273,53 @@ C     == Local variables ==
       CALL WRITE_1D_R8( rcoord, Nr, INDEX_K,'rcoord = ',
      &'   /* P-point R coordinate (  units of r ) */')
 
-
+C     Grid along selected grid lines
+      coordLine = 1
+      tileLine  = 1
+      CALL WRITE_XY_XLINE_RS( dxF, coordLine, tileLine,
+     I 'dxF','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dxF, coordLine, tileLine, 
+     I 'dxF','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dyF, coordLine, tileLine,
+     I 'dyF','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dyF, coordLine, tileLine, 
+     I 'dyF','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dxG, coordLine, tileLine,
+     I 'dxG','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dxG, coordLine, tileLine, 
+     I 'dxG','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dyG, coordLine, tileLine,
+     I 'dyG','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dyG, coordLine, tileLine, 
+     I 'dyG','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dxC, coordLine, tileLine,
+     I 'dxC','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dxC, coordLine, tileLine, 
+     I 'dxC','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dyC, coordLine, tileLine,
+     I 'dyC','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dyC, coordLine, tileLine, 
+     I 'dyC','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dxV, coordLine, tileLine,
+     I 'dxV','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dxV, coordLine, tileLine, 
+     I 'dxV','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dyU, coordLine, tileLine,
+     I 'dyU','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( dyU, coordLine, tileLine, 
+     I 'dyU','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( rA, coordLine, tileLine,
+     I 'rA','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( rA, coordLine, tileLine, 
+     I 'rA','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( rAw, coordLine, tileLine,
+     I 'rAw','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( rAw, coordLine, tileLine, 
+     I 'rAw','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( rAs, coordLine, tileLine,
+     I 'rAs','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_YLINE_RS( rAs, coordLine, tileLine, 
+     I 'rAs','( m - cartesian, degrees - spherical )')
 
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

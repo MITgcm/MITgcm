@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.19 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.20 2001/02/04 16:46:44 cnh Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -12,7 +12,7 @@ C     |==========================================================|
 C     | This routine produces a standard format for list         |
 C     | one-dimensional INTEGER data in textual form. The format |
 C     | is designed to be readily parsed by a post-processing    |
-C     | uFIELD.                                                 |
+C     | utility.                                                 |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -111,6 +111,8 @@ C     \==========================================================/
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
 
 C     == Routine arguments ==
 C     fld  - Field to be printed
@@ -126,9 +128,13 @@ C     comment - Descriptive comment for field
 CEndofinterface
 
 C     == Local variables ==
+C     ILH, ILC - Index of last balnk in head and comment
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER ILH, ILC
 
-      WRITE(msgBuf,'(A,A)') head, comment
+      ILH=ILNBLNK(head)
+      ILC=ILNBLNK(comment)
+      WRITE(msgBuf,'(A,A)') head(1:ILH), comment(1:ILC)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &    SQUEEZE_RIGHT , 1)
       CALL PRINT_LIST_R8( fld, lFld, index_type, .FALSE., 
@@ -280,4 +286,143 @@ C     == Local variables ==
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &    SQUEEZE_RIGHT , 1)
 
+      END
+
+
+CStartofinterface
+      SUBROUTINE WRITE_XY_XLINE_RS( 
+     I                              fld, sCoord, tCoord, 
+     I                              head, comment )
+C     /==========================================================
+C     | o SUBROUTINE WRITE_XY_XLINE_RS                           |
+C     | Prints out X row of an XY RS field e.g. phi(:,n,:,m)     |
+C     |==========================================================|
+C     | This routine produces a standard format for list         |
+C     | one-dimensional RS data in textual form. The format      |
+C     | is designed to be readily parsed by a post-processing    |
+C     | utility.                                                 |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      EXTERNAL IFNBLNK
+      INTEGER  IFNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
+
+C     == Routine arguments ==
+C     fld    - Field to be printed
+C     sCoord - subgrid coordinate
+C     tCoord - tile coordinate
+C     head - Statement start e.g. phi =
+C     comment - Descriptive comment for field
+      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER sCoord
+      INTEGER tCoord
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+CEndofinterface
+
+C     == Local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf1
+      CHARACTER*(MAX_LEN_MBUF) msgBuf2
+      CHARACTER*10 num1, num2
+      REAL*8 xcoord(sNx*nSx)
+      INTEGER bi, bj, i, j
+      INTEGER IFN1, ILN1, IFN2, ILN2
+      
+      WRITE(msgBuf1,'(A,A)') head,' = '
+      bj = tCoord
+      J  = sCoord
+      WRITE(num1,'(I10)') J
+      WRITE(num2,'(I10)') bj
+      IFN1 = IFNBLNK(num1)
+      ILN1 = ILNBLNK(num1)
+      IFN2 = IFNBLNK(num2)
+      ILN2 = ILNBLNK(num2)
+C     fld(:,J,:,bj)
+      WRITE(msgBuf2,'(A,A,A,A,A,A,A,A,A)')
+     & '  /* ', head,'(:,',
+     & num1(IFN1:ILN1),',:,',
+     & num2(IFN2:ILN2),') ',
+     & comment,' */'
+      DO bi=1,nSx
+       DO I=1,sNx
+        xcoord(sNx*(bi-1)+I)=fld(I,J,bi,bj)
+       ENDDO
+      ENDDO
+      CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,msgBuf1,msgBuf2)
+
+      RETURN
+      END
+
+CStartofinterface
+      SUBROUTINE WRITE_XY_YLINE_RS( 
+     I                              fld, sCoord, tCoord, 
+     I                              head, comment )
+C     /==========================================================
+C     | o SUBROUTINE WRITE_XY_YLINE_RS                           |
+C     | Prints out Y row of an XY RS field e.g. phi(n,:,m,:)     |
+C     |==========================================================|
+C     | This routine produces a standard format for list         |
+C     | one-dimensional RS data in textual form. The format      |
+C     | is designed to be readily parsed by a post-processing    |
+C     | utility.                                                 |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      EXTERNAL IFNBLNK
+      INTEGER  IFNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
+
+C     == Routine arguments ==
+C     fld    - Field to be printed
+C     sCoord - subgrid coordinate
+C     tCoord - tile coordinate
+C     head - Statement start e.g. phi =
+C     comment - Descriptive comment for field
+      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER sCoord
+      INTEGER tCoord
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+CEndofinterface
+
+C     == Local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf1
+      CHARACTER*(MAX_LEN_MBUF) msgBuf2
+      REAL*8 ycoord(sNy*nSy)
+      INTEGER bi, bj, i, j
+      CHARACTER*10 num1, num2
+      INTEGER IFN1, ILN1, IFN2, ILN2
+      
+      WRITE(msgBuf1,'(A,A)') head,' = '
+      bi = tCoord
+      I  = sCoord
+      WRITE(num1,'(I10)') I
+      WRITE(num2,'(I10)') bi
+      IFN1 = IFNBLNK(num1)
+      ILN1 = ILNBLNK(num1)
+      IFN2 = IFNBLNK(num2)
+      ILN2 = ILNBLNK(num2)
+C     fld(I,:,bi,:)
+      WRITE(msgBuf2,'(A,A,A,A,A,A,A,A,A)')
+     & '  /* ',head,'(',
+     & num1(IFN1:ILN1),',:,',
+     & num2(IFN2:ILN2),',:) ',
+     & comment,' */'
+      DO bj=1,nSy
+       DO J=1,sNy
+        ycoord(sNy*(bj-1)+J)=fld(I,J,bi,bj)
+       ENDDO
+      ENDDO
+      CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,msgBuf1,msgBuf2)
+
+      RETURN
       END

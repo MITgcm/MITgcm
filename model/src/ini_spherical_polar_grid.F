@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.16 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.17 2001/02/04 16:46:44 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -311,19 +311,6 @@ C--     Calculate trigonometric terms
 
        ENDDO ! bi
       ENDDO ! bj
-
-      write(0,*) ' yC=', (yC(1,j,1,1),j=1,sNy)
-      write(0,*) 'dxF=', (dXF(1,j,1,1),j=1,sNy)
-      write(0,*) 'dyF=', (dYF(1,j,1,1),j=1,sNy)
-      write(0,*) 'dxG=', (dXG(1,j,1,1),j=1,sNy)
-      write(0,*) 'dyG=', (dYG(1,j,1,1),j=1,sNy)
-      write(0,*) 'dxC=', (dXC(1,j,1,1),j=1,sNy)
-      write(0,*) 'dyC=', (dYC(1,j,1,1),j=1,sNy)
-      write(0,*) 'dxV=', (dXV(1,j,1,1),j=1,sNy)
-      write(0,*) 'dyU=', (dYU(1,j,1,1),j=1,sNy)
-      write(0,*) ' rA=', (rA(1,j,1,1),j=1,sNy)
-      write(0,*) 'rAw=', (rAw(1,j,1,1),j=1,sNy)
-      write(0,*) 'rAs=', (rAs(1,j,1,1),j=1,sNy)
 
       RETURN
       END
