@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.10 2004/10/07 19:31:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.11 2004/10/07 20:06:18 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -123,6 +123,7 @@ C         particular snap-shots
         IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_state', -1, myThid)
           CALL MNC_CW_I_W_S('I','kpp_state',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
           CALL MNC_CW_RL_W('D','kpp_state',0,0,
      &         'KPPviscAz', KPPviscAz, myThid)
           CALL MNC_CW_RL_W('D','kpp_state',0,0,
@@ -252,6 +253,7 @@ C         snap-shots
         IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
           CALL MNC_CW_I_W_S('I','kpp_timeave',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
           CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
      &         'KPPviscAz', KPPviscAzTave, myThid)
           CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
