@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.10 2004/03/03 13:48:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.11 2004/03/03 13:58:29 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -129,9 +129,9 @@ c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
 
       if ( debugLevel .GE. debLevB ) then
-CEH3     This is causing link-time errors because the debug_call subroutine 
-CEH3     does not exist anywhere in the code -- so I am commenting it out.
-CEH3       call debug_call( 'exf_check_range', myThid )
+#ifdef ALLOW_DEBUG
+         call debug_call( 'exf_check_range', myThid )
+#endif
          call exf_check_range( mytime, myiter, mythid )
       endif
 
