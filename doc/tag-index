@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.259 2004/02/23 21:00:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.260 2004/02/26 00:05:44 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o mask vorticity at the corner ; affects global_ocean.cs output
+o fix ini_curvilinear_grid ; test CS experiments with mpi
 o aim.5l_cs: modify sea-ice fraction input file ; update output
 
 checkpoint52k_post
