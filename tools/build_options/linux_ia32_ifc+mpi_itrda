@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.1 2004/09/15 17:51:38 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.2 2004/09/18 16:09:44 edhill Exp $
 #
 # adapted to itrda.acesgrid.org
 # Note:
@@ -18,6 +18,11 @@ LIBS='-L/usr/local/pkg/mpich-gm/mpich-1.2.6..13-gm/ifc/lib -lfmpich -lmpich'
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=1'
 CPP='/lib/cpp  -traditional -P'
 
+NOOPTFLAGS='-O0'
+NOOPTFILES='mdsio_byteswapr8.F mdsio_byteswapr4.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F'
+
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
@@ -26,8 +31,3 @@ if test "x$IEEE" = x ; then
 else
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
-NOOPTFLAGS='-O0'
-
-NOOPTFILES='mdsio_byteswapr8.F mdsio_byteswapr4.F'
-NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
-NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F'

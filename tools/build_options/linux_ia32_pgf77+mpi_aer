@@ -1,17 +1,24 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.2 2003/11/13 22:03:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.3 2004/09/18 16:09:44 edhill Exp $
 #
 
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
-DEFINES='-DWORDLENGTH=4'
 
-
-CPP='/lib/cpp  -traditional -P'
 FC='/opt/mpich/bin/mpif77'
+CC='gcc'
 LINK='/opt/mpich/bin/mpif77'
-FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
-LIBS='-L/opt/mpich/lib/ -lfmpich -lmpich'
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+fi
+
 INCLUDES='-I/opt/mpich/include'
+LIBS='-L/opt/mpich/lib/ -lfmpich -lmpich'

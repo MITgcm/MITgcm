@@ -9,23 +9,22 @@
 #  need -DWORDLENGTH=1 and not -DWORDLENGTH=4 (which is what ifc 6.0) used to have.
 
 
-CPP='/lib/cpp  -traditional -P'
+FC=ifort
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
+LINK='ifort -static'
+CPP='cpp  -traditional -P'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
 else
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
 
-FOPTIM='-O3 -align'
-#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
-#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
-
-FC=ifort
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
-LINK='ifort -static'
 LIBS='-lnetcdf'
 
 

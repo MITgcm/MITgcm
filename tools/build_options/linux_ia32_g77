@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.8 2004/08/29 15:38:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.9 2004/09/18 16:09:44 edhill Exp $
 #  $Name:  $
 #
 
@@ -22,5 +22,5 @@ else
 fi
 
 # netcdf
-# LIBS="-lnetcdf"
+LIBS="-lnetcdf"
 
