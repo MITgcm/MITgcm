@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.132 2003/02/11 04:32:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.133 2003/02/12 17:06:01 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint48e_post
 o New S/R for diagnostic of bottom pressure (phi0surf was missing in c48d_post)
 o dynamics: change definition of computational domain & adapt mom_fluxform
   accordingly ; when viscA4=0, allows to run the dynamics with Olx=Oly=2. 
 o following exp works with Olx=Oly=2 (and pass through checkbounds option):
     adjust_nlfs.cs-32x32x1 adjustment.128x64x1 adjustment.cs-32x32x1
-    exp0 exp1 exp2 exp4 exp5 hs94.cs-32x32x5 hs94.128x64x5
+    exp0 exp1 exp2 exp4 exp5 hs94.cs-32x32x5 hs94.128x64x5 hs94.1x64x5
     global_ocean.90x40x15 global_with_exf global_ocean_pressure 
     inverted_barometer solid-body.cs-32x32x1
   (high order AdvScheme and/or multiDimAd works with Olx=Oly=2 ? not sure)
