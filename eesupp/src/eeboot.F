@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.12 2003/12/15 02:02:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.13 2004/01/09 20:46:09 afe Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,6 +154,12 @@ C--   Pass attributes to the coupler
 C--   Initiialise the multi-process IO package
       CALL DFILE_INIT
 #endif
+
+#ifdef USE_W2
+C--   Initialise WRAPPER2 execution environment
+      CALL W2_EEBOOT
+#endif
+
  
   999 CONTINUE
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/Attic/CPP_EEOPTIONS.h,v 1.2 2001/05/29 14:01:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/Attic/CPP_EEOPTIONS.h,v 1.3 2004/01/09 20:46:10 afe Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -88,6 +88,8 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+#define USE_W2
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
