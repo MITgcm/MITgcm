@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.1 2002/01/09 00:28:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.2 2003/02/08 02:20:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MOM_VECINV( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
-     I        phi_hyd,KappaRU,KappaRV,
+     I        dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U        fVerU, fVerV,
      I        myCurrentTime, myIter, myThid)
 C     /==========================================================\
@@ -36,12 +36,13 @@ C     == Routine arguments ==
 C     fVerU   - Flux of momentum in the vertical
 C     fVerV     direction out of the upper face of a cell K
 C               ( flux into the cell above ).
-C     phi_hyd - Hydrostatic pressure
+C     dPhiHydX,Y :: Gradient (X & Y dir.) of Hydrostatic Potential
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown                     - Index for upper and lower layers.
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -282,16 +283,6 @@ C     Combine fluxes
        ENDDO
       ENDDO
 
-C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
-      IF (momPressureForcing) THEN
-       DO j=1-Olx,sNy+Oly
-        DO i=2-Olx,sNx+Olx
-         pf(i,j) = - _recip_dxC(i,j,bi,bj)
-     &    *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))
-        ENDDO
-       ENDDO
-      ENDIF
-
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
@@ -301,7 +292,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &  *(
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
      &   )
-     & _PHM( +phxFac * pf(i,j) )
+     &  - phxFac*dPhiHydX(i,j)
        ENDDO
       ENDDO
 
@@ -365,16 +356,6 @@ C     Combine fluxes -> fVerV
        ENDDO
       ENDDO
 
-C---  Hydorstatic term (-1/rhoConst . dphi/dy )
-      IF (momPressureForcing) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         pF(i,j) = -_recip_dyC(i,j,bi,bj)
-     &    *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))
-        ENDDO
-       ENDDO
-      ENDIF
-
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -384,7 +365,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &  *(
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
      &   )
-     & _PHM( +phyFac*pf(i,j) )
+     &  - phyFac*dPhiHydY(i,j)
        ENDDO
       ENDDO
 
@@ -504,7 +485,6 @@ C--   Bernoulli term
      &  DIFFERENT_MULTIPLE(diagFreq,myCurrentTime,
      &                     myCurrentTime-deltaTClock)
      & ) THEN
-       CALL WRITE_LOCAL_RL('Ph','I10',Nr,phi_hyd,bi,bj,1,myIter,myThid)
        CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
