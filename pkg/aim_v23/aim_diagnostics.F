@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.7 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.8 2004/07/24 02:41:33 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -236,23 +236,23 @@ C-    Keep record of how much time has been integrated over
         CALL FILL_DIAGNOSTICS(myThid,
      &            'DIABQ   ',0,Nr,1,bi,bj,aim_dSdt)
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'RADSW   ',0,Nr,2,bi,bj,TT_RSW(1,1,myThid))
+     &            'RADSW   ',0,-Nr,2,bi,bj,TT_RSW(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'RADLW   ',0,Nr,2,bi,bj,TT_RLW(1,1,myThid))
+     &            'RADLW   ',0,-Nr,2,bi,bj,TT_RLW(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'DTCONV  ',0,Nr,2,bi,bj,TT_CNV(1,1,myThid))
+     &            'DTCONV  ',0,-Nr,2,bi,bj,TT_CNV(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'TURBT   ',0,Nr,2,bi,bj,TT_PBL(1,1,myThid))
+     &            'TURBT   ',0,-Nr,2,bi,bj,TT_PBL(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'DTLS    ',0,Nr,2,bi,bj,TT_LSC(1,1,myThid))
+     &            'DTLS    ',0,-Nr,2,bi,bj,TT_LSC(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'DQCONV  ',0,Nr,2,bi,bj,QT_CNV(1,1,myThid))
+     &            'DQCONV  ',0,-Nr,2,bi,bj,QT_CNV(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'TURBQ   ',0,Nr,2,bi,bj,QT_PBL(1,1,myThid))
+     &            'TURBQ   ',0,-Nr,2,bi,bj,QT_PBL(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'DQLS    ',0,Nr,2,bi,bj,QT_LSC(1,1,myThid))
+     &            'DQLS    ',0,-Nr,2,bi,bj,QT_LSC(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
-     &            'RELHUM  ',0,Nr,2,bi,bj,RH(1,1,myThid))
+     &            'RELHUM  ',0,-Nr,2,bi,bj,RH(1,1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
      &            'OSR     ',1,1, 2,bi,bj,TSR(1,myThid))
         CALL FILL_DIAGNOSTICS(myThid,
@@ -298,9 +298,9 @@ C-    Keep record of how much time has been integrated over
 #ifdef ALLOW_CLR_SKY_DIAG
         IF ( aim_clrSkyDiag ) THEN 
          CALL FILL_DIAGNOSTICS(myThid,
-     &        'SWCLR   ',0,Nr,2,bi,bj,TT_SWclr(1,1,myThid))
+     &        'SWCLR   ',0,-Nr,2,bi,bj,TT_SWclr(1,1,myThid))
          CALL FILL_DIAGNOSTICS(myThid,
-     &        'LWCLR   ',0,Nr,2,bi,bj,TT_LWclr(1,1,myThid))
+     &        'LWCLR   ',0,-Nr,2,bi,bj,TT_LWclr(1,1,myThid))
          CALL FILL_DIAGNOSTICS(myThid,
      &        'OSRCLR  ',1,1,2,bi,bj,TSWclr(1,myThid))
          CALL FILL_DIAGNOSTICS(myThid,
