@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.15 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.16 2004/11/02 19:09:55 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,7 +47,7 @@ c     _EXCH_XYZ_R8( salt , myThid )
 
 #ifdef ALLOW_PTRACERS
 ceh3 add an IF ( usePTRACERS ) THEN
-      CALL PTRACERS_GTERM_BLOCKING_EXCHANGES(myThid)
+      CALL PTRACERS_GTERM_BLOCKING_EXCH(myThid)
 #endif /* ALLOW PTRACERS */
 
       RETURN

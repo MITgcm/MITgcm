@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.18 2004/09/27 08:02:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.19 2004/11/02 19:09:55 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,7 +69,7 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS)
-     &  CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)
+     &  CALL PTRACERS_FIELDS_BLOCKING_EXCH(myThid)
 #endif /* ALLOW PTRACERS */
 
 #ifdef ALLOW_GGL90

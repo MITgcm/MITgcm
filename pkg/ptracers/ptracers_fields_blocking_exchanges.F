@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.2 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.3 2004/11/02 19:09:55 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_FIELDS_BLOCKING_EXCHANGES
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_FIELDS_BLOCKING_EXCHANGES( myThid )
+      SUBROUTINE PTRACERS_FIELDS_BLOCKING_EXCH( myThid )
 
 C !DESCRIPTION:
 C     Exchange data to update overlaps for passive tracers
