@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.243 2004/01/19 18:59:19 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.244 2004/01/20 17:02:40 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52h_pre
 o shortened offending lines in exch2_send_rx?.template
 o modified W2_EXCH2_TOPOLOGY.h to reflect current topology generator
 o genmake2: add build & execute test for NetCDF code

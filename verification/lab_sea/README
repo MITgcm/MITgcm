@@ -34,8 +34,8 @@ Using testscript to test sea-ice code
 =====================================
 
 Running the testscript experiment:
-  cd verification
-  ./testscript -force lab_sea
+  cd MITgcm/verification
+  ./testreport -t lab_sea
 The default experiment is Experiment 8, below.
 It uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
 
