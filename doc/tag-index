@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.93 2002/11/01 22:00:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.94 2002/11/05 19:13:52 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o switched to g77/ifc from pgf77 in aim experiments
 
 checkpoint46l_post
 o made convective adjustment work with pressure coordinates:
