@@ -6,7 +6,7 @@ ieee='b';
 
 % Dimensions of grid
 nx=60;
-ny=3;
+ny=1;
 nz=20;
 % Nominal depth of model (meters)
 H=200.0;
@@ -49,7 +49,7 @@ end
 fid=fopen('T.init','w',ieee); fwrite(fid,t,prec); fclose(fid);
 
 % Sloping channel 
-slope=0.0
+slope=0.03
 offset=2.5e3;
 dmax=-40.0;
 d=0.0*rand([nx,ny]);
@@ -65,9 +65,9 @@ d(i,j) = dmax;
 end
 end
 end
-%d(nx,:)=0.0;
+d(nx,:)=0.0;
 fid=fopen('topog.slope','w',ieee); fwrite(fid,d,prec); fclose(fid);
-plot(x,d(:,2))
+plot(x,d(:,1))
 
 fid=fopen('delXvar','w',ieee); fwrite(fid,dx,prec); fclose(fid);
 
@@ -98,8 +98,7 @@ end
 end
 %d1(end-1:end,:)=d1(1:2,:); % debug by aja
 fid=fopen('topog.convex','w',ieee); fwrite(fid,d1,prec); fclose(fid);
-hold on
-plot(x,d1(:,2),'g')
+plot(x,d1(:,1),'g')
 
 %convex slope
 d2=zeros(nx,ny);
@@ -126,7 +125,8 @@ end
 %d2(end-1:end,:)=d2(1:2,:); % debug by aja
 fid=fopen('topog.concave','w',ieee); fwrite(fid,d2,prec); fclose(fid);
 hold on
-plot(x,d2(:,2),'r')
+plot(x,d2(:,1),'r')
+hold off
 
 
 fid=fopen('delXvar','w',ieee); fwrite(fid,dx,prec); fclose(fid);

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/SIZE.h,v 1.3 2001/02/04 14:38:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/SIZE.h,v 1.4 2003/05/22 19:59:28 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -37,7 +37,7 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  60,
-     &           sNy =   3,
+     &           sNy =   1,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
