@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.5 2003/05/01 22:17:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.6 2003/08/03 02:58:29 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_TIMEAVE
@@ -40,6 +40,8 @@ C     UTtave       :: uVel * theta (* hFacW)
 C     VTtave       :: vVel * theta (* hFacS)
 C     WTtave       :: wVel * theta
 C     tDiffRtave   :: vertical diffusion flux of Temperature (theta)
+C     uZetatave   ::  uVel*Relativ_Vorticity_3 (computed at v point)
+C     vZetatave   ::  vVel*Relativ_Vorticity_3 (computed at u point)
 C     phiHydtave   :: Hydrostatic (ocean) pressure / (atmos) geo- Potential
 C     phiHydLowtave:: Hydrostatic (ocean) pressure / (atmos) geo- Potential
 C                     at the fixed boundary: (ocean) bottom pressure
@@ -76,6 +78,10 @@ c     _RL  KEtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL TdiffRtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifndef DISABLE_MOM_VECINV
+      _RL uZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
