@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.17 2001/09/26 18:09:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.18 2003/04/17 13:40:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,7 +64,7 @@ C     pulls div(U) + dh/dt back toward zero.
 C     Fully Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx+1
-          pf(i,j) = xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
+          pf(i,j) = xA(i,j)*gU(i,j,k,bi,bj) / deltaTmom
          ENDDO
         ENDDO
       ELSEIF (exactConserv) THEN
@@ -73,7 +73,7 @@ C     Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = implicDiv2Dflow 
-     &             *xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
+     &             *xA(i,j)*gU(i,j,k,bi,bj) / deltaTmom
          ENDDO
         ENDDO
       ELSE
@@ -93,7 +93,7 @@ C        ENDIF
 C#endif
         DO j=1,sNy
          DO i=1,sNx+1
-          pf(i,j) = ( implicDiv2Dflow * gUNm1(i,j,k,bi,bj)
+          pf(i,j) = ( implicDiv2Dflow * gU(i,j,k,bi,bj)
      &          + (1.-implicDiv2Dflow) * uVel(i,j,k,bi,bj)
      &               ) * xA(i,j) / deltaTmom
          ENDDO
@@ -120,7 +120,7 @@ C#endif
 C     Fully Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
-          pf(i,j) = yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
+          pf(i,j) = yA(i,j)*gV(i,j,k,bi,bj) / deltatmom
          ENDDO
         ENDDO
       ELSEIF (exactConserv) THEN
@@ -129,14 +129,14 @@ C     Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
           pf(i,j) = implicDiv2Dflow
-     &             *yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
+     &             *yA(i,j)*gV(i,j,k,bi,bj) / deltatmom
          ENDDO
         ENDDO
       ELSE
 C     Explicit+Implicit part of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
-          pf(i,j) = ( implicDiv2Dflow * gVNm1(i,j,k,bi,bj)
+          pf(i,j) = ( implicDiv2Dflow * gV(i,j,k,bi,bj)
      &          + (1.-implicDiv2Dflow) * vVel(i,j,k,bi,bj)
      &               ) * yA(i,j) / deltaTmom
          ENDDO

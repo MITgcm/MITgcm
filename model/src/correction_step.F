@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.19 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.20 2003/04/17 13:40:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,28 +67,26 @@ C     On/off scaling paramters
 C     Step forward zonal velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
-        uVel(i,j,k,bi,bj)=( gUNm1(i,j,k,bi,bj)
+        uVel(i,j,k,bi,bj)=( gU(i,j,k,bi,bj)
      &       -deltaTmom*hxFac*implicSurfPress*phiSurfX(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &       -deltaTmom*hx3dFac*_recip_dxC(i,j,bi,bj)*
      &          (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
 #endif
      &                    )*_maskW(i,j,k,bi,bj)
-        gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
 C     Step forward meridional velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
-        vVel(i,j,k,bi,bj)=( gVNm1(i,j,k,bi,bj)
+        vVel(i,j,k,bi,bj)=( gV(i,j,k,bi,bj)
      &       -deltaTmom*hyFac*implicSurfPress*phiSurfY(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &       -deltaTmom*hy3dFac*_recip_dyC(i,j,bi,bj)*
      &          (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
 #endif
      &                    )*_maskS(i,j,k,bi,bj)
-        gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
