@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.3 2003/11/17 22:32:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.4 2004/02/23 19:14:22 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -175,13 +175,9 @@ cph Thus, we can only store real values (no integers)
 cph because we only have active file handling to real available.
 # endif
 # ifdef ALLOW_TAMC_CHECKPOINTING
-       nIter0 = INT( startTime/deltaTClock )
        ikey_dynamics = 1
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      myTime = startTime
-      myIter = nIter0
 
       CALL TIMER_START('ECCO SPIN-UP', mythid)
 
@@ -216,6 +212,13 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
 #endif /* ALLOW_MONITOR */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
+#endif
+      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
+      CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
+      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
 
 
 #ifdef ALLOW_COST
