@@ -15,6 +15,7 @@ C     heimbach@mit.edu 11-Jan-2001
      &                     g_gu, g_gv, g_gt, g_gs, 
      &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
       _RL g_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_gs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2003/11/25 19:04:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2004/09/27 18:03:14 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -18,7 +18,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> Extract adjoint state
-#undef ALLOW_AUTODIFF_MONITOR
+#define ALLOW_AUTODIFF_MONITOR
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT

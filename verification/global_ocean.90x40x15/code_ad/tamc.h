@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/tamc.h,v 1.9 2004/09/17 23:06:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/tamc.h,v 1.10 2004/09/27 18:03:14 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,7 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_2
       parameter( nchklev_2      =   120 )
       integer    nchklev_3
-      parameter( nchklev_3      =     3 )
+      parameter( nchklev_3      =    60 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
