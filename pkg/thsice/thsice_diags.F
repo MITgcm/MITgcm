@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.4 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.5 2004/04/08 18:54:26 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -115,10 +115,12 @@ c    &                 bi,bj,myThid)
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(ice_salFx_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ice_flxAtm_Ave, ice_timeAve, 1 ,
+         IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+          CALL TIMEAVE_NORMALIZ(ice_flxAtm_Ave,ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ice_frwAtm_Ave, ice_timeAve, 1 ,
+          CALL TIMEAVE_NORMALIZ(ice_frwAtm_Ave,ice_timeAve, 1 ,
      &                 bi,bj,myThid)
+         ENDIF
          IF ( stepFwd_oceMxL ) THEN
           CALL TIMEAVE_NORMALIZ(ice_tMxL_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
@@ -150,10 +152,12 @@ c    &                 bi,bj,myThid)
      &                       ice_frw2oc_Ave, myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_salFx-T.',  suff,
      &                       ice_salFx_Ave,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
+       IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+        CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
      &                       ice_flxAtm_Ave, myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
+        CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
      &                       ice_frwAtm_Ave, myIter,myThid)
+       ENDIF
        CALL WRITE_FLD_XY_RL('ICE_albedo-T.', suff,
      &                       ice_albedo_Ave, myIter,myThid)
        IF ( stepFwd_oceMxL ) THEN

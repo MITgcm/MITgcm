@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.3 2004/04/08 18:54:26 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -52,7 +52,7 @@ C     == Local variables ==
 
 #ifdef ALLOW_TIMEAVE
 
-      IF ( thSIce_taveFreq .LE. 0. _d 0 ) RETURN
+      IF ( thSIce_taveFreq .GT. 0. _d 0 ) THEN
 
 C--    Time-average
        CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask, 
@@ -87,10 +87,12 @@ c    &                       1, thSIce_deltaT, bi, bj, myThid )
 
 C-- average of atmospheric fluxes : 
 #ifdef ALLOW_TIMEAVE
+      IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
        CALL TIMEAVE_CUMUL_1T(ice_flxAtm_Ave, flxAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_1T(ice_frwAtm_Ave, frwAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
+      ENDIF
 #endif /*ALLOW_TIMEAVE*/
 
 C-- average of oceanic fluxes : 
@@ -113,10 +115,11 @@ C-- average of Ocean Mixed-Layer temp. & salinity
 
        ice_timeAve(1,bi,bj)=ice_timeAve(1,bi,bj)+thSIce_deltaT
 
+      ENDIF
 #endif /* ALLOW_TIMEAVE */
 
       IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime+deltaTClock,myTime)
-     &   ) THEN
+     &     .AND. buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN 
         wrtIter = myIter+1
         CALL WRITE_LOCAL_RL('ice_flxAtm','I10',1,flxAtm,
      &                      bi,bj,1,wrtIter,myThid)
