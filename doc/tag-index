@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.357 2004/09/27 09:01:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.358 2004/09/27 14:54:35 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o multidimAdvection on CS-grid: implement the full 3 pass ; overlap needs to
+    be 2 times larger than the minimum size the advection scheme requires.
+    now get a perfect conservation of salt in advect_cs test-exp (updated)
 o GGL90 (Gaspar's TKE mixed layer)
   - add horizontal diffusion of TKE, requires exchanges in 
     do_fields_blocking_exchanges, horizontal diffusivity is zero by 
