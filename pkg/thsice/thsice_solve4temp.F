@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.4 2004/07/22 22:52:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.5 2004/12/17 03:44:52 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -24,6 +24,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#include "EEPARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.3 2004/05/07 21:33:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.4 2004/12/17 03:44:52 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -23,6 +23,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#include "EEPARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 
