@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.2 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.3 2001/03/06 17:50:15 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_KPP
@@ -14,7 +14,7 @@ C----------------------------------------------------------------
       INTEGER kpp_drctrec
       COMMON /KPP_RECORDNUM1/ kpp_drctrec
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 C----------------------------------------------------------------
 C     kpp_drctrecTave - next record to dump for KPP averaging files
 C----------------------------------------------------------------

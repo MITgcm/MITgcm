@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.2 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.3 2001/03/06 17:50:22 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -8,7 +8,7 @@ C     | GM_DIAGS.h                                               |
 C     | o Header for GM?Redi diagnostic output                   |
 C     \==========================================================/
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 
 C     Keep track of time
       _RL GM_TimeAve(Nr,nSx,nSy)
@@ -30,6 +30,6 @@ C     Storage arrays for time-averages
      &                       Visbeck_K_T
 #endif
 
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_GMREDI */

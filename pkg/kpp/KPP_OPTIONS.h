@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.5 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.6 2001/03/06 17:50:15 jmc Exp $
 C $Name:  $
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
@@ -55,7 +55,7 @@ C   level thickness in the model.
 
 C o Include/exclude various time-averaged diagnostic output
 C   for saving storage space
-#ifdef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef  ALLOW_TIMEAVE
 #define INCLUDE_DIAGNOSTICS_KPP
 #undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
 #endif
