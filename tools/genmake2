@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.16 2003/10/21 19:31:24 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.17 2003/10/21 20:10:12 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -335,6 +335,17 @@ fi
 
 AUTODIFF_PKG_USED=f
 AD_OPTFILE=
+TAF=
+AD_TAF_FLAGS=
+FTL_TAF_FLAGS=
+SVD_TAF_FLAGS=
+TAF_EXTRA=
+TAMC=
+AD_TAMC_FLAGS=
+FTL_TAF_FLAGS=
+SVD_TAMC_FLAGS=
+TAMC_EXTRA=
+
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE NOOPT"
@@ -347,11 +358,11 @@ gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
 gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s7="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF DIFF_FLAGS AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s7="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s8="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s9=""
+gm_s9="TAF_EXTRA TAMC_EXTRA"
 
-gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
+gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8 $gm_s9"
 
 
 echo
@@ -496,6 +507,16 @@ for ac_option ; do
 	-ds | --ds)
 	    DUMPSTATE=t ;;
 	
+	-taf_extra | --taf_extra)
+	    ac_prev=TAF_EXTRA ;;
+	-taf_extra=* | --taf_extra=*)
+	    TAF_EXTRA=$ac_optarg ;;
+
+	-tamc_extra | --tamc_extra)
+	    ac_prev=TAMC_EXTRA ;;
+	-tamc_extra=* | --tamc_extra=*)
+	    TAMC_EXTRA=$ac_optarg ;;
+
 	-*)
 	    echo "Error: unrecognized option: "$ac_option
 	    usage
@@ -1304,6 +1325,9 @@ cleanlinks:
 TAMC           = ${TAMC}
 TAF            = ${TAF}
 
+TAF_EXTRA      = ${TAF_EXTRA}
+TAMC_EXTRA     = ${TAMC_EXTRA}
+
 EOF
 
 ad_vars="AD_TAMC_FLAGS AD_TAF_FLAGS"
@@ -1329,21 +1353,20 @@ echo >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
-
 ad_input_code.f: \$(F77FILES)
 	@make \$(AD_FLOW_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.f
 
 # ... AD ...
 ad_taf_output.f: ad_input_code.f
-	\$(TAF) \$(AD_TAF_FLAGS) ad_input_code.f
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
 
 ad_taf: ad_taf_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
 
 ad_tamc_output.f: ad_input_code.f
-	\$(TAMC) \$(AD_TAMC_FLAGS) ad_input_code.f
+	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_tamc_output.f
 
 ad_tamc: ad_tamc_output.o \$(OBJFILES)
@@ -1352,14 +1375,14 @@ ad_tamc: ad_tamc_output.o \$(OBJFILES)
 
 # ... FLT ...
 flt_taf_output.f: ad_input_code.f
-	\$(TAF) \$(FTL_TAF_FLAGS) ad_input_code.f
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_taf_output.f
 
 flt_taf: flt_taf_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_taf_output.o \$(LIBS) 
 
 flt_tamc_output.f: ad_input_code.f
-	\$(TAMC) \$(FTL_TAF_FLAGS) ad_input_code.f
+	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_tamc_output.f
 
 flt_tamc: flt_tamc_output.o \$(OBJFILES)
@@ -1368,7 +1391,7 @@ flt_tamc: flt_tamc_output.o \$(OBJFILES)
 
 # ... SVD ...
 svd_taf_output.f: ad_input_code.f
-	\$(TAF) \$(SVD_TAF_FLAGS) ad_input_code.f
+	\$(TAF) \$(SVD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > svd_taf_output.f
 
 svd_taf: svd_taf_output.o \$(OBJFILES)
