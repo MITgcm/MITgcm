@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.7 2004/01/17 13:55:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.8 2004/01/18 23:23:15 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -49,11 +49,11 @@ C     Local Variables
       dims(1) =  7
       dims(2) =  4
       dims(3) =  2
-      dims(4) = -1 ! -1 
+      dims(4) = -1
       dnames(1)(1:1) = 'X'
       dnames(2)(1:1) = 'Y'
       dnames(3)(1:1) = 'Z'
-      dnames(4)(1:1) = 'T '
+      dnames(4)(1:1) = 'T'
       myThid = 1
 C     In FORTRAN, the first variable cycles most quickly
       DO ii = 1,MAX_STOR

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.8 2004/01/17 13:55:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.9 2004/01/18 23:23:15 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -341,7 +341,7 @@ C     Arguments
       character*(*) fname,vname
       REAL*8 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname, 1, var, 0.0, 0 )
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,1,0,var,0.0,0)
       RETURN
       END
 
@@ -359,7 +359,7 @@ C     Arguments
       character*(*) fname,vname
       REAL*4 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname, 2, 0.0D0, var, 0 )
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,2,0,0.0D0,var,0)
       RETURN
       END
 
@@ -377,7 +377,64 @@ C     Arguments
       character*(*) fname,vname
       integer var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname, 3, 0.0D0, 0.0, var )
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,3,0,0.0D0,0.0,var)
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_VAR_APPEND_DBL( 
+     I     myThid, 
+     I     fname, 
+     I     vname, 
+     I     var, 
+     I     append )
+
+      implicit none
+C     Arguments
+      integer myThid, append
+      character*(*) fname,vname
+      REAL*8 var(*)
+
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,1,append,var,0.0,0)
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_VAR_APPEND_REAL( 
+     I     myThid, 
+     I     fname, 
+     I     vname, 
+     I     var, 
+     I     append )
+
+      implicit none
+C     Arguments
+      integer myThid, append
+      character*(*) fname,vname
+      REAL*4 var(*)
+
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,2,append,0.0D0,var,0)
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_VAR_APPEND_INT( 
+     I     myThid, 
+     I     fname, 
+     I     vname, 
+     I     var, 
+     I     append )
+
+      implicit none
+C     Arguments
+      integer myThid, append
+      character*(*) fname,vname
+      integer var(*)
+
+      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,3,append,0.0D0,0.0,var)
       RETURN
       END
 
@@ -388,6 +445,7 @@ C==================================================================
      I     fname, 
      I     vname, 
      I     vtype,
+     I     append,
      I     dv,
      I     rv,
      I     iv )
@@ -403,6 +461,7 @@ C     Arguments
       REAL*8 dv(*)
       REAL*4 rv(*)
       integer iv(*)
+      integer append
 
 C     Functions
       integer ILNBLNK
@@ -446,7 +505,10 @@ C     Check for the unlimited dimension
         err = NF_INQ_DIMLEN(fid, did, lend)
         write(msgbuf,'(a)') 'reading current length of unlimited dim'
         CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
-        IF (lend .LT. 1)  lend = lend + 1
+        IF (append .GT. 0) THEN
+          lend = lend + append
+        ENDIF
+        IF (lend .LT. 1) lend = 1
         vstart(k) = lend
         vcount(k) = 1
       ENDIF

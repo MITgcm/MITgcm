@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.7 2004/01/17 13:55:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.8 2004/01/18 23:23:15 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -283,6 +283,69 @@ C     Clear all the file, grid, variable, and dim names and refs
         mnc_f_info(ind,i) = 0
       ENDDO
       mnc_f_names(ind)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_CLOSE_ALL_MATCHING( 
+     I     myThid, 
+     I     fname ) 
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer i,n
+
+      n = ILNBLNK(fname)
+      DO i = 1,MNC_MAX_ID
+
+C       Check that the file is open
+        IF (fname(1:n) .EQ. mnc_f_names(i)(1:n)) THEN
+          CALL MNC_FILE_CLOSE(myThid,mnc_f_names(i))
+        ENDIF
+
+      ENDDO
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_CLOSE_ALL( 
+     I     myThid ) 
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+
+C     Local Variables
+      integer i
+
+      DO i = 1,MNC_MAX_ID
+
+C       Check that the file is open
+        IF (mnc_f_names(i)(1:MNC_MAX_CHAR) 
+     &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
+          CALL MNC_FILE_CLOSE(myThid,mnc_f_names(i))
+        ENDIF
+
+      ENDDO
 
       RETURN
       END
