@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.22 2004/09/20 21:54:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.23 2004/09/24 17:02:34 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -512,8 +512,8 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &   .AND. k.EQ.4 .AND. myIter.EQ.nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
-        CALL DEBUG_CS_CORNER_UV(uDiss,vDiss,k,
-     &                          standardMessageUnit,bi,bj,myThid)
+        CALL DEBUG_CS_CORNER_UV( ' uDiss,vDiss from MOM_VECINV',
+     &             uDiss,vDiss, k, standardMessageUnit,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
 
