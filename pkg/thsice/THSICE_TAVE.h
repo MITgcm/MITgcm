@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.2 2004/07/22 23:02:37 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -27,7 +27,7 @@ C     ice_snowH_Ave  :: cumulated Snow thickness [m]
 C     ice_Tsrf_Ave   :: cumulated surface Temperature [oC]
 C     ice_Tice1_Ave  :: cumulated 1srt level Temp. [oC]
 C     ice_Tice2_Ave  :: cumulated 2nd  level Temp. [oC]
-C     ice_snowPr_Ave :: cumulated snow precipitation (+=down) [kg/m2]
+C     ice_snowPr_Ave :: cumulated snow precipitation (+=down) [kg/m2/s]
 C     ice_flx2oc_Ave :: cumulated heat flux out of the ocean (+=up) [W/m2]
 C     ice_frw2oc_Ave :: cumulated fresh-water flux out off the ocean (E-P) [m/s]
 C     ice_salFx_Ave  :: cumulated salt flux out of the ocean (+=up) [psu.kg/m2]
