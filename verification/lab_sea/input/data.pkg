@@ -3,4 +3,5 @@
   useGMRedi = .TRUE.,
   useKPP    = .TRUE.,
   useSEAICE = .TRUE.,
+  useMNC    = .TRUE.,
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.15 2004/07/18 21:59:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.16 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,15 @@ C     msgBuf :: Informational/error meesage buffer
 CEOP
 
 C-  check that CPP option is "defined" when running-flag parameter is on:
+
+#ifndef ALLOW_MNC
+      IF (useMNC) THEN
+        WRITE(msgBuf,'(2A)') '**WARNNING** ',
+     &   'CONFIG_CHECK: useMNC is TRUE and #undef ALLOW_MNC'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)                      
+      ENDIF
+#endif
 
 #ifndef ALLOW_CD_CODE
       IF (useCDscheme) THEN

@@ -5,4 +5,5 @@
  useAIM=.TRUE.,
  useLand=.TRUE.,
  useSHAP_FILT=.TRUE.,
+ useMNC=.TRUE.,
  &

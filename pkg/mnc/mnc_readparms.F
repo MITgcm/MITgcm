@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.11 2004/09/29 04:38:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.12 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -34,7 +34,6 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
-     &     useMNC,
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
@@ -50,7 +49,6 @@ C     Set default values for MNC run-time parameters
         mnc_outdir_str(i:i) = ' '
         mnc_indir_str(i:i)  = ' '
       ENDDO
-      useMNC                =  .FALSE.
       mnc_echo_gvtypes      =  .FALSE.
       mnc_use_outdir        =  .FALSE.
         mnc_outdir_str(1:4) =  'mnc_'
@@ -158,6 +156,24 @@ C--   Report contents of model parameter file
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+C     IO handling is done in one of two senses:
+C     
+C     [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
+C       write methods can occur simultaneously
+C     [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only one 
+C       write method can occur in a given run
+C     
+C     Since all the *_mdsio flags default to .TRUE. and all *_ioinc
+C     default to .FALSE., the logic here is simple:
+      IF ( (.NOT. pickup_write_ioinc) 
+     &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
+      IF ( (.NOT. timeave_ioinc) 
+     &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
+      IF ( (.NOT. snapshot_ioinc) 
+     &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
+      IF ( (.NOT. monitor_ioinc) 
+     &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
 
 C     Create the MNC output directory
       IF (mnc_use_outdir) THEN

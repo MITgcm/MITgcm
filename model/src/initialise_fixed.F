@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.36 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.37 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,10 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     INITIALISE_FIXED
 C      |
+C      |-- PACKAGES_BOOT
+C      |
+C      |-- PACKAGES_READPARMS
+C      |
 C      |-- INI_PARMS
 C      |
 C      |-- MNC_INIT + MNC_CW_INIT
@@ -40,10 +44,6 @@ C      |
 C      |-- INI_DEPTHS
 C      |
 C      |-- INI_MASKS_ETC
-C      |
-C      |-- PACKAGES_BOOT
-C      |
-C      |-- PACKAGES_READPARMS
 C      |
 C      |-- PACKAGES_INIT_FIXED
 C      |
@@ -71,9 +71,6 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -86,17 +83,11 @@ C     an input file called data.
       CALL INI_PARMS( myThid )
       _BARRIER
 
-#ifdef ALLOW_MNC
-C     Initialize MNC look-up tables
-      IF (useMNC) THEN
-        CALL MNC_INIT(myThid)
-        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
-     &       Nr,myThid)
-        IF ( mnc_echo_gvtypes ) THEN
-          CALL MNC_CW_DUMP( myThid )
-        ENDIF
-      ENDIF
-#endif
+C--   Configure packages
+      CALL PACKAGES_BOOT( myThid )
+
+C--   Read configuration parameters for packages
+      CALL PACKAGES_READPARMS( myThid )
 
 #ifdef ALLOW_MONITOR
 C--   Initialise MONITOR I/O streams so we can report config. info
@@ -121,12 +112,6 @@ C--   Derive masks, lopping factors and recipricols of quantities.
 C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
       _BARRIER
-
-C--   Configure packages
-      CALL PACKAGES_BOOT( myThid )
-
-C--   Read configuration parameters for packages
-      CALL PACKAGES_READPARMS( myThid )
 
 C--   Call fixed data initialization phase of packages
       CALL PACKAGES_INIT_FIXED( myThid )

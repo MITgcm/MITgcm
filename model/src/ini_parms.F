@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.128 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.129 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,9 +18,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
 #include "EOS.h"
 
@@ -109,10 +106,6 @@ C                 salt vertically ( Pa^2/s )
       _RL diffKpT
       _RL diffKzS
       _RL diffKpS
-
-C     IO Parameters
-      LOGICAL pickup_write_ioinc, timeave_ioinc
-      LOGICAL snapshot_ioinc, monitor_ioinc
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
 C     zonal_filt_lat  - Moved to package "zonal_filt"
@@ -739,28 +732,6 @@ C     o Monitor (should also add CPP flag for monitor?)
      &         monitorFreq=pChkPtFreq
        IF (monitorFreq.EQ.0.) monitorFreq=deltaTclock
       ENDIF
-
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-C       IO handling is done in one of two senses:
-C     
-C       [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
-C          write methods can occur simultaneously
-C       [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only one 
-C          write method can occur in a given run
-C     
-C       Since all the *_mdsio flags default to .TRUE. and all *_ioinc
-C       default to .FALSE., the logic here is simple:
-        IF ( (.NOT. pickup_write_ioinc) 
-     &       .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
-        IF ( (.NOT. timeave_ioinc) 
-     &       .AND. timeave_mnc ) timeave_mdsio = .FALSE.
-        IF ( (.NOT. snapshot_ioinc) 
-     &       .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
-        IF ( (.NOT. monitor_ioinc) 
-     &       .AND. monitor_mnc ) monitor_stdio = .FALSE.
-      ENDIF
-#endif
 
 C--   Grid parameters
 C     In cartesian coords distances are in metres

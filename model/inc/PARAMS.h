@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.130 2004/10/13 04:37:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.131 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 C
 
@@ -296,7 +296,10 @@ C     monitor_stdio      :: use stdio for monitor output
      & usePickupBeforeC35, usePickupBeforeC54, debugMode,
      & readPickupWithTracer, writePickupWithTracer,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
-     & timeave_mdsio, snapshot_mdsio, monitor_stdio
+     & timeave_mdsio, snapshot_mdsio, monitor_stdio,
+     & timeave_ioinc, snapshot_ioinc, monitor_ioinc, 
+     & pickup_write_ioinc
+
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
@@ -369,6 +372,8 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
+      LOGICAL timeave_ioinc, snapshot_ioinc, monitor_ioinc
+      LOGICAL pickup_write_ioinc
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

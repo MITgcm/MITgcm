@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.34 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.35 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,19 @@ C     == Global variables ==
 C     == Routine arguments ==
       INTEGER myThid
 CEOP
+
+#ifdef ALLOW_MNC
+C     Read run-time flags and initialize look-up tables for MNC
+      IF (useMNC) THEN
+        CALL MNC_READPARMS( myThid )
+        CALL MNC_INIT(myThid)
+        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
+     &       Nr,myThid)
+CEH3       IF ( mnc_echo_gvtypes ) THEN
+CEH3       CALL MNC_CW_DUMP( myThid )
+CEH3       ENDIF
+      ENDIF
+#endif
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameters

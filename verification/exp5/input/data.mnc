@@ -1,7 +1,6 @@
 # Example "data.mnc" file
 # Lines beginning "#" are comments
  &MNC_01
- useMNC=.TRUE.,
  mnc_echo_gvtypes=.TRUE.,
  mnc_use_outdir=.TRUE.,
  mnc_outdir_date=.TRUE.,

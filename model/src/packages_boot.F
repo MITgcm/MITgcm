@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.24 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.25 2004/10/14 13:44:54 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,7 +43,6 @@ C     iUnit       - Work variable for IO unit number
       INTEGER iUnit
 
 C     data.pkg namelists
-
       NAMELIST /PACKAGES/
      &          useOPPS,
      &          usePP81,
@@ -67,9 +66,8 @@ C     data.pkg namelists
      &          usefizhi,
      &          usegridalt,
      &          usediagnostics,
-     &          useEBM
-
-
+     &          useEBM,
+     &          useMNC
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -107,6 +105,7 @@ C--   Default package configuration
       usegridalt=.FALSE.
       usediagnostics=.FALSE.
       useEBM=.FALSE.
+      useMNC=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)
