@@ -4,5 +4,5 @@
  useGRIDALT=.TRUE.,
  useSHAP_FILT=.TRUE.,
  useDIAGNOSTICS=.TRUE.,
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
  &
