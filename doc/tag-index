@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.121 2003/01/21 19:44:45 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.122 2003/01/23 15:35:48 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48
+o fix small bug that was causing lot of warning (TIMER_STOP 'UPDATE_CG2D')
 
 checkpoint47j_post
 o add new exp. (ideal_2D_oce) to test "exotic" parameters and options.
