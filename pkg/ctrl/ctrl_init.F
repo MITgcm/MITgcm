@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.13 2004/12/03 00:48:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.14 2005/02/24 05:08:34 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -306,7 +306,7 @@ c--   Zonal wind speed.
         diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_uwind_file, 9, 109, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'w', 'xy', mythid )
+     &       snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUU0_CONTROL))
 c--   initial forcing only
@@ -360,7 +360,7 @@ c--   Meridional wind speed.
         diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_vwind_file, 10, 110, diffrec, startrec, endrec,
-     &       snx, sny, 1, 's', 'xy', mythid )
+     &       snx, sny, 1, 'c', 'xy', mythid )
 
 #elif (defined (ALLOW_TAUV0_CONTROL))
 c--   initial forcing only
