@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.7 2003/09/22 19:06:12 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.8 2003/09/23 15:53:02 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -388,6 +388,41 @@ else
 	fi
     fi
 fi
+
+#  Check that FC, LINK, CPP, and S64 are defined.  If not, complain 
+#  and abort!
+if test "x$FC" = x ; then
+    cat <<EOF 1>&2
+
+Error: no Fortran compiler: please specify using one of the following:
+  1) within the options file ("FC=...") as specified by "-of=OPTFILE"
+  2) the "-fc=XXX" command-line option
+  3) the "./gm_local" file
+EOF
+    exit 1
+fi
+if test "x$LINK" = x ; then
+    LINK=$FC
+fi
+if test "x$CPP" = x ; then
+    cat <<EOF 1>&2
+
+Error: no C pre-processor: please specify using one of the following:
+  1) within the options file ("CPP=...") as specified by "-of=OPTFILE"
+  2) the "./gm_local" file
+EOF
+    exit 1
+fi
+if test "x$S64" = x ; then
+    cat <<EOF 1>&2
+
+Error: no C pre-processor: please specify using one of the following:
+  1) within the options file ("S64=...") as specified by "-of=OPTFILE"
+  2) the "./gm_local" file
+EOF
+    exit 1
+fi
+
 
 printf "\n===  Setting defaults  ===\n"
 echo -n "  Adding MODS directories:  "
