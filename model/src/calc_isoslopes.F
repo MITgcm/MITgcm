@@ -26,15 +26,24 @@
 ! Local
       integer i,j
       _RL dSigmaDx,dSigmaDy,dSigmaDz,SlopeX,SlopeY,dZdSigma
-      _RL gradSmod,stratLimit,rMaxSlope,deltaH
+      _RL gradSmod,stratLimit,rMaxSlope
       _RL Small_Number
       parameter(Small_Number=1. _d -12)
-      logical TOP_LEVEL
+      _RS deltaH,zero_rs
+      parameter(zero_rs=0.)
 ! ------------------------------------------------------------------------------
 
-      TOP_LEVEL = K.EQ.1
-      deltaH=dzC(k)/GMdepth
-      if (k.gt.11) deltaH=0.
+! This little calculation is part of the depth integral of Richardson number
+! which is used in the "variable K" parameterisaton.
+! Distance between interface above layer and the integration depth (GMdepth)
+      deltaH=abs(GMdepth)-abs(zFace(k))
+! If positive we limit this to the layer thickness
+      deltaH=min(deltaH,dzF(k))
+! If negative then we are below the integration level
+      deltaH=max(deltaH,zero_rs)
+! Now we convert deltaH to a non-dimensional fraction
+      deltaH=deltaH/GMdepth
+
       rMaxSlope=0.
       if (GMmaxSlope.ne.0.) rMaxSlope=1. _d 0 / GMmaxSlope
 
