@@ -18,8 +18,8 @@ C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
 C                      AND that we have been sent a local array
-C     bi ......... X-direction process(or) number - used for bibjflg=1
-C     bj ......... Y-direction process(or) number - used for bibjflg=1
+C     bi ......... X-direction process(or) number - used for bibjflg=1,2
+C     bj ......... Y-direction process(or) number - used for bibjflg=1,2
 C     arrayin .... Field to increment diagnostics array
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
