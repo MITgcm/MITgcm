@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/CPP_OPTIONS.h,v 1.1 2001/11/08 20:47:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/CPP_OPTIONS.h,v 1.2 2001/11/20 20:44:24 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -18,7 +18,7 @@ C o Shortwave heating as extra term in external_forcing.F
 #endif
 
 C o Include/exclude code for Shapiro filters
-#define  ALLOW_SHAP_FILT
+#undef  ALLOW_SHAP_FILT
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
@@ -35,7 +35,7 @@ C o Include/exclude latitude circle FFT filter
 
 C o Include/exclude temperature advection code
 cph
-#define  INCLUDE_TR1_ADVECTION_CODE
+#undef  INCLUDE_TR1_ADVECTION_CODE
 #define  INCLUDE_T_ADVECTION_CODE
 #ifdef   INCLUDE_T_ADVECTION_CODE
 #define  _ADT(a)a
@@ -45,7 +45,7 @@ cph
 #endif
 
 C o Include/exclude temperature diffusion code
-#define  INCLUDE_TR1_DIFFUSION_CODE
+#undef  INCLUDE_TR1_DIFFUSION_CODE
 #define  INCLUDE_T_DIFFUSION_CODE
 #ifdef   INCLUDE_T_DIFFUSION_CODE
 #define  _LPT(a)a
@@ -142,7 +142,7 @@ C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
 
 C o Add passive tracer advection routines
-#define ALLOW_PASSIVE_TRACER
+#undef ALLOW_PASSIVE_TRACER
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

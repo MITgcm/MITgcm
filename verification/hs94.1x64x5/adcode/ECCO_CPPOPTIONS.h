@@ -43,8 +43,8 @@ C ********************************************************************
 C 
 C       >>> Cost function contributions
 #define ALLOW_COST
-#undef  ALLOW_COST_TEST
-#define ALLOW_COST_TRACER
+#define  ALLOW_COST_TEST
+#undef ALLOW_COST_TRACER
 
 C ********************************************************************
 C ***               Control vector Package                         ***

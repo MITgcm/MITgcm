@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/SIZE.h,v 1.1 2001/11/08 20:47:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/SIZE.h,v 1.2 2001/11/20 20:44:24 heimbach Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -36,10 +36,10 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =   1,
+     &           sNx =   2,
      &           sNy =  64,
-     &           OLx =   5,
-     &           OLy =   5,
+     &           OLx =   4,
+     &           OLy =   4,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,
