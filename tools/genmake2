@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.53 2003/12/05 15:08:33 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.54 2003/12/05 18:09:35 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1218,7 +1218,7 @@ spaths=". $INCLUDEDIRS"
 names=`ls -1 "$ROOTDIR/pkg"`
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
-    if test -f $try -a -r $try -a "x$CPP_OPTIONS" == x ; then
+    if test -f $try -a -r $try -a "x$CPP_OPTIONS" = x ; then
 	echo "    found CPP_OPTIONS=\"$try\""
 	CPP_OPTIONS="$try"
         # New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
@@ -1227,7 +1227,7 @@ for i in $spaths ; do
         done
     fi
     try="$i/CPP_EEOPTIONS.h"
-    if test -f $try -a -r $try -a "x$CPP_EEOPTIONS" == x ; then
+    if test -f $try -a -r $try -a "x$CPP_EEOPTIONS" = x ; then
 	echo "    found CPP_EEOPTIONS=\"$try\""
         # New safety test: make sure MPI is not determined by CPP_EEOPTIONS.h
 #**** not yet enabled ****
