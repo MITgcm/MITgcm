@@ -12,7 +12,7 @@ function [hc,hh,hcf] = pcolorfv(x,z,h,a,varargin)
 %
 % Optional arguments are passed on to PCOLOR
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/pcolorfv.m,v 1.1 2001/11/21 19:18:10 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/pcolorfv.m,v 1.2 2004/06/04 17:09:11 adcroft Exp $
 
 nx=prod(size(x));
 nz=prod(size(z));
@@ -21,8 +21,8 @@ nz=prod(size(z));
 if max(size(h)) ~= prod(size(h)) | prod(size(h)) ~= nx
  error('H must have dimensions of size(X)');
 end
-ndims(squeeze(a))
-size(squeeze(a))
+%ndims(squeeze(a))
+%size(squeeze(a))
 if ndims(squeeze(a)) ~= 2 | sum(size(squeeze(a)) ~= [nx nz])
  error('A must have dimensions of size(X) x size(H)');
 end

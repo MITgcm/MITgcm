@@ -51,3 +51,4 @@ for k=1:nz,
 end
 
 dens=reshape(dens,n);
+dens( find(t==0 & s==0) )=0;

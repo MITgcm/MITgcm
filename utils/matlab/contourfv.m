@@ -12,7 +12,7 @@ function [hc,hh,hcf] = contourfv(x,z,h,a,varargin)
 %
 % Optional arguments are passed on to CONTOURF
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/contourfv.m,v 1.1 2001/11/21 17:56:43 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/contourfv.m,v 1.2 2004/06/04 17:09:11 adcroft Exp $
 
 nx=prod(size(x));
 nz=prod(size(z));
@@ -21,8 +21,8 @@ nz=prod(size(z));
 if max(size(h)) ~= prod(size(h)) | prod(size(h)) ~= nx
  error('H must have dimensions of size(X)');
 end
-ndims(squeeze(a))
-size(squeeze(a))
+%ndims(squeeze(a))
+%size(squeeze(a))
 if ndims(squeeze(a)) ~= 2 | sum(size(squeeze(a)) ~= [nx nz])
  error('A must have dimensions of size(X) x size(H)');
 end
@@ -30,7 +30,7 @@ end
 % Create extended Z coordinate
 zz=zeros(1,nz+2);
 zz(2:nz+1)=z;
-zz(1)=0;
+zz(1)=max(0,z(1));
 zz(nz+2)=1.5*z(nz)-0.5*z(nz-1);
 
 [Z,X]=meshgrid(zz,x);
