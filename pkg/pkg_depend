@@ -47,6 +47,9 @@ fizhi           -aim
 fizhi           +gridalt
 fizhi           +diagnostics
 rw              +mdsio
+flt             +mdsio
+sbo             +mdsio
+exf             +mdsio
 
 #  Need more information on the following:
 

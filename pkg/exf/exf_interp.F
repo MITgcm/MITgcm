@@ -73,8 +73,11 @@ C subroutine variables
       _RL           lat_0, lat_inc(ny_in-1)
       integer       method, mythid
 
+C Functions
+      integer MDS_RECLEN
+
 C local variables
-      integer  ierr
+      integer  ierr, length_of_rec
       real*8   ne_fac,nw_fac,se_fac,sw_fac
       integer  e_ind(snx,sny),w_ind(snx,sny)
       integer  n_ind(snx,sny),s_ind(snx,sny)
@@ -99,8 +102,9 @@ C read in input data
 C master thread of process 0, only, opens a global file
         IF( mpiMyId .EQ. 0 ) THEN
          call mdsfindunit( interp_unit, mythid)
+         length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, mythid )
          open(interp_unit,file=infile,status='old',access='direct',
-     &        recl=nx_in*ny_in*4)
+     &        recl=length_of_rec)
          read(interp_unit,rec=irecord)
      &        ((global(i,j),i=1,nx_in),j=1,ny_in)
          close(interp_unit)
@@ -119,8 +123,9 @@ C broadcast to all processes
 #endif /* ALLOW_USE_MPI */
 
         call mdsfindunit( interp_unit, mythid)
+        length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, mythid )
         open(interp_unit,file=infile,status='old',access='direct',
-     &       recl=nx_in*ny_in*4)
+     &       recl=length_of_rec)
         read(interp_unit,rec=irecord)
      &       ((arrayin(i,j),i=1,nx_in),j=1,ny_in)
         close(interp_unit)
