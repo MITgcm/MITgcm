@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.93 2004/05/21 21:04:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.94 2004/06/08 16:15:10 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -291,6 +291,7 @@ C AMM
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
          CALL TIMER_START('FIZHI               [FORWARD_STEP]',mythid)
+         CALL FIZHI_UPDATE_TIME ( myIter, deltaTclock )
          CALL UPDATE_OCEAN_EXPORTS ( myTime, myIter, myThid )
          CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
          CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
