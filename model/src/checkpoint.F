@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.23 2003/06/25 21:06:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.24 2003/10/08 18:55:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -464,6 +464,13 @@ C SPK 4/9/01: Open boundary checkpointing
      &               prec, lgf, permCheckPoint, myIter, myThid)
         ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_THERM_SEAICE
+        IF (useThermSeaIce) THEN
+          CALL ICE_WRITE_CHECKPOINT(
+     &               prec, lgf, permCheckPoint, myIter, myThid)
+        ENDIF
+#endif /* ALLOW_THERM_SEAICE */
 
 #ifdef ALLOW_FLT
 C--     Write restart file for floats
