@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.11 2004/12/22 00:49:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.12 2004/12/22 01:25:20 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -110,25 +110,24 @@ C     to South-West C-grid for forcing ocean model.
 
 #ifdef SEAICE_TEST_ICE_STRESS_1
 C--   Compute ice-affected wind stress
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)*
-     &          (UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))
-           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)*
-     &          (UICEC(I,J,bi,bj)-GWATX(I,J,bi,bj))
-           fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
-     &          HALF*AREA(I,J,1,bi,bj)*
-     &          (WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
-           fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+
-     &          HALF*AREA(I,J,1,bi,bj)*
-     &          (WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
-          ENDDO
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)*
+     &         (UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))
+          WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)*
+     &         (UICEC(I,J,bi,bj)-GWATX(I,J,bi,bj))
+          fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
+     &         HALF*AREA(I,J,1,bi,bj)*
+     &         (WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
+          fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+
+     &         HALF*AREA(I,J,1,bi,bj)*
+     &         (WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
+      ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 #endif /* SEAICE_TEST_ICE_STRESS_1 */
 
