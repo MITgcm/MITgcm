@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gtr1.F,v 1.1 2001/07/13 19:06:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gtr1.F,v 1.2 2001/08/30 00:40:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,7 +61,7 @@ C--   the kDown is still required
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           diffKhT, diffK4T, KappaRT, tr1,
-     I           GAD_TR1,
+     I           GAD_TR1, tracerAdvScheme,
      U           fVerT, gTr1,
      I           myThid )
 

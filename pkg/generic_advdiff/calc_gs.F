@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gs.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gs.F,v 1.2 2001/08/30 00:40:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,7 +80,7 @@ C--   the kDown is still required
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           diffKhS, diffK4S, KappaRS, Salt,
-     I           GAD_SALINITY,
+     I           GAD_SALINITY, saltAdvScheme,
      U           fVerS, gS,
      I           myThid )
 
