@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.35 2003/03/05 23:39:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.36 2003/03/07 23:48:41 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -118,12 +118,10 @@ C--   Set initial conditions (variable arrays)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
-#ifndef ALLOW_AUTODIFF_TAMC
 c--   Dump for start state.
       CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
       CALL WRITE_STATE( mytime, myiter, mythid )
       CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
-#endif
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
@@ -184,8 +182,11 @@ c**************************************
 #include "checkpoint_lev2_directives.h"
 c**************************************
 
+c**************************************
+#ifdef ALLOW_AUTODIFF_TAMC
 c--       Initialize storage for the innermost loop.
 c--       Always check common block sizes for the checkpointing!
+c--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
@@ -218,6 +219,9 @@ CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 #endif /* ALLOW_BULKFORMULAE */
+c--
+#endif /* ALLOW_AUTODIFF_TAMC */
+c**************************************
 
           do ilev_1 = 1,nchklev_1
 
@@ -238,9 +242,6 @@ CADJ INIT history        = USER
 CADJ INIT comlev1_bibj   = COMMON,nchklev_0*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_0*nsx*nsy*nr*nthreads_chkpt
 CADJ INIT comlev1_kpp    = COMMON,nchklev_0*nsx*nsy
-
-C--   RG replace 2 by max of num_v_smooth_Ri
-CADJ INIT comlev1_kpp_sm = COMMON,nchklev_0*nsx*nsy*2
 
 c--   Check the choice of the checkpointing parameters in relation
 c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
