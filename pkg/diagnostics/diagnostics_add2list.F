@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.2 2004/12/15 00:19:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -47,6 +47,7 @@ C-    Add one diagnostic to the list of available diagnostics:
       IF ( n .LE. ndiagMax ) THEN
         cdiag(n) = diagName
         gdiag(n) = diagCode
+        udiag(n) = diagUnits
         tdiag(n) = diagTitle
         ndiagt = n
       ELSE
