@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.7 2004/11/19 21:28:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.8 2004/11/28 23:48:30 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -36,11 +36,6 @@ cccccccccccccccccccccc
      & call dic_biotic_diags( myTime, myIter, myThid )
 #endif /* ALLOW_TIMEAVE */
 #endif /* DIC_BIOTIC */
-
-ccccccccccccccccccccccccc
-c  monitor              c
-ccccccccccccccccccccccccc
-        call gchem_monitor(myIter, myTime, myThid )
 
 #endif /* ALLOW_GCHEM */
 
