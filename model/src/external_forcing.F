@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.29 2005/02/28 17:37:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.30 2005/03/01 18:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,7 +85,7 @@ C     Add windstress momentum impulse into the top-layer
        ENDDO
       ENDIF
 
-#if (defined (ALLOW_TAU_EDDY) || defined (ALLOW_GMREDI))
+#if (defined (ALLOW_TAU_EDDY))
        CALL TAUEDDY_EXTERNAL_FORCING_U(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
      I           myCurrentTime,myThid)
@@ -179,7 +179,7 @@ C     Add windstress momentum impulse into the top-layer
        ENDDO
       ENDIF
 
-#if (defined (ALLOW_TAU_EDDY) || defined (ALLOW_GMREDI))
+#if (defined (ALLOW_TAU_EDDY))
        CALL TAUEDDY_EXTERNAL_FORCING_V(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
      I           myCurrentTime,myThid)
