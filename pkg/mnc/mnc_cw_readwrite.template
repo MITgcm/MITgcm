@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.24 2004/10/22 21:30:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.25 2004/11/14 03:34:35 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -238,6 +238,9 @@ C           based on the byte count per unlimited dimension
               fsnu = (1.0 _d 0 + 1.0 _d 0 / DBLE(unlim_sz))
      &             * DBLE(nbytes)
               IF (fsnu .GT. mnc_max_fsize) THEN
+C               Delete the now-full fname from the lookup tables since
+C               we are all done writing to it.
+                CALL MNC_FILE_CLOSE(fname, myThid)
                 iseq = iseq + 1
                 indu = 1
                 mnc_cw_fgud(indfg) = 1
