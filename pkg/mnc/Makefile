@@ -37,6 +37,21 @@ EEPARAMS.h:
 utils.F:
 	ln -s ../../eesupp/src/utils.F .
 
+TEMPLATE_FILES = \
+  MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
+  MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F
+
+templates: $(TEMPLATE_FILES)
+
+MNC_RESHAPE_RS_D.F: mnc_reshape.template
+	cat mnc_reshape.template | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
+MNC_RESHAPE_RL_D.F: mnc_reshape.template
+	cat mnc_reshape.template | sed -e 's/RX/RL/g' | sed -e 's/YY/D/g' > $@
+MNC_RESHAPE_RS_R.F: mnc_reshape.template
+	cat mnc_reshape.template | sed -e 's/RX/RS/g' | sed -e 's/YY/R/g' > $@
+MNC_RESHAPE_RL_R.F: mnc_reshape.template
+	cat mnc_reshape.template | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
+
 test: mnc_test_001
 	echo "running mnc_test_001 ..."
 	./mnc_test_001 && ncdump test_001.nc | head -50
@@ -49,3 +64,4 @@ mnc_test_001: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_001.o
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc
+	-rm -f MNC_RESHAPE_R?_?.F

@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_grids.F,v 1.2 2004/01/15 04:31:24 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_grids.F,v 1.3 2004/01/15 19:23:05 edhill Exp $
 C $Name:  $
-      
+
 #include "MNC_OPTIONS.h"
-      
+
 C==================================================================
 
       SUBROUTINE MNC_W_GRIDINFO( 
@@ -27,11 +27,11 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,k,ii, n, bi,bj, iG,jG, rnX,rnY
+      integer i, n, bi,bj, iG,jG, rnX,rnY,rnZ
       integer istart(3), iend(3)
       character*(MNC_MAX_CHAR) fname, gnames(20),dnames(20)
-      _RS trs((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
-      _RL trl((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
+      REAL*4 trs((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
+      REAL*8 trl((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
 
 C     Initialize strings
       fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
@@ -144,12 +144,13 @@ C         Indicies and sizes for extracting the data -- we need to skip
 C         over the exchange regions
           rnX = sNx + 2*OLx
           rnY = sNy + 2*OLy
+          rnZ = Nr
           istart(1) = OLx + 1
           istart(2) = OLy + 1
           istart(3) = 1
           iend(1) = sNx + OLx
           iend(2) = sNy + OLy
-          istart(3) = Nr
+          iend(3) = Nr
 
 C         Create and write grid parameters
 C         rC, rF
@@ -168,78 +169,104 @@ C         saFac
 
 C         xC, yC
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'xC','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         xC(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'xC', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'yC','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         yC(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'yC', trl)
 C         xG, yG
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'xG','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         xG(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'xG', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'yG','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         yG(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'yG', trl)
 C         dxC, dyC
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dxC','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dxC(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dxC', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dyC','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dyC(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dyC', trl)
 C         dxF, dyF
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dxF','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dxF(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dxF', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dyF','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dyF(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dyF', trl)
 C         dxG, dyG
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dxG','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dxG(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dxG', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dyG','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dyG(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dyG', trl)
 C         dxV, dyU
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dxV','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dxV(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dxV', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'dyU','m')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         dyU(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'dyU', trl)
+C         rA, rAw, rAs, rAz
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'rA','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         rA(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'rA', trl)
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'rAw','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         rAw(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'rAw', trl)
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'rAs','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         rAs(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'rAs', trl)
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'rAz','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         rAz(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'rAz', trl)
+C         fCori, fCoriG
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'fCori','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         fCori(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'fCori', trl)
+          CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'fCoriG','m')
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
+     &         fCoriG(1-OLx,1-OLy,bi,bj), trl)
+          CALL MNC_VAR_WRITE_DBL(myThid, fname, 'fCoriG', trl)
 C         R_low, Ro_surf
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'R_low','--')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         R_low(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'R_low', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(1),'Ro_surf','--')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, 1, istart, iend, 
      &         Ro_surf(1-OLx,1-OLy,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'Ro_surf', trl)
 C         HFacC, HFacW, HFacS
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(6),'HFacC','--')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, rnZ, istart, iend, 
      &         HFacC(1-OLx,1-OLy,1,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'HFacC', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(6),'HFacW','--')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, rnZ, istart, iend, 
      &         HFacW(1-OLx,1-OLy,1,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'HFacW', trl)
           CALL MNC_VAR_INIT_DBL(myThid,fname,gnames(6),'HFacS','--')
-          CALL MNC_RESHAPE_2DD(rnX, rnY, istart, iend, 
+          CALL MNC_RESHAPE_RS_D(rnX, rnY, rnZ, istart, iend, 
      &         HFacS(1-OLx,1-OLy,1,bi,bj), trl)
           CALL MNC_VAR_WRITE_DBL(myThid, fname, 'HFacS', trl)
 
@@ -250,112 +277,8 @@ C         Close the grid file
       ENDDO
 
       _END_MASTER( myThid )
-      
-      RETURN
-      END
-
-
-C==================================================================
-
-      SUBROUTINE MNC_RESHAPE_2DD( ni,nj, istart,iend, din,dout ) 
-
-      implicit none
-
-C     Arguments
-      integer ni,nj, istart(2), iend(2)
-      _RL din(ni,nj)
-      _RL dout(*)
-
-C     Locals
-      integer i,j, n
-
-      n = 0
-      DO i = istart(1),iend(1)
-        DO j = istart(2),iend(2)
-          n = n + 1
-          dout(n) = din(i,j)
-        ENDDO
-      ENDDO
 
       RETURN
       END
 
-C==================================================================
-
-      SUBROUTINE MNC_RESHAPE_2DR( ni,nj, istart,iend, din,dout ) 
-
-      implicit none
-
-C     Arguments
-      integer ni,nj, istart(2), iend(2)
-      _RS din(ni,nj)
-      _RS dout(*)
-
-C     Locals
-      integer i,j, n
-
-      n = 0
-      DO i = istart(1),iend(1)
-        DO j = istart(2),iend(2)
-          n = n + 1
-          dout(n) = din(i,j)
-        ENDDO
-      ENDDO
-
-      RETURN
-      END
-
-C==================================================================
-
-      SUBROUTINE MNC_RESHAPE_3DD( ni,nj,nk, istart,iend, din,dout ) 
-
-      implicit none
-
-C     Arguments
-      integer ni,nj,nk, istart(3), iend(3)
-      _RL din(ni,nj,nk)
-      _RL dout(*)
-
-C     Locals
-      integer i,j,k, n
-
-      n = 0
-      DO i = istart(1),iend(1)
-        DO j = istart(2),iend(2)
-          DO k = istart(3),iend(3)
-            n = n + 1
-            dout(n) = din(i,j,k)
-          ENDDO
-        ENDDO
-      ENDDO
-
-      RETURN
-      END
-
-C==================================================================
-
-      SUBROUTINE MNC_RESHAPE_3DR( ni,nj,nk, istart,iend, din,dout ) 
-
-      implicit none
-
-C     Arguments
-      integer ni,nj,nk, istart(3), iend(3)
-      _RS din(ni,nj,nk)
-      _RS dout(*)
-
-C     Locals
-      integer i,j,k, n
-
-      n = 0
-      DO i = istart(1),iend(1)
-        DO j = istart(2),iend(2)
-          DO k = istart(3),iend(3)
-            n = n + 1
-            dout(n) = din(i,j,k)
-          ENDDO
-        ENDDO
-      ENDDO
-
-      RETURN
-      END
 

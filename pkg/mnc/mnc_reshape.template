@@ -1,0 +1,50 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_reshape.template,v 1.1 2004/01/15 19:23:05 edhill Exp $
+C $Name:  $
+
+#include "MNC_OPTIONS.h"
+
+      SUBROUTINE MNC_RESHAPE_RX_YY( ni,nj,nk, istart,iend, din,dout ) 
+
+      implicit none
+
+C     Arguments
+      integer ni,nj,nk, istart(3), iend(3)
+      _RX din(ni,nj,nk)
+#define mnc_rtype_YY
+#ifdef  mnc_rtype_D
+      REAL*8 dout(*)
+#endif
+#ifdef  mnc_rtype_R
+      REAL*4 dout(*)
+#endif
+#undef mnc_rtype_YY
+
+C     Locals
+      integer i,j,k, n
+
+      n = 0
+      IF (nk .GT. 1) THEN
+        DO i = istart(1),iend(1)
+          DO j = istart(2),iend(2)
+            DO k = istart(3),iend(3)
+              n = n + 1
+              dout(n) = din(i,j,k)
+            ENDDO
+          ENDDO
+        ENDDO
+      ELSE
+        k = 1
+        DO i = istart(1),iend(1)
+          DO j = istart(2),iend(2)
+            n = n + 1
+            dout(n) = din(i,j,k)
+          ENDDO
+        ENDDO
+      ENDIF
+
+      RETURN
+      END
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
