@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.3 2003/10/02 21:34:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.4 2003/11/06 22:03:49 heimbach Exp $
 
+#include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
-
 
       subroutine cost_initvaria( mythid )
 
@@ -53,17 +53,7 @@ c     == end of interface ==
 c--   Initialize the tiled cost function contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          objf_hflux(bi,bj)   = 0. _d 0
-          objf_sflux(bi,bj)   = 0. _d 0
-          objf_tauu(bi,bj) = 0. _d 0
-          objf_tauv(bi,bj) = 0. _d 0
-          objf_temp(bi,bj) = 0. _d 0
-          objf_salt(bi,bj) = 0. _d 0
-          objf_sst(bi,bj)  = 0. _d 0
-          objf_h(bi,bj)    = 0. _d 0
           objf_atl(bi,bj)  = 0. _d 0
-          objf_ctdt(bi,bj) = 0. _d 0
-          objf_ctds(bi,bj) = 0. _d 0
           objf_test(bi,bj) = 0. _d 0
           objf_tracer(bi,bj) = 0. _d 0
 #ifdef ALLOW_COST_VECTOR
@@ -85,9 +75,12 @@ c          end do
        enddo
       enddo
 
+#ifdef ALLOW_ECCO
+      call ecco_cost_initvaria( mythid )
+#endif
+
 c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
-        objf_hmean = 0. _d 0
         fc         = 0. _d 0
       _END_MASTER( mythid )
 
