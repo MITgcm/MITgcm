@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.6 1999/07/30 15:42:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.7 2000/03/15 16:00:52 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,6 +36,8 @@ C     myThid - Thread number for this instance of the routine.
       CHARACTER*(*) filNam
       CHARACTER*(*) filFmt
       INTEGER       myThid
+
+#ifdef USE_EEIO
 
 C     == Local variables ==
 C     msgBuf       - Variable for writing error messages
@@ -113,5 +115,7 @@ C--    Copy data into per thread data structures
 C
       _EXCH_XYZ_R8(fld, myThid )
 C
+#endif
+
       RETURN
       END

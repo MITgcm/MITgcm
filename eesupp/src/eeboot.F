@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.6 2000/03/14 16:10:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.7 2000/03/15 16:00:52 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -114,8 +114,10 @@ C       execution at this stage.
       CALL INI_THREADING_ENVIRONMENT
       IF ( eeBootError ) GOTO 999
 
+#ifdef USE_DFILE
 C--   Initiialise the multi-process IO package
       CALL DFILE_INIT
+#endif
  
   999 CONTINUE
       RETURN

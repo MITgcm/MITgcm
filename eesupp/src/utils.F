@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.7 2000/03/14 20:28:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.8 2000/03/15 16:00:52 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -126,7 +126,6 @@ C     \==========================================================/
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DFILE.h"
 
 C     == Routine arguments ==
       INTEGER myThid

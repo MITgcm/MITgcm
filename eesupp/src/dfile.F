@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.9 1999/05/24 14:31:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.10 2000/03/15 16:00:52 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -65,6 +65,8 @@ C     == Global variables ==
 C     == Routine arguments ==
       INTEGER myThid
       INTEGER fileHandle
+
+#ifdef USE_DFILE
 
 C     == Local variables ==
 C     msgBuf - Error message buffer
@@ -779,5 +781,7 @@ C--   Now write meta information
        ENDIF
        ioErrorCount(myThid) = ioErrorCount(myThid)  + 1
       GOTO 1000
+
+#endif /* USE_DFILE */
 
       END

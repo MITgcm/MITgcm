@@ -1,4 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.3 1998/10/28 03:11:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.4 2000/03/15 16:00:50 adcroft Exp $
+
+#ifdef USE_DFILE
+
 C     /==========================================================\
 C     | DFILE.h                                                  |
 C     |==========================================================|
@@ -81,3 +84,4 @@ C                ( but without overlaps )
       Real*8 ioBuf_R8( sNx*nSx*nPx * sNy*nSy*nPy * Nr )
       Real*4 ioBuf_R4( sNx*nSx*nPx * sNy*nSy*nPy * Nr )
 
+#endif /* USE_DFILE */

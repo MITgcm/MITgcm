@@ -71,8 +71,10 @@ C      Write to files
        _BEGIN_MASTER( myThid )
 
 C--     Set IO "context" for writing state
+#ifdef USE_DFILE
         CALL DFILE_SET_RW
         CALL DFILE_SET_CONT_ON_ERROR
+#endif
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
         prevPrec = writeBinaryPrec

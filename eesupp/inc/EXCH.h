@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.1 1998/09/29 18:54:26 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.2 2000/03/15 16:00:50 adcroft Exp $
 C
 C     /==========================================================\
 C     | EXCH.h                                                   |
@@ -132,7 +132,7 @@ C      EXCH_SPIN_LIMIT - Error trapping threshold for deadlocked exchange
        INTEGER MAX_NR_EXCH
        PARAMETER ( MAX_NR_EXCH  = nR + 1 )
        INTEGER NUMBER_OF_BUFFER_LEVELS
-       PARAMETER ( NUMBER_OF_BUFFER_LEVELS = 10 )
+       PARAMETER ( NUMBER_OF_BUFFER_LEVELS = 1 )
        INTEGER EXCH_SPIN_LIMIT
        PARAMETER ( EXCH_SPIN_LIMIT = 100000000 )
 
