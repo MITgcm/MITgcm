@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.4 2001/02/28 14:48:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.5 2002/01/30 04:22:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -54,6 +54,9 @@ C     Eastern OB
 #ifdef ALLOW_NONHYDROSTATIC
               OBEw(J,K,bi,bj)=0.
 #endif
+#ifdef NONLIN_FRSURF
+              OBEeta(J,bi,bj)=0.
+#endif
             ENDIF
           ENDDO
         ENDDO
@@ -76,6 +79,9 @@ C     Western OB
               OBWs(J,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
               OBWw(J,K,bi,bj)=0.
+#endif
+#ifdef NONLIN_FRSURF
+              OBWeta(J,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
@@ -100,6 +106,9 @@ C         Northern OB
 #ifdef ALLOW_NONHYDROSTATIC
               OBNw(I,K,bi,bj)=0.
 #endif
+#ifdef NONLIN_FRSURF
+              OBNeta(I,bi,bj)=0.
+#endif
             ENDIF
           ENDDO
         ENDDO
@@ -122,6 +131,9 @@ C         Southern OB
               OBSs(I,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
               OBSw(I,K,bi,bj)=0.
+#endif
+#ifdef NONLIN_FRSURF
+              OBSeta(I,bi,bj)=0.
 #endif
             ENDIF
           ENDDO

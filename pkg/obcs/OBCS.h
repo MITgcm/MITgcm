@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.4 2002/01/28 15:26:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.5 2002/01/30 04:22:31 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -97,5 +97,19 @@ C
       _RS OBEw (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS OBWw (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef NONLIN_FRSURF
+      COMMON /GRID_OB_NLFS/ 
+     &  OBNhfac0,OBShfac0,OBEhfac0,OBWhfac0,
+     &  OBNeta,  OBSeta,  OBEeta,  OBWeta
+      _RS OBNhfac0(1-Olx:sNx+Olx,nSx,nSy)
+      _RS OBShfac0(1-Olx:sNx+Olx,nSx,nSy)
+      _RS OBEhfac0(1-Oly:sNy+Oly,nSx,nSy)
+      _RS OBWhfac0(1-Oly:sNy+Oly,nSx,nSy)
+      _RS OBNeta (1-Olx:sNx+Olx,nSx,nSy)
+      _RS OBSeta (1-Olx:sNx+Olx,nSx,nSy)
+      _RS OBEeta (1-Oly:sNy+Oly,nSx,nSy)
+      _RS OBWeta (1-Oly:sNy+Oly,nSx,nSy)
+#endif /* NONLIN_FRSURF */
 
 #endif /* ALLOW_OBCS */

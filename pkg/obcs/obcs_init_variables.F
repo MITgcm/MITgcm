@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.4 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.5 2002/01/30 04:22:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -62,6 +62,17 @@ C     == Local variables ==
 #endif
          ENDDO
         ENDDO
+
+#ifdef NONLIN_FRSURF
+        DO I=1-Olx,sNx+Olx
+          OBNeta(I,bi,bj)=0.
+          OBSeta(I,bi,bj)=0.
+        ENDDO
+        DO J=1-Oly,sNy+Oly
+          OBEeta(J,bi,bj)=0.
+          OBWeta(J,bi,bj)=0.
+        ENDDO
+#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_ORLANSKI
         IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.

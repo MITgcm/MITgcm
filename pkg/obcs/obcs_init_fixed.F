@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.3 2001/05/14 21:36:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.4 2002/01/30 04:22:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -17,6 +17,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "OBCS.h"
+#ifdef NONLIN_FRSURF
+#include "GRID.h"
+#include "SURFACE.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_DEPTHS
@@ -69,6 +73,46 @@ C OB_Jnorth(iGm) allows for the northern boundary to be at variable y locations
           IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(I,bi,bj)=J
          ENDDO
         ENDDO
+
+#ifdef NONLIN_FRSURF
+
+C- save the initial hFacS at the N & S boundaries :
+        DO i=1-Olx,sNx+Olx
+          OBNhFac0(i,bi,bj)=0.
+          OBShFac0(i,bi,bj)=0.
+C  Northern boundary
+          IF ( OB_Jn(i,bi,bj).NE.0 ) THEN
+            j = OB_Jn(i,bi,bj)
+            k = ksurfS(i,j,bi,bj) 
+            IF (k.LE.Nr) OBNhFac0(i,bi,bj)=hFacS(i,j,k,bi,bj)
+          ENDIF
+C  Southern boundary
+          IF ( OB_Js(i,bi,bj).NE.0 ) THEN
+            j = OB_Js(i,bi,bj)+1
+            k = ksurfS(i,j,bi,bj) 
+            IF (k.LE.Nr) OBShFac0(i,bi,bj)=hFacS(i,j,k,bi,bj)
+          ENDIF
+        ENDDO     
+
+C- save the initial hFacW at the E & W boundaries :
+        DO j=1-Oly,sNy+Oly
+          OBEhFac0(j,bi,bj)=0.
+          OBWhFac0(j,bi,bj)=0.
+C  Eastern boundary
+          IF ( OB_Ie(j,bi,bj).NE.0 ) THEN
+            i = OB_Ie(j,bi,bj)
+            k = ksurfW(i,j,bi,bj) 
+            IF (k.LE.Nr) OBEhFac0(j,bi,bj)=hFacW(i,j,k,bi,bj)
+          ENDIF
+C  Western boundary
+          IF ( OB_Iw(j,bi,bj).NE.0 ) THEN
+            i = OB_Iw(j,bi,bj)+1
+            k = ksurfW(i,j,bi,bj) 
+            IF (k.LE.Nr) OBWhFac0(j,bi,bj)=hFacW(i,j,k,bi,bj)
+          ENDIF
+        ENDDO     
+
+#endif /* NONLIN_FRSURF */    
 
        ENDDO
       ENDDO
