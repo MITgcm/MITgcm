@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.11 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.12 2004/07/16 19:37:04 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -720,8 +720,6 @@ C  WHERE:
 C  RA AND COSZ(I) ARE THE TWO OUTPUTS OF THIS SUBROUTINE.
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
       implicit none
 #include "CPP_EEOPTIONS.h"
@@ -859,8 +857,6 @@ C
 C     imnm .... Previous   Time Index for Interpolation
 C     imnp .... Subsequent Time Index for Interpolation
 C
-C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
 C***********************************************************************
 
       implicit none

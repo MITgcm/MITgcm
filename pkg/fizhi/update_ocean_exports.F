@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.8 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.9 2004/07/16 19:37:04 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -70,7 +70,7 @@ c --------------------------------
        end
 
        subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .            nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
+     .           nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
 C************************************************************************
 C
 C!ROUTINE:	GETSICE
@@ -115,7 +115,7 @@ C--------------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
-      integer bi,bj,biglobal.bjglobal,nymd,nhms
+      integer nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms
 
       _RL sice(idim1:idim2,jdim1:jdim2,nSx,nSy)
 
@@ -125,13 +125,13 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
-      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      _RL sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
+      real sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -139,10 +139,10 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-      save first
-      save sicebc1, sicebc2
+c     save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+c     save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
+c     save first
+c     save sicebc1, sicebc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -360,7 +360,7 @@ C--------------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
-      integer bi,bj,biglobal.bjglobal,nymd,nhms
+      integer nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms
 
       _RL sst(idim1:idim2,jdim1:jdim2,nSx,nSy)
 
@@ -370,13 +370,13 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
-      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      _RL sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
+      real sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -384,10 +384,10 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-      save first
-      save sstbc1, sstbc2
+c     save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+c     save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
+c     save first
+c     save sstbc1, sstbc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -419,7 +419,7 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,form='unformatted',access='direct',
-     .                                          recl=im2*jm2nPx*nPy*4)
+     .                                          recl=im2*jm2*nPx*nPy*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
      .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
@@ -454,8 +454,8 @@ C Check Year
 C if climatology, fill dates for data with current model year
         if (iyearbc.eq.0) then		
          write(6,*)
-         write(6,*) 'Climatological Dataset is being used.'  
-         write(6,*) 'Current model year will be used to fill Header Dates'
+         write(6,*)'Climatological Dataset is being used.'  
+         write(6,*)'Current model year is used to fill Header Dates'
          do n = 2, ndatebc-1
           nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
          enddo
@@ -570,11 +570,11 @@ C--------------------------------------------------------------------------
 
       integer iunit,im,jm,nPx,nPy,nrec1,nrec2
 
-      _RL  field1(im,jm)
-      _RL  field2(im,jm)
+      real  field1(im,jm,nPx,nPy)
+      real  field2(im,jm,nPx,nPy)
 
       integer i,j,n1,n2
-      real*4 f1(im,jm,nPx,nPy), f1(im,jm,nPx,nPy)
+      real*4 f1(im,jm,nPx,nPy), f2(im,jm,nPx,nPy)
 
 C--------- Read file -----------------------------------------------
       read(iunit,rec=nrec1) f1
@@ -630,12 +630,12 @@ C--------------------------------------------------------------------------
       character*8  cname
       character*80 cdscrip
       integer im,jm,npx,npy,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
-      _RL lat0,lon0,undef
+      real lat0,lon0,undef
       logical error
 
       integer i,n
       integer*4 im_32,jm_32,npx_32,npy_32
-      integer*4 ndatebc_32(ndmax),nhmsbc_32(ndmax)
+      integer*4 ndatebc_32,nhmsbc_32(ndmax),nymdbc_32(ndmax)
       real*4 lat0_32,lon0_32,undef_32
 
 C--------- Read file -----------------------------------------------

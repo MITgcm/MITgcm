@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.7 2004/07/06 19:47:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.8 2004/07/16 19:37:04 molod Exp $
 C $Name:  $
 
        subroutine update_chemistry_exports (myTime, myIter, myThid)
@@ -14,6 +14,7 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "fizhi_chemistry_coms.h"
@@ -25,15 +26,15 @@ c-----------------------------------------------------------------------
       integer myTime, myIter, myThid
 
 c pe on physics grid refers to bottom edge
-      _RL pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
-      _RL pphy(sNx,sNy,Nrphys,nSx,nSy)
-      _RL oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
-      _RL waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
+      real pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
+      real pphy(sNx,sNy,Nrphys,nSx,nSy)
+      real oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
+      real waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
 
       integer i, j, L, LL, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer nhms1,nymd1,nhms2,nymd2,imns,ipls
-      _RL facm, facp
+      real facm, facp
       logical alarm
       external alarm
 
@@ -107,27 +108,23 @@ c                                         (even though dpphy counted bottom up)
       end
 
       subroutine interp_chemistry (stratq,nwatlevs,nwatlats,watlevs,
-     . watlats,ozone,nozolevs,nozolats,ozolevs,ozolats,
-     . qz,plz,ptop,xlat,im,jm,lm,nSx,nSy,bi,bj,ozrad,qzrad)
+     . watlats,ozone,nozlevs,nozlats,ozlevs,ozlats,
+     . qz,plz,xlat,im,jm,lm,nSx,nSy,bi,bj,ozrad,qzrad)
 
+#include "CPP_OPTIONS.h"
       implicit none
 
 c Input Variables
 c ---------------
-      integer nwatlevs,nwatlats,nozolevs,nozolats,nSx,nSy,bi,bj
+      integer nwatlevs,nwatlats,nozlevs,nozlats,nSx,nSy,bi,bj
       real stratq(nwatlats,nwatlevs),ozone(nozlats,nozlevs)
-      integer watlevs(nwatlevs),watlats(nwatlats)
-      integer ozlevs(nozlevs),ozlats(nozlats)
-      real qz(im,jm,lm),plz(im,jm,lm)
-      real ptop, xlat(im,jm)
+      _RL watlevs(nwatlevs),watlats(nwatlats)
+      _RL ozlevs(nozlevs),ozlats(nozlats)
       integer im,jm,lm
-      real ozrad(im,jm,lm,nSx,nSy)
-      real qzrad(im,jm,lm,nSx,nSy)
-
-c Local Variables
-c ---------------
-      integer   i,j,L
-      real      pi,fjeq,pi180
+      real qz(im,jm,lm),plz(im,jm,lm)
+      real xlat(im,jm)
+      _RL ozrad(im,jm,lm,nSx,nSy)
+      _RL qzrad(im,jm,lm,nSx,nSy)
 
 C **********************************************************************
 C ****           Get Ozone and Stratospheric Moisture Data          ****
@@ -135,7 +132,7 @@ C **********************************************************************
 
       call interp_qz (stratq,nwatlevs,nwatlats,watlevs,watlats,im*jm,
      .                                xlat,lm,plz,qz,qzrad(1,1,1,bi,bj))
-      call interp_oz (ozone ,nozolevs,nozolats,ozolevs,ozolats,im*jm,
+      call interp_oz (ozone ,nozlevs,nozlats,ozlevs,ozlats,im*jm,
      .                                xlat,lm,plz,ozrad(1,1,1,bi,bj))
       return
       end
@@ -153,25 +150,23 @@ C     xlat ...... Latitude in Degrees
 C     nlevs ..... Vertical   Dimension
 C     pres ...... PRES (IM,JM,nlevs) Three-dimensional array of pressures
 C     qz_in ..... Model Moisture (kg/kg mass mixing radtio)
-C     qz_out .... Combination of Chemistry Moisture and Model Moisture (kg/kg mass mixing ratio)
+C     qz_out .... Combination of Chemistry Moisture and Model Moisture 
+C                 (kg/kg mass mixing ratio)
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
-c Declare Modules and Data Structures
-c -----------------------------------
+#include "CPP_OPTIONS.h"
       implicit none 
       integer nwatlevs,nwatlats
       real stratq ( nwatlats,nwatlevs )
-      real watlats (nwatlats)
-      real watlevs (nwatlevs)
+      _RL watlats (nwatlats)
+      _RL watlevs (nwatlevs)
 
       integer irun,nlevs
       real xlat  (irun)
       real pres  (irun,nlevs)
       real qz_in (irun,nlevs)
-      real qz_out(irun,nlevs)
+      _RL qz_out(irun,nlevs)
 
 c Local Variables
 c ---------------
@@ -281,7 +276,7 @@ c
       return
       end
 
-      subroutine interp_oz (ozone,nozolevs,nozolats,ozolevs,ozolats,
+      subroutine interp_oz (ozone,nozlevs,nozlats,ozlevs,ozlats,
      .                                      irun,xlat,nlevs,plevs,ozrad)
 C***********************************************************************
 C  Purpose
@@ -297,18 +292,14 @@ C     pres ....... Three-dimensional array of pressures
 C     ozrad ...... Ozone on Physics Grid (kg/kg mass mixing radtio)
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
-
-c Declare Modules and Data Structures
-c -----------------------------------
+#include "CPP_OPTIONS.h"
       implicit none
-      real     ozone ( nozolats,nozolevs )
-
-      integer irun,nlevs
-      real xlat  (irun)
-      real plevs (irun,nlevs)
-      real ozrad (irun,nlevs)
+      integer nozlevs,nozlats,irun,nlevs
+      real ozone(nozlats,nozlevs)
+      real xlat(irun)
+      real plevs(irun,nlevs)
+      _RL ozrad(irun,nlevs)
+      _RL ozlevs(nozlevs),ozlats(nozlats)
 
 c Local Variables
 c ---------------
@@ -320,7 +311,7 @@ c ---------------
 
       integer  i,k,L1,L2,LM,LP
       integer  jlat,jlatm,jlatp
-      real  O3INT1(IRUN,nozolevs)
+      real  O3INT1(IRUN,nozlevs)
       real    QPR1(IRUN), QPR2(IRUN), SLOPE(IRUN)
       real     PR1(IRUN),  PR2(IRUN)
 
@@ -328,11 +319,11 @@ C **********************************************************************
 C ****           INTERPOLATE ozone data to model latitudes           ***
 C **********************************************************************
 
-      DO 32 K=1,nozolevs
+      DO 32 K=1,nozlevs
       DO 34 I=1,IRUN
 
-      DO 36 jlat = 1,nozolats
-      IF( ozolats(jlat).gt.xlat(i) ) THEN
+      DO 36 jlat = 1,nozlats
+      IF( ozlats(jlat).gt.xlat(i) ) THEN
       IF( jlat.EQ.1 ) THEN
       jlatm    = 1
       jlatp    = 1
@@ -340,14 +331,14 @@ C **********************************************************************
         ELSE
       jlatm    = jlat-1
       jlatp    = jlat
-      slope(i) = ( XLAT(I)        -ozolats(jlat-1) )
-     .         / ( ozolats(jlat)-ozolats(jlat-1) )
+      slope(i) = ( XLAT(I)        -ozlats(jlat-1) )
+     .         / ( ozlats(jlat)-ozlats(jlat-1) )
       ENDIF
       GOTO 37
       ENDIF
    36 CONTINUE
-      jlatm    = nozolats
-      jlatp    = nozolats
+      jlatm    = nozlats
+      jlatp    = nozlats
       slope(i) = one
    37 CONTINUE
       QPR1(I) = ozone(jlatm,k)
@@ -367,8 +358,8 @@ C **********************************************************************
       DO 40 L2 = 1,NLEVS
 
       DO 44 I  = 1,IRUN
-      DO 46 L1 = 1,nozolevs
-      IF( ozolevs(L1).GT.PLEVS(I,L2) ) THEN
+      DO 46 L1 = 1,nozlevs
+      IF( ozlevs(L1).GT.PLEVS(I,L2) ) THEN
       IF( L1.EQ.1 ) THEN
           LM = 1
           LP = 2
@@ -379,11 +370,11 @@ C **********************************************************************
       GOTO 47
       ENDIF
    46 CONTINUE
-            LM = nozolevs-1
-            LP = nozolevs
+            LM = nozlevs-1
+            LP = nozlevs
    47 CONTINUE
-       PR1(I) = ozolevs (LM)
-       PR2(I) = ozolevs (LP)
+       PR1(I) = ozlevs (LM)
+       PR2(I) = ozlevs (LP)
       QPR1(I) =   O3INT1(I,LM)
       QPR2(I) =   O3INT1(I,LP)
    44 CONTINUE

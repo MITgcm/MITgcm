@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.4 2004/06/07 18:11:38 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.5 2004/07/16 19:37:04 molod Exp $
 C $Name:  $
 
        subroutine step_fizhi_fg (myTime, myIter, myThid, dt)
@@ -20,7 +20,7 @@ c-----------------------------------------------------------------------
 
        integer myTime, myIter, myThid 
 
-       integer i, j, L, bi, bj
+       integer bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        _RL dt
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.12 2004/07/14 17:31:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.13 2004/07/16 19:37:04 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -16,9 +16,11 @@ c-----------------------------------------------------------------------
        implicit none
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+#include "GRID.h"
 #include "fizhi_land_SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_coms.h"
+#include "chronos.h"
 #include "gridalt_mapping.h"
 #include "fizhi_land_coms.h"
 #include "fizhi_earth_coms.h"
@@ -29,14 +31,17 @@ c-----------------------------------------------------------------------
 
       logical alarm
       external alarm
-      _RL lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
-      _RL fraci(sNx,sNy), fracl(sNx,sNy)
-      _RL ficetile(nchp)
-      _RL ra
-      integer i, j, L, bi, bj
+      real lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
+      real fraci(sNx,sNy), fracl(sNx,sNy)
+      real ficetile(nchp)
+      real radius
+      real tmpij(sNx,sNy)
+      real tmpchp(nchp)
+      integer i, j, n, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer sec, day, month
-      integer nmonf,ndayf
+      integer nmonf,ndayf,nsecf
+      nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
 
@@ -56,8 +61,8 @@ c-----------------------------------------------------------------------
       do bi = myBxLo(myThid), myBxHi(myThid)
        do j = jm1,jm2
        do i = im1,im2
-        lons(i,j,bi,bj) = xC(i,j,bi,bj)
-        lats(i,j,bi,bj) = yC(i,j,bi,bj)
+        lons(i,j) = xC(i,j,bi,bj)
+        lats(i,j) = yC(i,j,bi,bj)
        enddo
        enddo
 
@@ -65,7 +70,7 @@ c-----------------------------------------------------------------------
      .                                                            fracl)
        do j = jm1,jm2
        do i = im1,im2
-        if(sea_ice(i,j,bi,bj).gt.0.) then
+        if(sice(i,j,bi,bj).gt.0.) then
            fraci(i,j) = 1.
         else
            fraci(i,j) = 0.
@@ -87,7 +92,7 @@ C                      Compute Surface Albedo
 C **********************************************************************
 
        if( alarm('radsw') ) then
-        call astro(nymd,nhms,lats,lons,im2*jm2,cosz,ra)
+        call astro(nymd,nhms,lats,lons,im2*jm2,cosz,radius)
         call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
      .             nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
      .             albvisdr,albvisdf,albnirdr,albnirdf )
@@ -112,14 +117,18 @@ C*********************************************************************
 
        do j = jm1,jm2
        do i = im1,im2
-        tgz(i,j,bi,bj) = 0.
+        tmpij(i,j) = 0.
        enddo
        enddo
-       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tcanopy(1,bi,bj),
-     .                           nchp,nchp,fracl,tgz(1,bi,bj),im2,jm2)
+       do i = 1,nchp
+        tmpchp(i) = tcanopy(i,bi,bj)
+       enddo
+       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,
+     .                           nchp,nchp,fracl,tmpij,im2,jm2)
        do j = jm1,jm2
        do i = im1,im2
-        if(fracl(i,j).lt.0.3.and.sea_ice(i,j,bi,bj).eq.0.0)
+        tgz(i,j,bi,bj) = tmpij(i,j)
+        if(fracl(i,j).lt.0.3.and.sice(i,j,bi,bj).eq.0.0)
      .                                 tgz(i,j,bi,bj) = sst(i,j,bi,bj)
        enddo
        enddo
@@ -154,8 +163,9 @@ C*******************************************************************
 #include "CPP_EEOPTIONS.h"
 
       INTEGER IRUN
-      _RL AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN),
-     `	     VLAI   (IRUN),   VGRN (IRUN),   ZTH  (IRUN),    SNW (IRUN)
+      real AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN)
+      _RL VLAI(IRUN),VGRN (IRUN), SNW(IRUN)
+      REAL ZTH(IRUN)
       INTEGER ITYP (IRUN)
 
       _RL ALVDRS,  ALIDRS
@@ -211,27 +221,16 @@ C                  9:  GLACIER
 C                 10:  DARK DESERT
 C
 
+      INTEGER I, LAI
+      real FAC,GAMMA,BETA,ALPHA,DX,DY,ALA,GRN (2),SNWALB(4,NTYPS)
+      real COEFF
 
-* [ Definition of Variables: ]
-*
-	INTEGER I, LAI
-
-	_RL FAC,               GAMMA,          BETA,          ALPHA,
-     `	     DX,                DY,             ALA,           GRN (2),
-     `	     SNWALB (4, NTYPS), SNWMID (NTYPS)
-
-* [ Definition of Functions: ]
-*
-	_RL COEFF
-
-C   Constants used in albedo calculations:
-
-      _RL ALVDR (NLAI, 2, NTYPS)
-      _RL BTVDR (NLAI, 2, NTYPS)
-      _RL GMVDR (NLAI, 2, NTYPS)
-      _RL ALIDR (NLAI, 2, NTYPS)
-      _RL BTIDR (NLAI, 2, NTYPS)
-      _RL GMIDR (NLAI, 2, NTYPS)
+      real ALVDR (NLAI, 2, NTYPS)
+      real BTVDR (NLAI, 2, NTYPS)
+      real GMVDR (NLAI, 2, NTYPS)
+      real ALIDR (NLAI, 2, NTYPS)
+      real BTIDR (NLAI, 2, NTYPS)
+      real GMIDR (NLAI, 2, NTYPS)
 
 C  (Data statements for ALVDR described in full; data statements for
 C   other constants follow same framework.)
@@ -680,8 +679,8 @@ cfpp$ expand (coeff)
 #include "CPP_EEOPTIONS.h"
          
       INTEGER NTABL, LAI
- 
-      _RL TABLE (NTABL, 2), DX, DY
+      real coeff 
+      real TABLE (NTABL, 2), DX, DY
  
       COEFF = (TABLE(LAI,  1)
      *      + (TABLE(LAI  ,2) - TABLE(LAI  ,1)) * DY ) * (1.0-DX)
@@ -852,7 +851,7 @@ C***********************************************************************
 #include "CPP_EEOPTIONS.h"
 
       integer sec,month,day,im,jm,nchp,nchpland,nSx,nSy,bi,bj
-      _RL cosz(im,jm),fraci(im,jm),fracg(im,jm)
+      real cosz(im,jm),fraci(im,jm),fracg(im,jm)
       _RL snodep(nchp,nSx,nSy),chfr(nchp,nSx,nSy),chlt(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
       _RL alai(nchp,nSx,nSy),agrn(nchp,nSx,nSy)
@@ -868,18 +867,20 @@ C***********************************************************************
       PARAMETER (OCNALB=0.08)
       PARAMETER (ALBSI=0.7)
  
-      _RL alboc(im,jm)
-      _RL AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
-      _RL ANIRDF(nchp),zenith(nchp)
+      real alboc(im,jm)
+      real AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
+      real ANIRDF(nchp)
+      real zenith(nchp)
+      real tmpij(im,jm)
       integer i,j
 
       DO I=1,IM
       DO J=1,JM
        ALBOC(I,J) = A0 + (A1 + (A2 +  A3*cosz(I,J))*cosz(I,J))*cosz(I,J)
-       ALBVR(I,J) = ALBSI * FRACI(I,J) + ALBOC(I,J) * (ONE-FRACI(I,J))
-       ALBNR(I,J) = ALBVR(I,J)
-       ALBVF(I,J) = ALBSI * FRACI(I,J) + OCNALB * (ONE-FRACI(I,J))
-       ALBNF(I,J) = ALBVF(I,J)
+       ALBVR(I,J,bi,bj) = ALBSI*FRACI(I,J) + ALBOC(I,J)*(ONE-FRACI(I,J))
+       ALBNR(I,J,bi,bj) = ALBVR(I,J,bi,bj)
+       ALBVF(I,J,bi,bj) = ALBSI * FRACI(I,J) + OCNALB * (ONE-FRACI(I,J))
+       ALBNF(I,J,bi,bj) = ALBVF(I,J,bi,bj)
       ENDDO
       ENDDO
  
@@ -895,14 +896,54 @@ C and now call sibalb
  
 C finally some transformations back to grid space for albedos
  
+      DO I=1,IM
+      DO J=1,JM
+       tmpij(i,j) = 0.
+      ENDDO
+      ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdr,nchp,nchpland,
-     .                                      fracg,albvr(1,bi,bj),im,jm)
+     .                                     fracg,tmpij,im,jm)
+      DO I=1,IM
+      DO J=1,JM
+       albvr(i,j,bi,bj) = tmpij(i,j)
+      ENDDO
+      ENDDO
+      DO I=1,IM
+      DO J=1,JM
+       tmpij(i,j) = 0.
+      ENDDO
+      ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdf,nchp,nchpland,
-     .                                      fracg,albvf(1,bi,bj),im,jm)
+     .                                     fracg,tmpij,im,jm)
+      DO I=1,IM
+      DO J=1,JM
+       albvf(i,j,bi,bj) = tmpij(i,j)
+      ENDDO
+      ENDDO
+      DO I=1,IM
+      DO J=1,JM
+       tmpij(i,j) = 0.
+      ENDDO
+      ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdr,nchp,nchpland,
-     .                                      fracg,albnr(1,bi,bj),im,jm)
+     .                                     fracg,tmpij,im,jm)
+      DO I=1,IM
+      DO J=1,JM
+       albnr(i,j,bi,bj) = tmpij(i,j)
+      ENDDO
+      ENDDO
+      DO I=1,IM
+      DO J=1,JM
+       tmpij(i,j) = 0.
+      ENDDO
+      ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdf,nchp,nchpland,
-     .                                      fracg,albnf(1,bi,bj),im,jm)
+     .                                     fracg,tmpij,im,jm)
+      DO I=1,IM
+      DO J=1,JM
+       albnf(i,j,bi,bj) = tmpij(i,j)
+      ENDDO
+      ENDDO
  
       return
       end
@@ -940,13 +981,15 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer im,jm,nchp,nSx,nSy,bi,bj
-      _RL fracg(im,jm)
+      real fracg(im,jm)
       _RL chfr(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
-      _RL snowdep(nchp,nSx,nSy),fraci(nchp)
+      _RL snowdep(nchp,nSx,nSy)
+      real fraci(nchp)
       _RL emiss(im,jm,10,nSx,nSy)
 
-      _RL emisstile(nchp,10)
+      real emisstile(nchp,10)
+      real tmpij(im,jm)
       integer i,j,k,n
 
       do i = 1,10
@@ -965,11 +1008,16 @@ c ---------------------------------------------
       do k = 1,10
       do j = 1,jm
       do i = 1,im
-      emiss(i,j,k) = 0.0
+       tmpij(i,j) = 0.0
       enddo
       enddo
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),emisstile(1,k),nchp,nchp,
-     .      fracg,emiss(1,1,k,bi,bj),im,jm)
+     .      fracg,tmpij,im,jm)
+      do j = 1,jm
+      do i = 1,im
+       emiss(i,j,k,bi,bj) = tmpij(i,j)
+      enddo
+      enddo
       enddo
 
       return
@@ -980,12 +1028,12 @@ c ---------------------------------------------
 #include "CPP_EEOPTIONS.h"
       integer numpts
       integer   ityp(numpts)
-      _RL snowdepth(numpts),fraci(numpts)
-      _RL   newemis(numpts,10)
+      _RL snowdepth(numpts)
+      real fraci(numpts)
+      real newemis(numpts,10)
 
-      _RL emis(12,11)
-      _RL snwmid(10)
-      _RL fac
+      real emis(12,11)
+      real fac
       integer i,j
 
 c-----------------------------------------------------------------------
@@ -1165,10 +1213,10 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
 
-      integer i,j,nSx,nSy,bi,bj,maxtyp
-      integer surftype(im,jm,nSx,nSy)
-      _RL surftype(im,jm,nSx,nSy)
-      _RL frac(im,jm)
+      integer im,jm,nSx,nSy,bi,bj,maxtyp
+      integer surftype(im,jm,maxtyp,nSx,nSy)
+      _RL tilefrac(im,jm,maxtyp,nSx,nSy)
+      real frac(im,jm)
 
       integer  i,j,k
 
@@ -1181,8 +1229,8 @@ C***********************************************************************
       do k=1,maxtyp
       do j=1,jm
       do i=1,im
-      if(surftype(i,j,k,bi,bj).lt.100.and.
-                                       tilefrac(i,j,k,bi,bj).gt.0.0)then
+      if( (surftype(i,j,k,bi,bj).lt.100.).and.
+     .                               (tilefrac(i,j,k,bi,bj).gt.0.0))then
        frac(i,j) = frac(i,j) + tilefrac(i,j,k,bi,bj)
       endif
       enddo
