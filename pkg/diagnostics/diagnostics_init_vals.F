@@ -1,4 +1,4 @@
-      subroutine diagnostics_init_vals (myThid,Nr,Nrphys)
+      subroutine diagnostics_init_vals (myThid)
 C ***********************************************************************
 C *****                                                              ****
 C *****  PURPOSE                                                     ****
@@ -36,10 +36,20 @@ C *****                                                              ****
 C ***********************************************************************
 
       implicit none
+#include "CPP_OPTIONS.h"
+#include "SIZE.h"
+
+#ifdef(ALLOW_FIZHI)then
+#include "fizhi_SIZE.h"
+#else
+       integer Nrphys
+       parameter (Nrphys=1)
+#endif
+
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
-      integer  nr,nrphys
+      integer myThid
       integer  n
 
 c Diagnostic Names
@@ -283,7 +293,7 @@ c ----------------
       cdiag(237) = 'GWCV    '
 
 c Diagnostic Descriptions
-c -----------------------
+c ----------------------------------------------------------------------
       tdiag( 1)  = 'Zonal Wind Surface Stress  (N/m^2)'
       tdiag( 2)  = 'Meridional Wind Surface Stress  (N/m^2)'
       tdiag( 3)  = 'Sensible Heat Flux (pos.upwrd)  (W/m^2)'
@@ -296,14 +306,20 @@ c -----------------------
       tdiag(10)  = 'Surface Drag Coef for Winds (non-dimensional)'
       tdiag(11)  = 'Eddy Diffusivity Coefficient for Momentum  (m^2/s)'
       tdiag(12)  = 'Eddy Diffusivity Coefficient for Scalars  (m^2/s)'
-      tdiag(13)  = 'Zonal Wind Tendency due to Turbulence  (m/s/day)'
-      tdiag(14)  = 'Meridional Wind Tendency due to Turbulence  (m/s/day)'
-      tdiag(15)  = 'Temperature Tendency due to Turbulence  (K/day)'
-      tdiag(16)  = 'Specific Humidity Tendency due to Turbulence  (g/kg/day)'
-      tdiag(17)  = 'Temperature Tendency due to Moist Processes  (K/day)'
-      tdiag(18)  = 'Specific Humidity Tendency due to Moist Processes  (g/kg/day)'
-      tdiag(19)  = 'Temperature Tendency due to Longwave Radiation  (K/day)'
-      tdiag(20)  = 'Temperature Tendency due to Shortwave Radiation  (K/day)'
+      tdiag(13)  = 'Zonal Wind Tendency from Turbulence  (m/s/day)'
+      tdiag(14)  = 'Meridional Wind Tendency from Turbulence  (m/s/day)'
+      tdiag(15)  = 
+     .  'Temperature Tendency from Turbulence  (K/day)'
+      tdiag(16)  = 
+     .  'Specific Humidity Tendency from Turbulence  (g/kg/day)'
+      tdiag(17)  = 
+     .  'Temperature Tendency due to Moist Processes  (K/day)'
+      tdiag(18)  = 
+     .  'Specific Humidity Tendency due to Moist Processes  (g/kg/day)'
+      tdiag(19)  = 
+     .  'Temperature Tendency due to Longwave Radiation  (K/day)'
+      tdiag(20)  = 
+     .  'Temperature Tendency due to Shortwave Radiation  (K/day)'
       tdiag(21)  = 'Total Precipitation  (mm/day)'
       tdiag(22)  = 'Convective Precipitation  (mm/day)'
       tdiag(23)  = 'Turbulent Flux of Zonal Momentum  (N/m^2)'
@@ -326,13 +342,16 @@ c -----------------------
       tdiag(40)  = 'Clear Sky Longwave Radiation Heating Rates  (K/day)'
       tdiag(41)  = 'Temperature used by Radiation  (deg K)'
       tdiag(42)  = 'Specific Humidity used by Radiation  (g/kg)'
-      tdiag(43)  = 'Ozone mixing ratio used by Longwave Radiation (non-dimensional)'
+      tdiag(43)  = 
+     . 'Ozone mixing ratio used by Longwave Radiation (non-dimensional)'
       tdiag(44)  = 'Convective Cloud Fraction  (0-1)'
       tdiag(45)  = '3-D Total Cloud Fraction  (0-1)'
       tdiag(46)  = 'Downward Longwave Radiation at the Ground  (W/m^2)'
-      tdiag(47)  = 'Temperature Tendency due to Gravity Wave Drag  (K/day)'
+      tdiag(47)  = 
+     .  'Temperature Tendency due to Gravity Wave Drag  (K/day)'
       tdiag(48)  = 'Incident Shortwave Radiation at TOA (W/m^2)'
-      tdiag(49)  = 'Counted Cloud Optical Depth (non-dimensional) per 100 mb'
+      tdiag(49)  = 
+     .  'Counted Cloud Optical Depth (non-dimensional) per 100 mb'
       tdiag(50)  = 'Cloud Optical Depth Counter'
       tdiag(51)  = 'Low-Level ( 1000-700 hPa) Cloud Fraction  (0-1)'
       tdiag(52)  = 'Surface Evaporation  (mm/day)'
@@ -340,7 +359,8 @@ c -----------------------
       tdiag(54)  = 'Zonal Wind Tendency due to Analysis  (m/s/day)'
       tdiag(55)  = 'Meridional Wind Tendency due to Analysis  (m/s/day)'
       tdiag(56)  = 'Temperature Tendency due to Analysis  (K/day)'
-      tdiag(57)  = 'Specific Humidity Tendency due to Analysis  (g/kg/day)'
+      tdiag(57)  = 
+     .  'Specific Humidity Tendency due to Analysis  (g/kg/day)'
       tdiag(58)  = 'Vertical Velocity  (hPa/day)'
       tdiag(59)  = 'Total Zonal Wind Tendency  (m/s/day)'
       tdiag(60)  = 'Total Meridional Wind Tendency  (m/s/day)'
@@ -348,8 +368,10 @@ c -----------------------
       tdiag(62)  = 'Total Specific Humidity Tendency  (g/kg/day)'
       tdiag(63)  = 'Relative Vorticity  (x10^-4  sec^-1)'
       tdiag(64)  = 'Pi-Weighted Vertical Sigma Velocity  (hPa/day)'
-      tdiag(65)  = 'Temperature Tendency due to Stratiform Processes  (K/day)'
-      tdiag(66)  = 'Specific Humidity Tendency due to Stratiform Processes  (g/kg/day)'
+      tdiag(65)  = 
+     .  'Temperature Tendency due to Stratiform Processes  (K/day)'
+      tdiag(66)  = 
+     . 'Specific Humidity Tendency from Stratiform Processes (g/kg/day)'
       tdiag(67)  = 'Friction Velocity  (m/s)'
       tdiag(68)  = 'Surface Roughness Z0  (m)'
       tdiag(69)  = 'Frequency of Turbulence  (0-1)'
@@ -362,28 +384,40 @@ c -----------------------
       tdiag(76)  = 'Time-Averaged Meridional Wind  (m/s)'
       tdiag(77)  = 'Time-Averaged Temperature  (deg K)'
       tdiag(78)  = 'Time-Averaged Specific Humidity  (g/kg)'
-      tdiag(79)  = 'Temperature Tendency due to Rayleigh Friction  (K/day)'
+      tdiag(79)  = 
+     .  'Temperature Tendency due to Rayleigh Friction (K/day)'
       tdiag(80)  = 'Time-Averaged Surface Pressure  (hPa)'
       tdiag(81)  = 'Time-Averaged Turbulent Kinetic Energy  (m/s)^2'
-      tdiag(82)  = 'Clear Sky Net Downward SW Radiation at the Ground  (W/m^2)'
-      tdiag(83)  = 'Surface Pressure Tendency due to Analysis  (hPa/day)'
+      tdiag(82)  = 
+     .  'Clear Sky Net Downward SW Radiation at the Ground  (W/m^2)'
+      tdiag(83)  = 'Surface Pressure Tendency due to Analysis (hPa/day)'
       tdiag(84)  = 'User-Defined Surface   Diagnostic #1'
       tdiag(85)  = 'User-Defined Surface   Diagnostic #2'
       tdiag(86)  = 'User-Defined Upper-Air Diagnostic #1'
       tdiag(87)  = 'User-Defined Upper-Air Diagnostic #2'
-      tdiag(88)  = 'Zonal Wind Tendency due to Diabatic Forcing  (m/s/day)'
-      tdiag(89)  = 'Meridional Wind Tendency due to Diabatic Forcing  (m/s/day)'
-      tdiag(90)  = 'Temperature Tendency due to Diabatic Forcing  (K/day)'
-      tdiag(91)  = 'Specific Humidity Tendency due to Diabatic Forcing  (g/kg/day)'
-      tdiag(92)  = 'Zonal Wind Tendency due to Rayleigh Friction  (m/s/day)'
-      tdiag(93)  = 'Meridional Wind Tendency due to Rayleigh Friction  (m/s/day)'
-      tdiag(94)  = 'Zonal Wind Tendency due to Gravity Wave Drag  (m/s/day)'
-      tdiag(95)  = 'Meridional Wind Tendency due to Gravity Wave Drag  (m/s/day)'
+      tdiag(88)  = 
+     .  'Zonal Wind Tendency due to Diabatic Forcing  (m/s/day)'
+      tdiag(89)  = 
+     .  'Meridional Wind Tendency due to Diabatic Forcing  (m/s/day)'
+      tdiag(90)  = 
+     .  'Temperature Tendency due to Diabatic Forcing  (K/day)'
+      tdiag(91)  = 
+     .  'Specific Humidity Tendency due to Diabatic Forcing  (g/kg/day)'
+      tdiag(92)  = 
+     .  'Zonal Wind Tendency due to Rayleigh Friction  (m/s/day)'
+      tdiag(93)  = 
+     .  'Meridional Wind Tendency due to Rayleigh Friction  (m/s/day)'
+      tdiag(94)  = 
+     .  'Zonal Wind Tendency due to Gravity Wave Drag  (m/s/day)'
+      tdiag(95)  = 
+     .  'Meridional Wind Tendency due to Gravity Wave Drag  (m/s/day)'
       tdiag(96)  = 'Zonal Wind Gravity Wave Surface Stress (N/m^2)'
       tdiag(97)  = 'Meridional Wind Gravity Wave Surface Stress (N/m^2)'
       tdiag(98)  = 'Zonal Wind Gravity Wave Stress at Model Top (N/m^2)'
-      tdiag(99)  = 'Meridional Wind Gravity Wave Stress at Model Top (N/m^2)'
-      tdiag(100) = 'Estimated Cloud Liquid Water used in Radiation (mg/kg)'
+      tdiag(99)  = 
+     .  'Meridional Wind Gravity Wave Stress at Model Top (N/m^2)'
+      tdiag(100) = 
+     .  'Estimated Cloud Liquid Water used in Radiation (mg/kg)'
       tdiag(101) = 'Time-Averaged Sea-Level Pressure  (mb)'
       tdiag(102) = 'Vertically Averaged UWND*SPHU  (m/s g/kg)'
       tdiag(103) = 'Vertically Averaged VWND*SPHU  (m/s g/kg)'
@@ -403,10 +437,13 @@ c -----------------------
       tdiag(117) = 'Filling of Negative Specific Humidity (g/kg/day)'
       tdiag(118) = 'Vertically Averaged QIAU  (mm/day)'
       tdiag(119) = 'Vertically Averaged QFILL  (mm/day)'
-      tdiag(120) = 'Zonal Wind Tendency due to Shapiro Filter  (m/s/day)'
-      tdiag(121) = 'Meridional Wind Tendency due to Shapiro Filter  (m/s/day)'
+      tdiag(120) = 
+     .  'Zonal Wind Tendency due to Shapiro Filter  (m/s/day)'
+      tdiag(121) = 
+     .  'Meridional Wind Tendency due to Shapiro Filter  (m/s/day)'
       tdiag(122) = 'Temperature Tendency due to Shapiro Filter  (K/day)'
-      tdiag(123) = 'Specific Humidity Tendency due to Shapiro Filter  (g/kg/day)'
+      tdiag(123) = 
+     .  'Specific Humidity Tendency due to Shapiro Filter  (g/kg/day)'
       tdiag(124) = 'User-Defined Surface   Diagnostic #3    '
       tdiag(125) = 'User-Defined Surface   Diagnostic #4    '
       tdiag(126) = 'User-Defined Surface   Diagnostic #5    '
@@ -436,55 +473,77 @@ c -----------------------
       tdiag(150) = 'Low-Level Optical Depth Counter'
       tdiag(151) = 'Mid-Level Optical Depth Counter'
       tdiag(152) = 'High-Level Optical Depth Counter'
-      tdiag(153) = 'Skin Temperature of the Canopy/Soil (SST over water)  (deg K)'
+      tdiag(153) = 
+     .  'Skin Temperature of the Canopy/Soil (SST over water)  (deg K)'
       tdiag(154) = 'Deep Soil Temperature  (deg K)'
       tdiag(155) = 'Specific Humidity of the Canopy  (g/kg)'
-      tdiag(156) = 'Soil Moisture Field Capacity Fraction in Shallow (5 mm) Layer  (0-1)'
-      tdiag(157) = 'Soil Moisture Field Capacity Fraction in Root Zone  (0-1)'
-      tdiag(158) = 'Soil Moisture Field Capacity Fraction in Recharge Layer  (0-1)'
+      tdiag(156) = 
+     .  'Soil Moisture Field Capacity Fraction in Shallow (5 mm) Layer'
+      tdiag(157) = 'Soil Moisture Field Capacity Fraction in Root Zone'
+      tdiag(158) = 
+     .  'Soil Moisture Field Capacity Fraction in Recharge Layer '
       tdiag(159) = 'Canopy Interception Reservoir (mm)'
       tdiag(160) = 'Snow Depth (mm water equivalent)'
       tdiag(161) = 'Convective Rainfall (liquid precipitate)  (mm/day)'
       tdiag(162) = 'Large-scale Rainfall (liquid precipitate)  (mm/day)'
       tdiag(163) = 'Total Snowfall (solid precipitate)  (mm/day)'
-      tdiag(164) = 'Water from precipitation not infiltrated into soil  (mm/s)'
+      tdiag(164) = 
+     .  'Water from precipitation not infiltrated into soil  (mm/s)'
       tdiag(165) = 'Rainwater Infiltration into top soil layer  (mm/s)'
-      tdiag(166) = 'Diffusion of Moisture across bottom of root zone  (mm/s)'
+      tdiag(166) = 
+     .  'Diffusion of Moisture across bottom of root zone  (mm/s)'
       tdiag(167) = 'Rate of Snow Melt  (mm/s)'
-      tdiag(168) = 'Latent Heat Flux from Canopy Interception Reservoir  (W/m^2)'
+      tdiag(168) = 
+     .  'Latent Heat Flux from Canopy Interception Reservoir  (W/m^2)'
       tdiag(169) = 'Latent Heat Flux from Bare Soil  (W/m^2)'
-      tdiag(170) = 'Latent Heat Flux (Transpiration) from Vegetation Surface  (W/m^2)'
+      tdiag(170) = 
+     . 'Latent Heat Flux (Transpiration) from Vegetated Surface (W/m^2)'
       tdiag(171) = 'Latent Heat Flux from Snow Pack  (W/m^2)'
-      tdiag(172) = 'Diffuse-beam Photosynthetically Active Radiation  (W/m^2)'
-      tdiag(173) = 'Direct-beam Photosynthetically Active Radiation  (W/m^2)'
+      tdiag(172) = 
+     .  'Diffuse-beam Photosynthetically Active Radiation  (W/m^2)'
+      tdiag(173) = 
+     .  'Direct-beam Photosynthetically Active Radiation  (W/m^2)'
       tdiag(174) = 'Leaf Area Index  (%)'
       tdiag(175) = 'Green-ness Index  (%)'
-      tdiag(176) = 'Derivative of Upward LW Radiation wrt TCANOPY (W/m^2 /deg K)'
-      tdiag(177) = 'Derivative of Sensible Heat Flux wrt TCANOPY (W/m^2 /deg K)'
-      tdiag(178) = 'Derivative of Latent Heat Flux wrt TCANOPY (W/m^2 /deg K)'
+      tdiag(176) = 
+     .  'Derivative of Upward LW Radiation wrt TCANOPY (W/m^2 /deg K)'
+      tdiag(177) = 
+     .  'Derivative of Sensible Heat Flux wrt TCANOPY (W/m^2 /deg K)'
+      tdiag(178) = 
+     .  'Derivative of Latent Heat Flux wrt TCANOPY (W/m^2 /deg K)'
       tdiag(179) = 'Vertically Averaged MOISTT  (K/day)'
       tdiag(180) = 'Vertically Averaged TURBT  (K/day)'
       tdiag(181) = 'Vertically Averaged RADLW  (K/day)'
       tdiag(182) = 'Vertically Averaged RADSW  (K/day)'
       tdiag(183) = 'Vertically Averaged TIAU  (K/day)'
       tdiag(184) = 'Pressure Thickness of the RAS Subcloud Layer (mb)'
-      tdiag(185) = 'Pressure Thickness of the RAS Subcloud Layer Counter'
-      tdiag(186) = 'Lifting Condensation Level (mb)                           '
-      tdiag(187) = 'User-Defined Counted Surface Diagnostic                   '
-      tdiag(188) = 'User-Defined Counted Surface Diagnostic Counter           '
-      tdiag(189) = '                                                          '
+      tdiag(185) = 
+     .  'Pressure Thickness of the RAS Subcloud Layer Counter'
+      tdiag(186) = 'Lifting Condensation Level (mb)                 '
+      tdiag(187) = 'User-Defined Counted Surface Diagnostic         '
+      tdiag(188) = 'User-Defined Counted Surface Diagnostic Counter'
+      tdiag(189) = '                         '
       tdiag(190) = 'Potential Evapotranspiration (W/m^2)'
-      tdiag(191) = 'Net precipitation due to supersaturation above critical RH  (mm/day)'
-      tdiag(192) = 'Derivative of Sensible Heat wrt Canopy Humidity (W/m^2)'
-      tdiag(193) = 'Derivative of Latent Heat wrt Canopy Humidity (W/m^2)'
+      tdiag(191) = 
+     . 'Net precip due to supersaturation above critical RH  (mm/day)'
+      tdiag(192) = 
+     .  'Derivative of Sensible Heat wrt Canopy Humidity (W/m^2)'
+      tdiag(193) = 
+     .  'Derivative of Latent Heat wrt Canopy Humidity (W/m^2)'
       tdiag(194) = 'Total Change in Canopy Temperature (deg/sec)'
       tdiag(195) = 'Change in Canopy Humidity (kg/kg/sec)'
-      tdiag(196) = 'Change in Canopy Temperature - Energy Term (deg/sec)'
-      tdiag(197) = 'Change in Canopy Temperature - Net Radiation Term (deg/sec)'
-      tdiag(198) = 'Change in Canopy Temperature - Sensible Heat Term (deg/sec)'
-      tdiag(199) = 'Change in Canopy Temperature - Latent Heat Term (deg/sec)'
-      tdiag(200) = 'Change in Canopy Temperature - Ground Temperature Term (deg/sec)'
-      tdiag(201) = 'Change in Canopy Temperature - Humidity Term (deg/sec)'
+      tdiag(196) = 
+     .  'Change in Canopy Temperature - Energy Term (deg/sec)'
+      tdiag(197) = 
+     .  'Change in Canopy Temperature - Net Radiation Term (deg/sec)'
+      tdiag(198) = 
+     .  'Change in Canopy Temperature - Sensible Heat Term (deg/sec)'
+      tdiag(199) = 
+     .  'Change in Canopy Temperature - Latent Heat Term (deg/sec)'
+      tdiag(200) = 
+     .  'Change in Canopy Temperature - Ground Temp Term (deg/sec)'
+      tdiag(201) = 
+     .  'Change in Canopy Temperature - Humidity Term (deg/sec)'
       tdiag(202) = 'Cloud Liquid Water Generated in Turbulence (mg/kg)'
       tdiag(203) = 'Cloud Fraction Generated in Turbulence (fraction)'
       tdiag(204) = 'Mean Surface Albedo (SW_Up/SW_Down)  0-1 '
@@ -492,35 +551,59 @@ c -----------------------
       tdiag(206) = 'Diffuse Beam VIS Surface Albedo (0-1)   '
       tdiag(207) = 'Direct  Beam NIR Surface Albedo (0-1)   '
       tdiag(208) = 'Diffuse Beam NIR Surface Albedo (0-1)   '
-      tdiag(209) = 'Averaged Cloud Optical Depth (non-dimensional) per 100 mb'
+      tdiag(209) = 
+     .  'Averaged Cloud Optical Depth (non-dimensional) per 100 mb'
       tdiag(210) = 'Surface Albedo Counter'
-      tdiag(211) = 'Temperature Change due to supersaturation above critical RH  (K/day)'
-      tdiag(212) = 'Spec.Humid. Change due to supersaturation above critical RH  (g/kg/day)'
+      tdiag(211) = 
+     . 'Temperature Change due to humidity above critical RH  (K/day)'
+      tdiag(212) = 
+     . 'Spec.Humid. Change due to humidity above critical RH (g/kg/day)'
       tdiag(213) = 'Large-Scale Cloud Fraction  (0-1)'
-      tdiag(214) = 'Vertically integrated low-level (below 700mb) suspended cloud water (mg/cm**2)'
-      tdiag(215) = 'Vertically integrated mid-level (700-400mb) suspended cloud water (mg/cm**2)'
-      tdiag(216) = 'Vertically integrated high-level (above 400mb) suspended cloud water (mg/cm**2)'
-      tdiag(217) = 'Vertically integrated total suspended cloud water (mg/cm**2)'
+      tdiag(214) = 
+     .  'Vert integrated low-level (below 700mb) cloud water (mg/cm**2)'
+      tdiag(215) = 
+     .  'Vert integrated mid-level (700-400mb) cloud water (mg/cm**2)'
+      tdiag(216) = 
+     . 'Vert integrated high-level (above 400mb) cloud water (mg/cm**2)'
+      tdiag(217) = 
+     .  'Vertically integrated total suspended cloud water (mg/cm**2)'
       tdiag(218) = 'Convective Available Potential Energy'
       tdiag(219) = 'Moist Static Energy in RAS subcloud layer'
       tdiag(220) = 'Saturation Moist Static Energy'
-      tdiag(221) = 'Temperature Tendency due to Convective  Precipitation (K/day)'
-      tdiag(222) = 'Moisture    Tendency due to Convective  Precipitation (g/kg/day)'
-      tdiag(223) = 'Temperature Tendency due to Large Scale Precipitation (K/day)'
-      tdiag(224) = 'Moisture    Tendency due to Large Scale Precipitation (g/kg/day)'
-      tdiag(225) = 'Temperature Tendency due to Convective  Rain Re-evaporation (K/day)'
-      tdiag(226) = 'Moisture    Tendency due to Convective  Rain Re-evaporation (g/kg/day)'
-      tdiag(227) = 'Temperature Tendency due to Large Scale Rain Re-evaporation (K/day)'
-      tdiag(228) = 'Moisture    Tendency due to Large Scale Rain Re-evaporation (g/kg/day)'
-      tdiag(229) = 'Mid-Level Mean U-Wind Speed used for Gravity Wave Drag w/Clouds (m/sec)'
-      tdiag(230) = 'Mid-Level Mean V-Wind Speed used for Gravity Wave Drag w/Clouds (m/sec)'
-      tdiag(231) = 'Mid-Level Cloud Perturbation Length used for Gravity Wave Drag w/Clouds (m)'
-      tdiag(232) = 'Mid-Level Perturbation U-Wind Speed used for Gravity Wave Drag w/Clouds (m/sec)'
-      tdiag(233) = 'Mid-Level Perturbation V-Wind Speed used for Gravity Wave Drag w/Clouds (m/sec)'
-      tdiag(234) = 'Mid-Level U-Wind Stress used for Gravity Wave Drag w/Clouds (N/m^2)'
-      tdiag(235) = 'Mid-Level V-Wind Stress used for Gravity Wave Drag w/Clouds (N/m^2)'
-      tdiag(236) = 'U-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
-      tdiag(237) = 'V-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
+      tdiag(221) = 
+     .  'Temperature Tendency due to Convective  Precipitation (K/day)'
+      tdiag(222) = 
+     .  'Moisture Tendency due to Convective Precipitation (g/kg/day)'
+      tdiag(223) = 
+     .  'Temperature Tendency due to Large Scale Precipitation (K/day)'
+      tdiag(224) = 
+     .  'Moisture Tendency due to Large Scale Precipitation (g/kg/day)'
+      tdiag(225) = 
+     .  'Temperature Tendency due to Conv Rain Re-evaporation (K/day)'
+      tdiag(226) = 
+     .  'Moisture Tendency due to Conv Rain Re-evaporation (g/kg/day)'
+      tdiag(227) = 
+     .  'Temperature Tendency due to Large Scale Rain Re-evap (K/day)'
+      tdiag(228) = 
+     .  'Moisture Tendency due to Large Scale Rain Re-evap (g/kg/day)'
+      tdiag(229) = 
+     .  'Mid-Lev Mean U-Wind for Gravity Wave Drag w/Clouds (m/sec)'
+      tdiag(230) = 
+     .  'Mid-Lev Mean V-Wind for Gravity Wave Drag w/Clouds (m/sec)'
+      tdiag(231) = 
+     . 'Mid-Lev Cloud Perturb Length for Gravity Wave Drag w/Clouds (m)'
+      tdiag(232) = 
+     . 'Mid-Lev Perturb U-Wind for Gravity Wave Drag w/Clouds (m/sec)'
+      tdiag(233) = 
+     . 'Mid-Lev Perturb V-Wind for Gravity Wave Drag w/Clouds (m/sec)'
+      tdiag(234) = 
+     . 'Mid-Lev U-Wind Stress for Gravity Wave Drag w/Clouds (N/m^2)'
+      tdiag(235) = 
+     . 'Mid-Lev V-Wind Stress for Gravity Wave Drag w/Clouds (N/m^2)'
+      tdiag(236) = 
+     . 'U-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
+      tdiag(237) = 
+     . 'V-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
 
 c Diagnostic Units
 c ----------------
@@ -1246,7 +1329,6 @@ c -----------------
       idiag (n) = 0
       cdiag(n) = cdiag(n)
       enddo
-      ndiagmx   = 0
 
       RETURN
       END

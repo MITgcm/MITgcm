@@ -1,4 +1,4 @@
-      subroutine diag_readparms (myThid,ku,nlist)
+      subroutine diag_readparms (myThid)
 C***********************************************************************
 C  Purpose
 C  -------
@@ -6,34 +6,38 @@ C     Read Diagnostics Namelists to specify output sequence
 C
 C  Arguments  Description
 C  ----------------------
-C     ku ....... Namelist Unit Number
-C     list ..... History  List Data Structure
-C     nlist .... Number of Distinct Lists
-C
+C     myThid ... Process(or) number
 C***********************************************************************
       implicit none
-      integer myThid,ku,nlist
+      integer myThid
+
+#include "diagnostics_SIZE.h"
+#include "diagnostics.h"
+#include "EEPARAMS.h"
 
 c Declare Local Variables
 c -----------------------
+      character*(MAX_LEN_MBUF) msgBuf
+      integer ku
       integer l,n,m,ndim
-      real    undef
-      parameter ( ndim = 100 )   ! Maximum Number of Levels,Fields,Lists
-      character*120     command
-      integer           nlevel   ! Total   Number of Output Levels
-      integer           nfield   ! Total   Number of Output Fields
-      real              getcon
-      integer           frequency   (ndim)          ! Frequency of Output (hhmmss)
-      real              levels (ndim,ndim)          ! List Output Levels
-      character*8       fields (ndim,ndim)          ! List Output Fields
-      character*80      filename    (ndim)          ! List Output Filename
-      character*8       blank
+      _RL undef
+      parameter ( ndim = 100 )       ! Max Number of Levels,Fields,Lists
+      integer nlevel                 ! Total   Number of Output Levels
+      integer nfield                 ! Total   Number of Output Fields
+      _RL getcon
+      integer frequency(ndim)        ! Frequency of Output (hhmmss)
+      _RL levels (ndim,ndim)         ! List Output Levels
+      character*8 fields(ndim,ndim)  ! List Output Fields
+      character*80 filename(ndim)    ! List Output Filename
+      character*8 blank
 
       namelist / diagnostics_list / frequency,levels,fields,filename
 
 C **********************************************************************
 C ****           Initialize and Read Diagnostics Namelist           ****
 C **********************************************************************
+      _BEGIN_MASTER(myThid)
+
       undef = getcon('UNDEF')
       blank  = '        '
 
@@ -45,34 +49,35 @@ C **********************************************************************
       enddo
       enddo
 
-      rewind ku
-      read  (ku,diagnostics_list)
+      WRITE(msgBuf,'(A)') ' DIAG_READPARMS: opening data.diagnostics'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
+                                                                                        
+      CALL OPEN_COPY_DATA_FILE('data.diagnostics', 'DIAG_READPARMS',
+     .                          ku,myThid )
+      read  (ku,NML=diagnostics_list)
+      close (ku)
 
 C **********************************************************************
 C ****         Fill Diagnostics Common Block with Namelist Info     ****
 C **********************************************************************
 
-      nlist = 0
-      do n = 1,ndim
-        if( frequency(n).ne.0 ) then
-           list(n)%frequency   = frequency(n)
-           list(n)%filename    = filename (n)
-
-                                 nlevel = 0
-                                 nfield = 0
+      nlists = 0
+      do n = 1,numlists
+        if( freq(n).ne.0 ) then
+           nlists = nlists + 1
+           freq(n)   = frequency(n)
+           fnames(n)    = filename (n)
+           nlevels(n) = 0
+           nfields(n) = 0
           do m=1,ndim
-          if( levels(m,n).ne.undef ) nlevel = nlevel + 1
-          if( fields(m,n).ne.blank ) nfield = nfield + 1
+          if( levels(m,n).ne.undef ) nlevels(n) = nlevels(n) + 1
+          if( fields(m,n).ne.blank ) nfields(n) = nfields(n) + 1
           enddo
-                          list(n)%nlevel = nlevel
-                          list(n)%nfield = nfield
-
-          do m=1,nlevel
-          list(n)%levels(m) = levels(m,n)
+          do m=1,nlevels(n)
+          levs(m,n) = levels(m,n)
           enddo
-
-          do m=1,nfield
-          list(n)%fields(m) = fields(m,n)
+          do m=1,nfields(n)
+          flds(m,n) = fields(m,n)
           enddo
   
         endif
@@ -82,15 +87,15 @@ C **********************************************************************
 C ****               Echo History List Data Structure               ****
 C **********************************************************************
 
-      if( myid.eq.0 ) then
-      do n=1,nlist
-         print *, 'Creating Output Stream: ',list(n)%filename
-         print *, 'Frequency: ',list(n)%frequency
-         print *, 'Levels:    ',(list(n)%levels(l),l=1,list(n)%nlevel)
-         print *, 'Fields:    ',(list(n)%fields(l),l=1,list(n)%nfield)
+      do n=1,nlists
+         print *, 'Creating Output Stream: ',fnames(n)
+         print *, 'Frequency: ',freq(n)
+         print *, 'Levels:    ',(levs(n,l),l=1,nlevels(n))
+         print *, 'Fields:    ',(flds(n,l),l=1,nfields(n))
          print *
       enddo
-      endif
+
+      _END_MASTER(myThid)
 
       return
       end

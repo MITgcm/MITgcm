@@ -1431,12 +1431,16 @@ C diagnostics common
 
 C diag_choices common
 
-      integer freq(10,50)
-      integer nlevel(10)
-      integer nfield(10)
-      real levels (10,50)
-      character*8 fields (10,50)
-      character*80 filename(10)
+      integer numlists, numperlist
+      integer nlists
+      parameter    ( numlists = 10, numperlist = 50)
 
-      common /diag_choices/ freq,nlevel,nfield,levels,fields,filename
+      integer freq(numlists)
+      integer nlevels(numlists)
+      integer nfields(numlists)
+      _RL levs (numperlist,numlists)
+      character*8 flds (numperlist,numlists)
+      character*80 fnames(numlists)
+
+      common /diag_choices/ levs,flds,fnames,freq,nlevels,nfields,nlists
 
