@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.4 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.5 2004/07/30 18:59:32 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -231,7 +231,6 @@ C      SMELT(CHNO)  = 0.
       FWSOIL(CHNO) = 0.
  100  CONTINUE
 
-
 C****
 C**** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 C****       STEP 1: COMPUTE EFFECTIVE RESISTANCE RC FOR ENERGY BALANCE.
@@ -363,7 +362,6 @@ C****         EIRFRC=fraction of total evap. coming from interception res.
       EIRFRC(CHNO)=EPFRC*FCAN(CHNO)/(SNWFRC(CHNO)+FCAN(CHNO)+1.E-20)
       ALHX(CHNO) = (1.-ESNFRC(CHNO))*ALHE + ESNFRC(CHNO)*ALHS
   200 CONTINUE
-
 
       CALL FLUXES (
      I                NCH,   ITYP, DTSTEP, ESATTC, DESDTC,   ALHX, 
@@ -876,6 +874,7 @@ C****
 C****
 C**** Compute matrix elements A11, A22, AND Q0 (energy balance equation).
 C****
+
       A11 = CSOIL(ChNo)/DTSTEP +
      &        DHLWTC +
      &        DHSDTC(ChNo) +

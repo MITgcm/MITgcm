@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.30 2004/07/29 22:49:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.31 2004/07/30 18:59:32 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -124,16 +124,27 @@ c Local Variables
       logical alarm
       external alarm
 
-      save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
-      save moistu,moistv,moistt,moistq
-      save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-      save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
-      save nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz
-      save nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz
-      save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
-      save qq
-      save pl,ple,dpres,pkle,pkl
+c     save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+c     save moistu,moistv,moistt,moistq
+c     save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+c     save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
+c     save nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz
+c     save nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz
+c     save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
+c     save qq
+c     save pl,ple,dpres,pkle,pkl
 
+      common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+      common /saver/ moistu,moistv,moistt,moistq
+      common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
+      common /saver/ nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz
+      common /saver/ nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz
+      common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
+      common /saver/ fccavelw
+      common /saver/ qq
+      common /saver/ pl,ple,dpres,pkle,pkl
+ 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
@@ -238,7 +249,7 @@ C compute pressures - all pressure are converted here to hPa
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
 
-      if(bi.eq.1)then
+      if(bi.eq.1 .and. 1.eq.1 )then
       print *,' In do fizhi, before fizhi driver - bi = ',bi
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -365,8 +376,6 @@ C compute pressures - all pressure are converted here to hPa
      . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
      . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
      . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
-
-      endif
 
       if(bi.eq.1)then
       print *,' In do fizhi, after fizhi driver - bi = ',bi
@@ -503,6 +512,8 @@ C compute pressures - all pressure are converted here to hPa
       enddo
       enddo
       enddo
+
+      endif
 
       call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,

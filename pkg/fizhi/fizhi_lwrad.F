@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.13 2004/07/29 22:49:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.14 2004/07/30 18:59:32 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -263,9 +263,6 @@ C **********************************************************************
       CALL PASTE ( dtdtg ,dlwdtg  ,ISTRIP,im*jm,lm,NN )
 
  1000 CONTINUE
-
-      print *,' Inside LW - dtrad '
-      print *,dtradlw
 
 C **********************************************************************
 C ****                     BUMP DIAGNOSTICS                         ****
