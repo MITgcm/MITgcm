@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.14 2000/03/24 18:29:29 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.15 2000/03/24 18:52:53 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -193,8 +193,13 @@ switch ($platform$USEMPI)
     set LINK       = ( 'g77' )
     breaksw
   case Linux+pgi+mpi:
-    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
-    set INCLUDES   = ( '-I/usr/local/include' )
+    if ($?include_jam_libs) then
+     set INCLUDES   = ( '-I/usr/local//mpich-cnh-install/include' )
+     set LIBS       = ( '-L/usr/local/mpich-cnh-install/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    else
+     set INCLUDES   = ( '-I/usr/local/include' )
+     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    endif
   case Linux+pgi:
     set LN         = ( '/bin/ln -fs' )
     set CPP        = ( '/lib/cpp -traditional -P' )
@@ -365,7 +370,7 @@ FOPTIM = ${FOPTIM}
 NOOPTFILES = ${NOOPTFILES}
 NOOPTFLAGS = ${NOOPTFLAGS}
 # Flags and libraries needed for linking
-LIBS = ${LIBS}
+LIBS = ${LIBS} \$(XLIBS)
 
 EOF
 
