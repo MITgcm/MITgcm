@@ -163,7 +163,7 @@ C   Check to see if we need to do a bi-bj loop here
 
       ELSE
 
-      if (myThid.eq.1) write(6,1000) chardiag
+C     if (myThid.eq.1) write(6,1000) chardiag
 
       ENDIF
 
