@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.2 2004/11/29 00:38:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.3 2004/11/29 03:36:12 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -49,16 +49,12 @@ C  ip                   :: ptracer number
       _RL dT
       INTEGER time_as_int
       integer ip
-CML      integer i,j,k,bi,bj
-CML      _RL tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
       dT=deltaTclock
 
       IF (myIter.LE.nIter0+1.OR.DIFFERENT_MULTIPLE(
      &     PTRACERS_monitorFreq,myTime,myTime-dT)) THEN
-
-CML       mon_write_stdout = .TRUE.
 
 C     Ptracers field monitor start 
        _BEGIN_MASTER(myThid)
