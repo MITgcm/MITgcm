@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.26 2003/02/09 02:00:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.27 2003/02/09 02:58:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,7 +76,9 @@ C     == Local variables ==
       _RL ddPI, ddPIm, ddPIp, ratioRp, ratioRm
       INTEGER iMnLoc,jMnLoc
       PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
+      LOGICAL useDiagPhiRlow
 CEOP
+      useDiagPhiRlow = .TRUE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  Atmosphere:  
@@ -149,6 +151,14 @@ C Quasi-hydrostatic terms are added in as if they modify the buoyancy
          CALL QUASIHYDROSTATICTERMS(bi,bj,k,alphaRho,myThid)
         ENDIF
 
+C---   Diagnose Hydrostatic pressure at the bottom:
+       IF (useDiagPhiRlow) THEN
+          CALL DIAGS_PHI_RLOW(
+     I                        k, bi, bj, iMin,iMax, jMin,jMax,
+     I                        phiHyd, alphaRho, tFld, sFld,
+     I                        myTime, myIter, myThid)  
+       ENDIF
+
 C---   Hydrostatic pressure at cell centers
 
        IF (integr_GeoPot.EQ.1) THEN
@@ -161,12 +171,6 @@ C---------- This discretization is the "finite volume" form
 C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
 C
-          IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-           phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &          + hFacC(i,j,k,bi,bj)
-     &             *drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-          ENDIF
            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
      &            + drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
            phiHyd(i,j,k)=phiHyd(i,j,k)+
@@ -184,22 +188,10 @@ C  --  Finite Difference Form
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 C
-             
             phiHyd(i,j,k)=phiHyd(i,j,k)
      &        +half*dRloc*gravity*alphaRho(i,j)*recip_rhoConst
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
      &        +half*dRlocKp1*gravity*alphaRho(i,j)*recip_rhoConst
-
-C---------- Compute bottom pressure deviation from gravity*rho0*H
-C           This has to be done starting from phiHyd at the current
-C           tracer point and .5 of the cell's thickness has to be
-C           substracted from hFacC
-            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &              + (hFacC(i,j,k,bi,bj)-half)*drF(K)
-     &                   *gravity*alphaRho(i,j)*recip_rhoConst
-     &              + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-            ENDIF
 
           ENDDO
          ENDDO
@@ -233,7 +225,7 @@ c             phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
           ENDDO
         ENDIF
 
-C       Calculate density
+C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
 CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -246,6 +238,22 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C--     Calculate specific volume anomaly : alpha' = 1/rho - alpha_Cst
+        DO j=jMin,jMax
+          DO i=iMin,iMax
+            locAlpha=alphaRho(i,j)+rhoConst
+            alphaRho(i,j)=maskC(i,j,k,bi,bj)*
+     &              (one/locAlpha - recip_rhoConst)
+          ENDDO
+        ENDDO
+
+C---   Diagnose Sea-surface height (Hydrostatic geopotential at r=Rlow):
+       IF (useDiagPhiRlow) THEN
+          CALL DIAGS_PHI_RLOW(
+     I                        k, bi, bj, iMin,iMax, jMin,jMax,
+     I                        phiHyd, alphaRho, tFld, sFld,
+     I                        myTime, myIter, myThid)  
+       ENDIF
 
 C----  Hydrostatic pressure at cell centers
 
@@ -254,24 +262,15 @@ C  --  Finite Volume Form
 
          DO j=jMin,jMax
           DO i=iMin,iMax
-            locAlpha=alphaRho(i,j)+rhoConst
-            locAlpha=maskC(i,j,k,bi,bj)*
-     &              (one/locAlpha - recip_rhoConst)
-c           IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
 
 C---------- This discretization is the "finite volume" form
 C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
 C
-            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
-     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-            ENDIF
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
-     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
+     &          + hFacC(i,j,k,bi,bj)*drF(K)*alphaRho(i,j)
             phiHyd(i,j,k)=phiHyd(i,j,k)
-     &          +(hFacC(i,j,k,bi,bj)-half)*drF(K)*locAlpha
+     &          +(hFacC(i,j,k,bi,bj)-half)*drF(K)*alphaRho(i,j)
 
           ENDDO
          ENDDO
@@ -281,28 +280,13 @@ C  --  Finite Difference Form
 
          DO j=jMin,jMax
           DO i=iMin,iMax
-            locAlpha=alphaRho(i,j)+rhoConst
-            locAlpha=maskC(i,j,k,bi,bj)*
-     &              (one/locAlpha - recip_rhoConst)
-c           IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
 
 C---------- This discretization is the "energy conserving" form
 
             phiHyd(i,j,k)=phiHyd(i,j,k)
-     &          + half*dRloc*locAlpha
+     &          + half*dRloc*alphaRho(i,j)
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
-     &          + half*dRlocKp1*locAlpha
-
-
-C---------- Compute gravity*(sea surface elevation) first
-C           This has to be done starting from phiHyd at the current
-C           tracer point and .5 of the cell's thickness has to be
-C           substracted from hFacC
-            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &              + (hFacC(i,j,k,bi,bj)-half)*drF(k)*locAlpha
-     &              + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-            ENDIF
+     &          + half*dRlocKp1*alphaRho(i,j)
 
           ENDDO
          ENDDO
