@@ -463,7 +463,7 @@ checkpoint50d_pre
 
 	<orderedlist>
 	  <listitem>
-	    <para>a <filename>gm_local</filename> file in the current
+	    <para>a <filename>gemake_local</filename> file in the current
 	      directory</para>
 	  </listitem>
 	  <listitem>
@@ -960,7 +960,14 @@ Package Boot Sequence
      &       CALL ${PKG}_READPARMS( retCode )
         #endif
 
-    2. S/R PACKAGES_CHECK()
+    3. S/R PACKAGES_INIT_FIXED()
+            :
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_INIT_FIXED( retCode )
+        #endif
+
+    4. S/R PACKAGES_CHECK()
             :
         #ifdef ALLOW_${PKG}
           if ( use${Pkg} )
@@ -970,13 +977,28 @@ Package Boot Sequence
      &       CALL PACKAGES_CHECK_ERROR('${PKG}')
         #endif
 
-    3. S/R PACKAGES_INIT()
+    5. S/R PACKAGES_INIT_VARIABLES()
             :
         #ifdef ALLOW_${PKG}
           if ( use${Pkg} )
-     &       CALL ${PKG}_INIT( retCode )
+     &       CALL ${PKG}_INIT_VARIA( )
         #endif
 
+Package Output
+==============
+     6. S/R DO_THE_MODEL_IO
+
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_DIAGS( )
+        #endif
+
+     7. S/R PACKAGES_WRITE_PICKUP()
+
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_WRITE_PICKUP( )
+        #endif
 
 Description
 ===========
@@ -985,7 +1007,14 @@ Description
     is responsible for reading
     in the package parameters file data.${pkg}, and storing
     the package parameters in "${PKG}.h".
-    -> called in INITIALISE_FIXED
+    -> called from INITIALISE_FIXED in PACKAGES_READPARMS
+
+     - ${PKG}_INIT_FIXED() 
+    is responsible for completing the internal setup of a package. 
+    -> called from INITIALISE_FIXED in PACKAGES_INIT_FIXED
+    note: 1) some pkg use instead:
+             CALL ${PKG}_INITIALISE  ( or the old form CALL ${PKG}_INIT )
+          2) for simple pkg setup, this part is done inside ${PKG}_READPARMS
 
      - ${PKG}_CHECK() 
     is responsible for validating
@@ -994,14 +1023,33 @@ Description
     need to check. This is done through header files "${PKG}.h".
     It is assumed that parameters owned by other packages
     will not be reset during ${PKG}_CHECK().
-    -> called in INITIALISE_FIXED
+    -> called from INITIALISE_FIXED in PACKAGES_CHECK
 
-     - ${PKG}_INIT() 
-    is responsible for completing the
-    internal setup of a package. This routine is called after
-    the core model state has been completely initialised
-    but before the core model timestepping starts.
-    -> called in INITIALISE_VARIA
+     - ${PKG}_INIT_VARIA() 
+    is responsible for fill-in all package variables with an initial value.
+    Contains eventually a call to ${PKG}_READ_PICKUP that will read
+    from a pickup file the package variables required to restart the model.
+    This routine is called after the core model state has been completely 
+    initialised but before the core model timestepping starts.
+    -> called from INITIALISE_VARIA in PACKAGES_INIT_VARIABLES
+    note: the name ${PKG}_INIT_VARIA is not yet standard and some pkg 
+     use for e.g. ${PKG}_INI_VARS, ${PKG}_INIT_VARIABLES, or the old 
+     form ${PKG}_INIT
+
+     - ${PKG}_DIAGS() 
+     is responsible for writing time-average diagnostics to output
+     files (but the cumulating step is done within the package main S/R).
+     Can also contain other diagnostics (.e.g. CALL ${PKG}_MONITOR) 
+     and write snap-shot fields that are hold in common blocks. Other 
+     temporary fields are directly dump to file where they are available.
+     NOTE: this part does not yet have a standard form and should be called
+       from a package dedicated S/R such as PACKAGE_WRITE_DIAGS
+    -> called within DO_THE_MODEL_IO
+
+     - ${PKG}_WRITE_PICKUP() 
+     is responsible for writing a package pickup file when necessary for 
+     a restart. (found also the old name: ${PKG}_WRITE_CHECKPOINT )
+    -> called from FORWARD_STEP and THE_MODEL_MAIN in PACKAGES_WRITE_PICKUP
 
 Summary
 =======
@@ -1025,10 +1073,13 @@ Summary
 
 - FORTRAN source files
   -----------------------
-  * ${pkg}_readparms.F   reads parameters from file data.${pkg}
-  * ${pkg}_check.F       checks package dependencies and consistencies
-  * ${pkg}_init.F        initialises package-related fields
-  * ${pkg}_... .F        package source code
+  * ${pkg}_readparms.F    reads parameters from file data.${pkg}
+  * ${pkg}_init_fixed.F   complete the package setup
+  * ${pkg}_check.F        checks package dependencies and consistencies
+  * ${pkg}_init_varia.F   initialises package-related fields
+  * ${pkg}_... .F         package source code
+  * ${pkg}_diags.F        write diagnostics to file.
+  * ${pkg}_write_pickup.F write a package pickup file to restart the model
 
 - parameter file
   -----------------------
