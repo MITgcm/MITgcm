@@ -1,0 +1,178 @@
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.1 2003/01/26 21:06:11 jmc Exp $
+C $Name:  $
+
+#include "CPP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: CALC_R_STAR
+C     !INTERFACE:
+      SUBROUTINE CALC_R_STAR( etaFld,
+     I                        myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CALC_R_STAR                                   
+C     | o Calculate new column thickness & scaling factor for r*
+C     |    according to the surface r-position (Non-Lin Free-Surf)          
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "SURFACE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
+C     etaFld :: current eta field used to update the hFactor
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+
+#ifdef NONLIN_FRSURF
+
+C     !LOCAL VARIABLES:
+C     Local variables
+C     i,j,k,bi,bj  :: loop counter
+      INTEGER i,j,k,bi,bj
+      INTEGER km
+      _RL tmpfldW, tmpfldS
+c     CHARACTER*(MAX_LEN_MBUF) suff
+CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF (groundAtK1) THEN
+       km = 1
+      ELSE
+       km = Nr
+      ENDIF 
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+C-    1rst bi,bj loop :
+
+        IF (myIter.EQ.-1) THEN
+C-- Initialise arrays :
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx 
+            rStarFacC(i,j,bi,bj) = 1.
+            rStarFacW(i,j,bi,bj) = 1.
+            rStarFacS(i,j,bi,bj) = 1.
+            rStarExpC(i,j,bi,bj) = 1.
+            rStarExpW(i,j,bi,bj) = 1.
+            rStarExpS(i,j,bi,bj) = 1.
+            rStarDhCDt(i,j,bi,bj) = 0.
+            rStarDhWDt(i,j,bi,bj) = 0.
+            rStarDhSDt(i,j,bi,bj) = 0.
+            PmEpR(i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx 
+            h0FacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj)
+            h0FacW(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)
+            h0FacS(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+C-- copy rStarFacX -> rStarExpX
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx 
+            rStarExpC(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
+            rStarExpW(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
+            rStarExpS(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+
+C-- Compute the new column thikness :
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          IF (maskH(i,j,bi,bj).EQ.1. ) THEN
+           rStarFacC(i,j,bi,bj) = 
+     &      (etaFld(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
+     &      *recip_Rcol(i,j,bi,bj)
+          ELSE
+           rStarFacC(i,j,bi,bj) = 1.
+          ENDIF
+         ENDDO
+        ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          IF (maskW(i,j,km,bi,bj).EQ.1. ) THEN
+           tmpfldW = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+     &             - MAX( R_low(i-1,j,bi,bj), R_low(i,j,bi,bj) )
+           rStarFacW(i,j,bi,bj) = 
+     &       ( 0.5 _d 0 *( etaFld(i-1,j,bi,bj)*rA(i-1,j,bi,bj)
+     &                    +etaFld(i,j,bi,bj)*rA(i,j,bi,bj)
+     &                   )*recip_rAw(i,j,bi,bj)
+     &        +tmpfldW )/tmpfldW
+          ELSE
+           rStarFacW(i,j,bi,bj) = 1.
+          ENDIF
+          IF (maskS(i,j,km,bi,bj).EQ.1. ) THEN
+           tmpfldS = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+     &             - MAX( R_low(i,j-1,bi,bj), R_low(i,j,bi,bj) )
+           rStarFacS(i,j,bi,bj) = 
+     &       ( 0.5 _d 0 *( etaFld(i,j-1,bi,bj)*rA(i,j-1,bi,bj)
+     &                    +etaFld(i,j,bi,bj)*rA(i,j,bi,bj)
+     &                   )*recip_rAs(i,j,bi,bj)
+     &        +tmpfldS )/tmpfldS
+          ELSE
+           rStarFacS(i,j,bi,bj) = 1.
+          ENDIF
+         ENDDO
+        ENDDO
+
+C-    end 1rst bi,bj loop.
+        ENDDO
+       ENDDO
+
+       _EXCH_XY_RL( rStarFacC, myThid ) 
+      CALL EXCH_UV_XY_RL(rStarFacW,rStarFacS,.FALSE.,myThid)
+
+      IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
+     & _EXCH_XY_R4( PmEpR, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+C-    2nd bi,bj loop :
+
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx 
+           rStarDhCDt(i,j,bi,bj)=(rStarFacC(i,j,bi,bj) 
+     &                           -rStarExpC(i,j,bi,bj))/deltaTfreesurf
+           rStarDhWDt(i,j,bi,bj)=(rStarFacW(i,j,bi,bj)
+     &                           -rStarExpW(i,j,bi,bj))/deltaTfreesurf
+           rStarDhSDt(i,j,bi,bj)=(rStarFacS(i,j,bi,bj)
+     &                           -rStarExpS(i,j,bi,bj))/deltaTfreesurf
+           rStarExpC(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
+     &                          / rStarExpC(i,j,bi,bj)
+           rStarExpW(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
+     &                          / rStarExpW(i,j,bi,bj)
+           rStarExpS(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
+     &                          / rStarExpS(i,j,bi,bj)
+         ENDDO
+        ENDDO
+
+C-    end 2nd bi,bj loop.
+        ENDDO
+       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* NONLIN_FRSURF */
+
+      RETURN
+      END

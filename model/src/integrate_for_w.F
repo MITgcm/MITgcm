@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.8 2002/10/07 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.9 2003/01/26 21:06:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,6 +25,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -89,8 +90,37 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
            ENDDO
           ENDDO
         ENDIF
+#ifdef NONLIN_FRSURF
+      ELSEIF (select_rStar .NE. 0) THEN
+C-  o rStar case: zero under-ground and at r_lower boundary
+C     can be non-zero at surface (useRealFreshWaterFlux)
+        IF (k.eq.Nr) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+             wFld(i,j,k,bi,bj) = 
+     &        (       -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &         )*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1,sNy
+           DO i=1,sNx
+             wFld(i,j,k,bi,bj) = 
+     &        ( wFld(i,j,k+1,bi,bj)
+     &                -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &         )*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* NONLIN_FRSURF */
       ELSE
-C-  o Free Surface case: 
+C-  o Free Surface case (r-Coordinate): 
 C      non zero at surface ; zero under-ground and at r_lower boundary
         IF (k.eq.Nr) THEN
           DO j=1,sNy
