@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.3 1998/04/24 02:10:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.4 1998/05/25 18:01:32 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -221,6 +221,7 @@ C     other threads.
       _EXCH_XYZ_R4(rHFacS    , myThid )
       _EXCH_XYZ_R4(maskW    , myThid )
       _EXCH_XYZ_R4(maskS    , myThid )
+      _EXCH_XY_R4 (zA       , myThid )
 
 C
       RETURN
