@@ -62,7 +62,7 @@ c     == local variables ==
       integer funit
       integer cbuffindex
 
-      _RL     cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
+      real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
 
       character*(128) fname
 cgg(

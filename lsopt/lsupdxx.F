@@ -27,7 +27,7 @@ c     SUBROUTINE lsupdxx
 c     ==================================================================
 c
 
-#include <blas1.h>
+#include "blas1.h"
 
       implicit none
 

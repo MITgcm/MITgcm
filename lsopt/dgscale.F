@@ -18,7 +18,7 @@ c     ==================================================================
 
       implicit none
 
-#include <blas1.h>
+#include "blas1.h"
 
       integer nn
       double precision    gold(nn), xdiff(nn), diag(nn)
