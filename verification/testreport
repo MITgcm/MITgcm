@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.17 2003/11/11 16:10:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.18 2003/11/18 04:33:01 edhill Exp $
 #  $Name:  $
 #
 
@@ -516,7 +516,7 @@ for ac_option ; do
 	-nodepend | --nodepend | -nd | --nd)
 	    NODEPEND=t ;;
 
-	-mpi) MPI=true ;;
+	-mpi) MPI=t ;;
 
 	-ieee) IEEE=true ;;
 	-noieee) IEEE= ;;
