@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.6 2004/07/13 18:03:31 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
@@ -24,6 +27,7 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
 #ifdef DIC_BIOTIC
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #endif
 

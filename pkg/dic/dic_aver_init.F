@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.2 2004/07/13 18:03:31 jmc Exp $
+C $Name:  $
+
 cswdcost -- add sunroutine ---
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
@@ -18,6 +21,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"

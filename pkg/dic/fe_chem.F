@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.4 2004/07/13 18:03:31 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -21,6 +24,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_BIOTIC.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
 C     == Routine arguments ==                
