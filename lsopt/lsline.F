@@ -85,8 +85,8 @@ c----------------------------------
       double precision    z, test, barr
       double precision    left, right, told
 
-      external SDOT
-      double precision     SDOT
+      external DDOT
+      double precision     DDOT
 
 c----------------------------------
 c check parameters
@@ -128,7 +128,7 @@ c compute cost function and gradient
 c------------------------------------
          call simul( indic, nn, xdiff, fnew, gg )
 
-         fp = SDOT( nn, dd, 1, gg, 1 )
+         fp = DDOT( nn, dd, 1, gg, 1 )
          fdiff = fnew - ff
 
 c-----------------------------------------

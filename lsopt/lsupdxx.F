@@ -46,8 +46,8 @@ c-----------------------------------------
       integer i
       double precision    fdiff, preco
 
-      double precision     SDOT
-      external SDOT
+      double precision     DDOT
+      external DDOT
 
 c     ==================================================================
 
@@ -99,7 +99,7 @@ c-----------------------------------------
 c-----------------------------------------
 c check whether new direction is a descent one
 c-----------------------------------------
-         dotdg = SDOT( nn, dd, 1, gg, 1 )
+         dotdg = DDOT( nn, dd, 1, gg, 1 )
          if (dotdg .ge. 0.0) then
             ifail = 4
             goto 999

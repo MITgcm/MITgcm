@@ -41,8 +41,8 @@ c------------------------------------
 c------------------------------------
 c declare local variables
 c------------------------------------
-      external SDOT
-      double precision     SDOT
+      external DDOT
+      double precision     DDOT
 
       integer jfin, i, j, jp
       double precision    r
@@ -70,7 +70,7 @@ c------------------------------------
          jp = j
          if (jp.gt.mupd) jp = jp-mupd
          call dostore( nn, xdiff, .false., 2*jp+3 )
-         r = SDOT( nn, dd, 1, xdiff,1 )
+         r = DDOT( nn, dd, 1, xdiff,1 )
          call dostore( nn, xdiff, .false., 2*jp+2 )
          alpha(jp) = r
          do i = 1, nn
@@ -95,7 +95,7 @@ c------------------------------------
          jp = j
          if (jp .gt. mupd) jp = jp-mupd
          call dostore( nn, xdiff, .false., 2*jp+2 )
-         r = alpha(jp) - SDOT( nn, dd,1 , xdiff, 1 )
+         r = alpha(jp) - DDOT( nn, dd,1 , xdiff, 1 )
          call dostore( nn, xdiff, .false., 2*jp+3 )
          do i = 1, nn
             dd(i) = dd(i) + r*xdiff(i)

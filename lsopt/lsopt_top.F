@@ -50,7 +50,7 @@ c     ==================================================================
 
       implicit none
 
-#include <blas1.h>
+ccc#include <blas1.h>
 
 c-----------------------------------------
 c declare arguments
@@ -82,8 +82,8 @@ c-----------------------------------------
       double precision   fold, ys
       double precision   dotdg
 
-      external SDOT, SNRM2, SSCAL
-      double precision     SDOT, SNRM2
+      external DDOT, DNRM2, DSCAL
+      double precision     DDOT, DNRM2
 
 c-----------------------------------------
 c parameters
@@ -283,7 +283,7 @@ cph)
 cph(
       print *, 'pathei: vor gnorm0 '
 cph)
-         gnorm0 = SNRM2( nn, gg, 1 )
+         gnorm0 = DNRM2( nn, gg, 1 )
 cph(
       print *, 'pathei: gnorm0 = ', gnorm0
 cph)
@@ -374,11 +374,11 @@ c print information line
 c-----------------------------------------
          if (cold) then
             print iform, iiter, tact, ifunc, ff, gnorm0
-     $           , SNRM2( nn, xx, 1 ), 0.
+     $           , DNRM2( nn, xx, 1 ), 0.
 
             write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
      &           iiter, ff, gnorm0, tact, 
-     &           SNRM2( nn, xx, 1 ), 0.
+     &           DNRM2( nn, xx, 1 ), 0.
 
             if ( itmax .EQ. 0 ) then
                ifail = 10
@@ -452,17 +452,17 @@ cph(
       call lswri( iiter, nn, xx, gg, lphprint )
 cph)
 
-      gnorm = SNRM2( nn, gg, 1 )
+      gnorm = DNRM2( nn, gg, 1 )
 
 c-----------------------------------------
 c print information line
 c-----------------------------------------
       print iform, iiter, tact, ifunc, ff, gnorm
-     $     , SNRM2( nn, xx, 1 ), tact*SNRM2( nn, dd, 1 )
+     $     , DNRM2( nn, xx, 1 ), tact*DNRM2( nn, dd, 1 )
 
       write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
      &     iiter, ff, gnorm, tact,
-     &     SNRM2( nn, xx, 1 ), tact*SNRM2( nn, dd, 1 )
+     &     DNRM2( nn, xx, 1 ), tact*DNRM2( nn, dd, 1 )
 
 c-----------------------------------------
 c check output mode of ifail
@@ -497,7 +497,7 @@ c-----------------------------------------
             gold(i) = gg(i)-gold(i)
          end do
 
-         ys = SDOT( nn, gold, 1, xdiff, 1 )
+         ys = DDOT( nn, gold, 1, xdiff, 1 )
          if (ys .le. 0.) then
             ifail = 4
             print *, 'pathei-lsopt: ys < 0; ifail = ', ifail
@@ -539,8 +539,8 @@ c-----------------------------------------
 c compute sbar, ybar store rec = min 4,5
 c-----------------------------------------
          r1 = sqrt(1./ys)
-         call SSCAL( nn, r1, xdiff, 1 )
-         call SSCAL( nn, r1, gold, 1 )
+         call DSCAL( nn, r1, xdiff, 1 )
+         call DSCAL( nn, r1, gold, 1 )
 
       if (lphprint) 
      &        print *, 'pathei-lsopt: dostore at iiter, jmin, jmax ', 
@@ -628,9 +628,9 @@ c-----------------------------------------
          print '(a,e15.8)'
      $        , '  cost function...............', ff
          print '(a,e15.8)'
-     $        , '  norm of x...................', SNRM2( nn, xx, 1 )
+     $        , '  norm of x...................', DNRM2( nn, xx, 1 )
          print '(a,e15.8)'
-     $        , '  norm of g...................', SNRM2( nn, gg, 1 )
+     $        , '  norm of g...................', DNRM2( nn, gg, 1 )
       end if
 
 c-----------------------------------------
