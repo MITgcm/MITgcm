@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.144 2005/01/11 20:49:24 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.145 2005/01/19 01:51:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1021,8 +1021,6 @@ C--   Make metric term settings consistent with underlying grid.
       ENDIF
 
       IF ( usingSphericalPolarGrid ) THEN
-       useConstantF  = .FALSE.
-       useBetaPlaneF = .FALSE.
        useSphereF    = .TRUE.
        usingSphericalPolarMterms = metricTerms
       ENDIF

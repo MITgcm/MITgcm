@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.81 2005/01/11 20:49:24 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.82 2005/01/19 01:51:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,6 +68,10 @@ C     General curvilinear coordinate system
       usingCurvilinearGrid = .FALSE.
 C     General cylindrical coordinate system
       usingCylindricalGrid = .FALSE.
+C     Coriolis map:
+      useConstantF  = .FALSE.
+      useBetaPlaneF = .FALSE.
+      useSphereF    = .FALSE.
 
 
 C--   Set default "physical" parameters
