@@ -36,7 +36,7 @@ C we are trying to fill a valid diagnostic
        endif
       enddo
       if( ndiagnum.ne.0 .and. ipointer.ne.0 ) then
-       udiag(numdiag)=diagunits
+       udiag(ndiagnum)=diagunits
       else
        write(6,1000)chardiag
       endif
