@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.9 1998/06/01 22:27:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.10 1998/06/08 21:43:00 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -84,12 +84,14 @@ CEndOfInterface
 C     == Local variables ==
 C     I, J, K - Loop counters
       INTEGER i,j
+      LOGICAL TOP_LAYER
       _RL afFacT, dfFacT
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       afFacT = 1. _d 0
       dfFacT = 1. _d 0
+      TOP_LAYER = K .EQ. 1
 
 C---  Calculate advective and diffusive fluxes between cells.
 
@@ -216,9 +218,16 @@ C           boundary condition.
 C     Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fVerT(i,j,kUp) = (afFacT*af(i,j) + dfFacT*df(i,j))*maskUp(i,j)
+        fVerT(i,j,kUp) = ( afFacT*af(i,j)+  dfFacT*df(i,j) )*maskUp(i,j)
        ENDDO
       ENDDO
+      IF ( TOP_LAYER ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         fVerT(i,j,kUp) = afFacT*af(i,j)*freeSurfFac
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Tendency is minus divergence of the fluxes.
 C     Note. Tendency terms will only be correct for range
@@ -228,8 +237,12 @@ C           they are not algorithmically correct. These points
 C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
+C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
+C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
+C #define _rVolT(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
+#define _rVolT(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
         gT(i,j,k,bi,bj)=
-     &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
+     &   -_rVolT(i,j,k,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )

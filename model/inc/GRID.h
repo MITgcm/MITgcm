@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.3 1998/05/26 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.4 1998/06/08 21:43:00 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -329,6 +329,8 @@ C              averaging but are just a convient quantity for I/O,
 C              diagnostics etc.. As such xc is in m for cartesian 
 C              coordinates but degrees for spherical polar.
 C     yC     - Y-coordinate of center of cell f[X,Y].
+C     xC0, yC0 - West edge x coord  ( metres or degrees )
+C                South edge y coord ( metres or degrees )
 C     zA     - Z-face are f[X,Y] (m^2).
 C              Note: In a cartesian framework zA is simply dx*dy,
 C                    however we use zA to allow for non-globally
@@ -336,49 +338,59 @@ C                    orthogonal coordinate frames (with appropriate
 C                    metric terms).
 C     zC     - Z-coordinate of center of cell f[Z]
 C     zFace  - Z-coordinate of face of cell f[Z] (Pa).
+C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar 
+C                 metric term in U equation.
+C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
+C                 metric term in V equation.
       COMMON /GRID_R/
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,dzC,dzF,
      &  H,HFacC,HFacW,HFacS,
      &  rdxC,rdxF,rdxG,rdxV,rdyC,rdyF,rdyG,rdyU,rdzC,rdzF,
      &  rH, rhFacC,rhFacW,rhFacS, 
      &  saFac,xC,yC,zA,zC,zFace,
-     &  maskW,maskS
-      _RS dxC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxV     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyU     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dzC     (1:Nz)
-      _RS dzF     (1:Nz)
-      _RS H       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS HFacC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rdxC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxV    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdzC    (1:Nz)
-      _RS rdzF    (1:Nz)
-      _RS rh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rhFacC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rhFacW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rhFacS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS saFac   (1:Nz)
-      _RS xC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS yC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS zA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS zC      (1:Nz)
-      _RS zFace   (1:Nz+1)
-      _RS maskW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS maskS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+     &  yC0, xC0,
+     &  maskW,maskS,
+     &  tanPhiAtU, tanPhiAtV
+      _RS dxC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxV       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyU       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dzC       (1:Nz)
+      _RS dzF       (1:Nz)
+      _RS H         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS HFacC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rdxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdzC      (1:Nz)
+      _RS rdzF      (1:Nz)
+      _RS rh        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rhFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rhFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rhFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS saFac     (1:Nz)
+      _RS xC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS xC0
+      _RS yC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS yC0
+      _RS zA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS zC        (1:Nz)
+      _RS zFace     (1:Nz+1)
+      _RS maskW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS maskS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS tanPhiAtU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS tanPhiAtV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 
 C--   COMMON /GRID_I/ Integer valued grid defining variables

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.4 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.5 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -58,7 +58,7 @@ C     In spherical polar yc, delY and ly are degrees
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          distY = yC(i,j,bi,bj)/lY
+          distY = (yC(i,j,bi,bj)-yC0)/lY
           tauX  = -tauMax*cos(2. _d 0*PI*distY)
           tauX  = tauMax*sin(PI*distY)
           fu(i,j,bi,bj) = tauX/(delZ(1)*rhonil)

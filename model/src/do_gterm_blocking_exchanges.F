@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -40,6 +40,10 @@ C     myThid - Thread number for this instance of the routine.
       _EXCH_XYZ_R8( Gu , myThid )
       _EXCH_XYZ_R8( Gv , myThid )
       _EXCH_XYZ_R8( Gt , myThid )
+#ifdef ALLOW_CD
+      _EXCH_XYZ_R8( guCD , myThid )
+      _EXCH_XYZ_R8( gvCD , myThid )
+#endif
 CcnhDebugStarts
 Cdbg  _EXCH_XYZ_R8( phSave , myThid )
 CcnhDebugEnds

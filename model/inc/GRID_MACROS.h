@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.6 1998/05/30 02:10:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.7 1998/06/08 21:43:00 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -159,3 +159,13 @@ C     \==========================================================/
 #undef    MASKS_FY
 #undef    MASKS_FXY
 #include "MASKS_MACROS.h"
+
+#undef    TANPHIATU_CONST
+#undef    TANPHIATU_FX
+#undef    TANPHIATU_FY
+#include "TANPHIATU_MACROS.h"
+
+#undef    TANPHIATV_CONST
+#undef    TANPHIATV_FX
+#undef    TANPHIATV_FY
+#include "TANPHIATV_MACROS.h"

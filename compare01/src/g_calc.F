@@ -1,8 +1,9 @@
-C $Id: g_calc.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: g_calc.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 
 #define _DB0 0.
+#define _DB1 1.
 #define _wdvdz 1.D0
 
 C===================================================================
@@ -276,8 +277,8 @@ C       \-------------------------------------------------------------/
       ENDDO
       fX(0   ,1:ny) = fX(nx,1:ny)
       fY(1:nx,ny+1) = fY(1:nx,1)
-      WRITE(0,*) ' CALC_G fY '
-      CALL PLOT_FIELD( fY(1:nx,1:ny), nX, nY )
+C     WRITE(0,*) ' CALC_G fY '
+C     CALL PLOT_FIELD( fY(1:nx,1:ny), nX, nY )
       DO J=1,ny
        DO I=1,nx
 C       /-------------------------------------------------------------\
@@ -299,7 +300,7 @@ C       |         k4/DXu*XAu*Ddx{tmp} +   (  Biharmonic,<Line 2>  )   |
 C       |         Bx{XA*U}*Bx{U}          (  Advection,<Line 3-4> )   |
 C       \-------------------------------------------------------------/
         fX(I,J) = 0.
-     _LPM(&       -a2MomXY*fX(I,J)                                    )
+     _LPM(&       -_DB1*a2MomXY*fX(I,J)                                    )
      _BHM(&       +a4MomXY*uGradxOp(I,J)*(tmp(I+1,J)-tmp(I,J))        )
      _ADM(&       +0.25D0*(uK(I,J)*XAK(I,J)+uK(I+1,J)*XAK(I+1,J))*    )
      _ADM(&        (uK(I,J)+uK(I+1,J))                                )
@@ -311,7 +312,7 @@ C       |         k4/DYu*YAu*Ddy{tmp} +   (  Biharmonic,<Line 2>  )   |
 C       |         Bx{YA*V}*By{U}          (  Advection,<Line 3-4> )   |
 C       \-------------------------------------------------------------/
         fY(I,J) = 0.
-     _LPM(&            -a2MomXY*fY(I,J)                               )
+     _LPM(&            -_DB1*a2MomXY*fY(I,J)                               )
      _BHM(&            +a4MomXY*uGradyOp(I,J)*(tmp(I,J)-tmp(I,J-1))   )
      _ADM(&            +0.25D0*(uK(I,J)+uK(I,J-1))*                   )
      _ADM(&             (vK(I,J)*YAK(I,J)+vK(I-1,J)*YAK(I-1,J))       )
@@ -337,7 +338,7 @@ C        | fZK <- -k2Z/DZu*ZAu*Ddz{U} + (  Laplacian,<Line 1>   )     |
 C        |           Bx{ZA*-w}*Bz{U}    (  Advection,<Line 2-3> )     |
 C        \------------------------------------------------------------/
          fZK(I,J) = 0.
-     _LPM(&  -a2MomZ*uGradzOpK(I,J)*( U(_I3(K-1,I,J))-uK(I,J) )       )
+     _LPM(&  -_DB1*a2MomZ*uGradzOpK(I,J)*( U(_I3(K-1,I,J))-uK(I,J) )       )
      _ADM(&  +0.25D0*(uK(I,J)+U(_I3(K-1,I,J)))*                       )
      _ADM(&  (-wK(I,J)*ZAK(I,J)-wK(I-1,J)*ZAK(I-1,J))                 )
      _ADM(&  *uMskK(I,J)*UMASK(_I3(K-1,I,J))                          )
@@ -371,7 +372,7 @@ C        | fZKP1 <- -k2Z/DZu*ZAu*Ddz{U} +  (  Laplacian,<Line 1>   )  |
 C        |              Bx{ZA*-w}*Bz{U}    (  Advection,<Line 2-3> )  |
 C        \------------------------------------------------------------/
          fZKP1(I,J) = 0.
-     _LPM(&    -a2MomZ*uGradzOpKP1(I,J)*(uK(I,J)-U(_I3(K+1,I,J)))     )
+     _LPM(&    -_DB1*a2MomZ*uGradzOpKP1(I,J)*(uK(I,J)-U(_I3(K+1,I,J)))     )
      _ADM(&    +0.25D0*(uK(I,J)+U(_I3(K+1,I,J)))*                     )
      _ADM(&    (-wKP1(I,J)*ZAKP1(I,J)-wKP1(I-1,J)*ZAKP1(I-1,J))       )
      _ADM(&    *uMskK(I,J)*UMASK(_I3(K+1,I,J))                        )
@@ -385,7 +386,8 @@ C    Note!!!! omitted.
        DO J = 1, ny
         DO I = 1, nx
          fZKP1(I,J) = 0.
-     _LPM(&    -a2MomZ*rDzAtP(K)*2.D0*uK(I,J)*DM*DM                   )
+     _LPM(&    -_DB1*a2MomZ*rDzAtP(K)*2.D0*uK(I,J)                         )
+     _LPM(&    *0.5*( ZAk(I,J)+ZAk(I-1,J) )                                )
         ENDDO
        ENDDO
       ENDIF
@@ -525,7 +527,7 @@ C       o Laplacian<Line 1> + Biharmonic<Line 2> + Advection<Line 3,4>.
 C       fX: -K2xyMomentum*fX + K4xyMomentum*VAreaX*dx[tmp] + By[Ax*U]*Bx[V]
 C       fY: -K2xyMomentum*fY + K4xyMomentum*VAreaY*dy[tmp] + By[Ay*V]*By[V]
         fX(I,J) = 0.
-     _LPM(&            -a2MomXY*fX(I,J)                                    )
+     _LPM(&            -_DB1*a2MomXY*fX(I,J)                               )
      _BHM(&            +a4MomXY*vGradxOp(I,J)*(tmp(I,J)-tmp(I-1,J))        )
      _ADM(&            +0.25D0*(uK(I,J-1)*XAK(I,J-1)+uK(I,J)*XAK(I,J))*    )
      _ADM(&             (vK(I-1,J)+vK(I,J))                                )
@@ -535,7 +537,7 @@ C    Note!!!! boundary condition in the standard v010 CM5 code. The
 C    Note!!!! FV paper used a different bc in which the last line is
 C    Note!!!! omitted.
         fY(I,J) = 0.
-     _LPM(&            -a2MomXY*fY(I,J)                                    )
+     _LPM(&            -_DB1*a2MomXY*fY(I,J)                               )
      _BHM(&            +a4MomXY*vGradyOp(I,J)*(tmp(I,J+1)-tmp(I,J))        )
      _ADM(&            +0.25D0*(vK(I,J+1)*YAK(I,J+1)+vK(I,J)*YAK(I,J))*    )
      _ADM(&             (vK(I,J+1)+vK(I,J))                                )
@@ -551,7 +553,7 @@ C     fZK: -KzMomentum*VAreaZ*dz[V] + Bz[V]*By[Az*W]
        DO J = 1, ny
         DO I = 1, nx
          fZK(I,J) = 0.
-     _LPM(&  -a2MomZ*vGradzOpK(I,J)*(V(_I3(K-1,I,J))-vK(I,J) )            )
+     _LPM(&  -_DB1*a2MomZ*vGradzOpK(I,J)*(V(_I3(K-1,I,J))-vK(I,J) )            )
      _ADM(&  +0.25D0*(vK(I,J)+V(_I3(K-1,I,J)))*                           )
      _ADM(&               (-wK(I,J)*ZAK(I,J)-wK(I,J-1)*ZAK(I,J-1))        )
      _ADM(&            *vMskK(I,J)*vMask(_I3(K-1,I,J))*_wdvdz             )
@@ -575,7 +577,7 @@ C    Note!!!! omitted.
        DO J = 1, ny
         DO I = 1, nx
          fZKP1(I,J) = 0.
-     _LPM(& -a2MomZ*vGradzOpKP1(I,J)*( vK(I,J)-V(_I3(K+1,I,J)))           )
+     _LPM(& -_DB1*a2MomZ*vGradzOpKP1(I,J)*( vK(I,J)-V(_I3(K+1,I,J)))           )
      _ADM(& +0.25D0*(vK(I,J)+V(_I3(K+1,I,J)))*                            )
      _ADM(& (-wKP1(I,J)*ZAKP1(I,J)-wKP1(I,J-1)*ZAKP1(I,J-1))              )
      _ADM(& *vMskK(I,J)*vMask(_I3(K+1,I,J))*_wdvdz                        )
@@ -589,7 +591,9 @@ C    Note!!!! omitted.
        DO J = 1, ny
         DO I = 1, nx
          fZKP1(I,J) = 0.
-     _LPM(&    -a2MomZ*rDzAtP(K)*2.*vK(I,J)*DM*DM                     )
+     _LPM(&    -_DB1*a2MomZ*rDzAtP(K)*2.*vK(I,J)                           )
+     _LPM(&    *0.5*( ZAk(I,J)+ZAk(I,J-1) )                                )
+
         ENDDO
        ENDDO
       ENDIF
@@ -676,13 +680,17 @@ C     | tmp2 <- P(n) = P extrapolated to time level n.                |
 C     \---------------------------------------------------------------/
       tmp2(1:nx,1:ny) =  (1.5+abEps)*(pS+pH(_I3(K,:,:)) )
      &                 -(0.5+abEps)*(psNM1+phNM1(_I3(K,:,:)) )
+      tmp2(1:nx,1:ny) =  (1.5+abEps)*(pS )
+     &                 -(0.5+abEps)*(psNM1 )
       tmp2(0,1:ny)    = tmp2(nx,1:ny)
       DO J = 1,ny
        DO I = 1,nx
 C       /-------------------------------------------------------------\
 C       | tmp <- -G*Ddx{P(n)} + gU                                    |
 C       \-------------------------------------------------------------/
-        tmp(I,J) = -G*pDdxOp(_I3(K,I,J))*(tmp2(I,J)-tmp2(I-1,J))+gU(_I3(K,I,J))
+        tmp(I,J) = 
+     &   -G*pDdxOp(_I3(K,I,J))*(tmp2(I,J)-tmp2(I-1,J))+
+     &    gU(_I3(K,I,J))*uMask(_I3(K,I,J))
        ENDDO
       ENDDO
       tmp(nx+1,1:ny)    = tmp(1,1:ny)
@@ -693,7 +701,8 @@ C       /-------------------------------------------------------------\
 C       | uAja <- uAja + DT*BxBy{-d/dx P(n) + gU}+f*V                 |
 C       \-------------------------------------------------------------/
         uAja(_I3(K,I,J)) = uAja(_I3(K,I,J))
-     &  +DelT*(0.25D0*(tmp(I,J)+tmp(I+1,J)+tmp(I,J-1)+tmp(I+1,J-1))
+     &  +1.*DelT*(0.*tmp(I,J)+
+     &          1.*0.25D0*(tmp(I,J)+tmp(I+1,J)+tmp(I,J-1)+tmp(I+1,J-1))
      &         +fCorV(_I3(K,I,J))*V(_I3(K,I,J)) )
 C       uAja: uAja - lambda(uAja-BxBy[U(n+0.5)] ( note rAja = (1-lambda) )
         uAja(_I3(K,I,J)) = rAja*uAja(_I3(K,I,J))
@@ -701,14 +710,20 @@ C       uAja: uAja - lambda(uAja-BxBy[U(n+0.5)] ( note rAja = (1-lambda) )
      &    -(0.5+abEps)*0.25D0*(uKNM1(I,J)+uKNM1(I+1,J)+uKNM1(I,J-1)+uKNM1(I+1,J-1)) )
        ENDDO
       ENDDO
+CcnhDebugStarts
+C     WRITE(0,*) ' CG2D MAXVAL(uAja) ', MAXVAL(uAja)
+CcnhDebugEnds
 C     tmp2: P(n) = P extrapolated to time level n.
       tmp2(1:nx,1:ny) =  (1.5+abEps)*(pS+pH(_I3(K,:,:)) )
      &                  -(0.5+abEps)*(psNM1+phNM1(_I3(K,:,:)) )
+      tmp2(1:nx,1:ny) =  (1.5+abEps)*(pS )
+     &                  -(0.5+abEps)*(psNM1 )
       tmp2(1:nx,0)    = tmp2(1:nx,ny)
       DO J = 1,ny
        DO I = 1,nx
 C       tmp: -d/dy P(n) + gV
-        tmp(I,J) = -G*pDdyOp(_I3(K,I,J))*(tmp2(I,J)-tmp2(I,J-1))+gV(_I3(K,I,J))
+        tmp(I,J) = -G*pDdyOp(_I3(K,I,J))*(tmp2(I,J)-tmp2(I,J-1))+
+     &              gV(_I3(K,I,J))*vMask(_I3(K,I,J))
        ENDDO
       ENDDO
       tmp(0,1:ny) = tmp(nx,1:ny)
@@ -776,6 +791,22 @@ C           +1/delt*(dx[Ax*U]+dy[Ay*V])
         RHS2d(I,J)=RHS2d(I,J)+YAk(I,J+1)*tmp(I,J+1)-YAk(I,J)*tmp(I,J)
        ENDDO
       ENDDO
+CcnhDebugStarts
+      IF ( BOTTOM_LAYER ) THEN
+C      DO I=1,Nx
+C       WRITE(0,*) ' CG2D RHS2d(I,30) ', rhs2d(I,30), I
+C      ENDDO
+C      DO J=1,Ny
+C       WRITE(0,*) ' CG2D MAXVAL(RHS2d) ', 
+C    &  MAXVAL(RHS2d(1:Nx,J)), J
+C       WRITE(0,*) ' CG2D MINVAL(RHS2d) ', 
+C    &  MINVAL(RHS2d(1:Nx,J)), J
+C    &  MAXVAL(ABS(fCorV(_I3(:,I,:))*uAja(_I3(:,I,:))*vMask(_I3(:,I,:))))
+C      ENDDO
+C      CALL PLOT_FIELD( RHS2d(1:nx,1:ny), nX, nY )
+C      STOP
+      ENDIF
+CcnhDebugEnds
       DO J=1,ny
        DO I=1,nx
         divH(I,J)= divH(I,J)+ 

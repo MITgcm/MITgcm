@@ -1,4 +1,4 @@
-C $Id: CPP_OPTIONS.h,v 1.1 1998/05/25 20:21:06 cnh Exp $
+C $Id: CPP_OPTIONS.h,v 1.2 1998/06/08 21:42:59 cnh Exp $
 C Set compile time options.
 C Notes:
 C Names of the flags are meant to be self-explanatory.
@@ -35,7 +35,7 @@ C These options control which terms are active in the momentum equations.
 #define _LAPLACIAN_DIFFUSION_OF_MOMENTUM
 #undef  _BIHARMONIC_DIFFUSION_OF_MOMENTUM
 #define _ADVECTION_OF_MOMENTUM
-#undef  _SPHERICAL_POLAR_METRIC_TERMS
+#define _SPHERICAL_POLAR_METRIC_TERMS
 #undef  _XZ_CORIOLIS
 #define _XY_CORIOLIS
 #define _MOMENTUM_FORCING

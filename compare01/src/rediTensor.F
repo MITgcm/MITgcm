@@ -1,42 +1,38 @@
-#undef DEBUG_TESTS
-#define _SMAX 1.d-2
-#define _SMALL 1.d-9
-
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 
+#undef DEBUG_TESTS
+#define _SMAX 1.d-3
+#define _SMALL 1.d-12
+#define _SLP_FAC 1.0d0
+
 #define ICHAN 0
-#define GRONIL 9.8d0*999.8d0
- 
+#define _GRAV_G 9.81d0
+#define _RHO_NIL 999.8d0
+#define _GRONIL _GRAV_G*_RHO_NIL
+
 ! ==============================================================================
-      subroutine RediTensor(Temp,Salt,Kredi,K13,K23,K31,K32,K33,Ustar,Vstar,Wstar
-!                           |---in--| |------------------out--------------------|
-     &         ,nIter,DumpFlag)
+      subroutine RediTensor(Temp,Salt,Kredigm,K31,K32,K33,nIter,DumpFlag)
+!                           |---in--| |-------out-------|
       implicit none
 ! Global
 #include "SIZE.h"
 #include "MASKS.h"
 ! Arguments
-      real Temp(_I3(Nz,Nx,Ny))	! Locally referenced pot. temperature
-      real Salt(_I3(Nz,Nx,Ny))	! Locally referenced pot. temperature
-      real Kredi(_I3(Nz,Nx,Ny))	! Redi diffusion coefficient
-      real K13(_I3(Nz,Nx,Ny))	! Redi tensor component
-      real K23(_I3(Nz,Nx,Ny))	! Redi tensor component
-      real K31(_I3(Nz,Nx,Ny))	! Redi tensor component
-      real K32(_I3(Nz,Nx,Ny))	! Redi tensor component
-      real K33(_I3(Nz,Nx,Ny))	! Redi tensor component
-      real Ustar(_I3(Nz,Nx,Ny))	! Eddy transport velocity U*
-      real Vstar(_I3(Nz,Nx,Ny))	! Eddy transport velocity V*
-      real Wstar(_I3(Nz,Nx,Ny))	! Eddy transport velocity W*
+      real Temp(_I3(Nz,Nx,Ny))  ! Locally referenced pot. temperature
+      real Salt(_I3(Nz,Nx,Ny))  ! Locally referenced pot. temperature
+      real Kredigm(_I3(Nz,Nx,Ny))       ! Redi diffusion coefficient
+      real K31(_I3(Nz,Nx,Ny))   ! Redi tensor component
+      real K32(_I3(Nz,Nx,Ny))   ! Redi tensor component
+      real K33(_I3(Nz,Nx,Ny))   ! Redi tensor component
       integer nIter
       logical DumpFlag
 ! Local
       real rSmax
-      real SigX(_I3(Nz,Nx,Ny))		! d/dx Sigma (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))		! d/dy Sigma (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))		! d/dz Sigma (@ W points)
-      real SigZBz(_I3(Nz,Nx,Ny))	! d/dz Sigma (@ T/S points)
-      real Kgm(_I3(Nz,Nx,Ny))	! Eddy induced transport coefficient
+      real SigX(_I3(Nz,Nx,Ny))          ! d/dx Sigma (@ U points)
+      real SigY(_I3(Nz,Nx,Ny))          ! d/dy Sigma (@ V points)
+      real SigZ(_I3(Nz,Nx,Ny))          ! d/dz Sigma (@ W points)
+      real SigZBz(_I3(Nz,Nx,Ny))        ! d/dz Sigma (@ T/S points)
       character*(10) suffix
       integer iErr
 ! ------------------------------------------------------------------------------
@@ -50,42 +46,34 @@
       SigZBz=0.5*(SigZ+CSHIFT(SigZ,DIM=_I3Z,SHIFT=+1))*PMASK
       SigZBz(_I3(Nz,:,:))=SigZ(_I3(Nz-1,:,:))
 
-      call KtensorUface(SigX,SigY,SigZBz,rSmax,K13,K33)
-!                       |---------in---------| |-out-|
+CC      call KtensorUface(SigX,SigY,SigZBz,rSmax,K13,K33)
+CC!                       |---------in---------| |-out-|
 
-      call KtensorVface(SigX,SigY,SigZBz,rSmax,K33,K23)
-!                       |---------in---------| |-out-|
+CC      call KtensorVface(SigX,SigY,SigZBz,rSmax,K33,K23)
+CC!                       |---------in---------| |-out-|
 
       call KtensorWface(SigX,SigY,SigZ,rSmax,K31,K32,K33)
 !                       |--------in--------| |---out---|
 
-      call RediCoefficient(SigX,SigY,SigZ,Kredi)
-!                          |-----in-----| |out|
-
-      call GMcoefficient(SigX,SigX,SigZ,Kgm)
-!                        |-----in-----| |out|
-
-      call GMtransport(K13,K23,Kgm,Ustar,Vstar,Wstar)
-!                      |----in---| |------out------|
+      call GMRediCoefficient(SigX,SigY,SigZ,SigZBz,Kredigm,nIter,DumpFlag)
+!                            |---------in--------| |-out-|
 
       IF(DumpFlag)THEN
         iErr = 0.
         WRITE(suffix,'(I10.10)') nIter
-        CALL WRITE_DUMP_3D( Kgm, Nx, Ny, Nz,   'Kgm.', suffix, iErr)
-        CALL WRITE_DUMP_3D( Kredi, Nx, Ny, Nz, 'Kredi.', suffix, iErr)
-        CALL WRITE_DUMP_3D( K13, Nx, Ny, Nz, 'K13.', suffix, iErr)
-        CALL WRITE_DUMP_3D( K23, Nx, Ny, Nz, 'K23.', suffix, iErr)
+        CALL WRITE_DUMP_3D( Kredigm, Nx, Ny, Nz, 'Kredi.', suffix, iErr)
         CALL WRITE_DUMP_3D( K31, Nx, Ny, Nz, 'K31.', suffix, iErr)
         CALL WRITE_DUMP_3D( K32, Nx, Ny, Nz, 'K32.', suffix, iErr)
         CALL WRITE_DUMP_3D( K33, Nx, Ny, Nz, 'K33.', suffix, iErr)
-        CALL WRITE_DUMP_3D( SigX, Nx, Ny, Nz, 'SigX.', suffix, iErr)
-        CALL WRITE_DUMP_3D( SigY, Nx, Ny, Nz, 'SigY.', suffix, iErr)
-        CALL WRITE_DUMP_3D( SigZ, Nx, Ny, Nz, 'SigZ.', suffix, iErr)
-        CALL WRITE_DUMP_3D( Ustar, Nx, Ny, Nz, 'Ustar.',  suffix, iErr)
-        CALL WRITE_DUMP_3D( Vstar, Nx, Ny, Nz, 'Vstar.',  suffix, iErr)
-        CALL WRITE_DUMP_3D( Wstar, Nx, Ny, Nz, 'Wstar.',  suffix, iErr)
+!       CALL WRITE_DUMP_3D( SigX, Nx, Ny, Nz, 'SigX.', suffix, iErr)
+!       CALL WRITE_DUMP_3D( SigY, Nx, Ny, Nz, 'SigY.', suffix, iErr)
+!       CALL WRITE_DUMP_3D( SigZ, Nx, Ny, Nz, 'SigZ.', suffix, iErr)
       ENDIF
 
+#ifdef DEBUG_TESTS
+      write(ICHAN,*) 'KtensorWface: |Sigx|  =',maxval(abs(SigX))
+      write(ICHAN,*) 'KtensorWface: |Sigy|  =',maxval(abs(SigY))
+#endif
 
 ! ------------------------------------------------------------------------------
       return
@@ -101,27 +89,27 @@
 #include "OPERATORS.h"
 #include "MASKS.h"
 ! Arguments
-      real Temp(_I3(Nz,Nx,Ny))	! Locally referenced pot. temperature
-      real Salt(_I3(Nz,Nx,Ny))	! Locally referenced pot. temperature
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma
+      real Temp(_I3(Nz,Nx,Ny))  ! Locally referenced pot. temperature
+      real Salt(_I3(Nz,Nx,Ny))  ! Locally referenced pot. temperature
+      real SigX(_I3(Nz,Nx,Ny))  ! d/dx Sigma
+      real SigY(_I3(Nz,Nx,Ny))  ! d/dy Sigma
+      real SigZ(_I3(Nz,Nx,Ny))  ! d/dz Sigma
 ! Local
-      real sigma(_I3(Nz,Nx,Ny))	! Locally referenced pot. density
-      real sigUp(_I3(Nz,Nx,Ny))	! Pot. density referenced to level below
+      real sigma(_I3(Nz,Nx,Ny)) ! Locally referenced pot. density
+      real sigUp(_I3(Nz,Nx,Ny)) ! Pot. density referenced to level below
       integer K
 ! ------------------------------------------------------------------------------
 
       DO K=1,Nz
-       CALL UPDATE_RHO(Temp,Salt,K,'POLY3','LOCAL',sigma)
+       CALL UPDATE_RHO(Temp,Salt,K,'LINEAR','LOCAL',sigma)
 !                      |-----------in------------| |out|
        sigma(_I3(K,:,:))=sigma(_I3(K,:,:))*PMASK(_I3(K,:,:))
-       CALL UPDATE_RHO(Temp,Salt,K,'POLY3','BELOW',sigUp)
+       CALL UPDATE_RHO(Temp,Salt,K,'LINEAR','BELOW',sigUp)
 !                      |-----------in------------| |out|
 ! Lateral gradients of potential density
-       SigX(_I3(K,:,:))=rDXatU*UMASK(_I3(K,:,:))*
+       SigX(_I3(K,:,:))=_SLP_FAC*rDXatU*UMASK(_I3(K,:,:))*
      &  (sigma(_I3(K,:,:))-CSHIFT(sigma(_I3(K,:,:)),DIM=1,SHIFT=-1))
-       SigY(_I3(K,:,:))=rDYatV*VMASK(_I3(K,:,:))*
+       SigY(_I3(K,:,:))=_SLP_FAC*rDYatV*VMASK(_I3(K,:,:))*
      &  (sigma(_I3(K,:,:))-CSHIFT(sigma(_I3(K,:,:)),DIM=2,SHIFT=-1))
 
       ENDDO
@@ -129,7 +117,7 @@
 
 ! Static stability at W points (K=1 is at surface)
       DO K=2,Nz
-       SigZ(_I3(K,:,:))=rDZatW(K)*(GRONIL)*WMASK(_I3(K,:,:))*
+       SigZ(_I3(K,:,:))=rDZatW(K)*(_GRONIL)*WMASK(_I3(K,:,:))*
      &  (sigUp(_I3(K-1,:,:))-sigma(_I3(K,:,:)))
       ENDDO
       SigZ(_I3(1,:,:))=SigZ(_I3(2,:,:))
@@ -151,26 +139,26 @@
 #include "SIZE.h"
 #include "MASKS.h"
 ! Arguments
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma  (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma  (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma  (interpd to T/S points)
-      real rSmax		! reciprocal maximum allowed slope
-      real Sx(_I3(Nz,Nx,Ny))	! Sx = - d/dx Sigma / d/dz Sigma
-      real Sy(_I3(Nz,Nx,Ny))	! Sy = - d/dy Sigma / d/dz Sigma
+      real SigX(_I3(Nz,Nx,Ny))  ! d/dx Sigma  (@ U points)
+      real SigY(_I3(Nz,Nx,Ny))  ! d/dy Sigma  (@ V points)
+      real SigZ(_I3(Nz,Nx,Ny))  ! d/dz Sigma  (interpd to T/S points)
+      real rSmax                ! reciprocal maximum allowed slope
+      real Sx(_I3(Nz,Nx,Ny))    ! Sx = - d/dx Sigma / d/dz Sigma
+      real Sy(_I3(Nz,Nx,Ny))    ! Sy = - d/dy Sigma / d/dz Sigma
 ! Local
       real tmp(_I3(Nz,Nx,Ny))
       real tmp2(_I3(Nz,Nx,Ny))
 ! ------------------------------------------------------------------------------
 
 ! Interpolate d/dy Sigma and d/dz Sigma to U points
-      Sy=0.5d0*(SigY+CSHIFT(SigY,DIM=_I3Y,SHIFT=+1))*PMASK	! Interp to T
-      Sy=0.5d0*(Sy+CSHIFT(Sy,DIM=_I3X,SHIFT=-1))*UMASK		! Interp to U
-      tmp=0.5d0*(SigZ+CSHIFT(SigZ,DIM=_I3X,SHIFT=-1))		! d/dz sigma @ U
+      Sy=0.5d0*(SigY+CSHIFT(SigY,DIM=_I3Y,SHIFT=+1))*PMASK      ! Interp to T
+      Sy=0.5d0*(Sy+CSHIFT(Sy,DIM=_I3X,SHIFT=-1))*UMASK          ! Interp to U
+      tmp=0.5d0*(SigZ+CSHIFT(SigZ,DIM=_I3X,SHIFT=-1))           ! d/dz sigma @ U
 
 ! Limit maximum slope
-!     tmp=1.d0/max(tmp,-_SMALL-sqrt(SigX*SigX+Sy*Sy)*rSmax)	! check
+!     tmp=1.d0/max(tmp,-_SMALL-sqrt(SigX*SigX+Sy*Sy)*rSmax)     ! check
       tmp2=-_SMALL-sqrt(SigX*SigX+Sy*Sy)*rSmax
-      where (tmp.gt.tmp2) tmp=tmp2				! check
+      where (tmp.gt.tmp2) tmp=tmp2                              ! check
       tmp=1.d0/tmp
 
       Sx=-SigX*tmp
@@ -195,26 +183,26 @@
 #include "SIZE.h"
 #include "MASKS.h"
 ! Arguments
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma  (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma  (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma  (interpd to T/S points)
-      real rSmax		! reciprocal maximum allowed slope
-      real Sx(_I3(Nz,Nx,Ny))	! Sx = - d/dx Sigma / d/dz Sigma
-      real Sy(_I3(Nz,Nx,Ny))	! Sy = - d/dy Sigma / d/dz Sigma
+      real SigX(_I3(Nz,Nx,Ny))  ! d/dx Sigma  (@ U points)
+      real SigY(_I3(Nz,Nx,Ny))  ! d/dy Sigma  (@ V points)
+      real SigZ(_I3(Nz,Nx,Ny))  ! d/dz Sigma  (interpd to T/S points)
+      real rSmax                ! reciprocal maximum allowed slope
+      real Sx(_I3(Nz,Nx,Ny))    ! Sx = - d/dx Sigma / d/dz Sigma
+      real Sy(_I3(Nz,Nx,Ny))    ! Sy = - d/dy Sigma / d/dz Sigma
 ! Local
       real tmp(_I3(Nz,Nx,Ny))
       real tmp2(_I3(Nz,Nx,Ny))
 ! ------------------------------------------------------------------------------
 
 ! Interpolate d/dx Sigma and d/dz Sigma to V points
-      Sx=0.5d0*(SigX+CSHIFT(SigX,DIM=_I3X,SHIFT=+1))*PMASK	! Interp to T
-      Sx=0.5d0*(Sx+CSHIFT(Sx,DIM=_I3Y,SHIFT=-1))*VMASK		! Interp to V
-      tmp=0.5d0*(SigZ+CSHIFT(SigZ,DIM=_I3Y,SHIFT=-1))		! d/dz sigma @ V
+      Sx=0.5d0*(SigX+CSHIFT(SigX,DIM=_I3X,SHIFT=+1))*PMASK      ! Interp to T
+      Sx=0.5d0*(Sx+CSHIFT(Sx,DIM=_I3Y,SHIFT=-1))*VMASK          ! Interp to V
+      tmp=0.5d0*(SigZ+CSHIFT(SigZ,DIM=_I3Y,SHIFT=-1))           ! d/dz sigma @ V
 
 ! Limit maximum slope
-!     tmp=1.d0/max(tmp,-_SMALL-sqrt(Sx*Sx+SigY*SigY)*rSmax)	! check
+!     tmp=1.d0/max(tmp,-_SMALL-sqrt(Sx*Sx+SigY*SigY)*rSmax)     ! check
       tmp2=-_SMALL-sqrt(Sx*Sx+SigY*SigY)*rSmax
-      where (tmp.gt.tmp2) tmp=tmp2				! check
+      where (tmp.gt.tmp2) tmp=tmp2                              ! check
       tmp=1.d0/tmp
 
       Sx=-Sx*tmp
@@ -239,35 +227,35 @@
 #include "SIZE.h"
 #include "MASKS.h"
 ! Arguments
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma  (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma  (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma  (@ W points)
-      real rSmax		! reciprocal of maximum allowed slope
-      real Sx(_I3(Nz,Nx,Ny))	! Sx = - d/dx Sigma / d/dz Sigma
-      real Sy(_I3(Nz,Nx,Ny))	! Sy = - d/dy Sigma / d/dz Sigma
-      real Sxy2(_I3(Nz,Nx,Ny))	! Sxy2 = (grad_h Sigma)^2 / (d/dz Sigma)^2
+      real SigX(_I3(Nz,Nx,Ny))  ! d/dx Sigma  (@ U points)
+      real SigY(_I3(Nz,Nx,Ny))  ! d/dy Sigma  (@ V points)
+      real SigZ(_I3(Nz,Nx,Ny))  ! d/dz Sigma  (@ W points)
+      real rSmax                ! reciprocal of maximum allowed slope
+      real Sx(_I3(Nz,Nx,Ny))    ! Sx = - d/dx Sigma / d/dz Sigma
+      real Sy(_I3(Nz,Nx,Ny))    ! Sy = - d/dy Sigma / d/dz Sigma
+      real Sxy2(_I3(Nz,Nx,Ny))  ! Sxy2 = (grad_h Sigma)^2 / (d/dz Sigma)^2
 ! Local
       real tmp(_I3(Nz,Nx,Ny))
       real tmp2(_I3(Nz,Nx,Ny))
 ! ------------------------------------------------------------------------------
 
 ! Interpolate d/dx Sigma and d/dy Sigma to W points
-      Sx=0.5d0*(SigX+CSHIFT(SigX,DIM=_I3X,SHIFT=+1))*PMASK	! Interp to T
-      Sx=0.5d0*(Sx+CSHIFT(Sx,DIM=_I3Z,SHIFT=-1))*WMASK		! Interp to W
-      Sy=0.5d0*(SigY+CSHIFT(SigY,DIM=_I3Y,SHIFT=+1))*PMASK	! Interp to T
-      Sy=0.5d0*(Sy+CSHIFT(Sy,DIM=_I3Z,SHIFT=-1))*WMASK		! Interp to W
-      tmp=SigZ							! d/dz sigma @ W
+      Sx=0.5d0*(SigX+CSHIFT(SigX,DIM=_I3X,SHIFT=+1))*PMASK      ! Interp to T
+      Sx=0.5d0*(Sx+CSHIFT(Sx,DIM=_I3Z,SHIFT=-1))*WMASK          ! Interp to W
+      Sy=0.5d0*(SigY+CSHIFT(SigY,DIM=_I3Y,SHIFT=+1))*PMASK      ! Interp to T
+      Sy=0.5d0*(Sy+CSHIFT(Sy,DIM=_I3Z,SHIFT=-1))*WMASK          ! Interp to W
+      tmp=SigZ                                                  ! d/dz sigma @ W
 
 ! Limit maximum slope
       Sxy2=sqrt(Sx*Sx+Sy*Sy)
-!     tmp=1.d0/max(SigZ,-_SMALL-Sxy2*rSmax)			! check
+!     tmp=1.d0/max(SigZ,-_SMALL-Sxy2*rSmax)                     ! check
       tmp2=-_SMALL-Sxy2*rSmax
-      where (tmp.gt.tmp2) tmp=tmp2				! check
+      where (tmp.gt.tmp2) tmp=tmp2                              ! check
       tmp=1.d0/tmp
 
-      Sx=-Sx*tmp
-      Sy=-Sy*tmp
-      Sxy2=Sx*Sx+Sy*Sy
+      Sx=-2.*Sx*tmp
+      Sy=-2.*Sy*tmp
+      Sxy2=0.25*(Sx*Sx+Sy*Sy)
 
 #ifdef DEBUG_TESTS
       write(ICHAN,*) 'KtensorWface: |Sx|  =',maxval(abs(Sx))
@@ -282,102 +270,91 @@
 ! ==============================================================================
 
 ! ==============================================================================
-      subroutine RediCoefficient(SigX,SigY,SigZ,Kredi)
-!                                |-----in-----| |out|
+      subroutine GMRediCoefficient(SigX,SigY,SigZ,SigZBz,Kredigm,nIter_arg,DumpFlag)
+!                                  |---------in--------| |-out-|
       implicit none
 ! Global
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "MASKS.h"
 ! Arguments
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma  (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma  (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma  (@ W points)
-      real Kredi(_I3(Nz,Nx,Ny))	! Redi diffusion coefficient (@ T points)
+      real SigX(_I3(Nz,Nx,Ny))  ! d/dx Sigma  (@ U points)
+      real SigY(_I3(Nz,Nx,Ny))  ! d/dy Sigma  (@ V points)
+      real SigZ(_I3(Nz,Nx,Ny))  ! d/dz Sigma  (@ W points)
+      real SigZBz(_I3(Nz,Nx,Ny))! d/dz Sigma  (@ T points)
+      real Kredigm(_I3(Nz,Nx,Ny)) ! Redi/GM eddy coefficient (@ T points)
+      integer nIter_arg
+      logical DumpFlag
 ! Local
+      real rSmax,sqtgro,gRro
+      real Sx(_I3(Nz,Nx,Ny))    ! d/dx Sigma  (@ T points)
+      real Sy(_I3(Nz,Nx,Ny))    ! d/dy Sigma  (@ T points)
+      real tmp(_I3(Nz,Nx,Ny))
+      real tmp2(_I3(Nz,Nx,Ny))
+      real M2(_I3(Nz,Nx,Ny))    ! M2 = g/rho0 |grad_h Sigma|
+      real FrRi(Nx,Ny)
+      real totRiDep(Nx,Ny),depRiZ(Nz)
+      integer iErr,K,I,J
+      character*(10) suffix
 ! ------------------------------------------------------------------------------
 
-      Kredi=1.0d3*PMASK
+      rSmax=1.d0/(_SMAX)
+      gRro=_GRAV_G/_RHO_NIL
+      sqtgro=sqrt(gRro)
 
-! ------------------------------------------------------------------------------
-      return
-      end
-! ==============================================================================
+      Sx=0.5d0*(SigX+CSHIFT(SigX,DIM=_I3X,SHIFT=+1))*PMASK      ! Interp to T
+      Sy=0.5d0*(SigY+CSHIFT(SigY,DIM=_I3Y,SHIFT=+1))*PMASK      ! Interp to T
+      M2=sqrt(Sx*Sx+Sy*Sy)                                      ! M^2 * RONIL/G
+      tmp=SigZBz
+!             ^^  found error here in version 1 *********************
 
-! ==============================================================================
-      subroutine GMcoefficient(SigX,SigY,SigZ,Kgm)
-!                              |-----in-----| |out|
-      implicit none
-! Global
-#include "SIZE.h"
-#include "MASKS.h"
-! Arguments
-      real SigX(_I3(Nz,Nx,Ny))	! d/dx Sigma  (@ U points)
-      real SigY(_I3(Nz,Nx,Ny))	! d/dy Sigma  (@ V points)
-      real SigZ(_I3(Nz,Nx,Ny))	! d/dz Sigma  (@ W points)
-      real Kgm(_I3(Nz,Nx,Ny))	! Eddy induced transport coef. (@ W points)
-! Local
-! ------------------------------------------------------------------------------
+      tmp2=-_SMALL-M2*rSmax
+      where (tmp.gt.tmp2) tmp=tmp2                              ! slope check
 
-      Kgm=1.0d3*PMASK
+      M2=gRro*M2                                                ! M^2
+      tmp=-gRro*tmp                                             ! N^2
+!v1   tmp2=M2/sqrt(tmp)                                         ! |f|/sqrt(Ri)
 
-! ------------------------------------------------------------------------------
-      return
-      end
-! ==============================================================================
+      tmp2=M2/tmp               ! v2                            ! M^2/N^2
+      tmp=-gRro*SigZBz          ! v2                            ! N^2 (no limit)
+      tmp2=tmp2*sqrt(abs(tmp))  ! v2                            ! |f|/sqrt(Ri)
 
-! ==============================================================================
-      subroutine GMtransport(Sx,Sy,Kgm,Ustar,Vstar,Wstar)
-!                            |--in---| |------out------|
-      implicit none
-! Global
-#include "SIZE.h"
-#include "OPERATORS.h"
-#include "MASKS.h"
-! Arguments
-      real Sx(_I3(Nz,Nx,Ny))	! K13 = - d/dx Sigma / d/dz Sigma (@ U points)
-      real Sy(_I3(Nz,Nx,Ny))	! K23 = - d/dy Sigma / d/dz Sigma (@ V points)
-      real Kgm(_I3(Nz,Nx,Ny))	! Eddy induced transport coef. (@ W points)
-      real Ustar(_I3(Nz,Nx,Ny))	! U* = -d/dz (Kgm*Sx)
-      real Vstar(_I3(Nz,Nx,Ny))	! V* = -d/dz (Kgm*Sy)
-      real Wstar(_I3(Nz,Nx,Ny))	! W* = d/dx (Kgm*Sx) + d/dy (Kgm*Sy)
-! Local
-      real Fx(_I3(Nz,Nx,Ny))
-      real Fy(_I3(Nz,Nx,Ny))
-      integer K,Kp1
-! ------------------------------------------------------------------------------
+      depRiZ(1)=0.5*DELPS(1)
+      do K=2,Nz
+       depRiZ(K)=depRiZ(K-1)+0.5*(DELPS(K-1)+DELPS(K))
+      enddo
+      depRiZ=depRiZ/(_GRONIL)
 
-! *****
-! *****  MUST change this to not be barXZ(Sx) but barXZ(sigX)/ sigZ
-! *****
-
-      Fx=WMASK*CSHIFT(WMASK,DIM=_I3X,SHIFT=-1)
-     &  *0.5*(Kgm+CSHIFT(Kgm,DIM=_I3X,SHIFT=-1))
-     &  *0.5*(Sx+CSHIFT(Sx,DIM=_I3Z,SHIFT=-1))
-
-      Fy=WMASK*CSHIFT(WMASK,DIM=_I3Y,SHIFT=-1)
-     &  *0.5*(Kgm+CSHIFT(Kgm,DIM=_I3Y,SHIFT=-1))
-     &  *0.5*(Sy+CSHIFT(Sy,DIM=_I3Z,SHIFT=-1))
+      totRiDep=0.
+      FrRi=0.
+      do K=1,11                 ! Avg over top ???? metres
+       totRiDep=totRiDep+DELPS(K)*PMASK(_I3(K,:,:))
+       FrRi=FrRi+DELPS(K)*tmp2(_I3(K,:,:))              ! |f|/sqrt(Ri)
+      enddo
+      where (totRiDep.ne.0.) totRiDep=1./totRiDep
+      FrRi=FrRi*totRiDep                                ! avg |f|/sqrt(Ri)
 
       do K=1,Nz
-       Kp1=mod(K,Nz)+1
-       Ustar(_I3(K,:,:))=-(GRONIL)*rDZatP(K)*UMASK(_I3(K,:,:))*
-     &   (Fx(_I3(K,:,:))-Fx(_I3(Kp1,:,:)))
-       Vstar(_I3(K,:,:))=-(GRONIL)*rDZatP(K)*VMASK(_I3(K,:,:))*
-     &   (Fy(_I3(K,:,:))-Fy(_I3(Kp1,:,:)))
+       do J=1,Ny
+        do I=1,Nx
+         Kredigm(_I3(K,I,J))=PMASK(_I3(K,I,J))*(
+     &             0000.0d0                             ! Back-ground value
+!    &   +0.02d0*400.d3*50.d3*FrRi(I,J)         ! Richardson # depend.
+!    &   +1000.d0*exp(-((9.*0.05*(float(J)-20.5))**2))  ! Equatorial band
+     &            )
+!    &   *(0.1+0.9*exp(-depRiZ(K)/500.))                ! Depth depend.
+        enddo
+       enddo
       enddo
+!dbg  where (Kredigm.gt.2500.) Kredigm=2500.            ! Stability cut-off
 
-!     Wstar=pDdxOp*(CSHIFT(Fx,DIM=_I3X,SHIFT=+1)-Fx)
-!    &     +pDdyOp*(CSHIFT(Fy,DIM=_I3Y,SHIFT=+1)-Fy)
-
-      call UPDATE_W(
-     I               Ustar, Vstar, Fx,
-     O               Wstar )
-
-#ifdef DEBUG_TESTS
-      write(ICHAN,*) 'GMtransport: |U*|  =',maxval(abs(Ustar))
-      write(ICHAN,*) 'GMtransport: |V*|  =',maxval(abs(Vstar))
-      write(ICHAN,*) 'GMtransport: |W*|  =',maxval(abs(Wstar))
-#endif
+      IF(DumpFlag)THEN
+        iErr = 0.
+        WRITE(suffix,'(I10.10)') nIter_arg
+        CALL WRITE_DUMP_3D( M2, Nx, Ny, Nz, 'rRiM2.', suffix, iErr)
+        CALL WRITE_DUMP_3D( tmp2, Nx, Ny, Nz, 'rRi3.', suffix, iErr)
+        CALL WRITE_DUMP_2D( FrRi, Nx, Ny, 'rRi.', suffix, iErr)
+      ENDIF
 
 ! ------------------------------------------------------------------------------
       return

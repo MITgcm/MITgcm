@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.13 1998/06/08 18:45:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.14 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -58,7 +58,7 @@ C--   Continuous equation parameters
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      &  tRef, sRef, eosType,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
-     & momPressureForcing,
+     & momPressureForcing, metricTerms,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, freeSurfFac,
@@ -177,6 +177,7 @@ C--   Set default "physical" parameters
       momPressureForcing  = .TRUE.
       momStepping         = .TRUE.
       tempStepping        = .TRUE.
+      metricTerms         = .TRUE.
       implicitDiffusion   = .FALSE.
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
@@ -222,6 +223,11 @@ C--   Set default "physical" parameters
        pfFacMom = 1. _d 0
       ELSE
        pfFacMom = 0. _d 0
+      ENDIF
+      IF ( metricTerms ) THEN
+       mTFacMom = 1. _d 0
+      ELSE
+       mTFacMom = 1. _d 0
       ENDIF
 
       IF ( implicitFreeSurface .AND.  rigidLid ) THEN
@@ -273,6 +279,8 @@ C--   Time stepping parameters
       checkPtSuff(1) = 'ckptA'
       checkPtSuff(2) = 'ckptB'
       cAdjFreq       = -1. _d 0
+      rCD            = -1. _d 0
+      tauCD          = 0. _d 0
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO,err=7)
       IF ( errIO .GE. 0 ) GOTO 8
     7 CONTINUE
@@ -302,6 +310,13 @@ C     o Convection frequency
       IF ( cAdjFreq .LT. 0. ) THEN
        cAdjFreq = deltaTClock
       ENDIF
+C     o CD coupling
+      IF ( tauCD .EQ. 0. _d 0 ) THEN
+        tauCD = deltaTmom
+      ENDIF
+      IF ( rCD .LT. 0. ) THEN
+       rCD = 1. - deltaTMom/tauCD
+      ENDIF
 C     o Time step count
       IF ( endTime .NE. 0 ) THEN
        IF ( deltaTClock .NE. 0 ) nTimeSteps = 
@@ -326,12 +341,13 @@ C     In cartesian coords distances are in metres
       ENDDO
 C     In spherical polar distances are in degrees
       usingSphericalPolarGrid = .FALSE.
+      phiMin    = -5.0
+      thetaMin  = 0.
+      rSphere   = 6370. * 1. _d 3
+      rRsphere  = 1. _d 0/rSphere
       IF ( usingSphericalPolarGrid ) THEN
-       phiMin    = -5.0
-       thetaMin  = 0.
        dxSpacing = 1.
        dySpacing = 1.
-       rSphere   = 6370. * 1. _d 3
        DO I=1,Nx
         delX(I) = dxSpacing
        ENDDO
@@ -359,6 +375,12 @@ C     In spherical polar distances are in degrees
        STOP 'ABNORMAL END: S/R INI_PARMS'
   10  CONTINUE
 
+      IF ( rSphere .NE. 0 ) THEN
+       rRSphere = 1. _d 0/rSphere
+      ELSE
+       rRSphere = 0.
+      ENDIF
+
 C     Initialize EOS coefficients (3rd order polynomial)
       IF (eostype.eq.'POLY3') THEN
        OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
@@ -385,6 +407,29 @@ C     Initialize EOS coefficients (3rd order polynomial)
      &  'S/R INI_PARMS: More than one coordinate system requested'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
+
+      IF ( usingCartesianGrid ) THEN
+       usingSphericalPolarMterms = .FALSE.
+       metricTerms = .FALSE.
+       mTFacMom = 0
+
+       useConstantF  = .FALSE.
+       useBetaPlaneF = .FALSE.
+       useSphereF    = .TRUE.
+       omega         = 2. _d 0 * PI / ( 3600. _d 0 * 24. _d 0 )
+       usingSphericalPolarMterms = .TRUE.
+       metricTerms = .TRUE.
+       mTFacMom = 1
+      ENDIF
+      IF ( usingSphericalPolarGrid ) THEN
+       useConstantF  = .FALSE.
+       useBetaPlaneF = .FALSE.
+       useSphereF    = .TRUE.
+       omega         = 2. _d 0 * PI / ( 3600. _d 0 * 24. _d 0 )
+       usingSphericalPolarMterms = .TRUE.
+       metricTerms = .TRUE.
+       mTFacMom = 1
       ENDIF
 
       _END_MASTER(myThid)

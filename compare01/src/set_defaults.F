@@ -1,4 +1,4 @@
-C $Id: set_defaults.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: set_defaults.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -103,9 +103,9 @@ CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
 CSTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORE
-      phiMin      = 0.     
-      dPhi        = 4.0
-      dTheta      = 4.0
+      phiMin      = -30.
+      dPhi        = 1.0
+      dTheta      = 1.0
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
@@ -185,13 +185,13 @@ CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
       THS(1)   = 20.D0
       THS(2)   = 10.D0
-C     THS(3)   = 10.D0
-C     THS(4)   =  6.D0
+      THS(3)   =  8.D0
+      THS(4)   =  6.D0
       SSPPT = 10.D0
       T(_I3(1,:,:)) = 20.0D0
       T(_I3(2,:,:)) = 10.0D0
-C     T(_I3(3,:,:)) = 10.0D0
-C     T(_I3(4,:,:)) =  6.0D0
+      T(_I3(3,:,:)) =  8.0D0
+      T(_I3(4,:,:)) =  6.0D0
 C     T(_I3(1,:,:)) = 1.D-12
 C     T(_I3(2,:,:)) = 0.
 C     T(_I3(3,:,:)) = 0.
@@ -203,11 +203,12 @@ C     T(_I3(4,:,:)) = 20.0D0
       S = 10.0D0    
       DELTAZ(1) =  500.0D0
       DELTAZ(2) =  500.0D0
-C     DELTAZ(3) = 1500.0D0
-C     DELTAZ(4) = 2500.0D0
+      DELTAZ(3) =  500.0D0
+      DELTAZ(4) =  500.0D0
 
 C     Geometry
       DM        = 20. D3
+      DM        = 1.
       WRITE(20,*) ' DM',DM
 
 
@@ -305,7 +306,8 @@ C      tAlpha     = 0.D-4
 
 C     Numerics parameters
       abEps     = 0.1
-      rAja      = 0.0D0
+      rAja      = 9.930555555555556D-1
+C     rAja      = 0.
       dUnit               = 10
       scrUnit1            = 11
       scrUnit2            = 12
@@ -322,7 +324,7 @@ C     Wall at Y = Ly
       PMASK(_I3(:,:,ny))  = LAND  ! Land in northern most cell
 C     bathySource = textBathymetry 
 C     Island
-C     PMASK(_I3(:,1,24))  = LAND
+      PMASK(_I3(Nz,1,24))  = LAND
 
 C
 
@@ -355,8 +357,8 @@ CcnhDebugStarts
 Cdbg  WRITE(0,*) ' lY    = ', lY
 Cdbg  WRITE(0,*) ' distY = ', distY
 Cdbg  WRITE(0,*) ' tauMax = ', tauMax
-Cdbg  WRITE(0,*) ' fu '
-Cdbg  CALL PLOT_FIELD(fu,Nx,Ny)
+      WRITE(0,*) ' fu '
+      CALL PLOT_FIELD(fu,Nx,Ny)
 Cdbg  STOP
 CcnhDebugEnds
 C

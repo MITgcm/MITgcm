@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.4 1998/05/25 18:01:32 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.5 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -81,6 +81,8 @@ C     Set up my local grid first
 C     Note: In the spherical polar case delX and delY are given in
 C           degrees and are relative to some starting latitude and
 C           longitude - phiMin and thetaMin.
+      xC0 = thetaMin
+      yC0 = phiMin
       DO bj = myByLo(myThid), myByHi(myThid)
        jG = myYGlobalLo + (bj-1)*sNy
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -197,7 +199,53 @@ C     Calculate vertical face area
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R4(zA, myThid )
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           IF (HFacC(I,J,K,bi,bj) .NE. 0. D0 ) THEN
+            rHFacC(I,J,K,bi,bj) = 1. D0 / HFacC(I,J,K,bi,bj)
+           ELSE
+            rHFacC(I,J,K,bi,bj) = 0. D0
+           ENDIF
+           IF (HFacW(I,J,K,bi,bj) .NE. 0. D0 ) THEN
+            rHFacW(I,J,K,bi,bj) = 1. D0 / HFacW(I,J,K,bi,bj)
+            maskW(I,J,K,bi,bj) = 1. D0
+           ELSE
+            rHFacW(I,J,K,bi,bj) = 0. D0
+            maskW(I,J,K,bi,bj) = 0.0 D0
+           ENDIF
+           IF (HFacS(I,J,K,bi,bj) .NE. 0. D0 ) THEN
+            rHFacS(I,J,K,bi,bj) = 1. D0 / HFacS(I,J,K,bi,bj)
+            maskS(I,J,K,bi,bj) = 1. D0
+           ELSE
+            rHFacS(I,J,K,bi,bj) = 0. D0
+            maskS(I,J,K,bi,bj) = 0. D0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C     Now sync. and get/send edge regions that are shared with
+C     other threads.
+      _EXCH_XYZ_R4(rHFacC    , myThid )
+      _EXCH_XYZ_R4(rHFacW    , myThid )
+      _EXCH_XYZ_R4(rHFacS    , myThid )
+      _EXCH_XYZ_R4(maskW    , myThid )
+      _EXCH_XYZ_R4(maskS    , myThid )
+      _EXCH_XY_R4 (zA       , myThid )
+
+CcnhDebugStarts
+      tanPhiAtU = 0. _d 0
+      tanPhiAtV = 0. _d 0
+      _EXCH_XY_R4 (tanPhiAtU , myThid )
+      _EXCH_XY_R4 (tanPhiAtV , myThid )
+CcnhDebugEnds
+
+
 C
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.2 1998/04/23 20:59:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.3 1998/06/08 21:42:59 cnh Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -172,3 +172,5 @@ C     precision when they see .Dnn which runs very slowly!
 #ifndef REAL_D0_IS_16BYTES
 #define _d D
 #endif
+
+#define ALLOW_CD

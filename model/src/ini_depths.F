@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -71,6 +71,8 @@ C         Test for eastern edge
 C         Test for northern edge
           IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
 C         Island
+          IF ( iG .EQ. 1 .AND. 
+     &         jG .EQ. 24 ) H(i,j,bi,bj) = 0.75*phi
 C         IF ( iG .EQ. 1 .AND. 
 C    &         jG .EQ. 24 ) H(i,j,bi,bj) = 0.
            

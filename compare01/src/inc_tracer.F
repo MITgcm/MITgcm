@@ -1,4 +1,4 @@
-C $Id: inc_tracer.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: inc_tracer.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C     Procedure name: INC_TRACER
@@ -11,9 +11,11 @@ CStartofinterface
       SUBROUTINE INC_TRACER (
      I    U, V, W,
      U    Q, QT, QTNM1,
-     I    Kredi,K13,K23,K31,K32,K33,Ustar,Vstar,Wstar,
+     I    Kredigm,K31,K32,K33,
      I    surfProf,tracerStepping,tracerDiffusion,tracerBhDiffusion,
-     I    tracerAdvection,tracerForcing,a4TracerXY,a2TracerZ )
+     I    tracerAdvection,tracerForcing,a4TracerXY,a2TracerXY,
+     I    a2TracerZ 
+     O    )
       IMPLICIT NONE
 C      ======== Global data ============================
 #include "SIZE.h"
@@ -28,15 +30,10 @@ C     ======== Routine arguments ======================
       REAL Q  (_I3(Nz,Nx,Ny))
       REAL QT    (_I3(Nz,Nx,Ny))
       REAL QTNM1 (_I3(Nz,Nx,Ny))
-      REAL Kredi (_I3(Nz,Nx,Ny))
-      REAL K13 (_I3(Nz,Nx,Ny))
-      REAL K23 (_I3(Nz,Nx,Ny))
+      REAL Kredigm (_I3(Nz,Nx,Ny))
       REAL K31 (_I3(Nz,Nx,Ny))
       REAL K32 (_I3(Nz,Nx,Ny))
       REAL K33 (_I3(Nz,Nx,Ny))
-      REAL Ustar (_I3(Nz,Nx,Ny))
-      REAL Vstar (_I3(Nz,Nx,Ny))
-      REAL Wstar (_I3(Nz,Nx,Ny))
       REAL surfProf(Nx,Ny,2)
       LOGICAL tracerStepping
       LOGICAL tracerDiffusion
@@ -44,6 +41,7 @@ C     ======== Routine arguments ======================
       LOGICAL tracerAdvection
       LOGICAL tracerForcing
       REAL a4TracerXY
+      REAL a2TracerXY
       REAL a2TracerZ
 CEndofinterface
 C     Local variables
@@ -96,24 +94,15 @@ C       and/or del**4 lateral dissipation of Q, divh[k4.gradh(divh[gradh(Q))].
      &         -fluxWest+Cshift(fluxSouth,DIM=_I3Y,SHIFT=+1)-fluxSouth)
         ENDIF
 
-!moto   fluxWest = umask*difcx*XA*((1.+epslFac*slpxu*slpxu+slpyu*
-!moto& slpyu)*dqDx - (1.-epslFac)*slpxu*slpyu*(dqDy+
-!moto& Cshift(dqDy,DIM=_I3X,SHIFT=-1)+Cshift(dqDy,DIM=_I3Y,SHIFT=1)+Cshift(Cshift(dqDy,DIM=_I3X,SHIFT=-1),DIM=_I3Y,SHIFT=1))/4. + 
-!moto& (1.-epslFac)*slpxu*(dqDz+Cshift(dqDz,DIM=_I3X,SHIFT=-1)+Cshift(dqDz,DIM=_I3Z,SHIFT=1)+
-!moto& Cshift(Cshift(dqDz,DIM=_I3X,SHIFT=-1),DIM=_I3Z,SHIFT=1))/4.)/
-!moto& (1.+slpxu*slpxu+slpyu*slpyu)
+        fluxWest = -UMASK*XA*(
+     &    (0.5*(Kredigm+CSHIFT(Kredigm,DIM=_I3X,SHIFT=-1))+a2TracerXY)
+     &            *dQDx
+     &                       )
 
-        fluxWest = -UMASK*XA  *0.5*(Kredi+CSHIFT(Kredi,DIM=_I3X,SHIFT=-1))
-     &        *( dQDx + K13*0.5*(dQdzBz+Cshift(dQdzBz,DIM=_I3X,SHIFT=-1)) )
-
-!moto   fluxSouth = vmask*difcy*YA*((epslFac-1.)*slpxv*slpyv*(dqDx+
-!moto& Cshift(dqDx,DIM=_I3Y,SHIFT=-1)+Cshift(dqDx,DIM=_I3X,SHIFT=1)+Cshift(Cshift(dqDx,DIM=_I3X,SHIFT=1),DIM=_I3Y,SHIFT=-1)
-!moto& )/4. + (1.+slpxv*slpxv+epslFac*slpyv*slpyv)*dqDy + (1.-epslFac)*
-!moto& slpyv*(dqDz+Cshift(dqDz,DIM=_I3Y,SHIFT=-1)+Cshift(dqDz,DIM=_I3Z,SHIFT=1)+
-!moto& Cshift(Cshift(dqDz,DIM=_I3Y,SHIFT=-1),DIM=_I3Z,SHIFT=1))/4.)/(1.+slpxv*slpxv+slpyv*slpyv)
-
-        fluxSouth = -VMASK*YA  *0.5*(Kredi+CSHIFT(Kredi,DIM=_I3Y,SHIFT=-1))
-     &        *( dQdy + K23*0.5*(dQdzBz+Cshift(dQdzBz,DIM=_I3Y,SHIFT=-1)) )
+        fluxSouth = -VMASK*YA*(
+     &    (0.5*(Kredigm+CSHIFT(Kredigm,DIM=_I3Y,SHIFT=-1))+a2TracerXY)
+     &            *dQDy
+     &                       )
 
         IF ( tracerBhDiffusion ) THEN
           fluxWest = fluxWest  +
@@ -123,55 +112,50 @@ C       and/or del**4 lateral dissipation of Q, divh[k4.gradh(divh[gradh(Q))].
         ENDIF
 
 ! Interpolate d/dx Q and d/dy Q to W points
-        dQdx=0.5d0*(dQdx+CSHIFT(dQdx,DIM=_I3X,SHIFT=+1))*PMASK	! Interp to T
-        dQdx=0.5d0*(dQdx+CSHIFT(dQdx,DIM=_I3Z,SHIFT=-1))*WMASK	! Interp to W
-        dQdy=0.5d0*(dQdy+CSHIFT(dQdy,DIM=_I3Y,SHIFT=+1))*PMASK	! Interp to T
-        dQdy=0.5d0*(dQdy+CSHIFT(dQdy,DIM=_I3Z,SHIFT=-1))*WMASK	! Interp to W
+        dQdx=0.5d0*(dQdx+CSHIFT(dQdx,DIM=_I3X,SHIFT=+1))*PMASK  ! Interp to T
+        dQdx=0.5d0*(dQdx+CSHIFT(dQdx,DIM=_I3Z,SHIFT=-1))*WMASK  ! Interp to W
+        dQdy=0.5d0*(dQdy+CSHIFT(dQdy,DIM=_I3Y,SHIFT=+1))*PMASK  ! Interp to T
+        dQdy=0.5d0*(dQdy+CSHIFT(dQdy,DIM=_I3Z,SHIFT=-1))*WMASK  ! Interp to W
 
-c note difh is positive, while difcx and difcy are negative.  (see 
-c getkhkv.F)  to adjust to the sign convention of diffusion terms, 
-c its multiplied by "-" here.
-!moto   fluxUpper = -wmask*difh/(1.+slpxw*slpxw+slpyw*slpyw)
-!moto   fluxUpper = fluxUpper*ZA*((1.-epslFac)*slpxw*(dqDx+
-!moto& Cshift(dqDx,DIM=_I3X,SHIFT=1)+Cshift(dqDx,DIM=_I3Z,SHIFT=-1)+Cshift(Cshift(dqDx,DIM=_I3Z,SHIFT=-1),DIM=_I3X,SHIFT=1))/4. +
-!moto& (1.-epslFac)*slpyw*(dqDy+Cshift(dqDy,DIM=_I3Z,SHIFT=-1)+Cshift(dqDy,DIM=_I3Y,SHIFT=1)+
-!moto& Cshift(Cshift(dqDy,DIM=_I3Z,SHIFT=-1),DIM=_I3Y,SHIFT=1))/4. + 
-!moto& (slpxw*slpxw+slpyw*slpyw+epslFac)*dqDz)
-        fluxUpper = -ZA*0.5*(Kredi+CSHIFT(Kredi,DIM=_I3Z,SHIFT=-1))
-     &        *( K31*dQdx + K32*dQdy + K33*dQdz )
+!!      fluxUpper = -ZA*0.5*(Kredi+CSHIFT(Kredi,DIM=_I3Z,SHIFT=-1))
+!!   &        *( K31*dQdx + K32*dQdy + K33*dQdz )
 
-!                                    ^
-!                                    |
-!                                    |
-!                        this sign seems to be wrong?
+        fluxUpper = -ZA*(
+     &         0.5*(Kredigm+CSHIFT(Kredigm,DIM=_I3Z,SHIFT=-1))
+     &                  *( K31*dQdx + K32*dQdy )
+     &        +0.5*(Kredigm+CSHIFT(Kredigm,DIM=_I3Z,SHIFT=-1))
+     &                  *( K33*dQdz )   
+     &     )
 
 ! Add in vertical diffusion (Av d^2/dz^2)
 ! fluxUpper=-wmask*g*ronil*fluxUpper-a2TracerZ*wmask*ZA*(Q-qZM1))*pDdzOP
         fluxUpper = -WMASK*( (G*RONIL)*fluxUpper-a2TracerZ*ZA*(qZM1-Q)*pDdzOP )
         fluxUpper(_I3(1,:,:)) = 0.
-c factor g*ronil comes in to convert units of fluxUpper, since
-c Kv is in units of m**s-1 and gradients in vedtical are 1/Z.  
-c negative sign comes from different dT/dz calculation. 
       ENDIF
       IF ( tracerAdvection ) THEN
 C      Include transport of temperature by flow field.
-       fluxWest  = fluxWest +XA*(qXM1*0.5+Q*0.5)*(U+Ustar)
-       fluxSouth = fluxSouth+YA*(qYM1*0.5+Q*0.5)*(V+Vstar)
-       fluxUpper = fluxUpper+ZA*(qZM1*0.5+Q*0.5)*(W+Wstar)
+       fluxWest  = fluxWest +XA*(qXM1*0.5+Q*0.5)*U*UMASK
+       fluxSouth = fluxSouth+YA*(qYM1*0.5+Q*0.5)*V*VMASK
+       fluxUpper = fluxUpper+ZA*(qZM1*0.5+Q*0.5)*W*WMASK
       ENDIF
       IF ( tracerDiffusion .OR. tracerAdvection ) THEN
         qT = qT - (
      &              +Cshift(fluxWest,DIM=_I3X,SHIFT=+1)-fluxWest
      &              +Cshift(fluxSouth,DIM=_I3Y,SHIFT=+1)-fluxSouth
      &              -fluxUpper+Cshift(fluxUpper,DIM=_I3Z,SHIFT=+1)
-     &            )*rPVol*PMASK
+     &            )*rPVol
       ENDIF
+      qT(_I3(1,:,:)) = qT(_I3(1,:,:))
+     &               + freeSurfFac*W(_I3(1,:,:))*Q(_I3(1,:,:))/delps(1)
       IF(tracerForcing)THEN
 C     Include external forcing ( e.g. surface heat fluxes, boundary fluxes )
 C      Switch in the appropriate tracer forcing module 
-       qT(_I3(1:2,:,:)) = qT(_I3(1:2,:,:)) 
-     & - 1./(30.*oneDay)*(Q(_I3(1:2,:,:))-surfProf)
+c      qT(_I3(1,:,:)) = qT(_I3(1,:,:)) 
+c    & - 1./(30.*oneDay)*(Q(_I3(1,:,:))-surfProf(_I3(1,:,:)))
+c    & - surfProf(_I3(2,:,:))
       ENDIF
+      qT = qT*PMASK
+
 C
       Q = Q + ( (1.5+abEps)*qT-(0.5+abEps)*qTNM1 )*delT*asyncfac
 C

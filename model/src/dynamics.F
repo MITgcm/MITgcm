@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.13 1998/06/08 18:45:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.14 1998/06/08 21:43:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -39,9 +39,11 @@ C     myThid - Thread number for this instance of the routine.
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
 C     uTrans, vTrans, wTrans - Per block temporaries holding flow transport
-C                              o uTrans: Zonal transport
+C     wVel                     o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o wTrans: Vertical transport
+C                              o wVel:   Vertical velocity at upper and lower
+C                                        cell faces.
 C     maskC,maskUp             o maskC: land/water mask for tracer cells
 C                              o maskUp: land/water mask for W points
 C     aTerm, xTerm, cTerm    - Work arrays for holding separate terms in
@@ -68,6 +70,7 @@ C                          into fVerTerm
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTerm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -181,6 +184,8 @@ C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           wTrans(i,j)  = 0. _d 0
+          wVel  (i,j,1) = 0. _d 0
+          wVel  (i,j,2) = 0. _d 0
           fVerT(i,j,1) = 0. _d 0
           fVerT(i,j,2) = 0. _d 0
           fVerS(i,j,1) = 0. _d 0
@@ -300,7 +305,7 @@ C--     Initial boundary condition on barotropic divergence integral
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     O        xA,yA,uTrans,vTrans,wTrans,maskC,maskUp,
+     O        xA,yA,uTrans,vTrans,wTrans,wVel,maskC,maskUp,
      I        myThid)
 
 C--      Calculate the total vertical diffusivity
@@ -310,12 +315,11 @@ C--      Calculate the total vertical diffusivity
      O        KappaZT,
      I        myThid)
 
-
 C--      Calculate accelerations in the momentum equations
          IF ( momStepping ) THEN
           CALL CALC_MOM_RHS(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I         xA,yA,uTrans,vTrans,wTrans,maskC,
+     I         xA,yA,uTrans,vTrans,wTrans,wVel,maskC,
      I         pH,
      U         aTerm,xTerm,cTerm,mTerm,pTerm,
      U         fZon, fMer, fVerU, fVerV,

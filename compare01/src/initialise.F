@@ -1,6 +1,8 @@
-C $Id: initialise.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: initialise.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
+#define SPHERICAL
+#define _DB0 0.D0
 C ================
 C | initialise.F |
 C ================
@@ -128,50 +130,57 @@ C
       delY  =   dPhi   
       sbLat =   phiMin
 C
-C     rPVolHat = 0.
 C
-C     rZero    = radiusEarth
-C     DO k=1, nz
-C      latNorth = sbLat
-C      DO j =1, ny
-C       latSouth = latNorth
-C       latNorth = latNorth+delY
-C       longEast = 0.
-C       DO i =1, nx
-C        longWest = longEast
-C        longEast = longWest+delX
-C        XA( _I3(k,i,j) )   = rZero*delY*deg2rad*delps(k)
-C        YA( _I3(k,i,j) )   = rZero*delX*deg2rad*COS(latSouth*deg2rad)*delps(k)
-C        ZA( _I3(k,i,j) )   = rZero*delX*deg2rad
-C    &                        *(SIN(latNorth*deg2rad)-SIN(latSouth*deg2rad))
-C    &                        *rZero
-C        rPVol( _I3(k,i,j) )= 1.D0/( ZA( _I3(k,i,j) )*delps(k) )
-C        rPVolHat(i,j)      = rPVolHat(i,j) +  ZA( _I3(k,i,j) )*delps(k)
-C        dist = rZero*delX*deg2rad*COS( 0.5D0*deg2rad*(latNorth+latSouth) )
-C        uDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
-C        pDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
-C        dist = rZero*delX*deg2rad*COS( deg2rad*latSouth )
-C        vDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
-C        dist = rZero*delY*deg2rad
-C        uDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
-C        vDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
-C        pDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
+      rZero    = radiusEarth
+#ifdef SPHERICAL
+      rPVolHat = 0.
+      DO k=1, nz
+       latNorth = sbLat
+       DO j =1, ny
+        latSouth = latNorth
+        latNorth = latNorth+delY
+        longEast = 0.
+        DO i =1, nx
+         longWest = longEast
+         longEast = longWest+delX
+         XA( _I3(k,i,j) )   = rZero*delY*deg2rad*delps(k)
+         YA( _I3(k,i,j) )   = rZero*delX*deg2rad*COS(latSouth*deg2rad)*delps(k)
+         ZA( _I3(k,i,j) )   = rZero*delX*deg2rad
+     &                        *(SIN(latNorth*deg2rad)-SIN(latSouth*deg2rad))
+     &                        *rZero
+         rPVol( _I3(k,i,j) )= 1.D0/( ZA( _I3(k,i,j) )*delps(k) )
+         rPVolHat(i,j)      = rPVolHat(i,j) +  ZA( _I3(k,i,j) )*delps(k)
+         dist = rZero*delX*deg2rad*COS( 0.5D0*deg2rad*(latNorth+latSouth) )
+         uDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
+         pDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
+         dist = rZero*delX*deg2rad*COS( deg2rad*latSouth )
+         vDdxOp( _I3(k,i,j) ) = 1.D0/( dist )
+         dist = rZero*delY*deg2rad
+         uDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
+         vDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
+         pDdyOp( _I3(k,i,j) ) = 1.D0/( dist )
 C        fCorV( _I3(k,i,j) )  = 2.D0*omega*SIN(latSouth*deg2rad)
-C        uTPhiOp( _I3(k,i,j) ) = TAN(0.5D0*deg2rad*(latNorth+latSouth) )
-C        vTPhiOp( _I3(k,i,j) ) = TAN(deg2rad*(latSouth) )
-C       ENDDO
-C      ENDDO
-C     ENDDO
+         fCorU( _I3(k,i,j) )  = 2.D0*omega*SIN( 0.5D0*deg2rad*(latNorth+latSouth) )
+         uTPhiOp( _I3(k,i,j) ) = TAN(0.5D0*deg2rad*(latNorth+latSouth) )
+         vTPhiOp( _I3(k,i,j) ) = TAN(deg2rad*(latSouth) )
+         uTPhiOp( _I3(k,i,j) ) = 0.
+         vTPhiOp( _I3(k,i,j) ) = 0.
+        ENDDO
+       ENDDO
+      ENDDO
+      fCorV = fCorV * _DB0
+      fCorV = 0.5D0*(fCorU+CSHIFT(fCorU,-1,2) )
+C     fCorU = 0.5*(fCorV+CSHIFT(fCorV,+1,2) )
+      fCorW = fCorU
+ 
+      DO j=1, ny
+       DO i=1, nx
+        rPVolHat(i,j) = 1.D0/rPVolHat(i,j)
+       ENDDO
+      ENDDO
+#endif
       rDxatU = pDdxOp(_I3(1,:,:))
       rDyatV = pDdyOp(_I3(1,:,:))
-C     fCorU = 0.5*(fCorV+CSHIFT(fCorV,+1,2) )
-C     fCorW = fCorU
-C
-C     DO j=1, ny
-C      DO i=1, nx
-C       rPVolHat(i,j) = 1.D0/rPVolHat(i,j)
-C      ENDDO
-C     ENDDO
 C
       DO k=1, nz
        DO j=1, ny
@@ -278,13 +287,15 @@ C         du/dz = 0.
           LandHere   = tmpMsk( _I3(k  ,i,j) )*tmpMsk( _I3(k  ,i-1,j) ) .LT. 0.5
           WaterAbove = tmpMsk( _I3(k-1,i,j) )*tmpMsk( _I3(k-1,i-1,j) ) .GT. 0.5
           IF ( LandHere .AND. WaterAbove ) THEN
-           uDdzOp( _I3(k,i,j) ) = 0.    ! Free Slip
+           uDdzOp( _I3(k,i,j) ) = 0.              ! Free Slip
+           uDdzOp( _I3(k,i,j) ) = rDzAtP(K)*2.D0  ! No Slip
           ENDIF
 C         dv/dz = 0.
           LandHere   = tmpMsk( _I3(k  ,i,j) )*tmpMsk( _I3(k  ,i,j-1) ) .LT. 0.5
           WaterAbove = tmpMsk( _I3(k-1,i,j) )*tmpMsk( _I3(k-1,i,j-1) ) .GT. 0.5
           IF ( LandHere .AND. WaterAbove ) THEN
-           vDdzOp( _I3(k,i,j) ) = 0.    ! Free Slip
+           vDdzOp( _I3(k,i,j) ) = 0.              ! Free Slip
+           vDdzOp( _I3(k,i,j) ) = rDzAtP(K)*2.D0  ! No Slip
           ENDIF
 C         dt/dz = ds/dz = 0.
           LandHere   = tmpMsk( _I3(k  ,i,j) ) .LT. 0.5
@@ -319,9 +330,9 @@ C
         ENDDO
        ENDDO
       ENDDO
-C     XA = XA*UMASK
-C     YA = YA*VMASK
-C     ZA = ZA*PMASK
+      XA = XA*UMASK
+      YA = YA*VMASK
+      ZA = ZA*PMASK
       rPVolHat = rPVolHat*PMASK(_I3(1,:,:))
 C
 C     Elliptic equation solver variables.

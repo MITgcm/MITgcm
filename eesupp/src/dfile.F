@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.1 1998/05/21 18:30:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -545,8 +545,8 @@ C     ioUnit - Unit number for I/O
 C     msgBuf - Textual printing message buffer
 C     eMode  - Error mode for this file handle
       INTEGER ioUnit
-      CHARACTER(MAX_LEN_MBUF) msgBuf
-      CHARACTER(MAX_LEN_FNAM) fNam
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) fNam
       INTEGER eMode
       INTEGER I
 
@@ -667,8 +667,8 @@ C     ioUnit - Unit number for I/O
 C     msgBuf - Textual printing message buffer
 C     eMode  - Error mode for this file handle
       INTEGER ioUnit
-      CHARACTER(MAX_LEN_MBUF) msgBuf
-      CHARACTER(MAX_LEN_FNAM) fNam
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) fNam
       INTEGER eMode
       INTEGER I
 

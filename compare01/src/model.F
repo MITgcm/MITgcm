@@ -1,4 +1,4 @@
-C $Id: model.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: model.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -75,18 +75,13 @@ C     \-------------------------------------------------------------------------
 C     /-------------------------------------------------------------------------\ 
 C     | Variables for eddy paramiterisation                                     |
 C     \-------------------------------------------------------------------------/ 
-      REAL Kredi(_I3(Nz,Nx,Ny))
-      REAL K13(_I3(Nz,Nx,Ny))
-      REAL K23(_I3(Nz,Nx,Ny))
+      REAL Kredigm(_I3(Nz,Nx,Ny))
       REAL K31(_I3(Nz,Nx,Ny))
       REAL K32(_I3(Nz,Nx,Ny))
       REAL K33(_I3(Nz,Nx,Ny))
-      REAL Ustar(_I3(Nz,Nx,Ny))
-      REAL Vstar(_I3(Nz,Nx,Ny))
-      REAL Wstar(_I3(Nz,Nx,Ny))
       REAL Gwk (_I3(Nz,Nx,Ny))
+      REAL Tsurf(_I3(2,Nx,Ny))
       LOGICAL DumpFlg
-
 
 C     /-------------------------------------------------------------------------\ 
 C     | Control variables for multithreaded execution                           |
@@ -195,11 +190,24 @@ CMIC$  DO PARALLEL
      I               U, V, W, PH, PS, LEV,
      U               RHS2d_K, divH_K,
      O               GU, GV)
-         CALL UPDATE_T(
-     I                U, V, W, LEV, T,
-     O                GT )
+caja     CALL UPDATE_T(
+caja I                U, V, W, LEV, T,
+caja O                GT )
         ENDDO
        ENDDO
+
+Caja from 4x4 working model
+       CALL RediTensor(T,S,Kredigm,K31,K32,K33,nIter,DumpFlg)
+       CALL INC_TRACER (
+     I      U,V,W,
+     U      T,gWk,GTNM1,
+     I      Kredigm,K31,K32,K33,
+     I      Tsurf,.TRUE.,.TRUE.,.TRUE.,
+     I      .TRUE.,.TRUE.,
+     I      a4TempXY,a2TempXY,a2TempZ)
+         GTNM1=gWk
+Caja end from 4x4 working model
+
 CMIC$  GUARD
        RHS2d = RHS2d + RHS2d_K
        divH  = divH  + divH_K
@@ -369,6 +377,19 @@ CcnhDebugEnds
        DO K = 2, nz
         rPrmBz(_I3(K,:,:)) = ( rPrm(_I3(K,:,:))+rPrm(_I3(K-1,:,:)) )*0.5
        ENDDO
+ 
+       write(0,*) 'model: gT ',minval(gTnm1),maxval(gTnm1)
+       write(0,*) 'model: T  ',minval(T),maxval(T)
+       write(0,*) 'model: pH ',minval(pH),maxval(pH)
+!      write(0,*) 'model: gU ',minval(gUnm1),maxval(gUnm1)
+!      write(0,*) 'model: gV ',minval(gVnm1),maxval(gVnm1)
+       write(0,*) 'model: PS ',minval(PS),maxval(PS)
+       write(0,*) 'model: U  ',minval(U),maxval(U)
+       write(0,*) 'model: V  ',minval(V),maxval(V)
+       write(0,*) 'model: K13',minval(K31),maxval(K31)
+       write(0,*) 'model: K23',minval(K32),maxval(K32)
+       write(0,*) 'model: K33',minval(K33),maxval(K33)
+
       ENDDO
 C     /----------------------------------------------------------------\
 C     | End of main time stepping loop                                 |

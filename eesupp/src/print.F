@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.6 1998/05/21 18:30:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.7 1998/06/08 21:43:00 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -148,7 +148,7 @@ C     K    - Loop counter
       INTEGER nDup
       INTEGER xNew, xOld
       CHARACTER punc
-      CHARACTER(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K
@@ -251,7 +251,7 @@ C     K    - Loop counter
       INTEGER nDup
       LOGICAL xNew, xOld
       CHARACTER punc
-      CHARACTER(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K
@@ -354,7 +354,7 @@ C     K    - Loop counter
       INTEGER nDup
       Real*8 xNew, xOld
       CHARACTER punc
-      CHARACTER(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.14 1998/06/08 18:45:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.15 1998/06/08 21:43:00 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -77,6 +77,8 @@ C     momForcing    - Flag which turns external forcing of momentum on
 C                     and off.
 C     momPressureForcing - Flag which turns pressure term in momentum equation
 C                          on and off.
+C     metricTerms   - Flag which turns metric terms on or off.
+C     usingSphericalPolarMTerms - If TRUE use spherical polar metric terms.
 C     useCoriolis   - Flag which turns the coriolis terms on and off.
 C     tempDiffusion - Flag which turns diffusion of temperature on
 C                     and off.
@@ -93,16 +95,22 @@ C                     and off.
 C     implicitFreeSurface - Set to true to use implcit free surface
 C     rigidLid            - Set to true to use rigid lid
 C     momStepping   - Turns momentum equation time-stepping off
-C     momStepping   - Turns temperature equation time-stepping off
+C     tempStepping  - Turns temperature equation time-stepping off
+C     useConstantF  - Coriolis parameter set to f0
+C     useBetaPlaneF - Coriolis parameter set to f0 + beta.y
+C     useSphereF    - Coriolis parameter set to 2.omega.sin(phi)
 C     implicitDiffusion - Turns implicit vertical diffusion on
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, momStepping, tempStepping,
+     & metricTerms, usingSphericalPolarMTerms,
+     & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
+      LOGICAL usingSphericalPolarMTerms
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
@@ -118,6 +126,10 @@ C     implicitDiffusion - Turns implicit vertical diffusion on
       LOGICAL rigidLid
       LOGICAL momStepping
       LOGICAL tempStepping
+      LOGICAL metricTerms
+      LOGICAL useConstantF
+      LOGICAL useBetaPlaneF
+      LOGICAL useSphereF
       LOGICAL implicitDiffusion
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
@@ -150,9 +162,11 @@ C     thetaMin  - Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
 C                 to make geographical references simple.)
 C     rSphere   - Radius of sphere for a spherical polar grid ( m ).
+C     rRSphere  - Reciprocal radius of sphere for a spherical polar grid ( m ).
 C     f0        - Reference coriolis parameter ( 1/s )
 C                 ( Southern edge f for beta plane )
 C     beta      - df/dy ( s^-1.m^-1 )
+C     omega     - Angular velocity ( rad/s )
 C     viscAh    - Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAz    - Eddy viscosity coeff. for mixing of
@@ -201,17 +215,18 @@ C     vfFacMom  - Momentum viscosity scaling parameter
 C     pfFacMom  - Momentum pressure forcing parameter
 C     cfFacMom  - Coriolis term scaling parameter
 C     foFacMom  - Momentum forcing scaling parameter
+C     mtFacMom  - Metric terms scaling parameter
 C     cAdjFreq  - Frequency of convective adjustment
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
-     & thetaMin, rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
+     & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
      & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
      & tauCD, rCD, freeSurfFac,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
-     & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom,
-     & cAdjFreq
+     & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
+     & cAdjFreq, omega
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nz)
@@ -225,6 +240,7 @@ C     cAdjFreq  - Frequency of convective adjustment
       _RL phiMin
       _RL thetaMin
       _RL rSphere
+      _RL rRSphere
       _RL f0
       _RL freeSurfFac
       _RL beta
@@ -261,7 +277,9 @@ C     cAdjFreq  - Frequency of convective adjustment
       _RL pfFacMom
       _RL cfFacMom
       _RL foFacMom
+      _RL mTFacMom
       _RL cAdjFreq
+      _RL omega
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta
