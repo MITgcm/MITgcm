@@ -2,5 +2,5 @@
  &PACKAGES
  useGMRedi=.TRUE.
  usePTRACERS=.TRUE.
- /
+ &
   

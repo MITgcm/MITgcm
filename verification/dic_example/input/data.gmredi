@@ -18,6 +18,6 @@
   GM_Kmin_horiz      = 100.,
   GM_Scrit           = 4.e-3,
   GM_Sd              = 1.e-3,
- /
+ &
 
 

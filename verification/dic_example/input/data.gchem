@@ -4,4 +4,4 @@
   windFile='tren_speed.bin',
   SilicaFile='sillev1.bin',
   nsubtime=1,
- /
+ &

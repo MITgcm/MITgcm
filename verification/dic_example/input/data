@@ -34,13 +34,13 @@
  allowFreezing=.TRUE.,
  useCDscheme=.TRUE.,
 #usePickupBeforeC54=.TRUE.,
- /
+ &
 
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-13,
- /
+ &
 
 # Time stepping parameters
  &PARM03
@@ -71,7 +71,7 @@
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
  monitorFreq=1.,
- /
+ &
 
 # Gridding parameters
  &PARM04
@@ -83,7 +83,7 @@
  phiMin=-90.,
  delX=128*2.8125,
  delY=64*2.8125,
- /
+ &
 
 # Input datasets
  &PARM05
@@ -97,4 +97,4 @@
  surfQFile=      'shi_qnet.bin',
  EmPmRFile=      'shi_empmr_year.bin',
  the_run_name=   'Testing PTRACERS and MNC',
- /
+ &
