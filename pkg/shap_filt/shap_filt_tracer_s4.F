@@ -1,44 +1,61 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s4.F,v 1.2 2001/05/29 14:01:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s4.F,v 1.3 2002/03/04 01:32:55 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
-
-      SUBROUTINE SHAP_FILT_TRACER_S4( 
-     U           field, 
-     I           myTime, myThid )
-C     /==========================================================\
-C     | S/R SHAP_FILT_TRACER                                     |
-C     | Applies Shapiro filter to tracer field over one XY slice |
-C     | of one tile at a time.                                   |
-C     \==========================================================/
+ 
+CBOP
+C     !ROUTINE: SHAP_FILT_TRACER_S4
+C     !INTERFACE:
+      SUBROUTINE SHAP_FILT_TRACER_S4(
+     U           field, tmpFld,
+     I           kSize, myTime, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SHAP_FILT_TRACER_S4
+C     | o Applies Shapiro filter to tracer field (cell center).
+C     | o use filtering function "S4" = [1 - d_xx^n][1- d_yy^n]
+C     |     with no grid spacing (computational Filter)
+C     *==========================================================*
+C     \ev
+ 
+C     !USES:
       IMPLICIT NONE
-
+ 
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHAP_FILT.h"
-#include "SHAP_FILT_TRACER.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments
-      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     field :: cell-centered 2D field on which filter applies
+C     tmpFld :: working temporary array
+C     kSize :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
+C     myTime :: Current time in simulation
+C     myThid :: Thread number for this instance of SHAP_FILT_TRACER_S4
+      INTEGER kSize
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
       INTEGER myThid
-
+ 
 #ifdef ALLOW_SHAP_FILT
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,K,I,J,N
       _RL tmpGrd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
       IF (nShapT.gt.0) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO J=1,sNy
-            DO I=1,sNx
+          DO K=1,kSize
+           DO J=1-OLy,sNy+Oly
+            DO I=1-Olx,sNx+Olx
              tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
             ENDDO
            ENDDO
@@ -51,11 +68,15 @@ C      d_xx^n tmpFld
 
        DO N=1,nShapT
 
-        _EXCH_XYZ_R8( tmpFld, myThid )
+        IF (kSize.EQ.Nr) THEN
+          _EXCH_XYZ_R8( tmpFld, myThid )
+        ELSE
+          _EXCH_XY_R8( tmpFld, myThid )
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
 
            DO J=1,sNy
             DO I=1,sNx
@@ -79,14 +100,15 @@ C      d_xx^n tmpFld
 
        ENDDO
 
-C      F <-  [1-d_xx^n]F
+C      F <-  [1 - d_xx^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
+         DO K=1,kSize
           DO J=1,sNy
            DO I=1,sNx
-            tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)-tmpFld(i,j,k,bi,bj)
-            field(i,j,k,bi,bj)=tmpFld(i,j,k,bi,bj)
+            field(i,j,k,bi,bj)=field(i,j,k,bi,bj)
+     &              -tmpFld(i,j,k,bi,bj)*deltaTtracer/Shap_Trtau
+            tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -98,11 +120,15 @@ C      d_yy^n tmpFld
 
        DO N=1,nShapT
 
-        _EXCH_XYZ_R8( tmpFld, myThid )
+        IF (kSize.EQ.1) THEN
+          _EXCH_XY_R8( tmpFld, myThid )
+        ELSE
+          _EXCH_XYZ_R8( tmpFld, myThid )
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
 
            DO J=1,sNy
             DO I=1,sNx
@@ -126,20 +152,27 @@ C      d_yy^n tmpFld
 
        ENDDO
 
-C      F <-  [1-d_yy^n]F
+C      F <-  [1 - d_yy^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
+         DO K=1,kSize
           DO J=1,sNy
            DO I=1,sNx
-            field(i,j,k,bi,bj)=field(i,j,k,bi,bj)-tmpFld(i,j,k,bi,bj)
+            field(i,j,k,bi,bj)=field(i,j,k,bi,bj)
+     &              -tmpFld(i,j,k,bi,bj)*deltaTtracer/Shap_Trtau
            ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
-       _EXCH_XYZ_R8( field, myThid )
+        IF (kSize.EQ.Nr) THEN
+          _EXCH_XYZ_R8( field, myThid )
+        ELSEIF (kSize.EQ.1) THEN
+          _EXCH_XY_R8( field, myThid )
+        ELSE
+          STOP 'S/R SHAP_FILT_TRACER_S4: kSize is wrong'
+        ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */

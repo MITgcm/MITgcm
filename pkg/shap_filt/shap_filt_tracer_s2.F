@@ -1,39 +1,57 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.3 2001/06/15 15:14:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.4 2002/03/04 01:32:55 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
-
-      SUBROUTINE SHAP_FILT_TRACER_S2( 
-     U           field, 
-     I           myTime, myThid )
-C     /==========================================================\
-C     | S/R SHAP_FILT_TRACER_S2                                  |
-C     | Applies Shapiro filter to tracer field over one XY slice |
-C     | of one tile at a time.                                   |
-C     \==========================================================/
+ 
+CBOP
+C     !ROUTINE: SHAP_FILT_TRACER_S2
+C     !INTERFACE:
+      SUBROUTINE SHAP_FILT_TRACER_S2(
+     U           field, tmpFld,
+     I           kSize, myTime, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SHAP_FILT_TRACER_S2
+C     | o Applies Shapiro filter to 2D field (cell center).
+C     | o use filtering function "S2" = [1 - (d_xx+d_yy)^n]
+C     | o Options for computational filter (no grid spacing)
+C     |   or physical space filter (with grid spacing) or both.
+C     *==========================================================*
+C     \ev
+ 
+C     !USES:
       IMPLICIT NONE
-
+ 
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHAP_FILT.h"
-#include "SHAP_FILT_TRACER.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments
-      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     field :: cell-centered 2D field on which filter applies
+C     tmpFld :: working temporary array
+C     kSize :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
+C     myTime :: Current time in simulation
+C     myThid :: Thread number for this instance of SHAP_FILT_TRACER_S2
+      INTEGER kSize
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
       INTEGER myThid
-
+ 
 #ifdef ALLOW_SHAP_FILT
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER nShapComput
       INTEGER bi,bj,K,I,J,N
       _RL tmpGrd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
-      IF (nShapT.GT.0) THEN
+      IF (nShapT.gt.0) THEN
 C-------
 C  Apply computational filter ^(nShap-nShapPhys) without grid factor
 C  then apply Physical filter ^nShapPhys  with grid factors 
@@ -42,7 +60,7 @@ C-------
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
            DO J=1-Oly,sNy+Oly
             DO I=1-Olx,sNx+Olx
              tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
@@ -58,11 +76,15 @@ C      ( d_xx +d_yy )^n tmpFld
 C-- Computational Filter 
        DO N=1,nShapComput
 
-        _EXCH_XYZ_R8( tmpFld, myThid )
+        IF (kSize.EQ.Nr) THEN
+          _EXCH_XYZ_R8( tmpFld, myThid )
+        ELSE
+          _EXCH_XY_R8( tmpFld, myThid )
+        ENDIF
  
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
  
            DO J=1,sNy
             DO I=1,sNx
@@ -93,11 +115,15 @@ C      end loop N=1,nShapComput
        DO N=1,nShapTrPhys
 C-- Physical space Filter 
 
-        _EXCH_XYZ_R8( tmpFld, myThid )
+        IF (kSize.EQ.Nr) THEN
+          _EXCH_XYZ_R8( tmpFld, myThid )
+        ELSE
+          _EXCH_XY_R8( tmpFld, myThid )
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
 
            DO J=1,sNy
             DO I=1,sNx
@@ -144,10 +170,10 @@ C-- Physical space Filter
 C      end loop N=1,nShapTrPhys
        ENDDO
 
-C      F <-  [1-(d_xx+d_yy)^n]F
+C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
+         DO K=1,kSize
           DO J=1,sNy
            DO I=1,sNx
             field(i,j,k,bi,bj)=field(i,j,k,bi,bj)
@@ -158,7 +184,13 @@ C      F <-  [1-(d_xx+d_yy)^n]F
         ENDDO
        ENDDO
 
-       _EXCH_XYZ_R8( field, myThid )
+        IF (kSize.EQ.Nr) THEN
+          _EXCH_XYZ_R8( field, myThid )
+        ELSEIF (kSize.EQ.1) THEN
+          _EXCH_XY_R8( field, myThid )
+        ELSE
+          STOP 'S/R SHAP_FILT_TRACER_S4: kSize is wrong'
+        ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */

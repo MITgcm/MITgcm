@@ -1,16 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.2 2001/05/29 14:01:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.3 2002/03/04 01:32:55 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
 
-      SUBROUTINE SHAP_FILT_UV_S2G( 
-     U           uFld, vFld,
-     I           myTime, myThid )
-C     /==========================================================\
-C     | S/R SHAP_FILT_UV_S2                                      |
-C     | Applies Shapiro filter to U,V field over one XY slice    |
-C     | of one tile at a time.                                   |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: SHAP_FILT_UV_S2G
+C     !INTERFACE:
+      SUBROUTINE SHAP_FILT_UV_S2G(
+     U           uFld, vFld, tmpFldU, tmpFldV,
+     I           kSize, myTime, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SHAP_FILT_UV_S2G
+C     | o Applies Shapiro filter to velocity field (u & v).
+C     | o use filtering function "S2" = [1 - (d_xx+d_yy)^n]
+C     |     with grid spacing (physical space filter) ;
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -19,30 +27,42 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHAP_FILT.h"
-#include "SHAP_FILT_UV.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     uFld :: velocity field (U component) on which filter applies
+C     vFld :: velocity field (V component) on which filter applies
+C     tmpFldU :: working temporary array
+C     tmpFldV :: working temporary array
+C     kSize :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
+C     myTime :: Current time in simulation
+C     myThid :: Thread number for this instance of SHAP_FILT_UV_S2G
+      INTEGER kSize
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFldU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFldV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
       INTEGER myThid
 
 #ifdef ALLOW_SHAP_FILT
 
+C     !LOCAL VARIABLES: 
 C     == Local variables ==
-      INTEGER bi,bj,K,I,J,N
+      INTEGER bi,bj,k,i,j,N
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpGrdU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpGrdV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
       IF (nShapUV.gt.0 .AND. Shap_uvtau.GT.0.) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
            DO J=1,sNy
             DO I=1,sNx+1
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
@@ -64,11 +84,15 @@ C    [d_xx+d_yy]^n tmpFld
 
        DO N=1,nShapUV
 
-        CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        IF (kSize.EQ.Nr) THEN
+          CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        ELSE
+          CALL EXCH_UV_XY_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
 
 C    [d_xx+d_yy] tmpFld
            CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
@@ -114,10 +138,10 @@ C    [d_xx+d_yy] tmpFld
 
        ENDDO
 
-C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
+C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
+         DO K=1,kSize
           DO J=1,sNy+1
            DO I=1,sNx+1
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
@@ -130,7 +154,13 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
         ENDDO
        ENDDO
 
-      CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+        IF (kSize.EQ.Nr) THEN
+          CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+        ELSEIF (kSize.EQ.1) THEN
+          CALL EXCH_UV_XY_RL(uFld,vFld,.TRUE.,myThid)
+        ELSE
+          STOP 'S/R SHAP_FILT_UV_S2G: kSize is wrong'
+        ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */
