@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.5 2004/05/07 21:33:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.6 2004/07/12 20:20:03 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -343,6 +343,14 @@ C--   - if esurp > 0 : end
 C--     Return atmospheric fluxes in evpAtm & flxSW (same sign and units):
         evpAtm(i,j) = frwAtm
         flxSW (i,j) = flxAtm(i,j)
+
+#ifdef ATMOSPHERIC_LOADING
+C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
+        sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
+     &                         + iceHeight(i,j,bi,bj)*rhoi
+     &                        )*iceMask(i,j,bi,bj)
+#endif
+
        ENDDO
       ENDDO
 
