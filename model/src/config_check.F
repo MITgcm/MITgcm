@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.6 2003/01/27 20:45:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.7 2003/01/30 00:08:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -184,16 +184,16 @@ C-  check parameter consistency :
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-C- note : not yet implemented 
-      IF (select_rStar.GT.0 .AND. useOBCS ) THEN
-        WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: r* Coordinate not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: in OBC package'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
+C- note : not implemented in checkpoint48b but it's done now (since 01-28-03)
+c     IF (select_rStar.GT.0 .AND. useOBCS ) THEN
+c       WRITE(msgBuf,'(A)') 
+c    &   'CONFIG_CHECK: r* Coordinate not yet implemented'
+c       CALL PRINT_ERROR( msgBuf , 1)
+c       WRITE(msgBuf,'(A)')
+c    &   'CONFIG_CHECK: in OBC package'
+c       CALL PRINT_ERROR( msgBuf , 1)
+c       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+c     ENDIF
 
       IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
         WRITE(msgBuf,'(A)') 
