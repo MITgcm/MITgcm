@@ -1,0 +1,10 @@
+# Zonal Filter parameters
+ &ZONFILT_PARM01
+ zonal_filt_uvStar =.FALSE.,
+ zonal_filt_TrStagg=.FALSE.,
+ zonal_filt_lat=45.,
+ zonal_filt_sinpow=2,
+ zonal_filt_cospow=2,
+ zonal_filt_mode2dx=2,
+ &                                
+

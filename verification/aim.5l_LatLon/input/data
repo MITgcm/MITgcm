@@ -30,7 +30,6 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=1.0,
- zonal_filt_lat=45.0,
  saltAdvScheme=3,
  &
 
