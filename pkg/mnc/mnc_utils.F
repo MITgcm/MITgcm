@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.7 2004/01/27 05:47:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.8 2004/02/26 22:31:58 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -181,6 +181,71 @@ C     Find the vID
       ENDDO
       ind_fv_ids = -1
  10   CONTINUE
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     The purpose of this function is to determine whether the
+C     dimensions (sizes) of a specific variable within the MNC low-level
+C     look-up tables matches the dimensions of a Variable Type defined
+C     within the upper-level CW layer.
+C
+C     YES  ==>  ires > 0
+C     NO   ==>  ires < 0
+
+      SUBROUTINE MNC_COMP_VTYPE_VAR( 
+     I     myThid, 
+     I     ind_vt, 
+     I     indf,
+     I     ind_fv_ids, 
+     O     ires )
+
+      implicit none
+#include "mnc_common.h"
+
+C     Arguments
+      INTEGER  myThid, ind_vt, indf, ind_fv_ids, ires
+
+C     Locals
+      integer      i,k, ind_cw_g, ig,ids,ide,nint
+      character*1  ch
+
+      ires = -1
+
+C     grid index for the internal  representation
+      ig = mnc_fv_ids(indf,ind_fv_ids+2)
+      ids = mnc_f_info(indf,ig+1)
+      ide = mnc_f_info(indf,ig+2)
+      nint = ids - ide + 1
+
+C     GType index for CW
+C       ind_cw_g = mnc_cw_vgind(ind_vt)
+C       IF (nint .NE. mnc_cw_ndim(ind_cw_g)) THEN
+C         RETURN
+C       ENDIF
+C       k = 0
+C       DO i = ids,ide
+C         k = k + 1
+C         indd = mnc_fd_ind(indf,i)
+C         ch = mnc_d_names(indd)(1:1)
+C         cw_len = mnc_cw_ie(k,ind_cw_g) - mnc_cw_is(k,ind_cw_g) + 1
+C         IF (ch .EQ. 'X') THEN
+          
+C         ELSEIF (ch .EQ. 'Y') THEN
+          
+C         ELSE
+          
+C         ENDIF
+        
+C         IF (mnc_fd_ind(indf,i) .NE. cw_len) THEN
+C           RETURN
+C         ENDIF
+C       ENDDO
+
+C     Reaching this point means all tests passed
+      ires = 1
 
       RETURN
       END
