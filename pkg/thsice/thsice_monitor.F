@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.4 2004/09/08 02:07:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.5 2004/12/17 04:59:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,6 +49,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 mon_var
       CHARACTER*2 mon_sufx(0:2)
+      INTEGER k
       _RS yBand(2), locDr(1)
       _RL theMin(2), theMax(2)
       _RL theMean(2), theVar(2), theVol(2)
@@ -65,18 +66,38 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,myTime-deltaTclock)
      &     .OR. myIter.EQ.nIter0 ) THEN
 
-        mon_write_stdout = .TRUE.
+        mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
+        IF ( thSIce_mon_stdio ) mon_write_stdout = .TRUE.
 
-       _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)') '// Begin MONITOR Therm.SeaIce statistics'
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-       _END_MASTER(myThid)
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. thSIce_mon_mnc) THEN
+          DO k = 1,MAX_LEN_MBUF
+            mon_fname(k:k) = ' '
+          ENDDO
+          mon_fname(1:12) = 'monitor_sice'
+          CALL MNC_CW_APPEND_VNAME(
+     &         'iter', '-_-_--__-__t', 0,0, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+          CALL MNC_CW_I_W_S(
+     &        'I',mon_fname,1,1,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+          mon_write_mnc = .TRUE.
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
+        IF (mon_write_stdout) THEN
+         _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(A)')
+     &    '// ======================================================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)') '// Begin MONITOR Therm.SeaIce statistics'
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)')
+     &    '// ======================================================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+         _END_MASTER(myThid)
+        ENDIF
 
         CALL MON_SET_PREF('thSI_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
@@ -201,18 +222,21 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
-       _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)') '// End MONITOR Therm.SeaIce statistics'
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-       _END_MASTER(myThid)
+        IF (mon_write_stdout) THEN
+         _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(A)')
+     &    '// ======================================================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)') '// End MONITOR Therm.SeaIce statistics'
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)')
+     &    '// ======================================================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+         _END_MASTER(myThid)
+        ENDIF
 
         mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
 
       ENDIF
 

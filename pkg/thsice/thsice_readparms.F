@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.5 2004/12/17 04:29:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.6 2004/12/17 04:59:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -65,6 +65,7 @@ C--   Th-Sea-ICE parameter
      &         stressReduction,
      &         thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
 c    &         thSIce_tave_mnc, thSIce_diag_mnc, thSIce_mon_mnc,
+     &                                           thSIce_mon_mnc,
      &         thSIceFract_InitFile, thSIceThick_InitFile,
      &         thSIceSnowH_InitFile, thSIceSnowA_InitFile,
      &         thSIceEnthp_InitFile, thSIceTsurf_InitFile
@@ -175,11 +176,10 @@ C-------
 C-    MNC not yet available in this package => turn off MNC flags for now 
         thSIce_tave_mnc = .FALSE.
         thSIce_diag_mnc = .FALSE.
-        thSIce_mon_mnc  = .FALSE.
 C-------
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_tave_mnc ) thSIce_tave_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive)
+        IF ( .NOT.outputTypesInclusive 
      &       .AND. thSIce_diag_mnc ) thSIce_diag_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_mon_mnc  ) thSIce_mon_stdio  = .FALSE.
