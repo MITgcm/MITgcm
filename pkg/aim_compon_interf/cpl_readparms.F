@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_readparms.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_readparms.F,v 1.3 2004/07/26 20:08:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,7 +68,7 @@ C     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
-      cpl_earlyExpImpCall = .FALSE. 
+      cpl_earlyExpImpCall = .TRUE. 
       cpl_oldPickup = .FALSE. 
       useImportMxlD = .TRUE. 
       useImportSST  = .TRUE. 
