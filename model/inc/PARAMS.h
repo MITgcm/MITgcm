@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.67 2001/12/11 14:54:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.68 2002/02/09 23:38:55 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -173,6 +173,9 @@ C     saltAdvection :: Flag which turns advection of salinit on
 C                     and off.
 C     saltForcing   :: Flag which turns external forcing of salinit on
 C                     and off.
+C     useRealFreshWaterFlux :: if true (=Natural BCS), treats P+R-E flux 
+C                         as a real Fresh Water (=> changes the seal level)
+C                              if false, converts P+R-E to virtual salt flux
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
@@ -209,6 +212,7 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
      & momPressureForcing, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
+     & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping, tr1Stepping,
      & metricTerms, usingSphericalPolarMTerms,
@@ -241,6 +245,7 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
       LOGICAL saltDiffusion
       LOGICAL saltAdvection
       LOGICAL saltForcing
+      LOGICAL useRealFreshWaterFlux
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
@@ -396,6 +401,14 @@ C     externForcingPeriod :: Is the period of which forcing varies (eg. 1 month)
 C     externForcingCycle :: Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
+C     convertFW2Salt :: salinity, used to convert Fresh-Water Flux to Salt Flux
+C                       (use model surface (local) value if set to -1)
+C     temp_EvPrRn :: temperature of Rain & Evap. 
+C     salt_EvPrRn :: salinity of Rain & Evap.
+C     trac_EvPrRn :: tracer concentration in Rain & Evap.
+C        (notes: a) tracer content of Rain/Evap only used if both 
+C                     NonLin_FrSurf & useRealFreshWater are set.
+C                b) use model surface (local) value if set to UNSET_RL)
 C     horiVertRatio      :: Ratio on units in vertical to units in horizontal.
 C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
@@ -424,8 +437,9 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & tauTr1ClimRelax, lambdaTr1ClimRelax,
      & externForcingCycle, externForcingPeriod,
+     & convertFW2Salt, temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
-     & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
+     & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
      & bottomDragLinear,bottomDragQuadratic
 
@@ -485,9 +499,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL recip_rhonil
       _RL rhoConst
       _RL recip_rhoConst
-      _RL specVol_S(Nr)
       _RL tRef(Nr)
-      _RL theta_S(Nr)
       _RL sRef(Nr)
       _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -516,6 +528,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL lambdaTr1ClimRelax
       _RL externForcingCycle
       _RL externForcingPeriod
+      _RL convertFW2Salt
+      _RL temp_EvPrRn
+      _RL salt_EvPrRn
+      _RL trac_EvPrRn 
       _RL horiVertRatio
       _RL recip_horiVertRatio
       _RL ivdc_kappa

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.5 2001/11/08 20:57:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.6 2002/02/09 23:38:55 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -46,9 +46,13 @@ C     hFac_surfC ::  New thickness factor of the surface level
 C                        center (Tracer point)
 C     hFac_surfW ::  idem, West  interface (U point)
 C     hFac_surfS ::  idem, South interface (V point)
+C     PmEpR :: keep the fresh water input (=-EmPmR) of the previous time step
       COMMON /SURF_CHANGE/
-     &     hFac_surfC, hFac_surfW, hFac_surfS
+     &     hFac_surfC, hFac_surfW, hFac_surfS, 
+     &     PmEpR
       _RS  hFac_surfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  PmEpR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 #endif /* NONLIN_FRSURF */
