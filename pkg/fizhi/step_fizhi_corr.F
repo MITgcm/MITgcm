@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.11 2004/08/05 17:06:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.12 2004/08/29 19:39:42 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -38,7 +38,7 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL udyntemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
        _RL vdyntemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
        _RL thdyntemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-       _RL sdyntemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
+       _RL sdyntemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
        _RL uphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL vphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL thphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
