@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.8 2004/07/29 15:21:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.9 2004/07/29 22:49:34 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -117,6 +117,12 @@ C Moist Processes     Frequency
 
 c Set Alarm Clocks
 c ----------------
+
+      ndlw = 000730
+      ndsw = 000730
+      ndmoist = 000730
+      ndturb = 000730
+
       call set_alarm ( 'radsw',nymdb,nhmsb,ndsw    )
       call set_alarm ( 'radlw',nymdb,nhmsb,ndlw    )
       call set_alarm ( 'turb' ,nymdb,nhmsb,ndturb  )

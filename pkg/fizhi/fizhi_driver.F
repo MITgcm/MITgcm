@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.19 2004/07/29 15:21:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.20 2004/07/29 22:49:34 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -152,6 +152,7 @@ C **********************************************************************
 C SHORT WAVE RADIATION
 C ====================
       IF ( alarm('radsw') ) THEN
+      print *,' Time to do sw '
 
       call swrio ( nymd,nhms,bi,bj,ndsw,myid,istrip,npcs,
      .   low_level,mid_level,im,jm,lm,
@@ -167,6 +168,7 @@ C ====================
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
+      print *,' Time to do lw '
 
 c Set Reference Ground Temperature
 c --------------------------------
@@ -190,6 +192,65 @@ c --------------------------------
 C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
+
+      print *,' Time to do turb '
+      if(bi.eq.1 .and. 2.eq.1)then
+      print *,' In fizhi driver, before turb - bi = ',bi
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = radswt(i,j)
+      enddo
+      enddo
+      print *,' radswt ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = radswg(i,j)
+      enddo
+      enddo
+      print *,' radswg ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = st4(i,j)
+      enddo
+      enddo
+      print *,' st4 ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = dst4(i,j)
+      enddo
+      enddo
+      print *,' dst4 ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = radlwg(i,j)
+      enddo
+      enddo
+      print *,' radlwg ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = fdifpar(i,j)
+      enddo
+      enddo
+      print *,' fdifpar ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = fdirpar(i,j)
+      enddo
+      enddo
+      print *,' fdirpar ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = tgz(i,j)
+      enddo
+      enddo
+      print *,' tgz ',tempij
+      do j = 1,jm
+      do i = 1,im
+       tempij(i,j) = tg0(i,j)
+      enddo
+      enddo
+      print *,' tg0 ',tempij
+      endif
 
       call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
      .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
@@ -217,6 +278,7 @@ c    .   imglobal)
 C MOIST PROCESSES
 C ===============
       if ( alarm('moist') ) then
+      print *,' Time to do moist '
       call moistio (ndmoist,istrip,npcs,
      .    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
      .    p,pl,ple,dpres,pkht,pkl,t,q,bi,bj,ntracer,ptracer,qq,

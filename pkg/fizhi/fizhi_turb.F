@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.19 2004/07/29 15:21:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.20 2004/07/29 22:49:34 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -480,10 +480,10 @@ c**********************************************************************
        call strip2tile(plze,igrd,pe,nchp,ijall,istrip,nlay+1,nn)
        call strip2tile(pkz,igrd,pk,nchp,ijall,istrip,nlay,nn)
        call strip2tile(pkht,igrd,pke,nchp,ijall,istrip,nlay+1,nn)
-       do nt = 1,ntracers-ptracers
-       call strip2tile(qz(1,1,1,ptracers+nt),igrd,tracers(1,1,nt),nchp,
-     1                                             ijall,istrip,nlay,nn)
-       enddo
+c      do nt = 1,ntracers-ptracers
+c      call strip2tile(qz(1,1,1,ptracers+nt),igrd,tracers(1,1,nt),nchp,
+c    1                                             ijall,istrip,nlay,nn)
+c      enddo
 
        call stripit  (z0,stz0,nchptot,nchp,istrip,1,nn)
        call stripit  (tground,th(1,nlay+1),nchptot,nchp,istrip,1,nn)
@@ -573,11 +573,11 @@ c --------------------------------------------------------------------
 
 c value of tracers at the ground
 c ------------------------------
-      do nt = 1,ntracers-ptracers
-       do i = 1,istrip
-        tracers(i,nlay+1,nt) = 0.
-       enddo
-      enddo
+c     do nt = 1,ntracers-ptracers
+C      do i = 1,istrip
+C       tracers(i,nlay+1,nt) = 0.
+C      enddo
+C     enddo
 
 c compute virtual potential temperatures
 c --------------------------------------
@@ -621,6 +621,26 @@ c ------------------------------------------------------------------
      1                      qdiag(1,1,idtsrf,bi,bj),ijall,1,nn,.false.)
       endif
 
+
+      if(2.eq.1)then
+      print *,' In turbio, Just before trbflx for strip ',nn
+      print *,' ntracers ',ntracers,' ptracers ',ptracers
+      print *,'dttrb,itrtrb,rmu,edle ',dttrb,' ',itrtrb,' ',rmu,' ',edle
+      print *,' qbeg, tprof ',qbeg,' ',tprof
+      print *,' th ',th
+      print *,' thv ',thv
+      print *,' sh ',sh
+      print *,' u ',u
+      print *,' v ',v
+      print *,' p ',p
+      print *,' pe ',pe
+      print *,' pk ',pk
+      print *,' pke ',pke
+      print *,' dpstr ',dpstr
+      print *,' stwatr ',stwatr
+      print *,' stz0 ',stz0
+      endif
+
 c call trbflx
 c -----------
       call trbflx(nn,th,thv,sh,u,v,qq,p,pe,pk,pke,dpstr,stwatr,stz0,
@@ -631,6 +651,24 @@ c -----------
      5 dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
+
+      if(2.eq.1)then
+      print *,' In turbio, Just after trbflx for strip ',nn
+      print *,' stuflux ',stuflux
+      print *,' stvflux ',stvflux
+      print *,' dshdthg ',dshdthg
+      print *,' dshdshg ',dshdshg
+      print *,' dthdthg ',dthdthg
+      print *,' dthdshg ',dthdshg
+      print *,' eturb ',eturb
+      print *,' dedqa ',dedqa
+      print *,' dedtc ',dedtc
+      print *,' hsturb ',hsturb
+      print *,' dhsdqa ',dhsdqa
+      print *,' dhsdtc ',dhsdtc
+      print *,' transth ',transth
+      print *,' transsh ',transsh
+      endif
 
       call pastit (qq,tke,istrip,nchp,nchptot,nlay,nn)
       call pastit (ctsave,ctmt,istrip,nchp,nchptot,1,nn)
@@ -765,31 +803,31 @@ c**********************************************************************
       endif
 c**********************************************************************
 
-      if(nland.gt.0)then
-       call tile (
-     I   nland, timstp, types, rainls, raincon,  newsnow,  wspeed,
-     I   eturb,  dedqa,  dedtc,  hsturb, dhsdqa, dhsdtc,
-     I   tmpnlay, sh(1,nlay), cd, cosz, pardr, pardf,
-     I   swnet,  hlwdwn, psurf, laistrip, grnstrip,  z2str,
-     I   scatstr, rs1str, rs2str, rdcstr, u2fstr,
-     I   shgstr, dqsdtstr, alwrad, blwrad,
-     U   tc, td, qa, swet1, swet2, swet3, capacity, snowdepth,
-     O   evap, shflux, runoff, bomb,
-     O   eint, esoi, eveg, esno, smelt, hlatn,
-     O   hlwup, gdrain, runsrf, fwsoil,
-     O   strdg1, strdg2, strdg3, strdg4,
-     O   strdg5, strdg6, strdg7, strdg8, strdg9)
-      endif
+c     if(nland.gt.0)then
+c      call tile (
+c    I   nland, timstp, types, rainls, raincon,  newsnow,  wspeed,
+c    I   eturb,  dedqa,  dedtc,  hsturb, dhsdqa, dhsdtc,
+c    I   tmpnlay, sh(1,nlay), cd, cosz, pardr, pardf,
+c    I   swnet,  hlwdwn, psurf, laistrip, grnstrip,  z2str,
+c    I   scatstr, rs1str, rs2str, rdcstr, u2fstr,
+c    I   shgstr, dqsdtstr, alwrad, blwrad,
+c    U   tc, td, qa, swet1, swet2, swet3, capacity, snowdepth,
+c    O   evap, shflux, runoff, bomb,
+c    O   eint, esoi, eveg, esno, smelt, hlatn,
+c    O   hlwup, gdrain, runsrf, fwsoil,
+c    O   strdg1, strdg2, strdg3, strdg4,
+c    O   strdg5, strdg6, strdg7, strdg8, strdg9)
+c     endif
 
-      if( nice.gt.0 ) then
-       call seaice ( nocean, timstp,     hice,
-     .               eturb(nland+1),    dedtc(nland+1),
-     .              hsturb(nland+1),   dhsdtc(nland+1), 
-     .             qicestr(nland+1), dqicestr(nland+1), 
-     .               swnet(nland+1),  lwstrip(nland+1), blwrad(nland+1),
-     .          pke(nland+1,nlay+1),    icest(nland+1),
-     .                  tc(nland+1),       qa(nland+1) )
-      endif
+c     if( nice.gt.0 ) then
+c      call seaice ( nocean, timstp,     hice,
+c    .               eturb(nland+1),    dedtc(nland+1),
+c    .              hsturb(nland+1),   dhsdtc(nland+1), 
+c    .             qicestr(nland+1), dqicestr(nland+1), 
+c    .               swnet(nland+1),  lwstrip(nland+1), blwrad(nland+1),
+c    .          pke(nland+1,nlay+1),    icest(nland+1),
+c    .                  tc(nland+1),       qa(nland+1) )
+c     endif
 
 c***********************************************************************
 c   diagnostics: fill arrays for lsm output fields
@@ -920,6 +958,11 @@ c  Now update the theta and sh profiles with the new ground temperature
 c**********************************************************************
 
       do i =1,istrip
+       qa(i) = qa(i) + 0.00001
+       tc(i) = tc(i) + 0.001
+      enddo
+
+      do i =1,istrip
       th(i,nlay+1) = tc(i) / pke(i,nlay+1)
       enddo
       do L = 1,nlay
@@ -975,15 +1018,15 @@ c ----------------
       enddo
       call pastit (tends,dqmsc(1,l,1),istrip,nchp,nchptot,1,nn)
 
-      do nt = 1,ntracers-ptracers
-       call strip2tile(qz(1,1,L,ptracers+nt),igrd,tmpstrip,nchp,
-     1                                             ijall,istrip,1,nn)
-       do i =1,istrip
-        tends(i) = ( tracers(i,L,nt)-tmpstrip(i) )
-       enddo
-       call pastit(tends,dqmsc(1,L,ptracers+nt),istrip,nchp,
-     .                                     nchptot,1,nn)
-      enddo
+c     do nt = 1,ntracers-ptracers
+c      call strip2tile(qz(1,1,L,ptracers+nt),igrd,tmpstrip,nchp,
+c    1                                             ijall,istrip,1,nn)
+c      do i =1,istrip
+c       tends(i) = ( tracers(i,L,nt)-tmpstrip(i) )
+c      enddo
+c      call pastit(tends,dqmsc(1,L,ptracers+nt),istrip,nchp,
+c    .                                     nchptot,1,nn)
+c     enddo
 
       enddo
 
@@ -1477,8 +1520,8 @@ C    Z0            -         SURFACE ROUGHNESS
 C    tracers       -         array of passive tracers 
 C    ntrace        -         number of tracers to be diffused
 C    ntracedim     -         outer dimension of tracers array
-C    DTAU          -         TIME CHANGE PER ITERATION OF TRBLFX
-C    ITRTRB        -         NUMBER OF ITERATIONS OF TRBLFX
+C    DTAU          -         TIME CHANGE PER ITERATION OF TRBFLX
+C    ITRTRB        -         NUMBER OF ITERATIONS OF TRBFLX
 C    KMBG          -         BACKGROUND VALUE OF MOMENTUM TRANSFER COEF
 C    KHBG          -         BACKGROUND VALUE OF HEAT TRANSFER COEF
 C    NLEV          -         NUMBER OF ATMOSPHERIC LEVELS TO CALCULATE
@@ -2292,13 +2335,13 @@ C
       rhokdz(i,nlev) = 0.0      
       enddo
 
-      do nt = 1,ntrace
-      do  i = 1,irun
-      tracers(i,nlev+1,nt) = tracers(i,nlev,nt)
-      enddo
-      CALL TRBDIF(tracers(1,1,nt),DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,
-     .                                         NLEV,4,0. _d 0,irun)
-      enddo
+c     do nt = 1,ntrace
+c     do  i = 1,irun
+c     tracers(i,nlev+1,nt) = tracers(i,nlev,nt)
+c     enddo
+c     CALL TRBDIF(tracers(1,1,nt),DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,
+c    .                                         NLEV,4,0. _d 0,irun)
+c     enddo
 C
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: U AND V
 C

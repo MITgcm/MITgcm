@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.29 2004/07/29 15:21:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.30 2004/07/29 22:49:34 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -139,9 +139,9 @@ C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
 
       if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
-       if(myid.eq.1) print *,' nhms, nhms0 ',nhms,' ',nhms0
-       if(myid.eq.1) print *,' nymd, nymd0 ',nymd,' ',nymd0
+       _BEGIN_MASTER(myid)
        if(myid.eq.1) print *,' Initializing fizhi arrays '
+       _END_MASTER(myid)
        imstturblw = 0
        imstturbsw = 0
        iras = 0
@@ -226,13 +226,112 @@ C compute pressures - all pressure are converted here to hPa
        pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
        dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
        ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
-       pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
+       if (ple(i,j,L,bi,bj).gt.0.) then
+        pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
+       else
+        pkle(i,j,L,bi,bj) = 0.
+       endif
       enddo
       enddo
       enddo
 
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
+
+      if(bi.eq.1)then
+      print *,' In do fizhi, before fizhi driver - bi = ',bi
+      do L = 1,Nrphys+1
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = pephy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' pephy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = u(i,j,L)
+       enddo
+       enddo
+       print *,' u at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = v(i,j,L)
+       enddo
+       enddo
+       print *,' v at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = t(i,j,L)
+       enddo
+       enddo
+       print *,' t at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = q(i,j,L,1)
+       enddo
+       enddo
+       print *,' q at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = pl(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' pl at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys+1
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = ple(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' ple at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = pkl(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' pkl at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys+1
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = pkle(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' pkle at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = dpres(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' dpres at level ',l,' ',tempij
+      enddo
+      do j = jm1,jm2
+      do i = im1,im2
+       tempij(i,j) = tgz(i,j,bi,bj)
+      enddo
+      enddo
+      print *,' tgz ',tempij
+
+      print *,' Just before fizhi driver call '
+
+      endif
+
+      
 
       call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
      . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
@@ -269,7 +368,8 @@ C compute pressures - all pressure are converted here to hPa
 
       endif
 
-      print *,' In do fizhi, bi = ',bi
+      if(bi.eq.1)then
+      print *,' In do fizhi, after fizhi driver - bi = ',bi
       do L = 1,Nrphys
        do j = jm1,jm2
        do i = im1,im2
@@ -346,13 +446,48 @@ C compute pressures - all pressure are converted here to hPa
       do L = 1,Nrphys
        do j = jm1,jm2
        do i = im1,im2
+        tempij(i,j) = lwdt(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' lwdt itself at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = dlwdtg(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' dlwdtg at level ',l,' ',tempij
+      enddo
+      do j = jm1,jm2
+      do i = im1,im2
+       tempij(i,j) = tg0(i,j,bi,bj)
+      enddo
+      enddo
+      print *,' tg0 ',tempij
+      do j = jm1,jm2
+      do i = im1,im2
+       tempij(i,j) = tgz(i,j,bi,bj)
+      enddo
+      enddo
+      print *,' tgz ',tempij
+      do j = jm1,jm2
+      do i = im1,im2
+       tempij(i,j) = p(i,j,bi,bj)
+      enddo
+      enddo
+      print *,' p ',tempij
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
         tempij(i,j) = (lwdt(i,j,L,bi,bj)+
      .         dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)))
      .                 *p0kappa/p(i,j,bi,bj)
        enddo
        enddo
-       print *,' lwdt at level ',l,' ',tempij
+       print *,' net lwdt at level ',l,' ',tempij
       enddo
+      endif
 
       do L = 1,Nrphys
       do j = jm1,jm2
