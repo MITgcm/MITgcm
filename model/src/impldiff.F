@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.2 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.3 1998/06/10 16:05:39 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -7,7 +7,7 @@ C     | S/R IMPLDIFF                                             |
 C     | o Step model fields forward in time                      |
 C     \==========================================================/
       SUBROUTINE IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                     KappaZT,
+     I                     KappaZT,KappaZS,
      I                     myThid )
       implicit none
 ! Common
@@ -19,6 +19,7 @@ C     \==========================================================/
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL KappaZT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL KappaZS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
       INTEGER myThid
 C     == Local variables ==
       INTEGER i,j,k
@@ -28,6 +29,24 @@ C     == Local variables ==
       _RL ckm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+
+C ***************************************************************
+C *****************                              ****************
+C *****************           N O T E            ****************
+C *****************                              ****************
+C ***************************************************************
+C
+C The implicit diffusion of SALT currently uses the diffusivity
+C of the THETA.
+C                  ie. KappaZS is ignored.
+C
+C This is only a temporary situation. We appreciate your
+C patience and understanding.
+C
+C                              Signed,  The Management.
+C
+C ***************************************************************
+C ***************************************************************
 
       IF (Nz.GT.1) THEN		! Only need do anything if Nz>1
 C Beginning of forward sweep (top level)
@@ -39,6 +58,7 @@ C Beginning of forward sweep (top level)
          bet(i,j)=0.
          IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
          theta(i,j,1,bi,bj)=theta(i,j,1,bi,bj)*bet(i,j)
+         salt(i,j,1,bi,bj)=salt(i,j,1,bi,bj)*bet(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -62,6 +82,8 @@ C Middle of forward sweep
           IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
           theta(i,j,k,bi,bj)=(theta(i,j,k,bi,bj)
      &       -a(i,j)*theta(i,j,k-1,bi,bj))*bet(i,j)
+          salt(i,j,k,bi,bj)=(salt(i,j,k,bi,bj)
+     &       -a(i,j)*salt(i,j,k-1,bi,bj))*bet(i,j)
          ENDDO
         ENDDO
        ENDDO
@@ -83,6 +105,8 @@ C End of forward sweep (bottom level)
          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
          theta(i,j,Nz,bi,bj)=(theta(i,j,Nz,bi,bj)
      &      -a(i,j)*theta(i,j,Nz-1,bi,bj))*bet(i,j)
+         salt(i,j,Nz,bi,bj)=(salt(i,j,Nz,bi,bj)
+     &      -a(i,j)*salt(i,j,Nz-1,bi,bj))*bet(i,j)
         ENDDO
        ENDDO
 C Backward sweep
@@ -91,6 +115,8 @@ C Backward sweep
          DO i=iMin,iMax
           theta(i,j,k,bi,bj)=theta(i,j,k,bi,bj)
      &              -gam(i,j,k+1)*theta(i,j,k+1,bi,bj)
+          salt(i,j,k,bi,bj)=salt(i,j,k,bi,bj)
+     &              -gam(i,j,k+1)*salt(i,j,k+1,bi,bj)
          ENDDO
         ENDDO
        ENDDO

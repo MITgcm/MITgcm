@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.17 1998/06/10 01:44:03 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.18 1998/06/10 16:05:39 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -95,6 +95,7 @@ C                          into fVerTerm
       _RL K33   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaZT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL KappaZS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -313,7 +314,7 @@ C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
-     O        KappaZT,
+     O        KappaZT,KappaZS,
      I        myThid)
 
 C--      Calculate accelerations in the momentum equations
@@ -336,12 +337,14 @@ C--      Calculate active tracer tendencies
      U         aTerm,xTerm,fZon,fMer,fVerT,
      I         myThid)
          ENDIF
-Cdbg     CALL CALC_GS(
-Cdbg I        bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
-Cdbg I        xA,yA,uTrans,vTrans,wTrans,maskUp,
-Cdbg I        K13,K23,K33,KapGM,
-Cdbg U        aTerm,xTerm,fZon,fMer,fVerS,
-Cdbg I        myThid)
+         IF ( saltStepping ) THEN
+          CALL CALC_GS(
+     I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
+     I         xA,yA,uTrans,vTrans,wTrans,maskUp,
+     I         K13,K23,KappaZS,KapGM,
+     U         aTerm,xTerm,fZon,fMer,fVerS,
+     I         myThid)
+         ENDIF
 
 C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(
@@ -359,29 +362,33 @@ C--      Diagnose barotropic divergence of predicted fields
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN
          CALL IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                  KappaZT,
+     I                  KappaZT,KappaZS,
      I                  myThid )
         ENDIF
  
        ENDDO
       ENDDO
 
-C     write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
-C    &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
-C     write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,:,:,:)),
-C    &                           maxval(uVel(1:sNx,1:sNy,:,:,:))
-C     write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,:,:,:)),
-C    &                           maxval(vVel(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
+     &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
+      write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(uVel(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(vVel(1:sNx,1:sNy,:,:,:))
 cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
 cblk &                           maxval(K13(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
 cblk &                           maxval(K23(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
 cblk &                           maxval(K33(1:sNx,1:sNy,:))
-C     write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
-C    &                           maxval(gT(1:sNx,1:sNy,:,:,:))
-C     write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
-C    &                           maxval(Theta(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(gT(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(Theta(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: gS ',minval(gS(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(gS(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(salt(1:sNx,1:sNy,:,:,:))
 cblk  write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil)),
 cblk &                           maxval(pH/(Gravity*Rhonil))
 

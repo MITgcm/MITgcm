@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.16 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.17 1998/06/10 16:05:39 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -110,6 +110,7 @@ C     implicitFreeSurface - Set to true to use implcit free surface
 C     rigidLid            - Set to true to use rigid lid
 C     momStepping   - Turns momentum equation time-stepping off
 C     tempStepping  - Turns temperature equation time-stepping off
+C     saltStepping  - Turns salinity equation time-stepping off
 C     useConstantF  - Coriolis parameter set to f0
 C     useBetaPlaneF - Coriolis parameter set to f0 + beta.y
 C     useSphereF    - Coriolis parameter set to 2.omega.sin(phi)
@@ -118,7 +119,8 @@ C     implicitDiffusion - Turns implicit vertical diffusion on
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicitFreeSurface, rigidLid, momStepping, tempStepping,
+     & implicitFreeSurface, rigidLid,
+     & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion
@@ -140,6 +142,7 @@ C     implicitDiffusion - Turns implicit vertical diffusion on
       LOGICAL rigidLid
       LOGICAL momStepping
       LOGICAL tempStepping
+      LOGICAL saltStepping
       LOGICAL metricTerms
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF
