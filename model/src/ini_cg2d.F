@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.32 2001/03/08 20:49:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.33 2001/03/09 20:42:56 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -65,12 +65,13 @@ C--
          ENDDO
         ENDDO
       ELSE
+C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1-Oly,sNy+Oly
            DO I=1-Olx,sNx+Olx
-             Bo_surf(I,J,bi,bj) = gravity
-             recip_Bo(I,J,bi,bj) = recip_Gravity
+             Bo_surf(I,J,bi,bj) = gBaro
+             recip_Bo(I,J,bi,bj) = 1. _d 0 / gBaro
            ENDDO
           ENDDO
          ENDDO
