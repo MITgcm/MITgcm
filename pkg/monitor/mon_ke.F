@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.3 2001/06/04 14:25:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.4 2001/06/06 14:50:23 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,10 +55,10 @@ C     === Local variables ====
       IF (tmpVal.NE.0.) theMean=theMean*tmpVal
 
       _BEGIN_MASTER( myThid )
-      WRITE(*,'(A,24x,A,1PE22.14)')
-     &      'MON_KE: ','  max=',theMax
-      WRITE(*,'(A,24x,A,1PE22.14)')
-     &      'MON_KE: ',' mean=',theMean
+      WRITE(*,'(A,29x,A,1PE22.14)')
+     &      'MON_KE: ',' KE max=',theMax
+      WRITE(*,'(A,29x,A,1PE22.14)')
+     &      'MON_KE: ','KE mean=',theMean
       _END_MASTER( )
 
       RETURN
