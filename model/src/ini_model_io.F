@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.9 2004/10/07 21:52:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.10 2004/10/07 22:16:39 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -204,6 +204,8 @@ C     &     'potential_temperature', myThid)
       CALL MNC_CW_ADD_VNAME('fU', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('zV', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('zU', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('KEx','Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('KEy','Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('Ds', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('Dt', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('Du', 'Cen_xy_Hn__-__t', 0,0, myThid)
@@ -211,7 +213,7 @@ C     &     'potential_temperature', myThid)
       CALL MNC_CW_ADD_VNAME('Z3', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('W3', 'Cen_xy_Hn__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('KE', 'Cen_xy_Hn__-__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('D', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('D',  'Cen_xy_Hn__-__t', 0,0, myThid)
 
 #ifdef ALLOW_AUTODIFF_MONITOR
       CALL AUTODIFF_INI_MODEL_IO( myThid )
