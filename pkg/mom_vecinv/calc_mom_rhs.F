@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/calc_mom_rhs.F,v 1.3 2001/06/27 19:28:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/calc_mom_rhs.F,v 1.4 2001/07/31 20:02:24 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,7 +55,6 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 C     == Local variables ==
       _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vrF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -126,7 +125,6 @@ C     Initialise intermediate terms
        DO I=1-OLx,sNx+OLx
         aF(i,j)   = 0.
         vF(i,j)   = 0.
-        v4F(i,j)  = 0.
         vrF(i,j)  = 0.
         uCf(i,j)   = 0.
         vCf(i,j)   = 0.
@@ -279,7 +277,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_U_SIDEDRAG(bi,bj,k,uFld,v4F,hFacZ,vF,myThid)
+       CALL MOM_U_SIDEDRAG(bi,bj,k,uFld,del2u,hFacZ,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+vF(i,j)
@@ -362,7 +360,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_V_SIDEDRAG(bi,bj,k,vFld,v4F,hFacZ,vF,myThid)
+       CALL MOM_V_SIDEDRAG(bi,bj,k,vFld,del2v,hFacZ,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vF(i,j)
