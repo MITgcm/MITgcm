@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.293 2004/05/14 16:31:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.294 2004/05/14 17:43:06 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o created pkg/mom_common in preparation for variable viscosity code
+o renamed and split ini_mnc_io
 o pkg/land: only liquid water can diffuse or run-off
 o AIM using land: soil wetness availability account for snow
 o added printMapIncludesZeros to EEPARMS namelist

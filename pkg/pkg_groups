@@ -1,5 +1,5 @@
 #
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.7 2004/05/05 15:40:33 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.8 2004/05/14 17:43:11 adcroft Exp $
 #
 #  This is the package "groups" definition file where groups of packages
 #  are defined so they can be conveniently substituted.
@@ -14,8 +14,8 @@
 #EH3
 #EH3  gfd : mom_fluxform mom_vecinv generic_advdiff debug mdsio mnc rw monitor
 
-gfd : mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor
+gfd : mom_common mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor
 
-oceanic : gfd gmredi kpp
+oceanic : gfd gmredi kpp timeave
 
 atmospheric : gfd timeave shap_filt

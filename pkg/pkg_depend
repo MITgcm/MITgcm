@@ -34,6 +34,8 @@ generic_advdiff
 gmredi
 
 #  Known dependencies
+mom_fluxform	+mom_common
+mom_vecinv	+mom_common
 shap_filt	+mom_vecinv
 seaice		-thsice
 thsice		-seaice

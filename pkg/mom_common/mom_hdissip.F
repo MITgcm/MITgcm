@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_hdissip.F,v 1.1 2001/09/06 14:23:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 
       SUBROUTINE MOM_HDISSIP(
      I        bi,bj,k,

@@ -1,36 +1,55 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_v_sidedrag.F,v 1.3 2004/02/08 01:08:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_V_SIDEDRAG
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_SIDEDRAG(
      I        bi,bj,k,
      I        vFld, del2v, hFacZ,
      O        vDragTerms,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate side drag terms for V eqn
-C       - is not vector invariant ...
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the drag terms due to the no-slip condition on viscous stresses:
+C \begin{equation*}
+C G^v_{drag} = - \frac{2}{\Delta x_v} (A_h v - A_4 \nabla^2 v)
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uvld                 :: meridional flow
+C  del2v                :: Laplacian of meridional flow
+C  hFacZ                :: fractional open water at vorticity points
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vDragTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  vDragTerms           :: drag term
+      _RL vDragTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  hFacZClosedE         :: fractional open water to east
+C  hFacZClosedW         :: fractional open water to west
       INTEGER I,J
       _RS hFacZClosedE,hFacZClosedW
+CEOP
 
 C     - Laplacian  and bi-harmonic terms
       DO j=1-Oly,sNy+Oly-1

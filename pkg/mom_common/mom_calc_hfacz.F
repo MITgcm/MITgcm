@@ -1,31 +1,43 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_calc_hfacz.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_CALC_HFACZ
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CALC_HFACZ(
      I        bi,bj,k,
      O        hFacZ,r_hFacZ,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate Kinetic Energy, KE, with units (m/s)^2
-C       - assumes hydrostatic formulation only
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the fractional thickness at vorticity points
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  myThid               :: thread number
       INTEGER bi,bj,k
-      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hFacZOpen
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  hFacZ                :: fractional thickness at vorticity points
+C  r_hFacZ              :: reciprocal
+      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER I,J
+      _RL hFacZOpen
+CEOP
 
 C--   Calculate open water fraction at vorticity points
 
