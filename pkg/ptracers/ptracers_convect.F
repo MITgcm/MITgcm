@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.2 2003/12/11 03:19:02 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,7 +44,7 @@ C Loop over tracers
 
        CALL CONVECTIVELY_MIXTRACER(
      I         bi,bj,k,weightA,weightB,
-     U         pTracer(1-Olx,1-Oly,1,bi,bj,iTracer),
+     U         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      I         myThid)
 
 C End of tracer loop
