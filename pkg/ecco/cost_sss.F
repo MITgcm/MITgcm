@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -111,12 +111,6 @@ c--   Read tiled data.
         ilsalt = ilnblnk( sbarfile )
         write(fnamesalt(1:80),'(2a,i10.10)')
      &    sbarfile(1:ilsalt),'.',optimcycle
-      else
-        print*
-        print*,' cost_sss: optimcycle has a wrong value.'
-        print*,'           optimcycle = ',optimcycle
-        print*
-        stop   '  ... stopped in cost_sss.'
       endif
 
       fcthread_sss = 0. _d 0

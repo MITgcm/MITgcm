@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.1 2003/11/06 22:10:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -127,7 +127,9 @@ c--     Read time averages and the monthly mean data.
      &          optimcycle, mythid
      &   , xx_tbar_mean_dummy )
   
-        call cost_readargot( irec, mythid )
+cph        call cost_readargot( irec, mythid )
+        call mdsreadfield( argotfile, cost_iprec, 'RL', nr, argotobs,
+     &                    irec, mythid)
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi

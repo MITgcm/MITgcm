@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -110,14 +110,8 @@ c--   Read state record from global file.
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)') tbarfile(1:ilu),'.',
-     &                                   optimcycle
-      else
-        print*
-        print*,' cost_CTDT: optimcycle has a wrong value.'
-        print*,'                 optimcycle = ',optimcycle
-        print*
-        stop   '  ... stopped in cost_CTDT.'
+        write(fnametheta(1:80),'(2a,i10.10)') 
+     &       tbarfile(1:ilu), '.', optimcycle
       endif
       
       fcthread_ctdt = 0. _d 0

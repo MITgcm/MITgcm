@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -125,12 +125,6 @@ c--   Read tiled data.
         ilctdtclim = ilnblnk( tbarfile )
         write(fnametheta(1:80),'(2a,i10.10)')
      &    tbarfile(1:ilctdtclim),'.',optimcycle
-      else
-        print*
-        print*,' cost_Ctdtclim: optimcycle has a wrong value.'
-        print*,'             optimcycle = ',optimcycle
-        print*
-        stop   '  ... stopped in cost_Ctdtclim.'
       endif
 
       fcthread = 0. _d 0
