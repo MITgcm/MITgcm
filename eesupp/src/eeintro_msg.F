@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.6 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.7 2001/09/27 18:13:40 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -16,7 +16,7 @@ C     | o Write basic WRAPPER introductory message.
 C     *==========================================================
 C     | This routine could be customised for different platforms.
 C     | Output includes which checkpoint of the code is running.
-C     | The routine doesn't currently report the user id or      
+C     | The routine doesnt currently report the user id or      
 C     | machine name correctly.                                  
 C     *==========================================================
 

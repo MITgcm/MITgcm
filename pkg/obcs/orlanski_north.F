@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_north.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_north.F,v 1.3 2001/09/27 18:13:13 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -24,7 +24,7 @@ C     === Global variables ===
 #include "OBCS.h"
 #include "ORLANSKI.h"
 
-C SPK 6/2/00: Added radiative OBC's for salinity. 
+C SPK 6/2/00: Added radiative OBCs for salinity. 
 C SPK 6/6/00: Changed calculation of OB*w. When K=1, the 
 C             upstream value is used. For example on the eastern OB:
 C                IF (K.EQ.1) THEN
@@ -38,7 +38,7 @@ C                (non-dimensional) phase speed must be <0.5
 C             3) (Sonya Legg) Changed application of uVel and vVel.
 C                uVel on the western OB is actually applied at I_obc+1 
 C                while vVel on the southern OB is applied at J_obc+1.
-C             4) (Sonya Legg) Added templates for forced OB's.
+C             4) (Sonya Legg) Added templates for forced OBs.
 C
 C SPK 7/17/00: Non-uniform resolution is now taken into account in diagnosing
 C              phase speeds and time-stepping OB values. CL is still the
@@ -87,8 +87,8 @@ C     == Local variables ==
       /* cvelTimeScale is averaging period for phase speed in sec. */
 
       fracCVEL = deltaT/cvelTimeScale /* fraction of new phase speed used*/
-      f1 = fracCVEL /* don't change this. Set cvelTimeScale */
-      f2 = 1.0-fracCVEL   /* don't change this. set cvelTimeScale */
+      f1 = fracCVEL /* dont change this. Set cvelTimeScale */
+      f2 = 1.0-fracCVEL   /* dont change this. set cvelTimeScale */
 
 C     Northern OB (Orlanski Radiation Condition)
        DO K=1,Nr

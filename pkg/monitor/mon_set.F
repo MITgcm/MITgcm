@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/Attic/mon_set.F,v 1.2 2001/06/18 17:55:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/Attic/mon_set.F,v 1.3 2001/09/27 18:11:59 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,7 +21,7 @@ C     myThid - Instance number of this call to monitor
       INTEGER unit
       INTEGER myThid
 
-C     Don't change before everyone is ready
+C     Dont change before everyone is ready
       CALL BAR2( myThid )
 
 C     Set monitor I/O unit
@@ -60,7 +60,7 @@ C     IL     - String length
       INTEGER I0, I1
       INTEGER IL
 
-C     Don't change before everyone is ready
+C     Dont change before everyone is ready
       CALL BAR2( myThid )
 
 C     Set monitor I/O unit

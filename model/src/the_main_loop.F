@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.18 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.19 2001/09/27 18:15:58 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -235,7 +235,7 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
       if (nchklev_0 .lt. nTimeSteps) then
         print*
         print*, ' the_main_loop: TAMC checkpointing parameter ',
-     &       nchklev_0 = ',       nchklev_0
+     &       'nchklev_0 = ',       nchklev_0
         print*, '                 not consistent with nTimeSteps = ', 
      &       nTimeSteps
         stop    ' ... stopped in the_main_loop.'
