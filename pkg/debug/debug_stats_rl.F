@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.1 2001/06/06 14:55:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.2 2001/11/08 16:25:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,7 +32,7 @@ C     === Local variables ====
       _RL theMean
       _RL theSD
 
-      CALL MON_STATS_RL(
+      CALL DEBUG_FLD_STATS_RL(
      I                myNr, arr,
      O                theMin,theMax,theMean,theSD,
      I                myThid )
