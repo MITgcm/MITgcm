@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.35 2003/01/10 23:41:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.36 2003/01/21 19:19:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -269,6 +269,9 @@ cph although some of these are re-initialised later.
 #  ifdef GM_BOLUS_ADVEC
            GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
            GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_VISBECK_VARIABLE_K
+           VisbeckK(i,j,bi,bj)   = 0. _d 0
 #  endif
 # endif /* ALLOW_GMREDI */
 #endif /* ALLOW_AUTODIFF_TAMC */
