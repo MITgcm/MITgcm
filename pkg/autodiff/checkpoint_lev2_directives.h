@@ -16,6 +16,7 @@ CADJ STORE etan      = tapelev2, key = ilev_2
 CADJ STORE gu        = tapelev2, key = ilev_2
 CADJ STORE gv        = tapelev2, key = ilev_2
 CADJ STORE totphihyd = tapelev2, key = ilev_2
+CADJ STORE empmr     = tapelev2, key = ilev_2
 
 #ifdef INCLUDE_CD_CODE
 CADJ STORE uveld     = tapelev2, key = ilev_2
@@ -124,8 +125,6 @@ CADJ STORE xx_tauv1      = tapelev2, key = ilev_2
 
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
-CADJ STORE empmr   = tapelev2, key = ilev_2
-c
 CADJ STORE taux0   = tapelev2, key = ilev_2
 CADJ STORE taux1   = tapelev2, key = ilev_2
 CADJ STORE tauy0   = tapelev2, key = ilev_2
