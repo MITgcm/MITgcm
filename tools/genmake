@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.31 2001/02/28 16:08:51 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.32 2001/03/05 19:57:31 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -623,6 +623,7 @@ all: \$(EXECUTABLE)
 depend:
 	@make links
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
+
 links: \$(SRCFILES)
 
 small_f: \$(F77FILES)
@@ -631,13 +632,18 @@ clean:
 	-rm -rf *.o *.f *.p ${RMFILES}
 Clean:
 	@make clean
-	-find . -type l -exec rm {} \;
+	@make cleanlinks
 	-rm -f Makefile.bak
 CLEAN:
 	@make Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-rm -f \$(EXECUTABLE)
+
+makefile:
+	${0} $argv
+cleanlinks:
+	-find . -type l -exec rm {} \;
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
