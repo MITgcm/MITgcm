@@ -1,0 +1,147 @@
+Miscellaneous notes relating to MITgcm UV
+=========================================
+
+o Something really weird is happening - variables keep
+  changing value!
+
+  Apart from the usual problems of out of bounds array refs.
+  and various bugs itis important to be sure that "stack"
+  variables really are stack variables in multi-threaded execution.
+  Some compilers put subroutines local variables in static storage.
+  This can result in an apparently private variable in a local
+  routine being mysteriously changed by concurrently executing
+  thread.
+
+                    =====================================
+
+o Something really weird is happening - the code gets stuck in
+  a loop somewhere!
+
+  The routines in barrier.F should be compiled without any
+  optimisation. The routines check variables that are updated by other threads
+  Compiler optimisations generally assume that the code being optimised 
+  will obey the sequential semantics of regular Fortran. That means they
+  will assume that a variable is not going to change value unless the
+  code it is optimising changes it. Obviously this can cause problems.
+
+                    =====================================
+
+o Is the Fortran SAVE statement a problem.
+
+  Yes. On the whole the Fortran SAVE statement should not be used
+  for data in a multi-threaded code. SAVE causes data to be held in 
+  static storage meaning that all threads will see the same location. 
+  Therefore, generally if one thread updates the location all other threads 
+  will see it. Note - there is often no specification for what should happen
+  in this situation in a multi-threaded environment, so this is
+  not a robust machanism for sharing data.
+  For most cases where SAVE might be appropriate either of the following 
+  recipes should be used instead. Both these schemes are potential 
+  performance bottlenecks if they are over-used. 
+  Method 1
+  ********
+   1. Put the SAVE variable in a common block
+   2. Update the SAVE variable in a _BEGIN_MASTER, _END_MASTER block.
+   3. Include a _BARRIER after the _BEGIN_MASTER, _END_MASTER block.
+   e.g
+   C nIter - Current iteration counter
+   COMMON /PARAMS/ nIter
+   INTEGER nIter
+
+   _BEGIN_MASTER(myThid)
+    nIter = nIter+1
+   _END_MASTER(myThid)
+   _BARRIER
+
+   Note. The _BARRIER operation is potentially expensive. Be conservative
+         in your use of this scheme.
+
+  Method 2
+  ********
+   1. Put the SAVE variable in a common block but with an extra dimension
+      for the thread number.
+   2. Change the updates and references to the SAVE variable to a per thread 
+      basis.
+   e.g
+   C nIter - Current iteration counter
+   COMMON /PARAMS/ nIter
+   INTEGER nIter(MAX_NO_THREADS)
+ 
+    nIter(myThid) = nIter(myThid)+1
+
+   Note. nIter(myThid) and nIter(myThid+1) will share the same
+         cache line. The update will cause extra low-level memory 
+         traffic to maintain cache coherence. If the update is in
+         a tight loop this will be a problem and nIter will need
+         padding.
+         In a NUMA system nIter(1:MAX_NO_THREADS) is likely to reside
+         in a single page of physical memory on a single box. Again in
+         a tight loop this would cause lots of remote/far memory references
+         and would be a problem. Some compilers provide a machanism
+         for helping overcome this problem.
+
+                    =====================================
+
+o Can I debug using write statements.
+
+  Many systems do not have "thread-safe" Fortran I/O libraries.
+  On these systems I/O generally orks but it gets a bit intermingled!
+  Occaisionally doing multi-threaded I/O with an unsafe  Fortran I/O library
+  will actual cause the program to fail. Note: SGI has a "thread-safe" Fortran 
+  I/O library.
+
+                    =====================================
+
+o Mapping virtual memory to physical memory.
+
+  The current code declares arrays as
+       real aW2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+  This raises an issue on shared virtual-memory machines that have
+  an underlying non-uniform memory subsystem e.g. HP Exemplar, SGI 
+  Origin, DG, Sequent etc.. . What most machines implement is a scheme 
+  in which the physical memory that backs the virtual memory is allocated           
+  on a page basis at 
+  run-time. The OS manages this allocation and without exception
+  pages are assigned to physical memory on the box where the thread 
+  which caused the page-fault is running. Pages are typically 4-8KB in 
+  size. This means that in some environments it would make sense to   
+  declare arrays
+       real aW2d (1-OLx:sNx+OLx+PX,1-OLy:sNy+OLy+PY,nSx,nSy)
+  where PX and PY are chosen so that the divides between near and 
+  far memory will coincide with the boundaries of the virtual memory
+  regions a thread works on. In principle this is easy but it is
+  also inelegant and really one would like the OS/hardware to take
+  care of this issue. Doing it oneself requires PX and PY to be recalculated whenever 
+  the mapping of the nSx, nSy blocks to nTx and nTy threads is changed. Also
+  different PX and PY are required depending on
+   page size
+   array element size ( real*4, real*8 )
+   array dimensions ( 2d, 3d Nz, 3d Nz+1 ) - in 3d a PZ would also be needed!
+  Note: 1. A C implementation would be a lot easier. An F90 including allocation
+           would also be fairly straightforward.
+        2. The padding really ought to be between the "collection" of blocks
+           that all the threads using the same near memory work on. To save on wasted 
+           memory the padding really should be between these blocks. The 
+           PX, PY, PZ mechanism does this three levels down on the heirarchy. This
+           wastes more memory.
+        3. For large problems this is less of an issue. For a large problem
+           even for a 2d array there might be say 16 pages per array per processor
+           and at least 4 processors in a uniform memory access box. Assuming a 
+           sensible mapping of processors to blocks only one page (1.5% of the
+           memory) referenced by processors in another box.
+           On the other hand for a very small per processor problem size e.g.
+           32x32 per processor and again four processors per box as many as
+           50% of the memory references could be to far memory for 2d fields. 
+           This could be very bad!
+
+                    =====================================
+
+                    =====================================
+
+                    =====================================
+
+                    =====================================
+
+                    =====================================
+
+                    =====================================
