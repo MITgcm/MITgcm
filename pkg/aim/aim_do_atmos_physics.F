@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.5 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.6 2001/08/15 13:50:43 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -197,13 +197,12 @@ c_jmc    QG1(I2,Katm,myThid)   = salt(I,J,K,bi,bj)
          QG1(I2,Katm,myThid)   = MAX(salt(I,J,K,bi,bj), 0. _d 0)
          PHIG1(I2,Katm,myThid) = (phiTotal(I,J,K)- ptotalniv5 ) 
      &                  + gravity*Hinitial(k)
-C *NOTE* Fix me for lopped cells
-         if(hFacC(i,j,k,bi,bj).eq.1.) then
+C *NOTE* Fix me for lopped cells <== done !
+         IF (maskC(i,j,k,bi,bj).EQ.1.) THEN
            RHOG1(I2,Katm) = pSurfs(K)/RD/TG1(I2,Katm,myThid)
-         else
+         ELSE
            RHOG1(I2,Katm)=0.
-         endif
-C *NOTE* Fix me for lopped cells
+         ENDIF
         ENDDO
        ENDDO
       ENDDO

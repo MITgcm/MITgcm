@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_dyn2aim.F,v 1.2 2001/06/18 17:39:58 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_dyn2aim.F,v 1.3 2001/08/15 13:50:43 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -70,9 +70,12 @@ C     Depth in levels
           NLEVxyU(I2,myThid)=0
           NLEVxyV(I2,myThid)=0
           DO k=1,NLEV
-            NLEVxy(I2,myThid) = NLEVxy(I2,myThid)  +int( hFacC(I,J,K,bi,bj) )
-            NLEVxyU(I2,myThid)= NLEVxyU(I2,myThid) +int( hFacW(I,J,K,bi,bj) )
-            NLEVxyV(I2,myThid)= NLEVxyV(I2,myThid) +int( hFacS(I,J,K,bi,bj) )
+            NLEVxy(I2,myThid) = NLEVxy(I2,myThid)
+     &                        + INT( maskC(I,J,K,bi,bj) )
+            NLEVxyU(I2,myThid)= NLEVxyU(I2,myThid)
+     &                        + INT( maskW(I,J,K,bi,bj) )
+            NLEVxyV(I2,myThid)= NLEVxyV(I2,myThid)
+     &                        + INT( maskS(I,J,K,bi,bj) )
           ENDDO
         ENDDO
       ENDDO
