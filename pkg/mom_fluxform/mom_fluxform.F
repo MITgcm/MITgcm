@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.8 2003/01/26 21:18:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.9 2003/02/08 02:13:02 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -33,7 +33,7 @@ C !ROUTINE: MOM_FLUXFORM
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_FLUXFORM( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
-     I        phi_hyd,KappaRU,KappaRV,
+     I        phi_hyd,dPhihydX,dPhiHydY,KappaRU,KappaRV,
      U        fVerU, fVerV,
      I        myTime,myIter,myThid)
 
@@ -59,6 +59,7 @@ C  k                    :: vertical level
 C  kUp                  :: =1 or 2 for consecutive k
 C  kDown                :: =2 or 1 for consecutive k
 C  phi_hyd              :: hydrostatic pressure (perturbation)
+C  dPhiHydX,Y           :: Gradient (X & Y dir.) of Hydrostatic Potential 
 C  KappaRU              :: vertical viscosity
 C  KappaRV              :: vertical viscosity
 C  fVerU                :: vertical flux of U, 2 1/2 dim for pipe-lining
@@ -69,6 +70,8 @@ C  myThid               :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k,kUp,kDown
       _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -348,16 +351,6 @@ C     Combine fluxes
        ENDDO
       ENDDO
 
-C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
-      IF (momPressureForcing) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         pf(i,j) = - _recip_dxC(i,j,bi,bj)
-     &    *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))
-        ENDDO
-       ENDDO
-      ENDIF
-
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -373,7 +366,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
      &   )
-     & _PHM( +phxFac * pf(i,j) )
+     &  - phxFac*dPhiHydX(i,j)
        ENDDO
       ENDDO
 
@@ -510,16 +503,6 @@ C     Combine fluxes -> fVerV
        ENDDO
       ENDDO
 
-C---  Hydorstatic term (-1/rhoConst . dphi/dy )
-      IF (momPressureForcing) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         pF(i,j) = -_recip_dyC(i,j,bi,bj)
-     &    *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))
-        ENDDO
-       ENDDO
-      ENDIF
-
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -535,7 +518,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
      &   )
-     & _PHM( +phyFac*pf(i,j) )
+     &  - phyFac*dPhiHydY(i,j)
        ENDDO
       ENDDO
 
@@ -615,7 +598,7 @@ C--   Set dv/dt on boundaries to zero
 C--   Coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
 #ifdef INCLUDE_CD_CODE
-      CALL MOM_CDSCHEME(bi,bj,k,phi_hyd,myThid)
+      CALL MOM_CDSCHEME(bi,bj,k,phi_hyd,dPhiHydX,dPhiHydY,myThid)
 #else
       CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
       DO j=jMin,jMax

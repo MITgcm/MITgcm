@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.24 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.25 2003/02/08 02:09:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,7 +10,8 @@ C     !INTERFACE:
      I                         bi, bj, iMin, iMax, jMin, jMax, K,
      I                         tFld, sFld,
      U                         phiHyd,
-     I                         myThid)
+     O                         dPhiHydX, dPhiHydY,
+     I                         myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CALC_PHI_HYD                                  |
@@ -59,7 +60,10 @@ C     == Routine arguments ==
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      INTEGER myThid
+      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL myTime
+      INTEGER myIter, myThid
       
 #ifdef INCLUDE_PHIHYD_CALCULATION_CODE
 
@@ -70,11 +74,9 @@ C     == Local variables ==
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRloc,dRlocKp1,locAlpha
       _RL ddPI, ddPIm, ddPIp, ratioRp, ratioRm
+      INTEGER iMnLoc,jMnLoc
+      PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
 CEOP
-
-      zero = 0. _d 0
-      one  = 1. _d 0
-      half = .5 _d 0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  Atmosphere:  
@@ -103,10 +105,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
 C       This is the hydrostatic pressure calculation for the Ocean
 C       which uses the FIND_RHO() routine to calculate density
 C       before integrating g*rho over the current layer/interface
+#ifdef      ALLOW_AUTODIFF_TAMC
+CADJ GENERAL
+#endif      /* ALLOW_AUTODIFF_TAMC */
 
         dRloc=drC(k)
         IF (k.EQ.1) dRloc=drF(1)
@@ -122,6 +129,7 @@ C       P(z=eta) = P(atmospheric_loading)
           DO j=jMin,jMax
             DO i=iMin,iMax
               phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
+c             phiHyd(i,j,k) = 0.
             ENDDO
           ENDDO
         ENDIF
@@ -141,42 +149,46 @@ C Quasi-hydrostatic terms are added in as if they modify the buoyancy
          CALL QUASIHYDROSTATICTERMS(bi,bj,k,alphaRho,myThid)
         ENDIF
 
-C       Hydrostatic pressure at cell centers
-        DO j=jMin,jMax
-          DO i=iMin,iMax
-#ifdef      ALLOW_AUTODIFF_TAMC
-c           Patrick, is this directive correct or even necessary in
-c           this new code?
-c           Yes, because of phiHyd(i,j,k+1)=phiHyd(i,j,k)+...
-c           within the k-loop.
-CADJ GENERAL
-#endif      /* ALLOW_AUTODIFF_TAMC */
+C---   Hydrostatic pressure at cell centers
 
-CmlC---------- This discretization is the "finite volume" form
-CmlC           which has not been used to date since it does not
-CmlC           conserve KE+PE exactly even though it is more natural
-CmlC
-Cml          IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-Cml           phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-Cml     &          + hFacC(i,j,k,bi,bj)
-Cml     &            *drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-Cml     &          + gravity*etaN(i,j,bi,bj)
-Cml          ENDIF
-Cml           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-Cml     &         drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-Cml           phiHyd(i,j,k)=phiHyd(i,j,k)+
-Cml     &          0.5*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-CmlC-----------------------------------------------------------------------
+       IF (integr_GeoPot.EQ.1) THEN
+C  --  Finite Volume Form
+
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+
+C---------- This discretization is the "finite volume" form
+C           which has not been used to date since it does not
+C           conserve KE+PE exactly even though it is more natural
+C
+          IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+           phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+     &          + hFacC(i,j,k,bi,bj)
+     &             *drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+          ENDIF
+           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
+     &            + drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+           phiHyd(i,j,k)=phiHyd(i,j,k)+
+     &       + half*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
+
+          ENDDO
+         ENDDO
+
+       ELSE
+C  --  Finite Difference Form
+
+         DO j=jMin,jMax
+          DO i=iMin,iMax
 
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 C
              
-            phiHyd(i,j,k)=phiHyd(i,j,k)+
-     &          0.5*dRloc*gravity*alphaRho(i,j)*recip_rhoConst
-            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-     &          0.5*dRlocKp1*gravity*alphaRho(i,j)*recip_rhoConst
-C-----------------------------------------------------------------------
+            phiHyd(i,j,k)=phiHyd(i,j,k)
+     &        +half*dRloc*gravity*alphaRho(i,j)*recip_rhoConst
+            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
+     &        +half*dRlocKp1*gravity*alphaRho(i,j)*recip_rhoConst
 
 C---------- Compute bottom pressure deviation from gravity*rho0*H
 C           This has to be done starting from phiHyd at the current
@@ -184,19 +196,22 @@ C           tracer point and .5 of the cell's thickness has to be
 C           substracted from hFacC
             IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
              phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &              + (hFacC(i,j,k,bi,bj)-.5)*drF(K)
+     &              + (hFacC(i,j,k,bi,bj)-half)*drF(K)
      &                   *gravity*alphaRho(i,j)*recip_rhoConst
-     &              + gravity*etaN(i,j,bi,bj)
+     &              + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
             ENDIF
-C-----------------------------------------------------------------------
 
           ENDDO
-        ENDDO
+         ENDDO
+
+C  --  end if integr_GeoPot = ...
+       ENDIF
         
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
 C       This is the hydrostatic pressure calculation for the Ocean
 C       which uses the FIND_RHO() routine to calculate density
-C       before integrating g*rho over the current layer/interface
+C       before integrating (1/rho)'*dp over the current layer/interface
 #ifdef      ALLOW_AUTODIFF_TAMC
 CADJ GENERAL
 #endif      /* ALLOW_AUTODIFF_TAMC */
@@ -213,6 +228,7 @@ CADJ GENERAL
           DO j=jMin,jMax
             DO i=iMin,iMax
               phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
+c             phiHyd(i,j,k) = 0.
             ENDDO
           ENDDO
         ENDIF
@@ -231,37 +247,52 @@ CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 
-C       Hydrostatic pressure at cell centers
-        DO j=jMin,jMax
+C----  Hydrostatic pressure at cell centers
+
+       IF (integr_GeoPot.EQ.1) THEN
+C  --  Finite Volume Form
+
+         DO j=jMin,jMax
           DO i=iMin,iMax
             locAlpha=alphaRho(i,j)+rhoConst
-            IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
+            locAlpha=maskC(i,j,k,bi,bj)*
+     &              (one/locAlpha - recip_rhoConst)
+c           IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
 
-CmlC---------- This discretization is the "finite volume" form
-CmlC           which has not been used to date since it does not
-CmlC           conserve KE+PE exactly even though it is more natural
-CmlC
-Cml            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
-Cml             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-Cml     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
-Cml     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-Cml            ENDIF
-Cml            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-Cml     &           drF(K)*locAlpha
-Cml            phiHyd(i,j,k)=phiHyd(i,j,k)+
-Cml     &           0.5*drF(K)*locAlpha
-CmlC-----------------------------------------------------------------------
+C---------- This discretization is the "finite volume" form
+C           which has not been used to date since it does not
+C           conserve KE+PE exactly even though it is more natural
+C
+            IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
+             phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
+     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
+     &          + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+            ENDIF
+            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
+     &          + hFacC(i,j,k,bi,bj)*drF(K)*locAlpha
+            phiHyd(i,j,k)=phiHyd(i,j,k)
+     &          +(hFacC(i,j,k,bi,bj)-half)*drF(K)*locAlpha
+
+          ENDDO
+         ENDDO
+
+       ELSE
+C  --  Finite Difference Form
+
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            locAlpha=alphaRho(i,j)+rhoConst
+            locAlpha=maskC(i,j,k,bi,bj)*
+     &              (one/locAlpha - recip_rhoConst)
+c           IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
 
 C---------- This discretization is the "energy conserving" form
-C           which has been used since at least Adcroft et al., MWR 1997
-C
 
-            phiHyd(i,j,k)=phiHyd(i,j,k)+
-     &          0.5*dRloc*locAlpha
-            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-     &          0.5*dRlocKp1*locAlpha
+            phiHyd(i,j,k)=phiHyd(i,j,k)
+     &          + half*dRloc*locAlpha
+            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
+     &          + half*dRlocKp1*locAlpha
 
-C-----------------------------------------------------------------------
 
 C---------- Compute gravity*(sea surface elevation) first
 C           This has to be done starting from phiHyd at the current
@@ -269,13 +300,15 @@ C           tracer point and .5 of the cell's thickness has to be
 C           substracted from hFacC
             IF ( K .EQ. kLowC(i,j,bi,bj) ) THEN
              phiHydLow(i,j,bi,bj) = phiHyd(i,j,k)
-     &              + (hFacC(i,j,k,bi,bj)-0.5)*drF(k)*locAlpha
+     &              + (hFacC(i,j,k,bi,bj)-half)*drF(k)*locAlpha
      &              + Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
             ENDIF
-C-----------------------------------------------------------------------
 
           ENDDO
-        ENDDO
+         ENDDO
+
+C  --  end if integr_GeoPot = ...
+       ENDIF
 
       ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -298,8 +331,9 @@ C-----------------------------------------------------------------------
      &                  -((rC(K)/atm_Po)**atm_kappa) )
           DO j=jMin,jMax
            DO i=iMin,iMax
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)
-     &         +ddPIp*maskC(i,j,K,bi,bj)
+c            phiHyd(i,j,K)= 
+             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+     &          ddPIp*maskC(i,j,K,bi,bj)
      &               *(tFld(I,J,K,bi,bj)-tRef(K))
            ENDDO
           ENDDO
@@ -338,8 +372,9 @@ C---------
      &                  -((rC(K)/atm_Po)**atm_kappa) )
           DO j=jMin,jMax
            DO i=iMin,iMax
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)
-     &         +ddPIp*_hFacC(I,J, K ,bi,bj)
+c            phiHyd(i,j,K)=
+             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+     &          ddPIp*_hFacC(I,J, K ,bi,bj)
      &               *(tFld(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
           ENDDO
@@ -376,8 +411,9 @@ C---------
      &                  -((rC(Kp1)/atm_Po)**atm_kappa) )  
           DO j=jMin,jMax
            DO i=iMin,iMax
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)
-     &       +( ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
+c            phiHyd(i,j,K)=
+             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+     &        ( ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
      &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
@@ -421,8 +457,9 @@ C---------
      &                  -((rC(Kp1)/atm_Po)**atm_kappa) )  
           DO j=jMin,jMax
            DO i=iMin,iMax
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)
-     &       +( ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
+c            phiHyd(i,j,K)=
+             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+     &        ( ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
      &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
@@ -458,6 +495,16 @@ C-----------------------------------------------------------------------
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
         STOP 'CALC_PHI_HYD: Bad value of buoyancyRelation !'
+      ENDIF
+
+      IF (momPressureForcing) THEN 
+        iMnLoc = MAX(1-Olx+1,iMin)
+        jMnLoc = MAX(1-Oly+1,jMin)
+        CALL CALC_GRAD_PHI_HYD(
+     I                         k, bi, bj, iMnLoc,iMax, jMnLoc,jMax,
+     I                         phiHyd, alphaRho, tFld, sFld,
+     O                         dPhiHydX, dPhiHydY,
+     I                         myTime, myIter, myThid)  
       ENDIF
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */

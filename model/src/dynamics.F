@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.91 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.92 2003/02/08 02:09:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -131,13 +131,14 @@ C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
 C     rhoK, rhoKM1   - Density at current level, and level above 
-C     phiHyd         - Hydrostatic part of the potential phiHydi.
-C                      In z coords phiHydiHyd is the hydrostatic 
+C     phiHyd         - Hydrostatic part of the potential.
+C                      In z coords phiHyd is the hydrostatic 
 C                      Potential (=pressure/rho0) anomaly
-C                      In p coords phiHydiHyd is the geopotential 
+C                      In p coords phiHyd is the geopotential 
 C                      surface height anomaly.
-C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
-C     phiSurfY             or geopotentiel (atmos) in X and Y direction
+C     dPhiHydX,Y :: Gradient (X & Y directions) of Hydrostatic Potential
+C     phiSurfX, - gradient of Surface potential (Pressure/rho, ocean)
+C     phiSurfY             or geopotential (atmos) in X and Y direction
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -147,6 +148,8 @@ C                      index into fVerTerm.
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -160,11 +163,8 @@ C                      index into fVerTerm.
       INTEGER i, j
       INTEGER k, km1, kp1, kup, kDown
 
-Cjmc : add for phiHyd output <- but not working if multi tile per CPU
-c      CHARACTER*(MAX_LEN_MBUF) suff 
-c      LOGICAL  DIFFERENT_MULTIPLE
-c      EXTERNAL DIFFERENT_MULTIPLE
-Cjmc(end)
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
  
 C---    The algorithm...
 C
@@ -274,6 +274,8 @@ C--     Set up work arrays that need valid initial values
           fVerU  (i,j,2) = 0. _d 0
           fVerV  (i,j,1) = 0. _d 0
           fVerV  (i,j,2) = 0. _d 0
+          dPhiHydX(i,j)  = 0. _d 0
+          dPhiHydY(i,j)  = 0. _d 0 
          ENDDO
         ENDDO
 
@@ -343,13 +345,15 @@ C        distinguishe between Stagger and Non Stagger time stepping
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        gT, gS,
      U        phiHyd,
-     I        myThid )
+     O        dPhiHydX, dPhiHydY,
+     I        myTime, myIter, myThid )
          ELSE
            CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        theta, salt,
      U        phiHyd,
-     I        myThid )
+     O        dPhiHydX, dPhiHydY,
+     I        myTime, myIter, myThid )
          ENDIF
 
 C        calculate pressure from phiHyd and store it on common block
@@ -362,20 +366,20 @@ C        and step forward storing the result in gUnm1, gVnm1, etc...
 #ifndef DISABLE_MOM_FLUXFORM
            IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         phiHyd,KappaRU,KappaRV,
+     I         phiHyd,dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U         fVerU, fVerV,
      I         myTime, myIter, myThid)
 #endif
 #ifndef DISABLE_MOM_VECINV
            IF (vectorInvariantMomentum) CALL MOM_VECINV(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         phiHyd,KappaRU,KappaRV,
+     I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U         fVerU, fVerV,
      I         myTime, myIter, myThid)
 #endif
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
-     I         phiHyd, phiSurfX, phiSurfY,
+     I         phiHyd, dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
      I         myIter, myThid)
 
 #ifdef   ALLOW_OBCS
@@ -451,13 +455,12 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 C--     End If implicitViscosity.AND.momStepping
         ENDIF
  
-Cjmc : add for phiHyd output <- but not working if multi tile per CPU
-c        IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime+deltaTClock,myTime) 
-c     &       .AND. buoyancyRelation .ne. 'OCEANIC' ) THEN
-c           WRITE(suff,'(I10.10)') myIter+1
-c           CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid) 
-c        ENDIF
-Cjmc(end)
+C- jmc: add for diagnostic of phiHyd
+        IF ( DIFFERENT_MULTIPLE(diagFreq,myTime+deltaTClock,myTime) 
+     &       .AND. buoyancyRelation .NE. 'OCEANIC' ) THEN
+          CALL WRITE_LOCAL_RL('Ph','I10',Nr,phiHyd,
+     &                         bi,bj,1,myIter+1,myThid)
+        ENDIF
 
 #ifdef ALLOW_TIMEAVE
         IF (taveFreq.GT.0.) THEN 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.28 2003/01/26 21:06:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.29 2003/02/08 02:09:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: TIMESTEP
 C     !INTERFACE:
       SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax, K,
-     I                     phiHyd, phiSurfX, phiSurfY,
+     I             phiHyd, dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
      I                     myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -28,13 +28,16 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     phiHyd    - Hydrostatic Potential (ocean: pressure/rho) 
-C                                       (atmos: geopotentiel)
-C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
-C     phiSurfY             or geopotentiel (atmos) in X and Y direction
+C     phiHyd     :: Hydrostatic Potential (ocean: pressure/rho) 
+C                                         (atmos: geopotential)
+C     dPhiHydX,Y :: Gradient (X & Y directions) of Hydrostatic Potential
+C     phiSurfX :: gradient of Surface potential (Pressure/rho, ocean)
+C     phiSurfY ::          or geopotential (atmos) in X and Y direction
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
       _RL     phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
+      _RL     dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myIter, myThid
@@ -56,6 +59,19 @@ C     Adams-Bashforth timestepping weights
        ab15=1.5+abeps
        ab05=-0.5-abeps
       ENDIF
+
+C-- stagger time step: grad Phi_Hyp is not in gU,gV => add it in this S/R
+c     IF (staggerTimeStep) THEN
+      IF (.FALSE.) THEN
+        phxFac = pfFacMom
+        phyFac = pfFacMom
+      ELSE
+        phxFac = 0.
+        phyFac = 0.
+      ENDIF 
+
+C-- explicit part of the surface potential gradient is added in this S/R
+      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Compute effective gU term (including Adams-Bashforth weights) :
@@ -92,23 +108,25 @@ C-    Compute effective gU term (including Adams-Bashforth weights) :
 #endif 
 
 C     Step forward zonal velocity (store in Gu)
-      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gUNm1(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) 
      &     +deltaTmom*( 
      &         gUtmp(i,j)
      &       - psFac*phiSurfX(i,j)
+     &       - phxFac*dPhiHydX(i,j)
      &        )*_maskW(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
+c     IF (.FALSE.) THEN
       IF (staggerTimeStep) THEN
 C--   -grad Phi_Hyd has not been incorporated to gU and is added here:
         phxFac = pfFacMom*deltaTmom
         DO j=jMin,jMax
           DO i=iMin,iMax
             gUNm1(i,j,k,bi,bj)=gUNm1(i,j,k,bi,bj)
+c    &       - phxFac*dPhiHydX(i,j)*_maskW(i,j,k,bi,bj)
      &       - _recip_dxC(i,j,bi,bj)
      &         *(phiHyd(i,j,k)-phiHyd(i-1,j,k))*phxFac
      &         *_maskW(i,j,k,bi,bj)
@@ -151,23 +169,25 @@ C-    Compute effective gV term (including Adams-Bashforth weights) :
 #endif 
 
 C     Step forward meridional velocity (store in Gv)
-      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gVNm1(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
      &     +deltaTmom*(
      &         gVtmp(i,j)
      &       - psFac*phiSurfY(i,j)
+     &       - phyFac*dPhiHydY(i,j)
      &        )*_maskS(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
+c     IF (.FALSE.) THEN
       IF (staggerTimeStep) THEN
 C--   -grad Phi_Hyd has not been incorporated to gV and is added here:
         phyFac = pfFacMom*deltaTmom
         DO j=jMin,jMax
           DO i=iMin,iMax
             gVNm1(i,j,k,bi,bj)=gVNm1(i,j,k,bi,bj)
+c    &       - phyFac*dPhiHydY(i,j)*_maskS(i,j,k,bi,bj)
      &       - _recip_dyC(i,j,bi,bj)
      &         *(phiHyd(i,j,k)-phiHyd(i,j-1,k))*phyFac
      &         *_maskS(i,j,k,bi,bj)
