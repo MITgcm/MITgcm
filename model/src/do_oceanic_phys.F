@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.16 2004/12/14 04:36:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.17 2005/02/15 21:00:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -95,6 +95,11 @@ C                      index into fVerTerm.
       INTEGER i, j
       INTEGER k, km1, kup, kDown
       INTEGER iTracer, ip
+      INTEGER doDiagsRho
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 
 CEOP
 
@@ -108,6 +113,18 @@ C--   dummy statement to end declaration part
      &    CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
 #endif
  
+      doDiagsRho = 0
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND. fluidIsWater ) THEN
+        IF ( DIAGNOSTICS_IS_ON('DRHODR  ',myThid) ) doDiagsRho = 1
+        IF ( DIAGNOSTICS_IS_ON('RHOANOSQ',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('URHOMASS',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('VRHOMASS',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) doDiagsRho = 2
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 #ifdef ALLOW_THSICE
       IF ( useThSIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
@@ -253,7 +270,8 @@ cph Needed for rhok, rhokm1, in the case useGMREDI.
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
 c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
-          IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.) ) THEN
+          IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
+     &                   .OR. doDiagsRho.GE.1 ) THEN
 #ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB ) 
      &       CALL DEBUG_CALL('FIND_RHO',myThid)
@@ -309,12 +327,21 @@ c ==> should use sigmaR !!!
      I        myTime, myIter, myThid)
           ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( doDiagsRho.GE.2 ) THEN
+            CALL DIAGS_RHO( k, bi, bj,
+     I                      rhoK, rhoKm1,
+     I                      myTime, myIter, myThid)
+          ENDIF
+#endif
+
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics .AND. 
-     &       (useGMRedi .OR. ivdc_kappa.NE.0.) ) THEN
+c       IF ( useDiagnostics .AND. 
+c    &       (useGMRedi .OR. ivdc_kappa.NE.0.) ) THEN
+        IF ( doDiagsRho.GE.1 ) THEN
           CALL DIAGNOSTICS_FILL (sigmaR, 'DRHODR  ', 0, Nr,
      &         2, bi, bj, myThid)
         ENDIF
