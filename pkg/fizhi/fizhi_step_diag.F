@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.7 2004/07/26 19:51:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.8 2004/07/30 18:55:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -49,6 +49,7 @@ C***********************************************************************
 
 C **********************************************************************        
 
+#ifdef ALLOW_DIAGNOSTICS
       do j=jm1,jm2
       do i=im1,im2
       pinv(i,j) = 1.0 / p(i,j,bi,bj)
@@ -430,5 +431,6 @@ c -------------------------------------------------------
       nvdtradlw = nvdtradlw + 1
       nvdtradsw = nvdtradsw + 1
  
+#endif
       return
       end
