@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.30 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.31 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,6 +9,11 @@ C $Name:  $
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
+cswdice --- add ----
+#ifdef ALLOW_TSEAICE
+#include "ICE.h"
+#endif
+cswdice ------
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 CBOP
@@ -387,11 +392,32 @@ C--     Calculate future values on open boundaries
         ENDIF
 #endif  /* ALLOW_OBCS */
 
+
+c********************************************
+cswdice --- add ---
+#ifdef ALLOW_TSEAICE
 C--     Determines forcing terms based on external fields
-C       relaxation terms, etc.
-        CALL EXTERNAL_FORCING_SURF( 
+c--     including effects from ice
+        CALL ICE_FORCING(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
+#else
+
+cswdice --- end add ---
+
+C--     Determines forcing terms based on external fields
+C       relaxation terms, etc.
+        CALL EXTERNAL_FORCING_SURF(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             myThid )
+cswdice --- add ----
+#endif
+cswdice --- end add ---
+c******************************************
+
+
+
+
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
 CADJ STORE surfacetendencyU(:,:,bi,bj)
@@ -645,6 +671,16 @@ CADJ &   , key = kkey, byte = isbyte
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
+
+cswdice -- add ---
+#ifdef ALLOW_TSEAICE
+c timeaveraging for ice model values
+           CALL ICE_AVE(bi,bj,iMin,iMax,jMin,jMax,myThid )
+#endif
+cswdice --- end add ---
+
+
+
 
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN

@@ -88,6 +88,21 @@ C--   Initialize SEAICE parameters
       IF (useOBCS) CALL OBCS_READPARMS( myThid )
 #endif
 
+cswdblk -- add ---
+#ifdef ALLOW_BULKFORMULA
+C -- initialize Bulkf parameters
+      IF (useBulkf) call BULKF_READPARMS( myThid )
+#endif
+cswdblk --- end add ---
+
+cswdice -- add ---
+#ifdef ALLOW_TSEAICE
+C -- initialize Sea Ice parameters
+      IF (useSeaIce) call ICE_READPARMS( myThid )
+#endif
+cswdice --- end add ---
+
+
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
 #endif

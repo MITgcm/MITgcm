@@ -93,5 +93,18 @@ c--   Initialise the cost function.
 # endif
 #endif
 
+cswdblk -- begin add ---
+#ifdef ALLOW_BULKFORMULA
+      IF (useBulkf) call BULKF_INIT( mythid)
+#endif
+cswdblk ---end add ---
+
+cswdice ---begin add ---
+#ifdef ALLOW_TSEAICE
+      IF (useSeaIce) call ICE_INIT( mythid)
+#endif
+cswdice ---end add ---
+
+
       RETURN
       END

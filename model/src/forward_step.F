@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.37 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.38 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -116,14 +116,37 @@ C      according to etaH(n+1)
         ENDIF
 #endif /* NONLIN_FRSURF */
 
+
+
+
 C--     Load forcing/external data fields.
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
 #include "checkpoint_lev1_directives.h"
 c**************************************
 #endif
+
+
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C--   Call external forcing package
+cswdblk -- add ---
+#ifdef ALLOW_BULKFORMULA
+       CALL TIMER_START('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
+       CALL BULKF_FIELDS_LOAD( mytime, myiter, mythid )
+       CALL TIMER_STOP ('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
+c calculate qnet and empmr (and wind stress)
+       DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL BULKF_FORCING( bi,bj, mytime, myiter, mythid )
+         ENDDO
+       ENDDO
+c     Update the tile edges.
+       _EXCH_XY_R8(Qnet,   mythid)
+       _EXCH_XY_R8(EmPmR,   mythid)
+       _EXCH_XY_R8(fu     , mythid)
+       _EXCH_XY_R8(fv     , mythid)
+cswdblk -- end add ---
+#endif
         IF ( .not. useSEAICE ) THEN 
          CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
          CALL EXF_GETFORCING( mytime, myiter, mythid )
@@ -137,11 +160,14 @@ C--   Call external forcing package
         ENDIF
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
+
+
+
 #ifdef ALLOW_SEAICE
 C--   Call sea ice model to compute forcing/external data fields.
         IF ( useSEAICE ) THEN
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
-         CALL SEAICE_MODEL( myTime, myIter, myThid )
+Cxxxx         CALL SEAICE_MODEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
         ENDIF
 #endif ALLOW_SEAICE

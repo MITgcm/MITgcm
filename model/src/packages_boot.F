@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.10 2002/11/12 20:45:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.11 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,10 @@ C     iUnit       - Work variable for IO unit number
       INTEGER iUnit
 
 C     data.pkg namelists
+C     data.pkg namelists
+cswdblk -- add useBulkf to NAMELIST
+cswdice -- addd useTSeaIce to NAMELIST
+
       NAMELIST /PACKAGES/
      &          useKPP,
      &          useGMRedi,
@@ -54,7 +58,11 @@ C     data.pkg namelists
      &          useZONAL_FILT,
      &          useFLT,
      &          usePTRACERS,
-     &          useSEAICE
+     &          useSEAICE,
+     &          useBulkf,
+     &          useTSEAICE
+
+
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -80,7 +88,14 @@ C--   Default package configuration
       useZONAL_FILT=.FALSE.
       useFLT=.FALSE.
       usePTRACERS=.FALSE.
-      usePTRACERS=.FALSE.
+      useSeaIce=.FALSE.
+cswdblk -- add
+      useBulkf=.FALSE.
+cswdblk -- end add ---
+cswdice --- add ---
+      useTSeaIce=.FALSE.
+cswdice --- end add ---
+
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.15 2002/03/04 17:26:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.16 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,6 +104,7 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
 #endif
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
@@ -153,6 +154,8 @@ C--     Read model fields
 c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
+
+
 
 C Create suffix to pass on to package pickup routines
         WRITE(fn,'(I10.10)') myIter
@@ -253,6 +256,11 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+cswdice -- add ---
+#ifdef ALLOW_TSEAICE
+#include "ICE.h"
+#endif
+cswdice -- end add --
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
@@ -348,6 +356,22 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'vNM1',  vNM1,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
+cswdice - add --
+#ifdef ALLOW_SEAICE
+        WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceMask,   1,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceHeight, 2,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowHeight,3,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tsrf, 4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice1,5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice2,6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice1,7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice2,8,myIter,myThid)
+#endif
+cswdice -- end add ---
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -414,6 +438,23 @@ C--     Write model fields
 c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
+cswdice - add --
+#ifdef ALLOW_SEAICE
+        WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceMask,   1,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceHeight, 2,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowHeight,3,
+     &                                               myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tsrf, 4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice1,5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice2,6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice1,7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice2,8,myIter,myThid)
+#endif
+cswdice -- end add ---
+
 
 C Create suffix to pass on to package pickup routines
          IF ( permCheckPoint ) THEN

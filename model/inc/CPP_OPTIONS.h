@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.19 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.20 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -27,6 +27,21 @@ C o Include/exclude code for GM/Redi parameterization
 
 C o Include/exclude code for KPP mixing scheme
 #define  ALLOW_KPP
+
+cswdblk --- add ---
+C o Include/exclude code for bulk formula
+#define  ALLOW_BULKFORMULA
+#ifdef ALLOW_BULKFORMULA
+cswdice -- add ---
+C o allow seaice
+#define ALLOW_TSEAICE
+cswdice -- end add ---
+
+C o try to conserve qnet and emp
+#define CONSERV_BULKF
+#endif
+cswdblk -- end add ---
+
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP

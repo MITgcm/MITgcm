@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.22 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.23 2002/11/15 19:58:21 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,21 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+cswdblk --- add ---
+#ifdef ALLOW_BULKFORMULA
+#include "BULKF.h"
+#include "FFIELDS.h"
+#endif
+cswdblk -- end add ---
+cswdice -- add ---
+#ifdef ALLOW_TSEAICE
+#include "ICE.h"
+#include "ICE_DIAGS.h"
+#endif
+cswdice -- end add ---
+
+
+
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
@@ -95,6 +110,24 @@ C--   Do KPP diagnostics.
       IF (useKPP)
      & CALL KPP_DO_DIAGS( myCurrentTime, myIter, myThid )
 #endif
+
+cswdblk ---  add ---
+#ifdef ALLOW_BULKFORMULA
+C--   Do bulkf diagnostics.
+      IF (useBulkf)
+     & CALL BULKF_DIAGS( myCurrentTime, myIter, myThid )
+#endif
+cswdblk -- end add ---
+
+cswdice ---  add ---
+#ifdef ALLOW_TSEAICE
+C--   Do seaice diagnostics.
+      IF (useSeaice)
+     & CALL ICE_DIAGS( myCurrentTime, myIter, myThid )
+#endif
+cswdice -- end add ---
+
+
 
       RETURN
       END
