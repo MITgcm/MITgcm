@@ -1,0 +1,147 @@
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.1 2004/04/08 00:14:09 jmc Exp $
+C $Name:  $
+
+#include "AIM_OPTIONS.h"
+#ifdef ALLOW_THSICE
+#include "THSICE_OPTIONS.h"
+#endif
+
+CBOP
+C     !ROUTINE: AIM_SICE2AIM
+C     !INTERFACE:
+      SUBROUTINE AIM_SICE2AIM(
+     I               land_frc, aimTsoce,
+     U               aimSIfrc, aimTsice, aimAlb,
+     I               myTime, myIter, bi, bj, myThid ) 
+
+C     !DESCRIPTION: \bv
+C     *================================================================*
+C     | S/R AIM_SICE2AIM
+C     | provide surface Boundary Conditions over sea-ice
+C     | (from thsice pkg) to atmospheric physics package AIM
+C     *================================================================*
+C     *================================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h"
+
+C-- MITgcm
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C-- Physics package
+#include "AIM_PARAMS.h"
+#include "com_forcon.h"
+
+#ifdef ALLOW_THSICE
+C-- Sea-Ice package
+#include "THSICE_SIZE.h"
+#include "THSICE_PARAMS.h"
+#include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     land_frc :: land fraction [0-1]
+C     aimTsoce :: sea surface temp [K], used in AIM
+C     aimSIfrc :: sea-ice fraction [0-1]
+C     aimTsice :: sea-ice (or snow) surface temp (K), used in AIM
+C     aimAlb   :: sea-ice albedo [0-1], used in AIM
+C     myTime   :: Current time of simulation ( s )
+C     myIter   :: Current iteration number in simulation
+C     bi,bj    :: Tile index 
+C     myThid   :: Number of this instance of the routine
+      _RS  land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aimTsoce(sNx,sNy)
+      _RL  aimSIfrc(sNx,sNy)
+      _RL  aimTsice(sNx,sNy)
+      _RL  aimAlb(sNx,sNy)
+      INTEGER myIter, bi, bj, myThid
+      _RL myTime
+CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AIM
+#ifdef ALLOW_THSICE
+
+C     == Local variables ==
+C     i,j          :: Loop counters
+      INTEGER i,j
+
+      IF ( .TRUE. ) THEN
+C-    Use thsice-pkg output instead of prescribed Temp & ice fraction
+        DO j=1,sNy
+         DO i=1,sNx
+           aimTsice(i,j) = Tsrf(i,j,bi,bj)+celsius2K
+           aimSIfrc(i,j) = iceMask(i,j,bi,bj)
+         ENDDO
+        ENDDO
+      ELSE
+C-    Fill in thsice-pkg Temp. using AIM surf. fields
+        DO j=1,sNy
+         DO i=1,sNx
+           Tsrf (i,j,bi,bj) = aimTsice(i,j)-celsius2K
+           Tice1(i,j,bi,bj) = Tsrf (i,j,bi,bj)
+           Tice2(i,j,bi,bj) = Tsrf (i,j,bi,bj)
+           iceMask(i,j,bi,bj) = aimSIfrc(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+
+      IF ( .TRUE. ) THEN
+C-     Compute albedo over sea-ice 
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( iceMask(i,j,bi,bj) .GT. 0. _d 0 ) THEN
+           CALL THSICE_ALBEDO(
+     I              snowHeight(i,j,bi,bj), iceHeight(i,j,bi,bj),
+     I              Tsrf(i,j,bi,bj), snowAge(i,j,bi,bj),
+     O              aimAlb(i,j),
+     I              myThid)
+          ELSE
+           aimAlb(i,j) = ALBICE
+          ENDIF
+#ifdef ALLOW_TIMEAVE
+          ice_albedo_Ave(i,j,bi,bj) = ice_albedo_Ave(i,j,bi,bj)
+     &            + iceMask(i,j,bi,bj)*aimAlb(i,j)*thSIce_deltaT
+#endif /*ALLOW_TIMEAVE*/
+         ENDDO
+        ENDDO
+      ELSE
+C-    Surface Albedo : (from F.M. FORDATE S/R)
+        DO j=1,sNy
+         DO i=1,sNx
+           aimAlb(i,j) = ALBICE
+         ENDDO
+        ENDDO
+      ENDIF
+
+C-- fill in ocean mixed layer variables:
+C   notes: needs to be done before call to phy_driver (since freezing
+C          temp. is fct of salinity) ; but would be better somewhere else.
+      IF ( tauRelax_MxL .EQ. -1. _d 0 
+     &     .OR. ( stepFwd_oceMxL  .AND. StartIceModel.NE.0
+     &                            .AND. myIter.EQ.nIter0   )
+     &   ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( land_frc(i,j,bi,bj) .LT. 1. _d 0 ) THEN
+           tOceMxL(i,j,bi,bj) = aimTsoce(i,j)-celsius2K
+           sOceMxL(i,j,bi,bj) = sMxL_default
+          ENDIF
+         ENDDO
+        ENDDO
+      ENDIF
+
+#endif /* ALLOW_THSICE */
+#endif /* ALLOW_AIM */
+
+      RETURN
+      END

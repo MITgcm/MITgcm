@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.2 2003/05/26 18:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.3 2004/04/08 00:14:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -60,7 +60,7 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     Loop counters
-C     msgBuf :: Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER I, J, I2, K, Katm
       _RL conv_theta2T, temp1, temp2

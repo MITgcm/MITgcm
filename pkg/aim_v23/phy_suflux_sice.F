@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_sice.F,v 1.1 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_sice.F,v 1.2 2004/04/08 00:14:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -64,7 +64,7 @@ C    Evp0   :: evaporation computed over freezing surface (Ts=0.oC)
 C    dEvp   :: evaporation derivative relative to surf. temp
 C    Slr0   :: upward long wave radiation over freezing surf.
 C    dSlr   :: upward long wave rad. derivative relative to surf. temp
-C    sFlx   :: net surface flux (+=down) function of surf. temp Ts:
+C    sFlx   :: net heat flux (+=down) except SW, function of surf. temp Ts:
 C              0: Flux(Ts=0.oC) ; 1: Flux(Ts^n) ; 2: d.Flux/d.Ts(Ts^n)
 C    TSFC   :: surface temperature (clim.)     (2-dim)
 C    TSKIN  :: skin surface temperature        (2-dim)
@@ -143,20 +143,18 @@ C     2.4 Emission of lw radiation from the surface
 C--   Compute net surface heat flux and its derivative ./. surf. temp.
       DO J=1,NGP
         sFlx(J,0)= sFlx(J,0)
-     &           - ALHC*Evp0(J) - EMISloc*Slr0(J) + SLRD(J) + SSR(J)
+     &           - ALHC*Evp0(J) - EMISloc*Slr0(J) + SLRD(J)
         sFlx(J,1)= sFlx(J,1)
-     &           - ALHC*EVAP(J) - EMISloc*SLRU(J) + SLRD(J) + SSR(J)
+     &           - ALHC*EVAP(J) - EMISloc*SLRU(J) + SLRD(J)
         sFlx(J,2)= sFlx(J,2)
      &           - ALHC*dEvp(J) - EMISloc*dSlr(J)
       ENDDO
       IF ( aim_energPrecip ) THEN
-C-     Evap of snow: substract Latent Heat of freezing from heatFlux
+C-     Evap of snow/ice: substract Latent Heat of freezing from heatFlux
        DO J=1,NGP
-        IF ( EnPrec(J) .LT. 0. ) THEN
          sFlx(J,0) = sFlx(J,0) - ALHF*Evp0(J)
          sFlx(J,1) = sFlx(J,1) - ALHF*EVAP(J)
          sFlx(J,2) = sFlx(J,2) - ALHF*dEvp(J)
-        ENDIF
        ENDDO
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_post.F,v 1.1 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_post.F,v 1.2 2004/04/08 00:14:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -41,6 +41,7 @@ C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
+#include "GRID.h"
 
 C     Physical constants + functions of sigma and latitude
 #include "com_physcon.h"
@@ -87,7 +88,10 @@ CEOP
 #ifdef ALLOW_AIM
 
 C-- Local variables:
-      INTEGER J
+C     J,i1,j1 :: Loop counters
+C     msgBuf  :: Informational/error message buffer
+      INTEGER J,i1,j1
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -143,6 +147,28 @@ C      (for diagnostic only)
         SLRup(J,2)=EMISloc*SLRup(J,2)-SLRD(J)
         SLRup(J,3)=EMISloc*SLRup(J,3)-SLRD(J)
       ENDDO
+
+C-    Check that Temp is OK for LW Radiation scheme :
+       DO J=1,NGP
+        IF (  TSFC(J).LT.lwTemp1 .OR.
+     &        TSFC(J).GT.lwTemp2 ) THEN
+         i1 = 1 + mod((J-1),sNx)
+         j1 = 1 + int((J-1)/sNx)
+         WRITE(msgBuf,'(A,1PE20.13,A,2I4)')
+     &    'SUFLUX_POST: TS=', TSFC(J),
+     &    ' out of range ',lwTemp1,lwTemp2
+         CALL PRINT_ERROR( msgBuf , myThid)
+         WRITE(msgBuf,'(A,1P3E10.3,A,0P3F8.5)')
+     &    'SUFLUX_POST: T_Lnd,Sea,Sic=',TLAND(J),TSEA(J),TSICE(J),
+     &                ' Mask:',FMASK(J,1),FMASK(J,2),FMASK(J,3)
+         CALL PRINT_ERROR( msgBuf , myThid)
+         WRITE(msgBuf,'(A,2I4,3I3,I6,2F9.3)')
+     &    'SUFLUX_POST: Pb in i,j,bi,bj,myThid,IJ,X,Y=',
+     &        i1,j1,bi,bj,myThid,J,xC(i1,j1,bi,bj),yC(i1,j1,bi,bj)
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SUFLUX_POST'
+        ENDIF
+       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */

@@ -1,10 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.4 2003/12/15 02:10:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.5 2004/04/08 00:14:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: AIM_DO_PHYSICS
+C     !INTERFACE:
       SUBROUTINE AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid ) 
                                       
+C     !DESCRIPTION: \bv
 C     *==================================================================*
 C     | S/R AIM_DO_PHYSICS
 C     *==================================================================*
@@ -16,6 +20,9 @@ C     | which can be included as external forcing terms in the dynamical
 C     | tendency routines. Packages should communicate this information
 C     | through common blocks.
 C     *==================================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     -------------- Global variables ------------------------------------
@@ -36,6 +43,7 @@ C-- Physics package
 #include "com_physvar.h"
 #include "com_forcing.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi,bj  - Tile index 
 C     myTime - Current time of simulation ( s )
@@ -43,15 +51,24 @@ C     myIter - Current iteration number in simulation
 C     myThid - Number of this instance of the routine
       INTEGER bi, bj, myIter, myThid
       _RL myTime
+CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     I,J,K,I2      - Loop counters
 C     tYear         - Fraction into year
 C     Katm          - Atmospheric K index
+C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
+C     evpAtm   :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
+C     flxSW    :: net Short-Wave heat flux into the ocean (+=down) [W/m2]
       INTEGER I,J,K,I2
 c     INTEGER Katm
       _RL     tYear, yearLength
+#ifdef ALLOW_THSICE
+      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 C      ==> move water wapor from the stratos to the surface level.
@@ -122,6 +139,28 @@ C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
 
       ENDIF
 #endif /* ALLOW_LAND */
+
+#ifdef ALLOW_THSICE
+      IF ( useThSIce ) THEN
+C-    prepare Surface flux over sea-ice for thsice package
+        CALL AIM_AIM2SICE( aim_landFr,
+     O                     prcAtm, evpAtm, flxSW, 
+     I                     bi, bj, myTime, myIter, myThid )
+
+C-    Step forward sea-ice model
+        CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
+     I                        prcAtm, 
+     U                        evpAtm, flxSW,
+     I                        myTime, myIter, myThid )
+
+C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity 
+        CALL THSICE_SLAB_OCEAN( bi,bj, myThid )
+
+        CALL THSICE_AVE( evpAtm, flxSW,
+     I                   bi, bj, myTime, myIter, myThid )
+
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN

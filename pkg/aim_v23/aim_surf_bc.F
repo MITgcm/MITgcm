@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.4 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.5 2004/04/08 00:14:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -56,7 +56,7 @@ C     == Local variables ==
 C     i,j,k,I2      - Loop counters
       INTEGER i,j,I2
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
-      _RL RSD, alb_land, tFreez
+      _RL RSD, alb_land, oceTfreez
 c     _RL DALB, alb_sea
 
       IF (aim_useFMsurfBC) THEN
@@ -128,11 +128,12 @@ C-    Set snow depth & sea-ice fraction :
 
         IF (aim_splitSIOsFx) THEN
 C-    Split Ocean and Sea-Ice surf. temp. ; remove ice-fraction < 1 %
-         tFreez = celsius2K - 1.9 _d 0
+c        oceTfreez = tFreeze - 1.9 _d 0
+         oceTfreez = celsius2K - 1.9 _d 0
          DO J=1,NGP
           sti1(J,myThid) = sst1(J,myThid) 
           IF ( oice1(J) .GT. 1. _d -2 ) THEN
-            sst1(J,myThid) = MAX(sst1(J,myThid),tFreez);
+            sst1(J,myThid) = MAX(sst1(J,myThid),oceTfreez);
             sti1(J,myThid) = sst1(J,myThid) 
      &                     +(sti1(J,myThid)-sst1(J,myThid))/oice1(J)
           ELSE
@@ -302,6 +303,16 @@ C-    Use land model output instead of prescribed Temp & moisture
      I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* ALLOW_LAND */
+
+#ifdef ALLOW_THSICE
+      IF (useThSIce) THEN
+C-    Use thermo. sea-ice model output instead of prescribed Temp & albedo
+        CALL AIM_SICE2AIM( 
+     I           aim_landFr, sst1(1,mythid),
+     U           oice1, sti1(1,mythid), alb1(1,3,myThid),
+     I           myTime, myIter, bi, bj, myThid ) 
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 C-- set the sea-ice & open ocean fraction :
         DO J=1,NGP
