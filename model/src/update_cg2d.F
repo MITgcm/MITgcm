@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.2 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.3 2002/02/10 20:04:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,7 +51,7 @@ C     faceArea - Temporary used to hold cell face areas.
       INTEGER bi, bj
       INTEGER I, J, K
       _RL     faceArea
-      _RL     aC, aCw, aCs
+      _RL     pW_tmp, pS_tmp
 CEOP
 
 C--   Initialise laplace operator
@@ -59,15 +59,15 @@ C     aW2d: integral in Z Ax/dX
 C     aS2d: integral in Z Ay/dY
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=1,sNy+1
+         DO I=1,sNx+1
           aW2d(I,J,bi,bj) = 0. _d 0
           aS2d(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
         DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
+         DO J=1,sNy+1
+          DO I=1,sNx+1
            faceArea = _dyG(I,J,bi,bj)*drF(K)
      &               *_hFacW(I,J,K,bi,bj)
            aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
@@ -95,72 +95,59 @@ C     aS2d: integral in Z Ay/dY
          ENDDO
         ENDIF
 #endif
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=1,sNy+1
+         DO I=1,sNx+1
           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)*cg2dNorm
      &                     *implicSurfPress*implicDiv2DFlow
           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)*cg2dNorm
      &                     *implicSurfPress*implicDiv2DFlow
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-      
-C--   Update overlap regions
-c     _EXCH_XY_R4(aW2d, myThid)
-c     _EXCH_XY_R4(aS2d, myThid)
-      CALL EXCH_UV_XY_RS(aW2d,aS2d,.FALSE.,myThid)
-
-C--   Initialise preconditioner
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Start to compute preconditioner matrix (use cg2d_q as temporary array)
         DO J=1,sNy
          DO I=1,sNx
-          pC(I,J,bi,bj) = 1. _d 0
-          aC = -(
+          cg2d_q(I,J,bi,bj) = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
      &    +freeSurfFac*cg2dNorm*recip_Bo(I,J,bi,bj)* 
      &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
-          aCs = -(
-     &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
-     &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
-     &    +freeSurfFac*cg2dNorm*recip_Bo(I,J-1,bi,bj)* 
-     &     rA(I,J-1,bi,bj)/deltaTMom/deltaTMom
-     &    )
-          aCw = -(
-     &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
-     &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
-     &    +freeSurfFac*cg2dNorm*recip_Bo(I-1,J,bi,bj)* 
-     &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
-     &    )
-          IF ( aC .EQ. 0. ) THEN
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      
+C--   Update overlap regions
+      _EXCH_XY_R8(cg2d_q, myThid)
+
+C--   Initialise preconditioner
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy+1
+         DO I=1,sNx+1
+          IF ( cg2d_q(I,J,bi,bj) .EQ. 0. ) THEN
             pC(I,J,bi,bj) = 1. _d 0
           ELSE
-           pC(I,J,bi,bj) =  1. _d 0 / aC
+           pC(I,J,bi,bj) =  1. _d 0 / cg2d_q(I,J,bi,bj)
           ENDIF
-          IF ( aC + aCw .EQ. 0. ) THEN
+          pW_tmp = cg2d_q(I,J,bi,bj)+cg2d_q(I-1,J,bi,bj)
+          IF ( pW_tmp .EQ. 0. ) THEN
            pW(I,J,bi,bj) = 0.
           ELSE
            pW(I,J,bi,bj) = 
-     &     -aW2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
+     &     -aW2d(I,J,bi,bj)/((cg2dpcOffDFac *pW_tmp)**2 )
           ENDIF
-          IF ( aC + aCs .EQ. 0. ) THEN
+          pS_tmp = cg2d_q(I,J,bi,bj)+cg2d_q(I,J-1,bi,bj)
+          IF ( pS_tmp .EQ. 0. ) THEN
            pS(I,J,bi,bj) = 0.
           ELSE
            pS(I,J,bi,bj) =
-     &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
+     &     -aS2d(I,J,bi,bj)/((cg2dpcOffDFac *pS_tmp)**2 )
           ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C--   Update overlap regions
-      _EXCH_XY_R4(pC, myThid)
-c     _EXCH_XY_R4(pW, myThid)
-c     _EXCH_XY_R4(pS, myThid)
-      CALL EXCH_UV_XY_RS(pW,pS,.FALSE.,myThid)
 
 #endif /* NONLIN_FRSURF */
 
