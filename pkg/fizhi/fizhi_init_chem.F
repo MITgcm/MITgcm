@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.14 2004/09/01 18:35:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.15 2004/10/20 16:41:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -75,7 +75,7 @@ C***********************************************************************
       _RL voltomas
       parameter ( voltomas = 0.622e-6 )
 
-      open(ku,file='sage.data',form='formatted')
+      open(ku,file='data.sage',form='formatted')
       rewind ku
 
 c Set Moisture Data Latitudes
@@ -162,7 +162,7 @@ c ------------------------
 c Read Ozone Amounts by Month and Level
 c -------------------------------------
       close (ku)
-      open(ku,file='gcmo3.data',form='unformatted',access='direct',
+      open(ku,file='data.gcmo3',form='unformatted',access='direct',
      .                                                 recl=nlat*4)
 
       do time0=1,ntime
