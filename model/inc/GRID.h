@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.26 2004/07/24 01:26:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.27 2005/04/06 18:22:11 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -364,6 +364,9 @@ C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar
 C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
+C     fCori     :: Coriolis parameter at grid Center point
+C     fCoriG    :: Coriolis parameter at grid Corner point
+C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       COMMON /GRID_I/ klowC
       INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -382,7 +385,8 @@ C                 metric term in V equation.
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  tanPhiAtU, tanPhiAtV,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
-     &  xC0, yC0
+     &  xC0, yC0,
+     &  fCori, fCoriG, fCoriCos
       _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
       _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
       _RL sqcosfacU(1-Oly:sNy+Oly,nSx,nSy)
@@ -442,6 +446,10 @@ C                 metric term in V equation.
       _RS rF             (1:Nr+1)
       _RS xC0
       _RS yC0
+      _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_NH/
