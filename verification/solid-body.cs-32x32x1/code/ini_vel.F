@@ -1,13 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_vel.F,v 1.1 2001/07/31 18:30:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_vel.F,v 1.2 2003/02/11 04:02:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_VEL
+C     !INTERFACE:
       SUBROUTINE INI_VEL( myThid )
+
+C     !DESCRIPTION: \bv
+C     *=================================================================
+C     | SUBROUTINE INI_VEL
+C     | o Initialize flow field (either to zero or from input files)
+C     *=================================================================
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
-C     Initialize 3D flow field (either to zero or from input files)
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -15,13 +24,15 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid -  Number of this instance of INI_VEL 
       INTEGER myThid
 
 C     == Local variables ==
 C     bi,bj,i,j,k - Loop counters
       INTEGER bi,bj,i,j,k
+      INTEGER ip1,jp1
       _RL psi,omegaprime,fac
 
       psi(i,j,bi,bj)=fac*fCoriG(i,j,bi,bj)
@@ -39,11 +50,13 @@ C
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
+          jp1=MIN(j+1,sNy+Oly)
           DO i=1-Olx,sNx+Olx
+           ip1=MIN(i+1,sNx+Olx)
            uVel(i,j,k,bi,bj)=0.
-     &      +(psi(i,j,bi,bj)-psi(i,j+1,bi,bj))*recip_dyg(i,j,bi,bj)
+     &      +(psi(i,j,bi,bj)-psi(i,jp1,bi,bj))*recip_dyg(i,j,bi,bj)
            vVel(i,j,k,bi,bj)=0.
-     &      +(psi(i+1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxg(i,j,bi,bj)
+     &      +(psi(ip1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxg(i,j,bi,bj)
            wVel(i,j,k,bi,bj)=0.
           ENDDO
          ENDDO
@@ -66,6 +79,10 @@ c      _EXCH_XYZ_R8(uVel  , myThid )
 c      _EXCH_XYZ_R8(vVel  , myThid )
       ENDIF
 
+c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
+       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
+c     ENDIF
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
@@ -75,18 +92,9 @@ c      _EXCH_XYZ_R8(vVel  , myThid )
            vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
           ENDDO
          ENDDO
-         CALL INTEGRATE_FOR_W(
-     I                        bi, bj, k, uVel, vVel,
-     O                        wVel,
-     I                        myThid )
         ENDDO
        ENDDO
       ENDDO
-
-c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
-       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-       _EXCH_XYZ_R8(wVel,myThid)
-c     ENDIF
 
       RETURN
       END
