@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.1 2000/06/21 19:45:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.2 2000/06/29 17:39:12 adcroft Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -50,21 +50,23 @@ C     I, J, K - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRS(i,j,k) = KappaRS(i,j,k)+maskUp(i,j)*
-     &                   (KPPdiffKzS(i,j,k,bi,bj)-diffKrT)
+     &                   (KPPdiffKzS(i,j,k,bi,bj)-diffKrS)
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRU(i,j,k) = KappaRU(i,j,k)
-     &       + 0.5*( KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i-1,j,k,bi,bj) )
+        KappaRU(i,j,k) = max ( KappaRU(i,j,k),
+     &         KappaRU(i,j,k) - viscAr + _maskW(i,j,k,bi,bj) *
+     &         0.5*(KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i-1,j,k,bi,bj)) )
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRV(i,j,k) = KappaRV(i,j,k)
-     &       + 0.5*( KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i,j-1,k,bi,bj) )
+        KappaRV(i,j,k) = max ( KappaRV(i,j,k),
+     &         KappaRV(i,j,k) - viscAr + _maskS(i,j,k,bi,bj) *
+     &         0.5*(KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i,j-1,k,bi,bj)) )
        ENDDO
       ENDDO
 
