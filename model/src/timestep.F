@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.23 2001/03/08 20:27:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.24 2001/06/05 15:29:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,7 +93,7 @@ C--   -grad Phi_Hyd has not been incorporated to gV and is added here:
           DO i=iMin,iMax
             gVNm1(i,j,k,bi,bj)=gVNm1(i,j,k,bi,bj)
      &       - _recip_dyC(i,j,bi,bj)
-     &         *(phiHyd(i,j,k)-phiHyd(i,j-1,k))*phyFac                      
+     &         *(phiHyd(i,j,k)-phiHyd(i,j-1,k))*phyFac
      &         *_maskS(i,j,k,bi,bj)
           ENDDO
         ENDDO
