@@ -1,0 +1,85 @@
+# AIM physics package parameters:
+
+#--   Physical constants
+#      P0   = reference pressure
+#      GG   = gravity accel.
+#      RD   = gas constant for dry air
+#      CP   = specific heat at constant pressure
+#      ALHC = latent heat of condensation
+#      SBC  = Stefan-Boltzmann constant            
+
+#--   Constants for forcing fields (namelist AIM_PAR_FOR):
+#      SOLC   = Solar constant (area averaged) in W/m^2
+#      ALBSEA = Albedo over sea
+#      ALBICE = Albedo over sea ice (for ice fraction = 1)
+#      ALBSN  = Albedo over snow (for snow depth > SDALB)
+#      SDALB  = Snow depth corresponding to maximum albedo
+#      SWCAP  = Soil wetness capacity
+#      SWWIL  = Soil wetness at wilting point 
+ &AIM_PAR_FOR
+ &
+
+#--   Constants for surface fluxes (namelist AIM_PAR_SFL): 
+#      FWIND0 = ratio of near-sfc wind to lowest-level wind
+#      FTEMP0 = weight for near-sfc temperature extrapolation (0-1) :
+#               1 : linear extrapolation from two lowest levels
+#               0 : constant potential temperature ( = lowest level)
+#      FHUM0  = weight for near-sfc specific humidity extrapolation (0-1) :
+#               1 : extrap. with constant relative hum. ( = lowest level)
+#               0 : constant specific hum. ( = lowest level)
+#      CDL    = drag coefficient for momentum over land
+#      CDS    = drag coefficient for momentum over sea
+#      CHL    = heat exchange coefficient over land
+#      CHS    = heat exchange coefficient over sea
+#      VGUST  = wind speed for sub-grid-scale gusts
+#      SWMAX  = Soil wetness (in mm) corresp. to potential evapotranspiration  
+ &AIM_PAR_SFL
+  FWIND0 = 0.42, 
+  FTEMP0 = 0., 
+  CHL  = 2.0e-3,
+  CHS  = 0.9e-3,
+  VGUST  = 4.,
+ &
+
+#--   Convection constants (namelist AIM_PAR_CNV):
+#      RHBL   = relative hum. threshold in the boundary (lowest) layer
+#      TRCNV  = time of relaxation (in hours) towards neutral equilibrium
+#      ENTMAX = max. entrainment as a fraction of cloud-base mass flux
+ &AIM_PAR_CNV
+ &
+
+#--   Constants for large-scale condendation (namelist AIM_PAR_LSC): 
+#      RHLSC  = Relative humidity threshold
+#      TRLSC  = Relaxation time (in hours) for supersat. specific humidity 
+ &AIM_PAR_LSC
+ &
+
+#--   Radiation constants (namelist AIM_PAR_RAD):
+#      ABSSW  = shortwave absorptivity for dry air (per dp = 10^5 Pa)
+#      ABSLW  =  longwave absorptivity for dry air (per dp = 10^5 Pa)
+#      ABWSW  = shortwave absorptivity for water vapour (per dq = 1 g/kg)
+#      ABWLW  =  longwave absorptivity for water vapour (per dq = 1 g/kg)
+#      ABCSW  = shortwave absorptivity for cloud fraction
+#      ABCLW  =  longwave absorptivity for cloud fraction
+#      EPSSW  = fraction of incoming solar radiation absorbed by ozone
+#      EPSLW  = fraction of surface LW radiation emitted directly to space
+#      ALBCL  = cloud albedo (for cloud cover = 1)
+#      RHCL1  = relative hum. corresponding to cloud cover = 0
+#      RHCL2  = relative hum. corresponding to cloud cover = 1
+#      QACL   = specific hum. threshold for cloud cover
+ &AIM_PAR_RAD
+   ABWLW = 0.60,
+   ALBCL = 0.34,
+   RHCL1 = 0.50,
+   RHCL2 = 0.90,
+   QACL  = 0.50,
+ &
+
+#--   Constants for vertical dif. and sh. conv. (namelist AIM_PAR_VDI): 
+#      TRVDI  = relaxation time (in hours) for moisture diffusion
+#      TRSHC  = relaxation time (in hours) for shallow convection
+ &AIM_PAR_VDI
+   TRVDI = 48.,
+   TRSHC = 12.,
+ &
+
