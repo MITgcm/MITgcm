@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.1 1998/07/01 14:01:12 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.2 1998/07/01 16:15:03 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -41,6 +41,7 @@ set EXECUTABLE  = ( mitgcmuv )
 
 # This is the generic configuration.
 # Platform specific options are chosen below
+set LN         = ( 'ln -sf' )
 set CPP        = ( '/lib/cpp -P' )
 set KPP        = (  )
 set FC         = ( 'f77' )
@@ -78,8 +79,10 @@ switch ($platform$USEMPI)
     set FC         = ( 'f90' )
     set FFLAGS     = ( '-convert big_endian -r8 -extend_source -u -automatic -call_shared -notransform_loops -align dcommons -p1' )
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
+    set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
     set KPPFILES   = ( 'main.F' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
     set RMFILES    = ( '*.p.out' )
     breaksw
   case mips+mpi:
@@ -100,8 +103,16 @@ switch ($platform$USEMPI)
     set RMFILES    = ( 'rii_files' )
     breaksw
   case sparc:
+    set LN         = ( '/usr/bin/ln -fs' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
+    set INCLUDES   = ( '-I/usr/local/mpi/include' )
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
+    set FOPTIM     = ( '-O5' )
+    set NOOPTFLAGS = ( '-O0' )
+    set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
+                       '-lsocket -lnsl -fast' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
@@ -182,6 +193,8 @@ INCLUDEDIRS = ${INCLUDEDIRS}
 EXEDIR     = ${EXEDIR}
 EXECUTABLE = \$(EXEDIR)${EXECUTABLE}
 
+# Unix ln (link)
+LN = ${LN}
 # C preprocessor
 CPP = ${CPP}
 # Special preprocessor (KAP on DECs, FPP on Crays)
@@ -220,7 +233,7 @@ all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(OBJFILES)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(LIBS) \$(OBJFILES)
 links:
-	@-ln -sf $SRCSTARS .
+	@-\$(LN) $SRCSTARS .
 depend:
 	@make links
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
