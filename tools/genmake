@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.54 2001/09/19 02:43:27 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.55 2001/09/27 19:06:30 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -133,6 +133,11 @@ end
 # If platform wasn't specified then determine platform type of the host
 if (! $?platform) then
  set platform = (`uname`)
+# This let's us distinguish between different Linux platforms
+ if ($platform == Linux) then
+  set machine = (`uname -m`)
+  set platform = ($platform'-'$machine)
+ endif
 endif
 # If name of makefile wasn't specified then use default "Makefile"
 if (! $?mfile) set mfile = ( Makefile )
@@ -435,10 +440,26 @@ switch ($platform$USEMPI)
     set NOOPTFILES = ( 'barrier.F different_multiple.F' \
                        'external_fields_load.F' )
     breaksw
-  case Linux+mpi:
+  case Linux-alpha+mpi:
+    echo "Configuring with MPI"
     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
     set INCLUDES   = ( '-I/usr/local/include' )
-  case Linux:
+  case Linux-alpha:
+    echo "Configuring for " $platform
+    set LN         = ( '/bin/ln -s' )
+    set CPP        = ( '/lib/cpp  -traditional -P' )
+    set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
+    set FC         = ( 'g77' )
+    set FFLAGS     = ( ' ' )
+    if ($?IEEE) set FFLAGS = ( $FFLAGS '-ffloat-store' )
+    set FOPTIM     = ( '-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3' )
+    set LINK       = ( 'g77' )
+    breaksw
+  case Linux*+mpi:
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    set INCLUDES   = ( '-I/usr/local/include' )
+  case Linux*:
+    echo "Configuring for " $platform
     set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/lib/cpp  -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
@@ -448,7 +469,7 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
     set LINK       = ( 'g77' )
     breaksw
-  case Linux+pgi+mpi:
+  case Linux*+pgi+mpi:
     if ($?include_jam_libs) then
      set INCLUDES   = ( '-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include' )
      set LIBS       = ( '-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich' )
@@ -456,7 +477,8 @@ switch ($platform$USEMPI)
      set INCLUDES   = ( '-I/usr/local/include' )
      set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
     endif
-  case Linux+pgi:
+  case Linux*+pgi:
+    echo "Configuring for " $platform
     set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/lib/cpp -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
@@ -467,6 +489,7 @@ switch ($platform$USEMPI)
     breaksw
   case T3E:
   case sn6312:
+    echo "Configuring for T3E"
     set CPP        = ( '/opt/ctl/bin/cpp -P')
     set DEFINES    = ( ${DEFINES} '-DTARGET_T3E -DWORDLENGTH=4' )
     set FC         = ( 'f90' )
@@ -475,6 +498,7 @@ switch ($platform$USEMPI)
     breaksw
   case T90:
   case sn7113:
+    echo "Configuring for T90"
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
     set LN         = ( '/bin/ln -s' )
