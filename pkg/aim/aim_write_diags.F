@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.5 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.6 2002/11/22 03:04:44 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
 CStartOfInterFace
-      SUBROUTINE AIM_WRITE_DIAGS( myTime, myIter, myThid )
+      SUBROUTINE AIM_WRITE_TAVE( myTime, myIter, myThid )
 C     /==========================================================\
-C     | SUBROUTINE AIM_WRITE_DIAGS                               |
+C     | SUBROUTINE AIM_WRITE_TAVE                                |
 C     | o Write out AIM diagnostic output                        |
 C     \==========================================================/
       IMPLICIT NONE
