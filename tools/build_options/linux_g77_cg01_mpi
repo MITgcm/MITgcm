@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_g77_cg01_mpi,v 1.1 2003/09/10 04:24:18 edhill Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
+
+
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+FOPTIM='-O3 -malign-double -funroll-loops'
+NOOPTFLAGS='-O0'
+FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/g77/bin/mpif77'
+LINK='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/g77/bin/mpif77'
+INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/g77/include'
+

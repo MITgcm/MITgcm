@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_pgi_cg01_mpi,v 1.1 2003/09/10 04:24:18 edhill Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+
+
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+NOOPTFLAGS='-O0'
+FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
+LINK='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
+INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
+

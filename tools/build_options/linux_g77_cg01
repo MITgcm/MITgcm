@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_g77_cg01,v 1.1 2003/09/10 04:24:18 edhill Exp $
+#
+# tested on cg01 and confirmed to work, eh3 2003-09-08
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+
+
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+FOPTIM='-O3 -malign-double -funroll-loops'
+NOOPTFLAGS='-O0'
+FC=g77
+LINK=g77
+
+
