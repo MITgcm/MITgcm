@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.6 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.7 2002/08/15 18:48:47 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -106,7 +106,7 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      I        theta, salt,
      O        bulkMod,
      I        myThid )
@@ -129,7 +129,7 @@ C     issue a warning
                end if
                s3o2 = sqrt(s*s*s)
                
-               p  = pressure(i,j,k,bi,bj)*SItoBar
+               p  = pressure(i,j,kRef,bi,bj)*SItoBar
                p2 = p*p
 
 C     d(rho)/d(theta)
@@ -297,7 +297,7 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      I        theta, salt,
      O        bulkMod,
      I        myThid )
@@ -320,7 +320,7 @@ C     issue a warning
                end if
                s3o2 = 1.5*sqrt(s)
 
-               p  = pressure(i,j,k,bi,bj)*SItoBar
+               p  = pressure(i,j,kRef,bi,bj)*SItoBar
 
 C     d(rho)/d(S)
 C     of fresh water at p = 0

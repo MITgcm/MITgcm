@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.17 2002/08/15 17:25:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.18 2002/08/15 18:48:47 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -129,7 +129,7 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      I        tFld, sFld,
      O        bulkMod,
      I        myThid )
@@ -140,7 +140,7 @@ C     nonlinear equation of state in pressure coordinates
 C     density of sea water at pressure p
                rholoc(i,j) = rhoP0(i,j)
      &              /(1. _d 0 - 
-     &              pressure(i,j,k,bi,bj)*SItoBar/bulkMod(i,j))
+     &              pressure(i,j,kRef,bi,bj)*SItoBar/bulkMod(i,j))
      &              - rhonil
 
             end do
@@ -251,7 +251,7 @@ C     density of sea water at the surface
 C     !ROUTINE: FIND_BULKMOD
 C     !INTERFACE:
       subroutine FIND_BULKMOD(
-     I      bi, bj, iMin, iMax, jMin, jMax,  k,
+     I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      I      tFld, sFld,
      O      bulkMod,
      I      myThid )
@@ -262,7 +262,8 @@ C     | o SUBROUTINE FIND_BULKMOD
 C     |   Calculates the secant bulk modulus K(S,T,p) of a slice
 C     *==========================================================*
 C     |                                                           
-C     | k - is the surface level                               
+C     | k    - is the surface level                               
+C     | kRef - is the level to use to determine the pressure
 C     |                                                           
 C     *==========================================================*
 C     \ev
@@ -279,6 +280,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       integer bi,bj,iMin,iMax,jMin,jMax
       integer k			! Level of surface slice
+      integer kRef		! Reference pressure level
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -308,7 +310,7 @@ C     issue a warning
             end if
             s3o2 = s*sqrt(s)
 C
-            p = pressure(i,j,k,bi,bj)*SItoBar
+            p = pressure(i,j,kRef,bi,bj)*SItoBar
             p2 = p*p
 C     secant bulk modulus of fresh water at the surface
             bMfresh = 
