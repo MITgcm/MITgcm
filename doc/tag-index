@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.75 2002/06/20 23:52:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.76 2002/07/12 14:52:08 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o use recip_dx*,recip_dy* instead of /dx*,/dy* in orlanski_E,W,N,S
+  (affects plume_on_slope "cg2d" output)
 o NONLIN_FRSURF: rescale gNm1 to get a better conservation with A-B
 o change phiMin in exp1 (to agree with documentation)
 o add new flags: 
