@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.14 2000/04/05 15:23:20 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.15 2000/11/13 16:20:30 heimbach Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
