@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.15 2003/10/21 18:35:08 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.16 2003/10/21 19:31:24 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1334,7 +1334,7 @@ ad_input_code.f: \$(F77FILES)
 	@make \$(AD_FLOW_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.f
 
-
+# ... AD ...
 ad_taf_output.f: ad_input_code.f
 	\$(TAF) \$(AD_TAF_FLAGS) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
@@ -1342,15 +1342,15 @@ ad_taf_output.f: ad_input_code.f
 ad_taf: ad_taf_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
 
-
 ad_tamc_output.f: ad_input_code.f
 	\$(TAMC) \$(AD_TAMC_FLAGS) ad_input_code.f
-	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_tamc_output.f
 
 ad_tamc: ad_tamc_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
 
 
+# ... FLT ...
 flt_taf_output.f: ad_input_code.f
 	\$(TAF) \$(FTL_TAF_FLAGS) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_taf_output.f
@@ -1358,6 +1358,21 @@ flt_taf_output.f: ad_input_code.f
 flt_taf: flt_taf_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_taf_output.o \$(LIBS) 
 
+flt_tamc_output.f: ad_input_code.f
+	\$(TAMC) \$(FTL_TAF_FLAGS) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_tamc_output.f
+
+flt_tamc: flt_tamc_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_tamc_output.o \$(LIBS) 
+
+
+# ... SVD ...
+svd_taf_output.f: ad_input_code.f
+	\$(TAF) \$(SVD_TAF_FLAGS) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > svd_taf_output.f
+
+svd_taf: svd_taf_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) svd_taf_output.o \$(LIBS) 
 
 
 #=========================================
