@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.52 2001/09/27 20:13:58 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.53 2001/09/28 17:53:37 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint43
+o added two new advection tests
+o added global 4x4 degree ocean test
+o added test of H&S94 with free surface on cube
+o some final mods for gradient check, adjoint,...
 
 checkpoint42
   Fixed AD-related problems:
