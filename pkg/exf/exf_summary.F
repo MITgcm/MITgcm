@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.4 2003/02/18 05:33:55 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -13,20 +13,17 @@ c     ==================================================================
 c
 c     o List all the settings of the external forcing.
 c
-c     started: Christian Eckert eckert@mit.edu  11-Jan-1999
+c     started: Christian Eckert eckert@mit.edu 11-Jan-1999
 c
-c     changed: Christian Eckert eckert@mit.edu  12-Feb-2000
+c     changed: Christian Eckert eckert@mit.edu 12-Feb-2000
+c              - changed routine names (package prefix: exf_)
 c
-c              - Changed Routine names (package prefix: exf_)
-c
-c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c
+c     changed: Patrick Heimbach heimbach@mit.edu 04-May-2000
 c              - changed the handling of precip and sflux with respect
 c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
 c
-c              Dimitris Menemenlis menemenlis@jpl.nasa.gov  20-Dec-2002
-c
-c              - Added EXF_READ_EVAP and EXF_NO_BULK_COMPUTATIONS.
+c     changed: Dimitris Menemenlis menemenlis@jpl.nasa.gov 20-Dec-2002
+c              - modifications for using pkg/exf with pkg/seaice
 c
 c     ==================================================================
 c     SUBROUTINE exf_Summary
@@ -96,33 +93,20 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c     For each data set used the summary prints the calendar data
-c     and the corresponding file from which the data will be read.
+c--   Print settings of some CPP flags.
 
-#ifdef ALLOW_BULKFORMULAE
-      write(msgbuf,'(a)')
-     &'// ALLOW_BULKFORMULAE:                 defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
 #ifdef ALLOW_ATM_TEMP
-      write(msgbuf,'(a)')
-     &'// '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_TEMP:                     defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
      &'// ALLOW_ATM_TEMP:                 NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
+
 #ifdef ALLOW_ATM_WIND
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_WIND:                     defined'
@@ -134,17 +118,24 @@ c     and the corresponding file from which the data will be read.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
-#ifdef EXF_NO_BULK_COMPUTATIONS
+
+#ifdef ALLOW_DOWNWARD_RADIATION
       write(msgbuf,'(a)')
-     &'// EXF_NO_BULK_COMPUTATIONS:           defined'
+     &'// ALLOW_DOWNWARD_RADIATION:           defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// EXF_NO_BULK_COMPUTATIONS:       NOT defined'
+     &'// DOWNWARD_RADIATION:             NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
+
+#ifdef ALLOW_BULKFORMULAE
+      write(msgbuf,'(a)')
+     &'// ALLOW_BULKFORMULAE:                 defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_BULKFORMULAE:             NOT defined'
@@ -152,19 +143,316 @@ c     and the corresponding file from which the data will be read.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_KPP
+c--   For each data set used the summary prints the calendar data
+c     and the corresponding file from which the data will be read.
+
+#ifndef ALLOW_ATM_WIND
+c--   Zonal wind stress.
+      il = ilnblnk(ustressfile)
+      call cal_TimeInterval( ustressperiod, 'secs', timeint, mythid )
       write(msgbuf,'(a)')
-     &'// ALLOW_KPP:                          defined'
+     &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#else
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Zonal wind stress forcing starts at         ',
+     &    (ustressstartdate(i), i=1,2), dayofweek(ustressstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Zonal wind stress forcing period is         ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// ALLOW_KPP:                      NOT defined'
+     &'   Zonal wind stress forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',ustressfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Meridional wind stress.
+      il = ilnblnk(vstressfile)
+      call cal_TimeInterval( vstressperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Meridional wind stress forcing starts at    ',
+     &    (vstressstartdate(i), i=1,2), dayofweek(vstressstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Meridional wind stress forcing period is    ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Meridional wind stress forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',vstressfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifndef ALLOW_ATM_TEMP
+c--   Heat flux.
+      il = ilnblnk(hfluxfile)
+      call cal_TimeInterval( hfluxperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Heat flux forcing starts at                ',
+     &    (hfluxstartdate(i), i=1,2), dayofweek(hfluxstartdate(4)),'.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Heat flux forcing period is                 ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Heat flux forcing is read from file:        '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',hfluxfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Salt flux.
+      il = ilnblnk(sfluxfile)
+      call cal_TimeInterval( sfluxperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Salt flux forcing starts at                 ',
+     &    (sfluxstartdate(i), i=1,2), dayofweek(sfluxstartdate(4)),'.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Salt flux forcing period is                 ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Salt flux forcing is read from file:        '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',sfluxfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+c--   Net shortwave.
+      il = ilnblnk(swfluxfile)
+      call cal_TimeInterval( swfluxperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Net shortwave flux forcing starts at      ',
+     &    (swfluxstartdate(i), i=1,2), dayofweek(swfluxstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Net shortwave flux forcing period is      ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Net shortwave flux forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',swfluxfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_ATM_WIND
+c--   Zonal wind.
+      il = ilnblnk(uwindfile)
+      call cal_TimeInterval( uwindperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Zonal wind forcing starts at                ',
+     &    (uwindstartdate(i), i=1,2), dayofweek(uwindstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Zonal wind forcing period is                ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Zonal wind forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',uwindfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Meridional wind.
+      il = ilnblnk(vwindfile)
+      call cal_TimeInterval( vwindperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Meridional wind forcing starts at           ',
+     &    (vwindstartdate(i), i=1,2), dayofweek(vwindstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Meridional wind forcing period is           ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Meridional wind forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',vwindfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_ATM_TEMP
+c--   Atmospheric temperature.
+      il = ilnblnk(atempfile)
+      call cal_TimeInterval( atempperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Atmospheric temperature starts at           ',
+     &    (atempstartdate(i), i=1,2), dayofweek(atempstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Atmospheric temperature period is           ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Atmospheric temperature is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',atempfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Atmospheric specific humidity.
+      il = ilnblnk(aqhfile)
+      call cal_TimeInterval( aqhperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Atmospheric specific humidity starts at     ',
+     &    (aqhstartdate(i), i=1,2), dayofweek(aqhstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Atmospheric specific humidity period is     ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Atmospheric specific humidity is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',aqhfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Net longwave.
+      il = ilnblnk(lwfluxfile)
+      call cal_TimeInterval( lwfluxperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Net longwave flux forcing starts at       ',
+     &    (lwfluxstartdate(i), i=1,2), dayofweek(lwfluxstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Net longwave flux forcing period is       ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Net longwave flux forcing is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',lwfluxfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c--   Precipitation.
+      il = ilnblnk(precipfile)
+      call cal_TimeInterval( precipperiod, 'secs', timeint, mythid )
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Precipitation data set starts at            ',
+     &    (precipstartdate(i), i=1,2), dayofweek(precipstartdate(4)),
+     &'.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Precipitation data period is                ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Precipitation data is read from file:       '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',precipfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
 #ifdef EXF_READ_EVAP
+c--   Evaporation.
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                      defined'
       call print_message( msgbuf, standardmessageunit,
@@ -195,14 +483,15 @@ c     and the corresponding file from which the data will be read.
      &'   >>  ',evapfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#else EXF_READ_EVAP
+#else
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                  NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif EXF_READ_EVAP
+#endif
 
 #ifdef ALLOW_RUNOFF
+c--   Runoff.
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                       defined'
       call print_message( msgbuf, standardmessageunit,
@@ -233,497 +522,96 @@ c     and the corresponding file from which the data will be read.
      &'   >>  ',runofffile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#else ALLOW_RUNOFF
+#else /* ALLOW_RUNOFF */
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                   NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif ALLOW_RUNOFF
+#endif /* ALLOW_RUNOFF */
 
-#ifdef ALLOW_BULKFORMULAE
-
-#ifdef ALLOW_ATM_TEMP
-c     Atmospheric temperature.
-      il = ilnblnk(atempfile)
-      call cal_TimeInterval( atempperiod, 'secs', timeint, mythid )
-
+#ifdef DOWNWARD_RADIATION
+c--   Downward shortwave.
+      il = ilnblnk(swdownfile)
+      call cal_TimeInterval( swdownperiod, 'secs', timeint, mythid )
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Atmospheric temperature starts at           ',
-     &    (atempstartdate(i), i=1,2), dayofweek(atempstartdate(4)),
+     &'   Downward shortwave flux forcing starts at      ',
+     &    (swdownstartdate(i), i=1,2), dayofweek(swdownstartdate(4)),
      &    '.'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Atmospheric temperature period is           ',
+     &'   Downward shortwave flux forcing period is      ',
      &    (timeint(i), i=1,2)
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'   Atmospheric temperature is read from file:'
+     &'   Downward shortwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,a,a)')
-     &'   >>  ',atempfile(1:il),'  <<'
+     &'   >>  ',swdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c     Atmospheric specific humidity.
-      il = ilnblnk(aqhfile)
-      call cal_TimeInterval( aqhperiod, 'secs', timeint, mythid )
-
+c--   Downward longwave.
+      il = ilnblnk(lwdownfile)
+      call cal_TimeInterval( lwdownperiod, 'secs', timeint, mythid )
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Atmospheric specific humidity starts at     ',
-     &    (aqhstartdate(i), i=1,2), dayofweek(aqhstartdate(4)),
+     &'   Downward longwave flux forcing starts at       ',
+     &    (lwdownstartdate(i), i=1,2), dayofweek(lwdownstartdate(4)),
      &    '.'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Atmospheric specific humidity period is     ',
+     &'   Downward longwave flux forcing period is       ',
      &    (timeint(i), i=1,2)
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'   Atmospheric specific humidity is read from file:'
+     &'   Downward longwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,a,a)')
-     &'   >>  ',aqhfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Short wave radiative flux.
-      il = ilnblnk(swfluxfile)
-      call cal_TimeInterval( swfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Short wave rad. flux forcing starts at      ',
-     &    (swfluxstartdate(i), i=1,2), dayofweek(swfluxstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Short wave rad. flux forcing period is      ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Short wave rad. flux forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',swfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Long wave radiative flux.
-      il = ilnblnk(lwfluxfile)
-      call cal_TimeInterval( lwfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Long wave rad. flux forcing starts at       ',
-     &    (lwfluxstartdate(i), i=1,2), dayofweek(lwfluxstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Long wave rad. flux forcing period is       ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Long wave rad. flux forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',lwfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Precipitation.
-      il = ilnblnk(precipfile)
-      call cal_TimeInterval( precipperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Precipitation data set starts at            ',
-     &    (precipstartdate(i), i=1,2), dayofweek(precipstartdate(4)),
-     &'.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Precipitation data period is                ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Precipitation data is read from file:       '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',precipfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-#else
-c     Heat flux.
-      il = ilnblnk(hfluxfile)
-      call cal_TimeInterval( hfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Heat flux forcing starts at                ',
-     &    (hfluxstartdate(i), i=1,2), dayofweek(hfluxstartdate(4)),'.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Heat flux forcing period is                 ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Heat flux forcing is read from file:        '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',hfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Salt flux.
-      il = ilnblnk(sfluxfile)
-      call cal_TimeInterval( sfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Salt flux forcing starts at                 ',
-     &    (sfluxstartdate(i), i=1,2), dayofweek(sfluxstartdate(4)),'.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Salt flux forcing period is                 ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Salt flux forcing is read from file:        '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',sfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-#ifdef ALLOW_KPP
-c     Short wave radiative flux.
-      il = ilnblnk(swfluxfile)
-      call cal_TimeInterval( swfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Short wave rad. flux forcing starts at      ',
-     &    (swfluxstartdate(i), i=1,2), dayofweek(swfluxstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Short wave rad. flux forcing period is      ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Short wave rad. flux forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',swfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-#endif
-
-#ifdef ALLOW_ATM_WIND
-c     Zonal wind.
-      il = ilnblnk(uwindfile)
-      call cal_TimeInterval( uwindperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Zonal wind forcing starts at                ',
-     &    (uwindstartdate(i), i=1,2), dayofweek(uwindstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Zonal wind forcing period is                ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Zonal wind forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',uwindfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Meridional wind.
-      il = ilnblnk(vwindfile)
-      call cal_TimeInterval( vwindperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Meridional wind forcing starts at           ',
-     &    (vwindstartdate(i), i=1,2), dayofweek(vwindstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Meridional wind forcing period is           ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Meridional wind forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',vwindfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#else
-c     Zonal wind stress.
-      il = ilnblnk(ustressfile)
-      call cal_TimeInterval( ustressperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Zonal wind stress forcing starts at         ',
-     &    (ustressstartdate(i), i=1,2), dayofweek(ustressstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Zonal wind stress forcing period is         ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Zonal wind stress forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',ustressfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Meridional wind stress.
-      il = ilnblnk(vstressfile)
-      call cal_TimeInterval( vstressperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Meridional wind stress forcing starts at    ',
-     &    (vstressstartdate(i), i=1,2), dayofweek(vstressstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Meridional wind stress forcing period is    ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Meridional wind stress forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',vstressfile(1:il),'  <<'
+     &'   >>  ',lwdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#else
-c     Heat flux.
-      il = ilnblnk(hfluxfile)
-      call cal_TimeInterval( hfluxperiod, 'secs', timeint, mythid )
-
+#ifdef ATMOSPHERIC_LOADING
+c--   Atmospheric pressure.
+      il = ilnblnk(apressurefile)
+      call cal_TimeInterval( apressureperiod, 'secs', timeint, mythid )
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Heat flux forcing starts at                 ',
-     &    (hfluxstartdate(i), i=1,2), dayofweek(hfluxstartdate(4)),'.'
+     &'   Atmospheric pressure forcing starts at      ',
+     &    (apressurestartdate(i), i=1,2),
+     &    dayofweek(apressurestartdate(4)), '.'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Heat flux forcing period is                 ',
+     &'   Atmospheric pressure forcing period is      ',
      &    (timeint(i), i=1,2)
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'   Heat flux forcing is read from file:        '
+     &'   Atmospheric pressureforcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,a,a)')
-     &'   >>  ',hfluxfile(1:il),'  <<'
+     &'   >>  ',apressurefile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-
-c     Salt flux.
-      il = ilnblnk(sfluxfile)
-      call cal_TimeInterval( sfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Salt flux forcing starts at                 ',
-     &    (sfluxstartdate(i), i=1,2), dayofweek(sfluxstartdate(4)),'.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Salt flux forcing period is                 ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Salt flux forcing is read from file:        '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',sfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Zonal wind stress.
-      il = ilnblnk(ustressfile)
-      call cal_TimeInterval( ustressperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Zonal wind stress forcing starts at         ',
-     &    (ustressstartdate(i), i=1,2), dayofweek(ustressstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Zonal wind stress forcing period is         ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Zonal wind stress forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',ustressfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-c     Meridional wind stress.
-      il = ilnblnk(vstressfile)
-      call cal_TimeInterval( vstressperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Meridional wind stress forcing starts at    ',
-     &    (vstressstartdate(i), i=1,2), dayofweek(vstressstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Meridional wind stress forcing period is    ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Meridional wind stress forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',vstressfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-#ifdef ALLOW_KPP
-c     Short wave radiative flux.
-      il = ilnblnk(swfluxfile)
-      call cal_TimeInterval( swfluxperiod, 'secs', timeint, mythid )
-
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
-     &'   Short wave rad. flux forcing starts at      ',
-     &    (swfluxstartdate(i), i=1,2), dayofweek(swfluxstartdate(4)),
-     &    '.'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
-     &'   Short wave rad. flux forcing period is      ',
-     &    (timeint(i), i=1,2)
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'   Short wave rad. flux forcing is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a,a)')
-     &'   >>  ',swfluxfile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
 #endif
 
       write(msgbuf,'(a)')

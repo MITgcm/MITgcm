@@ -24,8 +24,8 @@ NCEP reanalysis (see pkg/seaice/SEAICE_FFIELDS.h for units and signs)
   vwindFile      = 'v10m.labsea79'    # 10-m meridional wind
   atempFile      = 'tair.labsea1979'  # 2-m air temperature
   aqhFile        = 'qa.labsea1979'    # 2-m specific humidity
-  lwfluxFile     = 'flo.labsea1979'   # longwave radiation
-  swfluxFile     = 'fsh.labsea1979'   # shortwave radiation
+  lwdownFile     = 'flo.labsea1979'   # downward longwave radiation
+  swdownFile     = 'fsh.labsea1979'   # downward shortwave radiation
   precipFile     = 'prate.labsea1979' # precipitation
   evapFile       = 'evap.labsea1979'  # evaporation
 
@@ -83,6 +83,21 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FORCING:
   make depend
   make
   mv mitgcmuv mitgcmuv_exf_forcing
+
+1-CPU executable with SEAICE_EXTERNAL_FORCING, without READ_EVAP
+  cd ../../../verification/lab_sea/input
+  ln -sf ../code/SIZE.h .
+  ln -sf ../code/CPP_EEOPTIONS.h .
+  ln -sf ../code/CPP_OPTIONS.h .
+  ln -sf ../code/ECCO_CPPOPTIONS.BULK.h ECCO_CPPOPTIONS.h
+  ln -sf ../code/SEAICE_OPTIONS.h .
+  ../../../tools/genmake -makefile
+    ==> on alhena use:
+    ../../../tools/genmake -platform=o2k_noopt -makefile
+  make clean
+  make depend
+  make
+  mv mitgcmuv mitgcmuv_compute_evap
 
 Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
   cd ../../../verification/lab_sea/input
@@ -337,3 +352,24 @@ the output of exp9 to that of exp8:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp9
+
+
+Instructions for running Experiment 10
+======================================
+
+This is a 1-cpu, 10-hour integration similar to exp8, but
+with bulk formula computation of evaporation fields.
+
+To run Experiment 10:
+  cd ../../../verification/lab_sea/input
+  ln -sf DATA.10hours_exf data
+  ln -sf DATA.SEAICE.adi_exf data.seaice
+  mitgcmuv_compute_evap >&! output.txt
+  mkdir exp10
+  mv *tave.0000000010.data exp10
+
+Use matlab script lookat_exp10.m to compare
+the output of exp10 to that of exp8:
+  cd ../../../verification/lab_sea/matlab
+  matlab
+  lookat_exp10

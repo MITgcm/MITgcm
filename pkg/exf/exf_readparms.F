@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.5 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.6 2003/02/18 05:33:54 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -35,7 +35,7 @@ c              - added new obcs parameters (for each boundaries)
 c     included runoff D. Stammer, Nov. 25, 2001
 c     included pressure forcing. heimbach@mit.edu 05-Nov-2002
 c     added "repeatPeriod" for cycling of forcing datasets 19-Dec-2002
-c     added option EXF_READ_EVAP. menemenlis@jpl.nasa.gov 20-Dec-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_readparms
@@ -83,6 +83,8 @@ c     Surface flux data.
      &    vwindstartdate1,    vwindstartdate2,   vwindperiod,
      &   swfluxstartdate1,   swfluxstartdate2,  swfluxperiod,
      &   lwfluxstartdate1,   lwfluxstartdate2,  lwfluxperiod,
+     &   swdownstartdate1,   swdownstartdate2,  swdownperiod,
+     &   lwdownstartdate1,   lwdownstartdate2,  lwdownperiod,
      &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
      &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
      &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
@@ -93,10 +95,15 @@ c     Surface flux data.
      &        ustressfile,        vstressfile,      evapfile,
      &          uwindfile,          vwindfile,
      &         swfluxfile,         lwfluxfile, apressurefile,
+     &         swdownfile,         lwdownfile,
      &          exf_iprec,         exf_yftype,
-     &           scal_hfl,           scal_ust,       scal_vst,
-     &           scal_swf,           scal_sst,       scal_sss,
-     &     scal_apressure,           scal_sfl
+     &     exf_inscal_hfl,     exf_inscal_ust, exf_inscal_vst,
+     &     exf_inscal_swf,     exf_inscal_sst, exf_inscal_sss,
+     &     exf_inscal_sfl,  exf_inscal_runoff,exf_inscal_apressure,
+     &    exf_outscal_hfl,    exf_outscal_ust,exf_outscal_vst,
+     &    exf_outscal_swf,    exf_outscal_sst,exf_outscal_sss,
+     &    exf_outscal_sfl,  exf_outscal_apressure,
+     &     EXFwindOnBgrid
 
       _BEGIN_MASTER(mythid)
 
@@ -155,6 +162,14 @@ c     Calendar data.
       lwfluxstartdate2   = 0
       lwfluxperiod       = 0.0 _d 0
 
+      swdownstartdate1   = 0
+      swdownstartdate2   = 0
+      swdownperiod       = 0.0 _d 0
+
+      lwdownstartdate1   = 0
+      lwdownstartdate2   = 0
+      lwdownperiod       = 0.0 _d 0
+
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
       obcsNperiod        = 0.0 _d 0
@@ -191,6 +206,8 @@ c     Data files.
       vwindfile          = ' '
       swfluxfile         = ' '
       lwfluxfile         = ' '
+      swdownfile         = ' '
+      lwdownfile         = ' '
       apressurefile      = ' '
 
 c     Initialise the date arrays.
@@ -208,6 +225,8 @@ c     Initialise the date arrays.
          vwindstartdate(i)    = 0
          swfluxstartdate(i)   = 0
          lwfluxstartdate(i)   = 0
+         swdownstartdate(i)   = 0
+         lwdownstartdate(i)   = 0
          obcsNstartdate(i)    = 0
          obcsSstartdate(i)    = 0
          obcsEstartdate(i)    = 0
@@ -219,15 +238,29 @@ c     Initialise file type and field precision
       exf_iprec       = 32
       exf_yftype      = 'RL'
 
-c     scaling between exf units and MITgcm units
-      scal_hfl       =  1. _d 0
-      scal_ust       =  1. _d 0
-      scal_vst       =  1. _d 0
-      scal_swf       =  1. _d 0
-      scal_sst       =  1. _d 0
-      scal_sss       =  1. _d 0
-      scal_apressure =  1. _d 0
-      scal_sfl       =  1. _d 0     
+c     Input scaling factors.
+      exf_inscal_hfl       =  1. _d 0
+      exf_inscal_ust       =  1. _d 0
+      exf_inscal_vst       =  1. _d 0
+      exf_inscal_swf       =  1. _d 0
+      exf_inscal_sst       =  1. _d 0
+      exf_inscal_sss       =  1. _d 0
+      exf_inscal_apressure =  1. _d 0
+      exf_inscal_sfl       =  1. _d 0
+cds   convert runoff from m/yr to m/s and change sign.
+      exf_inscal_runoff    = -1.0/(86400.*365.0)
+
+c     Output scaling factors.
+      exf_outscal_hfl      =  1. _d 0
+      exf_outscal_ust      =  1. _d 0
+      exf_outscal_vst      =  1. _d 0
+      exf_outscal_swf      =  1. _d 0
+      exf_outscal_sst      =  1. _d 0
+      exf_outscal_sss      =  1. _d 0
+      exf_outscal_apressure=  1. _d 0
+      exf_outscal_sfl      =  1. _d 0
+c
+      EXFwindOnBgrid = .FALSE.
 
 c     Check for the availability of the right calendar version.
       if ( calendarversion .ne. usescalendarversion ) then
@@ -263,91 +296,78 @@ c     check for consistency
          stop 'stop in exf_readparms: value of exf_yftype not allowed'
       end if
 
-#ifdef EXF_READ_EVAP
-      call cal_FullDate(  evapstartdate1,    evapstartdate2,
-     &                    evapstartdate,              mythid )
-#endif EXF_READ_EVAP
-
-#ifdef ALLOW_RUNOFF
-      call cal_FullDate(  runoffstartdate1,  runoffstartdate2,
-     &                    runoffstartdate,            mythid )
+#ifdef ALLOW_ATM_WIND
+      call cal_FullDate(    uwindstartdate1,    uwindstartdate2,
+     &                      uwindstartdate ,             mythid )
+      call cal_FullDate(    vwindstartdate1,    vwindstartdate2,
+     &                      vwindstartdate ,             mythid )
+#else
+      call cal_FullDate(  ustressstartdate1,  ustressstartdate2,
+     &                    ustressstartdate ,             mythid )
+      call cal_FullDate(  vstressstartdate1,  vstressstartdate2,
+     &                    vstressstartdate ,             mythid )
 #endif
-
-#ifdef ALLOW_BULKFORMULAE
 
 #ifdef ALLOW_ATM_TEMP
-      call cal_FullDate(   atempstartdate1,   atempstartdate2,
-     &                     atempstartdate,            mythid )
-      call cal_FullDate(     aqhstartdate1,     aqhstartdate2,
-     &                       aqhstartdate,            mythid )
-      call cal_FullDate(  swfluxstartdate1,  swfluxstartdate2,
-     &                    swfluxstartdate,            mythid )
-      call cal_FullDate(  lwfluxstartdate1,  lwfluxstartdate2,
-     &                    lwfluxstartdate,            mythid )
-      call cal_FullDate(  precipstartdate1,  precipstartdate2,
-     &                    precipstartdate,            mythid )
+      call cal_FullDate(    atempstartdate1,    atempstartdate2,
+     &                      atempstartdate ,             mythid )
+      call cal_FullDate(      aqhstartdate1,      aqhstartdate2,
+     &                        aqhstartdate ,             mythid )
+      call cal_FullDate(   lwfluxstartdate1,   lwfluxstartdate2,
+     &                     lwfluxstartdate ,             mythid )
+      call cal_FullDate(   precipstartdate1,   precipstartdate2,
+     &                     precipstartdate ,             mythid )
 #else
-      call cal_FullDate(   hfluxstartdate1,   hfluxstartdate2,
-     &                     hfluxstartdate,            mythid )
-      call cal_FullDate(   sfluxstartdate1,  sfluxstartdate2,
-     &                     sfluxstartdate,           mythid )
-#ifdef ALLOW_KPP
-      call cal_FullDate(  swfluxstartdate1,  swfluxstartdate2,
-     &                    swfluxstartdate,            mythid )
+      call cal_FullDate(    hfluxstartdate1,    hfluxstartdate2,
+     &                      hfluxstartdate ,             mythid )
+      call cal_FullDate(    sfluxstartdate1,    sfluxstartdate2,
+     &                      sfluxstartdate ,             mythid )
 #endif
 
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+      call cal_FullDate(   swfluxstartdate1,   swfluxstartdate2,
+     &                     swfluxstartdate ,             mythid )
 #endif
 
-#ifdef ALLOW_ATM_WIND
-      call cal_FullDate(   uwindstartdate1,   uwindstartdate2,
-     &                     uwindstartdate,            mythid )
-      call cal_FullDate(   vwindstartdate1,   vwindstartdate2,
-     &                     vwindstartdate,            mythid )
-#else
-      call cal_FullDate( ustressstartdate1, ustressstartdate2,
-     &                   ustressstartdate,            mythid )
-      call cal_FullDate( vstressstartdate1, vstressstartdate2,
-     &                   vstressstartdate,            mythid )
+#ifdef EXF_READ_EVAP
+      call cal_FullDate(     evapstartdate1,     evapstartdate2,
+     &                       evapstartdate ,             mythid )
 #endif
 
-#else
-      call cal_FullDate(   hfluxstartdate1,  hfluxstartdate2,
-     &                     hfluxstartdate,           mythid )
-      call cal_FullDate(   sfluxstartdate1,  sfluxstartdate2,
-     &                     sfluxstartdate,           mythid )
-      call cal_FullDate( ustressstartdate1, ustressstartdate2,
-     &                   ustressstartdate,            mythid )
-      call cal_FullDate( vstressstartdate1, vstressstartdate2,
-     &                   vstressstartdate,            mythid )
-#ifdef ALLOW_KPP
-      call cal_FullDate(  swfluxstartdate1,  swfluxstartdate2,
-     &                    swfluxstartdate,            mythid )
+#ifdef ALLOW_RUNOFF
+      call cal_FullDate(   runoffstartdate1,   runoffstartdate2,
+     &                     runoffstartdate ,             mythid )
 #endif
 
+#ifdef ALLOW_DOWNWARD_RADIATION
+      call cal_FullDate(   swdownstartdate1,   swdownstartdate2,
+     &                     swdownstartdate ,             mythid )
+      call cal_FullDate(   lwdownstartdate1,   lwdownstartdate2,
+     &                     lwdownstartdate ,             mythid )
 #endif
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCS_NORTH
-      call cal_FullDate(  obcsNstartdate1,  obcsNstartdate2,
-     &                    obcsNstartdate,           mythid )
+      call cal_FullDate(    obcsNstartdate1,    obcsNstartdate2,
+     &                      obcsNstartdate ,             mythid )
 #endif
 #ifdef ALLOW_OBCS_SOUTH
-      call cal_FullDate(  obcsSstartdate1,  obcsSstartdate2,
-     &                    obcsSstartdate,           mythid )
+      call cal_FullDate(    obcsSstartdate1,    obcsSstartdate2,
+     &                      obcsSstartdate ,             mythid )
 #endif
 #ifdef ALLOW_OBCS_EAST
-      call cal_FullDate(  obcsEstartdate1,  obcsEstartdate2,
-     &                    obcsEstartdate,           mythid )
+      call cal_FullDate(    obcsEstartdate1,    obcsEstartdate2,
+     &                      obcsEstartdate ,             mythid )
 #endif
 #ifdef ALLOW_OBCS_WEST
-      call cal_FullDate(  obcsWstartdate1,  obcsWstartdate2,
-     &                    obcsWstartdate,           mythid )
+      call cal_FullDate(    obcsWstartdate1,    obcsWstartdate2,
+     &                      obcsWstartdate ,             mythid )
 #endif
-#endif
+#endif /* ALLOW_OBCS */
 
 #ifdef ATMOSPHERIC_LOADING
-      call cal_FullDate(   apressurestartdate1, apressurestartdate2,
-     &                     apressurestartdate,          mythid )
+      call cal_FullDate(apressurestartdate1,apressurestartdate2,
+     &                  apressurestartdate ,             mythid )
 #endif
 
       _END_MASTER( mythid )
@@ -356,7 +376,6 @@ c     check for consistency
 
 c--   Summarize the External forcing's setup.
       call exf_summary( mythid )
-
 
 c--   set climatology parameters
       call exf_clim_readparms( mythid )

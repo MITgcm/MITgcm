@@ -1,7 +1,35 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.133 2003/02/12 17:06:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.134 2003/02/18 05:33:53 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48f_post
+Merging from release1_p12:
+o Modifications for using pkg/exf with pkg/seaice
+  - improved description of the various forcing configurations
+  - added basic radiation bulk formulae to pkg/exf
+  - units/sign fix for evap computation in exf_getffields.F
+  - updated verification/global_with_exf/results/output.txt
+o Added pkg/sbo for computing IERS Special Bureau for the Oceans
+  (SBO) core products, including oceanic mass, center-of-mass,
+  angular, and bottom pressure (see pkg/sbo/README.sbo).
+o Lower bound for viscosity/diffusivity in pkg/kpp/kpp_routines.F
+  to avoid negative values in shallow regions.
+  - updated verification/natl_box/results/output.txt
+  - updated verification/lab_sea/results/output.txt
+o MPI gather, scatter: eesupp/src/gather_2d.F and scatter_2d.F
+o Added useSingleCpuIO option (see PARAMS.h).
+o Updated useSingleCpuIO option in mdsio_writefield.F to
+  work with multi-field files, e.g., for single-file pickup.
+o pkg/seaice:
+  - bug fix in growth.F: QNET for no shortwave case
+  - added HeffFile for specifying initial sea-ice thickness
+  - changed SEAICE_EXTERNAL_FLUXES wind stress implementation
+o Added missing /* */ to CPP comments in pkg/seaice, pkg/exf,
+  kpp_transport_t.F, forward_step.F, and the_main_loop.F
+o pkg/seaice:
+  - adjoint-friendly modifications
+  - added a SEAICE_WRITE_PICKUP at end of the_model_main.F
 
 checkpoint48e_post
 o New S/R for diagnostic of bottom pressure (phi0surf was missing in c48d_post)

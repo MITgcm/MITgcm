@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.2 2003/02/18 05:33:55 dimitri Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -50,11 +50,15 @@ C Created: 03/16/99 adcroft@mit.edu
 C
 C Changed: 05/31/00 heimbach@mit.edu
 C          open(dUnit, ..., status='old', ... -> status='unknown'
+C
+C Changed: 01/06/02 menemenlis@jpl.nasa.gov
+C          added useSingleCpuIO hack
 
       implicit none
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -82,6 +86,13 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+#ifdef ALLOW_USE_MPI
+      integer i
+      Real*8  global(Nx,Ny)
+      Real*4  global_r4(Nx,Ny)
+      _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_USE_MPI */
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -105,6 +116,88 @@ C Assume nothing
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
+
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      if (useSingleCpuIO) then
+
+C Master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         length_of_rec=MDS_RECLEN( filePrec, Nx*Ny, mythid )
+         if (irecord .EQ. 1) then
+          open( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         else
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         endif
+        ENDIF
+       _END_MASTER( myThid )
+
+C Gather array and write it to file, one vertical level at a time
+       DO k=1,nNz
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+            local(I,J,bi,bj) = arr(I,J,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL GATHER_2D( global, local, myThid )
+        _BEGIN_MASTER( myThid )
+         IF( mpiMyId .EQ. 0 ) THEN
+          irec=k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           DO J=1,Ny
+            DO I=1,Nx
+             global_r4(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+           write(dUnit,rec=irec) global_r4
+          elseif (filePrec .eq. precFloat64) then
+           write(dUnit,rec=irec) global
+          else
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+       ENDDO
+
+C Close data-file and create meta-file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         close( dUnit )
+         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         dimList(1,1)=Nx
+         dimList(2,1)=1
+         dimList(3,1)=Nx
+         dimList(1,2)=Ny
+         dimList(2,2)=1
+         dimList(3,2)=Ny
+         dimList(1,3)=Nr
+         dimList(2,3)=1
+         dimList(3,3)=Nr
+         ndims=3
+         if (nNz .EQ. 1) ndims=2
+         call MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+        ENDIF
+       _END_MASTER( myThid )
+C To be safe, make other processes wait for I/O completion
+       _BARRIER
+
+      elseif ( .NOT. useSingleCpuIO ) then
+      _BEGIN_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
@@ -282,6 +375,11 @@ C writing their data before we update the meta-file
       endif
 
       _END_MASTER( myThid )
+
+#ifdef ALLOW_USE_MPI
+C endif useSingleCpuIO
+      endif
+#endif /* ALLOW_USE_MPI */
 
 C     ------------------------------------------------------------------
       return

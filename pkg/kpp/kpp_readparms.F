@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.7 2002/12/28 10:11:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.8 2003/02/18 05:33:55 dimitri Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -60,8 +60,8 @@ C--   KPP vertical mixing parameters
 
 C--   set default KPP vertical mixing parameters
       kpp_freq      = deltaTClock
-      kpp_dumpFreq  = 0.
-      kpp_taveFreq  = 0.
+      kpp_dumpFreq  = dumpFreq
+      kpp_taveFreq  = taveFreq
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
       minKPPhbl     = drF(1)*0.5

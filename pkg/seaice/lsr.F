@@ -27,6 +27,7 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 #ifdef ALLOW_SEAICE
+#ifdef SEAICE_ALLOW_DYNAMICS
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -260,8 +261,7 @@ C FORM ERROR MATRIX
       _GLOBAL_MAX_R8( S1, myThid )
 C NOW FIND ERROR
       IF(S1.LT.LSR_ERROR) GO TO 200
-      CALL EXCH_RL( UICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      CALL SEAICE_EXCH ( UICE, myThid )
       GO TO 100
  201  CONTINUE
       PRINT 11
@@ -454,8 +454,7 @@ C FORM ERROR MATRIX
       _GLOBAL_MAX_R8( S2, myThid )
 C NOW FIND ERROR
       IF(S2.LT.LSR_ERROR) GO TO 400
-      CALL EXCH_RL( VICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      CALL SEAICE_EXCH( VICE, myThid )
       GO TO 300
  301  CONTINUE
       PRINT 121
@@ -476,12 +475,11 @@ C NOW MAKE COROLIS TERM IMPLICIT
         END DO
        ENDDO
       ENDDO
-      CALL EXCH_RL( UICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      CALL EXCH_RL( VICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      CALL SEAICE_EXCH( UICE, myThid )
+      CALL SEAICE_EXCH( VICE, myThid )
 
-#endif ALLOW_SEAICE
+#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

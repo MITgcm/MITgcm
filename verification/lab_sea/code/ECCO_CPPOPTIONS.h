@@ -44,18 +44,13 @@ C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE
 
 C   Options that are required to use pkg/exf with pkg/seaice.
-#define  ALLOW_BULKFORMULAE
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
+#define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
 
 C   Evaporation is read-in from file.
 #define  EXF_READ_EVAP
-
-C   Since Experiment 8 uses pkg/seaice bulk formulae,
-C   there is no need to compute them here.  This option
-C   does not impact the output of Experiment 8.
-#define  EXF_NO_BULK_COMPUTATIONS
 
 C   Options that control relaxation terms.
 #undef   ALLOW_CLIM_CYCLIC

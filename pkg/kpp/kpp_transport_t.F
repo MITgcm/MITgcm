@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.11 2002/11/12 20:45:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.12 2003/02/18 05:33:55 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -38,7 +38,7 @@ C     == GLobal variables ==
 
 #ifdef ALLOW_SEAICE
 #include "SEAICE_EXTERNAL.h"
-#endif ALLOW_SEAICE
+#endif
 
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
@@ -77,7 +77,7 @@ C     I, J - Loop counters
      &         *recip_Cp*recip_rhoConst*recip_dRf(1)
      &         * (1.-KPPfrac(i,j,bi,bj))
      &         )
-#endif ALLOW_SEAICE
+#endif
 
        ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_filter_rl.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_filter_rl.F,v 1.4 2003/02/18 05:33:54 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -15,7 +15,7 @@ c
 c     o Read a flux record for external forcing.
 c
 c     started: Ralf.Giering@FastOpt.de 24-Mai-2000
-c     changed: menemenlis@jpl.nasa.gov 20-Dec-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_filter_rl
@@ -108,5 +108,6 @@ c         Set land points to zero
       enddo
 
       ENDIF
+c     END IF ( .NOT. useSEAICE )
 
       end

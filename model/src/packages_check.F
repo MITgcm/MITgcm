@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.12 2002/11/12 20:45:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.13 2003/02/18 05:33:54 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,6 +74,12 @@ CEOP
 
 #ifndef ALLOW_FLT
       IF (useFLT) CALL PACKAGES_CHECK_ERROR('FLT', myThid)
+#endif
+
+#ifdef ALLOW_SBO
+      IF (useSBO) CALL SBO_CHECK( myThid )
+#else
+      IF (useSBO) CALL PACKAGES_CHECK_ERROR('SBO', myThid)
 #endif
 
 #ifdef ALLOW_SEAICE

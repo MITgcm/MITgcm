@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.73 2002/12/05 08:43:03 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.74 2003/02/18 05:33:55 dimitri Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -449,6 +449,25 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
     set FOPTIM     = ( '-O0' )
     set LIBS       = ( '-lmpi' )
+    breaksw
+  case ames_dbg+mpi:
+    echo "Configuring for SGI Origin2000 running IRIX 6.5"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/include -I/opt/mpt/1.6.1.beta/usr/include' )
+    set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
+    set LIBS       = ( '-lmpi -lscs' )
+    set FC         = ( 'f90' )
+    set LINK       = ( 'f90' )
+    breaksw
+  case ames_opt+mpi:
+    echo "Configuring for SGI Origin2000 running IRIX 6.5"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/include -I/opt/mpt/1.6.1.beta/usr/include' )
+    set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
+    set FOPTIM     = ( '-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed' )
+    set LIBS       = ( '-lmpi -lscs' )
+    set FC         = ( 'f90' )
+    set LINK       = ( 'f90' )
     breaksw
   case onyx:
   case onyx+mpi:

@@ -62,7 +62,7 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
           TMIX(I,J,bi,bj)=theta(I,J,1,bi,bj)+273.16 _d +00
 #ifdef SEAICE_DEBUG
           TMIX(I,J,bi,bj)=MAX(TMIX(I,J,bi,bj),271.2 _d +00)
-#endif SEAICE_DEBUG
+#endif
          ENDDO
         ENDDO
 
@@ -87,7 +87,7 @@ C NOW DO ICE
        ENDDO
       ENDDO
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

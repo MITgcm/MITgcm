@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.84 2003/01/24 18:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.85 2003/02/18 05:33:53 dimitri Exp $
 C $Name:  $
 C
 CBOP
@@ -217,6 +217,10 @@ C     setCenterDr    :: set cell Center depth and put Interface at the middle
 C     nonHydrostatic :: Using non-hydrostatic terms
 C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
 C     globalFiles    :: Selects between "global" and "tiled" files
+C     useSingleCpuIO :: On SGI platforms, option globalFiles is either
+C                       slow (f77) or does not work (f90).  When
+C                       useSingleCpuIO is set, mdsio_writefield.F
+C                       outputs from master mpi process only.
 C     allowFreezing  :: Allows water to freeze and form ice
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
@@ -238,7 +242,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & usingPCoords, usingZCoords, setCenterDr,
-     & nonHydrostatic, quasiHydrostatic, globalFiles,
+     & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
      & readPickupWithTracer, writePickupWithTracer
@@ -291,6 +295,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL nonHydrostatic
       LOGICAL quasiHydrostatic
       LOGICAL globalFiles
+      LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35

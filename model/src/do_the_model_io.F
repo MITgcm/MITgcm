@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.26 2003/01/03 03:52:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.27 2003/02/18 05:33:53 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -112,6 +112,14 @@ C--   Do KPP diagnostics.
      & CALL KPP_DO_DIAGS( myCurrentTime, myIter, myThid )
 #endif
 
+#ifdef ALLOW_SBO
+C--   Do SBO diagnostics.
+      IF (useSBO) THEN
+         CALL SBO_CALC ( myCurrentTime, myIter, myThid )
+         CALL SBO_DIAGS( myCurrentTime, myIter, myThid )
+      ENDIF
+#endif
+
 cswdblk ---  add ---
 #ifdef ALLOW_BULK_FORCE
 C--   Do bulkf diagnostics.
@@ -127,8 +135,6 @@ C--   Do seaice diagnostics.
      & CALL ICE_DIAGS( myCurrentTime, myIter, myThid )
 #endif
 cswdice -- end add ---
-
-
 
       RETURN
       END

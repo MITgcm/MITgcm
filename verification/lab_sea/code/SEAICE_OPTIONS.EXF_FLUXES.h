@@ -38,4 +38,4 @@ C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
 #define SEAICE_EXTERNAL_FLUXES
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */

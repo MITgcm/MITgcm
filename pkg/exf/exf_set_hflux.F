@@ -10,6 +10,7 @@ c     o set external forcing hflux
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_hflux
@@ -45,57 +46,60 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( hfluxfile .NE. ' ' ) then
+
 c     get record numbers and interpolation factor for hflux
-      call exf_GetFFieldRec(
-     I                       hfluxstartdate, hfluxperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        hfluxstartdate, hfluxperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 
-      if ( first ) then
-        if ( hfluxfile .NE. ' ' )
-     &        call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
-     &                   , hflux1, count0, mythid
-     &                   )
+         if ( first ) then
+            call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
+     &           , hflux1, count0, mythid
+     &           )
 
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( hflux1, hfluxmask, mythid )
-        else
-           call exf_filter_rs( hflux1, hfluxmask, mythid )
-        end if
-      endif
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( hflux1, hfluxmask, mythid )
+            else
+               call exf_filter_rs( hflux1, hfluxmask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields( hflux0, hflux1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields( hflux0, hflux1, mythid )
+            
+            call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
+     &           , hflux1, count1, mythid
+     &           )
 
-        if ( hfluxfile .NE. ' ' )
-     &       call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
-     &                   , hflux1, count1, mythid
-     &                   )
-
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( hflux1, hfluxmask, mythid )
-        else
-           call exf_filter_rs( hflux1, hfluxmask, mythid )
-        end if
-      endif
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( hflux1, hfluxmask, mythid )
+            else
+               call exf_filter_rs( hflux1, hfluxmask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1,sny
-            do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
 
-c             Interpolate linearly onto the current time.
+c     Interpolate linearly onto the current time.
 
-              hflux(i,j,bi,bj) = fac          *hflux0(i,j,bi,bj)+
-     &                          (exf_one - fac) *hflux1(i,j,bi,bj)
+                     hflux(i,j,bi,bj) = exf_inscal_hfl * (
+     &                                fac * hflux0(i,j,bi,bj) +
+     &                    (exf_one - fac) * hflux1(i,j,bi,bj) )
 
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

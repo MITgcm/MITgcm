@@ -10,6 +10,7 @@ c     o set external forcing apressure
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_apressure
@@ -45,55 +46,58 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( apressurefile .NE. ' ' ) then
+
 c     get record numbers and interpolation factor for apressure
-      call exf_GetFFieldRec(
-     I                       apressurestartdate, apressureperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        apressurestartdate, apressureperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 
-      if ( first ) then
-        if ( apressurefile .NE. ' ' )
-     &        call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
-     &                   , apressure1, count0, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( apressure1, apressuremask, mythid )
-        else
-           call exf_filter_rs( apressure1, apressuremask, mythid )
-        end if
-      endif
+         if ( first ) then
+            call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
+     &           , apressure1, count0, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( apressure1, apressuremask, mythid )
+            else
+               call exf_filter_rs( apressure1, apressuremask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields( apressure0, apressure1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields( apressure0, apressure1, mythid )
 
-        if ( apressurefile .NE. ' ' )
-     &       call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
-     &                   , apressure1, count1, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( apressure1, apressuremask, mythid )
-        else
-           call exf_filter_rs( apressure1, apressuremask, mythid )
-        end if
-      endif
+            call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
+     &           , apressure1, count1, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( apressure1, apressuremask, mythid )
+            else
+               call exf_filter_rs( apressure1, apressuremask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1,sny
-            do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
 
-c             Interpolate linearly onto the current time.
+c     Interpolate linearly onto the current time.
 
-              apressure(i,j,bi,bj) = fac *apressure0(i,j,bi,bj)+
-     &                   (exf_one - fac) *apressure1(i,j,bi,bj)
+                     apressure(i,j,bi,bj) = exf_inscal_apressure * (
+     &                                fac * apressure0(i,j,bi,bj) +
+     &                    (exf_one - fac) * apressure1(i,j,bi,bj) )
 
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

@@ -9,7 +9,7 @@ c
 c     o set external forcing evap
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
-c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_evap
@@ -45,57 +45,59 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( evapfile .NE. ' ' ) then
+
 c     get record numbers and interpolation factor for evap
-      call exf_GetFFieldRec(
-     I                       evapstartdate, evapperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        evapstartdate, evapperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 
-      if ( first ) then
-        if ( evapfile .NE. ' ' )
-     &        call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
-     &                   , evap1, count0, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( evap1, evapmask, mythid )
-        else
-           call exf_filter_rs( evap1, evapmask, mythid )
-        end if
-      endif
+         if ( first ) then
+            call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
+     &           , evap1, count0, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( evap1, evapmask, mythid )
+            else
+               call exf_filter_rs( evap1, evapmask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields( evap0, evap1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields( evap0, evap1, mythid )
 
-        if ( evapfile .NE. ' ' )
-     &       call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
-     &                   , evap1, count1, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( evap1, evapmask, mythid )
-        else
-           call exf_filter_rs( evap1, evapmask, mythid )
-        end if
-      endif
+            call mdsreadfield( evapfile, exf_iprec, exf_yftype, 1
+     &           , evap1, count1, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( evap1, evapmask, mythid )
+            else
+               call exf_filter_rs( evap1, evapmask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1,sny
-            do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
 
-c             Interpolate linearly onto the current time.
+c     Interpolate linearly onto the current time.
 
-              evap(i,j,bi,bj) = fac          *evap0(i,j,bi,bj)+
-     &                          (exf_one - fac) *evap1(i,j,bi,bj)
+                     evap(i,j,bi,bj) = fac * evap0(i,j,bi,bj) +
+     &                    (exf_one - fac) * evap1(i,j,bi,bj)
 
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
 
-#endif EXF_READ_EVAP
+      endif
+
+#endif /* EXF_READ_EVAP */
 
       end
 
@@ -111,6 +113,7 @@ c     o
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_init_evap
@@ -130,7 +133,7 @@ c     == routine arguments ==
 
       integer mythid
 
-#ifdef EXF_READ_EVAP
+#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
 c     == local variables ==
 
       integer bi, bj
@@ -143,13 +146,15 @@ c     == end of interface ==
           do j = 1, sny
             do i = 1, snx
               evap(i,j,bi,bj)  = 0. _d 0
+#ifdef EXF_READ_EVAP
               evap0(i,j,bi,bj) = 0. _d 0
               evap1(i,j,bi,bj) = 0. _d 0
+#endif
             enddo
           enddo
         enddo
       enddo
 
-#endif EXF_READ_EVAP
+#endif /* ALLOW_ATM_TEMP or EXF_READ_EVAP */
 
       end

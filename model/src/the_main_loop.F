@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.33 2003/02/06 22:42:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.34 2003/02/18 05:33:54 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -190,12 +190,10 @@ CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 #endif /* ALLOW_BULK_FORCE */
 #ifdef ALLOW_BULKFORMULAE
-#ifndef EXF_NO_BULK_COMPUTATIONS
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-#endif EXF_NO_BULK_COMPUTATIONS
 #endif /* ALLOW_BULKFORMULAE */
 
           do ilev_1 = 1,nchklev_1

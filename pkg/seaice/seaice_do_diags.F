@@ -117,12 +117,13 @@ c      CALL PLOT_FIELD_XYRS( uwind ,'Current uwind ' , myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( vwind ,'Current vwind ' , myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( atemp ,'Current atemp ' , myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( aqh   ,'Current aqh '   , myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( lwflux,'Current lwflux ', myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( swflux,'Current swflux ', myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( lwdown,'Current lwdown ', myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( swdown,'Current swdown ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( fu    ,'Current fu '    , myIter, myThid )
        CALL PLOT_FIELD_XYRL( fv    ,'Current fv '    , myIter, myThid )
        CALL PLOT_FIELD_XYRL( Qnet  ,'Current Qnet '  , myIter, myThid )
-#endif SEAICE_DEBUG
+       CALL PLOT_FIELD_XYRL( evap  ,'Current evap '  , myIter, myThid )
+#endif
 
          ENDIF
       ENDIF
@@ -194,7 +195,8 @@ C      Normalize by integrated time
        ENDDO
 
        WRITE(suff,'(I10.10)') myIter
-       
+       _BARRIER
+       _BEGIN_MASTER( myThid )
        CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
        CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
        CALL WRITE_FLD_XY_RL('EmPmRtave.',suff,EmPmRtave,myIter,myThid)
@@ -204,6 +206,8 @@ C      Normalize by integrated time
        CALL WRITE_FLD_XY_RL('VICEtave.' ,suff,VICEtave ,myIter,myThid)
        CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
        CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
+       _END_MASTER( myThid )
+       _BARRIER
        
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -227,7 +231,7 @@ C      Reset averages to zero
       
 #endif /* ALLOW_TIMEAVE */
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
       
       RETURN
       END

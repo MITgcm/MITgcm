@@ -1,11 +1,11 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/README,v 1.2 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/README,v 1.3 2003/02/18 05:33:54 dimitri Exp $
 c
 c
 c   =========================================
 c   External Forcing Package for the MITgcmUV
 c   =========================================
 c
-c   Current Version: 0.2.1 (20-Dec-2002)
+c   Current Version: 0.2.2 (11-Jan-2003)
 c
 c
 c   General Outline:
@@ -64,109 +64,7 @@ c
 c   CPP options:
 c   ------------
 c
-c   The following CPP options are available for this package:
-c
-c   >>> INCLUDE_EXTERNAL_FORCING_PACKAGE <<<
-c       Include this package into the setup.
-c
-c   >>> EXF_VERBOSE <<<
-c       Do a bit more printout for the log file than usual.
-c
-c   >>> ALLOW_BULKFORMULAE <<<
-c       Allows the use of bulk formulae in order to estimate
-c       the turbulent fluxes at the ocean's surface.
-c                                        
-c   >>> ALLOW_ATM_TEMP <<<
-c       Allows the use the atmospheric temperature and specific
-c       humidity to estimate the sensible and latent heat fluxes.
-c
-c   >>> ALLOW_ATM_WIND <<<
-c       Allows the use the atmospheric wind field to estimate the
-c       wind stress at the ocean's surface.
-c
-c   >>> EXF_NO_BULK_COMPUTATIONS <<<
-c       If defined, no bulk formulae computations are carried out
-c       within pkg/exf.  This option, in combination with
-c       ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP, and ALLOW_ATM_WIND
-c       can be used to read-in the atmospheric state and pass it
-c       on to a separate package for bulk formulae computations.
-c
-c   >>> EXF_READ_EVAP <<<
-c       If defined, evaporation is read-in from a file, rather than
-c       computed from atmospheric state.
-c
-c   >>> ALLOW_CLIM_CYCLIC <<<
-c       If defined, relaxation file record numbers are assumed 1 to
-c       12 corresponding to Jan. through Dec.  Otherwise relaxation
-c       file record numbers are specified in data.exf_clim
-c
-c   >>> ALLOW_CLIMTEMP_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of potential
-c       temperature, e.g. the Levitus climatology.
-c
-c   >>> ALLOW_CLIMSALT_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of salinity,
-c       e.g. the Levitus climatology.
-c
-c   >>> ALLOW_CLIMSST_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of sea surface
-c       temperature, e.g. the Reynolds climatology.
-c
-c   >>> ALLOW_CLIMSSS_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of sea surface
-c       salinity, e.g. the Levitus climatology.
-c
-c
-c
-c   Unit and sign conventions for forcing fields (valid for c28 !)
-c   --------------------------------------------------------------
-
-- tflux/qnet: net heat flux (ATTENTION: distinguish qnet vs. qnet-sw)
----------------------------
-        -> read in as tflux:   W/m**2 = kg/s**3 (>0 for oceanic cooling)
-        -> scaled to qnet:     scal_hfl = +1
-        -> transformed to gT:  Qnet     ->   Qnet/(rhonil*Cp*dR)
-                               W/m**2   ->   K/s
-        -> usage in gT:        gT = gT - qnet[K/s]
-
-- swflux/qsw: shortwave flux
-----------------------------
-        -> read in as swflux: W/m**2 = kg/s**3 (>0 for oceanic cooling)
-        -> for bulk forcing:  swflux ADDED to hfl = tflux
-        -> scaled to qsw:     scal_swf = +1
-        -> transformed to gT: only for #ifdef SHORTWAVE_HEATING
-                              (currently not used)
-
-- lwflux/qlw: longwave flux
----------------------------
-        -> read in as lwflux:  m/s (>0 for oceanic cooling)
-        -> for bulk forcing:  lwflux ADDED to hfl = tflux
-        -> scaled to qlw:     not used.
-        -> transformed to gT: not used.
-
-- sflux/empmr: freshwater flux (Evap. minus precip. minus runoff)
-------------------------------
-        -> read in as tflux:   m/s (>0 for ocean salting)
-        -> scaled to empmr:    scal_hfl = +1
-        -> transformed to gS:  empmr     ->   empmr*35./*dR
-                               m/s       ->   psu/s
-        -> usage in gS:        gS = gS + empmr[psu/s]
-
-- ustress/fu: zonal wind stress (West/East)
--------------------------------
-        -> read in as ustress: N/m**2 (>0 from West to East)
-        -> scaled to fu   :    scal_ust = -1
-        -> transformed to gU:  fu        ->   fu/(rhoNil*dR)
-                               N/m**2    ->   m/s**2
-        -> usage in gU:        gU = gU + fu[m/s**2]
-
-- vstress/fv: meridional wind stress (South/North)
-------------------------------------
-        -> read in as vstress: N/m**2 (>0 from South to North)
-        -> scaled to fv   :    scal_vst = -1
-        -> transformed to gV:  fv        ->   fv/(rhoNil*dR)
-                               N/m**2    ->   m/s**2
-        -> usage in gV:        gV = gV + fv[m/s**2]
+c   See EXF_CPPOPTIONS.h for definition of pkg/exf CPP options.
 c
 c
 c   Data files:
@@ -175,12 +73,14 @@ c
 c   data.exf      :: variables related to surface fluxes
 c   data.exf_clim :: variables for relaxation to climatological fields
 c
+c
 c   Routines:
 c   ----------
 c
 c   The package consists of two sets of routines. The first set is
 c   related to surface fluxes, the second set allows one to include
 c   relaxation to climatological fields.
+c
 c
 c   Call trees:
 c   -----------
@@ -354,38 +254,29 @@ c
 c   started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
 c   changed: Christian Eckert eckert@mit.edu  11-Jan-2000
-c
 c            - Restructured the code in order to create a package
 c              for the MITgcmUV.
 c
 c            Christian Eckert eckert@mit.edu  12-Feb-2000
-c
 c            - Changed Routine names (package prefix: exf_)
 c
 c            Christian Eckert eckert@mit.edu  02-May-2000
-c
 c            - CVS version of the package.
 c
 c            Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c
 c            - Added computation of evaporation rate for
 c              ALLOW_ATM_TEMP case
-c
 c            - changed the handling of precip and sflux with respect
 c              to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
-c
 c            - included some CPP flags ALLOW_BULKFORMULAE to make
 c              sure ALLOW_ATM_TEMP, ALLOW_ATM_WIND are used only in
 c              conjunction with defined ALLOW_BULKFORMULAE
-c
 c            - statement functions discarded and external functions
 c              initialised.
-c
 c            - file precision and field type are now prescribed in 
 c              data.exf;
 c              separately possible for exf_sflx.h and exf_clim.h
 c              related fields.
-c
 c            - created exf_constants.h that contains
 c              1. numbers
 c              2. physical constants
@@ -393,25 +284,19 @@ c              3. empirical parameters
 c              4. control parameters
 c
 c            Ralf Giering ralf.giering@fastopt.de 18-Jun-2000
-c
 c            - exf_getffields.F:
 c              Swapping of forcing fields has to be switched off
 c              if TAMC is used, because of generation of spurious
 c              dependencies. (P.H.)
 c
 c            Patrick Heimbach heimbach@mit.edu 20-Jun-2000
-c
 c            - sign change of ustress/vstress incorporated into
 c              scaling factors scal_ust, scal_vst in exf_mapfields.F
-c
 c            - Corrected description on how to implement exf package
 c              for c27 onwards.
-c
 c            - Included unit and sign conventions valid for c28
 c              in README.
 c
-c            Dimitris Menemenlis menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c            - Modifications for using pkg/exf with pkg/seaice.
+c   mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c   ==================================================================

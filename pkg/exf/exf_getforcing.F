@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.5 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.6 2003/02/18 05:33:54 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -84,7 +84,7 @@ c       model. However, the wind stress forcing is not treated
 c       this way. A positive zonal wind stress accelerates the
 c       model ocean towards the east.
 c       started: eckert@mit.edu, heimbach@mit.edu, ralf@ocean.mit.edu
-c       changed: menemenlis@jpl.nas.gov
+c       mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c     *=================================================================
 c     | SUBROUTINE exf_getforcing
 c     *=================================================================

@@ -27,6 +27,7 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
  
 #ifdef ALLOW_SEAICE
+#ifdef SEAICE_ALLOW_DYNAMICS
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -233,8 +234,7 @@ cdm ==> following operation may require exchange or global sum
 
 cdm ==> is this correct?  does it mean that tile boundaries
 cdm ==> will be slightly different?
-       CALL EXCH_RL( UICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       CALL SEAICE_EXCH( UICE, myThid )
 
 C NOW SECOND HALF
 
@@ -534,8 +534,7 @@ cdm ==> following operation may require exchange or global sum
 
 cdm ==> is this correct?  does it mean that tile boundaries
 cdm ==> will be slightly different?
-       CALL EXCH_RL( VICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       CALL SEAICE_EXCH( VICE, myThid )
 
 C NOW SECOND HALF
 
@@ -683,7 +682,8 @@ C--   Update overlap regions
        ENDDO
       ENDDO
 
-#endif ALLOW_SEAICE
+#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

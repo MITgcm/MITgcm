@@ -51,19 +51,15 @@ C--    Read ice model fields
        _BARRIER
 
 C--    Update overlap regions 
-       CALL EXCH_RL( UICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( VICE, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( HEFF, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( AREA, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       _EXCH_XY_R4(TICE , myThid )
-       _EXCH_XY_R4(YNEG , myThid )
-       _EXCH_XY_R4(HSNOW, myThid )
+       CALL SEAICE_EXCH ( UICE, myThid )
+       CALL SEAICE_EXCH ( VICE, myThid )
+       CALL SEAICE_EXCH ( HEFF, myThid )
+       CALL SEAICE_EXCH ( AREA, myThid )
+       _EXCH_XY_R8(TICE , myThid )
+       _EXCH_XY_R8(YNEG , myThid )
+       _EXCH_XY_R8(HSNOW, myThid )
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END
@@ -164,7 +160,7 @@ C--    Write model fields
 
       ENDIF
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

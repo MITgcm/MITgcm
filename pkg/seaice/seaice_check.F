@@ -14,6 +14,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_PARAMS.h"
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+      LOGICAL             EXFwindOnBgrid
+      COMMON /EXF_PARM_L/ EXFwindOnBgrid
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_CHECK
@@ -39,7 +44,7 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-#endif SEAICE_ALLOW_DYNAMICS
+#endif
 
 C--   SEAICE_EXTERNAL_FORCING
 C     At present this option is hardwired for pkg/exf.
@@ -50,38 +55,80 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif INCLUDE_EXTERNAL_FORCING_PACKAGE
-#ifndef ALLOW_BULKFORMULAE
-         WRITE(msgBuf,'(A)')
-     &        'need to define ALLOW_BULKFORMULAE'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif ALLOW_BULKFORMULAE
+#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(A)')
-     &        'need to define ALLOW_ATM_TEMP'
+     &        'need to define pkg/exf ALLOW_ATM_TEMP'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif ALLOW_ATM_TEMP
+#endif
 #ifndef ALLOW_ATM_WIND
          WRITE(msgBuf,'(A)')
-     &        'need to define ALLOW_ATM_WIND'
+     &        'need to define pkg/exf ALLOW_ATM_WIND'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif ALLOW_ATM_WIND
-#ifndef ALLOW_RUNOFF
+#endif
+#ifndef ALLOW_DOWNWARD_RADIATION
          WRITE(msgBuf,'(A)')
-     &        'need to define ALLOW_RUNOFF'
+     &        'need to define pkg/exf ALLOW_DOWNWARD_RADIATION'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif ALLOW_RUNOFF
-#endif SEAICE_EXTERNAL_FORCING
+#endif
+#if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
+         WRITE(msgBuf,'(A)')
+     &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif
+         IF(.NOT.SEAICEwindOnCgrid .AND. .NOT.EXFwindOnBgrid) THEN
+         WRITE(msgBuf,'(A)')
+     &        'please set either SEAICEwindOnCgrid or EXFwindOnBgrid '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+         IF(SEAICEwindOnCgrid .AND. EXFwindOnBgrid) THEN
+         WRITE(msgBuf,'(A)')
+     &        'please unset either SEAICEwindOnCgrid or EXFwindOnBgrid '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* SEAICE_EXTERNAL_FORCING */
 
-#endif ALLOW_SEAICE
+C--   SEAICE_EXTERNAL_FLUXES
+C     At present this option is hardwired for pkg/exf.
+#ifdef SEAICE_EXTERNAL_FLUXES
+#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+         WRITE(msgBuf,'(A)')
+     &        'need to define INCLUDE_EXTERNAL_FORCING_PACKAGE'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+         IF(.NOT.SEAICEwindOnCgrid .AND. .NOT.EXFwindOnBgrid) THEN
+         WRITE(msgBuf,'(A)')
+     &        'please set either SEAICEwindOnCgrid or EXFwindOnBgrid '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+         IF(SEAICEwindOnCgrid .AND. EXFwindOnBgrid) THEN
+         WRITE(msgBuf,'(A)')
+     &        'please unset either SEAICEwindOnCgrid or EXFwindOnBgrid '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* SEAICE_EXTERNAL_FLUXES */
+
+#endif /* ALLOW_SEAICE */
 
       return
       end

@@ -47,17 +47,18 @@ C     === Local variables ===
       _RL aWghtWind,bWghtWind,aWghtFlux,bWghtFlux,
      &     aWghtSSS,bWghtSSS,aWghtSST,bWghtSST
       _RS initValue
-      _RL year, seconds, YearTime
+      _RL year, seconds, YearTime, four
       INTEGER CurrentYear, CurrentYear2
       logical done
       CHARACTER*(MAX_LEN_MBUF) fName
 
 C--   Compute CurrentYear and YearTime
+      four = 4.0
       YearTime = myTime
       done = .false.
       do year = StartingYear, EndingYear
          if( .not. done ) then
-            if( mod(year,4.) .eq. 0. ) then
+            if( mod(year,four) .eq. 0. ) then
                seconds = 366.*24.*60.*60.
             else
                seconds = 365.*24.*60.*60.
@@ -105,11 +106,11 @@ C--   First call requires that we initialize everything for safety
        CALL INIT_ARRAY_RS( aqh0    , initValue, myThid )
        CALL INIT_ARRAY_RS( aqh1    , initValue, myThid )
        initValue = 300. _d 0
-       CALL INIT_ARRAY_RS( lwflux0 , initValue, myThid )
-       CALL INIT_ARRAY_RS( lwflux1 , initValue, myThid )
+       CALL INIT_ARRAY_RS( lwdown0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( lwdown1 , initValue, myThid )
        initValue = 200. _d 0
-       CALL INIT_ARRAY_RS( swflux0 , initValue, myThid )
-       CALL INIT_ARRAY_RS( swflux1 , initValue, myThid )
+       CALL INIT_ARRAY_RS( swdown0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( swdown1 , initValue, myThid )
        initValue = ZERO
        CALL INIT_ARRAY_RS( precip0 , initValue, myThid )
        CALL INIT_ARRAY_RS( precip1 , initValue, myThid )
@@ -160,17 +161,17 @@ C--   First call requires that we initialize everything for safety
         CALL READ_REC_XY_RS( fName,aqh0,iRec  ,myIter,myThid )
         CALL READ_REC_XY_RS( fName,aqh1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( lwfluxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( lwfluxFile ) - 4
-        WRITE(fName,'(A,I4.4)') lwfluxFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,lwflux0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,lwflux1,iRec+1,myIter,myThid )
+       IF ( lwdownFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( lwdownFile ) - 4
+        WRITE(fName,'(A,I4.4)') lwdownFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,lwdown0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,lwdown1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( swfluxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( swfluxFile ) - 4
-        WRITE(fName,'(A,I4.4)') swfluxFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,swflux0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,swflux1,iRec+1,myIter,myThid )
+       IF ( swdownFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( swdownFile ) - 4
+        WRITE(fName,'(A,I4.4)') swdownFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,swdown0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,swdown1,iRec+1,myIter,myThid )
        ENDIF
        IF ( precipFile .NE. ' ' ) THEN
         iEnd = ILNBLNK( precipFile ) - 4
@@ -215,10 +216,10 @@ C--   First call requires that we initialize everything for safety
        _EXCH_XY_R4( atemp1,  myThid )
        _EXCH_XY_R4( aqh0,    myThid )
        _EXCH_XY_R4( aqh1,    myThid )
-       _EXCH_XY_R4( lwflux0, myThid )
-       _EXCH_XY_R4( lwflux1, myThid )
-       _EXCH_XY_R4( swflux0, myThid )
-       _EXCH_XY_R4( swflux1, myThid )
+       _EXCH_XY_R4( lwdown0, myThid )
+       _EXCH_XY_R4( lwdown1, myThid )
+       _EXCH_XY_R4( swdown0, myThid )
+       _EXCH_XY_R4( swdown1, myThid )
        _EXCH_XY_R4( precip0, myThid )
        _EXCH_XY_R4( precip1, myThid )
        _EXCH_XY_R4( evap0,   myThid )
@@ -298,22 +299,22 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
          CALL READ_REC_XY_RS( fName,aqh1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( lwfluxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( lwfluxFile ) - 4
-        WRITE(fName,'(A,I4.4)') lwfluxFile(1:iEnd), CurrentYear
+       IF ( lwdownFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( lwdownFile ) - 4
+        WRITE(fName,'(A,I4.4)') lwdownFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,lwflux0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,lwdown0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,lwflux1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,lwdown1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( swfluxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( swfluxFile ) - 4
-        WRITE(fName,'(A,I4.4)') swfluxFile(1:iEnd), CurrentYear
+       IF ( swdownFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( swdownFile ) - 4
+        WRITE(fName,'(A,I4.4)') swdownFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,swflux0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,swdown0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,swflux1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,swdown1,iRec,myIter,myThid )
         ENDIF
        ENDIF
        IF ( precipFile .NE. ' ' ) THEN
@@ -347,8 +348,8 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
        IF (flux0_is_first) THEN
         _EXCH_XY_R4(atemp0,  myThid )
         _EXCH_XY_R4(aqh0,    myThid )
-        _EXCH_XY_R4(lwflux0, myThid )
-        _EXCH_XY_R4(swflux0, myThid )
+        _EXCH_XY_R4(lwdown0, myThid )
+        _EXCH_XY_R4(swdown0, myThid )
         _EXCH_XY_R4(precip0, myThid )
         _EXCH_XY_R4(evap0,   myThid )
         _EXCH_XY_R4(runoff0, myThid )
@@ -356,8 +357,8 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
        ELSE
         _EXCH_XY_R4(atemp1,  myThid )
         _EXCH_XY_R4(aqh1,    myThid )
-        _EXCH_XY_R4(lwflux1, myThid )
-        _EXCH_XY_R4(swflux1, myThid )
+        _EXCH_XY_R4(lwdown1, myThid )
+        _EXCH_XY_R4(swdown1, myThid )
         _EXCH_XY_R4(precip1, myThid )
         _EXCH_XY_R4(evap1,   myThid )
         _EXCH_XY_R4(runoff1, myThid )
@@ -452,10 +453,10 @@ C--   Time interpolation of flux forcing variables.
      &                        aWghtFlux *  atemp1(i,j,bi,bj)
           aqh(i,j,bi,bj)    = bWghtFlux *    aqh0(i,j,bi,bj) +
      &                        aWghtFlux *    aqh1(i,j,bi,bj)
-          lwflux(i,j,bi,bj) = bWghtFlux * lwflux0(i,j,bi,bj) +
-     &                        aWghtFlux * lwflux1(i,j,bi,bj)
-          swflux(i,j,bi,bj) = bWghtFlux * swflux0(i,j,bi,bj) +
-     &                        aWghtFlux * swflux1(i,j,bi,bj)
+          lwdown(i,j,bi,bj) = bWghtFlux * lwdown0(i,j,bi,bj) +
+     &                        aWghtFlux * lwdown1(i,j,bi,bj)
+          swdown(i,j,bi,bj) = bWghtFlux * swdown0(i,j,bi,bj) +
+     &                        aWghtFlux * swdown1(i,j,bi,bj)
           precip(i,j,bi,bj) = bWghtFlux * precip0(i,j,bi,bj) +
      &                        aWghtFlux *   precip1(i,j,bi,bj)
           evap(i,j,bi,bj)   = bWghtFlux *   evap0(i,j,bi,bj) +
@@ -475,10 +476,10 @@ C--   Time interpolation of flux forcing variables.
      &                        bWghtFlux *  atemp1(i,j,bi,bj)
           aqh(i,j,bi,bj)    = aWghtFlux *    aqh0(i,j,bi,bj) +
      &                        bWghtFlux *    aqh1(i,j,bi,bj)
-          lwflux(i,j,bi,bj) = aWghtFlux * lwflux0(i,j,bi,bj) +
-     &                        bWghtFlux * lwflux1(i,j,bi,bj)
-          swflux(i,j,bi,bj) = aWghtFlux * swflux0(i,j,bi,bj) +
-     &                        bWghtFlux * swflux1(i,j,bi,bj)
+          lwdown(i,j,bi,bj) = aWghtFlux * lwdown0(i,j,bi,bj) +
+     &                        bWghtFlux * lwdown1(i,j,bi,bj)
+          swdown(i,j,bi,bj) = aWghtFlux * swdown0(i,j,bi,bj) +
+     &                        bWghtFlux * swdown1(i,j,bi,bj)
           precip(i,j,bi,bj) = aWghtFlux * precip0(i,j,bi,bj) +
      &                        bWghtFlux * precip1(i,j,bi,bj)
           evap(i,j,bi,bj)   = aWghtFlux *   evap0(i,j,bi,bj) +
@@ -541,8 +542,8 @@ C--   Time interpolation of SST forcing variables.
        ENDDO
       ENDIF
 
-#endif SEAICE_EXTERNAL_FORCING
-#endif ALLOW_SEAICE
+#endif /* SEAICE_EXTERNAL_FORCING */
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END
@@ -577,8 +578,8 @@ C
        ENDDO
       ENDDO
 
-#endif SEAICE_EXTERNAL_FORCING
-#endif ALLOW_SEAICE
+#endif /* SEAICE_EXTERNAL_FORCING */
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

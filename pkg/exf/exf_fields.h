@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.4 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.5 2003/02/18 05:33:54 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -10,148 +10,232 @@ c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: field swap in adj. mode; heimbach@mit.edu 10-Jan-2002
 c     included runoff D. Stammer, Nov. 25, 2001
-c     included evaporation; menemenlis@jpl.nasa.gov 20-Dec-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     HEADER exf_fields
 c     ==================================================================
+c
+c
+c     Field definitions, units, and sign conventions:
+c     ===============================================
+c
+c     ustress   :: Zonal surface wind stress in N/m^2
+c                  > 0 for increase in uVel, which is west to
+c                      east for cartesian and spherical polar grids
+c                  Typical range: -0.5 < ustress < 0.5
+c                  Southwest C-grid U point
+c                  Input field
+c
+c     vstress   :: Meridional surface wind stress in N/m^2
+c                  > 0 for increase in vVel, which is south to
+c                      north for cartesian and spherical polar grids
+c                  Typical range: -0.5 < vstress < 0.5
+c                  Southwest C-grid V point
+c                  Input field
+c
+c     hflux     :: Net upward surface heat flux excluding shortwave in W/m^2
+c                  hflux = latent + sensible + lwflux
+c                  > 0 for decrease in theta (ocean cooling)
+c                  Typical range: -250 < hflux < 600
+c                  Southwest C-grid tracer point
+c                  Input field
+c
+c     sflux     :: Net upward freshwater flux in m/s
+c                  sflux = evap - precip - runoff
+c                  > 0 for increase in salt (ocean salinity)
+c                  Typical range: -1e-7 < sflux < 1e-7
+c                  Southwest C-grid tracer point
+c                  Input field
+c
+c     swflux    :: Net upward shortwave radiation in W/m^2
+c                  swflux = - ( swdown - ice and snow absorption - reflected )
+c                  > 0 for decrease in theta (ocean cooling)
+c                  Typical range: -350 < swflux < 0
+c                  Southwest C-grid tracer point
+c                  Input field
+c
+c     uwind     :: Surface (10-m) zonal wind velocity in m/s
+c                  > 0 for increase in uVel, which is west to
+c                      east for cartesian and spherical polar grids
+c                  Typical range: -10 < uwind < 10
+c                  Southwest C-grid U point
+c                  Input or input/output field
+c
+c     vwind     :: Surface (10-m) meridional wind velocity in m/s
+c                  > 0 for increase in vVel, which is south to
+c                      north for cartesian and spherical polar grids
+c                  Typical range: -10 < vwind < 10
+c                  Southwest C-grid V point
+c                  Input or input/output field
+c
+c     atemp     :: Surface (2-m) air temperature in deg K
+c                  Typical range: 200 < atemp < 300
+c                  Southwest C-grid tracer point
+c                  Input or input/output field
+c
+c     aqh       :: Surface (2m) specific humidity in kg/kg
+c                  Typical range: 0 < aqh < 0.02
+c                  Southwest C-grid tracer point
+c                  Input or input/output field
+c
+c     lwflux    :: Net upward longwave radiation in W/m^2
+c                  lwflux = - ( lwdown - ice and snow absorption - emitted )
+c                  > 0 for decrease in theta (ocean cooling)
+c                  Typical range: -20 < lwflux < 170
+c                  Southwest C-grid tracer point
+c                  Input field
+c
+c     evap      :: Evaporation in m/s
+c                  > 0 for increase in salt (ocean salinity)
+c                  Typical range: 0 < evap < 2.5e-7
+c                  Southwest C-grid tracer point
+c                  Input, input/output, or output field
+c
+c     precip    :: Precipitation in m/s
+c                  > 0 for decrease in salt (ocean salinity)
+c                  Typical range: 0 < precip < 5e-7
+c                  Southwest C-grid tracer point
+c                  Input or input/output field
+c
+c     runoff    :: River and glacier runoff in m/s
+c                  > 0 for decrease in salt (ocean salinity)
+c                  Typical range: 0 < runoff < ????
+c                  Southwest C-grid tracer point
+c                  Input or input/output field
+c                  !!! WATCH OUT: Default exf_inscal_runoff !!!
+c                  !!! in exf_readparms.F is not 1.0        !!!
+c
+c     swdown    :: Downward shortwave radiation in W/m^2
+c                  > 0 for increase in theta (ocean warming)
+c                  Typical range: 0 < swdown < 450
+c                  Southwest C-grid tracer point
+c                  Input/output field
+c
+c     lwdown    :: Downward longwave radiation in W/m^2
+c                  > 0 for increase in theta (ocean warming)
+c                  Typical range: 50 < lwdown < 450
+c                  Southwest C-grid tracer point
+c                  Input/output field
+c
+c     apressure :: Atmospheric pressure field in N/m^2
+c                  > 0 for ????
+c                  Typical range: ???? < apressure < ????
+c                  Southwest C-grid tracer point
+c                  Input field
+c
+c
+c     NOTES:
+c     ======
+c
+c     Input and output units and sign conventions can be customized
+c     using variables exf_inscal_* and exf_outscal_*, which are set
+c     by exf_readparms.F
+c
+c     Output fields fu, fv, Qnet, Qsw, and EmPmR are
+c     defined in FFIELDS.h
+c
+c     #ifndef SHORTWAVE_HEATING, hflux includes shortwave,
+c     that is, hflux = latent + sensible + lwflux +swflux
+c
+c     If (EXFwindOnBgrid .EQ. .TRUE.), uwind and vwind are
+c     defined on northeast B-grid U and V points, respectively.
+c
+c     Arrays *0 and *1 below are used for temporal interpolation.
+c
 
-c     Model fields.
-
-c     heat and salt flux.
-      common /exf_hsflux_r/ hflux, sflux
-      _RL hflux (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-      _RL sflux (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-
-c     zonal and meridionalwind stress.
       common /exf_stress_r/ ustress, vstress
-      _RL ustress (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL vstress (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-#ifdef ALLOW_ATM_TEMP
-c     Use the atmospheric temperature and specific humidity for flux
-c     estimates.
-
-c     Atmospheric temperature.
-      _RL atemp (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-
-c     Atmospheric specific humidity.
-      _RL aqh (1-olx:snx+olx,1-oly:sny+oly,    nsx,nsy)
-
-c     Long wave radiative flux.
-      _RL lwflux (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
-
-c     Evaporation.
-      _RL   evap (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
-
-c     Precipitation.
-      _RL precip (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
-
-      common /exf_atm_temp_r/ atemp, aqh, lwflux, evap, precip
-
-c     Short wave radiative flux.
-      common /exf_swflux_r/ swflux
-      _RL swflux (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
-
-#else
-c     Do not use the atmospheric temperature and specific humidity for
-c     flux estimates but given fluxes.
-
-#ifdef ALLOW_KPP
-c     Short wave radiative flux.
-      common /exf_swflux_r/ swflux
-      _RL swflux (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
-
-#endif
-
-#endif /* ALLOW_ATM_TEMP */
+      _RL ustress   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vstress   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_ATM_WIND
-c     Use the atmospheric winds for flux estimates.
-
-c     Atmospheric zonal and meridional wind
       common /exf_atm_wind_r/ uwind, vwind
-      _RL uwind (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-      _RL vwind (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-
-#else
-c     Do not use the atmospheric winds for flux estimates but given 
-c     wind stresses.
-
-#endif  /* ALLOW_ATM_WIND */
-
-c--   define auxiliary fields for temporal interpolation
-
-#ifdef ALLOW_ATM_TEMP
-
-      common /exfl_aqh_r/ aqh0, aqh1
-      _RL aqh0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL aqh1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_atemp_r/ atemp0, atemp1
-      _RL atemp0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL atemp1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_evap_r/ evap0, evap1
-      _RL evap0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL evap1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_precip_r/ precip0, precip1
-      _RL precip0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL precip1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_lwflux_r/ lwflux0, lwflux1
-      _RL lwflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL lwflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_swflux_r/ swflux0, swflux1
-      _RL swflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL swflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#else
-      common /exfl_hflux_r/ hflux0, hflux1
-      _RL hflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-      common /exfl_sflux_r/ sflux0, sflux1
-      _RL sflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL sflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
-#ifdef ALLOW_KPP
-      common /exfl_swflux_r/ swflux0, swflux1
-      _RL swflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL swflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#endif
-
-#ifdef ALLOW_ATM_WIND
-
+      _RL uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_uwind_r/ uwind0, uwind1
-      _RL uwind0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL uwind1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
+      _RL uwind0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL uwind1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_vwind_r/ vwind0, vwind1
-      _RL vwind0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL vwind1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vwind0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vwind1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #else
       common /exfl_ustress_r/ ustress0, ustress1
-      _RL ustress0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL ustress1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
+      _RL ustress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL ustress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_vstress_r/ vstress0, vstress1
-      _RL vstress0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL vstress1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vstress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vstress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-#ifdef ALLOW_RUNOFF
+      common /exf_hsflux_r/ hflux, sflux
+      _RL hflux     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL sflux     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
+      common /exf_evap/ evap
+      _RL evap      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ALLOW_ATM_TEMP
+      common /exf_atm_temp_r/ atemp, aqh, lwflux, precip
+      _RL atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL aqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL precip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_atemp_r/ atemp0, atemp1
+      _RL atemp0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL atemp1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_aqh_r/ aqh0, aqh1
+      _RL aqh0      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL aqh1      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_lwflux_r/ lwflux0, lwflux1
+      _RL lwflux0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lwflux1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_precip_r/ precip0, precip1
+      _RL precip0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL precip1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#else
+      common /exfl_hflux_r/ hflux0, hflux1
+      _RL hflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL hflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_sflux_r/ sflux0, sflux1
+      _RL sflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL sflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+      common /exf_swflux_r/ swflux
+      _RL swflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_swflux_r/ swflux0, swflux1
+      _RL swflux0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL swflux1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef EXF_READ_EVAP
+      common /exfl_evap_r/ evap0, evap1
+      _RL evap0     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL evap1     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
       common /exfl_runoff_r/ runoff
-      _RL runoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL runoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ALLOW_DOWNWARD_RADIATION
+      common /exf_rad_down_r/
+     &     swdown, lwdown, swdown0, swdown1, lwdown0, lwdown1
+      _RL swdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL swdown0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL swdown1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lwdown0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lwdown1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
-c     atmospheric pressure field.
       common /exf_apressure_r/ apressure, apressure0, apressure1
-      _RL apressure  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL apressure0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL apressure1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL apressure (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL apressure0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL apressure1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-

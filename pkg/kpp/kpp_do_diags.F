@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.5 2001/03/06 18:01:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.6 2003/02/18 05:33:55 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -43,7 +43,7 @@ C     Dump snapshot of KPP variables.
 C----------------------------------------------------------------
 
       IF (
-     &     DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
+     &     DIFFERENT_MULTIPLE(kpp_dumpFreq,myCurrentTime,
      &     myCurrentTime-deltaTClock)
      &     ) THEN
          
@@ -101,7 +101,7 @@ C     Initialize averages to zero
 C     Time Average KPP fields
       IF ( myIter .EQ. nIter0 .OR.
      &     DIFFERENT_MULTIPLE
-     &     (taveFreq,myCurrentTime,myCurrentTime-deltaTClock) )
+     &     (kpp_taveFreq,myCurrentTime,myCurrentTime-deltaTClock) )
      &     THEN
          DDTT=0.5*deltaTclock
       ELSE
@@ -128,7 +128,7 @@ C     Keep record of how much time has been integrated over
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(taveFreq,myCurrentTime,
+     &     DIFFERENT_MULTIPLE(kpp_taveFreq,myCurrentTime,
      &     myCurrentTime-deltaTClock)
      &     ) THEN
          

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.90 2003/01/24 18:26:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.91 2003/02/18 05:33:54 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -127,7 +127,7 @@ C--   Continuous equation parameters
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & nonHydrostatic, quasiHydrostatic, globalFiles,
+     & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, ivdc_kappa,
      & bottomDragLinear,bottomDragQuadratic,
      & usePickupBeforeC35, debugMode, 

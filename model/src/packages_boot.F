@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.13 2002/12/28 10:11:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.14 2003/02/18 05:33:54 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,6 +57,7 @@ cswdice -- addd useThermSeaIce to NAMELIST
      &          useZONAL_FILT,
      &          useFLT,
      &          usePTRACERS,
+     &          useSBO,
      &          useSEAICE,
      &          useBulkforce,
      &          useThermSEAICE
@@ -87,6 +88,7 @@ C--   Default package configuration
       useZONAL_FILT=.FALSE.
       useFLT=.FALSE.
       usePTRACERS=.FALSE.
+      useSBO=.FALSE.
       useSeaIce=.FALSE.
 cswdblk -- add
       useBulkforce=.FALSE.

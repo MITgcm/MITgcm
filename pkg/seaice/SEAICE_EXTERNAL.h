@@ -26,4 +26,4 @@ C
       COMMON /SEAICE_EXTERNAL/ surfaceTendencyTice
       _RS  surfaceTendencyTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */

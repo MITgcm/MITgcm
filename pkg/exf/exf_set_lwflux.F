@@ -10,6 +10,7 @@ c     o set external forcing lwflux
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_lwflux
@@ -45,55 +46,57 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( lwfluxfile .NE. ' ' ) then
+
 c     get record numbers and interpolation factor for lwflux
-      call exf_GetFFieldRec(
-     I                       lwfluxstartdate, lwfluxperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        lwfluxstartdate, lwfluxperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 
-      if ( first ) then
-        if ( lwfluxfile .NE. ' ' )
-     &        call mdsreadfield( lwfluxfile, exf_iprec, exf_yftype, 1
-     &                   , lwflux1, count0, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( lwflux1, lwfluxmask, mythid )
-        else
-           call exf_filter_rs( lwflux1, lwfluxmask, mythid )
-        end if
-      endif
+         if ( first ) then
+            call mdsreadfield( lwfluxfile, exf_iprec, exf_yftype, 1
+     &           , lwflux1, count0, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( lwflux1, lwfluxmask, mythid )
+            else
+               call exf_filter_rs( lwflux1, lwfluxmask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields( lwflux0, lwflux1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields( lwflux0, lwflux1, mythid )
 
-        if ( lwfluxfile .NE. ' ' )
-     &       call mdsreadfield( lwfluxfile, exf_iprec, exf_yftype, 1
-     &                   , lwflux1, count1, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( lwflux1, lwfluxmask, mythid )
-        else
-           call exf_filter_rs( lwflux1, lwfluxmask, mythid )
-        end if
-      endif
+            call mdsreadfield( lwfluxfile, exf_iprec, exf_yftype, 1
+     &           , lwflux1, count1, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( lwflux1, lwfluxmask, mythid )
+            else
+               call exf_filter_rs( lwflux1, lwfluxmask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1,sny
-            do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
 
-c             Interpolate linearly onto the current time.
+c     Interpolate linearly onto the current time.
 
-              lwflux(i,j,bi,bj) = fac          *lwflux0(i,j,bi,bj)+
-     &                          (exf_one - fac) *lwflux1(i,j,bi,bj)
+                     lwflux(i,j,bi,bj) = fac * lwflux0(i,j,bi,bj) +
+     &                    (exf_one - fac) *lwflux1(i,j,bi,bj)
 
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

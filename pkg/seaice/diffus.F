@@ -32,14 +32,14 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL DELTXX1, DELTYY1, DELTXX, DELTYY
-      _RL HEFF1  (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL HEFF1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF1(I,J)=0.0 _d 0
+          HEFF1(I,J,bi,bj)=0.0 _d 0
          ENDDO
         ENDDO
 
@@ -52,8 +52,8 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
      &          *CSTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
           DELTYY=DELTYY1/(DYTICE(I,J,bi,bj)*DYTICE(I,J,bi,bj)
      &          *CSTICE(I,J,bi,bj))
-          HEFF1(I,J)=DELTXX*((HEFF(I+1,J,3,bi,bj)-HEFF(I,J,3,bi,bj))
-     &     *HEFFM(I+1,J,bi,bj)
+          HEFF1(I,J,bi,bj)=DELTXX*((HEFF(I+1,J,3,bi,bj)
+     &     -HEFF(I,J,3,bi,bj))*HEFFM(I+1,J,bi,bj)
      &     -(HEFF(I,J,3,bi,bj)-HEFF(I-1,J,3,bi,bj))*HEFFM(I-1,J,bi,bj))
      &     +DELTYY*((HEFF(I,J+1,3,bi,bj)-HEFF(I,J,3,bi,bj))
      &     *CSUICE(I,J,bi,bj)*HEFFM(I,J+1,bi,bj)
@@ -71,13 +71,13 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(I,J,3,bi,bj)=HEFF1(I,J)
+          HEFF(I,J,3,bi,bj)=HEFF1(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

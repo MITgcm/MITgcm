@@ -59,6 +59,13 @@ C     i,j,bi,bj - Loop counters
           AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),
      &         HEFF(I,J,2,bi,bj)*1.0 _d +04)
 C NOW BALANCE THE HEAT IN OCEAN FIRT LEVEL
+C Here the units of YNEG are m of sea-ice.
+C The factor dRf(1)/72.0764, used to convert temperature
+C change in deg K to m of sea-ice, is approximately:
+C dRf(1) * (sea water heat capacity = 3996 J/kg/K)
+C        * (density of sea-water = 1026 kg/m^3)
+C        / (latent heat of fusion of sea-ice = 334000 J/kg)
+C        / (density of sea-ice = 910 kg/m^3)
           YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
           IF(YNEG(I,J,bi,bj).LE.ZERO) THEN
 C SUPERCOOLING, CONVERT TO ICE
@@ -100,13 +107,12 @@ C INCLUDING SNOWFALL
 C NOW CALCULATE CORRECTED GROWTH
         DO J=1,sNy
          DO I=1,sNx
-cdm ===> why is following line here?
-cdm       FICE(I,J,bi,bj)=FICE(I,J,bi,bj)
           GHEFF(I,J)=-DELTAT*FICE(I,J,bi,bj)
           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
           IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
 C SNOW CONVERTED INTO WATER AND THEN INTO ICE
+C The factor 0.920 is used to convert m of sea-ice to m of freshwater
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
@@ -172,6 +178,9 @@ C NOW GET TOTAL QNET AND QSW
      &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
           QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
+#ifndef SHORTWAVE_HEATING
+          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 
@@ -232,7 +241,7 @@ c      CALL PLOT_FIELD_XYRS( VWIND,'Current VWIND ', myIter, myThid )
           endif
          ENDDO
         ENDDO
-#endif SEAICE_DEBUG
+#endif /* SEAICE_DEBUG */
 
 crg Added by Ralf Giering: do we need DO_WE_NEED_THIS ?
 #define DO_WE_NEED_THIS
@@ -247,12 +256,12 @@ C NOW TRUNCATE AREA
           AREA(I,J,1,bi,bj)=MIN(ONE,AREA(I,J,1,bi,bj))
           AREA(I,J,1,bi,bj)=MAX(ZERO,AREA(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)=MAX(ZERO,HSNOW(I,J,bi,bj))
-#endif DO_WE_NEED_THIS
+#endif
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
 #ifdef DO_WE_NEED_THIS
           HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
-#endif DO_WE_NEED_THIS
+#endif
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -260,7 +269,7 @@ C NOW TRUNCATE AREA
        ENDDO
       ENDDO
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

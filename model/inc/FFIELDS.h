@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.15 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.16 2003/02/18 05:33:53 dimitri Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -10,35 +10,55 @@ C     *==========================================================*
 C     | FFIELDS.h                                                 
 C     | o Model forcing fields                                    
 C     *==========================================================*
-C     | The arrays here will need changing and customising for a  
-C     | particular experiment.                                    
+C     | More flexible surface forcing configurations are
+C     | available via pkg/exf and pkg/seaice
 C     *==========================================================*
 C     \ev
 CEOP
 C
-C--   For a classical "gyre" type experiment just one term is needed.
+C     fu    :: Zonal surface wind stress in N/m^2
+C              > 0 for increase in uVel, which is west to
+C                  east for cartesian and spherical polar grids
+C              Typical range: -0.5 < fu < 0.5
+C              Southwest C-grid U point
 C
-C     fu     - Zonal surface wind stress
-C                Units are           N/m^2 (>0 from East to West)
+C     fv    :: Meridional surface wind stress in N/m^2
+C              > 0 for increase in vVel, which is south to
+C                  north for cartesian and spherical polar grids
+C              Typical range: -0.5 < fv < 0.5
+C              Southwest C-grid V point
 C
-C     fv     - Meridional surface wind stress
-C                Units are           N/m^2 (>0 from North to South))
+C     EmPmR :: Net upward freshwater flux in m/s
+C              EmPmR = Evaporation - precipitation - runoff
+C              > 0 for increase in salt (ocean salinity)
+C              Typical range: -1e-7 < EmPmR < 1e-7
+C              Southwest C-grid tracer point
 C
-C     EmPmR  - Evaporation - Precipitation - Runoff
-C                Units are           m/s (>0 for ocean salting)
+C     Qnet  :: Net upward surface heat flux excluding shortwave in W/m^2
+C              Qnet = latent + sensible + net longwave
+C              > 0 for decrease in theta (ocean cooling)
+C              Typical range: -250 < Qnet < 600
+C              Southwest C-grid tracer point
 C
-C     Qnet   - Upward surface heat flux
-C                Units are           W/m^2=kg/s^3 (>0 for ocean cooling)
+C              NOTE: #ifndef SHORTWAVE_HEATING,
+C              Qnet = latent + sensible + net longwave + net shortwave
 C
-C     Qsw    - Upward short-wave surface heat flux
-C                Units are           W/m^2=kg/s^3 (>0 for ocean cooling)
+C     Qsw   :: Net upward shortwave radiation in W/m^2
+C              Qsw = - ( downward - ice and snow absorption - reflected )
+C              > 0 for decrease in theta (ocean cooling)
+C              Typical range: -350 < Qsw < 0
+C              Southwest C-grid tracer point
 C
-C     dQdT   - Thermal relaxation coefficient
-C                                 (W/m^2/degrees -> degrees/second)
-
-C     SST    - Sea surface temperature (degrees) for relaxation
-C     SSS    - Sea surface salinity (psu) for relaxation
-C     pload  - for the ocean:      atmospheric pressure at z=eta
+C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
+C              Southwest C-grid tracer point
+C
+C     SST   :: Sea surface temperature in degrees C for relaxation
+C              Southwest C-grid tracer point
+C
+C     SSS   :: Sea surface salinity in psu for relaxation
+C              Southwest C-grid tracer point
+C
+C     pload :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
 C              for the atmosphere: geopotential of the orography 
 C                Units are           meters (converted)

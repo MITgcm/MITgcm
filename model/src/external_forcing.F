@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.17 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.18 2003/02/18 05:33:54 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -225,7 +225,7 @@ C Penetrating SW radiation
       call SWFRAC(
      I     two,minusone,
      I     myCurrentTime,myThid,
-     O     swfracb)
+     U     swfracb)
       DO j=jMin,jMax
        DO i=iMin,iMax
         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) 

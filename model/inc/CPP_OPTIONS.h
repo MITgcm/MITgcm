@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.21 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.22 2003/02/18 05:33:53 dimitri Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -162,6 +162,12 @@ C o Use "OLD" UV geometry on sphere (definately *NOT* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
 C          because the old code did not have no-slip BCs
 #undef  OLD_UV_GEOMETRY
+
+C o Include/exclude IERS Special Bureau for the Oceans diagnostics
+#undef  ALLOW_SBO
+
+C o Include/exclude code for sea-ice model
+#undef  ALLOW_SEAICE
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

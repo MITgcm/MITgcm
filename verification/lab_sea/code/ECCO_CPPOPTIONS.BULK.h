@@ -44,9 +44,10 @@ C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE
 
 C   Options that are required to use pkg/exf with pkg/seaice.
-#define  ALLOW_BULKFORMULAE
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
+#define  ALLOW_DOWNWARD_RADIATION
+#define  ALLOW_BULKFORMULAE
 #define  ALLOW_RUNOFF
 
 C   Options that control relaxation terms.

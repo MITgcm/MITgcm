@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climtemp.F,v 1.4 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climtemp.F,v 1.5 2003/02/18 05:33:54 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -22,7 +22,7 @@ c                for the MITgcmUV.
 c              Christian Eckert eckert@mit.edu 12-Feb-2000
 c              - Changed Routine names (package prefix: exf_)
 c     changed: heimbach@mit.edu 08-Feb-2002
-c     changed: menemenlis@jpl.nasa.gov 20-Dec-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_set_climtemp
@@ -58,77 +58,77 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( climtempfile .NE. ' ' ) then
+
 #ifdef ALLOW_CLIM_CYCLIC
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
-      call cal_GetMonthsRec(
-     O                       fac, first, changed,
-     O                       count0, count1,
-     I                       mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call cal_GetMonthsRec(
+     O        fac, first, changed,
+     O        count0, count1,
+     I        mycurrenttime, mycurrentiter, mythid
+     &        )
 #else
 c     get record numbers and interpolation factor for climtemp
-      call exf_GetFFieldRec(
-     I                       climtempstartdate, climtempperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        climtempstartdate, climtempperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 #endif
 
-      if ( first ) then
-        if ( climtempfile .NE. ' ' )
-     &        call mdsreadfield( climtempfile, exf_clim_iprec
-     &                   , exf_clim_yftype, nr
-     &                   , climtemp1, count0, mythid
-     &                   )
-        if (exf_clim_yftype .eq. 'RL') then
-           call exf_filter_rl( climtemp1, climtempmask, mythid )
-        else
-           call exf_filter_rs( climtemp1, climtempmask, mythid )
-        end if
-      endif
+         if ( first ) then
+            call mdsreadfield( climtempfile, exf_clim_iprec
+     &           , exf_clim_yftype, nr
+     &           , climtemp1, count0, mythid
+     &           )
+            if (exf_clim_yftype .eq. 'RL') then
+               call exf_filter_rl( climtemp1, climtempmask, mythid )
+            else
+               call exf_filter_rs( climtemp1, climtempmask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields_3d( climtemp0, climtemp1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields_3d( climtemp0, climtemp1, mythid )
 
-        if ( climtempfile .NE. ' ' )
-     &        call mdsreadfield( climtempfile, exf_clim_iprec
-     &                   , exf_clim_yftype, nr
-     &                   , climtemp1, count1, mythid
-     &                   )
-        if (exf_clim_yftype .eq. 'RL') then
-           call exf_filter_rl( climtemp1, climtempmask, mythid )
-        else
-           call exf_filter_rs( climtemp1, climtempmask, mythid )
-        end if
-      endif
+            call mdsreadfield( climtempfile, exf_clim_iprec
+     &           , exf_clim_yftype, nr
+     &           , climtemp1, count1, mythid
+     &           )
+            if (exf_clim_yftype .eq. 'RL') then
+               call exf_filter_rl( climtemp1, climtempmask, mythid )
+            else
+               call exf_filter_rs( climtemp1, climtempmask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do k = 1,nr
-            do j = 1,sny
-              do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do k = 1,nr
+                  do j = 1,sny
+                     do i = 1,snx
 
-c             Set to freezing temperature if less
-              if (climtemp0(i,j,k,bi,bj) .lt. climtempfreeze) then
-                  climtemp0(i,j,k,bi,bj) = climtempfreeze
-              endif
-              if (climtemp1(i,j,k,bi,bj) .lt. climtempfreeze) then
-                  climtemp1(i,j,k,bi,bj) = climtempfreeze
-              endif
+c     Set to freezing temperature if less
+                        if (climtemp0(i,j,k,bi,bj) .lt. climtempfreeze)
+     &                       climtemp0(i,j,k,bi,bj) = climtempfreeze
+                        if (climtemp1(i,j,k,bi,bj) .lt. climtempfreeze)
+     &                       climtemp1(i,j,k,bi,bj) = climtempfreeze
 
-c             Interpolate linearly onto the current time.
-              climtemp(i,j,k,bi,bj) = 
-     &             fac             *climtemp0(i,j,k,bi,bj)+
-     &             (exf_one - fac) *climtemp1(i,j,k,bi,bj)
+c     Interpolate linearly onto the current time.
+                        climtemp(i,j,k,bi,bj) = 
+     &                       fac * climtemp0(i,j,k,bi,bj) +
+     &                       (exf_one - fac) * climtemp1(i,j,k,bi,bj)
 
-              enddo
+                     enddo
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
         
 #endif /* ALLOW_CLIMTEMP_RELAXATION */
 

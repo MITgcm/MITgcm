@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.4 2003/02/18 05:33:54 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -83,13 +83,6 @@ c     == local variables ==
 #endif
 
 c     == end of interface ==
-c      print *,'exf_GetFFieldRec: fldstartdate',fldstartdate
-c      print *,'exf_GetFFieldRec: fldperiod',fldperiod
-c      print *,'exf_GetFFieldRec: fac',fac
-c      print *,'exf_GetFFieldRec: first',first
-c      print *,'exf_GetFFieldRec: changed',changed
-c      print *,'exf_GetFFieldRec: count0',count0
-c      print *,'exf_GetFFieldRec: count1',count1
 
 c     Determine the current date.
       call cal_GetDate( myiter, mytime, mydate, mythid )

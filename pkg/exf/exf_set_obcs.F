@@ -14,6 +14,7 @@ c
 c     o set open boundary conditions
 c
 c     started: heimbach@mit.edu 01-May-2001
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_obcs_xz
@@ -53,33 +54,35 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      if ( first ) then
-        if ( obcs_file .NE. ' ' )
-     &        call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
-     &                     , obcs_xz_1, count0, mythid
-     &                     )
-      endif
+      if ( obcs_file .NE. ' ' ) then
 
-      if (( first ) .or. ( changed )) then
-        call exf_swapffields_xz( obcs_xz_0, obcs_xz_1, mythid )
+         if ( first ) then
+            call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
+     &           , obcs_xz_1, count0, mythid
+     &           )
+         endif
 
-        if ( obcs_file .NE. ' ' )
-     &       call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
-     &                     , obcs_xz_1, count1, mythid
-     &                     )
-      endif
+         if (( first ) .or. ( changed )) then
+            call exf_swapffields_xz( obcs_xz_0, obcs_xz_1, mythid )
 
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do k = 1,Nr
-            do i = 1,snx
-              obcs_fld_xz(i,k,bi,bj) = 
-     &              fac             *obcs_xz_0(i,k,bi,bj) +
-     &              (exf_one - fac) *obcs_xz_1(i,k,bi,bj)
+            call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
+     &           , obcs_xz_1, count1, mythid
+     &           )
+         endif
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do k = 1,Nr
+                  do i = 1,snx
+                     obcs_fld_xz(i,k,bi,bj) = 
+     &                    fac * obcs_xz_0(i,k,bi,bj) +
+     &                    (exf_one - fac) * obcs_xz_1(i,k,bi,bj)
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

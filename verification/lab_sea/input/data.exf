@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.2 2002/12/28 10:11:12 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.3 2003/02/18 05:33:56 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -52,6 +52,14 @@
  lwfluxstartdate2  = 180000,
  lwfluxperiod      = 2635200.0,
 #
+ swdownstartdate1  = 19781216,
+ swdownstartdate2  = 180000,
+ swdownperiod      = 2635200.0,
+#
+ lwdownstartdate1  = 19781216,
+ lwdownstartdate2  = 180000,
+ lwdownperiod      = 2635200.0,
+#
  hfluxfile         = ' ',
  sfluxfile         = ' ',
  ustressfile       = ' ',
@@ -62,10 +70,14 @@
  vwindfile         = 'v10m.labsea79',
  evapfile          = 'evap.labsea1979',
  precipfile        = 'prate.labsea1979',
- lwfluxfile        = 'flo.labsea1979',
- swfluxfile        = 'fsh.labsea1979',
+ lwfluxfile        = ' ',
+ swfluxfile        = ' ',
+ lwdownfile        = 'flo.labsea1979',
+ swdownfile        = 'fsh.labsea1979',
  runoffFile        = ' '
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
+#
+ EXFwindOnBgrid    = .TRUE.
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/CPP_OPTIONS.h,v 1.3 2002/12/28 10:11:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/CPP_OPTIONS.h,v 1.4 2003/02/18 05:33:56 dimitri Exp $
 C $Name:  $
 C
 
@@ -13,6 +13,9 @@ CEOP
 
 C o Include/exclude code for AIM package
 #undef  ALLOW_AIM
+
+C o Include/exclude IERS Special Bureau for the Oceans diagnostics
+#define   ALLOW_SBO
 
 C o Include/exclude code for sea-ice model
 #define  ALLOW_SEAICE

@@ -23,7 +23,7 @@ C     === Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
 C     === Routine arguments ===
 C     myTime - Simulation time
@@ -40,10 +40,11 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj, kii
-      _RL  DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
-      _RL  GRAV, ECCEN, ECM2, GMIN, RADIUS, DELT1, DELT2, PSTAR
+      _RL DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
+      _RL GRAV, ECCEN, ECM2, GMIN, RADIUS, DELT1, DELT2, PSTAR, AAA
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -53,11 +54,6 @@ C     i,j,bi,bj - Loop counters
       _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-
-#ifndef SEAICE_EXTERNAL_FLUXES
-      _RL  AAA
-      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-#endif SEAICE_EXTERNAL_FLUXES
 
 C--   FIRST SET UP BASIC CONSTANTS
       DWAT=0.59 _d 0
@@ -101,20 +97,6 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
 
 C--   NOW SET UP FORCING FIELDS
 
-#ifdef SEAICE_EXTERNAL_FLUXES
-C--   Wind stress computed externally on South-West C-grid
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           FORCEX(I,J,bi,bj)=HALF*(FU(I+1,J,bi,bj)+FU(I+1,J+1,bi,bj))
-           FORCEY(I,J,bi,bj)=HALF*(FV(I,J+1,bi,bj)+FV(I+1,J+1,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-#else SEAICE_EXTERNAL_FLUXES
       IF (SEAICEwindOnCgrid) THEN
 C--   Wind stress computed here from wind on South-West C-grid
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -154,7 +136,6 @@ C--   Wind stress computed here from wind on South-West B-grid
         ENDDO
        ENDDO
       ENDIF
-#endif SEAICE_EXTERNAL_FLUXES
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -420,7 +401,7 @@ C NOW ADI SCHEME (ZHANG-J/ROTHROCK 1999)
 c$taf store uice,vice = comlev1, key=ikey_dynamics
 
       ENDIF
-#endif SEAICE_ALLOW_DYNAMICS
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
 C Calculate ocean surface stress
       CALL OSTRES ( DWATN, COR_ICE, myThid )
@@ -442,7 +423,7 @@ c     &     ,gwatx(I,J,bi,bj),gwaty(i,j,bi,bj)
 c     &     ,forcex(I,J,bi,bj),forcey(i,j,bi,bj)
 c     &     ,uice(i,j,1,bi,bj)
 c     &     ,vice(i,j,1,bi,bj)
-#endif SEAICE_DEBUG
+#endif /* SEAICE_DEBUG */
           UICE(i,j,1,bi,bj)=min(UICE(i,j,1,bi,bj),0.40 _d +00)
           VICE(i,j,1,bi,bj)=min(VICE(i,j,1,bi,bj),0.40 _d +00)
           UICE(i,j,1,bi,bj)=max(UICE(i,j,1,bi,bj),-0.40 _d +00)
@@ -453,9 +434,9 @@ c     &     ,vice(i,j,1,bi,bj)
       ENDDO
 
       ENDIF
-#endif SEAICE_ALLOW_DYNAMICS
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

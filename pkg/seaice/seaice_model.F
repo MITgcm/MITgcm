@@ -23,11 +23,11 @@ C     === Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#endif ALLOW_AUTODIFF_TAMC
+#endif
 
 #ifdef SEAICE_EXTERNAL_FORCING
 #include "SEAICE_FFIELDS.h"
-#endif SEAICE_EXTERNAL_FORCING
+#endif
 
 C     === Routine arguments ===
 C     myTime - Simulation time
@@ -52,17 +52,15 @@ C     pkg/exf, which does not update edges.
          _EXCH_XY_R8( vwind,  myThid )
          _EXCH_XY_R8( atemp,  myThid )
          _EXCH_XY_R8( aqh,    myThid )
-         _EXCH_XY_R8( lwflux, myThid )
+         _EXCH_XY_R8( lwdown, myThid )
+         _EXCH_XY_R8( swdown, mythid )
          _EXCH_XY_R8( precip, myThid )
          _EXCH_XY_R8( evap,   myThid )
          _EXCH_XY_R8( runoff, myThid )
-#ifndef ALLOW_KPP
-         _EXCH_XY_R8( swflux, mythid )
-#endif ALLOW_KPP
-#else SEAICE_EXTERNAL_FORCING
+#else /* SEAICE_EXTERNAL_FORCING */
 C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
-#endif SEAICE_EXTERNAL_FORCING
+#endif /* SEAICE_EXTERNAL_FORCING */
 
 C--   Third level model velocity is used as proxy for geostrophic velocity
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -79,7 +77,7 @@ c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)
 c     &     ,GWATX(I,J,bi,bj),GWATY(I,J,bi,bj)
 c     &     ,uVel(i+1,j,3,bi,bj),uVel(i+1,j+1,3,bi,bj)
 c     &     ,vVel(i,j+1,3,bi,bj),vVel(i+1,j+1,3,bi,bj)
-#endif SEAICE_DEBUG
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -98,10 +96,8 @@ C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
 
 C--   Update overlap regions for a bunch of stuff
        _BARRIER
-       CALL EXCH_RL( HEFF, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RL( AREA, OLx, OLx, OLy, OLy, 3, OLx, OLy,
-     I      FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       CALL SEAICE_EXCH( HEFF, myThid )
+       CALL SEAICE_EXCH( AREA, myThid )
        _EXCH_XY_R4(fu   , myThid )
        _EXCH_XY_R4(fv   , myThid )
        _EXCH_XY_R4(EmPmR, myThid )
@@ -109,7 +105,7 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_R4(surfaceTendencyTice, myThid )
 #ifdef SHORTWAVE_HEATING
        _EXCH_XY_R4(Qsw  , myThid )
-#endif SHORTWAVE_HEATING
+#endif
        _EXCH_XYZ_R8(theta , myThid )
 
 C--   Sea ice diagnostics.
@@ -124,12 +120,12 @@ C OOH NOOOO we need to move the whole stuff
 C---------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CRG CADJ store UICE,VICE,AREA,HEFF,fu,fv,EmPmR,Qnet,Qsw = comlev1_bibj
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
 C--   Call sea-ice cost function routine
 CRG      CALL SEAICE_COST( myTime, myIter, myThid )
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

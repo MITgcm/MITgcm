@@ -29,4 +29,4 @@ C     Storage arrays for time-averages
 
 #endif /* ALLOW_TIMEAVE */
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */

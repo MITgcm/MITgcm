@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/data.exf,v 1.2 2002/12/28 10:11:11 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/data.exf,v 1.3 2003/02/18 05:33:54 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -68,4 +68,26 @@
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
+#
+#     input scaling factors
+      exf_inscalhfl       =  1. _d 0
+      exf_inscalust       =  1. _d 0
+      exf_inscalvst       =  1. _d 0
+      exf_inscalswf       =  1. _d 0
+      exf_inscalsst       =  1. _d 0
+      exf_inscalsss       =  1. _d 0
+      exf_inscalapressure =  1. _d 0
+      exf_inscalsfl       =  1. _d 0
+#     convert runoff from m/yr to m/s and change sign.
+      exf_inscalrunoff    = -1.0/(86400.*365.0)
+#     output scaling factors
+      exf_outscalhfl      =  1. _d 0
+      exf_outscalust      =  1. _d 0
+      exf_outscalvst      =  1. _d 0
+      exf_outscalswf      =  1. _d 0
+      exf_outscalsst      =  1. _d 0
+      exf_outscalsss      =  1. _d 0
+      exf_outscalapressure=  1. _d 0
+      exf_outscalsfl      =  1. _d 0
+      exf_outscalrunoff   =  1. _d 0
  &

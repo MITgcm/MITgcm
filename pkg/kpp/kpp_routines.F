@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.13 2002/12/28 10:11:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.14 2003/02/18 05:33:55 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -183,14 +183,16 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
 c combine interior and boundary layer coefficients and nonlocal term
+c !!!NOTE!!! In shallow (2-level) regions and for shallow mixed layers
+c (< 1 level), diffusivity blmc can become negative.  The max's below
+c are a hack until this problem is properly diagnosed and fixed.
 c-----------------------------------------------------------------------
-
       do k = 1, Nr
          do i = 1, imt
             if (k .lt. kbl(i)) then
-               do md = 1, mdiff
-                  diffus(i,k,md) = blmc(i,k,md)
-               end do
+               diffus(i,k,1) = max ( blmc(i,k,1), viscAr  )
+               diffus(i,k,2) = max ( blmc(i,k,2), diffKrS )
+               diffus(i,k,3) = max ( blmc(i,k,3), diffKrT )
             else
                ghat(i,k) = 0.
             endif

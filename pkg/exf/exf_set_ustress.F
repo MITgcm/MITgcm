@@ -10,6 +10,7 @@ c     o set external forcing ustress
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_ustress
@@ -45,55 +46,58 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      if ( ustressfile .NE. ' ' ) then
+
 c     get record numbers and interpolation factor for ustress
-      call exf_GetFFieldRec(
-     I                       ustressstartdate, ustressperiod
-     O                     , fac, first, changed
-     O                     , count0, count1
-     I                     , mycurrenttime, mycurrentiter, mythid
-     &                     )
+         call exf_GetFFieldRec(
+     I        ustressstartdate, ustressperiod
+     O        , fac, first, changed
+     O        , count0, count1
+     I        , mycurrenttime, mycurrentiter, mythid
+     &        )
 
-      if ( first ) then
-        if ( ustressfile .NE. ' ' )
-     &        call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
-     &                   , ustress1, count0, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( ustress1, ustressmask, mythid )
-        else
-           call exf_filter_rs( ustress1, ustressmask, mythid )
-        end if
-      endif
+         if ( first ) then
+            call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
+     &           , ustress1, count0, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( ustress1, ustressmask, mythid )
+            else
+               call exf_filter_rs( ustress1, ustressmask, mythid )
+            end if
+         endif
 
-      if (( first ) .or. ( changed )) then
-        call exf_SwapFFields( ustress0, ustress1, mythid )
+         if (( first ) .or. ( changed )) then
+            call exf_SwapFFields( ustress0, ustress1, mythid )
 
-        if ( ustressfile .NE. ' ' )
-     &        call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
-     &                   , ustress1, count1, mythid
-     &                   )
-        if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( ustress1, ustressmask, mythid )
-        else
-           call exf_filter_rs( ustress1, ustressmask, mythid )
-        end if
-      endif
+            call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
+     &           , ustress1, count1, mythid
+     &           )
+            if (exf_yftype .eq. 'RL') then
+               call exf_filter_rl( ustress1, ustressmask, mythid )
+            else
+               call exf_filter_rs( ustress1, ustressmask, mythid )
+            end if
+         endif
 
 c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1,sny
-            do i = 1,snx
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
 
-c             Interpolate linearly onto the current time.
+c     Interpolate linearly onto the current time.
 
-              ustress(i,j,bi,bj) = fac          *ustress0(i,j,bi,bj)+
-     &                          (exf_one - fac) *ustress1(i,j,bi,bj)
+                     ustress(i,j,bi,bj) = exf_inscal_ust * (
+     &                                fac * ustress0(i,j,bi,bj) +
+     &                    (exf_one - fac) * ustress1(i,j,bi,bj) )
 
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

@@ -1,0 +1,87 @@
+Online computation of angular momentume terms
+=============================================
+
+Subdirectory pkg/sbo contains a small diagnostic package that computes IERS
+Special Bureau for the Oceans (SBO) core products, including oceanic mass,
+center-of-mass, angular, and bottom pressure.  The package is enabled by
+setting "#define ALLOW_SBO" in CPP_OPTIONS.h at compile time and
+"useSBO=.TRUE." in data.pkg during model execution.  There are two separate
+output products, SBO_DIAG.* and OBPtave*, which are described below.
+
+===========
+
+SBO_DIAG.data is a single file that contains the following fields at every
+model time step:
+
+   myCurrentTime - model integration time                    (s)
+   xoamc         - x-comp oam due to currents        (kg-m**2/s)
+   yoamc         - y-comp oam due to currents        (kg-m**2/s)
+   zoamc         - z-comp oam due to currents        (kg-m**2/s)
+   xoamp         - x-comp oam due to pressure        (kg-m**2/s)
+   yoamp         - y-comp oam due to pressure        (kg-m**2/s)
+   zoamp         - z-comp oam due to pressure        (kg-m**2/s)
+   mass          - mass of oceans                           (kg)
+   xcom          - x-comp of center-of-mass of oceans        (m)
+   ycom          - y-comp of center-of-mass of oceans        (m)
+   zcom          - z-comp of center-of-mass of oceans        (m)
+
+The file is direct access, real*8, binary.  Its dimensions are 11 X nt, where
+nt is number of records.  For example, in matlab you can use
+
+   sbo=readbin('SBO_DIAG.data',[11 nt],1,'real*8',0,'native');
+
+to obtain the 11 X nt matlab array sbo.  A copy of readbin.m resides in
+subdirectory verification/lab_sea/matlab.
+
+===========
+
+OBPtave* files contain ocean-bottom pressure in Pascals (N/m^2).  Ocean bottom
+pressure is cumulated and averaged for sbo_taveFreq seconds.  Parameter
+sbo_taveFreq is specified in data.sbo during model execution.  For example:
+
+# SBO parameters
+ &SBO_PARM01
+ sbo_taveFreq = 86400.
+ &
+
+will average and dump bottom pressure once per day.  The bottom pressure files
+are 2-dimensional fields with dimension nx X ny equal to those of the model
+domain.  The files have standard MITgcmUV mdsio output format.  The files are
+direct access, real*4, binary.  They can be global or tiled (depending on
+whether "globalFiles=.TRUE." is set in parameter file data).  For example, in
+matlab you can use
+
+   obp=readbin('OBPtave0000000020.data',[nx ny],1);
+
+to read a global bottom pressure file output at model time step 20.  Land is
+flagged with -999.99 values.
+
+===========
+
+SBO package file description
+
+   Added:
+      pkg/sbo/sbo_calc.F         - main SBO routine, lots of comments
+      pkg/sbo/sbo_check.F        - check for package consistency
+      pkg/sbo/sbo_diags.F        - SBO diagnostics
+      pkg/sbo/sbo_readparms.F    - read parameter file data.sbo
+      pkg/sbo/sbo_rho.F          - in-situ density computation
+      pkg/sbo/sbo_writevector.F  - write direct access binary vector
+      pkg/sbo/SBO.h              - main header file
+      pkg/sbo/SBO_OPTIONS.h      - SBO compiler time options
+      doc/README.sbo             - description of SBO package
+      utils/matlab/read_record.m - matlab routine for reading binary files
+      utils/matlab/readbin.m     - matlab routine for reading binary files
+      verification/natl_box/input/data.sbo  - example parameter file
+
+   Modified:
+      model/inc/CPP_OPTIONS.h          - added ALLOW_SBO
+      model/inc/PARAMS.h               - added useSBO
+      model/src/do_the_model_io.F      - added call to SBO package
+      model/src/packages_boot.F        - added call to SBO package
+      model/src/packages_check.F       - added call to SBO package
+      model/src/packages_readparms.F   - added call to SBO package
+
+===========
+
+Last modified: 02/04/03 by Dimitris Menemenlis

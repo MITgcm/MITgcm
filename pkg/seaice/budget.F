@@ -1,7 +1,7 @@
 C $Header:
 
 #include "SEAICE_OPTIONS.h"
- 
+
 CStartOfInterface
       SUBROUTINE BUDGET(UG, TICE, HICE1, FICE1, KOPEN, bi, bj)
 C     /==========================================================\
@@ -10,7 +10,7 @@ C     | o Calculate ice growth rate                              |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
- 
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -36,7 +36,7 @@ C     === Routine arguments ===
       INTEGER KOPEN
       INTEGER bi, bj
 CEndOfInterface
- 
+
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
@@ -90,7 +90,7 @@ C PENETRATION SHORTWAVE RADIATION FACTOR
        DO I=1,sNx
         TICE(I,J,bi,bj)=MIN(273.16 _d 0+MAX_TICE,TICE(I,J,bi,bj))
         ATEMP(I,J,bi,bj)=MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
-        LWFLUX(I,J,bi,bj)=MAX(MIN_LWFLUX,LWFLUX(I,J,bi,bj))
+        LWDOWN(I,J,bi,bj)=MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
        ENDDO
       ENDDO
 
@@ -104,9 +104,9 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
 #ifdef SEAICE_EXTERNAL_FLUXES
            FICE1(I,J,bi,bj)=QNET(I,J,bi,bj)+Qsw(I,J,bi,bj)
            QSWO(I,J,bi,bj)=Qsw(I,J,bi,bj)
-#else SEAICE_EXTERNAL_FLUXES
+#else /* SEAICE_EXTERNAL_FLUXES undefined */
            ALB(I,J)=SEAICE_waterAlbedo                                
-           A1(I,J)=(1.0 _d 0-ALB(I,J))*SWFLUX(I,J,bi,bj)+LWFLUX(I,J,bi,bj)
+           A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)+LWDOWN(I,J,bi,bj)
      &          +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1W*UG(I,J)*AQH(I,J,bi,bj)
            B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
      &          *(TICE(I,J,bi,bj)-TMELT)
@@ -114,8 +114,8 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
            A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1W*UG(I,J)*B(I,J)
      &          -D3*(TICE(I,J,bi,bj)**4)
            FICE1(I,J,bi,bj)=-A1(I,J)-A2(I,J)    
-           QSWO(I,J,bi,bj)=-(ONE-ALB(I,J))*SWFLUX(I,J,bi,bj)
-#endif SEAICE_EXTERNAL_FLUXES
+           QSWO(I,J,bi,bj)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+#endif /* SEAICE_EXTERNAL_FLUXES */
            QNETO(I,J,bi,bj)=FICE1(I,J,bi,bj)-QSWO(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -150,12 +150,12 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
           DO I=1,sNx
            IF(HSNOW(I,J,bi,bj).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
-            A1(I,J)=(ONE-ALB(I,J))*SWFLUX(I,J,bi,bj)+LWFLUX(I,J,bi,bj)
+            A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)+LWDOWN(I,J,bi,bj)
      &       +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1I*UG(I,J)*AQH(I,J,bi,bj)
            ELSE
 C SW PENETRATION UNDER ICE
-            A1(I,J)=(ONE-ALB(I,J))*SWFLUX(I,J,bi,bj)
-     &       *(ONE-XIO*EXP(-1.5 _d 0*HICE(I,J)))+LWFLUX(I,J,bi,bj)
+            A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &       *(ONE-XIO*EXP(-1.5 _d 0*HICE(I,J)))+LWDOWN(I,J,bi,bj)
      &       +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1I*UG(I,J)*AQH(I,J,bi,bj)
            ENDIF
           ENDDO
@@ -213,7 +213,7 @@ C NO SW PENETRATION WITH SNOW
             QSWI(I,J,bi,bj)=ZERO
            ELSE
 C SW PENETRATION UNDER ICE
-            QSWI(I,J,bi,bj)=-(ONE-ALB(I,J))*SWFLUX(I,J,bi,bj)
+            QSWI(I,J,bi,bj)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &       *XIO*EXP(-1.5 _d 0*HICE(I,J))
            ENDIF
           ENDDO
@@ -221,7 +221,7 @@ C SW PENETRATION UNDER ICE
 
       END IF
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

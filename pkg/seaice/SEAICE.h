@@ -78,4 +78,4 @@ C
       COMMON/DAY/IDELT
       INTEGER ICOUNT, IDELT
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */

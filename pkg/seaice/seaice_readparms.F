@@ -42,15 +42,15 @@ C--   SEAICE parameters
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave,
-     & uwindFile, vwindFile, atempFile, aqhFile, lwfluxFile,
-     & swfluxFile, precipFile, evapFile, runoffFile,
+     & uwindFile, vwindFile, atempFile, aqhFile, lwdownFile,
+     & swdownFile, precipFile, evapFile, runoffFile, HeffFile,
      & LSR_ERROR, DIFF1, A22, HO,
      & WindForcingStart, WindForcingEnd, WindForcingPeriod,
      & FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
      & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
-     & MAX_HEFF, MIN_ATEMP, MIN_LWFLUX, MAX_TICE, MIN_TICE
+     & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
 
       _BEGIN_MASTER(myThid)
 
@@ -89,11 +89,12 @@ C--   set default sea ice parameters
       vwindFile  = ' '
       atempFile  = ' '
       aqhFile    = ' '
-      lwfluxFile = ' '
-      swfluxFile = ' '
+      lwdownFile = ' '
+      swdownFile = ' '
       precipFile = ' '
       evapFile   = ' '
       runoffFile = ' '
+      HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
       NPSEUDO    = 10
@@ -120,7 +121,7 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       EndingYear        = 2000.
       MAX_HEFF          = 6.      _d 0
       MIN_ATEMP         = -50.    _d 0
-      MIN_LWFLUX        = 60.     _d 0
+      MIN_LWDOWN        = 60.     _d 0
       MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
 
@@ -180,12 +181,12 @@ C--   Everyone else must wait for the parameters to be loaded
      &     SSSForcingEnd    = FluxForcingEnd
       IF ( SSSForcingPeriod .EQ. -99999. )
      &     SSSForcingPeriod = FluxForcingPeriod
-#endif SEAICE_EXTERNAL_FORCING
+#endif /* SEAICE_EXTERNAL_FORCING */
 
 C--   No pseudo time steps are needed for LSR solver.
       IF ( SEAICEuseLSR ) NPSEUDO = 1
 
-#endif ALLOW_SEAICE
+#endif /* ALLOW_SEAICE */
 
       return
       end

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkrhn.F,v 1.2 2002/12/28 10:11:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkrhn.F,v 1.3 2003/02/18 05:33:54 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -25,18 +25,13 @@ c
 c              - Included appropriate CPP options
 c                ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP
 c
-c              Dimitris Menemenlis menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c              - Added EXF_NO_BULK_COMPUTATIONS option.
-c
 c     ==================================================================
 c     FUNCTION exf_BulkRhn
 c     ==================================================================
 
       implicit none
 
-#if (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP) \
-    && ~defined (EXF_NO_BULK_COMPUTATIONS) )
+#if (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP))
 
 c     == global variables ==
 
