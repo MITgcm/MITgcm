@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.118 2003/01/13 14:31:49 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.119 2003/01/13 23:52:38 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-o gmredi: fix few bugs and restore parameter values (e.g., Small_Number=1.D-12)
-  and scheme (e.g., Large_SlopeSqr=1.D+48) of checkpoint47f_post
 
-checkpoint48
+checkpoint47i_post
+o GM_EXCLUDE_() replace GM_TAPER_(): by default, all the code is compiled.
+o add GM_Small_Number & GM_slopeSqCutoff as run-time parameters (data.gmredi)
+  default values = 1.D-12 & 1.D+48 (=> give same results as checkpoint47f_post)
+o cg2dTargetResWunit: define tolerance using deltaTmom (and not deltaTfreesurf) 
+o gmredi: fix few bugs.
+
 checkpoint47h_post (duplicate tag for PH's c48 tag, in order to move c48)
 This will be a good checkpoint to plug into the ecco-branch.
 o few modif.'s to get latest version adjointed
