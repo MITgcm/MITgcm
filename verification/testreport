@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.54 2004/12/08 21:49:05 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.55 2004/12/09 15:52:33 edhill Exp $
 #  $Name:  $
 #
 
@@ -969,7 +969,7 @@ for dir in $TESTDIRS ; do
 	echo "tdir='$dir'" >> $CDIR"/summary.txt"
 
 	OLD_COMMAND=$COMMAND
-	COMMAND="./mitgcmuv > output.txt"
+	# COMMAND="./mitgcmuv > output.txt"
 	for ex in $extra_runs ; do
 	    test -e "$dir/tr_run.$ex" && rm -rf "$dir/tr_run.$ex"
 	    mkdir "$dir/tr_run.$ex"
