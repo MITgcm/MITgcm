@@ -5,6 +5,6 @@
  zonal_filt_lat=45.,
  zonal_filt_sinpow=2,
  zonal_filt_cospow=2,
- zonal_filt_mode2dx=2,
+ zonal_filt_mode2dx=1,
  &                                
 

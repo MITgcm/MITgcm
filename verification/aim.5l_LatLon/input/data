@@ -25,6 +25,8 @@
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+#uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
@@ -52,6 +54,7 @@
  chkptFreq=0.0,
  dumpFreq=2592000.0,
  taveFreq=2592000.0,
+#monitorFreq=86400.0,
  monitorFreq=1.0,
  &
 
@@ -70,5 +73,5 @@
 
 # Input datasets
  &PARM05
- bathyFile='orography_fullcell.bin',
+ topoFile='topo.filt_55.bin',
  &
