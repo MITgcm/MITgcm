@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.19 2004/04/06 00:25:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.20 2004/04/06 01:20:44 dimitri Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -60,16 +60,15 @@ C                         units.
       INTEGER elCount
       INTEGER elLen
       INTEGER elStride
+      INTEGER npe,itemp,ierr,istatus(MPI_STATUS_SIZE)
+      INTEGER mpiBufSize,mpiRequest
+#endif /* ALLOW_USE_MPI */
+      INTEGER myThid
 
 C--   Variables needed for mpi gather scatter routines.
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)
       INTEGER mpi_myYGlobalLo(nPx*nPy)
-      INTEGER npe,itemp,ierr,istatus(MPI_STATUS_SIZE)
-      INTEGER mpiBufSize,mpiRequest
-
-#endif /* ALLOW_USE_MPI */
-      INTEGER myThid
 CEOP
 
 C--   Default values set to single processor case
@@ -86,6 +85,8 @@ C     processes. A process can be its own neighbor!
       pidE        = 1
       pidN        = 1
       pidS        = 1
+      mpi_myXGlobalLo(1)=1
+      mpi_myYGlobalLo(1)=1
 c     errorMessageUnit    = 0
 c     standardMessageUnit = 6
 
@@ -546,4 +547,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.19 2004/04/06 00:25:56 dimitri Exp $
+C $Id: ini_procs.F,v 1.20 2004/04/06 01:20:44 dimitri Exp $
