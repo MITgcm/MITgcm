@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.3 2000/09/13 17:07:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.4 2000/11/13 16:37:02 heimbach Exp $
 
 #ifdef ALLOW_KPP
 
@@ -25,7 +25,7 @@ C-----------------------------------------------------------------------
       _RL KPPdiffKzT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL KPPghat    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL KPPhbl     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RS KPPfrac    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL KPPfrac    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       COMMON /kpp/ KPPviscAz, KPPdiffKzT, KPPdiffKzS
      &              , KPPghat, KPPhbl
       COMMON /kpp_short/ KPPfrac

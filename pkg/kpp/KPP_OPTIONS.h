@@ -8,17 +8,10 @@ C     \==========================================================/
 
 #include "CPP_OPTIONS.h"
 
+C o Set precision for KPP variables (Real*4 or Real*8)
+#define _KPP_RL Real*8
+
 #ifdef ALLOW_KPP
-
-C o Get rid of vertical resolution dependence of dVsq term by
-C   estimating a surface velocity that is independent of first
-C   level thickness in the model.
-#undef KPP_ESTIMATE_UREF
-
-C o When set, test denominators for small values
-C   makes code adjoint-friendly by avoiding singularities in
-C   the forward code and its derivative
-#define KPP_TEST_DENOM
 
 C o When set, use exchange calls rather than recomputation
 C   to obtain KPP parameters in overlap region.  This option
@@ -44,34 +37,20 @@ C o When set, smooth all KPP density variables horizontally
 #  define KPP_SMOOTH_DBLOC
 #endif
 
-C o As coded KPP_SMOOTH_DBLOC and KPP_SMOOTH_DENS will not work
-C   with FRUGAL_KPP switch turned on
-#ifdef KPP_SMOOTH_DBLOC
-#  undef FRUGAL_KPP
-#endif
-
 C o When set, smooth vertical viscosity horizontally
-C   Right now this option only works with FRUGAL_KPP turned on
 #undef KPP_SMOOTH_VISC
-#ifdef KPP_SMOOTH_VISC
-#undef KPP_SMOOTH_DBLOC
-#undef KPP_SMOOTH_DENS
-#define FRUGAL_KPP
-#endif
 
 C o When set, smooth vertical diffusivity horizontally
-C   Right now this option only works with FRUGAL_KPP turned on
 #undef KPP_SMOOTH_DIFF
-#ifdef KPP_SMOOTH_DIFF
-#undef KPP_SMOOTH_DBLOC
-#undef KPP_SMOOTH_DENS
-#define FRUGAL_KPP
-#endif
 
+C o Get rid of vertical resolution dependence of dVsq term by
+C   estimating a surface velocity that is independent of first
+C   level thickness in the model.
+#undef KPP_ESTIMATE_UREF
 
 C o Include/exclude various time-averaged diagnostic output
 C   for saving storage space
-#ifdef   INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 #define INCLUDE_DIAGNOSTICS_KPP
 #undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.4 2000/09/13 17:07:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.5 2000/11/13 16:37:02 heimbach Exp $
 
 C     /==========================================================\
 C     | KPP_PARAMS.h                                             |
@@ -9,20 +9,24 @@ C     \==========================================================/
 
 C Parameters used in kpp routine arguments (needed for compilation
 C of kpp routines even if ALLOW_KPP is not defined)
-C     mdiff   = number of diffusivities for local arrays
-C     imt     = array dimension for local arrays
-C     Nrm1, Nrp1, Nrp2 = number of vertical levels
+C     mdiff                  - number of diffusivities for local arrays
+C     Nrm1, Nrp1, Nrp2       - number of vertical levels
+C     imt                    - array dimension for local arrays
+C     ibot, itop, jbot, jtop - array dimension indices
 
-      integer    mdiff, imt, Nrm1, Nrp1, Nrp2
-      parameter (mdiff = 3)
+      integer    mdiff, Nrm1, Nrp1, Nrp2
+      integer    imt, ibot, itop, jbot, jtop
+      parameter( mdiff = 3    )
+      parameter( Nrm1  = Nr-1 )
+      parameter( Nrp1  = Nr+1 )
+      parameter( Nrp2  = Nr+2 )
 #ifdef FRUGAL_KPP
-      parameter (imt   = sNx*sNy)
+      parameter( imt=(sNx+2)*(sNy+2) )
+      parameter( ibot=0, itop=sNx+1, jbot=0, jtop=sNy+1 )
 #else
-      parameter (imt   = (sNx+2*OLx)*(sNy+2*OLy))
+      parameter( imt=(sNx+2*OLx)*(sNy+2*OLy) )
+      parameter( ibot=1-OLx, itop=sNx+OLx, jbot=1-OLy, jtop=sNy+OLy )
 #endif
-      parameter (Nrm1  = Nr-1)
-      parameter (Nrp1  = Nr+1)
-      parameter (Nrp2  = Nr+2)
 
 #ifdef ALLOW_KPP
 
@@ -38,19 +42,19 @@ C     kpp_dumpFreq    - KPP dump frequency.                             (s)
 C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
 
 
-      INTEGER nzmax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RS pMask      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS zgrid      (0:Nr+1)
-      _RS hwide      (0:Nr+1)
+      INTEGER nzmax ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,     nSx, nSy )
+      _KPP_RL pMask ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
+      _KPP_RL zgrid ( 0:Nr+1 )
+      _KPP_RL hwide ( 0:Nr+1 )
       _RL kpp_freq
       _RL kpp_dumpFreq
       _RL kpp_taveFreq
 
-      COMMON /kpp_i/ nzmax
+      COMMON /kpp_i/  nzmax
 
-      COMMON /kpp_RS/ pMask, zgrid, hwide
+      COMMON /kpp_r1/ pMask, zgrid, hwide
 
-      COMMON /kpp_RL/ kpp_freq, kpp_dumpFreq, kpp_taveFreq
+      COMMON /kpp_r2/ kpp_freq, kpp_dumpFreq, kpp_taveFreq
 
 
 C-----------------------------------------------------------------------
@@ -59,10 +63,6 @@ C     KPP flags and min/max permitted values for mixing parameters
 c
 C     KPPmixingMaps     - if true, include KPP diagnostic maps in STDOUT
 C     KPPwriteState     - if true, write KPP state to file
-C     minKPPghat,    maxKPPghat    - KPP non local transport bounds (s/m^2)
-C     minKPPviscAz,  maxKPPviscAz  - KPP viscosity bounds           (m^2/s)
-C     minKPPdiffKzT, maxKPPdiffKzT - KPP heat diffusivity bounds    (m^2/s)
-C     minKPPdiffKzS, maxKPPdiffKzS - KPP tracer diffusivity bounds  (m^2/s)
 C     minKPPhbl                    - KPPhbl minimum value               (m)
 C
 C-----------------------------------------------------------------------
@@ -72,16 +72,10 @@ C-----------------------------------------------------------------------
       COMMON /KPP_PARM_L/
      &        KPPmixingMaps, KPPwriteState
 
-      _RS     minKPPghat   , maxKPPghat   
-      _RS     minKPPviscAz , maxKPPviscAz(Nr)
-      _RS     minKPPdiffKzT, maxKPPdiffKzT
-      _RS     minKPPdiffKzS, maxKPPdiffKzS, minKPPhbl
+      _KPP_RL minKPPhbl
 
       COMMON /KPP_PARM_R/
-     &        minKPPghat   , maxKPPghat   
-     &      , minKPPviscAz , maxKPPviscAz
-     &      , minKPPdiffKzT, maxKPPdiffKzT
-     &      , minKPPdiffKzS, maxKPPdiffKzS, minKPPhbl
+     &        minKPPhbl
 
 c======================  file "kmixcom.h" =======================
 c
@@ -103,7 +97,7 @@ c     conc1,conam,concm,conc2,zetam,conas,concs,conc3,zetas
 c             = scalar coefficients
 c-----------------------------------------------------------------------
 
-      _RS              epsln,phepsi,epsilon,vonk,dB_dz,
+      _KPP_RL          epsln,phepsi,epsilon,vonk,dB_dz,
      $                 conc1,
      $                 conam,concm,conc2,zetam,
      $                 conas,concs,conc3,zetas
@@ -132,9 +126,11 @@ c               scale of turbulant velocity shear
 c               (=function of concv,concs,epsilon,vonk,Ricr)
 c-----------------------------------------------------------------------
 
-      _RS              Ricr,cekman,cmonob,concv,hbf,Vtc
+      _KPP_RL               Ricr,cekman,cmonob,concv,Vtc
+      _RL                   hbf
 
-      common /kmixcbd/ Ricr,cekman,cmonob,concv,hbf,Vtc
+      common /kpp_bldepth1/ Ricr,cekman,cmonob,concv,Vtc
+      common /kpp_bldepth2/ hbf
 
 c-----------------------------------------------------------------------
 c     parameters and common arrays for subroutines "kmixinit" 
@@ -161,8 +157,8 @@ c-----------------------------------------------------------------------
       integer    nni      , nnj
       parameter (nni = 890, nnj = 480)
 
-      _RS              wmt(0:nni+1,0:nnj+1), wst(0:nni+1,0:nnj+1)
-      _RS              deltaz,deltau,zmin,zmax,umin,umax
+      _KPP_RL          wmt(0:nni+1,0:nnj+1), wst(0:nni+1,0:nnj+1)
+      _KPP_RL          deltaz,deltau,zmin,zmax,umin,umax
       common /kmixcws/ wmt, wst
      $               , deltaz,deltau,zmin,zmax,umin,umax
 
@@ -187,9 +183,9 @@ c-----------------------------------------------------------------------
 
       INTEGER num_v_smooth_Ri, num_v_smooth_BV
       INTEGER num_z_smooth_sh, num_m_smooth_sh
-      _RS     Riinfty, BVSQcon
-      _RS     difm0  , difs0  , dift0
-      _RS     difmcon, difscon, diftcon
+      _KPP_RL Riinfty, BVSQcon
+      _KPP_RL difm0  , difs0  , dift0
+      _KPP_RL difmcon, difscon, diftcon
 
       COMMON /kmixcri_i/ num_v_smooth_Ri, num_v_smooth_BV
      1                 , num_z_smooth_sh, num_m_smooth_sh
@@ -208,7 +204,7 @@ c     Rrho0   = limit for double diffusive density ratio
 c     dsfmax  = maximum diffusivity in case of salt fingering (m2/s)
 c-----------------------------------------------------------------------
 
-      _RS              Rrho0, dsfmax 
+      _KPP_RL          Rrho0, dsfmax 
       common /kmixcdd/ Rrho0, dsfmax
 
 c-----------------------------------------------------------------------
@@ -221,7 +217,7 @@ c     cstar   = proportionality coefficient for nonlocal transport
 c     cg      = non-dimensional coefficient for counter-gradient term
 c-----------------------------------------------------------------------
 
-      _RS              cstar, cg
+      _KPP_RL          cstar, cg
 
       common /kmixcbm/ cstar, cg
 

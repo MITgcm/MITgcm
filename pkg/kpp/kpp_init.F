@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.4 2000/09/13 17:07:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.5 2000/11/13 16:37:02 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -31,9 +31,9 @@ C     zehat       - zeta * ustar**3
 C     zeta        - Stability parameter d/l
 
       INTEGER i, j, k, bi, bj
-      _RS zehat
-      _RS zeta
-      _RS usta
+      _KPP_RL zehat
+      _KPP_RL zeta
+      _KPP_RL usta
 
 C-----------------------------------------------------------------------
 C Initialize constants that depend on parameters in data.kpp
@@ -53,11 +53,7 @@ c-----------------------------------------------------------------------
          zehat = deltaz*i + zmin
          do j = 0, nnj + 1
             usta = deltau*j + umin
-#ifdef KPP_TEST_DENOM
             zeta = zehat / max(phepsi,usta**3)
-#else
-            zeta = zehat/(usta**3 + epsln)
-#endif
             if (zehat .ge. 0.) then
                wmt(i,j) = vonk*usta/(1. + conc1*zeta)
                wst(i,j) = wmt(i,j)
@@ -105,13 +101,8 @@ C-----------------------------------------------------------------------
 C     vertical grid
 C-----------------------------------------------------------------------
 
-#ifdef KPP_TEST_DENOM
       zgrid(0)  =  phepsi
       hwide(0)  =  phepsi
-#else
-      zgrid(0)  =  epsln
-      hwide(0)  =  epsln
-#endif
       zgrid(1)  = -delZ(1)*0.5
       hwide(1)  =  delZ(1)
 
@@ -122,11 +113,7 @@ C-----------------------------------------------------------------------
 
       zgrid(Nrp1) = zgrid(Nr) * 100.
 
-#ifdef KPP_TEST_DENOM
       hwide(Nrp1) = phepsi
-#else
-      hwide(Nrp1) = epsln
-#endif
 
 C-----------------------------------------------------------------------
 C Initialize KPP variables KPPhbl, KPPghat, KPPviscAz,

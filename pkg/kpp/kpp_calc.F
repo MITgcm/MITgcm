@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.3 2000/09/13 17:07:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.4 2000/11/13 16:37:02 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -121,6 +121,21 @@ c     myTime - Current time in simulation
 
 #ifdef ALLOW_KPP
 
+c Local constants
+c     minusone, p0, p5, p25, p125, p0625
+c     imin, imax, jmin, jmax  - array computation indices
+
+      _RL        minusone
+      parameter( minusone=-1.0)
+      _KPP_RL    p0    , p5    , p25     , p125      , p0625
+      parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
+      integer    imin      , imax        , jmin      , jmax
+#ifdef FRUGAL_KPP
+      parameter( imin=1    , imax=sNx    , jmin=1    , jmax=sNy     )
+#else
+      parameter( imin=-2   , imax=sNx+3  , jmin=-2   , jmax=sNy+3   )
+#endif
+
 c Local arrays and variables
 c     work?  (nx,ny)       - horizontal working arrays
 c     ustar  (nx,ny)       - surface friction velocity                  (m/s)
@@ -145,66 +160,31 @@ c     zRef   (nx,ny)       - Reference depth: Hmix * epsilon              (m)
 c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
 c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 
-      _RS worka (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS workb (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef FRUGAL_KPP
-      integer work1(sNx,sNy)
-      _RS work2    (sNx,sNy)
-      _RS ustar    (sNx,sNy)
-      _RS bo       (sNx,sNy)
-      _RS bosol    (sNx,sNy)
-      _RS shsq     (sNx,sNy,Nr)
-      _RS dVsq     (sNx,sNy,Nr)
-      _RS dbloc    (sNx,sNy,Nr)
-      _RS Ritop    (sNx,sNy,Nr)
-      _RS vddiff   (sNx,sNy,0:Nrp1,mdiff)
-      _RS ghat     (sNx,sNy,Nr)
-      _RS hbl      (sNx,sNy)
+      _RL     worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      integer work1 ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL work2 ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL ustar ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL bo    ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL bosol ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL shsq  ( ibot:itop    , jbot:jtop    , Nr            )
+      _KPP_RL dVsq  ( ibot:itop    , jbot:jtop    , Nr            )
+      _KPP_RL dbloc ( ibot:itop    , jbot:jtop    , Nr            )
+      _KPP_RL Ritop ( ibot:itop    , jbot:jtop    , Nr            )
+      _KPP_RL vddiff( ibot:itop    , jbot:jtop    , 0:Nrp1, mdiff )
+      _KPP_RL ghat  ( ibot:itop    , jbot:jtop    , Nr            )
+      _KPP_RL hbl   ( ibot:itop    , jbot:jtop                    )
 #ifdef KPP_ESTIMATE_UREF
-      _RS z0       (sNx,sNy)
-      _RS zRef     (sNx,sNy)
-      _RS uRef     (sNx,sNy)
-      _RS vRef     (sNx,sNy)
+      _KPP_RL z0    ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL zRef  ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL uRef  ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL vRef  ( ibot:itop    , jbot:jtop                    )
 #endif /* KPP_ESTIMATE_UREF */
-#else /* FRUGAL_KPP */
-      integer work1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS work2    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS ustar    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS bo       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS bosol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS shsq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RS dVsq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RS dbloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RS Ritop    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RS vddiff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:Nrp1,mdiff)
-      _RS ghat     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RS hbl      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef KPP_ESTIMATE_UREF
-      _RS z0       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS zRef     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS uRef     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS vRef     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif /* KPP_ESTIMATE_UREF */
-#endif /* FRUGAL_KPP */
-
-c     imin,imax,jmin,jmax  - array indices
-      integer    imin   , imax      , jmin   , jmax
-      parameter( imin=-2, imax=sNx+3, jmin=-2, jmax=sNy+3 )
-
-c     mixing process switches
-      logical    lri
-      parameter( lri = .true. )
-
-      _RS        m1
-      parameter( m1=-1.0)
-      _RS        p0    , p5    , p25     , p125      , p0625
-      parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
       
-      _RL     tempVar
+      _KPP_RL tempvar1, tempvar2
       integer i, j, k, kp1, im1, ip1, jm1, jp1
 
 #ifdef KPP_ESTIMATE_UREF
-      _RS     dBdz1, dBdz2, ustarX, ustarY
+      _KPP_RL dBdz1, dBdz2, ustarX, ustarY
 #endif
 
 c     Check to see if new vertical mixing coefficient should be computed now?
@@ -249,76 +229,56 @@ c------------------------------------------------------------------------
       CALL STATEKPP(
      I       bi, bj, myThid
      O     , work2, dbloc, Ritop
-#ifdef FRUGAL_KPP
-     O     , vddiff(1    ,1    ,1,1), vddiff(1    ,1    ,1,2)
-#else 
-     O     , vddiff(1-OLx,1-OLy,1,1), vddiff(1-OLx,1-OLy,1,2)
-#endif
+     O     , vddiff(ibot,jbot,1,1), vddiff(ibot,jbot,1,2)
      &     )
       CALL TIMER_STOP ('STATEKPP      [KPP_CALC]', myThid)
 
-#ifdef KPP_SMOOTH_DBLOC
-c     horizontally smooth dbloc with a 121 filter
-c     (stored in ghat to save space)
-
       DO k = 1, Nr
-         CALL SMOOTH_HORIZ_RS (
-     I        k, bi, bj,
-     I        dbloc(1-OLx,1-OLy,k),
-     O        ghat (1-OLx,1-OLy,k) )
-      ENDDO
-
-#else /* KPP_SMOOTH_DBLOC */
-
-      DO k = 1, Nr
-#ifdef FRUGAL_KPP
-         DO j = 1, sNy
-            DO i = 1, sNx
-#else
-         DO j = 1-OLy, sNy+OLy
-            DO i = imin, imax
-#endif
+         DO j = jbot, jtop
+            DO i = ibot, itop
                ghat(i,j,k) = dbloc(i,j,k)
             ENDDO
          ENDDO
+      ENDDO
+
+#ifdef KPP_SMOOTH_DBLOC
+c     horizontally smooth dbloc with a 121 filter
+c     smooth dbloc stored in ghat to save space
+c     dbloc(k) is buoyancy gradientnote between k and k+1
+c     levels therefore k+1 mask must be used
+
+      DO k = 1, Nr-1
+         CALL KPP_SMOOTH_HORIZ (
+     I        k+1, bi, bj,
+     U        ghat (ibot,jbot,k) )
       ENDDO
 
 #endif /* KPP_SMOOTH_DBLOC */
 
 #ifdef KPP_SMOOTH_DENS
 c     horizontally smooth density related quantities with 121 filters
-      CALL SMOOTH_HORIZ_RS (
-     I     k, bi, bj,
-     I     work2,
-     O     work2 )
+      CALL KPP_SMOOTH_HORIZ (
+     I     1, bi, bj,
+     U     work2 )
       DO k = 1, Nr
-         CALL SMOOTH_HORIZ_RS (
+         CALL KPP_SMOOTH_HORIZ (
+     I        k+1, bi, bj,
+     U        dbloc (ibot,jbot,k) )
+         CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        dbloc (1-OLx,1-OLy,k)  ,
-     O        dbloc (1-OLx,1-OLy,k)   )
-         CALL SMOOTH_HORIZ_RS (
+     U        Ritop (ibot,jbot,k)  )
+         CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        Ritop (1-OLx,1-OLy,k)  ,
-     O        Ritop (1-OLx,1-OLy,k)   )
-         CALL SMOOTH_HORIZ_RS (
+     U        vddiff(ibot,jbot,k,1) )
+         CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        vddiff(1-OLx,1-OLy,k,1),
-     O        vddiff(1-OLx,1-OLy,k,1) )
-         CALL SMOOTH_HORIZ_RS (
-     I        k, bi, bj,
-     I        vddiff(1-OLx,1-OLy,k,2),
-     O        vddiff(1-OLx,1-OLy,k,2) )
+     U        vddiff(ibot,jbot,k,2) )
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
 
       DO k = 1, Nr
-#ifdef FRUGAL_KPP
-         DO j = 1, sNy
-            DO i = 1, sNx
-#else
-         DO j = 1-OLy, sNy+OLy
-            DO i = 1-OLx, sNx+OLx
-#endif
+         DO j = jbot, jtop
+            DO i = ibot, itop
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
@@ -351,25 +311,29 @@ c                     beta *SurfaceTendencyS ) * delZ(1) / rho  (m^2/s^3)
 c     bosol = - g * alpha * Qsw * delZ(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
 
-#ifdef FRUGAL_KPP
-      DO j = 1, sNy
-         jp1 = j + 1
-         DO i = 1, sNx
-#else
+c initialize arrays to zero
+      DO j = jbot, jtop
+         DO i = ibot, itop
+            ustar(i,j) = p0
+            bo   (I,J) = p0
+            bosol(I,J) = p0
+         END DO
+      END DO
+
       DO j = jmin, jmax
        jp1 = j + 1
        DO i = imin, imax
-#endif
         ip1 = i+1
-        tempVar =
+        tempVar1 =
      &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) *
      &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) +
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj)) *
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj))
-        if ( tempVar .lt. (epsln*epsln) ) then
-           ustar(i,j) = SQRT( epsln * p5 * delZ(1) )
+        if ( tempVar1 .lt. (phepsi*phepsi) ) then
+           ustar(i,j) = SQRT( phepsi * p5 * delZ(1) )
         else
-           ustar(i,j) = SQRT( SQRT( tempVar ) * p5 * delZ(1) )
+           tempVar2 =  SQRT( tempVar1 ) * p5 * delZ(1)
+           ustar(i,j) = SQRT( tempVar2 )
         endif
         bo(I,J) = - gravity *
      &       ( vddiff(I,J,1,1) * SurfaceTendencyT(i,j,bi,bj) +
@@ -381,34 +345,6 @@ c------------------------------------------------------------------------
        END DO
       END DO
 
-#ifndef FRUGAL_KPP
-c     set array edges to zero
-      DO j = jmin, jmax
-         DO i = 1-OLx, imin-1
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-         END DO
-         DO i = imax+1, sNx+OLx
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-         END DO
-      END DO
-      DO i = 1-OLx, sNx+OLx
-         DO j = 1-OLy, jmin-1
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-         END DO
-         DO j = jmax+1, sNy+OLy
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-         END DO
-      END DO
-#endif
-
 c------------------------------------------------------------------------
 c     velocity shear
 c     --------------
@@ -417,6 +353,16 @@ c     onto "t-grid" (in (m/s)**2):
 c     dVsq(k)=(Uref-U(k))**2+(Vref-V(k))**2      at grid levels
 c     shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
 c------------------------------------------------------------------------
+
+c initialize arrays to zero
+      DO k = 1, Nr
+         DO j = jbot, jtop
+            DO i = ibot, itop
+               shsq(i,j,k) = p0
+               dVsq(i,j,k) = p0
+            END DO
+         END DO
+      END DO
 
 c     dVsq computation
 
@@ -428,15 +374,9 @@ c     thickness in the model.  First determine mixed layer depth hMix.
 c     Second zRef = espilon * hMix.  Third determine roughness length
 c     scale z0.  Third estimate reference velocity.
 
-#ifdef FRUGAL_KPP
-      DO j = 1, sNy
-         jp1 = j + 1
-         DO i = 1, sNx
-#else
       DO j = jmin, jmax
          jp1 = j + 1
          DO i = imin, imax
-#endif /* FRUGAL_KPP */
             ip1 = i + 1
 
 c     Determine mixed layer depth hMix as the shallowest depth at which
@@ -465,7 +405,7 @@ c     Linearly interpolate to find hMix.
             ENDIF
 
 c     Compute roughness length scale z0 subject to 0 < z0
-               tempVar = p5 * (
+               tempVar1 = p5 * (
      &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) *
      &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) +
      &              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) *
@@ -474,15 +414,15 @@ c     Compute roughness length scale z0 subject to 0 < z0
      &              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) + 
      &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) *
      &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) )
-               if ( tempVar .lt. (epsln*epsln) ) then
-                  tempVar = epsln
+               if ( tempVar1 .lt. (epsln*epsln) ) then
+                  tempVar2 = epsln
                else
-                  tempVar = SQRT ( tempVar )
+                  tempVar2 = SQRT ( tempVar1 )
                endif
                z0(i,j) = rF(2) *
      &                   ( rF(3) * LOG ( rF(3) / rF(2) ) /
      &                     ( rF(3) - rF(2) ) -
-     &                     tempVar * vonK /
+     &                     tempVar2 * vonK /
      &                     MAX ( ustar(i,j), phepsi ) )
                z0(i,j) = MAX ( z0(i,j), phepsi )
 
@@ -500,73 +440,28 @@ c     Estimate reference velocity uRef and vRef.
      &                       SurfaceTendencyU(ip1,j,bi,bj) ) * p5
                   ustarY = ( SurfaceTendencyV(i,j,  bi,bj) +
      &                       SurfaceTendencyU(i,jp1,bi,bj) ) * p5
-                  tempVar = ustarX * ustarX + ustarY * ustarY
-                  if ( tempVar .lt. (epsln*epsln) ) then
-                     tempVar = epsln
+                  tempVar1 = ustarX * ustarX + ustarY * ustarY
+                  if ( tempVar1 .lt. (epsln*epsln) ) then
+                     tempVar2 = epsln
                   else
-                     tempVar = SQRT ( tempVar )
+                     tempVar2 = SQRT ( tempVar1 )
                   endif
-                  tempVar = ustar(i,j) *
+                  tempVar2 = ustar(i,j) *
      &                 ( LOG ( zRef(i,j) / rF(2) ) +
      &                 z0(i,j) / zRef(i,j) - z0(i,j) / rF(2) ) /
-     &                 vonK / tempVar
-                  uRef(i,j) = uRef(i,j) + ustarX * tempVar
-                  vRef(i,j) = vRef(i,j) + ustarY * tempVar
+     &                 vonK / tempVar2
+                  uRef(i,j) = uRef(i,j) + ustarX * tempVar2
+                  vRef(i,j) = vRef(i,j) + ustarY * tempVar2
                ENDIF
 
          END DO
       END DO
 
-      IF (KPPmixingMaps) THEN
-#ifdef FRUGAL_KPP
-         CALL PRINT_MAPRS(
-     I        zRef, 'zRef', PRINT_MAP_XY,
-     I        1, sNx, 1, sNy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        z0, 'z0', PRINT_MAP_XY,
-     I        1, sNx, 1, sNy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        uRef, 'uRef', PRINT_MAP_XY,
-     I        1, sNx, 1, sNy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        vRef, 'vRef', PRINT_MAP_XY,
-     I        1, sNx, 1, sNy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-#else 
-         CALL PRINT_MAPRS(
-     I        zRef, 'zRef', PRINT_MAP_XY,
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        z0, 'z0', PRINT_MAP_XY,
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        uRef, 'uRef', PRINT_MAP_XY,
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-         CALL PRINT_MAPRS(
-     I        vRef, 'vRef', PRINT_MAP_XY,
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1, 1, 1,
-     I        1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-#endif
-      ENDIF
-
       DO k = 1, Nr
-#ifdef FRUGAL_KPP
-         DO j = 1, sNy
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = 1, sNx
-#else
          DO j = jmin, jmax
             jm1 = j - 1
             jp1 = j + 1
             DO i = imin, imax
-#endif /* FRUGAL_KPP */
                im1 = i - 1
                ip1 = i + 1
                dVsq(i,j,k) = p5 * (
@@ -604,17 +499,10 @@ c     Estimate reference velocity uRef and vRef.
 #else /* KPP_ESTIMATE_UREF */
 
       DO k = 1, Nr
-#ifdef FRUGAL_KPP
-         DO j = 1, sNy
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = 1, sNx
-#else
          DO j = jmin, jmax
             jm1 = j - 1
             jp1 = j + 1
             DO i = imin, imax
-#endif /* FRUGAL_KPP */
                im1 = i - 1
                ip1 = i + 1
                dVsq(i,j,k) = p5 * (
@@ -654,17 +542,10 @@ c     Estimate reference velocity uRef and vRef.
 c     shsq computation
       DO k = 1, Nrm1
          kp1 = k + 1
-#ifdef FRUGAL_KPP
-         DO j = 1, sNy
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = 1, sNx
-#else
          DO j = jmin, jmax
             jm1 = j - 1
             jp1 = j + 1
             DO i = imin, imax
-#endif /* FRUGAL_KPP */
                im1 = i - 1
                ip1 = i + 1
                shsq(i,j,k) = p5 * (
@@ -699,125 +580,48 @@ c     shsq computation
          END DO
       END DO
 
-c     shsq @ Nr computation
-#ifdef FRUGAL_KPP
-      DO j = 1, sNy
-         DO i = 1, sNx
-#else
-      DO j = jmin, jmax
-         DO i = imin, imax
-#endif
-            shsq(i,j,Nr) = p0
-         END DO
-      END DO
-
-#ifndef FRUGAL_KPP
-c     set array edges to zero
-      DO k = 1, Nr
-         DO j = jmin, jmax
-            DO i = 1-OLx, imin-1
-               shsq(i,j,k) = p0
-               dVsq(i,j,k) = p0
-            END DO
-            DO i = imax+1, sNx+OLx
-               shsq(i,j,k) = p0
-               dVsq(i,j,k) = p0
-            END DO
-         END DO
-         DO i = 1-OLx, sNx+OLx
-            DO j = 1-OLy, jmin-1
-               shsq(i,j,k) = p0
-               dVsq(i,j,k) = p0
-            END DO
-            DO j = jmax+1, sNy+OLy
-               shsq(i,j,k) = p0
-               dVsq(i,j,k) = p0
-            END DO
-         END DO
-      END DO
-#endif
-
 c-----------------------------------------------------------------------
 c     solve for viscosity, diffusivity, ghat, and hbl on "t-grid"
 c-----------------------------------------------------------------------
 
-#ifdef FRUGAL_KPP
-      DO j = 1, sNy
-         DO i = 1, sNx
-#else
-      DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-#endif
+      DO j = jbot, jtop
+         DO i = ibot, itop
             work1(i,j) = nzmax(i,j,bi,bj)
             work2(i,j) = Fcori(i,j,bi,bj)
          END DO
       END DO
       CALL TIMER_START('KPPMIX [KPP_CALC]', myThid)
       CALL KPPMIX (
-     I       lri, work1, shsq, dVsq, ustar
+     I       mytime, mythid
+     I     , work1, shsq, dVsq, ustar
      I     , bo, bosol, dbloc, Ritop, work2
      I     , ikey
      O     , vddiff
      U     , ghat
-     O     , hbl
-     &        )
+     O     , hbl )
 
       CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
 
-      IF (KPPmixingMaps) THEN
-#ifdef FRUGAL_KPP
-       CALL PRINT_MAPRS(
-     I      hbl, 'hbl', PRINT_MAP_XY,
-     I      1, sNx, 1, sNy, 1, 1, 1, 1,
-     I      1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-#else
-       CALL PRINT_MAPRS(
-     I      hbl, 'hbl', PRINT_MAP_XY,
-     I      1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1, 1, 1,
-     I      1, sNx, 1, sNy, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1 )
-#endif
-       ENDIF
-
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE vddiff, ghat  = comlev1_kpp, key = ikey
+cph( storing not necessary
+cphCADJ STORE vddiff, ghat  = comlev1_kpp, key = ikey
+cph)
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c-----------------------------------------------------------------------
-c     zero out land values,
-c     make sure coefficients are within reasonable bounds,
-c     and transfer to global variables
+c     zero out land values and transfer to global variables
 c-----------------------------------------------------------------------
 
-#ifdef FRUGAL_KPP
-      DO j = 1, sNy
-         DO i = 1, sNx
-#else
       DO j = jmin, jmax
-         DO i = imin, imax
-#endif
-            DO k = 1, Nr
-c KPPviscAz
-               tempVar = min( maxKPPviscAz(k), vddiff(i,j,k-1,1) )
-               tempVar = max( minKPPviscAz, tempVar )
-               KPPviscAz(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
-c KPPdiffKzS
-               tempVar = min( maxKPPdiffKzS, vddiff(i,j,k-1,2) )
-               tempVar = max( minKPPdiffKzS, tempVar )
-               KPPdiffKzS(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
-c KPPdiffKzT
-               tempVar = min( maxKPPdiffKzT, vddiff(i,j,k-1,3) )
-               tempVar = max( minKPPdiffKzT, tempVar )
-               KPPdiffKzT(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
-c KPPghat
-               tempVar = min( maxKPPghat, ghat(i,j,k) )
-               tempVar = max( minKPPghat, tempVar )
-               KPPghat(i,j,k,bi,bj) = tempVar*pMask(i,j,k,bi,bj)
-            END DO
-c KPPhbl: set to -zgrid(1) over land
-            KPPhbl(i,j,bi,bj) = (hbl(i,j) + zgrid(1))
-     &           * pMask(i,j,1,bi,bj) -
-     &           zgrid(1)
-         END DO
+       DO i = imin, imax
+        DO k = 1, Nr
+         KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * pMask(i,j,k,bi,bj)
+         KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * pMask(i,j,k,bi,bj)
+         KPPdiffKzT(i,j,k,bi,bj)= vddiff(i,j,k-1,3) * pMask(i,j,k,bi,bj)
+         KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * pMask(i,j,k,bi,bj)
+        END DO
+        KPPhbl(i,j,bi,bj) = hbl(i,j) * pMask(i,j,1,bi,bj)
+       END DO
       END DO
 #ifdef FRUGAL_KPP
       _EXCH_XYZ_R8(KPPviscAz  , myThid )
@@ -829,34 +633,27 @@ c KPPhbl: set to -zgrid(1) over land
 
 #ifdef KPP_SMOOTH_VISC
 c     horizontal smoothing of vertical viscosity
-c     as coded requires FRUGAL_KPP and OLx=4, OLy=4
-c     alternatively could recode with OLx=5, OLy=5
-
       DO k = 1, Nr
-         CALL SMOOTH_HORIZ_RL (
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        KPPviscAz(1-OLx,1-OLy,k,bi,bj),
-     O        KPPviscAz(1-OLx,1-OLy,k,bi,bj) )
+     U        KPPviscAz(1-OLx,1-OLy,k,bi,bj) )
       END DO
+      _EXCH_XYZ_R8(KPPviscAz  , myThid )
 #endif /* KPP_SMOOTH_VISC */
 
 #ifdef KPP_SMOOTH_DIFF
 c     horizontal smoothing of vertical diffusivity
-c     as coded requires FRUGAL_KPP and OLx=4, OLy=4
-c     alternatively could recode with OLx=5, OLy=5
-
       DO k = 1, Nr
-         CALL SMOOTH_HORIZ_RL (
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj),
-     O        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj) )
-         CALL SMOOTH_HORIZ_RL (
+     U        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj) )
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     I        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj),
-     O        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj) )
+     U        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj) )
       END DO
+      _EXCH_XYZ_R8(KPPdiffKzS , myThid )
+      _EXCH_XYZ_R8(KPPdiffKzT , myThid )
 #endif /* KPP_SMOOTH_DIFF */
-
 
 C     Compute fraction of solar short-wave flux penetrating to
 C     the bottom of the mixing layer.
@@ -866,11 +663,12 @@ C     the bottom of the mixing layer.
          ENDDO
       ENDDO
       CALL SWFRAC(
-     I     (sNx+2*OLx)*(sNy+2*OLy), m1, worka,
-     O     workb )
+     I     (sNx+2*OLx)*(sNy+2*OLy), minusone,
+     I     mytime, mythid,
+     U     worka )
       DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            KPPfrac(i,j,bi,bj) = workb(i,j)
+            KPPfrac(i,j,bi,bj) = worka(i,j)
          ENDDO
       ENDDO
 

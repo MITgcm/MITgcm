@@ -33,8 +33,6 @@ C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
      & kpp_freq, kpp_dumpFreq, kpp_taveFreq,
      & KPPmixingMaps, KPPwriteState,
-     & minKPPviscAz, maxKPPviscAz, minKPPghat, maxKPPghat,
-     & minKPPdiffKzT, maxKPPdiffKzT, minKPPdiffKzS, maxKPPdiffKzS,
      & minKPPhbl,
      & epsln, phepsi, epsilon, vonk, dB_dz,
      & conc1, conam, concm, conc2, zetam,
@@ -65,16 +63,6 @@ C--   set default KPP vertical mixing parameters
       kpp_taveFreq  = 0.
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
-      minKPPghat    = 0.
-      maxKPPghat    = 1.e10
-      minKPPviscAz  = 0.
-      DO k = 1,Nr
-         maxKPPviscAz(k) = 100.
-      ENDDO
-      minKPPdiffKzT = 0.
-      maxKPPdiffKzT = 100.
-      minKPPdiffKzS = 0.
-      maxKPPdiffKzS = 100.
       minKPPhbl     = delZ(1)*0.5
 
 C-----------------------------------------------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.3 2000/09/13 17:07:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.4 2000/11/13 16:37:02 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
