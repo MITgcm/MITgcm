@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.67 2002/03/06 02:14:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.68 2002/03/14 15:23:50 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o vertical grid option: allow to put the Interface at the middle between
+  2 cell-centers ; replace delZ in pkg/kpp by drF.
 o GM Advective form: Tracers are advected using the residual transport (=
   Euler+GM-bolus); set param GM_AdvSeparate=T to return to previous form.
 
