@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.11 2000/09/11 20:50:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.12 2000/11/13 16:30:32 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -29,52 +29,90 @@ C     == Routine Arguments ==
       _RL KappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gXnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL gYnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER myThid
 
 C     == Local variables ==
       INTEGER i,j,k
-      _RL a(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL b(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL c(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ckm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL a(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL b(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL c(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER kkey
 #endif
 
+C--   Initialise
+
+C--   Old aLower
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+         a(i,j,1) = 0. _d 0 
+       ENDDO
+      ENDDO
+      DO k=2,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          a(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &               *KappaRX(i,j, k )*recip_drC( k )
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   Old aUpper
+      DO k=1,Nr-1
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          c(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &               *KappaRX(i,j,k+1)*recip_drC(k+1)
+        ENDDO
+       ENDDO
+      ENDDO
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+         c(i,j,Nr) = 0. _d 0
+       ENDDO
+      ENDDO
+
+C--   Old aCenter
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   Old and new gam, bet are the same
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          bet(i,j,k) = 0. _d 0
+          gam(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+
 C--   Only need do anything if Nr>1
       IF (Nr.GT.1) THEN
 
+       k = 1
 C--    Beginning of forward sweep (top level)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         c(i,j)=-deltaTX*recip_hFac(i,j,1,bi,bj)*recip_drF(1)
-     &         *KappaRX(i,j,2)*recip_drC(2)
-         b(i,j)=1.-c(i,j)
-         bet(i,j)=0.
-         IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
+         IF (b(i,j,1).NE.0.) bet(i,j,1) = 1. _d 0 / b(i,j,1)
         ENDDO
        ENDDO
 
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bet                 = comlev1_impl, key = idkey
-CADJ store gXNm1(:,:,:,bi,bj)  = comlev1_impl, key = idkey
-#endif
-
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gXNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j)
-        ENDDO
-       ENDDO
-
 C--   Middle of forward sweep
       IF (Nr.GT.2) THEN
 
-       DO k=2,Nr-1
+CADJ loop = sequential
+       DO k=2,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
         kkey = (idkey-1)*(Nr-2) + k-1
@@ -82,41 +120,9 @@ C--   Middle of forward sweep
 
         DO j=jMin,jMax
          DO i=iMin,iMax
-          ckm1(i,j)=c(i,j)
-          a(i,j)=-deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
-     &         *KappaRX(i,j, k )*recip_drC( k )
-          c(i,j)=-deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
-     &         *KappaRX(i,j,k+1)*recip_drC(k+1)
-          b(i,j)=1.-c(i,j)-a(i,j)
-         ENDDO
-        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ckm1, bet = comlev1_impl_k, key = kkey
-#endif
-
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gam(i,j,k)=ckm1(i,j)*bet(i,j)
-         ENDDO
-        ENDDO
-
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          bet(i,j)=b(i,j)-a(i,j)*gam(i,j,k)
-          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-         ENDDO
-        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bet                    = comlev1_impl_k, key = kkey
-CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl_k, key = kkey
-#endif
-
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gXnm1(i,j,k,bi,bj)=(gXnm1(i,j,k,bi,bj)
-     &       -a(i,j)*gXnm1(i,j,k-1,bi,bj))*bet(i,j)
+          gam(i,j,k) = c(i,j,k-1)*bet(i,j,k-1)
+          IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.) 
+     &        bet(i,j,k) = 1. _d 0 / ( b(i,j,k) - a(i,j,k)*gam(i,j,k) )
          ENDDO
         ENDDO
 
@@ -125,63 +131,39 @@ CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl_k, key = kkey
       ENDIF
 
 
-      IF (Nr.GT.1) THEN
-
-C--    End of forward sweep (bottom level)
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gYNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j,1)
+       ENDDO
+      ENDDO
+      DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         ckm1(i,j)=c(i,j)
-         a(i,j)=-deltaTX*recip_hFac(i,j,Nr,bi,bj)*recip_drF(Nr)
-     &        *KappaRX(i,j, Nr )*recip_drC( Nr )
-         b(i,j)=1.-a(i,j)
+         gYnm1(i,j,k,bi,bj) = bet(i,j,k)*
+     &        (gXnm1(i,j,k,bi,bj) - a(i,j,k)*gYnm1(i,j,k-1,bi,bj))
         ENDDO
        ENDDO
+      ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ckm1 = comlev1_impl, key = idkey
-CADJ store a,b  = comlev1_impl, key = idkey
-CADJ store bet  = comlev1_impl, key = idkey
-#endif
-
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gam(i,j,Nr)=ckm1(i,j)*bet(i,j)
-        ENDDO
-       ENDDO
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         bet(i,j)=b(i,j)-a(i,j)*gam(i,j,Nr)
-         IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-        ENDDO
-       ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store a,bet              = comlev1_impl, key = idkey
-CADJ store gXnm1(:,:,:,bi,bj) = comlev1_impl, key = idkey
-#endif
-
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gXnm1(i,j,Nr,bi,bj)=(gXnm1(i,j,Nr,bi,bj)
-     &      -a(i,j)*gXnm1(i,j,Nr-1,bi,bj))*bet(i,j)
-        ENDDO
-       ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store gam   = comlev1_impl, key = idkey
-#endif
 
 C--    Backward sweep
+CADJ loop = sequential
        DO k=Nr-1,1,-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gXnm1(i,j,k,bi,bj)=gXnm1(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*gXnm1(i,j,k+1,bi,bj)
+          gYnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
+     &              -gam(i,j,k+1)*gYnm1(i,j,k+1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
 
-      ENDIF
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gXnm1(i,j,k,bi,bj)=gYnm1(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
 
       RETURN
       END
