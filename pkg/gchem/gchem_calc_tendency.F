@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.1 2004/11/28 23:48:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.2 2004/11/29 03:34:55 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -80,10 +80,6 @@ C     loop over tiles
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     define horizontal loop ranges
-Cml        iMin = 1-OLx+2
-Cml        iMax = sNx+OLx-1
-Cml        jMin = 1-OLy+2
-Cml        jMax = sNy+OLy-1
         iMin = 1
         iMax = sNx
         jMin = 1
@@ -105,55 +101,14 @@ ccccccccccccccccccccccccc
 ccccccccccccccccccccccccccc CFC cccccccccccccccccccccccccccccccc
 c
         K = 1
-CML         DO kLoc=1,Nr
-CML          DO j=1-OLy,sNy+OLy
-CML           DO i=1-OLx,sNx+OLx
-CML            PtrLoc (I,J,kLoc) = Ptracer(I,J,kLoc,bi,bj,1)
-CML            gPtrLoc(I,J,kLoc) = gPtr(I,J,kLoc,bi,bj,1)
-CML           ENDDO
-CML          ENDDO
-CML         ENDDO	
-CML         call CFC11_Forcing( PtrLoc, gPtrLoc,
-CML     &        bi,bj,imin,imax,jmin,jmax,
-CML     &        myIter,myTime,myThid)
-CML         DO kLoc=1,Nr
-CML          DO j=1-OLy,sNy+OLy
-CML           DO i=1-OLx,sNx+OLx
-CML            Ptracer(I,J,kLoc,bi,bj,1) = PtrLoc (I,J,kLoc) 
-CML            gPtr(I,J,kLoc,bi,bj,1)    = gPtrLoc(I,J,kLoc)
-CML           ENDDO
-CML          ENDDO
-CML         ENDDO	
-CML        ENDIF
-CML        if (iTracer.eq.2.and.k.eq.1) THEN
-CML         DO kLoc=1,Nr
-CML          DO j=1-OLy,sNy+OLy
-CML           DO i=1-OLx,sNx+OLx
-CML            PtrLoc (I,J,kLoc) = Ptracer(I,J,kLoc,bi,bj,2)
-CML            gPtrLoc(I,J,kLoc) = gPtr(I,J,kLoc,bi,bj,2)
-CML           ENDDO
-CML          ENDDO
-CML         ENDDO	
-CML         call CFC12_Forcing( PtrLoc, gPtrLoc,
-CML     &        bi,bj,imin,imax,jmin,jmax,
-CML     &        myIter,myTime,myThid)
-CML         DO kLoc=1,Nr
-CML          DO j=1-OLy,sNy+OLy
-CML           DO i=1-OLx,sNx+OLx
-CML            Ptracer(I,J,kLoc,bi,bj,2) = PtrLoc (I,J,kLoc) 
-CML            gPtr(I,J,kLoc,bi,bj,2)    = gPtrLoc(I,J,kLoc)
-CML           ENDDO
-CML          ENDDO
-CML         ENDDO	
-CML        ENDIF
-       CALL CFC11_FORCING( Ptracer     (1-Olx,1-Oly,1,bi,bj,1),
-     &                        gchemTendency(1-Olx,1-Oly,1,bi,bj,1),
-     &                        bi, bj, imin, imax, jmin, jmax,
-     &                        myIter, myTime, myThid )
+        CALL CFC11_FORCING( Ptracer     (1-Olx,1-Oly,1,bi,bj,1),
+     &                      gchemTendency(1-Olx,1-Oly,1,bi,bj,1),
+     &                      bi, bj, imin, imax, jmin, jmax,
+     &                      myIter, myTime, myThid )
         CALL CFC12_FORCING( Ptracer     (1-Olx,1-Oly,1,bi,bj,2),
-     &                        gchemTendency(1-Olx,1-Oly,1,bi,bj,2),
-     &                        bi, bj, imin, imax, jmin, jmax,
-     &                        myIter, myTime, myThid )
+     &                      gchemTendency(1-Olx,1-Oly,1,bi,bj,2),
+     &                      bi, bj, imin, imax, jmin, jmax,
+     &                      myIter, myTime, myThid )
 
 cccccccccccccccccccccccccc END CFC cccccccccccccccccccccccccccccccccc
 #endif /* ALLOW_CFC */
