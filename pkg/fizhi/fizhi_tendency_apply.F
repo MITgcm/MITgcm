@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.8 2005/02/14 22:56:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.9 2005/02/18 19:43:04 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -135,7 +135,7 @@ C=======================================================================
       if(klev.eq.Nr .or. rC(klev).lt.7000.)then
        cp = getcon('CP')
        kappa = getcon('KAPPA')
-       pNrkappa = (rC(Nr)/100000.)**kappa 
+       pNrkappa = (rC(klev)/100000.)**kappa 
        rayleighdrag = 1./((31.*86400.*2.)*(pNrkappa*cp))
       else
        rayleighdrag = 0.
@@ -145,9 +145,13 @@ C=======================================================================
        do i=iMin,iMax
         gT(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)
      .       *( gT(i,j,kLev,bi,bj) + gthphy(i,j,kLev,bi,bj) )
-     . + rayleighdrag * 
+     . + rayleighdrag * 0.5 *
      . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+ 
-     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj))
+     .  maskW(i+1,j,kLev,bi,bj)*
+     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+ 
+     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
+     .  maskS(i,j+1,kLev,bi,bj)*
+     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj))
        enddo
       enddo
 
