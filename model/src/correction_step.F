@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.8 1998/08/20 19:25:05 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.9 1998/08/20 20:05:00 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -19,10 +19,11 @@ C     \==========================================================/
 #include "GRID.h"
 #include "CG2D.h"
 C     == Routine Arguments ==
-C     etaSurfX, etaSurfY - Surface slope
+C     etaSurfX, etaSurfY           - Surface slope
 C     bi,bj,iMin,iMax,jMin,jMax, K - Loop counters
-C     myThid - Instance number for this call to S/R CORRECTION_STEP
-C     myCurrentTime - Current simulation time for this instance.
+C     myThid                       - Instance number for 
+C                                    this call to S/R CORRECTION_STEP
+C     myCurrentTime                - Current simulation time for this instance.
       _RL  etaSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  etaSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
@@ -42,7 +43,7 @@ C     Step forward zonal velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
         uVel(i,j,k,bi,bj)=( gUNm1(i,j,k,bi,bj)
-     &       -deltaTmom*hxFac*gBaro *etaSurfX(i,j)
+     &       -deltaTmom*hxFac*gBaro*etaSurfX(i,j)
      &                    )*_maskW(i,j,k,bi,bj)
         gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
        ENDDO
@@ -52,7 +53,7 @@ C     Step forward meridional velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
         vVel(i,j,k,bi,bj)=( gVNm1(i,j,k,bi,bj)
-     &       -deltaTmom*hyFac*gBaro *etaSurfY(i,j)
+     &       -deltaTmom*hyFac*gBaro*etaSurfY(i,j)
      &                    )*_maskS(i,j,k,bi,bj)
         gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
        ENDDO
