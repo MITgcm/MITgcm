@@ -17,7 +17,7 @@
  &GM_PARM01 
   GM_Small_Number  = 1.D-20,
   GM_slopeSqCutoff = 1.D+08,
-  GM_AdvForm         = .TRUE.,
+  GM_AdvForm         = .FALSE.,
   GM_isopycK         = 1.1D+3,
   GM_background_K    = 0.9D+3,
   GM_taper_scheme    = 'dm95',

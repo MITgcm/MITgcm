@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_bottomdrag.F,v 1.7 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_bottomdrag.F,v 1.8 2003/10/24 05:52:05 edhill Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -61,7 +61,11 @@ C-  No-slip BCs impose a drag at bottom
        kBottom = 1
        kDown   = max(k-1,kBottom)
        kDownC  = k
-      ELSE	
+      ELSE
+cph k-assignments here are redundant but good for TAF	
+       kBottom = Nr
+       kDown   = min(k+1,kBottom)
+       kDownC  = kDown
        STOP 'S/R MOM_U_BOTTOMDRAG: We should never reach this point!'
       ENDIF	
       rdrckp1=recip_drC(kDownC)

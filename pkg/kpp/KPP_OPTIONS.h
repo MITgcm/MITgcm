@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.7 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.8 2003/10/24 05:52:05 edhill Exp $
 C $Name:  $
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
@@ -11,6 +11,8 @@ C     \==========================================================/
 #ifndef KPP_OPTIONS_H
 #define KPP_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
+
 #ifdef ALLOW_KPP
 
 #include "CPP_OPTIONS.h"

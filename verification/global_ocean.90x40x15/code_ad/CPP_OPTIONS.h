@@ -1,8 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.5 2003/10/23 04:41:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.6 2003/10/24 05:52:05 edhill Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
+cph#include "AD_CONFIG.h"
 
 C
 C CPP flags controlling which code in included in the files that

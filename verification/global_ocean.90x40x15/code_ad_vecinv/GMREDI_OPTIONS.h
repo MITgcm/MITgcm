@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/GMREDI_OPTIONS.h,v 1.1 2003/10/02 22:47:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/GMREDI_OPTIONS.h,v 1.2 2003/10/24 05:52:05 edhill Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -6,6 +6,10 @@ C
 C Use this file for selecting options within the GM/Redi package
 C
 C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
+
+#ifndef GMREDI_OPTIONS_H
+#define GMREDI_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
 
 #include "CPP_OPTIONS.h"
 
@@ -34,3 +38,5 @@ C  instead of the Skew-Flux form (=default)
 
 
 #endif /* ALLOW_GMREDI */
+#endif /* GMREDI_OPTIONS_H */
+

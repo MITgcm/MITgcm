@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.2 2003/10/23 04:41:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.3 2003/10/24 05:52:05 edhill Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -7,37 +7,17 @@ C $Name:  $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
-C
 
-C o Include/exclude code for AIM package
-#undef  ALLOW_AIM
-
-C o Include/exclude code for GM/Redi parameterization
-#define ALLOW_GMREDI
-
-C o Include/exclude code for KPP mixing scheme
-#undef  ALLOW_KPP
+#include "PACKAGES_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
 
-C o Include/exclude code for Shapiro filters
-#define ALLOW_SHAP_FILT
-
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
 #undef  INCLUDE_CD_CODE
-
-C o Include/exclude code for open-boundary conditions
-#undef   ALLOW_OBCS
-
-C o Include/exclude diagnostics package interface code
-#undef  ALLOW_TIMEAVE
-
-C o Include/exclude zonal FFT filter code
-#undef  ALLOW_ZONAL_FILT
 
 C o Include/exclude temperature advection code
 #define  INCLUDE_TR1_ADVECTION_CODE
