@@ -1,10 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.444 2005/02/07 18:37:19 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.445 2005/02/07 19:42:04 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o add a "readgrid_mnc" flag to MNC and give model/src/ini_curvilinear_grid.F
   the ability (off by default) to read the grid information using MNC 
+o lab_sea: use LSR_ERROR=1.E-12 for testing ; update output.txt
 o diagnostics: fix a bug (sub-set of levels); keep full precision when averaging
 o do snap-shot diagnostics at the middle of the time-interval (instead of 
   at the end).
