@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.5 1998/05/28 16:19:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.6 1998/06/08 18:45:28 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -42,8 +42,8 @@ C ***NOTE***
 C In the linear EOS, to make the static stability calculation meaningful
 C we alway calculate the perturbation with respect to the surface level.
 C **********
-       refTemp=tRef(1)
-       refSalt=sRef(1)
+       refTemp=tRef(kRef)
+       refSalt=sRef(kRef)
 
        do j=jMin,jMax
         do i=iMin,iMax

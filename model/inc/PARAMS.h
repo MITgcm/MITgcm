@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.13 1998/05/30 02:10:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.14 1998/06/08 18:45:28 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -94,11 +94,13 @@ C     implicitFreeSurface - Set to true to use implcit free surface
 C     rigidLid            - Set to true to use rigid lid
 C     momStepping   - Turns momentum equation time-stepping off
 C     momStepping   - Turns temperature equation time-stepping off
+C     implicitDiffusion - Turns implicit vertical diffusion on
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicitFreeSurface, rigidLid, momStepping, tempStepping
+     & implicitFreeSurface, rigidLid, momStepping, tempStepping,
+     & implicitDiffusion
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL momViscosity
@@ -116,6 +118,7 @@ C     momStepping   - Turns temperature equation time-stepping off
       LOGICAL rigidLid
       LOGICAL momStepping
       LOGICAL tempStepping
+      LOGICAL implicitDiffusion
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

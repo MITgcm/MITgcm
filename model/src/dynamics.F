@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.12 1998/06/01 22:27:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.13 1998/06/08 18:45:28 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -261,7 +261,7 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
      I            myThid )
 C--     Calculate static stability and mix where convectively unstable
         CALL CONVECT(
-     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhotmp,rhoKp1,
      I      myTime,myIter,myThid)
 C--     Density of K-1 level (above W(K)) reference to K-1 level
         CALL FIND_RHO(

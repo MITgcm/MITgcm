@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.12 1998/06/01 22:27:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.13 1998/06/08 18:45:28 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -166,7 +166,7 @@ C--   Set default "physical" parameters
       GMkbackground=0.
       tAlpha=2.d-4
       sBeta=1.d-5
-      eosType='POLY3'
+      eosType='LINEAR'
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
       freeSurfFac         = 1. _d 0

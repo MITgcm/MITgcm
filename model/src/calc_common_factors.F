@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.4 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.5 1998/06/08 18:45:28 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -94,7 +94,7 @@ C--    Calculate mask for tracer cells  (0 => land, 1 => water)
         maskC(i,j) = 1.
         if (_hFacC(i,j,k,bi,bj).eq.0.) maskC(i,j)=0.
         maskUp(i,j) = 1.
-        if (_hFacC(i,j,kM1,bi,bj).eq.0.) maskUp(i,j)=0.
+        if (_hFacC(i,j,k,bi,bj).eq.0.) maskUp(i,j)=0.
        ENDDO
       ENDDO
 
