@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.3 2004/09/24 16:55:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -42,25 +42,26 @@ C  del2                 :: Laplacian of tracer
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j
+c     _RL dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-C     Difference of zonal fluxes ...
+C--   Initialise to zero.
       DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx-1
-        del2(i,j)=dTdx(i+1,j)-dTdx(i,j)
+       DO i=1-Olx,sNx+Olx
+        del2(i,j)= 0. _d 0
        ENDDO
-       del2(sNx+Olx,j)=0.
       ENDDO
 
-C     ... add difference of meridional fluxes and divide by volume
+C     Difference of zonal fluxes & meridional fluxes
+C      and divide by grid-cell volume
       DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx
+       DO i=1-Olx,sNx+Olx-1
         del2(i,j)=recip_rA(i,j,bi,bj)
      &           *recip_drF(k)
      &           *_recip_hFacC(i,j,k,bi,bj)
-     &           *(
-     &              del2(i,j)
-     &            +( dTdy(i,j+1)-dTdy(i,j) )
+     &           *( ( dTdx(i+1,j)-dTdx(i,j) )
+     &             +( dTdy(i,j+1)-dTdy(i,j) )
      &            )
        ENDDO
       ENDDO
