@@ -1,0 +1,169 @@
+      subroutine exch2_uv_agrid_xy_RX( component1,component2, myThid )
+#include "CPP_EEOPTIONS.h"
+      implicit none
+
+C*=====================================================================*
+C  Purpose: subroutine exch2_uv_agrid_xy_rx will
+C      handle exchanges for a 3D vector field on an A-grid.  
+C
+C  Input: component1(lon,lat,levs,bi,bj) - first component of vector
+C         component2(lon,lat,levs,bi,bj) - second component of vector
+C         myThid                           - tile number
+C
+C  Output: component1 and component2 are updated (halo regions filled)
+C
+C  Calls: exch (exch2_xy_rx ) - twice, once
+C         for the first-component, once for second.
+C
+C*=====================================================================*
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+
+C     == Argument list variables ==
+      _RX component1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RX component2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER myThid
+
+C     == Local variables ==
+C     i,j,bi,bj  are do indices.
+C     OL[wens] - Overlap extents in west, east, north, south.
+C     exchWidth[XY] - Extent of regions that will be exchanged.
+C     dummy[12] - copies of the vector components with haloes filled.
+C     b[nsew] - indices of the [nswe] neighboring faces for each face.
+
+      integer i,j,bi,bj
+      integer OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      integer mytile, myface
+
+      OLw        = OLx
+      OLe        = OLx
+      OLn        = OLy
+      OLs        = OLy
+      exchWidthX = OLx
+      exchWidthY = OLy
+      myNz       = 1
+
+C First call the exchanges for the two components
+
+      if (useCubedSphereExchange) then
+       call exch2_xy_RX( component1,
+     .            OLw, OLe, OLs, OLn, myNz,
+     .            exchWidthX, exchWidthY,
+     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       call exch2_xy_RX( component2,
+     .            OLw, OLe, OLs, OLn, myNz,
+     .            exchWidthX, exchWidthY,
+     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      else
+c      call exch_RX( component1,
+c    .            OLw, OLe, OLs, OLn, myNz,
+c    .            exchWidthX, exchWidthY,
+c    .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+c      call exch_RX( component2,
+c    .            OLw, OLe, OLs, OLn, myNz,
+c    .            exchWidthX, exchWidthY,
+c    .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       _EXCH_XY_RL( component1, myThid )
+       _EXCH_XY_RL( component2, myThid )
+      endif
+
+C Then if we are on the sphere we may need to switch u and v components
+C and/or the signs depending on which cube face we are located.
+
+      if (useCubedSphereExchange) then
+
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+
+C First we need to copy the component info into dummy arrays
+       do j = 1-OLy,sNy+OLy
+       do i = 1-OLx,sNx+OLx
+        dummy1(i,j,bi,bj) = component1(i,j,bi,bj)
+        dummy2(i,j,bi,bj) = component2(i,j,bi,bj)
+       enddo
+       enddo
+
+C Now choose what to do at each edge of the halo based on which face
+C    (we assume that bj is always=1)
+
+       mytile = W2_myTilelist(bi)
+       myface = exch2_myFace(mytile)
+C odd faces share disposition of all sections of the halo
+       if ( mod(myface,2).eq.1 ) then
+         do j = 1,sNy
+C east
+          if(exch2_is_Eedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(sNx+i,j,bi,bj) = dummy1(sNx+i,j,bi,bj)
+            component2(sNx+i,j,bi,bj) = dummy2(sNx+i,j,bi,bj)
+           enddo
+          endif
+C west
+          if(exch2_is_Wedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(i-OLx,j,bi,bj) = dummy2(i-OLx,j,bi,bj)
+            component2(i-OLx,j,bi,bj) = -dummy1(i-OLx,j,bi,bj)
+           enddo
+          endif
+C north
+          if(exch2_is_Nedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(j,sNy+i,bi,bj) = -dummy2(j,sNy+i,bi,bj)
+            component2(j,sNy+i,bi,bj) = dummy1(j,sNy+i,bi,bj)
+           enddo
+          endif
+C south
+          if(exch2_is_Sedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(j,i-OLx,bi,bj) = dummy1(j,i-OLx,bi,bj)
+            component2(j,i-OLx,bi,bj) = dummy2(j,i-OLx,bi,bj)
+           enddo
+          endif
+         enddo
+C now the even faces (share disposition of all sections of the halo)
+       elseif ( mod(myface,2).eq.0 ) then
+         do j = 1,sNy
+C east
+          if(exch2_is_Eedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(sNx+i,j,bi,bj) = dummy2(sNx+i,j,bi,bj)
+            component2(sNx+i,j,bi,bj) = -dummy1(sNx+i,j,bi,bj)
+           enddo
+          endif
+C west
+          if(exch2_is_Wedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(i-OLx,j,bi,bj) = dummy1(i-OLx,j,bi,bj)
+            component2(i-OLx,j,bi,bj) = dummy2(i-OLx,j,bi,bj)
+           enddo
+          endif
+C north
+          if(exch2_is_Nedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(j,sNy+i,bi,bj) = dummy1(j,sNy+i,bi,bj)
+            component2(j,sNy+i,bi,bj) = dummy2(j,sNy+i,bi,bj)
+           enddo
+          endif
+C south
+          if(exch2_is_Sedge(mytile).eq.1) then
+           do i = 1,exchWidthX
+            component1(j,i-OLy,bi,bj) = -dummy2(j,i-OLy,bi,bj)
+            component2(j,i-OLy,bi,bj) = dummy1(j,i-OLy,bi,bj)
+           enddo
+          endif
+         enddo
+       endif
+
+       enddo
+       enddo
+
+      endif
+
+      RETURN
+      END
