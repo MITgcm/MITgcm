@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.136 2004/11/02 23:57:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.137 2004/11/05 02:40:26 jmc Exp $
 C $Name:  $
 C
 
@@ -149,7 +149,6 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        nonlinFreeSurf, select_rStar,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
-     &        tracerAdvScheme,
      &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -168,7 +167,6 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER select_rStar
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
-      INTEGER tracerAdvScheme
       INTEGER debugLevel
 
 C
@@ -198,13 +196,9 @@ C     metricTerms   :: Flag which turns metric terms on or off.
 C     usingSphericalPolarMTerms :: If TRUE use spherical polar metric terms.
 C     useNHMTerms :: If TRUE use non-hydrostatic metric terms.
 C     useCoriolis   :: Flag which turns the coriolis terms on and off.
-C     tempDiffusion :: Flag which turns diffusion of temperature on
-C                     and off.
 C     tempAdvection :: Flag which turns advection of temperature on
 C                     and off.
 C     tempForcing   :: Flag which turns external forcing of temperature on
-C                     and off.
-C     saltDiffusion :: Flag which turns diffusion of salinity on
 C                     and off.
 C     saltAdvection :: Flag which turns advection of salinity on 
 C                     and off.
@@ -278,8 +272,8 @@ C     monitor_stdio      :: use stdio for monitor output
      & staggerTimeStep,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing, vectorInvariantMomentum,
-     & tempDiffusion, tempAdvection, tempForcing,
-     & saltDiffusion, saltAdvection, saltForcing,
+     & tempAdvection, tempForcing,
+     & saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
@@ -319,10 +313,8 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL momPressureForcing
       LOGICAL useCoriolis
       LOGICAL vectorInvariantMomentum
-      LOGICAL tempDiffusion
       LOGICAL tempAdvection
       LOGICAL tempForcing
-      LOGICAL saltDiffusion
       LOGICAL saltAdvection
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
@@ -529,7 +521,6 @@ C     convertFW2Salt :: salinity, used to convert Fresh-Water Flux to Salt Flux
 C                       (use model surface (local) value if set to -1)
 C     temp_EvPrRn :: temperature of Rain & Evap. 
 C     salt_EvPrRn :: salinity of Rain & Evap.
-C     trac_EvPrRn :: tracer concentration in Rain & Evap.
 C        (notes: a) tracer content of Rain/Evap only used if both 
 C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
@@ -567,7 +558,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
-     & convertFW2Salt, temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
+     & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
@@ -678,7 +669,6 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL convertFW2Salt
       _RL temp_EvPrRn
       _RL salt_EvPrRn
-      _RL trac_EvPrRn 
       _RL horiVertRatio
       _RL recip_horiVertRatio
       _RL ivdc_kappa
