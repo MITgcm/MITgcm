@@ -43,7 +43,7 @@ function [AA] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.6 2001/08/28 17:58:49 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.7 2001/08/30 13:47:31 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -87,6 +87,14 @@ if iters(iter)>=0
  fname=sprintf('%s.%10.10i',fnamearg,iters(iter));
 end
 
+% Figure out if there is a path in the filename
+NS=findstr('/',fname);
+if size(NS)>0
+ Dir=fname(1:NS(end));
+else
+ Dir='./';
+end
+
 % Match name of all meta-files
 allfiles=dir( sprintf('%s.*.meta',fname) );
 
@@ -99,7 +107,7 @@ end
 for j=1:size(allfiles,1);
 
 % Read meta- and data-file
-[A,N] = localrdmds(allfiles(j).name,ieee);
+[A,N] = localrdmds([Dir allfiles(j).name],ieee);
 
 bdims=N(1,:);
 r0=N(2,:);
