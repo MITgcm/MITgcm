@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.75 2001/08/03 19:06:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.76 2001/08/13 18:05:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,12 +58,6 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 C     == Local variables
-C     xA, yA                 - Per block temporaries holding face areas
-C     uTrans, vTrans, rTrans - Per block temporaries holding flow 
-C                              transport
-C                              o uTrans: Zonal transport
-C                              o vTrans: Meridional transport
-C                              o rTrans: Vertical transport
 C     maskUp                   o maskUp: land/water mask for W points
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
@@ -77,8 +71,6 @@ C                      In p coords phiHydiHyd is the geopotential
 C                      surface height anomaly.
 C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
 C     phiSurfY             or geopotentiel (atmos) in X and Y direction
-C     KappaRT,       - Total diffusion in vertical for T and S.
-C     KappaRS          (background + spatially varying, isopycnal term).
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -86,15 +78,7 @@ C     k, kup,        - Index for layer above and below. kup and kDown
 C     kDown, km1       are switched with layer to be the appropriate 
 C                      index into fVerTerm.
 C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
-      _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -102,8 +86,6 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -170,15 +152,83 @@ C         (1 + dt * K * d_zz) theta[n] = theta*
 C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
 
+C--   Set up work arrays with valid (i.e. not NaN) values
+C     These inital values do not alter the numerical results. They
+C     just ensure that all memory references are to valid floating
+C     point numbers. This prevents spurious hardware signals due to
+C     uninitialised but inert locations.
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        DO k=1,Nr
+         phiHyd(i,j,k)  = 0. _d 0 
+         KappaRU(i,j,k) = 0. _d 0
+         KappaRV(i,j,k) = 0. _d 0
+         sigmaX(i,j,k) = 0. _d 0
+         sigmaY(i,j,k) = 0. _d 0
+         sigmaR(i,j,k) = 0. _d 0
+        ENDDO
+        rhoKM1 (i,j) = 0. _d 0
+        rhok   (i,j) = 0. _d 0
+        phiSurfX(i,j) = 0. _d 0
+        phiSurfY(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   HPF directive to help TAMC
+CHPF$ INDEPENDENT
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       DO bj=myByLo(myThid),myByHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--    HPF directive to help TAMC
+CHPF$  INDEPENDENT, NEW (fVerU,fVerV
+CHPF$&                  ,phiHyd
+CHPF$&                  ,KappaRU,KappaRV
+CHPF$&                  )
+#endif /* ALLOW_AUTODIFF_TAMC */
+
        DO bi=myBxLo(myThid),myBxHi(myThid)
-Ccs-
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+
+          act3 = myThid - 1
+          max3 = nTx*nTy
+
+          act4 = ikey_dynamics - 1
+
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--     Set up work arrays that need valid initial values
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          fVerU  (i,j,1) = 0. _d 0
+          fVerU  (i,j,2) = 0. _d 0
+          fVerV  (i,j,1) = 0. _d 0
+          fVerV  (i,j,2) = 0. _d 0
+         ENDDO
+        ENDDO
 
 C--     Start computation of dynamics
         iMin = 1-OLx+2
         iMax = sNx+OLx-1
         jMin = 1-OLy+2
         jMax = sNy+OLy-1
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)
 C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
@@ -201,6 +251,10 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
 
+#ifdef ALLOW_AUTODIFF_TAMC 
+         kkey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--      Integrate hydrostatic balance for phiHyd with BC of 
 C        phiHyd(z=0)=0
 C        distinguishe between Stagger and Non Stagger time stepping
@@ -218,17 +272,12 @@ C        distinguishe between Stagger and Non Stagger time stepping
      I        myThid )
          ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
-         CALL CALC_DIFFUSIVITY(
+         CALL CALC_VISCOSITY(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        maskUp,
-     O        KappaRT,KappaRS,KappaRU,KappaRV,
+     O        KappaRU,KappaRV,
      I        myThid)
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.1 2001/08/03 19:06:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.2 2001/08/13 18:05:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -84,8 +84,6 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -93,8 +91,6 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRV (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -177,8 +173,6 @@ C     uninitialised but inert locations.
         vTrans(i,j)  = 0. _d 0
         DO k=1,Nr
          phiHyd(i,j,k)  = 0. _d 0 
-         KappaRU(i,j,k) = 0. _d 0
-         KappaRV(i,j,k) = 0. _d 0
          sigmaX(i,j,k) = 0. _d 0
          sigmaY(i,j,k) = 0. _d 0
          sigmaR(i,j,k) = 0. _d 0
@@ -200,9 +194,9 @@ CHPF$ INDEPENDENT
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
-CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS,fVerU,fVerV
+CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
 CHPF$&                  ,phiHyd,utrans,vtrans,xA,yA
-CHPF$&                  ,KappaRT,KappaRS,KappaRU,KappaRV
+CHPF$&                  ,KappaRT,KappaRS
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -235,10 +229,6 @@ C--     Set up work arrays that need valid initial values
           fVerS  (i,j,2) = 0. _d 0
           fVerTr1(i,j,1) = 0. _d 0
           fVerTr1(i,j,2) = 0. _d 0
-          fVerU  (i,j,1) = 0. _d 0
-          fVerU  (i,j,2) = 0. _d 0
-          fVerV  (i,j,1) = 0. _d 0
-          fVerV  (i,j,2) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -262,11 +252,6 @@ C This is currently also used by IVDC and Diagnostics
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of diagnostic loop
@@ -490,7 +475,7 @@ C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        maskUp,
-     O        KappaRT,KappaRS,KappaRU,KappaRV,
+     O        KappaRT,KappaRS,
      I        myThid)
 #endif
 

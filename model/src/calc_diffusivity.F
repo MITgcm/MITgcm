@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.14 2001/07/30 20:37:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.15 2001/08/13 18:05:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CStartOfInterFace
       SUBROUTINE CALC_DIFFUSIVITY( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskUp,
-     O        KappaRT,KappaRS,KappaRU,KappaRV,
+     O        KappaRT,KappaRS,
      I        myThid)
 
 C     /==========================================================\
@@ -32,8 +32,6 @@ C
       _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
 CEndOfInterface
 
@@ -46,7 +44,11 @@ C     I, J, K - Loop counters
         KappaRT(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRT(i,j,k)
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+     &       + diffKr(i,j,k,bi,bj)
+#else
      &       + diffKrT
+#endif
      &      )
        ENDDO
       ENDDO
@@ -56,20 +58,12 @@ C     I, J, K - Loop counters
         KappaRS(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRS(i,j,k)
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+     &       + diffKr(i,j,k,bi,bj)
+#else
      &       + diffKrS
+#endif
      &      )
-       ENDDO
-      ENDDO
-
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        KappaRU(i,j,k) = viscAr
-       ENDDO
-      ENDDO
-
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        KappaRV(i,j,k) = viscAr
        ENDDO
       ENDDO
 
@@ -85,7 +79,7 @@ C     I, J, K - Loop counters
       IF (useKPP) CALL KPP_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
      I        maskUp,
-     O        KappaRT,KappaRS,KappaRU,KappaRV,
+     O        KappaRT,KappaRS,
      I        myThid)
 #endif
 
