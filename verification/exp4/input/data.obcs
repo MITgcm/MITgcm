@@ -7,6 +7,11 @@
 #useOrlanskiNorth=.TRUE.,
 #useOrlanskiSouth=.TRUE.,
 #useOrlanskiEast=.TRUE.,
-#Orlanski_Cmax=0.45,
-#Orlanski_TimeScale=1000.,
+#useOrlanskiWest=.FALSE.,
+ &
+
+# Orlanski parameters
+ &OBCS_PARM02
+#Cmax=0.45,
+#cVelTimeScale=1000.,
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.3 2001/02/05 15:45:47 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -34,7 +34,7 @@ C     == Routine arguments ==
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
-      INTEGER I, J ,K
+      INTEGER I, J , K, I_obc, J_obc
 
 C     Eastern OB
       IF (useOrlanskiEast) THEN
@@ -45,13 +45,16 @@ C     Eastern OB
       ELSE
         DO K=1,Nr
           DO J=1-Oly,sNy+Oly
-            OBEu(J,K,bi,bj)=0.
-            OBEv(J,K,bi,bj)=0.
-            OBEt(J,K,bi,bj)=tRef(K)
-            OBEs(J,K,bi,bj)=sRef(K)
+            I_obc=OB_Ie(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+              OBEu(J,K,bi,bj)=0.
+              OBEv(J,K,bi,bj)=0.
+              OBEt(J,K,bi,bj)=tRef(K)
+              OBEs(J,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
-            OBEw(J,K,bi,bj)=0.
+              OBEw(J,K,bi,bj)=0.
 #endif
+            ENDIF
           ENDDO
         ENDDO
       ENDIF
@@ -65,18 +68,21 @@ C     Western OB
       ELSE
         DO K=1,Nr
           DO J=1-Oly,sNy+Oly
-            OBWu(J,K,bi,bj)=0.
-            OBWv(J,K,bi,bj)=0.
-            OBWt(J,K,bi,bj)=tRef(K)
-            OBWs(J,K,bi,bj)=sRef(K)
+            I_obc=OB_Iw(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+              OBWu(J,K,bi,bj)=0.
+              OBWv(J,K,bi,bj)=0.
+              OBWt(J,K,bi,bj)=tRef(K)
+              OBWs(J,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
-            OBWw(J,K,bi,bj)=0.
+              OBWw(J,K,bi,bj)=0.
 #endif
+            ENDIF
           ENDDO
         ENDDO
       ENDIF
 
-C         Northern OB, template for forcing
+C         Northern OB
       IF (useOrlanskiNorth) THEN
         CALL ORLANSKI_NORTH(
      &          bi, bj, futureTime, 
@@ -85,33 +91,41 @@ C         Northern OB, template for forcing
       ELSE
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
-            OBNv(I,K,bi,bj)=0.
-            OBNu(I,K,bi,bj)=0.
-            OBNt(I,K,bi,bj)=tRef(K)
-            OBNs(I,K,bi,bj)=sRef(K)
+            J_obc=OB_Jn(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+              OBNv(I,K,bi,bj)=0.
+              OBNu(I,K,bi,bj)=0.
+              OBNt(I,K,bi,bj)=tRef(K)
+              OBNs(I,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
-            OBNw(I,K,bi,bj)=0.
+              OBNw(I,K,bi,bj)=0.
 #endif
+            ENDIF
           ENDDO
         ENDDO
       ENDIF
 
-C         Southern OB, template for forcing
+C         Southern OB
+#ifdef ALLOW_ORLANSKI
       IF (useOrlanskiSouth) THEN   
         CALL ORLANSKI_SOUTH(
      &          bi, bj, futureTime, 
      &          uVel, vVel, wVel, theta, salt, 
      &          myThid )
       ELSE
+#endif
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
-            OBSu(I,K,bi,bj)=0.
-            OBSv(I,K,bi,bj)=0.
-            OBSt(I,K,bi,bj)=tRef(K)
-            OBSs(I,K,bi,bj)=sRef(K)
+            J_obc=OB_Js(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+              OBSu(I,K,bi,bj)=0.
+              OBSv(I,K,bi,bj)=0.
+              OBSt(I,K,bi,bj)=tRef(K)
+              OBSs(I,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
-            OBSw(I,K,bi,bj)=0.
+              OBSw(I,K,bi,bj)=0.
 #endif
+            ENDIF
           ENDDO
         ENDDO
       ENDIF

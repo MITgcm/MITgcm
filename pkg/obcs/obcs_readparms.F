@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.3 2001/02/05 15:45:47 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -25,12 +25,15 @@ C     === Routine arguments ===
 
 #ifdef ALLOW_OBCS
 
-      _RL Orlanski_Cmax,Orlanski_TimeScale
       NAMELIST /OBCS_PARM01/
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      &          useOrlanskiNorth,useOrlanskiSouth,
-     &          useOrlanskiEast,useOrlanskiWest,
-     &          Orlanski_Cmax,Orlanski_TimeScale
+     &          useOrlanskiEast,useOrlanskiWest
+
+#ifdef ALLOW_ORLANSKI
+      NAMELIST /OBCS_PARM02/
+     & CMAX, cvelTimeScale
+#endif
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -68,10 +71,6 @@ C--   Default flags and values for OBCS
       useOrlanskiEast =.FALSE.
       useOrlanskiWest =.FALSE.
 
-C--   Defaults for the Orlanksi package
-      Orlanski_Cmax=0.
-      Orlanski_TimeScale=0.
-
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OBCS_PARM01)
 
@@ -87,20 +86,17 @@ C     Account for periodicity if negative indices were supplied
       write(0,*) 'OB Ie =',OB_Ieast
       write(0,*) 'OB Iw =',OB_Iwest
 
-#ifndef ALLOW_ORLANSKI
-      IF (
-     &    Orlanski_Cmax.NE.0. .OR.
-     &    Orlanski_TimeScale.NE.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_READPARMS: Orlanski parameters were set!'
-        CALL PRINT_ERROR( msgBuf, 1)
-        STOP 'OBCS_READPARMS: Inconsistent CPP options and parameters'
-      ENDIF
-#else
-      Cmax=Orlanski_Cmax
-      cVelTimeScale=Orlanski_TimeScale
+#ifdef ALLOW_ORLANSKI
+C     Default Orlanski radiation parameters
+      CMAX = 0.45 _d 0 /* maximum allowable phase speed-CFL for AB-II */
+      cvelTimeScale = 2000.0 _d 0 /* Averaging period for phase speed in sec. */
+      IF (useOrlanskiNorth.OR.
+     &    useOrlanskiSouth.OR.
+     &    useOrlanskiEast.OR.
+     &    useOrlanskiWest) 
+     & READ(UNIT=iUnit,NML=OBCS_PARM02)
 #endif
-
+      
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
