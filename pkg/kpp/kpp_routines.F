@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.14 2003/02/18 05:33:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.15 2003/03/07 23:51:02 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -125,12 +125,24 @@ c instability.
 c (ghat is temporary storage for horizontally smoothed dbloc)
 c-----------------------------------------------------------------------
 
-CADJ STORE ghat = comlev1_kpp, key = ikey
-
+cph(
+cph these storings avoid recomp. of Ri_iwmix
+CADJ STORE ghat  = comlev1_kpp, key = ikey
+CADJ STORE dbloc = comlev1_kpp, key = ikey
+cph)
       call Ri_iwmix (
      I       kmtj, shsq, dbloc, ghat
      I     , ikey
      O     , diffus )
+
+cph(
+cph these storings avoid recomp. of Ri_iwmix
+cph DESPITE TAFs 'not necessary' warning!
+CADJ STORE dbloc  = comlev1_kpp, key = ikey
+CADJ STORE shsq   = comlev1_kpp, key = ikey
+CADJ STORE ghat   = comlev1_kpp, key = ikey
+CADJ STORE diffus = comlev1_kpp, key = ikey
+cph)
 
 c-----------------------------------------------------------------------
 c set seafloor values to zero and fill extra "Nrp1" coefficients
@@ -169,8 +181,10 @@ c-----------------------------------------------------------------------
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma, ikey
      &     )
-
+cph(
 CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikey
+CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikey
+cph)
 
 c-----------------------------------------------------------------------
 c enhance diffusivity at interface kbl - 1
@@ -180,6 +194,11 @@ c-----------------------------------------------------------------------
      I       dkm1, hbl, kbl, diffus, casea
      U     , ghat
      O     , blmc )
+
+cph(
+cph avoids recomp. of enhance
+CADJ STORE blmc = comlev1_kpp, key = ikey
+cph)
 
 c-----------------------------------------------------------------------
 c combine interior and boundary layer coefficients and nonlocal term
