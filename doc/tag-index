@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.16 1998/11/03 15:31:08 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.17 1998/11/30 16:46:45 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint18
+ o Further changes for optional code generation with 
+   CPP - ugh!
 
 checkpoint17
  o Beginning to incorporating modularity
