@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.4 2004/07/27 04:10:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.5 2004/11/03 23:55:45 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -40,64 +40,79 @@ c
 c Code that MUST correspond to make_phys_grid in the gridalt package!
 c Require 12 bottom levels (300 mb worth) for the physics, 
 c    Counting from bottom to top, the dp's are:
-       integer ntry
-       parameter (ntry=12)
-       _RL dptry(ntry), dptry_pedge(ntry+1)
-       _RL drF_pedge(Nr+1),drF_pmid(Nr),drF_accum(Nr)
+       integer ntry,ntry10,ntry40
+       parameter (ntry40=15)
+       parameter (ntry10=12)
+       _RL dptry(ntry40), dptry10(ntry10), dptry40(ntry40)
+       _RL dptry_pedge(ntry40+1)
+       _RL rF_pmid(Nr),rF_edge(Nr+1)
        _RL pref(Nrphys) 
        integer plevref(Nrphys)
-       data dptry /300.000, 600.000,1000.000,1400.000,1700.000,2500.000,
-     .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/
-c
+       data dptry10 /3.00, 6.00,10.00,14.00,17.00,25.00,
+     .              25.00,25.00,25.00,50.00,50.00,50.00/
+       data dptry40 /3.00, 6.00,10.00,14.00,17.00,25.00,
+     .              25.00,25.00,25.00,25.00,25.00,25.00,
+     .              25.00,25.00,25.00/
+
+       if( (Nr.eq.10).or.(Nr.eq.20) ) then
+        ntry = ntry10
+        do L = 1,ntry
+         dptry(L) = dptry10(L)
+        enddo
+       elseif (Nr.eq.40) then
+        ntry = ntry40
+        do L = 1,ntry
+         dptry(L) = dptry40(L)
+        enddo
+       else
+        print *,' Dont know how to set levels for given pressures '
+        stop
+       endif
+
 c define the mid pressure for the levels that are specified - bottom 300 mb.
-c      dptry_pedge(1) = 100000.
-c      do L = 2,ntry+1
-c       dptry_pedge(L) = dptry_pedge(L-1) - dptry(L)
-c      enddo
-c      do L = 1,ntry
-c       pref(L) = (dptry_pedge(L) + dptry_pedge(L+1))/2.
-c      enddo
+       dptry_pedge(1) = 1000.
+       do L = 2,ntry+1
+        dptry_pedge(L) = dptry_pedge(L-1) - dptry(L-1)
+       enddo
+       do L = 1,ntry
+        pref(L) = (dptry_pedge(L) + dptry_pedge(L+1))/2.
+       enddo
 
 c define the rest of the mid pressures from the dynamics levels
-c      drF_accum(1) = drF(1)
-c      do L = 2,Nr
-c       drF_accum(L) = drF_accum(L-1) + drF(L)
-c      enddo
-c      do L = 1,Nr
-c       drF_pmid(L) = (drF_pedge(L) + drF_pedge(L+1))/2.
-c      enddo
+       rF_edge(1) = 1000.
+       do L = 2,Nr+1
+        rF_edge(L) = rF_edge(L-1) - (drF(L-1)/100.)
+       enddo
+       do L = 1,Nr
+        rF_pmid(L) = (rF_edge(L) + rF_edge(L+1))/2.
+       enddo
 
-c      do L = 1,Nr
-c       if(drF_pmid(L).ge.pref(ntry)) dynlev = L
-c      enddo
-c      if(drF_pmid(dynlev).ge.pref(ntry)-2500.) then
-c       do L = ntry+1,Nrphys
-c        pref(L) = drF_pmid(dynlev+L-ntry)
-c       enddo
-c      else
-c       pref(ntry) = drF_pmid(dynlev)
-c       do L = ntry+1,Nrphys
-c        pref(L) = drF_pmid(dynlev+L-ntry+1)
-c       enddo
-c      endif
+       dynlev = 0
+       do L = 1,Nr
+        if(rF_pmid(L).ge.pref(ntry)) dynlev = L
+       enddo
+       if(rF_pmid(dynlev).ge.pref(ntry)-25.) then
+        do L = ntry+1,Nrphys-1
+         pref(L) = rF_pmid(dynlev+L-ntry)
+        enddo
+       else
+        pref(ntry) = rF_pmid(dynlev)
+        do L = ntry+1,Nrphys-1
+         pref(L) = rF_pmid(dynlev+L-ntry+1)
+        enddo
+       endif
+c Add top level DP of 1 mb - p mid is at 0.5 mb
+       pref(Nrphys) = 0.5
 c
-c      do n = 1,numpress
-c       do L = 1,Nrphys
-c        if(pref(L).ge.pressures(n)) plevref(n) = L
-c       enddo
+       do n = 1,numpress
+        do L = 1,Nrphys
+         if(pref(L).ge.pressures(n)) plevref(n) = L
+        enddo
 c
 c and now flip the level numbers for the top down counting in fizhi
 c
-c       do L = 1,Nrphys
-c        levpressures(n) = Nrphys+1-plevref(n)
-c       enddo
-c      enddo
-
-       levpressures(1) = 16
-       levpressures(2) = 7
-       levpressures(3) = 6
-       levpressures(4) = 3
-       levpressures(5) = 1
+        levpressures(n) = Nrphys+1-plevref(n)
+       enddo
 
        return
        end
