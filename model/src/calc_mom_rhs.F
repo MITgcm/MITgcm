@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.25 1998/08/23 17:02:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.26 1998/08/24 00:32:44 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -570,6 +570,30 @@ C     Mean flow component of meridional flux
        ENDDO
       ENDDO
 C     Eddy component of meridional flux
+C     o Biharmonic term
+      DO j=1-2, sNy+2
+       DO i=iMin,iMax
+        v4F(i,j) =
+     &  _YAatP(i,j,k,bi,bj)
+     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*_recip_dyC(i,j,bi,bj)
+       ENDDO
+      ENDDO
+      DO j=1-2, sNy+2
+       DO i=iMin,iMax
+        vF(i,j) =
+     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
+     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
+     &  *(v4F(i,j  )          - v4F(i,j-1) )
+       ENDDO
+      ENDDO
+      DO j=1-2, sNy+2
+       DO i=iMin,iMax
+        v4F(i,j) =
+     &  viscA4*_YAatP(i,j,k,bi,bj)
+     &   *( vF(i,j+1) - vF(i,j) )*_recip_dyC(i,j,bi,bj)
+       ENDDO
+      ENDDO
+C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
         vF(i,j) =
