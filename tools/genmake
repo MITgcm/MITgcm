@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.15 2000/03/24 18:52:53 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.16 2000/03/24 19:28:46 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -317,6 +317,7 @@ if ($?include_jam_libs) then
 cat >> ${mfile} <<EOF
 # extra stuff for Hyades ............................................
 HYADES_DIR = /u/u0/cnh/jam-lib/software
+HYADES_DIR = /u/u0/cnh/jam-lib-twoproc
 WORK_DIR   = \$(HYADES_DIR)
 DEPOSIT_DIR = linux_bin
 
