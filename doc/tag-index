@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.311 2004/06/24 20:27:32 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.312 2004/06/25 00:28:53 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o AIM pkg:
+  - include stability function into surf.Flux derivative relative to Tsurf
+  - calculate clear-sky radiation & surface temp. change (for diagnostics)
 
 checkpoint53e_post
 o merged cylindrical coord configuration
