@@ -1,13 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/div_g.F,v 1.3 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_div_g.F,v 1.1 1998/08/20 18:44:24 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 C     /==========================================================\
-C     | S/R DIV_G                                                |
+C     | S/R CALC_DIV_G                                           |
 C     | o Form the right hand-side of the surface pressure eqn.  |
-C     |==========================================================|
 C     \==========================================================/
-      SUBROUTINE DIV_G( 
+      SUBROUTINE CALC_DIV_G( 
      I        bi,bj,iMin,iMax,jMin,jMax,
      I        K,
      I        xA,yA,
