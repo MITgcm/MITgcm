@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.8 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.9 2003/12/14 04:56:18 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,8 +47,7 @@ c do not introduce turning angle
       COSWAT=ONE
 
 C--   Update overlap regions
-      _EXCH_XY_R8(WINDX, myThid)
-      _EXCH_XY_R8(WINDY, myThid)
+      CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
 
 C--   Interpolate wind stress (N/m^2) from South-West B-grid
 C     to South-West C-grid for forcing ocean model.
@@ -78,8 +77,7 @@ cdm !!! also corresponds to that adopted by CCSM-2.            !!!
        ENDDO
       ENDDO
 
-      _EXCH_XY_R4( fu, myThid )
-      _EXCH_XY_R4( fv, myThid )
+      CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 
 #endif /* ALLOW_SEAICE */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.13 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.14 2003/12/14 04:56:18 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,15 +56,14 @@ C     i,j,bi,bj - Loop counters
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
-         _EXCH_XY_R8( uwind,  myThid )
-         _EXCH_XY_R8( vwind,  myThid )
-         _EXCH_XY_R8( atemp,  myThid )
-         _EXCH_XY_R8( aqh,    myThid )
-         _EXCH_XY_R8( lwdown, myThid )
-         _EXCH_XY_R8( swdown, mythid )
-         _EXCH_XY_R8( precip, myThid )
-         _EXCH_XY_R8( evap,   myThid )
-         _EXCH_XY_R8( runoff, myThid )
+      CALL EXCH_UV_XY_RL(uwind,vwind,.TRUE.,myThid)
+      _EXCH_XY_R8( atemp,  myThid )
+      _EXCH_XY_R8( aqh,    myThid )
+      _EXCH_XY_R8( lwdown, myThid )
+      _EXCH_XY_R8( swdown, mythid )
+      _EXCH_XY_R8( precip, myThid )
+      _EXCH_XY_R8( evap,   myThid )
+      _EXCH_XY_R8( runoff, myThid )
 #else /* SEAICE_EXTERNAL_FORCING */
 C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
@@ -120,18 +119,17 @@ C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
       CALL GROWTH( myTime, myIter, myThid)
 
 C--   Update overlap regions for a bunch of stuff
-       _BARRIER
-       CALL SEAICE_EXCH( HEFF, myThid )
-       CALL SEAICE_EXCH( AREA, myThid )
-       _EXCH_XY_R4(fu   , myThid )
-       _EXCH_XY_R4(fv   , myThid )
-       _EXCH_XY_R4(EmPmR, myThid )
-       _EXCH_XY_R4(Qnet , myThid )
-       _EXCH_XY_R4(surfaceTendencyTice, myThid )
+      _BARRIER
+      CALL SEAICE_EXCH( HEFF, myThid )
+      CALL SEAICE_EXCH( AREA, myThid )
+      CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
+      _EXCH_XY_R4(EmPmR, myThid )
+      _EXCH_XY_R4(Qnet , myThid )
+      _EXCH_XY_R4(surfaceTendencyTice, myThid )
 #ifdef SHORTWAVE_HEATING
-       _EXCH_XY_R4(Qsw  , myThid )
+      _EXCH_XY_R4(Qsw  , myThid )
 #endif
-       _EXCH_XYZ_R8(theta , myThid )
+      _EXCH_XYZ_R8(theta , myThid )
 
 C--   Sea ice diagnostics.
       CALL SEAICE_DO_DIAGS( myTime, myIter, myThid )

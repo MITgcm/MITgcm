@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/adi.F,v 1.8 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/adi.F,v 1.9 2003/12/14 04:56:18 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -75,8 +75,7 @@ c       ENDDO
 c      ENDDO
 
 C--   Update overlap regions
-      _EXCH_XY_R8(FORCEX, myThid)
-      _EXCH_XY_R8(FORCEY, myThid)
+      CALL EXCH_UV_XY_RL(FORCEX,FORCEY,.TRUE.,myThid)
       _EXCH_XY_R8(DRAGS, myThid)
       _EXCH_XY_R8(DRAGA, myThid)
       _EXCH_XY_R8(AMASS, myThid)
@@ -246,7 +245,7 @@ c        END DO
        ENDDO
       ENDDO
 
-       CALL SEAICE_EXCH( UICE, myThid )
+       CALL SEAICE_EXCH_UV( UICE, VICE, myThid )
 
 C NOW SECOND HALF
 
@@ -516,7 +515,7 @@ c         END DO
        ENDDO
       ENDDO
 
-       CALL SEAICE_EXCH( VICE, myThid )
+       CALL SEAICE_EXCH_UV( UICE, VICE, myThid )
 
 C NOW SECOND HALF
 
@@ -635,8 +634,7 @@ c$taf loop = parallel
       ENDDO
 
 C--   Update overlap regions
-      _EXCH_XY_R8(UICEC, myThid)
-      _EXCH_XY_R8(VICEC, myThid)
+      CALL EXCH_UV_XY_RL(UICEC,VICEC,.TRUE.,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
