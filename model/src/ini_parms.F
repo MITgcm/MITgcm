@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.26 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.27 1998/08/24 02:25:01 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -53,7 +53,7 @@ C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta,
      &   viscAh,  viscAz,  viscA4,
-     &  diffKhT, diffKzT, diffK4T,
+     &  diffKhT, diffKzT, diffK4T, 
      &  diffKhS, diffKzS, diffK4S,
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      &  tRef, sRef, eosType,
@@ -62,7 +62,9 @@ C--   Continuous equation parameters
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
-     & tempStepping, saltStepping, momStepping, implicitDiffusion
+     & tempStepping, saltStepping, momStepping, implicitDiffusion,
+     & viscAr, diffKrT, diffKrS, hFacMinDr,
+     & rhoConst
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -155,31 +157,33 @@ C--   Set default "physical" parameters
       gravity =   9.81 D0
       gBaro   = gravity
       rhoNil   = 999.8 D0
-      f0=1.D-4 
-      beta = 1. _d -11
-      viscAh=1.d3
-      diffKhT=1.0d3
-      diffKhS=1.0d3
-      viscAz=1.d-3
-      diffKzT=1.d-5
-      diffKzS=1.d-5
-      viscA4=0.
-      diffK4T=0.
-      diffK4S=0.
-      GMmaxslope=1.d-2
-      GMlength=200.d3
-      GMalpha=0.
-      GMdepth=1000.
-      GMkbackground=0.
-      GMmaxval=2500.d0
+      rhoConst = 999.8 D0
+      f0     = 1.D-4 
+      beta   = 1. _d -11
+      viscAh = 1.d3
+      diffKhT= 1.0d3
+      diffKhS= 1.0d3
+      viscAr = 1.d-3
+      diffKrT= 1.d-5
+      diffKrS= 1.d-5
+      viscA4 = 0.
+      diffK4T= 0.
+      diffK4S= 0.
+      GMmaxslope   = 1.d-2
+      GMlength     = 200.d3
+      GMalpha      = 0.
+      GMdepth      = 1000.
+      GMkbackground= 0.
+      GMmaxval     = 2500.d0
       tAlpha=2.d-4
       sBeta=7.4d-4
       eosType='LINEAR'
+      buoyancyRelation='OCEANIC'
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
       freeSurfFac         = 1. _d 0
       hFacMin             = 0. _d 0
-      hFacMinDz           = 0. _d 0
+      hFacMinDr           = 0. _d 0
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
       momForcing          = .TRUE.

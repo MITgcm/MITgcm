@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.14 1998/08/24 00:24:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.15 1998/08/24 02:25:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -187,6 +187,10 @@ C     == Local variables ==
      &'   /* Spherical coordinates flag ( True / False ) */')
       CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
      &'   /* W spacing ( m ) */')
+      CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',
+     &'   /* W spacing ( Pa ) */')
+      CALL WRITE_1D_R8( delR,Nr, INDEX_K,'delR = ',
+     &'   /* W spacing ( units of r ) */')
       CALL WRITE_1D_R8( delX, Nx, INDEX_I,'delX = ',
      &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( delY, Ny, INDEX_J,'delY = ',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.4 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.5 1998/08/24 02:25:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -75,11 +75,11 @@ C Impose minimum fraction
             ENDIF
            ENDIF
 C Impose minimum size (dimensional)
-           IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz) THEN
-            IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz*0.5) THEN
+           IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDr) THEN
+            IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDr*0.5) THEN
              hFacC(I,J,K,bi,bj)=0.
             ELSE
-             hFacC(I,J,K,bi,bj)=hFacMinDz*recip_drF(k)
+             hFacC(I,J,K,bi,bj)=hFacMinDr*recip_drF(k)
             ENDIF
            ENDIF
           ENDDO

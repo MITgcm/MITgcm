@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.26 1998/08/23 15:34:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.27 1998/08/24 02:25:01 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -209,6 +209,8 @@ C     viscAh    - Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAz    - Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( m^2/s )
+C     viscAp    - Eddy viscosity coeff. for mixing of
+C                 momentum vertically ( Pa^2/s )
 C     viscAr    - Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    - Biharmonic viscosity coeff. for mixing of
@@ -217,6 +219,8 @@ C     diffKhT   - Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKzT   - Laplacian diffusion coeff. for mixing of
 C                 heat vertically ( m^2/s )
+C     diffKpT   - Laplacian diffusion coeff. for mixing of
+C                 heat vertically ( Pa^2/s )
 C     diffKrT   - Laplacian diffusion coeff. for mixing of
 C                 heat vertically ( units of r^2/s )
 C     diffK4T   - Biharmonic diffusion coeff. for mixing of
@@ -225,6 +229,8 @@ C     diffKhS  -  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
 C     diffKzS   - Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( m^2/s )
+C     diffKpS   - Laplacian diffusion coeff. for mixing of
+C                 salt vertically ( Pa^2/s )
 C     diffKrS   - Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( units of r^2/s )
 C     diffK4S   - Biharmonic diffusion coeff. for mixing of
@@ -246,10 +252,10 @@ C     hFacMinDz    - Minimum dimesional size of a cell (affects hFacC etc..., m)
 C     hFacMinDr    - Minimum dimesional size of a cell (affects hFacC etc..., units of r)
 C     tauCD        - CD scheme coupling timescale ( 1/s )
 C     rCD          - CD scheme normalised coupling parameter ( 0-1 )
-C     GMmaxslope   - max. slope allowed in GM/Redi tensor
-C     GMlength     - Length to use in Visbeck et al. formula for K (m)
-C     GMalpha      - alpha to use in Visbeck et al. formula for K
-C     GMdepth      - Depth over which to integrate Richardson # (Visbeck et al.)
+C     GMmaxslope    - max. slope allowed in GM/Redi tensor
+C     GMlength      - Length to use in Visbeck et al. formula for K (m)
+C     GMalpha       - alpha to use in Visbeck et al. formula for K
+C     GMdepth       - Depth over which to integrate Richardson # (Visbeck et al.)
 C     GMkbackground - background value of GM/Redi diffusion coefficient ( m^2/s )
 C     GMmaxval      - max. value of KapGM allowed in GM/Redi scheme ( m^2/s )
 C     startTime     - Starting time for this integration ( s ).
@@ -266,8 +272,8 @@ C     foFacMom      - Momentum forcing tracer parameter
 C     mtFacMom      - Metric terms tracer parameter
 C     cAdjFreq      - Frequency of convective adjustment
 C
-C     taveFreq  - Frequency with which time-averaged model state is written to
-C                 post-processing files ( s ).
+C     taveFreq      - Frequency with which time-averaged model state is written to
+C                     post-processing files ( s ).
 C     tauThetaClimRelax - Relaxation to climatology time scale ( s ).
 C     lambdaThetaClimRelax - Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax - Relaxation to climatology time scale ( s ).
@@ -283,15 +289,18 @@ C                           number times externForcingPeriod)
      & viscAh,  viscAz,  viscA4,  viscAr,
      & diffKhT, diffKzT, diffK4T, diffKrT,
      & diffKhS, diffKzS, diffK4S, diffKrS,
-     & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
+     & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz, 
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      & gravity, gBaro, rhonil, recip_rhonil, 
-     & recip_rhoConst, rhoConst, tRef, sRef, theta_S, specVol_S,
+     & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
-     & externForcingCycle, externForcingPeriod
+     & externForcingCycle, externForcingPeriod,
+     & viscAp, diffKpT, diffKpS, hFacMinDr,
+     & theta_S, specVol_S
+
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nr)
@@ -312,18 +321,22 @@ C                           number times externForcingPeriod)
       _RL freeSurfFac
       _RL hFacMin
       _RL hFacMinDz
+      _RL hFacMinDr
       _RL beta
       _RL viscAh
       _RL viscAz
+      _RL viscAp
       _RL viscAr
       _RL viscA4 
       _RL diffKhT 
       _RL diffKrT
       _RL diffKzT
+      _RL diffKpT
       _RL diffK4T 
       _RL diffKhS 
       _RL diffKrS
       _RL diffKzS
+      _RL diffKpS
       _RL diffK4S 
       _RL delt
       _RL tauCD

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.26 1998/08/24 00:32:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.27 1998/08/24 02:25:01 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -669,7 +669,7 @@ C     Bottom level boundary condition
 C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pf(i,j) = - recip_dyC(i,j,bi,bj)
+        pF(i,j) = -recip_dyC(i,j,bi,bj)
      &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))/rhoConst
        ENDDO
       ENDDO
