@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.1 2003/01/26 21:06:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.2 2003/01/30 00:06:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,13 +46,13 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-c #ifdef ALLOW_OBCS
-c C-- Apply OBC to hFac_surfW,S before updating hFacW,S
-c         IF (useOBCS) CALL OBCS_APPLY_SURF_DR(
-c      I                    bi, bj, ksurfC, ksurfW, ksurfS,
-c      U                    hFac_surfC, hFac_surfW, hFac_surfS,
-c      I                    myThid )
-c #endif /* ALLOW_OBCS */
+#ifdef ALLOW_OBCS
+C-- Apply OBC to rStar_Factor_W,S before updating hFacW,S
+        IF (useOBCS) CALL OBCS_APPLY_R_STAR(
+     I                    bi, bj, ksurfC, ksurfW, ksurfS,
+     U                    rStarFacC, rStarFacW, rStarFacS,
+     I                    myTime, myIter, myThid )
+#endif /* ALLOW_OBCS */
 
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
