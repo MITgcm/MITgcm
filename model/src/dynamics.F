@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.66 2001/03/25 22:33:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.67 2001/05/14 21:46:17 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,11 +33,14 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# include "FFIELDS.h"
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_KPP
-# include "KPP.h"
-#endif
 
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
@@ -265,7 +268,7 @@ C This is currently also used by IVDC and Diagnostics
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE uvel(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -278,8 +281,8 @@ C? Do we still need this?
 cph kkey formula corrected. 
 cph Needed for rhok, rhokm1, in the case useGMREDI.
          kkey = (ikey-1)*Nr + k
-CADJ STORE rhokm1(:,:) = comlev1_bibj_k , key = kkey, byte = isbyte
-CADJ STORE rhok  (:,:) = comlev1_bibj_k , key = kkey, byte = isbyte
+CADJ STORE rhokm1(:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhok  (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Integrate continuity vertically for vertical velocity
@@ -301,16 +304,26 @@ C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
 c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.) ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
      I        theta, salt,
      O        rhoK,
      I        myThid )
-            IF (k.GT.1) CALL FIND_RHO(
+            IF (k.GT.1) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k-1, k, eosType,
      I        theta, salt,
      O        rhoKm1,
      I        myThid )
+            ENDIF
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
      I             rhoK, rhoKm1, rhoK,
@@ -331,6 +344,11 @@ c ==> should use sigmaR !!!
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+cph avoids recomputation of integrate_for_w
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef  ALLOW_OBCS
 C--     Calculate future values on open boundaries
         IF (useOBCS) THEN
@@ -345,8 +363,25 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF( 
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+cph needed for KPP
+CADJ STORE surfacetendencyU(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyV(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyS(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE surfacetendencyT(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_GMREDI
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sigmaX(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaY(:,:,:) = comlev1, key=ikey, byte=isbyte
+CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
           DO k=1,Nr
@@ -365,6 +400,13 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
           ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif  /* ALLOW_GMREDI */
 
 #ifdef  ALLOW_KPP
@@ -374,18 +416,8 @@ C--     Compute KPP mixing coefficients
      I                  bi, bj, myTime, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
         ELSE
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              KPPhbl (i,j,bi,bj) = 1.0
-              KPPfrac(i,j,bi,bj) = 0.0
-              DO k = 1,Nr
-                 KPPghat   (i,j,k,bi,bj) = 0.0
-                 KPPviscAz (i,j,k,bi,bj) = viscAz
-                 KPPdiffKzT(i,j,k,bi,bj) = diffKzT
-                 KPPdiffKzS(i,j,k,bi,bj) = diffKzS
-              ENDDO
-            ENDDO
-          ENDDO
+          CALL KPP_CALC_DUMMY(
+     I                  bi, bj, myTime, myThid )
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
 
@@ -422,6 +454,12 @@ C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
 
 C--     Start of thermodynamics loop
         DO k=Nr,1,-1
+#ifdef ALLOW_AUTODIFF_TAMC 
+C? Patrick Is this formula correct?
+cph Yes, but I rewrote it.
+cph Also, the KappaR? need the index and subscript k!
+         kkey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       km1    Points to level above k (=k-1)
 C--       kup    Cycles through 1,2 to point to layer above
@@ -436,20 +474,16 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMin = 1-OLy+2
           jMax = sNy+OLy-1
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-C? Patrick Is this formula correct?
-cph Yes, but I rewrote it.
-cph Also, the KappaR? need the index k!
-         kkey = (ikey-1)*Nr + k
-CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
      I        bi,bj,iMin,iMax,jMin,jMax,k,km1,kup,kDown,
      O        xA,yA,uTrans,vTrans,rTrans,maskC,maskUp,
      I        myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity

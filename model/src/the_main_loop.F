@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.6 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.7 2001/05/14 21:46:18 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -77,6 +77,9 @@ c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev3 = USER
+#ifdef ALLOW_TAMC_CHECKPOINTING
+       ikey_dynamics = 1
+#endif
 #endif
 
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
@@ -192,11 +195,6 @@ c--         Requirement: nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps .
      &              (ilev_2 - 1)*nchklev_1           + ilev_1
 
             if ( iloop .le. nTimeSteps ) then
-CADJ STORE gsnm1     = comlev1, key = ilev_1
-CADJ STORE gtnm1     = comlev1, key = ilev_1
-CADJ STORE uvel      = comlev1, key = ilev_1
-CADJ STORE vvel      = comlev1, key = ilev_1
-CADJ STORE wvel      = comlev1, key = ilev_1
 
 #else /* ALLOW_TAMC_CHECKPOINTING  undefined */
 c--   Initialise storage for reference trajectory without TAMC check-
@@ -243,9 +241,16 @@ c--           Set the model iteration counter and the model time.
 #endif
 
 c--           Load forcing/external data fields.
-              call timer_start('EXF_GETFORCING     [ADJOINT]',mythid)
+              call timer_start('EXTERNAL_FIELDS_LOAD [ADJOINT]',mythid)
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c             NOTE, that although the exf package is part of the
+c             distribution, it is not currently maintained, i.e.
+c             exf is disabled by default in genmake.
+              call exf_getforcing( mytime, myiter, mythid )
+#else
               call external_fields_load( mytime, myiter, mythid )
-              call timer_stop ('EXF_GETFORCING     [ADJOINT]',mythid)
+#endif
+              call timer_stop ('EXTERNAL_FIELDS_LOAD [ADJOINT]',mythid)
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
               ikey_dynamics = ilev_1

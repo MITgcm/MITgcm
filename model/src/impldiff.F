@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.15 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.16 2001/05/14 21:46:17 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,6 +45,13 @@ C     == Local variables ==
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
 C--   Initialise
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gYNm1(i,j,k,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
 
 C--   Old aLower
       DO j=jMin,jMax

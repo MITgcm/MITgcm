@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.1 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.2 2001/05/14 21:46:17 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,7 +62,7 @@ C-      Initialisation of Convection Counter
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT tapelev_ini_bibj   = USER
+CADJ INIT tapelev_ini_bibj_k   = USER
 
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -90,10 +90,11 @@ C--       Loop over all *interior* layers
           DO K=2,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj, 
-CADJ &     key=ikey, byte=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj, 
-CADJ &     key=ikey, byte=isbyte
+            kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj_k, 
+CADJ &     key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj_k, 
+CADJ &     key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
             CALL FIND_RHO(
@@ -104,10 +105,10 @@ C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
 
 C-          Density of K layer (below W(K)) reference to K-1 T-level.
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = tapelev_ini_bibj, 
-CADJ &     key = ikey, byte = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj, 
-CADJ &     key = ikey, byte = isbyte
+CADJ STORE theta(:,:,k,bi,bj) = tapelev_ini_bibj_k, 
+CADJ &     key = kkey, byte = isbyte
+CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj_k, 
+CADJ &     key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I           bi,bj,iMin,iMax,jMin,jMax,K,K-1,eosType,
@@ -116,8 +117,8 @@ CADJ &     key = ikey, byte = isbyte
      I           myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoKm1(:,:)  = tapelev_ini_bibj, key = ikey, byte = isbyte
-CADJ STORE rhoK  (:,:)  = tapelev_ini_bibj, key = ikey, byte = isbyte
+CADJ STORE rhoKm1(:,:)  = tapelev_ini_bibj_k, key=kkey, byte=isbyte
+CADJ STORE rhoK  (:,:)  = tapelev_ini_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Check static stability with layer below and mix as needed.
             CALL CONVECT(

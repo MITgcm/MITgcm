@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.7 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.8 2001/05/14 21:46:17 heimbach Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -103,6 +103,10 @@ C-      Calculate gradient of surface Potentiel
 C--     Loop over all layers, top to bottom
         DO K=1,Nr
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkey = (ikey-1)*Nr + k
+#endif
+
 C-        Update velocity fields:  V(n) = V** - dt * grad Eta
           IF (momStepping)
      &      CALL CORRECTION_STEP(
@@ -123,10 +127,10 @@ C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
 
 #ifdef    ALLOW_OBCS
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uvel (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE vvel (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE uvel (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE vvel (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           IF (useOBCS) THEN
             CALL OBCS_APPLY_UV(bi,bj,K,uVel,vVel,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.6 2001/03/25 22:33:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.7 2001/05/14 21:46:17 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -88,8 +88,9 @@ C--       Loop over all *interior* layers
           DO K=2,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+            kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
             CALL FIND_RHO(
@@ -100,8 +101,8 @@ C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
 
 C-          Density of K layer (below W(K)) reference to K-1 T-level.
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I           bi,bj,iMin,iMax,jMin,jMax,K,K-1,eosType,
@@ -110,8 +111,8 @@ CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
      I           myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoKm1(:,:)  = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE rhoK  (:,:)  = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE rhoKm1(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE rhoK  (:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Check static stability with layer below and mix as needed.
             CALL CONVECT(
