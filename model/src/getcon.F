@@ -13,10 +13,10 @@ C
       CHARACTER*16 ANAME(MAXCON)
       real         ACON (MAXCON)
       integer I
-      real  vecmax, undef, ob, per, ecc, ae, eqnx, sols, s0, grav, 
-      real  srfprs, pimean, pstd, tstd, sday, ssalb, co2, cfc11, 
-      real  cfc12, cfc22, atmpopa, pi, cpd, cpv, alhl, alhs, stfbol, 
-      real  airmw, h2omw, runiv, rgas, rvap, rkap, heatw, heati, tice, 
+      real  vecmax, undef, ob, per, ecc, ae, eqnx, sols, s0, grav
+      real  srfprs, pimean, pstd, tstd, sday, ssalb, co2, cfc11
+      real  cfc12, cfc22, atmpopa, pi, cpd, cpv, alhl, alhs, stfbol
+      real  airmw, h2omw, runiv, rgas, rvap, rkap, heatw, heati, tice
       real  vkrm, deg2rad, caltoj, eps, virtcon, epsfac, getcon
 
 C COMPUTATIONAL CONSTANTS
