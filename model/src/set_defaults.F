@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.76 2004/11/05 02:47:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.77 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -203,7 +203,12 @@ C--   Elliptic solver parameters
       cg3dChkResFreq     = 1
 
 C--   Time stepping parameters
-      deltaT            = 0.
+      deltaT            = 0. _d 0
+      deltaTmom         = 0. _d 0
+      deltaTfreesurf    = 0. _d 0
+      DO k=1,Nr
+        dTtracerLev(k)  = 0. _d 0
+      ENDDO
       nIter0            = 0
       startTime         = deltaT*float(nIter0)
       pickupSuff        = ' '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.17 2004/11/02 01:02:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.18 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -182,6 +182,19 @@ C       code is being compiled
       ENDIF
 #endif
 
+#ifndef ALLOW_GENERIC_ADVDIFF
+      IF ( tempStepping .OR. saltStepping .OR. usePTRACERS ) THEN
+        WRITE(msgBuf,'(2A)')
+     &  'CONFIG_CHECK: cannot step forward Temp,Salt or pTracers',
+     &  ' without pkg/generic_advdiff'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with pkg "generic_advdiff" in packages.conf'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
 C     o If taveFreq is finite, then we must make sure the diagnostics
 C       code is being compiled
 #ifndef ALLOW_TIMEAVE
@@ -290,7 +303,8 @@ c     ENDIF
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF (nonlinFreeSurf.NE.0.AND.deltaTfreesurf.NE.deltaTtracer) THEN
+      IF ( nonlinFreeSurf.NE.0 .AND. 
+     &     deltaTfreesurf.NE.dTtracerLev(1) ) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause problems'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,

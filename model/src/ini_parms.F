@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.138 2004/11/22 20:47:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.139 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,7 @@ C     dxSpacing, dySpacing - Default spacing in X and Y.
 C                            Units are that of coordinate system
 C                            i.e. cartesian => metres
 C                                  s. polar => degrees
+C     deltaTtracer :: Timestep for tracer equations ( s )
 C     tmp4delX,tmp8delX - temporary arrays to read in delX
 C     tmp4delY,tmp8delY - temporary arrays to read in delY
 C     goptCount - Used to count the nuber of grid options
@@ -42,6 +43,7 @@ C     K, I, J - Loop counters
 C     xxxDefault - Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
+      _RL deltaTtracer
       REAL*4 tmp4delX(Nx), tmp4delY(Ny)
       REAL*8 tmp8delX(Nx), tmp8delY(Ny)
       CHARACTER*(MAX_LEN_FNAM) delXfile
@@ -180,7 +182,7 @@ C--   Elliptic solver parameters
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
-     & deltaT, deltaTmom, deltaTtracer, deltaTfreesurf,
+     & deltaT, deltaTmom, deltaTtracer, dTtracerLev, deltaTfreesurf,
      & forcing_In_AB, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
@@ -665,6 +667,7 @@ C--   Elliptic solver parameters
 C--   Time stepping parameters
       rCD               = -1.D0
       latBandClimRelax  = UNSET_RL
+      deltaTtracer      = 0. _d 0
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
@@ -691,11 +694,23 @@ C--   Time stepping parameters
       ENDIF   
 C     Process "timestepping" params
 C     o Time step size
+      IF ( deltaTtracer .NE. dTtracerLev(1) .AND.
+     &     deltaTtracer .NE. 0. .AND. dTtracerLev(1) .NE. 0. ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: deltaTtracer & dTtracerLev(1) not equal'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSEIF ( dTtracerLev(1) .NE. 0. ) THEN
+        deltaTtracer = dTtracerLev(1)
+      ENDIF
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTmom
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTtracer
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
+      DO k=1,Nr
+       IF (dTtracerLev(k).EQ.0.) dTtracerLev(k)= deltaTtracer
+      ENDDO
 C Note that this line should set deltaFreesurf=deltaTmom
 C but this would change a lot of existing set-ups so we are
 C obliged to set the default inappropriately.

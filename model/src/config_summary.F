@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.65 2004/11/05 02:47:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.66 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -354,7 +354,7 @@ C     zcoord ::
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
      &'   /* FreeSurface equation timestep ( s ) */')
-      CALL WRITE_0D_R8( deltaTtracer, INDEX_NONE,'deltatTtracer =',
+      CALL WRITE_1D_R8( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
      &'   /* Tracer equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltatTClock  =',
      &'   /* Model clock timestep ( s ) */')

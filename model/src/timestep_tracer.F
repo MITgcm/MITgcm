@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.11 2004/12/03 15:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.12 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,7 +44,7 @@ C-    Extrapolate tendancies to mid-time level (n+1/2)
       DO j=jMin,jMax
        DO i=iMin,iMax
          gTracer(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)
-     &            +deltaTtracer*gTracer(i,j,k,bi,bj)
+     &            +dTtracerLev(k)*gTracer(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

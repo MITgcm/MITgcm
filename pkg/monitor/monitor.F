@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.26 2004/12/01 22:53:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.27 2004/12/04 00:13:01 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -117,7 +117,7 @@ C       Print the basic statistics of model state variables
        
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('advcfl',myThid)
-        dT=max(deltaTtracer,deltaTmom)
+        dT=MAX(dTtracerLev(1),deltaTmom)
         CALL MON_ADVCFL('_uvel',uVel,recip_dxc,dT,myThid)
         CALL MON_ADVCFL('_vvel',vVel,recip_dyc,dT,myThid)
         CALL MON_ADVCFLW('_wvel',wVel,recip_drc,dT,myThid)

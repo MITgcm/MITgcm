@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.7 2004/12/04 00:15:14 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -193,18 +196,18 @@ C update
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            PTR_DIC(i,j,k)=
-     &      PTR_DIC(i,j,k)+GDIC(i,j,k)*deltaTtracer
+     &      PTR_DIC(i,j,k)+GDIC(i,j,k)*dTtracerLev(k)
            PTR_ALK(i,j,k)=
-     &      PTR_ALK(i,j,k)+GALK(i,j,k)*deltaTtracer
+     &      PTR_ALK(i,j,k)+GALK(i,j,k)*dTtracerLev(k)
            PTR_PO4(i,j,k)=
-     &      PTR_PO4(i,j,k)+GPO4(i,j,k)*deltaTtracer
+     &      PTR_PO4(i,j,k)+GPO4(i,j,k)*dTtracerLev(k)
            PTR_DOP(i,j,k)=
-     &      PTR_DOP(i,j,k)+GDOP(i,j,k)*deltaTtracer
+     &      PTR_DOP(i,j,k)+GDOP(i,j,k)*dTtracerLev(k)
            PTR_O2(i,j,k)=
-     &      PTR_O2(i,j,k)+GO2(i,j,k)*deltaTtracer
+     &      PTR_O2(i,j,k)+GO2(i,j,k)*dTtracerLev(k)
 #ifdef ALLOW_FE
            PTR_FE(i,j,k)=
-     &      PTR_FE(i,j,k)+GFE(i,j,k)*deltaTtracer
+     &      PTR_FE(i,j,k)+GFE(i,j,k)*dTtracerLev(k)
 #endif
           ENDDO
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.3 2004/09/14 16:20:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.4 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,7 @@ C AMM
          CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
          CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
          CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
-         CALL STEP_FIZHI_FG ( myTime, myIter, myThid, deltaTtracer )
+         CALL STEP_FIZHI_FG ( myTime, myIter, myThid, dTtracerLev(1) )
          CALL FIZHI_UPDATE_TIME ( myIter, myThid, deltaTclock )
          CALL TIMER_STOP ('FIZHI          [DO_ATMOSPHERIC_PHYS]',myThid)
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.83 2004/12/03 15:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.84 2004/12/04 00:12:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -526,7 +526,10 @@ C--     Implicit vertical advection & diffusion
      I         myThid)
         ENDIF
 #ifdef INCLUDE_IMPLVERTADV_CODE
-        IF ( tempImplVertAdv ) THEN
+c       IF ( tempImplVertAdv ) THEN
+        IF ( (dTtracerLev(1).NE.dTtracerLev(Nr)
+     &        .AND. tempStepping .AND. implicitDiffusion)
+     &   .OR.tempImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempAdvScheme, GAD_TEMPERATURE,
      I         kappaRk, wVel, theta, 
@@ -542,7 +545,7 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, kappaRk, recip_HFacC,
+     I         dTtracerLev(1), kappaRk, recip_hFacC,
      U         gT,
      I         myThid )
         ENDIF
@@ -574,7 +577,10 @@ c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
         ENDIF
 
 #ifdef INCLUDE_IMPLVERTADV_CODE
-        IF ( saltImplVertAdv ) THEN
+c       IF ( saltImplVertAdv ) THEN
+        IF ( (dTtracerLev(1).NE.dTtracerLev(Nr)
+     &        .AND. saltStepping .AND. implicitDiffusion)
+     &   .OR.saltImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltAdvScheme, GAD_SALINITY,
      I         kappaRk, wVel, salt, 
@@ -590,7 +596,7 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, kappaRk, recip_HFacC,
+     I         dTtracerLev(1), kappaRk, recip_hFacC,
      U         gS,
      I         myThid )
         ENDIF
