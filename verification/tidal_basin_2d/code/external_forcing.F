@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.2 2003/03/25 15:24:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.3 2003/05/15 15:19:02 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,7 +92,7 @@ C Make the tide relatively strong (about 1 m)
      &     -SIN( tidal_freq*myCurrentTime + 2.*longitud1 )
      &    )*recip_DXC(i,j,bi,bj)
      &   *_maskW(i,j,kLev,bi,bj)
-     &   *min( myCurrentTime/86400. , 1.)
+c    &   *min( myCurrentTime/86400. , 1.)
        ENDDO
       ENDDO
 
