@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.10 2004/12/30 18:30:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.11 2004/12/30 19:27:55 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -166,8 +166,10 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
         ENDDO
        ENDIF
 
+#ifdef ALLOW_OBCS
        IF ( useOBCS )
      &    CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
+#endif /* ALLOW_OBCS */            
 
       ENDIF
 
