@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.110 2004/11/28 23:49:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.111 2004/12/20 01:55:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,6 +127,13 @@ C--   Reset the model iteration counter and the model time.
 c**************************************
 #include "checkpoint_lev1_directives.h"
 c**************************************
+#endif
+
+C--   Switch on/off diagnostics for snap-shot output:
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myIter, myThid )
+      ENDIF
 #endif
 
 C--   Call external forcing package
