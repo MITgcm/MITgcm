@@ -1,19 +1,26 @@
-C$Header: /u/gcmpack/MITgcm/verification/cfc_example/code/GCHEM_OPTIONS.h,v 1.1 2004/11/29 22:38:16 mlosch Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/verification/cfc_example/code/GCHEM_OPTIONS.h,v 1.2 2004/12/05 22:34:51 jmc Exp $
+C $Name:  $
+
+#ifndef GCHEM_OPTIONS_H
+#define GCHEM_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_GCHEM
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_PTRACERS
 
+CBOP
 C    !ROUTINE: GCHEM_OPTIONS.h
 C    !INTERFACE:
 
 C    !DESCRIPTION:
 c options for biogeochemistry package
-#undef GCHEM_SEPARATE_FORCING
+CEOP
+
+#undef  GCHEM_SEPARATE_FORCING
+#undef  DIC_BIOTIC
 #define ALLOW_CFC
-#undef DIC_BIOTIC
 #undef  ALLOW_FE
 
-#undef ALLOW_DIC_COST
 
-#endif
+#endif /* ALLOW_GCHEM */
+#endif /* GCHEM_OPTIONS_H */
