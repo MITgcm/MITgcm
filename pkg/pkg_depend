@@ -39,7 +39,6 @@ seaice		-thsice
 thsice		-seaice
 exf		-bulk_force
 bulk_force	-exf
-thsice		+bulk_force
 gchem           +ptracers
 dic             +gchem
 fizhi           -aim
