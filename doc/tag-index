@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.216 2003/12/04 19:43:03 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.217 2003/12/05 02:46:41 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
 
 checkpoint52c_post
 o Fixing OPTIONS files for use of exf:
