@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.7 2004/01/26 01:17:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.8 2004/01/26 23:38:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "EESUPPORT.h"
 #ifdef USE_W2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
@@ -49,6 +48,10 @@ C     == Local variables ==
       INTEGER I,J
       CHARACTER*(15) fName
       _RL buf(sNx+1,sNy+1)
+      INTEGER iG, iL
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 CEOP
 
 C--   Set everything to zero everywhere
@@ -245,55 +248,82 @@ c     write(10) DYG
 
 #else
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+C--   Only do I/O if I am the master thread
       _BEGIN_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
-      write(fName(1:15),'("tile",I3.3,".mitgrid")') myPid+1
-#else
-      write(fName(1:15),'("tile",I3.3,".mitgrid")') bi
-#endif
+
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        iG=bi+(myXGlobalLo-1)/sNx
+        WRITE(fName(1:15),'("tile",I3.3,".mitgrid")') iG
+        WRITE(msgBuf,'(A,I4)') 'tile:',iG
 #ifdef USE_W2
       myTile = W2_myTileList(bi)
       write(fName(1:15),'("tile",I3.3,".mitgrid")')
      &  exch2_myface(myTile)
+      WRITE(msgBuf,'(A,I4)') 'tile:',myTile
 #endif
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(3A)') msgBuf(1:iL),
+     &                   ' ; Read from file ',fName(1:15)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A)') '  =>'
 
-      CALL READSYMTILE_RS(fName,1,XC,bi,bj,buf,myThid)
-      write(0,*) 'Read XC'
-      CALL READSYMTILE_RS(fName,2,YC,bi,bj,buf,myThid)
-      write(0,*) 'Read YC'
-      CALL READSYMTILE_RS(fName,3,DXF,bi,bj,buf,myThid)
-      write(0,*) 'Read DXF'
-      CALL READSYMTILE_RS(fName,4,DYF,bi,bj,buf,myThid)
-      write(0,*) 'Read DYF'
-      CALL READSYMTILE_RS(fName,5,RA,bi,bj,buf,myThid)
-      write(0,*) 'Read RA'
-      CALL READSYMTILE_RS(fName,6,XG,bi,bj,buf,myThid)
-      write(0,*) 'Read XG'
-      CALL READSYMTILE_RS(fName,7,YG,bi,bj,buf,myThid)
-      write(0,*) 'Read YG'
-      CALL READSYMTILE_RS(fName,8,DXV,bi,bj,buf,myThid)
-      write(0,*) 'Read DXV'
-      CALL READSYMTILE_RS(fName,9,DYU,bi,bj,buf,myThid)
-      write(0,*) 'Read DYU'
-      CALL READSYMTILE_RS(fName,10,RAZ,bi,bj,buf,myThid)
-      write(0,*) 'Read RAZ'
-      CALL READSYMTILE_RS(fName,11,DXC,bi,bj,buf,myThid)
-      write(0,*) 'Read DXC'
-      CALL READSYMTILE_RS(fName,12,DYC,bi,bj,buf,myThid)
-      write(0,*) 'Read DYC'
-      CALL READSYMTILE_RS(fName,13,RAW,bi,bj,buf,myThid)
-      write(0,*) 'Read RAW'
-      CALL READSYMTILE_RS(fName,14,RAS,bi,bj,buf,myThid)
-      write(0,*) 'Read RAS'
-      CALL READSYMTILE_RS(fName,15,DXG,bi,bj,buf,myThid)
-      write(0,*) 'Read DXG'
-      CALL READSYMTILE_RS(fName,16,DYG,bi,bj,buf,myThid)
-      write(0,*) 'Read DYG'
-      _END_MASTER(myThid)
+        CALL READSYMTILE_RS(fName,1,XC,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'XC'
+        CALL READSYMTILE_RS(fName,2,YC,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'YC'
+        CALL READSYMTILE_RS(fName,3,DXF,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXF'
+        CALL READSYMTILE_RS(fName,4,DYF,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYF'
+        CALL READSYMTILE_RS(fName,5,RA,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RA'
+        CALL READSYMTILE_RS(fName,6,XG,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'XG'
+        CALL READSYMTILE_RS(fName,7,YG,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'YG'
+        CALL READSYMTILE_RS(fName,8,DXV,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXV'
+        CALL READSYMTILE_RS(fName,9,DYU,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYU'
+        CALL READSYMTILE_RS(fName,10,RAZ,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAZ'
+        CALL READSYMTILE_RS(fName,11,DXC,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXC'
+        CALL READSYMTILE_RS(fName,12,DYC,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYC'
+        CALL READSYMTILE_RS(fName,13,RAW,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAW'
+        CALL READSYMTILE_RS(fName,14,RAS,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAS'
+        CALL READSYMTILE_RS(fName,15,DXG,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXG'
+        CALL READSYMTILE_RS(fName,16,DYG,bi,bj,buf,myThid)
+        iL = ILNBLNK(msgBuf)
+        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYG'
+
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+
        ENDDO
       ENDDO
+      _END_MASTER(myThid)
 
       CALL EXCH_XY_RS(XC,myThid)
       CALL EXCH_XY_RS(YC,myThid)
