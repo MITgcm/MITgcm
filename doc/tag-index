@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.66 2002/03/05 15:36:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.67 2002/03/06 02:14:02 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o GM Advective form: Tracers are advected using the residual transport (=
+  Euler+GM-bolus); set param GM_AdvSeparate=T to return to previous form.
 
 checkpoint44g_post
 o fix surface correction term in multiDimAdvection (affects plume_on_slope 
