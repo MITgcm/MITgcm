@@ -55,7 +55,6 @@ c pe on dynamics and physics grid refers to bottom edge
        jdim2 = sNy
        dt = 1.
 
-       CALL TIMER_START('SETUP FIZHI CORR  [STEP_FIZHI_CORR]',mythid)
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -110,7 +109,6 @@ c Create a wind magnitude field on the physics grid -
         enddo
        enddo
        enddo
-       CALL TIMER_STOP('SETUP FIZHI CORR  [STEP_FIZHI_CORR]',mythid)
 
        CALL TIMER_START('PHYS2DYN          [STEP_FIZHI_CORR]',mythid)
        do bj = myByLo(myThid), myByHi(myThid)
@@ -168,9 +166,9 @@ c    Fifth: Interpolate correction terms to physics grid
        do bi = myBxLo(myThid), myBxHi(myThid)
 
         call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,uphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,uphytemp)
         call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,vphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,vphytemp)
         call dyn2phys(thdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
      .     1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,thphytemp)
         call dyn2phys(sdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
@@ -180,7 +178,6 @@ c    Fifth: Interpolate correction terms to physics grid
        CALL TIMER_STOP('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
 
 c    Last: Increment physics state by the correction term
-       CALL TIMER_START('STEP_PHYSICS      [STEP_FIZHI_CORR]',mythid)
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
         call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
@@ -189,7 +186,6 @@ c    Last: Increment physics state by the correction term
 
        enddo
        enddo
-       CALL TIMER_STOP('STEP_PHYSICS      [STEP_FIZHI_CORR]',mythid)
 
        return
        end
