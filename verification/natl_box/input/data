@@ -138,7 +138,3 @@
  EmPmRFile       = 'kf_empmr',
  surfQswFile     = 'kf_sw',
  &
-
-# Open-boundaries
- &PARM06
- &

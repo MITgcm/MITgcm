@@ -1,10 +1,19 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.22 2000/11/30 19:58:13 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.23 2001/02/02 21:36:30 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
-#   created by cnh 03/98
-#   adapted by aja 06/98
+#   created  by cnh 03/98
+#   adapted  by aja 06/98
+#   modified by aja 01/00
+
+# Default lists
+set DISABLE = ( aim )
+set ENABLE  = ( )
+set MODS  = ( )
+
+# Grab variables/lists from .genmakerc
+if (-r .genmakerc) source .genmakerc
 
 # Process command-line arguments
 set allargs=( $argv )
@@ -24,7 +33,51 @@ while ($#allargs)
    exit
    breaksw
  case -platform*:
+   if ($?platform) then
+    echo Option -platform=dir can only be specified once.; exit 1
+   endif
    set platform = ( `echo $arg | sed 's/-platform=//' `)
+   breaksw
+ case -rootdir:
+ case -rootdir=:
+   echo "To specify root directory you must specify one with -rootdir=dir"
+   echo "with NO space eg. -rootdir=../../..  or  -rootdir=/usr/people/joe/src"
+   exit
+   breaksw
+ case -rootdir=*:
+   if ($?ROOTDIR) then
+    echo "***" Warning: variable \$ROOTDIR is already set to $ROOTDIR
+    echo "***" Command line \"$arg\" will override this.
+   endif
+   set ROOTDIR = ( `echo $arg | sed 's/-rootdir=//' `)
+   breaksw
+ case -mods:
+ case -mods=:
+   echo "To specify an additional source directory you must specify one with -mods=dir"
+   echo "with NO space eg. -mods=../code  or  -mods=/usr/people/joe/src"
+   exit
+   breaksw
+ case -mods=*:
+   set MODS = ( $MODS `echo $arg | sed 's/-mods=//' | sed 's/,/ /' `)
+   breaksw
+ case -disable:
+ case -disable=:
+   echo "To disable packages from compilation use -disable=pkg1,pkg2"
+   echo "with NO spaces eg. -disable=kpp,gmredi or -disable=all (to enable all packages)"
+   exit
+   breaksw
+ case -disable=*:
+   set DISABLE = ( $DISABLE `echo $arg | sed 's/-disable=//' | sed 's/,/ /' `)
+   breaksw
+ case -enable:
+ case -enable=:
+   echo "To enable packages from compilation use -enable=pkg1,pkg2"
+   echo "with NO spaces eg. -enable=aim or -enable=all (to enable all packages)"
+   echo "-enable overrides -disable, ie. a package listed in both is enabled"
+   exit
+   breaksw
+ case -enable=*:
+   set ENABLE = ( $ENABLE `echo $arg | sed 's/-enable=//' | sed 's/,/ /' `)
    breaksw
  case -mpi:
    echo "Enabling MPI options"
@@ -47,28 +100,101 @@ while ($#allargs)
  shift allargs
 end
 
-if ($?platform == 0) then
+# Default actions/options
+
+# If platform wasn't specified then determine platform type of the host
+if (! $?platform) then
  set platform = (`uname`)
 endif
-if ($?mfile == 0) set mfile = ( Makefile.$platform )
+# If name of makefile wasn't specified then use default "Makefile"
+if (! $?mfile) set mfile = ( Makefile )
+
 set mach  = ( `uname -a` )
 echo Operating system: $mach
 
+
 # Directories for source, includes, binaries and executables
-# Note
-# o If you prefer/need everything under a single directory
-#   copy everything in ../eesupp/src, ../model/src,
-#   ../eesupp/inc and ../model/inc into a directory and then
-#   edit the paths below to ./
-set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ ../diags/src/ ../pkg/*/ )
-set INCLUDEDIRS = ( ./ ../eesupp/inc/ ../model/inc/ ../diags/inc/ ../pkg/*/ )
-set BUILDDIR    = ( ../bin/ )
-set EXEDIR      = ( ../exe/ )
-set EXECUTABLE  = ( mitgcmuv )
+#
+# If -rootdir wasn't specified then assume script is being run from bin
+# but if it was supplied then we should place the executable in the build dir
+if (! $?ROOTDIR) then
+  set ROOTDIR = ( .. )
+else
+  if (! $?EXEDIR) set EXEDIR = ( . )
+endif
+if (! -d $ROOTDIR) then
+  echo Root directory $ROOTDIR not found.;exit 1
+endif
+# If -mods wasn't specified then we will assume that we can find all the
+# source code in the standard directories
+if (! $?MODS) then
+ set SOURCEDIRS  = ( )
+ set INCLUDEDIRS = ( . )
+else
+ set SOURCEDIRS  = ( $MODS )
+ set INCLUDEDIRS = ( . $MODS )
+endif
+if (! $?BUILDDIR) set BUILDDIR = ( . )
+if (! -d $BUILDDIR) then
+  echo Build directory $BUILDDIR not found.;exit 1
+endif
+if (! $?EXEDIR) set EXEDIR = ( $ROOTDIR/exe )
+if (! -d $EXEDIR) then
+  echo Executable directory $EXEDIR not found.;exit 1
+endif
+if (! $?TOOLSDIR) set TOOLSDIR = ( $ROOTDIR/tools )
+if (! -d $TOOLSDIR) then
+  echo Tools directory $TOOLSDIR not found.;exit 1
+endif
+if (! $?EXECUTABLE) set EXECUTABLE  = ( mitgcmuv )
+
+# Now scan the standard source code tree
+foreach dr ($SOURCEDIRS)
+  set adr=$dr
+  if (! -d $adr) then
+    echo mods directory $adr not found.; exit 1
+  endif
+  echo Adding mods directory $adr
+end
+if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model diags)
+foreach dr ($STANDARDDIRS)
+  set adr=$ROOTDIR/$dr/src
+  if (! -d $adr) then
+    echo Source directory $adr not found.; exit 1
+  endif
+  echo Adding source directory $adr
+  set SOURCEDIRS = ($SOURCEDIRS $adr)
+  set idr = `echo $adr | sed 's/src/inc/'`
+  set INCLUDEDIRS = ($INCLUDEDIRS $idr)
+end
+if (! $?PACKAGES) then
+  set PACKAGES=(`cd $ROOTDIR/pkg; ls -1 | grep -v CVS`)
+endif
+foreach dr ($PACKAGES)
+  set enable
+  foreach p ($DISABLE)
+   if ($dr == $p) unset enable
+   if ($p == 'all') unset enable
+  end
+  foreach p ($ENABLE)
+   if ($dr == $p) set enable
+  end
+  if ($?enable) then
+    set adr=$ROOTDIR/pkg/$dr
+    if (! -d $adr) then
+      echo Source directory $adr not found.; exit 1
+    endif
+    echo Adding package directory $adr
+    set SOURCEDIRS = ($SOURCEDIRS $adr)
+    set INCLUDEDIRS = ($INCLUDEDIRS $adr)
+  else
+    echo "*" Package \"$dr\" has not been enabled.
+  endif
+end
 
 # This is the generic configuration.
 # Platform specific options are chosen below
-set LN         = ( 'ln -sf' )
+set LN         = ( 'ln -s' )
 set CPP        = ( '/lib/cpp -P' )
 set KPP        = (  )
 set FC         = ( 'f77' )
@@ -172,7 +298,7 @@ switch ($platform$USEMPI)
     set LIBS       = ( '-lmpi' )
     breaksw
   case SunOS:
-    set LN         = ( '/usr/bin/ln -fs' )
+    set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
@@ -181,7 +307,7 @@ switch ($platform$USEMPI)
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F')
     breaksw
   case SunOS+mpi:
-    set LN         = ( '/usr/bin/ln -fs' )
+    set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
@@ -222,7 +348,7 @@ switch ($platform$USEMPI)
     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
     set INCLUDES   = ( '-I/usr/local/include' )
   case Linux:
-    set LN         = ( '/bin/ln -fs' )
+    set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/lib/cpp  -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
     set FC         = ( 'g77' )
@@ -239,11 +365,11 @@ switch ($platform$USEMPI)
      set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
     endif
   case Linux+pgi:
-    set LN         = ( '/bin/ln -fs' )
+    set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/lib/cpp -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
     set FC         = ( 'pgf77' )
-    set FFLAGS     = ( '-byteswapio' )
+    set FFLAGS     = ( '-byteswapio -r8 -Mnodclchk -Mextend' )
     set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
     set LINK       = ( 'pgf77' )
     breaksw
@@ -259,7 +385,7 @@ switch ($platform$USEMPI)
   case sn7113:
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
-    set LN         = ( '/bin/ln -fs' )
+    set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/opt/ctl/bin/cpp -N -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DWORDLENGTH=4' )
     set FFLAGS     = ( '-m3 -Rabc -N 132')
@@ -271,7 +397,7 @@ switch ($platform$USEMPI)
   case sn3002:
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
-    set LN         = ( '/bin/ln -fs' )
+    set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/opt/ctl/bin/cpp -N -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DWORDLENGTH=4' )
     set FFLAGS     = ( '-m3 -Rabc -ei -eI -s cf77types -N 132')
@@ -292,52 +418,68 @@ endsw
 ##                                                                           ##
 ###############################################################################
 
-# Create list of files
-set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[F]$'`
-if ( $#flist ) then
- echo -n 'SRCFILES = ' > srclist.inc
- foreach ff ( ${flist} )
-  set fname = ( ${ff:t}       )
-  echo    ' \'                       >> srclist.inc
-  echo -n "           " ${fname:r}.F >> srclist.inc
- end
-else
- echo No source files found...\!
- exit
-endif
-echo " " >> srclist.inc
-
-set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[c]$'`
-if ( $#flist ) then
- echo -n 'CSRCFILES = ' > csrclist.inc
- foreach ff ( ${flist} )
-  set fname = ( ${ff:t}       )
-  echo    ' \'                   >> csrclist.inc
-  echo -n "           " ${fname} >> csrclist.inc
-else
- echo -n 'CSRCFILES =' > csrclist.inc
-endif
-echo " " >> csrclist.inc
-
 # Convert lists of directories into command-line options
 foreach inc ($INCLUDEDIRS)
  set INCLUDES = ($INCLUDES -I$inc)
 end
-set SRCSTARS = ( )
+
+# Search for source code
+rm -rf .links.tmp;mkdir .links.tmp
+echo "# This section creates symbolic links" > srclinks.tmp
+echo "" >> srclinks.tmp
+echo -n 'SRCFILES = ' > srclist.inc
+echo -n 'CSRCFILES = ' > csrclist.inc
+#echo -n 'HEADERFILES = ' > hlist.inc
 foreach dr ($SOURCEDIRS)
- set SRCSTARS = ("${SRCSTARS}" $dr\*.\[Fc\] )
+ set deplist=( )
+ foreach srcfile (`cd $dr; ls *.[hcF]`)
+  if (! -r .links.tmp/$srcfile) then
+   if (-f $dr/$srcfile) then
+    switch ($srcfile:e)
+    case F:
+     touch .links.tmp/$srcfile
+     set deplist=($deplist $srcfile)
+     echo    ' \'                   >> srclist.inc
+     echo -n "           " $srcfile >> srclist.inc
+     breaksw
+    case c:
+     touch .links.tmp/$srcfile
+     set deplist=($deplist $srcfile)
+     echo    ' \'                   >> csrclist.inc
+     echo -n "           " $srcfile >> csrclist.inc
+     breaksw
+    case h:
+#     touch .links.tmp/$srcfile
+#     set deplist=($deplist $srcfile)
+#     echo    ' \'                   >> hlist.inc
+#     echo -n "           " $srcfile >> hlist.inc
+     breaksw
+    endsw
+   endif
+  endif
+ end
+ if ($#deplist != 0) then
+  echo "# These files are linked from $dr" >> srclinks.tmp
+  echo $deplist':' >> srclinks.tmp
+  echo '	$(LN) '$dr'/$@ $@' >> srclinks.tmp
+ endif
 end
+rm -rf .links.tmp
+echo "" >> srclist.inc
+echo "" >> csrclist.inc
+#echo "" >> hlist.inc
 
 set THISHOSTNAME = ( `hostname` )
 set THISCWD = ( `pwd` )
 set THISDATE = ( `date` )
 
+if (-r $mfile) mv -f $mfile $mfile.bak
 ###########################################
 ## This is the template for the makefile ##
 ###########################################
 echo Creating makefile: $mfile
 echo "# Multithreaded + multi-processing makefile for $mach" > ${mfile}
-echo "# This makefile was generated automatically pn" >> ${mfile}
+echo "# This makefile was generated automatically on" >> ${mfile}
 echo "#    $THISDATE" >> ${mfile}
 echo "# by the command:" >> ${mfile}
 echo "#    ${0} $argv" >> ${mfile}
@@ -362,11 +504,13 @@ cat >> ${mfile} <<EOF
 # LINK         : Command for link editor program
 # LIBS         : Library flags /or/ additional optimization/debugging flags
 
-BUILDDIR   = ${BUILDDIR}  
-SOURCEDIRS = ${SOURCEDIRS}
+ROOTDIR     = ${ROOTDIR}
+BUILDDIR    = ${BUILDDIR}  
+SOURCEDIRS  = ${SOURCEDIRS}
 INCLUDEDIRS = ${INCLUDEDIRS}
-EXEDIR     = ${EXEDIR}
-EXECUTABLE = \$(EXEDIR)${EXECUTABLE}
+EXEDIR      = ${EXEDIR}
+EXECUTABLE  = \$(EXEDIR)/${EXECUTABLE}
+TOOLSDIR    = ${TOOLSDIR}
 
 EOF
 
@@ -408,7 +552,7 @@ cat >> ${mfile} <<EOF
 # Unix ln (link)
 LN = ${LN}
 # C preprocessor
-CPP = cat \$< | ../tools/set64bitConst.sh | ${CPP}
+CPP = cat \$< | \$(TOOLSDIR)/set64bitConst.sh | ${CPP}
 # Special preprocessor (KAP on DECs, FPP on Crays)
 KPP = ${KPP}
 # Fortran compiler
@@ -439,7 +583,7 @@ cat csrclist.inc >> ${mfile}
 echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> ${mfile}
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> ${mfile}
 
-rm -f srclist.inc csrclist.inc
+rm -f srclist.inc csrclist.inc flist.tmp clist.tmp
 
 cat >> ${mfile} <<EOF
 
@@ -449,11 +593,10 @@ cat >> ${mfile} <<EOF
 all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(OBJFILES)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
-links:
-	@-\$(LN) $SRCSTARS .
 depend:
 	@make links
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
+links: \$(SRCFILES)
 
 small_f: \$(F77FILES)
 
@@ -462,12 +605,12 @@ clean:
 Clean:
 	@make clean
 	-find . -type l -exec rm {} \;
-	-rm Makefile.bak
+	-rm -f Makefile.bak
 CLEAN:
 	@make Clean
-	-find ../verification/*/input/ -name "*.meta" -exec rm {} \;
-	-find ../verification/*/input/ -name "*.data" -exec rm {} \;
-	-rm \$(EXECUTABLE)
+	-find \$(ROOTDIR) -name "*.meta" -exec rm {} \;
+	-find \$(ROOTDIR) -name "*.data" -exec rm {} \;
+	-rm -f \$(EXECUTABLE)
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
@@ -492,7 +635,13 @@ foreach sf ($NOOPTFILES)
  echo "${fname:r}.o: ${fname:r}.f" >> ${mfile}
  echo '	$(FC) $(FFLAGS) $(NOOPTFLAGS) -c $<' >> ${mfile}
 end
-echo >> ${mfile}
+echo "" >> ${mfile}
+
+# Add rules for links
+cat srclinks.tmp >> ${mfile}
+rm -f srclinks.tmp
+
+echo "" >> ${mfile}
 echo "# DO NOT DELETE" >> ${mfile}
 
 exit

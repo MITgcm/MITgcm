@@ -50,7 +50,3 @@
  zonalWindFile='windx.sin_y',
  meridWindFile=,
  &
-
-# Open-boundaries
- &PARM06
- &

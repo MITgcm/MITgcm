@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.2 2001/01/29 20:07:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.3 2001/02/02 21:36:29 adcroft Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -20,7 +20,6 @@ C     === Global variables ===
 #include "GMREDI_DIAGS.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of KPP_INIT
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
@@ -54,13 +53,13 @@ C     the package is active.
 
       _BEGIN_MASTER(myThid)
 
-      WRITE(msgBuf,'(A)') ' GM_INIT: opening data.gmredi'
+      WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
     
 
       CALL OPEN_COPY_DATA_FILE(
-     I                          'data.gmredi', 'GM_INIT',
+     I                          'data.gmredi', 'GM_READPARMS',
      O                          iUnit,
      I                          myThid )
 
@@ -99,16 +98,16 @@ c      if (GM_taveFreq.EQ.-1.) GM_taveFreq=taveFreq
 C     Make sure we are not trying to use something that is unavailable
       IF (GM_Visbeck_alpha .NE. 0.) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GM_INIT: Visbeck variables used in data.gmredi'
+     &   ' GM_READPARMS: Visbeck variables used in data.gmredi'
        CALL PRINT_ERROR( msgBuf, 1 )
        WRITE(msgBuf,'(A)')
-     &   ' GM_INIT: without #define GM_VISBECK_VARIABLE_K'
+     &   ' GM_READPARMS: without #define GM_VISBECK_VARIABLE_K'
        CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R GM_INIT'
+       STOP 'ABNORMAL END: S/R GM_READPARMS'
       ENDIF
 #endif
 
-      WRITE(msgBuf,'(A)') ' GM_INIT: finished reading data.gmredi'
+      WRITE(msgBuf,'(A)') ' GM_READPARMS: finished reading data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.2 2001/01/29 20:07:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.3 2001/02/02 21:36:29 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -26,21 +26,21 @@ C     msgBuf      - Informational/error meesage buffer
 
 
 #ifdef ALLOW_GMREDI
-
       IF (GMRediIsOn) THEN
 
-       WRITE(msgBuf,'(A)') 'GMREDI_PKG_CHECK: #define GMREDI'
+       WRITE(msgBuf,'(A)') 'GMREDI_CHECK: #define GMREDI'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
 C      GM/Redi needs implicit diffusion (will be packaged later)
        IF (.NOT.implicitDiffusion) THEN
         WRITE(msgBuf,'(A)') 'GM/Redi needs implicitDiffusion=.true.'
         CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R PACKAGE_CHECK'
+        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
        ENDIF
 
       ENDIF
 
 #endif
-
-
-      return
-      end
+      RETURN
+      END

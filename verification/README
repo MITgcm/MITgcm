@@ -7,7 +7,7 @@ exp3 - atmospheric configuration.
 exp4 - flow over a Gaussian bump in open-water or channel with open
        boundaries.
 exp5 - inhomogenously forced convection in a doubly periodic box.
-front_relax - relaxation of a thermal front (test for GM scheme). 2D (Y-Z).
+front_relax   - relaxation of a thermal front (test for GM scheme). 2D (Y-Z).
 internal_wave - internal wave forced by open boundary conditions.
-natl_exp - eastern subtropical North Atlantic with KPP; 1 month integration.
-
+natl_exp      - eastern subtropical North Atlantic with KPP; 1 month integration
+hs94.1x64x5   - Zonal averaged atmosphere using Held and Suarez '94 forcing.

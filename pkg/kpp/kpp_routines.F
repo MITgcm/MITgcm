@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.5 2001/01/29 20:09:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.6 2001/02/02 21:36:29 adcroft Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -1297,6 +1297,7 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
+#include "DYNVARS.h"
 
 c-------------- Routine arguments -----------------------------------------
       INTEGER bi, bj, myThid
@@ -1329,6 +1330,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
       call FIND_RHO(
      I     bi, bj, ibot, itop, jbot, jtop, 1, 1, eosType,
+     I     theta, salt,
      O     WORK1,
      I     myThid )
 
@@ -1356,16 +1358,19 @@ CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
 
          call FIND_RHO(
      I        bi, bj, ibot, itop, jbot, jtop, K, K, eosType,
+     I        theta, salt,
      O        RHOK,
      I        myThid )
 
          call FIND_RHO(
      I        bi, bj, ibot, itop, jbot, jtop, K-1, K, eosType,
+     I        theta, salt,
      O        RHOKM1,
      I        myThid )
 
          call FIND_RHO(
      I        bi, bj, ibot, itop, jbot, jtop, 1, K, eosType,
+     I        theta, salt,
      O        RHO1K,
      I        myThid )
 

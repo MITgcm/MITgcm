@@ -29,7 +29,6 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  hFacMin=0.2,
- openBoundaries=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  globalFiles=.TRUE.,
@@ -69,10 +68,4 @@
  &PARM05
  hydrogThetaFile='T.init',
  bathyFile='topog.slope',
- &
-
-# Open-boundaries
- &PARM06
- OB_Ieast=3*-1,
- OB_Iwest=3*1,
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.3 2001/01/29 20:07:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.4 2001/02/02 21:36:29 adcroft Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -144,11 +144,13 @@ C--     Time-average
      &  Visbeck_K_T(i,j,bi,bj)=Visbeck_K_T(i,j,bi,bj)
      &                       +VisbeckK(i,j,bi,bj)*deltaTclock
 #endif
+#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
        ENDDO
       ENDDO
-      GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
 
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+      GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
+#endif
 
 
 #ifdef GM_NON_UNITY_DIAGONAL

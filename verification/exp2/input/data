@@ -79,7 +79,3 @@
  thetaClimFile='SST.bin'
  saltClimFile='SSS.bin'
  &
-
-# Open-boundaries
- &PARM06
- &

@@ -1,0 +1,9 @@
+# GM-Redi parameters
+ &GM_PARM01
+ GM_background_K=1000.d0,
+# GM_taper_scheme=' ',
+ GM_maxSlope=1.000000000000000E-02
+# GM_Scrit,
+# GM_Sd                            
+ &                                
+

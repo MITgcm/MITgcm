@@ -1,0 +1,9 @@
+# Disable packages that are not needed
+set DISABLE=( kpp gmredi obcs )
+
+# Enable packages that are needed but are disabled by default
+set ENABLE=( aim )
+
+# We can also specify other defaults
+set ROOTDIR=../../..
+set MYMODS=../code

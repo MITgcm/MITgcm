@@ -22,10 +22,6 @@
  eosType='LINEAR',
  diffKhT=0.E3,
  diffKhS=0.E3,
- GMkBackground=1000.d0,
-#diffKhT=1.E3,
-#diffKhS=1.E3,
-#GMkBackground=0000.d0,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  implicitDiffusion=.TRUE.,
@@ -40,7 +36,7 @@
 # Time stepping parameters
  &PARM03
  startTime=0,
- endTime=43200000.,
+ nTimeSteps=20,
  deltaT=1800.0,
  cAdjFreq=-1.,
  abEps=0.1,
@@ -65,8 +61,4 @@
  hydrogThetaFile='theta.bin',
  hydrogSaltFile='salt.bin',
  bathyFile='topog.bin',
- &
-
-# Open-boundaries
- &PARM06
  &

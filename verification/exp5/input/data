@@ -4,7 +4,7 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=20*0.
+ tRef=20*1.
  sRef=20*35.,
  viscAh=1.E0,
  viscAz=1.E0,
@@ -15,7 +15,6 @@
  diffKzT=1.E0,
  diffKhS=1.E0,
  diffKzS=1.E0,
- GMkBackground=0.,
  f0=1250.,
  beta=0.E-11,
  tAlpha=1.,
@@ -27,7 +26,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
- openBoundaries=.FALSE.,
  nonHydrostatic=.TRUE.,
  readBinaryPrec=64,
  &
@@ -63,8 +61,4 @@
 # Input datasets
  &PARM05
  surfQfile='Qnet.circle',
- &
-
-# Open-boundaries
- &PARM06
  &

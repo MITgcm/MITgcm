@@ -25,7 +25,6 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  hFacMin=0.2,
- openBoundaries=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  globalFiles=.TRUE.,
@@ -47,7 +46,7 @@
  abEps=0.1,
  pChkptFreq=3000.0,
  chkptFreq=0.0,
- dumpFreq=6000.0,
+ dumpFreq=10800.0,
  &
 
 # Gridding parameters
@@ -62,12 +61,4 @@
 # Input datasets
  &PARM05
  bathyFile='topog.bump',
- &
-
-# Open-boundaries
- &PARM06
- OB_Jnorth=80*-1,
- OB_Jsouth=80*1,
- OB_Ieast=42*-1,
- OB_Iwest=42*1,
  &

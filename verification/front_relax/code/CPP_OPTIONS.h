@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/CPP_OPTIONS.h,v 1.2 2000/06/21 19:35:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/CPP_OPTIONS.h,v 1.3 2001/02/02 21:36:33 adcroft Exp $
 C
 
 C 
@@ -7,7 +7,7 @@ C will be compiled.
 C
 
 C o Include/exclude code for GM/Redi parameterization
-#undef  ALLOW_GMREDI
+#define  ALLOW_GMREDI
 
 C o Include/exclude code for KPP mixing scheme
 #undef  ALLOW_KPP

@@ -1,0 +1,21 @@
+Held-Suarez zonal average config. - no eddy param
+=================================================
+
+Configure and build makefile:
+  cd bin
+  ../tools/genmake -makefile
+  ln -f -s ../verification/hs94.five-layer/code/*.[hF] .
+  make depend
+  ln -f -s ../verification/hs94.five-layer/code/*.[hF] .
+
+Compile:
+  make
+
+To run:
+  cd ../verification/hs94.five-layer/input/
+  ../../../exe/mitgcmuv
+
+Comments:
+  These numbers differe from the hs94.five-layer expt in mitgcmuv-atmos-exact
+code  due to the normalization in the cg2d solver. Uncomment the line
+Catm rhsMax=1. to reproduce the exact old output.
