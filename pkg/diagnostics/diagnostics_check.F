@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.2 2004/12/16 21:39:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.3 2005/02/23 14:45:00 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -34,6 +34,40 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Check diagnostics parameter consistency
 
+#ifdef DIAGNOSTICS_HAS_PICKUP
+      IF ( diag_pickup_read ) THEN
+        WRITE(msgBuf,'(2A)') '**CAUTION** (DIAGNOSTICS_CHECK): ',
+     &   'reading diagnostics previous state'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)') '**CAUTION** ',
+     &   ' from a pickup file can only work if data.diagnostics'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)') '**CAUTION** ',
+     &   ' is not changed (<= further checking not yet implemented)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+      ENDIF
+#else /* undef DIAGNOSTICS_HAS_PICKUP */
+C-    stop if trying to use part of the code that is not compiled:
+      IF ( diag_pickup_read  ) THEN
+        WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
+     &   'diag_pickup_read  is TRUE ',
+     &   'but DIAGNOSTICS_HAS_PICKUP is "#undef"'
+        CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( diag_pickup_write ) THEN
+        WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
+     &   'diag_pickup_write is TRUE ',
+     &   'but DIAGNOSTICS_HAS_PICKUP is "#undef"'
+        CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( diag_pickup_read .OR. diag_pickup_write ) THEN
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+      ENDIF
+#endif /* DIAGNOSTICS_HAS_PICKUP */
+      
 C-    File names:
       DO n = 2,nlists
        DO m = 1,n-1
