@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.21 2004/02/05 00:13:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.22 2004/02/05 05:42:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -150,16 +150,27 @@ C     Test the MNC package
       CALL MNC_CW_INIT(myThid, sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr)
 
       CALL MNC_CW_ADD_VNAME(myThid, 'iter', '-_-_--__-__t', 0,0)
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'iter', 1, 
-     &     'units', 's')
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'iter', 1, 
-     &     'mitgcm_grid', '-_-_--__-__t')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'iter',1,'units','s')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'U', 'U_xy_Hn__C__t', 4,5)
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'U', 1, 
-     &     'units', 'm/s')
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'U', 1, 
-     &     'mitgcm_grid', 'U_xy_Hn__C__t')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'U',1,'units','m/s')
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'V', 'V_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'V',1,'units','m/s')
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'T', 'Cen_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'T',1,'units','degC')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'T',1,'long_name',
+     &     'potential_temperature')
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'S', 'Cen_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'T',1,'long_name',
+     &     'salinity')
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'Eta', 'Cen_xy_Hn__-__t', 3,4)
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'W', 'Cen_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'U',1,'units','m/s')
 #endif
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.3 2004/02/05 00:13:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.4 2004/02/05 05:42:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -79,8 +79,6 @@ C
       DO lbj = bjs,bje
         DO lbi = bis,bie
 
-      write(*,*) 'lbi,lbj = ',lbi,lbj, '  ', vtype(nvf:nvl)
-
 C         Create the file name
           CALL MNC_CW_GET_TILE_NUM(myThid, lbi,lbj, uniq_tnum)
           fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
@@ -141,6 +139,7 @@ C         Ensure that the variable is defined
 C         Check for bi,bj indicies
           bidim = mnc_cw_vbij(1,indv)
           bjdim = mnc_cw_vbij(2,indv)
+CEH3      write(*,*) 'bidim,bjdim = ', bidim,bjdim
 
 C         Set the dimensions for the in-memory array
           ndim = mnc_cw_ndim(igrid)
@@ -199,9 +198,9 @@ C               Use the current unlimited dim size
             s(bjdim) = lbj
             e(bjdim) = lbj
           ENDIF
-CEH3          DO i = 1,7
-CEH3            write(*,*) 'i,s(i),e(i) = ', i,s(i),e(i)
-CEH3          ENDDO
+CEH3      DO i = 1,9
+CEH3        write(*,*) 'i,p(i),s(i),e(i) = ', i,p(i),s(i),e(i)
+CEH3      ENDDO
 
 C         Add the global attributes
           CALL MNC_CW_SET_GATTR(myThid, fname, lbi,lbj, uniq_tnum)
@@ -224,27 +223,27 @@ C         Add the per-variable attributes
 
 C         Write the variable one vector at a time
           DO j7 = s(7),e(7)
-            k7 = (j7 - s(7))*p(6)
+            k7 = (j7 - 1)*p(6)
             vstart(7) = udo(7) + j7 - s(7) + 1
             vcount(7) = 1
             DO j6 = s(6),e(6)
-              k6 = (j6 - s(6))*p(5) + k7
+              k6 = (j6 - 1)*p(5) + k7
               vstart(6) = udo(6) + j6 - s(6) + 1
               vcount(6) = 1
               DO j5 = s(5),e(5)
-                k5 = (j5 - s(5))*p(4) + k6
+                k5 = (j5 - 1)*p(4) + k6
                 vstart(5) = udo(5) + j5 - s(5) + 1
                 vcount(5) = 1
                 DO j4 = s(4),e(4)
-                  k4 = (j4 - s(4))*p(3) + k5
+                  k4 = (j4 - 1)*p(3) + k5
                   vstart(4) = udo(4) + j4 - s(4) + 1
                   vcount(4) = 1
                   DO j3 = s(3),e(3)
-                    k3 = (j3 - s(3))*p(2) + k4
+                    k3 = (j3 - 1)*p(2) + k4
                     vstart(3) = udo(3) + j3 - s(3) + 1
                     vcount(3) = 1
                     DO j2 = s(2),e(2)
-                      k2 = (j2 - s(2))*p(1) + k3
+                      k2 = (j2 - 1)*p(1) + k3
                       vstart(2) = udo(2) + j2 - s(2) + 1
                       vcount(2) = 1
 

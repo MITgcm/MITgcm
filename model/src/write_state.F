@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.30 2004/02/05 00:13:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.31 2004/02/05 05:42:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -170,9 +170,13 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 #ifdef ALLOW_MNC
 C     Test the MNC package
       mnc_d_iter = myIter
-      write(*,*) 'mnc_d_iter, myIter = ', mnc_d_iter, myIter
       CALL MNC_CW_RL_W_R(myThid,'state',0,0,'iter',-1,mnc_d_iter)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'U',0,    uVel)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'U', 0, uVel)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'V', 0, vVel)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'T', 0, theta)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'S', 0, salt)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'Eta', 0, etaN)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'W', 0, wVel)
 #endif
 
       ENDIF
