@@ -9,6 +9,7 @@ c
 c     started: Christian Eckert eckert@mit.edu  01-Mar-2000
 c
 c     changed: Christian Eckert eckert@mit.edu
+c              heimbach@mit.edu 24-Feb-2003
 c
 c
 c     ==================================================================
@@ -32,11 +33,13 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       nbeg,
      &                       nend,
      &                       nstep,
-     &                       grdchkvarindex
+     &                       grdchkvarindex,
+     &                       grdchkwhichproc
       integer nbeg
       integer nend
       integer nstep
       integer grdchkvarindex
+      integer grdchkwhichproc
 
       common /grdchk_r/
      &                  fcrmem, fcppmem, fcpmmem,

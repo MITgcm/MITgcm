@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.4 2002/07/13 02:55:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.5 2003/02/28 02:34:56 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
 
-      subroutine grdchk_init(
-     I                       mythid
-     &                      )
+      subroutine grdchk_init( mythid )
 
 c     ==================================================================
 c     SUBROUTINE grdchk_init

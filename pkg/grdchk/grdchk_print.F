@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.5 2002/09/16 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.6 2003/02/28 02:34:56 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -96,20 +96,26 @@ c--   Print header.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      write(msgbuf,'(a,6(1x,a15))') 
-     & 'grdchk output:  ', 'I', 'ITILEPOS', 'JTILEPOS', 
+      write(msgbuf,'(a,7(1x,a15))') 
+     & 'grdchk output:  ', 'procId', 'I', 'ITILEPOS', 'JTILEPOS', 
      & 'LAYER', 'X(I)', 'X(I)+/-EPS'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,6(1x,a15))') 
-     & 'grdchk output:  ', 'FC', 'FC1', 'FC2', 'FC1-FC2/(2*EPS)',
-     & 'GRAD(FC)', '1-FDGRD/ADGRD'
+#ifdef ALLOW_TANGENTLINEAR_RUN
+      write(msgbuf,'(a,7(1x,a15))') 
+     &     'grdchk output:  ', ' ', 'FC', 'FC1', 'FC2', 
+     &     'FC1-FC2/(2*EPS)', 'TLM GRAD(FC)', '1-FDGRD/TLMGRD'
+#else
+      write(msgbuf,'(a,7(1x,a15))') 
+     &     'grdchk output:  ', ' ', 'FC', 'FC1', 'FC2', 
+     &     'FC1-FC2/(2*EPS)', 'ADJ GRAD(FC)', '1-FDGRD/ADGRD'
+#endif
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
 c--   Individual checks.
       if ( ierr_grdchk .eq. 0 ) then
-         numchecks = ichknum - 1
+         numchecks = ichknum
       else
          numchecks = maxgrdchecks
       endif
@@ -121,8 +127,8 @@ c--   Individual checks.
         ftlxxmemo    = ftlxxmem  (i)
         fcref        = fcrmem    (i)
         fcpertplus   = fcppmem   (i)
-        fcpertminus  = fcppmem   (i)
-        gfd          = gfdmem      (i)
+        fcpertminus  = fcpmmem   (i)
+        gfd          = gfdmem    (i)
         ratio_ad     = ratioadmem  (i)
         ratio_ftl    = ratioftlmem (i)
         itile        = bimem   (i)
@@ -133,15 +139,24 @@ c--   Individual checks.
         icomp        = icompmem(i)
         ierr         = ierrmem (i)
 
-        write(msgbuf,'(A,4(I16),2(1x,D15.9))')
-     &       'grdchk output:  ', i, itilepos, jtilepos, layer, 
+        write(msgbuf,'(A,5(I16),2(1x,D15.9))')
+     &       'grdchk output:  ',
+     &       myprocid, i, itilepos, jtilepos, layer, 
      &       xxmemo_ref, xxmemo_pert
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         if ( ierr .eq. 0 ) then
-          write(msgbuf,'(A,6(1x,D15.9))')
-     &      'grdchk output:  ',
-     &          fcref, fcpertplus, fcpertminus, gfd, adxxmemo, ratio_ad
+#ifdef ALLOW_TANGENTLINEAR_RUN
+          write(msgbuf,'(A,1(1x,a15),6(1x,D15.9))')
+     &         'grdchk output:  ', ' ',
+     &         fcref, fcpertplus, fcpertminus, 
+     &         gfd, ftlxxmemo, ratio_ftl
+#else
+          write(msgbuf,'(A,1(1x,a15),6(1x,D15.9))')
+     &          'grdchk output:  ', ' ',
+     &          fcref, fcpertplus, fcpertminus, 
+     &          gfd, adxxmemo, ratio_ad
+#endif
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
         else

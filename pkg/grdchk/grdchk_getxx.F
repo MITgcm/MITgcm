@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.6 2002/12/19 14:00:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.7 2003/02/28 02:34:56 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -78,6 +78,7 @@ c--   == end of interface ==
       ladinit      = .false.
       dumiter      = 0
       dumtime      = 0. _d 0
+      write(fname(1:80),'(80a)') ' '
 
       if ( grdchkvarindex .eq. 0 ) then
          STOP 'GRDCHK INDEX 0 NOT ALLOWED'
@@ -85,10 +86,9 @@ c--   == end of interface ==
 #ifdef ALLOW_THETA0_CONTROL
       else if ( grdchkvarindex .eq. 1 ) then
          il=ilnblnk( xx_theta_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_theta_file(1:il),'.',optimcycle
+     &           yadmark, xx_theta_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_theta_file(1:il),'.',optimcycle
@@ -111,10 +111,9 @@ c--   == end of interface ==
 #ifdef ALLOW_SALT0_CONTROL
       else if ( grdchkvarindex .eq. 2 ) then
          il=ilnblnk( xx_salt_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_salt_file(1:il),'.',optimcycle
+     &           yadmark, xx_salt_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_salt_file(1:il),'.',optimcycle
@@ -137,10 +136,9 @@ c--   == end of interface ==
 #ifdef ALLOW_HFLUX_CONTROL
       else if ( grdchkvarindex .eq. 3 ) then
          il=ilnblnk( xx_hflux_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_hflux_file(1:il),'.',optimcycle
+     &           yadmark, xx_hflux_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hflux_file(1:il),'.',optimcycle
@@ -163,10 +161,9 @@ c--   == end of interface ==
 #ifdef ALLOW_SFLUX_CONTROL
       else if ( grdchkvarindex .eq. 4 ) then
          il=ilnblnk( xx_sflux_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_sflux_file(1:il),'.',optimcycle
+     &           yadmark, xx_sflux_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sflux_file(1:il),'.',optimcycle
@@ -189,10 +186,9 @@ c--   == end of interface ==
 #ifdef ALLOW_USTRESS_CONTROL
       else if ( grdchkvarindex .eq. 5 ) then
          il=ilnblnk( xx_tauu_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_tauu_file(1:il),'.',optimcycle
+     &           yadmark, xx_tauu_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauu_file(1:il),'.',optimcycle
@@ -215,10 +211,9 @@ c--   == end of interface ==
 #ifdef ALLOW_VSTRESS_CONTROL
       else if ( grdchkvarindex .eq. 6 ) then
          il=ilnblnk( xx_tauv_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_tauv_file(1:il),'.',optimcycle
+     &           yadmark, xx_tauv_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauv_file(1:il),'.',optimcycle
@@ -238,13 +233,112 @@ c--   == end of interface ==
 
 #endif /* ALLOW_VSTRESS_CONTROL */
 
+#ifdef ALLOW_ATEMP_CONTROL
+      else if ( grdchkvarindex .eq. 7 ) then
+         il=ilnblnk( xx_atemp_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_atemp_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_atemp_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_ATEMP_CONTROL */
+
+#ifdef ALLOW_AQH_CONTROL
+      else if ( grdchkvarindex .eq. 8 ) then
+         il=ilnblnk( xx_aqh_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_aqh_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_aqh_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_AQH_CONTROL */
+
+#ifdef ALLOW_UWIND_CONTROL
+      else if ( grdchkvarindex .eq. 9 ) then
+         il=ilnblnk( xx_uwind_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_uwind_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_uwind_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_UWIND_CONTROL */
+
+#ifdef ALLOW_VWIND_CONTROL
+      else if ( grdchkvarindex .eq. 10 ) then
+         il=ilnblnk( xx_vwind_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_vwind_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_vwind_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_VWIND_CONTROL */
+
 #ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then
          il=ilnblnk( xx_tr1_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_tr1_file(1:il),'.',optimcycle
+     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tr1_file(1:il),'.',optimcycle
@@ -267,10 +361,9 @@ c--   == end of interface ==
 #ifdef ALLOW_SST0_CONTROL
       else if ( grdchkvarindex .eq. 18 ) then
          il=ilnblnk( xx_sst_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_sst_file(1:il),'.',optimcycle
+     &           yadmark, xx_sst_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sst_file(1:il),'.',optimcycle
@@ -293,10 +386,9 @@ c--   == end of interface ==
 #ifdef ALLOW_SSS0_CONTROL
       else if ( grdchkvarindex .eq. 19 ) then
          il=ilnblnk( xx_sss_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_sss_file(1:il),'.',optimcycle
+     &           yadmark, xx_sss_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sss_file(1:il),'.',optimcycle
@@ -319,10 +411,9 @@ c--   == end of interface ==
 #ifdef ALLOW_HFACC_CONTROL
       else if ( grdchkvarindex .eq. 20 ) then
          il=ilnblnk( xx_hfacc_file )
-         write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_hfacc_file(1:il),'.',optimcycle
+     &           yadmark, xx_hfacc_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hfacc_file(1:il),'.',optimcycle
@@ -365,7 +456,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_efluxy_file(1:il),'.',optimcycle
+     &           yadmark, xx_efluxy_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxy_file(1:il),'.',optimcycle
@@ -391,7 +482,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadprefix, xx_efluxp_file(1:il),'.',optimcycle
+     &           yadmark, xx_efluxp_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxp_file(1:il),'.',optimcycle
