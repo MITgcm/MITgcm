@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.97 2002/11/05 19:17:20 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.98 2002/11/05 19:20:40 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fixed sign of non-hydrostatic metric terms in u and v equations.
+  Depend on correct sign of gravitySign.
 o added work.pc* to .cvsignore in aim directories using ifc
 o introduced flag for controllin non-hydrostatic metric terms
 o removed gravitySign from PARM04

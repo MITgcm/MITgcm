@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.4 2002/11/05 19:20:42 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,7 @@ CEOP
      &    *0.25*(wVelBottomOverride*
      &            (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
      &            +wFld(i-1,j, k ,bi,bj)+wFld(i,j, k ,bi,bj)
-     &          )*rkFac*recip_horiVertRatio
+     &          )*rkFac*recip_horiVertRatio*gravitySign
        ENDDO
       ENDDO
 
