@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.4 1998/04/30 14:03:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.5 1998/05/04 16:32:10 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -94,22 +94,22 @@ C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        xA(i,j)      = 0.*1. _d 37
-        yA(i,j)      = 0.*1. _d 37
-        uTrans(i,j)  = 0.*1. _d 37
-        vTrans(i,j)  = 0.*1. _d 37
-        aTerm(i,j)   = 0.*1. _d 37
-        xTerm(i,j)   = 0.*1. _d 37
-        cTerm(i,j)   = 0.*1. _d 37
-        mTerm(i,j)   = 0.*1. _d 37
-        pTerm(i,j)   = 0.*1. _d 37
-        fZon(i,j)    = 0.*1. _d 37
-        fMer(i,j)    = 0.*1. _d 37
+        xA(i,j)      = 0. _d 0
+        yA(i,j)      = 0. _d 0
+        uTrans(i,j)  = 0. _d 0
+        vTrans(i,j)  = 0. _d 0
+        aTerm(i,j)   = 0. _d 0
+        xTerm(i,j)   = 0. _d 0
+        cTerm(i,j)   = 0. _d 0
+        mTerm(i,j)   = 0. _d 0
+        pTerm(i,j)   = 0. _d 0
+        fZon(i,j)    = 0. _d 0
+        fMer(i,j)    = 0. _d 0
         DO K=1,nZ
-         pH (i,j,k)  = 0.*1. _d 37
+         pH (i,j,k)  = 0. _d 0
         ENDDO
-        rhokm1(i,j)    = 0. _d 0
-        rhokp1(i,j)    = 0. _d 0
+        rhokm1(i,j)  = 0. _d 0
+        rhokp1(i,j)  = 0. _d 0
        ENDDO
       ENDDO
 C--   Set up work arrays that need valid initial values
@@ -152,6 +152,17 @@ C--     Update fields in top level according to tendency terms
         CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,1,pSurfX,pSurfY,myThid)
 
+C Density of 1st level (below W(1)) reference to level 1
+         CALL FIND_RHO(
+     I      bi, bj, iMin, iMax, jMin, jMax, 1, 1, 'LINEAR',
+     O      rhoKm1,
+     I      myThid )
+C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
+         CALL CALC_PH(
+     I       bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
+     U       pH,
+     I       myThid )
+
         DO K=2,Nz
 C--     Update fields in Kth level according to tendency terms
         CALL TIMESTEP(
@@ -174,23 +185,18 @@ C Density of K-1 level (above W(K)) reference to K-1 level
      I      bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, 'LINEAR',
      O      rhoKm1,
      I      myThid )
-C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-         CALL CALC_PH(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,
-     U       pH,
-     I       myThid )
-        ENDDO ! K
-
-C Density of Nz level (bottom level) reference to Nz level
+C Density of K level (below W(K)) referenced to K level
          CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  Nz, Nz, 'LINEAR',
-     O      rhoKm1,
+     I      bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
+     O      rhoKp1,
      I      myThid )
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
          CALL CALC_PH(
-     I       bi,bj,iMin,iMax,jMin,jMax,Nz+1,rhoKm1,
+     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
      U       pH,
      I       myThid )
+
+        ENDDO ! K
 
         DO K = Nz, 1, -1
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
@@ -228,7 +234,7 @@ Cdbg I        xA,yA,uTrans,vTrans,wTrans,maskUp,
 Cdbg U        aTerm,xTerm,fZon,fMer,fVerS,
 Cdbg I        myThid)
 
-        ENDDO
+        ENDDO ! K
  
        ENDDO
       ENDDO
