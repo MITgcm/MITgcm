@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.8 2004/10/09 20:12:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.9 2005/02/01 16:12:37 jmc Exp $
 #  $Name:  $
 #
 
@@ -20,9 +20,9 @@ if test "x$IEEE" = x ; then
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
 else
-#   FOPTIM='-O0 -noalign'
     FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+#   FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW'
 fi
 
 NOOPTFILES='mdsio_byteswapr8.F mdsio_byteswapr4.F'
