@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.76 2004/04/08 21:32:11 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.77 2004/04/08 23:48:43 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -97,8 +97,8 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	if test "x$FS" = x ; then
-	    FS='fs'
-	    FS90='fs90'
+	    FS='for'
+	    FS90='fr9'
 	    check_for_broken_Ff
 	else
 	    cat <<EOF 2>&1
@@ -124,6 +124,7 @@ EOF
 EOF
     test -e Makefile  &&  mv -f Makefile Makefile.bak
     cat <<EOF >> Makefile
+%.$tfs : %.F
 .SUFFIXES:
 genmake_hello.$tfs: genmake_hello.F
 	$LN genmake_hello.F genmake_hello.$tfs
@@ -132,8 +133,8 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" != x0 -o ! -e "genmake_hello."$tfs ; then
 	if test "x$FS" = x ; then
-	    FS='fs'
-	    FS90='fs9'
+	    FS='for'
+	    FS90='fr9'
 	    check_for_broken_Ff
 	else
 	    cat <<EOF 2>&1
@@ -167,6 +168,7 @@ find_possible_configs()  {
     tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
+    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
     
@@ -206,8 +208,16 @@ find_possible_configs()  {
     #
     if test "x${MAKEDEPEND}" = x ; then
       which makedepend > /dev/null 2>&1
-      RETVAL=$?
-      if test ! "x${RETVAL}" = x0 ; then
+      RV0=$?
+      cat <<EOF >> genmake_tc.f
+      program test
+      write(*,*) 'test'
+      stop
+      end
+EOF
+      makedepend genmake_tc.f > /dev/null 2>&1
+      RV1=$?
+      if test ! "x${RV0}${RV1}" = x00 ; then
          echo "    a system-default makedepend was not found."
 
 	 #  Try to build the cyrus impl
@@ -215,8 +225,11 @@ find_possible_configs()  {
 	 (
 	     cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
 		 &&  ./configure > /dev/null 2>&1  \
-		 &&  make > /dev/null 2>&1  \
-		 &&  ./makedepend ifparser.c > /dev/null 2>&1  \
+		 &&  make > /dev/null 2>&1
+	     if test -x ./makedepend.exe ; then
+		 $LN ./makedepend.exe ./makedepend
+	     fi
+	     ./makedepend ifparser.c > /dev/null 2>&1  \
 		 &&  echo "true"
 	 ) > ./genmake_cy_md
 	 grep true ./genmake_cy_md > /dev/null 2>&1
@@ -987,7 +1000,7 @@ if test "x$OPTFILE" != xNONE ; then
 fi
 
 #  Check for broken systems that cannot correctly distinguish *.F and *.f files
-check_for_broken_Ff
+# check_for_broken_Ff
 
 echo "  getting AD_OPTFILE information:  "
 if test "x${AD_OPTFILE}" = x ; then
@@ -1085,6 +1098,9 @@ EOF
     exit 1
 fi
 rm -f genmake_test_ln genmake_tlink
+
+#  Check for broken *.F/*.f handling and fix if possible
+check_for_broken_Ff
 
 if test ! "x$MPI" = x ; then
       echo "  Turning on MPI cpp macros"
