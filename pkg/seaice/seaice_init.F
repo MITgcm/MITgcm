@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.20 2004/03/13 14:57:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.21 2004/04/09 06:08:08 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -154,6 +154,37 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
            UVM(i,j,bi,bj)=ZERO
           ENDDO
          ENDIF
+C--   Make sure that DXTICE and DYTICE do not contain any zeros
+         DO J=1,sNy
+          DO I=1-OLx,0
+           IF(DXTICE(i,j,bi,bj).EQ.0)
+     &            DXTICE(i,j,bi,bj)=DXTICE(1,j,bi,bj)
+           IF(DYTICE(i,j,bi,bj).EQ.0)
+     &            DYTICE(i,j,bi,bj)=DYTICE(1,j,bi,bj)
+          ENDDO
+          DO I=sNx+1,sNx+OLx
+           IF(DXTICE(i,j,bi,bj).EQ.0)
+     &            DXTICE(i,j,bi,bj)=DXTICE(sNx,j,bi,bj)
+           IF(DYTICE(i,j,bi,bj).EQ.0)
+     &            DYTICE(i,j,bi,bj)=DYTICE(sNx,j,bi,bj)
+          ENDDO
+         ENDDO
+         DO J=1-OLy,0
+          DO I=1-OLx,sNx+OLx
+           IF(DXTICE(i,j,bi,bj).EQ.0)
+     &            DXTICE(i,j,bi,bj)=DXTICE(i,1,bi,bj)
+           IF(DYTICE(i,j,bi,bj).EQ.0)
+     &            DYTICE(i,j,bi,bj)=DYTICE(i,1,bi,bj)
+          ENDDO
+         ENDDO
+         DO J=sNy+1,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           IF(DXTICE(i,j,bi,bj).EQ.0)
+     &            DXTICE(i,j,bi,bj)=DXTICE(i,sNy,bi,bj)
+           IF(DYTICE(i,j,bi,bj).EQ.0)
+     &            DYTICE(i,j,bi,bj)=DYTICE(i,sNy,bi,bj)
+          ENDDO
+         ENDDO
         ENDIF
 #endif /* ALLOW_EXCH2 */
 
