@@ -1,59 +1,54 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.4 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.5 2004/08/04 22:06:09 molod Exp $
 C $Name:  $
                                                                                      
 #include "FIZHI_OPTIONS.h"
-      SUBROUTINE PQCHECK ( PQZ,PZ,DP,IM,JM,LM,delt)
+      SUBROUTINE PQCHECK ( im,jm,lm,dp,pz,qz)
 C***********************************************************************
 C  Purpose                                                              
 C     Check Specific Humidity Field for Negative values                 
 C
 C  Argument Description
-C     PQZ ........ (ps-ptop)*Specific Humidity (mb g/g)                                  
-C     PZ ......... Pi = ps-ptop (mb)                                  
-C     DP .......   Delta Pressure                                              
 C     IM ......... Zonal      Dimension
 C     JM ......... Meridional Dimension
 C     LM ......... Vertical   Dimension
-C     DELT ....... Timestep  (Seconds)
-C
+C     DP .......   Delta Pressure
+C     PZ ........  Surface Pressure
+C     QZ ........  Specific Humidity (g/g)
 C***********************************************************************
-                                                                        
       implicit none
 
       integer im,jm,lm
       _RL delt
-
-      _RL     PQZ(IM,JM,LM), DP(IM,JM,LM)                        
-      _RL      PZ(IM,JM)
+      _RL qz(im,jm,lm),dp(im,jm,lm),pz(im,jm)
 
       integer i,j,L,LM1
-      _RL    getcon,grav,ddsig
+      _RL getcon,grav,ddsig
 
       grav = getcon('GRAVITY')
  
 c Fill Negative Specific Humidities
 c ---------------------------------
-      DO  L = 2,LM
-      LM1   = L-1                                                     
+      DO L=2,LM
+      LM1 = L-1                                                     
       do j=1,jm
       do i=1,im
-      DDSIG = DP(I,J,LM1)/DP(I,J,L)                                     
-      IF( PQZ(I,j,LM1).LT.0.0 ) THEN                                
-          PQZ(I,j,L  ) = PQZ(I,j,L) + PQZ(I,j,LM1)*DDSIG                   
-          PQZ(I,j,LM1) = 0.0
-      ENDIF
-      ENDDO
-      ENDDO
-      ENDDO
+       ddsig = dp(i,j,LM1)/dp(i,j,L)                                     
+       if( qz(i,j,LM1).lt.0.0 ) then                                
+        qz(i,j,L  ) = qz(i,j,L) + qz(i,j,LM1)*ddsig
+        qz(i,j,LM1) = 0.0
+       endif
+      enddo
+      enddo
+      enddo
 
       do j=1,jm
       do i=1,im
-      IF( PQZ(I,j,LM).LT.0.0 ) PQZ(I,j,LM) = 0.0
-      ENDDO
-      ENDDO
+       if( qz(i,j,LM).lt.0.0 ) qz(i,j,LM) = 0.0
+      enddo
+      enddo
 
-      RETURN                                                            
-      END                                                               
+      return                                                            
+      end                                                               
 
       subroutine tracer_fill ( pq,im,jm,lm,dlam,dphi,dp)
 C***********************************************************************
