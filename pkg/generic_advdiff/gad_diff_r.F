@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.4 2004/10/21 21:26:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -35,7 +35,7 @@ C  KappaR               :: vertical diffusivity
 C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
-      _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
@@ -62,7 +62,7 @@ CEOP
         DO i=1-Olx,sNx+Olx
          dfr(i,j) =
      &    -_rA(i,j,bi,bj)
-     &     *KappaR(i,j,k)*recip_drC(k)
+     &     *KappaR(i,j)*recip_drC(k)
      &     *(Tracer(i,j,km1,bi,bj)-Tracer(i,j,k,bi,bj))*rkFac
         ENDDO
        ENDDO

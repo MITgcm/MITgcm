@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.37 2004/09/24 16:58:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.38 2004/10/21 21:25:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,7 +71,7 @@ C     myThid :: Instance number for this innvocation of CALC_GT
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL     myTime

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.29 2004/10/20 21:54:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.30 2004/10/21 21:26:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
-     I           diffKh, diffK4, KappaRT, Tracer,
+     I           diffKh, diffK4, KappaR, Tracer,
      I           tracerIdentity, advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection,
      U           fVerT, gTracer,
@@ -65,7 +65,7 @@ C maskUp           :: 2-D array for mask at W points
 C uVel,vVel,wVel   :: 3 components of the velcity field (3-D array)
 C diffKh           :: horizontal diffusion coefficient
 C diffK4           :: bi-harmonic diffusion coefficient
-C KappaRT          :: 3-D array for vertical diffusion coefficient
+C KappaR           :: 2-D array for vertical diffusion coefficient, interf k
 C Tracer           :: tracer field
 C tracerIdentity   :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
@@ -88,7 +88,7 @@ C myThid           :: thread number
       _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL diffKh, diffK4
-      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme, vertAdvecScheme
@@ -364,7 +364,7 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
-       CALL GAD_DIFF_R(bi,bj,k,KappaRT,tracer,df,myThid)
+       CALL GAD_DIFF_R(bi,bj,k,KappaR,tracer,df,myThid)
       ENDIF
 
 #ifdef ALLOW_GMREDI

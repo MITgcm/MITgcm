@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.79 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.80 2004/10/21 21:25:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -437,7 +437,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I         KappaRT,
+     I         KappaRT(1-Olx,1-Oly,k),
      U         fVerT,
      I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
@@ -452,7 +452,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I         KappaRS,
+     I         KappaRS(1-Olx,1-Oly,k),
      U         fVerS,
      I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
@@ -466,7 +466,8 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     X         fVerP, KappaRS,
+     U         fVerP,
+     I         KappaRS(1-Olx,1-Oly,k),
      I         myIter,myTime,myThid)
          ENDIF
 #endif /* ALLOW_PTRACERS */
