@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.25 2004/10/22 01:42:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.26 2004/10/28 00:30:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,8 +45,8 @@ C     KappaRT :: Net diffusivity for temperature
 C     KappaRS :: Net diffusivity for salinity
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -61,7 +61,7 @@ CEOP
 
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
-        KappaRT(i,j,k) =
+        KappaRT(i,j) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
@@ -74,7 +74,7 @@ CEOP
 
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
-        KappaRS(i,j,k) =
+        KappaRS(i,j) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
@@ -88,11 +88,11 @@ CEOP
 #ifdef ALLOW_GMREDI
       IF (useGMRedi) THEN 
          CALL GMREDI_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,1,
      U        KappaRT,
      I        myThid)
          CALL GMREDI_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,1,
      U        KappaRS,
      I        myThid)
       ENDIF
@@ -101,11 +101,11 @@ CEOP
 #ifdef ALLOW_KPP
       IF (useKPP) THEN
          CALL KPP_CALC_DIFF_T(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRT,
      I        myThid)
          CALL KPP_CALC_DIFF_S(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRS,
      I        myThid)
       ENDIF
@@ -114,11 +114,11 @@ CEOP
 #ifdef ALLOW_PP81
       IF (usePP81) THEN
          CALL PP81_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRT,
      I        myThid)
          CALL PP81_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRS,
      I        myThid)
       ENDIF
@@ -127,11 +127,11 @@ CEOP
 #ifdef ALLOW_MY82
       IF (useMY82) THEN
          CALL MY82_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRT,
      I        myThid)
          CALL MY82_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRS,
      I        myThid)
       ENDIF
@@ -140,11 +140,11 @@ CEOP
 #ifdef ALLOW_GGL90
       IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      O        KappaRT,
      I        myThid)
          CALL GGL90_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      O        KappaRS,
      I        myThid)
       ENDIF
@@ -155,8 +155,8 @@ C jmc: don't have the impression that masking is needed
 C      but could be removed later if it's the case.
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
-        KappaRT(i,j,k) = maskUp(i,j)*KappaRT(i,j,k)
-        KappaRS(i,j,k) = maskUp(i,j)*KappaRS(i,j,k)
+        KappaRT(i,j) = maskUp(i,j)*KappaRT(i,j)
+        KappaRS(i,j) = maskUp(i,j)*KappaRS(i,j)
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.1 2004/10/22 16:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.2 2004/10/28 00:30:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,12 +64,11 @@ C     msgBuf     :: message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     & *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
-
       IF ( trIdentity.EQ.GAD_TEMPERATURE) THEN
 
        DO k = 1,Nr
+        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
         DO j = 1-Oly,sNy+Oly
          DO i = 1-Olx,sNx+Olx
           KappaRTr(i,j,k) =
@@ -87,6 +86,8 @@ CEOP
       ELSEIF ( trIdentity.EQ.GAD_SALINITY) THEN
 
        DO k = 1,Nr
+        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
@@ -107,6 +108,8 @@ CEOP
 
        iTr = trIdentity - GAD_TR1 + 1
        DO k = 1,Nr
+        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
@@ -144,12 +147,12 @@ C--   Add physical pacakge contributions:
       IF (trUseKPP) THEN
        IF (trIdentity.EQ.GAD_TEMPERATURE) THEN
          CALL KPP_CALC_DIFF_T(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,0,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
      I        myThid)
        ELSE
          CALL KPP_CALC_DIFF_S(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,0,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
      I        myThid)
        ENDIF
@@ -159,7 +162,7 @@ C--   Add physical pacakge contributions:
 #ifdef ALLOW_PP81
       IF (usePP81) THEN
          CALL PP81_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,0,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
      I        myThid)
       ENDIF
@@ -168,7 +171,7 @@ C--   Add physical pacakge contributions:
 #ifdef ALLOW_MY82
       IF (useMY82) THEN
          CALL MY82_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,0,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
      I        myThid)
       ENDIF
@@ -177,7 +180,7 @@ C--   Add physical pacakge contributions:
 #ifdef ALLOW_GGL90
       IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,0,Nr,
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      O        KappaRTr,
      I        myThid)
       ENDIF

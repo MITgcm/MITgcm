@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.80 2004/10/21 21:25:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.81 2004/10/28 00:30:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,8 +129,11 @@ C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
-C     KappaRT,       - Total diffusion in vertical for T and S.
-C     KappaRS          (background + spatially varying, isopycnal term).
+C     kappaRT,       - Total diffusion in vertical at level k, for T and S
+C     kappaRS          (background + spatially varying, isopycnal term).
+C     kappaRTr       - Total diffusion in vertical at level k, 
+C                      for each passive Tracer
+C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer  
 C     useVariableK   = T when vertical diffusion is not constant
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
@@ -147,11 +150,13 @@ C                      index into fVerTerm.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL kappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL kappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #ifdef ALLOW_PTRACERS
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
+      _RL kappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
 #endif
-      _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRk (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -188,7 +193,7 @@ CHPF$ INDEPENDENT
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
 CHPF$&                  ,utrans,vtrans,xA,yA
-CHPF$&                  ,KappaRT,KappaRS
+CHPF$&                  ,kappaRT,kappaRS
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -225,10 +230,13 @@ C     uninitialised but inert locations.
           fVerT  (i,j,2) = 0. _d 0
           fVerS  (i,j,1) = 0. _d 0
           fVerS  (i,j,2) = 0. _d 0
+          kappaRT(i,j)   = 0. _d 0
+          kappaRS(i,j)   = 0. _d 0
 #ifdef ALLOW_PTRACERS
           DO ip=1,PTRACERS_num
            fVerP  (i,j,1,ip) = 0. _d 0
            fVerP  (i,j,2,ip) = 0. _d 0
+           kappaRTr(i,j,ip)  = 0. _d 0
           ENDDO
 #endif
          ENDDO
@@ -238,13 +246,11 @@ C     uninitialised but inert locations.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C This is currently also used by IVDC and Diagnostics
-           KappaRT(i,j,k)    = 0. _d 0
-           KappaRS(i,j,k)    = 0. _d 0
+           kappaRk(i,j,k)    = 0. _d 0
 C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
            gT(i,j,k,bi,bj)   = 0. _d 0
            gS(i,j,k,bi,bj)   = 0. _d 0
 # ifdef ALLOW_PTRACERS
-ceh3 this should have an   IF ( usePTRACERS ) THEN
            DO iTracer=1,PTRACERS_numInUse
             gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
            ENDDO
@@ -342,7 +348,7 @@ C--     Start of thermodynamics loop
 #ifdef ALLOW_AUTODIFF_TAMC 
 C? Patrick Is this formula correct?
 cph Yes, but I rewrote it.
-cph Also, the KappaR? need the index and subscript k!
+cph Also, the kappaR? need the index and subscript k!
          kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -414,14 +420,16 @@ CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
-         CALL CALC_DIFFUSIVITY(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        maskUp,
-     O        KappaRT,KappaRS,
-     I        myThid)
+          IF ( .NOT.implicitDiffusion ) THEN
+            CALL CALC_DIFFUSIVITY(
+     I          bi,bj,iMin,iMax,jMin,jMax,k,
+     I          maskUp,
+     O          kappaRT,kappaRS,
+     I          myThid)
+          ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE kappaRT(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif
 
@@ -437,7 +445,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I         KappaRT(1-Olx,1-Oly,k),
+     I         kappaRT,
      U         fVerT,
      I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
@@ -452,7 +460,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I         KappaRS(1-Olx,1-Oly,k),
+     I         kappaRS,
      U         fVerS,
      I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
@@ -463,11 +471,18 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
 #endif
 #ifdef ALLOW_PTRACERS
          IF ( usePTRACERS ) THEN
+           IF ( .NOT.implicitDiffusion ) THEN
+             CALL PTRACERS_CALC_DIFF(
+     I            bi,bj,iMin,iMax,jMin,jMax,k,
+     I            maskUp,
+     O            kappaRTr,
+     I            myThid)
+           ENDIF
            CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      U         fVerP,
-     I         KappaRS(1-Olx,1-Oly,k),
+     I         kappaRTr,
      I         myIter,myTime,myThid)
          ENDIF
 #endif /* ALLOW_PTRACERS */
@@ -496,14 +511,25 @@ CADJ &   , key = kkey, byte = isbyte
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
+        iMin = 1
+        iMax = sNx
+        jMin = 1
+        jMax = sNy
 
 C--     Implicit vertical advection & diffusion 
 #ifndef ALLOW_OFFLINE
+        IF ( tempStepping .AND. implicitDiffusion ) THEN
+          CALL CALC_3D_DIFFUSIVITY(
+     I         bi,bj,iMin,iMax,jMin,jMax,
+     I         GAD_TEMPERATURE, useGMredi, useKPP,
+     O         kappaRk,
+     I         myThid)
+        ENDIF
 #ifdef INCLUDE_IMPLVERTADV_CODE
         IF ( tempImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempAdvScheme, GAD_TEMPERATURE,
-     I         kappaRT, wVel, theta, 
+     I         kappaRk, wVel, theta, 
      U         gT,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
@@ -511,23 +537,47 @@ C--     Implicit vertical advection & diffusion
         IF     ( tempStepping .AND. implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, KappaRT, recip_HFacC,
+     I         deltaTtracer, kappaRk, recip_HFacC,
      U         gT,
      I         myThid )
         ENDIF
-#endif
+#endif /* ndef ALLOW_OFFLINE */
+
+#ifdef ALLOW_TIMEAVE
+#ifndef HRCUBE
+        useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
+     &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
+        IF (taveFreq.GT.0. .AND. useVariableK ) THEN
+         IF (implicitDiffusion) THEN
+           CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRk,
+     I                        Nr, 3, deltaTclock, bi, bj, myThid)
+c        ELSE
+c          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
+c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
+         ENDIF
+        ENDIF
+#endif /* ndef HRCUBE */
+#endif /* ALLOW_TIMEAVE */ 
 
 #ifndef ALLOW_OFFLINE
+        IF ( saltStepping .AND. implicitDiffusion ) THEN
+          CALL CALC_3D_DIFFUSIVITY(
+     I         bi,bj,iMin,iMax,jMin,jMax,
+     I         GAD_SALINITY, useGMredi, useKPP,
+     O         kappaRk,
+     I         myThid)
+        ENDIF
+
 #ifdef INCLUDE_IMPLVERTADV_CODE
         IF ( saltImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltAdvScheme, GAD_SALINITY,
-     I         kappaRS, wVel, salt, 
+     I         kappaRk, wVel, salt, 
      U         gS,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
@@ -535,25 +585,21 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
         IF     ( saltStepping .AND. implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRS(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, KappaRS, recip_HFacC,
+     I         deltaTtracer, kappaRk, recip_HFacC,
      U         gS,
      I         myThid )
         ENDIF
 #endif
 
 #ifdef ALLOW_PTRACERS
-c #ifdef INCLUDE_IMPLVERTADV_CODE
-c       IF ( usePTRACERS .AND. ptracerImplVertAdv ) THEN
-c       ELSEIF ( usePTRACERS .AND. implicitDiffusion ) THEN
-c #else
         IF     ( usePTRACERS .AND. implicitDiffusion ) THEN
 C--     Vertical diffusion (implicit) for passive tracers
-           CALL PTRACERS_IMPLDIFF( bi,bj,KappaRS,myThid )
+           CALL PTRACERS_IMPLDIFF( bi,bj,kappaRk,myThid )
         ENDIF
 #endif /* ALLOW_PTRACERS */
 
@@ -577,17 +623,6 @@ C--      Apply open boundary conditions
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
-        ENDIF
-        useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
-     &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
-        IF (taveFreq.GT.0. .AND. useVariableK ) THEN
-         IF (implicitDiffusion) THEN
-          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRT,
-     I                        Nr, 3, deltaTclock, bi, bj, myThid)
-         ELSE
-          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
-     I                        Nr, 3, deltaTclock, bi, bj, myThid)
-         ENDIF
         ENDIF
 #endif /* ndef HRCUBE */
 #endif /* ALLOW_TIMEAVE */ 
