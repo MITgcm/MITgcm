@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.214 2003/11/25 19:06:08 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.215 2003/11/25 23:33:21 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint53c_post
 o Fixing OPTIONS files for use of exf:
   - ALLOW_ECCO not needed
   - ECCO_CPPOPTIONS.h should not be included from
@@ -13,6 +14,8 @@ o Fixing OPTIONS files for use of exf:
     agree on a consistent new policy.
 o Removed all CPP options for cal package.
   cal has no more CPP options.
+o modified STOREs in GAD_ADVECTION
+o corrected key comp. for passkey
 
 checkpoint52b_post
 o new version: "thsice" of thermodynamic sea-ice pkg:
