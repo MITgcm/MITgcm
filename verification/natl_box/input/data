@@ -60,7 +60,7 @@
 #
  &PARM02
  cg2dMaxIters       = 1000,
- cg2dTargetResidual = 1.E-8,
+ cg2dTargetResidual = 1.E-13,
  &
 
 # Time stepping parameters
@@ -83,6 +83,7 @@
  endTime    = 2592000.0,
  deltaTmom  = 3600.0,
  TauCD      = 172800.
+ cAdjFreq   = 0.,
  abEps      = 0.1,
  pChkptFreq = 0.0,
  chkptFreq  = 0.0,
@@ -91,7 +92,7 @@
  tauThetaClimRelax = 2592000.0,
  periodicExternalForcing = .TRUE.,
  externForcingPeriod = 43200.0,
- externForcingCycle = 2592000.0,
+ externForcingCycle = 2764800.0,
  &
 
 # Gridding parameters
@@ -111,8 +112,8 @@
  delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
        100., 150., 200., 275., 350., 415., 450.,
        500., 500., 500., 500., 500., 500., 500.
- phiMin = 12.,
- thetaMin= 321.
+ phiMin = 10.,
+ thetaMin= -42.
  &
 
 # Input datasets

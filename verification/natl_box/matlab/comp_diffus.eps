@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0 EPSF-1.2
 %%Creator: MATLAB, The Mathworks, Inc.
 %%Title: comp_diffus.eps
-%%CreationDate: 11/09/ 0  11:39:59
+%%CreationDate: 11/13/ 0  22:33:40
 %%DocumentNeededFonts: Helvetica
 %%DocumentProcessColors: Cyan Magenta Yellow Black
 %%Extensions: CMYK
@@ -435,10 +435,63 @@ SO
  899 2710 mt  899  680 L
 5481 2710 mt 5481  680 L
 gs 899 680 4583 2031 MR c np
+
+% Quadrilateral Solid Rendering Routines
+MathWorks begin
+/X0 0 def /Y0 0 def /X1 0 def /Y1 0 def /X2 0 def /Y2 0 def
+/AX 0 def /AY 0 def /CX 0 def /CY 0 def /DX 0 def /DY 0 def
+/C30 0 def /C0 0 def /C10 0 def /C20 0 def /C4 0 def
+/M 0 def /N 0 def
+/min { 2 copy gt { exch } if pop } bdef
+/max { 2 copy lt { exch } if pop } bdef
+/triangle_xfd { /Y2 xdef /X2 xdef
+          /Y1 xdef /X1 xdef /Y0 xdef /X0 xdef} bdef
+/xfd {/AX X1 X0 sub def /AY Y1 Y0 sub def
+/CX X2 X0 sub def /CY Y2 Y0 sub def
+/DX X0 def /DY Y0 def} bdef
+0 0 0 0 0 0 triangle_xfd xfd 
+/triangle_cl {np DX DY mt AX AY rl CX AX sub CY AY sub rl cp c np} bdef
+/triangle_tf {[ AX AY CX CY DX DY ] cc} bdef
+/triangle_det { AX CY mul AY CX mul ne } bdef
+/NI 16 def	% NI can be 4 (draft), 8 (medium) , or 16 (high-res)
+/log2N NI log 2 log div neg cvi def
+/N1 NI 1 sub def  /N2 NI NI mul def  /N21 N2 1 sub def
+/CS 0.255 N1 div def  /C4S CS N1 div def
+/quad_interp_cd {3 index 2 copy sub CS mul /C30 xdef 0.255 mul /C0 xdef
+            4 2 roll 2 copy sub neg CS mul /C10 xdef
+            sub sub sub C4S mul /C4 xdef} bdef
+            0 0 0 0 quad_interp_cd
+/quad_interp_fcn {cvi dup N1 and exch log2N bitshift 2 copy
+  mul C4 mul exch C10 mul add exch C30 mul add C0 add cvi} bdef
+/quad_interp_image{ 0 1 N21 { 1 index exch dup quad_interp_fcn put } for pop} bdef
+/triangle_interp_cd {2 index sub CS mul /C20 xdef        1 index sub CS mul /C10 xdef        0.255 mul /C0 xdef} bdef
+0 0 0 triangle_interp_cd
+/triangle_interp_fcn {cvi dup N1 and exch log2N bitshift
+     C20 mul exch C10 mul add C0 add cvi 
+     dup 0 lt {pop 0} if dup 255 gt {pop 255} if} bdef
+/triangle_interp_image{ 0 1 N21 { 1 index exch dup triangle_interp_fcn put } for pop} bdef
+/read_image {currentfile exch readhexstring pop pop} bdef
+/Rquad_im_str N2 string def  /Rintr_str N2 string def
+/Gquad_im_str N2 string def  /Gintr_str N2 string def
+/Bquad_im_str N2 string def  /Bintr_str N2 string def
+/quad_imc {N M 8 [ N 0 0 M 0 0 ]
+  Rquad_im_str Gquad_im_str Bquad_im_str true 3 colorimage} bdef
+/triangle_render_c {gs xfd triangle_cl triangle_tf triangle_det { quad_imc } if gr} bdef
+/itc {/N NI def /M NI def
+      /Bquad_im_str Bintr_str def triangle_interp_cd Bquad_im_str triangle_interp_image
+      /Gquad_im_str Gintr_str def triangle_interp_cd Gquad_im_str triangle_interp_image
+      /Rquad_im_str Rintr_str def triangle_interp_cd Rquad_im_str triangle_interp_image
+      triangle_xfd triangle_render_c} bdef
+/txc {/N xdef /M xdef triangle_xfd 
+      /Rquad_im_str N M mul string def Rquad_im_str read_image
+      /Gquad_im_str N M mul string def Gquad_im_str read_image
+      /Bquad_im_str N M mul string def Bquad_im_str read_image
+      triangle_render_c} bdef
+end	% MathWorks dictionary
+899 680 1204 680 1204 889 
+0 0 0  0 0 0  562 625 562  itc
 /c8 { 0.000000 0.000000 0.562500 sr} bdef
 c8
-0 209 305 0 899 680 3 MP
-PP
 305 0 0 209 899 680 3 MP
 PP
 0 169 305 0 899 889 3 MP
@@ -521,65 +574,12 @@ PP
 PP
 305 0 0 33 899 2677 3 MP
 PP
-
-% Quadrilateral Solid Rendering Routines
-MathWorks begin
-/X0 0 def /Y0 0 def /X1 0 def /Y1 0 def /X2 0 def /Y2 0 def
-/AX 0 def /AY 0 def /CX 0 def /CY 0 def /DX 0 def /DY 0 def
-/C30 0 def /C0 0 def /C10 0 def /C20 0 def /C4 0 def
-/M 0 def /N 0 def
-/min { 2 copy gt { exch } if pop } bdef
-/max { 2 copy lt { exch } if pop } bdef
-/triangle_xfd { /Y2 xdef /X2 xdef
-          /Y1 xdef /X1 xdef /Y0 xdef /X0 xdef} bdef
-/xfd {/AX X1 X0 sub def /AY Y1 Y0 sub def
-/CX X2 X0 sub def /CY Y2 Y0 sub def
-/DX X0 def /DY Y0 def} bdef
-0 0 0 0 0 0 triangle_xfd xfd 
-/triangle_cl {np DX DY mt AX AY rl CX AX sub CY AY sub rl cp c np} bdef
-/triangle_tf {[ AX AY CX CY DX DY ] cc} bdef
-/triangle_det { AX CY mul AY CX mul ne } bdef
-/NI 16 def	% NI can be 4 (draft), 8 (medium) , or 16 (high-res)
-/log2N NI log 2 log div neg cvi def
-/N1 NI 1 sub def  /N2 NI NI mul def  /N21 N2 1 sub def
-/CS 0.255 N1 div def  /C4S CS N1 div def
-/quad_interp_cd {3 index 2 copy sub CS mul /C30 xdef 0.255 mul /C0 xdef
-            4 2 roll 2 copy sub neg CS mul /C10 xdef
-            sub sub sub C4S mul /C4 xdef} bdef
-            0 0 0 0 quad_interp_cd
-/quad_interp_fcn {cvi dup N1 and exch log2N bitshift 2 copy
-  mul C4 mul exch C10 mul add exch C30 mul add C0 add cvi} bdef
-/quad_interp_image{ 0 1 N21 { 1 index exch dup quad_interp_fcn put } for pop} bdef
-/triangle_interp_cd {2 index sub CS mul /C20 xdef        1 index sub CS mul /C10 xdef        0.255 mul /C0 xdef} bdef
-0 0 0 triangle_interp_cd
-/triangle_interp_fcn {cvi dup N1 and exch log2N bitshift
-     C20 mul exch C10 mul add C0 add cvi 
-     dup 0 lt {pop 0} if dup 255 gt {pop 255} if} bdef
-/triangle_interp_image{ 0 1 N21 { 1 index exch dup triangle_interp_fcn put } for pop} bdef
-/read_image {currentfile exch readhexstring pop pop} bdef
-/Rquad_im_str N2 string def  /Rintr_str N2 string def
-/Gquad_im_str N2 string def  /Gintr_str N2 string def
-/Bquad_im_str N2 string def  /Bintr_str N2 string def
-/quad_imc {N M 8 [ N 0 0 M 0 0 ]
-  Rquad_im_str Gquad_im_str Bquad_im_str true 3 colorimage} bdef
-/triangle_render_c {gs xfd triangle_cl triangle_tf triangle_det { quad_imc } if gr} bdef
-/itc {/N NI def /M NI def
-      /Bquad_im_str Bintr_str def triangle_interp_cd Bquad_im_str triangle_interp_image
-      /Gquad_im_str Gintr_str def triangle_interp_cd Gquad_im_str triangle_interp_image
-      /Rquad_im_str Rintr_str def triangle_interp_cd Rquad_im_str triangle_interp_image
-      triangle_xfd triangle_render_c} bdef
-/txc {/N xdef /M xdef triangle_xfd 
-      /Rquad_im_str N M mul string def Rquad_im_str read_image
-      /Gquad_im_str N M mul string def Gquad_im_str read_image
-      /Bquad_im_str N M mul string def Bquad_im_str read_image
-      triangle_render_c} bdef
-end	% MathWorks dictionary
 1204 680 1510 680 1510 889 
-0 0 0  0 1000 0  562 1000 562  itc
-306 0 0 209 1204 680 3 MP
-PP
-0 169 306 0 1204 889 3 MP
-PP
+0 1000 0  0 812 0  625 0 625  itc
+1204 680 1204 889 1510 889 
+0 0 0  0 0 0  625 562 625  itc
+1204 889 1510 889 1510 1058 
+0 0 0  0 0 0  562 625 562  itc
 306 0 0 169 1204 889 3 MP
 PP
 0 127 306 0 1204 1058 3 MP
@@ -659,13 +659,13 @@ PP
 306 0 0 33 1204 2677 3 MP
 PP
 1510 680 1815 680 1815 889 
-0 1000 187  1000 500 1000  1000 0 875  itc
+1000 937 1000  812 0 437  0 0 0  itc
 1510 680 1510 889 1815 889 
-0 0 187  1000 0 1000  1000 562 875  itc
+1000 0 1000  812 0 437  0 625 0  itc
 1510 889 1815 889 1815 1058 
-0 187 0  0 1000 0  562 875 562  itc
-305 0 0 169 1510 889 3 MP
-PP
+0 1000 0  0 437 0  625 0 562  itc
+1510 889 1510 1058 1815 1058 
+0 0 0  0 0 0  625 562 562  itc
 0 127 305 0 1510 1058 3 MP
 PP
 305 0 0 127 1510 1058 3 MP
@@ -743,15 +743,15 @@ PP
 305 0 0 33 1510 2677 3 MP
 PP
 1815 680 2121 680 2121 889 
-1000 1000 1000  500 312 937  0 0 0  itc
+937 937 1000  0 0 312  0 0 0  itc
 1815 680 1815 889 2121 889 
-1000 187 1000  500 1000 937  0 875 0  itc
+937 1000 1000  0 437 312  0 0 0  itc
 1815 889 2121 889 2121 1058 
-187 1000 0  1000 937 0  875 0 562  itc
+1000 1000 0  437 312 0  0 0 937  itc
 1815 889 1815 1058 2121 1058 
-187 0 0  1000 0 0  875 562 562  itc
-0 127 306 0 1815 1058 3 MP
-PP
+1000 0 0  437 0 0  0 562 937  itc
+1815 1058 2121 1058 2121 1185 
+0 0 0  0 0 0  562 937 562  itc
 306 0 0 127 1815 1058 3 MP
 PP
 0 102 306 0 1815 1185 3 MP
@@ -827,17 +827,17 @@ PP
 306 0 0 33 1815 2677 3 MP
 PP
 2121 680 2426 680 2426 889 
-1000 1000 1000  312 312 1000  0 0 0  itc
+937 937 1000  0 0 375  0 0 0  itc
 2121 680 2121 889 2426 889 
-1000 1000 1000  312 937 1000  0 0 0  itc
+937 1000 1000  0 312 375  0 0 0  itc
 2121 889 2426 889 2426 1058 
-1000 1000 0  937 1000 0  0 0 562  itc
+1000 1000 0  312 375 312  0 0 1000  itc
 2121 889 2121 1058 2426 1058 
-1000 0 0  937 0 0  0 562 562  itc
-0 127 305 0 2121 1058 3 MP
-PP
-305 0 0 127 2121 1058 3 MP
-PP
+1000 0 0  312 0 312  0 937 1000  itc
+2121 1058 2426 1058 2426 1185 
+0 0 0  0 312 0  937 1000 562  itc
+2121 1058 2121 1185 2426 1185 
+0 0 0  0 0 0  937 562 562  itc
 0 102 305 0 2121 1185 3 MP
 PP
 305 0 0 102 2121 1185 3 MP
@@ -911,17 +911,17 @@ PP
 305 0 0 33 2121 2677 3 MP
 PP
 2426 680 2732 680 2732 889 
-1000 1000 1000  312 187 500  0 0 0  itc
+937 937 1000  0 0 0  0 0 0  itc
 2426 680 2426 889 2732 889 
-1000 1000 1000  312 1000 500  0 0 0  itc
+937 1000 1000  0 375 0  0 0 0  itc
 2426 889 2732 889 2732 1058 
-1000 1000 0  1000 500 1000  0 0 1000  itc
+1000 1000 1000  375 0 750  0 0 0  itc
 2426 889 2426 1058 2732 1058 
-1000 0 0  1000 0 1000  0 562 1000  itc
+1000 0 1000  375 312 750  0 1000 0  itc
 2426 1058 2732 1058 2732 1185 
-0 0 0  0 1000 0  562 1000 562  itc
-306 0 0 127 2426 1058 3 MP
-PP
+0 1000 0  312 750 0  1000 0 562  itc
+2426 1058 2426 1185 2732 1185 
+0 0 0  312 0 0  1000 562 562  itc
 0 102 306 0 2426 1185 3 MP
 PP
 306 0 0 102 2426 1185 3 MP
@@ -995,17 +995,17 @@ PP
 306 0 0 33 2426 2677 3 MP
 PP
 2732 680 3037 680 3037 889 
-1000 1000 0  187 625 937  0 0 1000  itc
+937 1000 1000  0 375 875  0 0 0  itc
 2732 680 2732 889 3037 889 
-1000 1000 0  187 500 937  0 0 1000  itc
+937 1000 1000  0 0 875  0 0 0  itc
 2732 889 3037 889 3037 1058 
-1000 0 0  500 937 0  0 1000 562  itc
+1000 1000 0  0 875 500  0 0 1000  itc
 2732 889 2732 1058 3037 1058 
-1000 0 0  500 1000 0  0 1000 562  itc
+1000 1000 0  0 750 500  0 0 1000  itc
 2732 1058 3037 1058 3037 1185 
-0 0 0  1000 0 0  1000 562 562  itc
+1000 0 0  750 500 0  0 1000 562  itc
 2732 1058 2732 1185 3037 1185 
-0 0 0  1000 0 0  1000 562 562  itc
+1000 0 0  750 0 0  0 562 562  itc
 0 102 305 0 2732 1185 3 MP
 PP
 305 0 0 102 2732 1185 3 MP
@@ -1079,17 +1079,17 @@ PP
 305 0 0 33 2732 2677 3 MP
 PP
 3037 680 3343 680 3343 889 
-1000 0 0  625 0 0  0 562 562  itc
+1000 0 0  375 0 0  0 562 562  itc
 3037 680 3037 889 3343 889 
-1000 0 0  625 937 0  0 1000 562  itc
+1000 1000 0  375 875 0  0 0 562  itc
 3037 889 3343 889 3343 1058 
-0 0 0  937 0 0  1000 562 562  itc
+1000 0 0  875 0 0  0 562 562  itc
 3037 889 3037 1058 3343 1058 
-0 0 0  937 0 0  1000 562 562  itc
-0 127 306 0 3037 1058 3 MP
-PP
-306 0 0 127 3037 1058 3 MP
-PP
+1000 0 0  875 500 0  0 1000 562  itc
+3037 1058 3343 1058 3343 1185 
+0 0 0  500 0 0  1000 562 562  itc
+3037 1058 3037 1185 3343 1185 
+0 0 0  500 0 0  1000 562 562  itc
 0 102 306 0 3037 1185 3 MP
 PP
 306 0 0 102 3037 1185 3 MP
@@ -1757,18 +1757,18 @@ c8
  543 1960 mt  -90 rotate
 (Depth \(m\)) s
 90 rotate
-1648  585 mt 
+1681  585 mt 
 (c32 KPP diffusivity \(m) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 96 FMSR
 
-2815  525 mt 
+2848  525 mt 
 (2) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 120 FMSR
 
-2868  585 mt 
-(/s\), day 30,  min=0,  max=0.009967) s
+2901  585 mt 
+(/s\), day 30,  min=0,  max=0.01782) s
 1 sg
 0 2029 401 0 0 -2029 5750 5392 4 MP
 PP
@@ -1882,9 +1882,9 @@ SO
  899 5392 mt  899 3363 L
 5481 5392 mt 5481 3363 L
 gs 899 3363 4583 2030 MR c np
+899 3363 1204 3363 1204 3572 
+0 0 0  0 0 0  562 625 562  itc
 c8
-0 209 305 0 899 3363 3 MP
-PP
 305 0 0 209 899 3363 3 MP
 PP
 0 169 305 0 899 3572 3 MP
@@ -1968,11 +1968,11 @@ PP
 305 0 0 33 899 5359 3 MP
 PP
 1204 3363 1510 3363 1510 3572 
-0 0 0  0 1000 0  562 1000 562  itc
-306 0 0 209 1204 3363 3 MP
-PP
-0 169 306 0 1204 3572 3 MP
-PP
+0 1000 0  0 812 0  625 0 625  itc
+1204 3363 1204 3572 1510 3572 
+0 0 0  0 0 0  625 562 625  itc
+1204 3572 1510 3572 1510 3741 
+0 0 0  0 0 0  562 625 562  itc
 306 0 0 169 1204 3572 3 MP
 PP
 0 127 306 0 1204 3741 3 MP
@@ -2052,13 +2052,13 @@ PP
 306 0 0 33 1204 5359 3 MP
 PP
 1510 3363 1815 3363 1815 3572 
-0 1000 187  1000 500 1000  1000 0 875  itc
+1000 937 1000  812 0 437  0 0 0  itc
 1510 3363 1510 3572 1815 3572 
-0 0 187  1000 0 1000  1000 562 875  itc
+1000 0 1000  812 0 437  0 625 0  itc
 1510 3572 1815 3572 1815 3741 
-0 187 0  0 1000 0  562 875 562  itc
-305 0 0 169 1510 3572 3 MP
-PP
+0 1000 0  0 437 0  625 0 562  itc
+1510 3572 1510 3741 1815 3741 
+0 0 0  0 0 0  625 562 562  itc
 0 127 305 0 1510 3741 3 MP
 PP
 305 0 0 127 1510 3741 3 MP
@@ -2136,15 +2136,15 @@ PP
 305 0 0 33 1510 5359 3 MP
 PP
 1815 3363 2121 3363 2121 3572 
-1000 1000 1000  500 312 937  0 0 0  itc
+937 937 1000  0 0 312  0 0 0  itc
 1815 3363 1815 3572 2121 3572 
-1000 187 1000  500 1000 937  0 875 0  itc
+937 1000 1000  0 437 312  0 0 0  itc
 1815 3572 2121 3572 2121 3741 
-187 1000 0  1000 937 0  875 0 562  itc
+1000 1000 0  437 312 0  0 0 937  itc
 1815 3572 1815 3741 2121 3741 
-187 0 0  1000 0 0  875 562 562  itc
-0 127 306 0 1815 3741 3 MP
-PP
+1000 0 0  437 0 0  0 562 937  itc
+1815 3741 2121 3741 2121 3868 
+0 0 0  0 0 0  562 937 562  itc
 306 0 0 127 1815 3741 3 MP
 PP
 0 102 306 0 1815 3868 3 MP
@@ -2220,17 +2220,17 @@ PP
 306 0 0 33 1815 5359 3 MP
 PP
 2121 3363 2426 3363 2426 3572 
-1000 1000 1000  312 312 1000  0 0 0  itc
+937 937 1000  0 0 375  0 0 0  itc
 2121 3363 2121 3572 2426 3572 
-1000 1000 1000  312 937 1000  0 0 0  itc
+937 1000 1000  0 312 375  0 0 0  itc
 2121 3572 2426 3572 2426 3741 
-1000 1000 0  937 1000 0  0 0 562  itc
+1000 1000 0  312 375 312  0 0 1000  itc
 2121 3572 2121 3741 2426 3741 
-1000 0 0  937 0 0  0 562 562  itc
-0 127 305 0 2121 3741 3 MP
-PP
-305 0 0 127 2121 3741 3 MP
-PP
+1000 0 0  312 0 312  0 937 1000  itc
+2121 3741 2426 3741 2426 3868 
+0 0 0  0 312 0  937 1000 562  itc
+2121 3741 2121 3868 2426 3868 
+0 0 0  0 0 0  937 562 562  itc
 0 102 305 0 2121 3868 3 MP
 PP
 305 0 0 102 2121 3868 3 MP
@@ -2304,17 +2304,17 @@ PP
 305 0 0 33 2121 5359 3 MP
 PP
 2426 3363 2732 3363 2732 3572 
-1000 1000 1000  312 187 500  0 0 0  itc
+937 937 1000  0 0 0  0 0 0  itc
 2426 3363 2426 3572 2732 3572 
-1000 1000 1000  312 1000 500  0 0 0  itc
+937 1000 1000  0 375 0  0 0 0  itc
 2426 3572 2732 3572 2732 3741 
-1000 1000 0  1000 500 1000  0 0 1000  itc
+1000 1000 1000  375 0 750  0 0 0  itc
 2426 3572 2426 3741 2732 3741 
-1000 0 0  1000 0 1000  0 562 1000  itc
+1000 0 1000  375 312 750  0 1000 0  itc
 2426 3741 2732 3741 2732 3868 
-0 0 0  0 1000 0  562 1000 562  itc
-306 0 0 127 2426 3741 3 MP
-PP
+0 1000 0  312 750 0  1000 0 562  itc
+2426 3741 2426 3868 2732 3868 
+0 0 0  312 0 0  1000 562 562  itc
 0 102 306 0 2426 3868 3 MP
 PP
 306 0 0 102 2426 3868 3 MP
@@ -2388,17 +2388,17 @@ PP
 306 0 0 33 2426 5359 3 MP
 PP
 2732 3363 3037 3363 3037 3572 
-1000 1000 0  187 625 937  0 0 1000  itc
+937 1000 1000  0 375 875  0 0 0  itc
 2732 3363 2732 3572 3037 3572 
-1000 1000 0  187 500 937  0 0 1000  itc
+937 1000 1000  0 0 875  0 0 0  itc
 2732 3572 3037 3572 3037 3741 
-1000 0 0  500 937 0  0 1000 562  itc
+1000 1000 0  0 875 500  0 0 1000  itc
 2732 3572 2732 3741 3037 3741 
-1000 0 0  500 1000 0  0 1000 562  itc
+1000 1000 0  0 750 500  0 0 1000  itc
 2732 3741 3037 3741 3037 3868 
-0 0 0  1000 0 0  1000 562 562  itc
+1000 0 0  750 500 0  0 1000 562  itc
 2732 3741 2732 3868 3037 3868 
-0 0 0  1000 0 0  1000 562 562  itc
+1000 0 0  750 0 0  0 562 562  itc
 0 102 305 0 2732 3868 3 MP
 PP
 305 0 0 102 2732 3868 3 MP
@@ -2472,17 +2472,17 @@ PP
 305 0 0 33 2732 5359 3 MP
 PP
 3037 3363 3343 3363 3343 3572 
-1000 0 0  625 0 0  0 562 562  itc
+1000 0 0  375 0 0  0 562 562  itc
 3037 3363 3037 3572 3343 3572 
-1000 0 0  625 937 0  0 1000 562  itc
+1000 1000 0  375 875 0  0 0 562  itc
 3037 3572 3343 3572 3343 3741 
-0 0 0  937 0 0  1000 562 562  itc
+1000 0 0  875 0 0  0 562 562  itc
 3037 3572 3037 3741 3343 3741 
-0 0 0  937 0 0  1000 562 562  itc
-0 127 306 0 3037 3741 3 MP
-PP
-306 0 0 127 3037 3741 3 MP
-PP
+1000 0 0  875 500 0  0 1000 562  itc
+3037 3741 3343 3741 3343 3868 
+0 0 0  500 0 0  1000 562 562  itc
+3037 3741 3037 3868 3343 3868 
+0 0 0  500 0 0  1000 562 562  itc
 0 102 306 0 3037 3868 3 MP
 PP
 306 0 0 102 3037 3868 3 MP
@@ -3150,18 +3150,18 @@ c8
  543 4643 mt  -90 rotate
 (Depth \(m\)) s
 90 rotate
-1635 3268 mt 
+1668 3268 mt 
 (new KPP diffusivity \(m) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 96 FMSR
 
-2826 3208 mt 
+2859 3208 mt 
 (2) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 120 FMSR
 
-2879 3268 mt 
-(/s\), day 30,  min=0,  max=0.009967) s
+2912 3268 mt 
+(/s\), day 30,  min=0,  max=0.01782) s
 1 sg
 0 2029 401 0 0 -2029 5750 8074 4 MP
 PP
@@ -3297,10 +3297,10 @@ SO
  899 8074 mt  899 6045 L
 5481 8074 mt 5481 6045 L
 gs 899 6045 4583 2030 MR c np
+899 6045 1204 6045 1204 6254 
+562 500 562  1000 1000 1000  500 562 500  itc
 /c9 { 0.562500 1.000000 0.500000 sr} bdef
 c9
-0 209 305 0 899 6045 3 MP
-PP
 305 0 0 209 899 6045 3 MP
 PP
 0 169 305 0 899 6254 3 MP
@@ -3383,10 +3383,10 @@ PP
 PP
 305 0 0 33 899 8041 3 MP
 PP
-0 209 306 0 1204 6045 3 MP
-PP
-306 0 0 209 1204 6045 3 MP
-PP
+1204 6045 1510 6045 1510 6254 
+500 562 562  1000 1000 1000  562 500 500  itc
+1204 6045 1204 6254 1510 6254 
+500 562 562  1000 1000 1000  562 500 500  itc
 0 169 306 0 1204 6254 3 MP
 PP
 306 0 0 169 1204 6254 3 MP
@@ -3551,16 +3551,16 @@ PP
 PP
 305 0 0 33 1510 8041 3 MP
 PP
-0 209 306 0 1815 6045 3 MP
-PP
-306 0 0 209 1815 6045 3 MP
-PP
-0 169 306 0 1815 6254 3 MP
-PP
-306 0 0 169 1815 6254 3 MP
-PP
-0 127 306 0 1815 6423 3 MP
-PP
+1815 6045 2121 6045 2121 6254 
+562 500 500  1000 1000 1000  500 562 562  itc
+1815 6045 1815 6254 2121 6254 
+562 562 500  1000 1000 1000  500 500 562  itc
+1815 6254 2121 6254 2121 6423 
+562 500 500  1000 1000 1000  500 562 562  itc
+1815 6254 1815 6423 2121 6423 
+562 562 500  1000 1000 1000  500 500 562  itc
+1815 6423 2121 6423 2121 6550 
+562 500 562  1000 1000 1000  500 562 500  itc
 306 0 0 127 1815 6423 3 MP
 PP
 0 102 306 0 1815 6550 3 MP
@@ -3635,6 +3635,8 @@ PP
 PP
 306 0 0 33 1815 8041 3 MP
 PP
+/c10 { 0.500000 1.000000 0.562500 sr} bdef
+c10
 0 209 305 0 2121 6045 3 MP
 PP
 305 0 0 209 2121 6045 3 MP
@@ -3643,10 +3645,11 @@ PP
 PP
 305 0 0 169 2121 6254 3 MP
 PP
-0 127 305 0 2121 6423 3 MP
-PP
-305 0 0 127 2121 6423 3 MP
-PP
+2121 6423 2426 6423 2426 6550 
+500 500 562  1000 1000 1000  562 562 500  itc
+2121 6423 2121 6550 2426 6550 
+500 562 562  1000 1000 1000  562 500 500  itc
+c9
 0 102 305 0 2121 6550 3 MP
 PP
 305 0 0 102 2121 6550 3 MP
@@ -3719,6 +3722,7 @@ PP
 PP
 305 0 0 33 2121 8041 3 MP
 PP
+c10
 0 209 306 0 2426 6045 3 MP
 PP
 306 0 0 209 2426 6045 3 MP
@@ -3727,10 +3731,11 @@ PP
 PP
 306 0 0 169 2426 6254 3 MP
 PP
-0 127 306 0 2426 6423 3 MP
-PP
-306 0 0 127 2426 6423 3 MP
-PP
+2426 6423 2732 6423 2732 6550 
+500 500 562  1000 1000 1000  562 562 500  itc
+2426 6423 2426 6550 2732 6550 
+500 562 562  1000 1000 1000  562 500 500  itc
+c9
 0 102 306 0 2426 6550 3 MP
 PP
 306 0 0 102 2426 6550 3 MP
@@ -3803,6 +3808,7 @@ PP
 PP
 306 0 0 33 2426 8041 3 MP
 PP
+c10
 0 209 305 0 2732 6045 3 MP
 PP
 305 0 0 209 2732 6045 3 MP
@@ -3811,10 +3817,11 @@ PP
 PP
 305 0 0 169 2732 6254 3 MP
 PP
-0 127 305 0 2732 6423 3 MP
-PP
-305 0 0 127 2732 6423 3 MP
-PP
+2732 6423 3037 6423 3037 6550 
+500 500 562  1000 1000 1000  562 562 500  itc
+2732 6423 2732 6550 3037 6550 
+500 562 562  1000 1000 1000  562 500 500  itc
+c9
 0 102 305 0 2732 6550 3 MP
 PP
 305 0 0 102 2732 6550 3 MP
@@ -3887,18 +3894,18 @@ PP
 PP
 305 0 0 33 2732 8041 3 MP
 PP
-0 209 306 0 3037 6045 3 MP
-PP
-306 0 0 209 3037 6045 3 MP
-PP
-0 169 306 0 3037 6254 3 MP
-PP
-306 0 0 169 3037 6254 3 MP
-PP
-0 127 306 0 3037 6423 3 MP
-PP
-306 0 0 127 3037 6423 3 MP
-PP
+3037 6045 3343 6045 3343 6254 
+500 562 562  1000 1000 1000  562 500 500  itc
+3037 6045 3037 6254 3343 6254 
+500 500 562  1000 1000 1000  562 562 500  itc
+3037 6254 3343 6254 3343 6423 
+500 562 562  1000 1000 1000  562 500 500  itc
+3037 6254 3037 6423 3343 6423 
+500 500 562  1000 1000 1000  562 562 500  itc
+3037 6423 3343 6423 3343 6550 
+500 562 562  1000 1000 1000  562 500 500  itc
+3037 6423 3037 6550 3343 6550 
+500 562 562  1000 1000 1000  562 500 500  itc
 0 102 306 0 3037 6550 3 MP
 PP
 306 0 0 102 3037 6550 3 MP
@@ -4568,18 +4575,18 @@ c9
  543 7325 mt  -90 rotate
 (Depth \(m\)) s
 90 rotate
-2297 5950 mt 
+1763 5950 mt 
 (Difference \(m) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 96 FMSR
 
-3013 5890 mt 
+2479 5890 mt 
 (2) s
 %%IncludeResource: font Helvetica
 /Helvetica /ISOLatin1Encoding 120 FMSR
 
-3066 5950 mt 
-(/s\),  min=0,  max=0) s
+2532 5950 mt 
+(/s\),  min=-1.756e-07,  max=4.014e-07) s
 
 end
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.1 2000/11/13 16:02:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.2 2000/11/14 03:45:06 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -95,15 +95,15 @@ C First call requires that we initialize everything to zero for safety
 
 C Now calculate whether it is time to update the forcing arrays
       rdt=1. _d 0 / deltaTclock
-      nForcingPeriods=int(externForcingCycle/externForcingPeriod+0.5)
-      Imytm=int(myTime*rdt+0.5)
-      Ifprd=int(externForcingPeriod*rdt+0.5)
-      Ifcyc=int(externForcingCycle*rdt+0.5)
-      Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+      nForcingPeriods=int(externForcingCycle/externForcingPeriod)
+      Imytm=int(myTime*rdt)
+      Ifprd=int(externForcingPeriod*rdt)
+      Ifcyc=int(externForcingCycle*rdt)
+      Iftm=mod( Imytm ,Ifcyc)
 
       intime0=int(Iftm/Ifprd)
       intime1=mod(intime0+1,nForcingPeriods)
-      aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
+      aWght=mod(myTime/externForcingPeriod,1.)
       bWght=1.-aWght
 
       intime0=intime0+1
