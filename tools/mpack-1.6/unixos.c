@@ -39,7 +39,7 @@
 #endif
 
 extern int errno;
-extern char *malloc();
+/* extern char *malloc(); */
 extern char *getenv();
 
 int overwrite_files = 0;
@@ -75,7 +75,7 @@ char *os_genid(void)
 	}
     }
 
-    result = malloc(25+strlen(hostname));
+    result = (char *)malloc(25+strlen(hostname));
     sprintf(result, "%d.%d@%s", pid, curtime++, hostname);
     return result;
 }
