@@ -1,26 +1,20 @@
-#include "EXF_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.1 2004/09/22 20:43:04 heimbach Exp $
+C $Name:  $
 
-      subroutine exf_getobcs ( 
+# include "OBCS_OPTIONS.h"
+
+      subroutine obcs_prescribe_read ( 
      I                      mycurrenttime
      I                    , mycurrentiter
      I                    , mythid
      &                     )
-
-c     ==================================================================
-c     SUBROUTINE exf_getobcs
-c     ==================================================================
-c
-c     o set open boundary conditions
-c
-c     started: heimbach@mit.edu 01-May-2001
-c              gebbie@mit.edu 18-Mar-2003 open boundary control added
-
-c     ==================================================================
-c     SUBROUTINE exf_getobcs
-c     ==================================================================
+c     |==================================================================|
+c     | SUBROUTINE obcs_prescribe_read                                   |
+c     |==================================================================|
+c     | read open boundary conditions from file                          |
+c     | N.B.: * uses exf and cal routines for file/record handling       |
+c     |       * uses ctrl routines for control variable handling         |
+c     |==================================================================|
 
       implicit none
 
@@ -29,10 +23,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#ifdef ALLOW_OBCS
 #include "OBCS.h"
+#ifdef ALLOW_EXF
+# include "exf_param.h"
 #endif
-#include "exf_param.h"
 
 c     == routine arguments ==
 
