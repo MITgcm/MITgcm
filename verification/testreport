@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.15 2003/11/10 17:42:51 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.16 2003/11/11 16:05:11 edhill Exp $
 #  $Name:  $
 #
 
@@ -581,7 +581,7 @@ fi
 SUMMARY="$DRESULTS/summary.txt"
 echo -n "Start time:  " >> $SUMMARY
 date > $SUMMARY
-date > dfile
+start_date=`date`
 cat << EOF >> $SUMMARY
                 T           S           U           V
 G D M    c        m  s        m  s        m  s        m  s
@@ -749,7 +749,7 @@ for dir in $TESTDIRS ; do
 done
 
 echo -n "Start time:  " >> $SUMMARY
-date -r dfile >> $SUMMARY
+echo $start_date >> $SUMMARY
 echo -n "End time:    " >> $SUMMARY
 date >> $SUMMARY
 
