@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.108 2002/12/05 08:43:02 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.109 2002/12/10 04:28:01 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o allow to run AIM physics with SPEEDY input files (from Franco Molteni)
+o allow a more accurate definition of Ro_Surf (selectFindRoSurf=1)
+  when using P-coordinate; only implemented for atmospheric config.
+o OCEANICP & realFreshWater: include P-E direct effect on wVel ;
+  NOTES: requires option NONLIN_FRSURF to be "#define".
+o update advect_xz/results/output.txt (left from checkpoint44g_post)
 
 checkpoint47b_post
 Merging from release1_p9:
