@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.16 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.17 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1185,8 +1185,6 @@ C
         SETRAS = .FALSE.
        ENDIF
        IB = IC(NC)
-
-       print *,' Calling cloud for cloud ',nc,' det at ',ic(nc)
 
 c Initialize Cloud Fraction Array
 c -------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.7 2004/08/06 21:12:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.8 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -168,7 +168,7 @@ c         Physics works top-down. so -> need to flip arrays
 c Now initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
 c Now initialize land state too - tcanopy, etc...
         do L = 1,Nrphys
-        do i = 1,nchptot
+        do i = 1,nchptot(bi,bj)
          tke(i,L,bi,bj) = 0.
          xlmt(i,L,bi,bj) = 0.
          khmt(i,L,bi,bj) = 0.
@@ -176,7 +176,7 @@ c Now initialize land state too - tcanopy, etc...
         enddo
 c Now initialize land state too - tcanopy, etc... SET FOR NOW, 
 c                                              READ CLIM FOR REAL
-        do i = 1,nchptot
+        do i = 1,nchptot(bi,bj)
         tcanopy(i,bi,bj) = 283.
         tdeep(i,bi,bj) = 282.5
         ecanopy(i,bi,bj) = 2.e-2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.18 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.19 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -490,7 +490,7 @@ C **********************************************************************
 
       do l=1,lm
       do i=1,istrip
-      alf = grav*(ple(i,L+1)-ptop)/(cp*dpstrip(i,L)*100)
+      alf = grav*(ple(i,Lm+1)-ptop)/(cp*dpstrip(i,L)*100)
       dtsw (i,L) = alf*( flux   (i,L)-flux   (i,L+1) )/pk(i,L)
       dtswc(i,L) = alf*( fluxclr(i,L)-fluxclr(i,L+1) )/pk(i,L)
       enddo

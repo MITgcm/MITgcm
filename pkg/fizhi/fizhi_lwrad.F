@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.16 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.17 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      .                  co2,cfc11,cfc12,cfc22,methane,n2o,emissivity,
      .                  tgz,radlwg,st4,dst4,
      .                  dtradlw,dlwdtg,dtradlwc,lwgclr,
-     .                  ptop,nlwcld,cldlw,clwmo,nlwlz,lwlz,
+     .                  nlwcld,cldlw,clwmo,nlwlz,lwlz,
      .                  lpnt,imstturb,qliqave,fccave,landtype)
 
       implicit none
@@ -23,7 +23,6 @@ c ---------------
       integer nymd,nhms,istrip,npcs,bi,bj
       integer mid_level,low_level
       integer im,jm,lm        
-      _RL  ptop              
       _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1)
       _RL dpres(im,jm,lm),pkht(im,jm,lm+1),pkz(im,jm,lm)
       _RL tz(im,jm,lm),qz(im,jm,lm),oz(im,jm,lm)
@@ -71,11 +70,17 @@ c ---------------
       _RL SGMT4(ISTRIP),TSURF(ISTRIP),dsgmt4(ISTRIP)
       integer lwi(istrip)
 
+      _RL tmpstrip(istrip,lm)
+      _RL tmpimjm(im,jm,lm)
+      _RL tempor(im,jm)
+
       _RL getcon,secday,convrt
 
       logical high,  trace, cldwater
-      data high /.true./
-      data trace /.true./
+c     data high /.true./
+c     data trace /.true./
+      data high /.false./
+      data trace /.false./
       data cldwater /.false./
 
 C **********************************************************************
@@ -134,8 +139,10 @@ C **********************************************************************
 
        call stripitint (landtype,lwi,im*jm,im*jm,istrip,1,nn)
 
-       DO I = 1,ISTRIP*lm
-        ADELPL(I,1) = convrt / ( ple(I,2)-ple(I,1) )
+       DO L = 1,lm
+       DO I = 1,ISTRIP
+        ADELPL(I,L) = convrt / ( ple(I,L+1)-ple(I,L) )
+       ENDDO
        ENDDO
  
 C Compute Clouds
@@ -212,6 +219,7 @@ C **********************************************************************
        do L = 1,lm
        do i = 1,istrip
          dtrad(i,L) = (   flx(i,L)-   flx(i,L+1))*adelpl(i,L)
+         tmpstrip(i,L) = (   flx(i,L)-   flx(i,L+1))
          dtdtg(i,L) = ( dfdts(i,L)- dfdts(i,L+1))*adelpl(i,L)
         dtradc(i,L) = (flxclr(i,L)-flxclr(i,L+1))*adelpl(i,L)
        enddo
@@ -240,6 +248,8 @@ C **********************************************************************
 C ****            PASTE AND BUMP SOME DIAGNOSTICS                   ****
 C **********************************************************************
 
+      CALL PASTE(flx(1,1),tempor,ISTRIP,im*jm,1,NN)
+
 c     IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR,bi,bj),ISTRIP,
 c    .                                                      im*jm, 1,NN)
 c     IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR,bi,bj),
@@ -253,11 +263,12 @@ C **********************************************************************
 
       DO L = 1,lm
       DO I = 1,ISTRIP
-      DTRAD (I,L) = ( ple(i,lm+1)-PTOP ) * DTRAD (I,L)/pk(I,L)
-      DTRADC(I,L) = ( ple(i,lm+1)-PTOP ) * DTRADC(I,L)/pk(I,L)
-       dtdtg(I,L) = ( ple(i,lm+1)-PTOP ) * dtdtg (I,L)/pk(I,L)
+      DTRAD (I,L) = ple(i,lm+1) * DTRAD (I,L)/pk(I,L)
+      DTRADC(I,L) = ple(i,lm+1) * DTRADC(I,L)/pk(I,L)
+       dtdtg(I,L) = ple(i,lm+1) * dtdtg (I,L)/pk(I,L)
       ENDDO
       ENDDO
+      CALL PASTE ( tmpstrip ,tmpimjm ,ISTRIP,im*jm,lm,NN )
       CALL PASTE ( DTRAD ,DTRADLW ,ISTRIP,im*jm,lm,NN )
       CALL PASTE ( DTRADC,DTRADLWC,ISTRIP,im*jm,lm,NN )
       CALL PASTE ( dtdtg ,dlwdtg  ,ISTRIP,im*jm,lm,NN )
@@ -298,6 +309,35 @@ C **********************************************************************
       enddo
       endif
 
+      if (iudiag1.ne.0) then
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+      qdiag(i,j,iudiag1+L-1,bi,bj) = qdiag(i,j,iudiag1+L-1,bi,bj) + 
+     .  dtradlw(i,j,l) * pkz(i,j,l) * 86400 / pz(i,j)
+      enddo
+      enddo
+      enddo
+      endif
+
+      if (iudiag4.ne.0) then
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+      qdiag(i,j,iudiag4+L-1,bi,bj) = qdiag(i,j,iudiag4+L-1,bi,bj) + 
+     .  tmpimjm(i,j,L)
+      enddo
+      enddo
+      enddo
+      endif
+
+      if (iolr.ne.0) then
+      do j = 1,jm
+      do i = 1,im
+      qdiag(i,j,iolr,bi,bj) = qdiag(i,j,iolr,bi,bj) + tempor(i,j)
+      enddo
+      enddo
+      endif
 
 C **********************************************************************
 C ****    Increment Diagnostics Counters and Zero-Out Cloud Info    ****
@@ -311,6 +351,9 @@ C **********************************************************************
       ntgrlw   = ntgrlw   + 1
       nolr     = nolr     + 1
       nolrclr  = nolrclr  + 1
+
+      nudiag1  = nudiag1  + 1
+      nudiag4  = nudiag4  + 1
       endif
 #endif
 
@@ -779,8 +822,8 @@ c     o3 (band 5), and h2o (bands 1, 2, and 7) transmission functions.
 #include "co2-tran3.h"
 #include "o3-tran3.h"
 
-      save c1,c2,c3,o1,o2,o3
-      save h11,h12,h13,h21,h22,h23,h81,h82,h83
+c     save c1,c2,c3,o1,o2,o3
+c     save h11,h12,h13,h21,h22,h23,h81,h82,h83
 
 c     if (first) then
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.35 2004/08/05 17:06:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.36 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -28,7 +28,8 @@ c-----------------------------------------------------------------------
 
 C Argument list declarations
       integer myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
-      integer Nrphin,Nsxin,Nsyin,bi,bj,nchp,nchptot,nchpland
+      integer Nrphin,Nsxin,Nsyin,bi,bj,nchp
+      integer nchptot(Nsxin,Nsyin),nchpland(Nsxin,Nsyin)
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL vphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL thphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -359,10 +360,10 @@ c     print *,' tgz ',tempij
      . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
      . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
-     . chlon(1,bi,bj),igrd(1,bi,bj),nchptot,nchpland,chfr(1,bi,bj),
-     . ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
-     . swetshal(1,bi,bj),swetroot(1,bi,bj),swetdeep(1,bi,bj),
-     . capac(1,bi,bj),snodep(1,bi,bj),
+     . chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
+     . chfr(1,bi,bj),ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),
+     . ecanopy(1,bi,bj),swetshal(1,bi,bj),swetroot(1,bi,bj),
+     . swetdeep(1,bi,bj),capac(1,bi,bj),snodep(1,bi,bj),
      . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
      . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
      . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),

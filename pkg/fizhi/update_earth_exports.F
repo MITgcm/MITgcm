@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.21 2004/07/28 22:08:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.22 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -84,8 +84,8 @@ C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
        if( alarm('turb') .or. alarm('radsw') ) then
-       call getlgr (sec,month,day,chlt,ityp,nchpland,nchp,nSx,nSy,bi,bj,
-     .                                                       alai,agrn )
+       call getlgr (sec,month,day,chlt,ityp,nchpland(bi,bj),
+     .       nchp,nSx,nSy,bi,bj,alai,agrn )
        endif
 
 C **********************************************************************
@@ -95,7 +95,8 @@ C **********************************************************************
        if( alarm('radsw') ) then
         call astro(nymd,nhms,lats,lons,im2*jm2,cosz,radius)
         call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
-     .    nchptot,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
+     .    nchptot(bi,bj),nchpland(bi,bj),nSx,nSy,bi,bj,igrd,ityp,
+     .    chfr,chlt,alai,agrn,
      .    albvisdr,albvisdf,albnirdr,albnirdf )
        endif
 
@@ -104,8 +105,8 @@ C                      Compute Surface Emissivity
 C **********************************************************************
 
        if( alarm('radlw') ) then
-        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchptot)
-        call getemiss(fracl,im2,jm2,nchp,nchptot,nSx,nSy,bi,bj,
+        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchptot(bi,bj))
+        call getemiss(fracl,im2,jm2,nchp,nchptot(bi,bj),nSx,nSy,bi,bj,
      .   igrd,ityp,chfr,snodep,ficetile,emiss)
        endif
 
@@ -119,11 +120,11 @@ C*********************************************************************
         tmpij(i,j) = 0.
        enddo
        enddo
-       do i = 1,nchpland
+       do i = 1,nchpland(bi,bj)
         tmpchp(i) = tcanopy(i,bi,bj)
        enddo
        call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,
-     .                           nchp,nchpland,fracl,tmpij,im2,jm2)
+     .                    nchp,nchpland(bi,bj),fracl,tmpij,im2,jm2)
        do j = jm1,jm2
        do i = im1,im2
         tgz(i,j,bi,bj) = tmpij(i,j)

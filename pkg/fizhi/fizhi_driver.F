@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.22 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.23 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -77,7 +77,7 @@ c ----------------
       _RL moistq(im,jm,lm)
       _RL chemo3(im,jm,lm),chemq(im,jm,lm)
       _RL albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
-      _RL albnirdf(im,jm),emiss(im,jm)
+      _RL albnirdf(im,jm),emiss(im,jm,10)
       _RL alai(nchp),agrn(nchp)
       _RL radswg(im,jm),swgclr(im,jm)
       _RL fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
@@ -180,7 +180,7 @@ c --------------------------------
      .   low_level,mid_level,im,jm,lm,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
-     .   lwdt,dlwdtg,lwdtclr,lwgclr,ptop,
+     .   lwdt,dlwdtg,lwdtclr,lwgclr,
      .   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
      .   .false.,imstturblw,qliqavelw,
      .   fccavelw,landtype )

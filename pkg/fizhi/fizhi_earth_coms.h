@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.9 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.10 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 c Solid-Earth State Variables
@@ -14,7 +14,7 @@ c ---------------------
      .   chfr, alai, agrn, 
      .   albvisdr, albvisdf, albnirdr, albnirdf, emiss,
      .   landtype, tgz, nchptot, nchpland, ityp
-      integer nchptot,nchpland
+      integer nchptot(Nsx,Nsy),nchpland(Nsx,Nsy)
       integer ityp(nchp,Nsx,Nsy)
       integer landtype(sNx,sNy,Nsx,Nsy)
       _RL chfr(nchp,Nsx,Nsy)

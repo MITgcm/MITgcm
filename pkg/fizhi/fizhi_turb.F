@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.23 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.24 2004/08/12 15:21:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -634,7 +634,7 @@ c    1                      qdiag(1,1,idtsrf,bi,bj),ijall,1,nn,.false.)
 c     endif
 
 
-      if(1.eq.1)then
+      if(2.eq.1)then
       print *,' In turb before trbflx - strip ',nn,' out of ',numstrips
       print *,' bi = ',bi
       print *,' ntracers ',ntracers,' ptracers ',ptracers
@@ -658,16 +658,6 @@ c     print *,' field: stwatr ',stwatr
 c     print *,' field: stz0 ',stz0
       endif
 
-      if(iudiag1.gt.0) then
-      call paste2grd(th,igrd,chfrstr,istrip,nchp,
-     1                   tempor1,ijall,nlay,nn,.false.)
-      endif
-      if(iudiag2.gt.0) then
-      call paste2grd(p,igrd,chfrstr,istrip,nchp,
-     1                   tempor2,ijall,nlay,nn,.false.)
-      endif
-
-
 c call trbflx
 c -----------
       call trbflx(nn,th,thv,sh,u,v,qq,p,pe,pk,pke,dpstr,stwatr,stz0,
@@ -679,9 +669,6 @@ c -----------
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
 
-
-      if(iudiag3.gt.0) call paste2grd(th,igrd,chfrstr,istrip,nchp,
-     1                   tempor3,ijall,nlay,nn,.false.)
 
       if(2.eq.1)then
       print *,' In turbio, Just after trbflx for strip ',nn,' bi = ',bi
@@ -838,7 +825,7 @@ c**********************************************************************
 
       if(nland.gt.0)then
 
-      if(1.eq.1)then
+      if(2.eq.1)then
       print *,' In turbio, Just before tile for strip ',nn,' bi = ',bi
       print *,' calling tile for ',nland,' land points '
       print *,' field: types ',types
@@ -1076,13 +1063,6 @@ c**********************************************************************
       th(i,L) = th(i,L) + dthdthg(i,L)*(tc(i)-savetc(i))/pke(i,nlay+1)
       enddo
       enddo
-
-      if(iudiag4.gt.0) then
-      print *,' Bumping UDIAG4 '
-      call paste2grd(th,igrd,chfrstr,istrip,nchp,
-     1                   tempor4,ijall,nlay,nn,.false.)
-      endif
-
 
       do i =1,istrip
       sh(i,nlay+1) = qa(i)
@@ -1518,42 +1498,6 @@ c *********************************************************************
        enddo
        endif
 
-       if(iudiag1.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iudiag1+l-1,bi,bj) =  qdiag(i,j,iudiag1+l-1,bi,bj)
-     .                      + tempor1(i,j,l)
-       enddo
-       enddo
-       endif
-
-       if(iudiag2.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iudiag2+l-1,bi,bj) =  qdiag(i,j,iudiag2+l-1,bi,bj)
-     .                      + tempor2(i,j,l)
-       enddo
-       enddo
-       endif
-
-       if(iudiag3.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iudiag3+l-1,bi,bj) =  qdiag(i,j,iudiag3+l-1,bi,bj)
-     .                      + tempor3(i,j,l)
-       enddo
-       enddo
-       endif
-
-       if(iudiag4.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iudiag4+l-1,bi,bj) =  qdiag(i,j,iudiag4+l-1,bi,bj)
-     .                      + tempor4(i,j,l)
-       enddo
-       enddo
-       endif
-
       enddo
 
        if(isdiag1.gt.0) then
@@ -1694,10 +1638,6 @@ c *********************************************************************
 
       nsdiag1 = nsdiag1 + 1
       nsdiag2 = nsdiag2 + 1
-      nudiag1 = nudiag1 + 1
-      nudiag2 = nudiag2 + 1
-      nudiag3 = nudiag3 + 1
-      nudiag4 = nudiag4 + 1
       endif
 
 #endif
