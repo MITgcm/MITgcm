@@ -25,7 +25,7 @@
  PTRACERS_names(3)='po4',
  PTRACERS_advScheme(3)=77,
  PTRACERS_diffKh(3)=0.E3,
- PTRACERS_diffKr(3)=3.E-5,
+ PTRACERS_diffKr(3)=5.E-5,
  PTRACERS_useGMRedi(3)=.TRUE. ,
  PTRACERS_useKPP(3)=.FALSE. ,
  PTRACERS_initialFile(3)=' ',
@@ -33,7 +33,7 @@
  PTRACERS_names(4)='dop',
  PTRACERS_advScheme(4)=77,
  PTRACERS_diffKh(4)=0.E3,
- PTRACERS_diffKr(4)=3.E-5,
+ PTRACERS_diffKr(4)=5.E-5,
  PTRACERS_useGMRedi(4)=.TRUE.
  PTRACERS_useKPP(4)=.FALSE. ,
  PTRACERS_initialFile(4)=' ',
@@ -43,7 +43,7 @@
  PTRACERS_units(5)='g/cm^3',
  PTRACERS_advScheme(5)=77,
  PTRACERS_diffKh(5)=0.E3,
- PTRACERS_diffKr(5)=3.E-5,
+ PTRACERS_diffKr(5)=5.E-5,
  PTRACERS_useGMRedi(5)=.TRUE.
  PTRACERS_useKPP(5)=.FALSE. ,
  PTRACERS_initialFile(5)=' ',
