@@ -4,9 +4,9 @@ c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
 #ifdef ALLOW_EXF
-#
+
 # ifdef ALLOW_ATM_TEMP
-#
+
 CADJ STORE aqh0      = comlev1, key = ikey_dynamics
 CADJ STORE aqh1      = comlev1, key = ikey_dynamics
 CADJ STORE atemp0    = comlev1, key = ikey_dynamics
@@ -29,9 +29,9 @@ CADJ STORE swdown1   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown0   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown1   = comlev1, key = ikey_dynamics
 #  endif
-#
+
 # else /* ALLOW_ATM_TEMP undef */
-#
+
 CADJ STORE hflux0    = comlev1, key = ikey_dynamics
 CADJ STORE hflux1    = comlev1, key = ikey_dynamics
 CADJ STORE sflux0    = comlev1, key = ikey_dynamics
@@ -40,9 +40,9 @@ CADJ STORE sflux1    = comlev1, key = ikey_dynamics
 CADJ STORE swflux0   = comlev1, key = ikey_dynamics
 CADJ STORE swflux1   = comlev1, key = ikey_dynamics
 #  endif
-#
+
 # endif /* ALLOW_ATM_TEMP */
-#
+
 # ifdef ALLOW_ATM_WIND
 CADJ STORE uwind0    = comlev1, key = ikey_dynamics
 CADJ STORE uwind1    = comlev1, key = ikey_dynamics
@@ -54,7 +54,7 @@ CADJ STORE ustress1  = comlev1, key = ikey_dynamics
 CADJ STORE vstress0  = comlev1, key = ikey_dynamics
 CADJ STORE vstress1  = comlev1, key = ikey_dynamics
 # endif  /* ALLOW_ATM_WIND */
-#
+
 # ifdef ALLOW_BULKFORMULAE
 CADJ STORE theta     = comlev1, key = ikey_dynamics
 # endif
@@ -113,5 +113,5 @@ CADJ STORE xx_atemp1     = comlev1, key = ikey_dynamics
 CADJ STORE xx_aqh0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_aqh1       = comlev1, key = ikey_dynamics
 # endif
-#
+
 #endif /* ALLOW_EXF */
