@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/plume_on_slope/code/Attic/CPP_OPTIONS.h,v 1.4 2003/10/28 22:58:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/plume_on_slope/code/Attic/CPP_OPTIONS.h,v 1.5 2003/11/03 03:16:44 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
+#ifndef CPP_OPTIONS_H
+#define CPP_OPTIONS_H
 
 C CPP flags controlling particular source code features
 
@@ -61,3 +62,6 @@ C o Include/exclude code specific to the ECCO/SEALION version.
 #ifdef INCLUDE_ECCO_PACKAGE
 #include "ECCO_CPPOPTIONS.h"
 #endif
+
+#endif /* CPP_OPTIONS_H */
+
