@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.150 2003/04/30 07:04:08 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.151 2003/05/01 22:43:25 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add time-average diagnostic of U*V and vertical diffusive flux for theta.
+o bug fixed in convective adjustment diagnostic (multi-tile set-up).
+o 4th Order Adv scheme: return to previous (c40pre7) masking near boundaries.
 
 checkpoint50c_pre
 Merging from release1_p13:
