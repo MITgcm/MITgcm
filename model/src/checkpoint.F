@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.20 2003/04/17 13:36:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.21 2003/06/05 16:03:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,6 +68,7 @@ C     prec
 C     fn      :: Temp. for building file name.
       INTEGER oldPrec
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(10) suff
       INTEGER prec
 CEOP
 
@@ -116,8 +117,15 @@ c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
 
         prec = precFloat64
 
+C--     Suffix for pickup files
+        IF (pickupSuff.EQ.' ') THEN
+         WRITE(suff,'(I10.10)') myIter
+        ELSE
+         WRITE(suff,'(A10)') pickupSuff
+        ENDIF
+
 C--     Read model fields
-        WRITE(fn,'(A,I10.10)') 'pickup.',myIter
+        WRITE(fn,'(A,A10)') 'pickup.',suff
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
@@ -137,12 +145,12 @@ C--     Read model fields
 #endif
 
         IF ( useDynP_inEos_Zc ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
+         WRITE(fn,'(A,A10)') 'pickup_ph.',suff
          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
         ENDIF
 
 #ifdef INCLUDE_CD_CODE
-        WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
+        WRITE(fn,'(A,A10)') 'pickup_cd.',suff
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
@@ -154,22 +162,17 @@ c       CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
+         WRITE(fn,'(A,A10)') 'pickup_nh.',suff
          CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
 c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
 
-
-
-C Create suffix to pass on to package pickup routines
-        WRITE(fn,'(I10.10)') myIter
-
 C SPK 4/9/01: Open boundary checkpointing
 #ifdef  ALLOW_OBCS
         IF (useOBCS) THEN
-          CALL OBCS_READ_CHECKPOINT(prec, myIter, myThid)
+          CALL OBCS_READ_CHECKPOINT(prec, suff, myThid)
         ENDIF
 #endif  /* ALLOW_OBCS */
 
@@ -184,7 +187,7 @@ C       Reset default IO precision
 #ifdef ALLOW_PTRACERS
 C Write restart file for passive tracers
        IF (usePTRACERS) THEN
-         CALL PTRACERS_READ_CHECKPOINT(myIter,myThid)
+         CALL PTRACERS_READ_CHECKPOINT(myIter,suff,myThid)
        ENDIF
 #endif /* ALLOW_PTRACERS */
 
@@ -299,6 +302,7 @@ C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint  
       INTEGER oldPrec
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec
       LOGICAL lgf
 CEOP
@@ -484,6 +488,14 @@ C Write restart file for passive tracers
          CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
        ENDIF
 #endif /* ALLOW_PTRACERS */
+
+C Write information to stdout so there is a record that the
+C checkpoint was completed
+      _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(A11,I10,1X,A10)')
+     &   "%CHECKPOINT ",myIter,fn
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER(myThid)
 
       ENDIF
 

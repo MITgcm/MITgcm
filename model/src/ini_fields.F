@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.14 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.15 2003/06/05 16:03:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,7 +33,8 @@ C     myThid -  Number of this instance of INI_FIELDS
 CEOP
 
 C--   Set model variables to initial/restart conditions
-      IF ( startTime .EQ. 0. .AND.  nIter0 .EQ. 0 ) THEN
+      IF ( startTime .EQ. 0. .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ' ) THEN
        CALL INI_VEL( myThid )
        CALL INI_THETA( myThid )
        CALL INI_SALT( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.89 2003/04/17 13:11:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.90 2003/06/05 16:03:05 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -82,7 +82,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                EmPmRfile, surfQfile, surfQswfile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
-     &                eosType
+     &                eosType, pickupSuff
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -101,6 +101,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
       CHARACTER*(6) eosType
+      CHARACTER*(10) pickupSuff
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the

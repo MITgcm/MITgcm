@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.95 2003/04/17 13:16:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.96 2003/06/05 16:03:05 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -148,7 +148,7 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, nEndIter,
+     & nIter0, nTimeSteps, nEndIter, pickupSuff,
      & deltaT, deltaTmom, deltaTtracer, deltaTfreesurf,
      & forcing_In_AB, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq,
