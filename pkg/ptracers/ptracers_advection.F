@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.3 2004/06/26 02:39:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.4 2004/07/07 18:45:28 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -50,7 +50,7 @@ C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
 
        IF (
-c    &     multiDimAdvection .AND.
+     &     multiDimAdvection .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_2ND .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_UPWIND_3RD .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
