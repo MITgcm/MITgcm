@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.4 1998/08/19 13:57:42 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -146,6 +146,9 @@ C--   Report contents of parameter file
        CALL EEDATA_EXAMPLE
        STOP 'ABNORMAL END: S/R EESET_PARMS'
    4  CONTINUE
+
+C--   Execution Environment parameter file read
+      CLOSE(iUnit)
 
 Cdbg  eeDataUnit = 42
 Cdbg  OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',IOSTAT=errIO)
