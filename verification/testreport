@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.25 2003/12/04 16:36:18 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.26 2003/12/05 14:56:45 edhill Exp $
 #  $Name:  $
 #
 
@@ -55,6 +55,9 @@ build_mpack()
 	    HAVE_MPACK=f
 	fi
 	echo -n "building mpack...  "
+	if test "x$CC" = x ; then
+	    export CC=cc
+	fi
 	( cd $MPACKDIR && ./configure && $MAKE ) > tr_build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
