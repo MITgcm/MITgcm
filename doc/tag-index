@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.334 2004/07/24 02:47:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.335 2004/07/27 00:44:10 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o update global_ocean.cs32x15/thsice: use z* + RealFW + staggerTimeStep
+o start with no AB and no initial filtering (staggerTimeStep):
+  change the results of test-exp: hs94.128x64x5, hs94.1x64x5 & hs94.cs-32x32x5
+o move ocean specific S/R calls from forward_step.F to do_oceanic_phys.F
+  (external loading & cpl import/export stay in forward_step.F)
+o update coupling interface to work with new staggerTimeStep
+o change MDSIO ptracers_pickup.
 o fix a bug in Flux deriv. vs Ts (pkg/aim_v23/phy_suflux_sice.F);
 o genmake2 fixes so netcdf now works on halem ("osf1_alpha_*")
 o bugs fixed in kpp_calc.F (ustarY) and external_forcing.F (Qsw & Partial-cell)
