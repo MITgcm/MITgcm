@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.19 2000/09/12 19:20:35 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.20 2000/11/13 16:40:02 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -109,7 +109,7 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
     set RMFILES    = ( '*.p.out' )
     breaksw
   case IRIX64+mpi:
@@ -130,17 +130,55 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O3' )
 #   set NOOPTFLAGS = ( '-O0' )
 #   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
-#                      'load_external_fields.F' )
+#                      'external_fields_load.F' )
     set RMFILES    = ( 'rii_files' )
+    breaksw
+  case o2:
+  case IRIX:
+    echo "Configuring for SGI O2 running IRIX 6.5"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000 -mips4' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFLAGS = ( '-O0' )
+    breaksw
+  case o2+mpi:
+  case IRIX+mpi:
+    echo "Configuring for SGI O2 running IRIX 6.5 with MPI"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000 -mips4' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F' )
+    set NOOPTFLAGS = ( '-O0' )
+    set LIBS       = ( '-lmpi' )
+    breaksw
+  case o2k+mpi:
+    echo "Configuring for SGI Origin2000 running IRIX 6.5"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/include' )
+    set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFILES = ( 'calc_mom_rhs.F' )
+    set NOOPTFLAGS = ( '-O1' )
+    set LIBS       = ( '-lmpi -lscs' )
+    breaksw
+  case onyx:
+  case onyx+mpi:
+    echo "Configuring for SGI ONYX running IRIX64"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000 -64' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F' )
+    set LIBS       = ( '-lmpi' )
     breaksw
   case SunOS:
     set LN         = ( '/usr/bin/ln -fs' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-fast -O4' )
+    set FOPTIM     = ( '-fast -O3' )
     set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F ini_vertical_grid.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F')
     breaksw
   case SunOS+mpi:
     set LN         = ( '/usr/bin/ln -fs' )
@@ -148,11 +186,11 @@ switch ($platform$USEMPI)
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-fast -O4' )
+    set FOPTIM     = ( '-fast -O3' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
                        '-lsocket -lnsl' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F ini_vertical_grid.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F')
     breaksw
   case IRIX32:
     echo "Configuring for SGI ONYX running IRIX64"
@@ -162,7 +200,7 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O2' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
-                       'load_external_fields.F' )
+                       'external_fields_load.F' )
     set LIBS       = ( '-lmpi' )
     breaksw
   case HP-UX+mpi:
@@ -178,7 +216,7 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '+O2' )
     set NOOPTFLAGS = ( '+O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F' \
-                       'load_external_fields.F' )
+                       'external_fields_load.F' )
     breaksw
   case Linux+mpi:
     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
@@ -227,7 +265,7 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-m3 -Rabc -N 132')
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
     breaksw
   case SV1:
   case sn3002:
@@ -239,7 +277,7 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-m3 -Rabc -ei -eI -s cf77types -N 132')
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
