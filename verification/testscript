@@ -367,8 +367,11 @@ do
  echo Experiment: $dir
  echo
  unset genmake makedepend make run
- results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
- results='-- -- -- -- -- -- -- -- --'
+ if [ $longtest -gt 0 ]; then
+  results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+ else
+  results='-- -- -- -- -- -- -- -- --'
+ fi
  genmakemodel $dir/input && genmake=Y \
  && makeclean $dir/input \
  && makedependmodel $dir/input && makedepend=Y \
