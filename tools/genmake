@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.8 1998/12/08 18:08:51 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.9 1999/03/22 16:27:13 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -11,12 +11,11 @@ set allargs=( $argv )
 while ($#allargs)
  set arg = $allargs[1]
  switch ($arg)
- case -makefile*:
-   if ($arg == "-makefile") then
-     set mfile = ( Makefile )
-   else
-     set mfile = ( `echo $arg | sed 's/-makefile=//' `)
-   endif
+ case -makefile:
+   set mfile = ( Makefile )
+   breaksw
+ case -makefile=*:
+   set mfile = ( `echo $arg | sed 's/-makefile=//' `)
    breaksw
  case -platform:
  case -platform=:
@@ -177,15 +176,16 @@ switch ($platform$USEMPI)
     set NOOPTFILES = ( 'barrier.F different_multiple.F' \
                        'load_external_fields.F' )
     breaksw
+  case Linux+mpi:
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
   case Linux:
     set LN         = ( '/bin/ln -fs' )
     set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp  -traditional -P' )
     set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'g77' )
     set FFLAGS     = ( ' ' )
-    set FOPTIM     = ( '  -O3 -funroll-loops ' )
+    set FOPTIM     = ( '-O3 -funroll-loops ' )
     set LINK       = ( 'g77' )
-    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
     breaksw
   case Linux+pgi:
     set LN         = ( '/bin/ln -fs' )
