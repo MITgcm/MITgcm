@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.8 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.9 1999/08/26 17:47:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -51,10 +51,11 @@ C     I, J, K - Loop counters
        DO i=iMin,iMax
         KappaRT(i,j,k) = maskC(i,j)*maskUp(i,j)*
      &      (
+     &         KappaRT(i,j,k)
 #ifdef ALLOW_KPP
-     &         KPPdiffKzT(i,j,k,bi,bj)
+     &       + KPPdiffKzT(i,j,k,bi,bj)
 #else
-     &         diffKrT
+     &       + diffKrT
 #endif
      &       + KapGM(i,j)*K33(i,j,k)
      &      )
@@ -65,10 +66,11 @@ C     I, J, K - Loop counters
        DO i=iMin,iMax
         KappaRS(i,j,k) = maskC(i,j)*maskUp(i,j)*
      &      (
+     &         KappaRS(i,j,k)
 #ifdef ALLOW_KPP
-     &         KPPdiffKzS(i,j,k,bi,bj)
+     &       + KPPdiffKzS(i,j,k,bi,bj)
 #else
-     &         diffKrS
+     &       + diffKrS
 #endif
      &       + KapGM(i,j)*K33(i,j,k)
      &      )

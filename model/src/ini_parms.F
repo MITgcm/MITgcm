@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.45 1999/07/28 16:32:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.46 1999/08/26 17:47:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -102,7 +102,7 @@ C--   Continuous equation parameters
      & rhoConst, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & openBoundaries, nonHydrostatic, globalFiles,
-     & allowFreezing
+     & allowFreezing, ivdc_kappa
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -111,8 +111,8 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, 
-     & tauCD, rCD,
+     & nIter0, nTimeSteps, nEndIter, deltaT, deltaTmom, deltaTtracer,
+     & abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, taveFreq, deltaTClock,
      & pChkPtFreq, cAdjFreq, tauThetaClimRelax, tauSaltClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
@@ -330,6 +330,14 @@ C--   z,p,r coord input switching.
       IF ( hFacMinDp .EQ. UNSET_RL ) hFacMinDr       = hFacMinDp
       IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDrDefault
 
+      IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
+     &  ' vertical diffusion.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
+
       IF ( implicitFreeSurface .AND.  rigidLid ) THEN
        WRITE(msgBuf,'(A,A)')
      & 'S/R INI_PARMS: Cannot select both implicitFreeSurface',
@@ -462,6 +470,13 @@ C     o Convection frequency
       IF ( cAdjFreq .LT. 0. ) THEN
        cAdjFreq = deltaTClock
       ENDIF
+      IF ( ivdc_kappa .NE. 0. .AND. cAdjFreq .NE. 0. ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: You have enabled both ivdc_kappa and',
+     &  ' convective adjustment.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
 C     o CD coupling
       IF ( tauCD .EQ. 0.D0 ) THEN
         tauCD = deltaTmom
@@ -492,14 +507,38 @@ C     o Start time
 C     o nIter0
       IF ( nIter0 .EQ. 0 .AND. startTime .NE. 0. )
      &   nIter0 = INT( startTime/deltaTClock )
-C     o End Time
-      IF ( nTimeSteps .NE. 0 .AND. endTime .EQ. 0. )
-     &   endTime = startTime + deltaTClock*float(nTimeSteps)
-C     o nTimeSteps
+
+C     o nTimeSteps 1
+      IF ( nTimeSteps .EQ. 0 .AND. nEndIter .NE. 0 )
+     &     nTimeSteps = nEndIter-nIter0
+C     o nTimeSteps 2
       IF ( nTimeSteps .EQ. 0 .AND. endTime .NE. 0. )
-     &   nTimeSteps = INT((endTime-startTime)/deltaTClock)
+     &     nTimeSteps = int(0.5+(endTime-startTime)/deltaTclock)
+C     o nEndIter 1
+      IF ( nEndIter .EQ. 0 .AND. nTimeSteps .NE. 0 )
+     &     nEndIter = nIter0+nTimeSteps
+C     o nEndIter 2
+      IF ( nEndIter .EQ. 0 .AND. endTime .NE. 0. )
+     &     nEndIter = int(0.5+endTime/deltaTclock)
+C     o End Time 1
+      IF ( endTime .EQ. 0. .AND. nTimeSteps .NE. 0 )
+     &     endTime = startTime + deltaTClock*float(nTimeSteps)
+C     o End Time 2
+      IF ( endTime .EQ. 0. .AND. nEndIter .NE. 0 )
+     &     endTime = deltaTClock*float(nEndIter)
+
 C     o Consistent?
-      IF ( endTime-startTime .NE. deltaTClock*float(nTimeSteps) ) THEN
+      IF ( nEndIter .NE. nIter0+nTimeSteps ) THEN
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: nIter0, nTimeSteps and nEndIter are inconsistent'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: Perhaps more than two were set at once'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
+      IF ( nTimeSteps .NE. int(0.5+(endTime-startTime)/deltaTClock) )
+     & THEN
         WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: both endTime and nTimeSteps have been set'
         CALL PRINT_ERROR( msgBuf , 1)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.40 1999/07/28 16:32:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.41 1999/08/26 17:47:37 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -105,7 +105,7 @@ C                           etc...
      &        cg2dChkResFreq,
      &        cg3dMaxIters,
      &        cg3dChkResFreq,
-     &        nIter0, nTimeSteps,
+     &        nIter0, nTimeSteps, nEndIter,
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
@@ -116,6 +116,7 @@ C                           etc...
       INTEGER cg3dChkResFreq
       INTEGER nIter0
       INTEGER nTimeSteps
+      INTEGER nEndIter
       INTEGER numStepsPerPickup
       INTEGER writeStatePrec
       INTEGER writeBinaryPrec
@@ -369,7 +370,7 @@ C                          circles ( see filter*.F )
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
      & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
-     & latFFTFiltLo
+     & latFFTFiltLo, ivdc_kappa
 
       _RL cg2dTargetResidual
       _RL cg3dTargetResidual
@@ -455,6 +456,7 @@ C                          circles ( see filter*.F )
       _RL horiVertRatio
       _RL recip_horiVertRatio
       _RL latFFTFiltLo
+      _RL ivdc_kappa
 
       COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp,
      &                Lamba_theta

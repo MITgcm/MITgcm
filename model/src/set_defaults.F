@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.5 1999/07/28 16:32:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.6 1999/08/26 17:47:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -113,6 +113,7 @@ C--   Set default "physical" parameters
       nonHydrostatic      = .FALSE.
       globalFiles         = .FALSE.
       allowFreezing       = .FALSE.
+      ivdc_kappa          = 0.D0
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
@@ -128,7 +129,8 @@ C--   Time stepping parameters
       nIter0            = 0
       startTime         = deltaT*float(nIter0)
       nTimeSteps        = 0
-      endTime           = deltaT*float(nTimeSteps)
+      nEndIter          = nIter0+nTimeSteps
+      endTime           = deltaT*float(nEndIter)
       abEps             = 0.01
       pchkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
@@ -140,7 +142,7 @@ C--   Time stepping parameters
       nCheckLev         = 1
       checkPtSuff(1)    = 'ckptA'
       checkPtSuff(2)    = 'ckptB'
-      cAdjFreq          = -1.D0
+      cAdjFreq          =  0.D0
       tauCD             =  0.D0
       tauThetaClimRelax =  0.D0
       tauSaltClimRelax  =  0.D0

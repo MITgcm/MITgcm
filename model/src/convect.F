@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.11 1998/11/06 22:44:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.12 1999/08/26 17:47:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE CONVECT( bi, bj, iMin, iMax, jMin, jMax, K,
-     &       rhoKm1, rhoKp1,myTime,myIter, myThid )
+     &       rhoKm1, rhoKp1, ConvectCount,
+     &       myTime,myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CONVECT                                       |
 C     | o Does vertical mixing of unstable water columns         |
@@ -30,6 +31,7 @@ C     myThid - Thread number of this instance of S/R CONVECT
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -68,6 +70,7 @@ C--    Where statically unstable, mix the heat and salt
           theta(i,j,k  ,bi,bj) = tMix(i,j)/dSum(i,j)
           salt(i,j,k-1,bi,bj)  = sMix(i,j)/dSum(i,j)
           salt(i,j,k  ,bi,bj)  = sMix(i,j)/dSum(i,j)
+          ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
          ENDIF
         ENDDO
        ENDDO
