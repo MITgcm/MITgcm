@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.2 1998/07/29 18:33:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.3 1998/07/29 21:37:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -33,10 +33,10 @@ C     Calculate depths of centers and interfaces
        zFace(K+1) = zFace(K)-delZ(K)
       ENDDO
       dzC(1)      = delZ(1) * 0.5 _d 0
-      zC(1)       = delZ(1) * 0.5 _d 0
+      zC(1)       = -delZ(1) * 0.5 _d 0
       DO K=2,Nz
        dzC(K)     = 0.5 _d 0 *(delZ(K-1)+delZ(K))
-       zC(K)      = zC(K) - dzC(K)
+       zC(K)      = zC(K-1) - dzC(K)
       ENDDO
       DO K=1,Nz
        saFac(K)  = 1. D0
