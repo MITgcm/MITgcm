@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.1 2001/05/14 22:07:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.2 2002/12/19 13:12:42 cheisey Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
@@ -61,12 +61,15 @@ c     == local variables ==
       integer ierr
 
 c     == end of interface ==
+c     print *,'cal_toseconds: date',date
+c     print *,'cal_toseconds: timeint',timeint
 
       check_sign_1 = sign(1,date(1))
       check_sign_2 = sign(1,date(2))
-      if ((date(4) .eq. -1) .and.
+      if (((date(4) .eq. -1) .and.
      &    (date(3) .eq.  0) .and.
-     &    (check_sign_1*check_sign_2 .ge. 0)) then
+     &    (check_sign_1*check_sign_2 .ge. 0)) .or.
+     &    usingModelCalendar) then
         if ((date(1) .lt. 0) .or.
      &      (date(2) .lt. 0)) then
           ndays  = -date(1)
