@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.2 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.3 2003/11/01 03:38:53 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "AIM_OPTIONS.h"
 
 CStartOfInterface
