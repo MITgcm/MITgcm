@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.30 2003/08/01 04:03:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.31 2005/01/03 02:34:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,6 +149,11 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &                 tFld, sFld,
      &                 alphaRho, myThid)
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics )
+     &   CALL DIAGNOSTICS_FILL(alphaRho,'RHOAnoma',k,1,2,bi,bj,myThid)
+#endif
+
 C Quasi-hydrostatic terms are added in as if they modify the buoyancy
         IF (quasiHydrostatic) THEN
          CALL QUASIHYDROSTATICTERMS(bi,bj,k,alphaRho,myThid)
@@ -232,6 +237,11 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics )
+     &   CALL DIAGNOSTICS_FILL(alphaRho,'RHOAnoma',k,1,2,bi,bj,myThid)
+#endif
 
 C--     Calculate specific volume anomaly : alpha' = 1/rho - alpha_Cst
         DO j=jMin,jMax

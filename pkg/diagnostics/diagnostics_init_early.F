@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.2 2004/12/18 23:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.3 2005/01/03 02:32:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -24,8 +24,9 @@ C       \begin{tabular}[h]{|c|c|}\hline
 C         \textbf{Positions}  &  \textbf{Characters}
 C         &  \textbf{Meanings} \\\hline
 C         parse(1)  &  S  &  scalar \\
-C                   &  U  &  U-vector component  \\
-C                   &  V  &  V-vector component  \\
+C                   &  U  &  vector component in X direction \\
+C                   &  V  &  vector component in Y direction \\
+C                   &  W  &  vector component in vertical direction \\
 C         parse(2)  &  U  &  C-grid U-Point  \\
 C                   &  V  &  C-grid V-Point  \\
 C                   &  M  &  C-grid Mass Point  \\
