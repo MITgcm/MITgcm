@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.3 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.4 2004/11/21 16:06:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,6 +28,10 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     rhoK       :: density at level k
+C     sigKm1     :: upper level density computed at current pressure
+C     sigKp1     :: lower level density computed at current pressure
+C     sigmaX,Y,R :: iso-neutral gradient of density in 3 directions X,Y,R
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       _RL rhoK(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL sigKm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -39,34 +43,68 @@ C     == Routine arguments ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     rhoLoc :: local copy of rhoK
       INTEGER i,j
+      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 CEOP
 
+C-    safer to work on a local copy of rhoK (before a partial update)
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        rhoLoc(i,j) = rhoK(i,j)
+       ENDDO
+      ENDDO
+
+C-    Internal exchange for calculations in X
+      IF ( useCubedSphereExchange ) THEN
+        CALL FILL_CS_CORNER_TR_RL( .TRUE., rhoLoc, bi,bj, myThid )
+      ENDIF
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
         sigmaX(i,j,k)=_maskW(i,j,k,bi,bj)
      &        *_recip_dxC(i,j,bi,bj)
-     &        *(rhoK(i,j)-rhoK(i-1,j))
+     &        *(rhoLoc(i,j)-rhoLoc(i-1,j))
        ENDDO
       ENDDO
 
+C-    Internal exchange for calculations in Y
+      IF ( useCubedSphereExchange ) THEN
+        CALL FILL_CS_CORNER_TR_RL( .FALSE., rhoLoc, bi,bj, myThid )
+      ENDIF
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
         sigmaY(i,j,k)=_maskS(i,j,k,bi,bj)
      &        *_recip_dyC(i,j,bi,bj)
-     &        *(rhoK(i,j)-rhoK(i,j-1))
+     &        *(rhoLoc(i,j)-rhoLoc(i,j-1))
        ENDDO
       ENDDO
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        IF (K.NE.1 .AND. hfacC(i,j,k,bi,bj).NE.0.) THEN
-         sigmaR(i,j,k)=recip_drC(k)*rkFac*(sigKm1(i,j)-sigKp1(i,j))
-        ELSE
+C- jmc: Patrick, will this work for TAF ?
+      IF (K.EQ.1) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          sigmaR(i,j,k)=0.
-        ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         sigmaR(i,j,k)= maskC(i,j,k,bi,bj)
+     &                *recip_drC(k)*rkFac
+     &                *(sigKm1(i,j)-sigKp1(i,j))
+        ENDDO
+       ENDDO
+      ENDIF
+C- jmc: leave the old code commented (in case ...)
+c     DO j=1-Oly,sNy+Oly
+c      DO i=1-Olx,sNx+Olx
+c       IF (K.NE.1 .AND. hfacC(i,j,k,bi,bj).NE.0.) THEN
+c        sigmaR(i,j,k)=recip_drC(k)*rkFac*(sigKm1(i,j)-sigKp1(i,j))
+c       ELSE
+c        sigmaR(i,j,k)=0.
+c       ENDIF
+c      ENDDO
+c     ENDDO
 
       RETURN
       END
