@@ -1,6 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.37 2003/05/13 17:42:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.38 2003/06/27 01:51:10 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_OPTIONS.h"
+# endif
 
 CBOP
 C     !ROUTINE: THE_MAIN_LOOP
@@ -45,6 +48,9 @@ c They provide the fields to be stored.
 # include "GAD.h"
 # ifdef ALLOW_PASSIVE_TRACER
 #  include "TR1.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS.h"
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
 #  include "CG3D.h"
@@ -213,6 +219,10 @@ c--
 CADJ INIT comlev1_gmredi_k_gad
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
 #endif /* ALLOW_GMREDI */
+#ifdef ALLOW_PTRACERS
+CADJ INIT comlev1_bibj_ptracers = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*NUMBER_OF_PTRACERS
+#endif /* ALLOW_PTRACERS */
 c--
 #ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_k_gad

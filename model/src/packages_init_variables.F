@@ -83,7 +83,13 @@ cph      ENDIF
 cph#endif
 
 #ifdef ALLOW_PTRACERS
-      IF ( usePTRACERS ) CALL PTRACERS_INIT( mythid )
+# ifndef ALLOW_AUTODIFF_TAMC
+      IF ( usePTRACERS ) THEN
+# endif
+         CALL PTRACERS_INIT( mythid )
+# ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
+# endif
 #endif
 
 #ifdef ALLOW_LAND

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.30 2003/06/25 21:06:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.31 2003/06/27 01:51:10 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -154,7 +154,7 @@ C--   Do seaice diagnostics.
 cswdice -- end add ---
 
 cswdptr ---  add ---
-#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
 C--   Do ptracer diagnostics.
       IF (usePTRACERS)
      & CALL GCHEM_DIAGS( myCurrentTime, myIter, myThid )

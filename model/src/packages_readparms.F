@@ -107,13 +107,15 @@ C -- initialize Sea Ice parameters
 #endif
 cswdice --- end add ---
 
-
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
-cswdptr -- add --
-      IF (usePTRACERS) CALL GCHEM_READPARMS( myThid )
-cswdptr -- end add ---
 #endif
+
+cswdptr -- add --
+#ifdef ALLOW_GCHEM
+      IF (usePTRACERS) CALL GCHEM_READPARMS( myThid )
+#endif
+cswdptr -- end add ---
 
 #if (defined (ALLOW_ADJOINT_RUN) || \
      defined (ALLOW_TANGENTLINEAR_RUN) || \

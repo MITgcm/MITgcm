@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.41 2003/06/23 22:32:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.42 2003/06/27 01:51:10 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,11 +9,9 @@ C $Name:  $
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
-cswdice --- add ----
-#ifdef ALLOW_THERM_SEAICE
-#include "ICE.h"
-#endif
-cswdice ------
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_OPTIONS.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 CBOP
@@ -84,6 +82,10 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -95,10 +97,15 @@ C     == Global variables ===
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
 # endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS.h"
+# endif
+cswdice --- add ----
+# ifdef ALLOW_THERM_SEAICE
+#  include "ICE.h"
+# endif
+cswdice ------
 #endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -160,6 +167,7 @@ C     This is currently used by IVDC and Diagnostics
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, km1, kup, kDown
+      INTEGER iTracer
 
 CEOP
 
@@ -247,6 +255,11 @@ cph although some of these are re-initialised later.
 # ifdef ALLOW_PASSIVE_TRACER
            gTr1(i,j,k,bi,bj) = 0. _d 0
 # endif
+# ifdef ALLOW_PTRACERS
+           DO iTracer=1,PTRACERS_numInUse
+            gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
+           ENDDO
+# endif
 # ifdef ALLOW_GMREDI
            Kwx(i,j,k,bi,bj)  = 0. _d 0
            Kwy(i,j,k,bi,bj)  = 0. _d 0
@@ -276,7 +289,6 @@ cph although some of these are re-initialised later.
         iMax = sNx+OLx
         jMin = 1-OLy
         jMax = sNy+OLy
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -520,6 +532,11 @@ CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
+#ifdef ALLOW_PTRACERS
+cph-- moved to forward_step to avoid key computation
+cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
+cphCADJ &                              key=itdkey, byte=isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AIM
@@ -694,7 +711,7 @@ cswdice -- end add ---
 #endif
 #ifdef ALLOW_PTRACERS
          IF ( usePTRACERS ) THEN
-           CALL PTRACERS_INTEGERATE(
+           CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      X         KappaRS,
