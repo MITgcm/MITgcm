@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.11 2004/06/23 22:18:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.12 2004/07/05 04:44:51 edhill Exp $
 C $Name:  $
 
       subroutine  diagout (myThid,myIter,listnum)
@@ -15,9 +15,10 @@ C***********************************************************************
 
       implicit none
 #include "PACKAGES_CONFIG.h"
-#include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
 #ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
@@ -108,9 +109,27 @@ c          do k=1,kdiag(m)
 
           endif
          endif
-         call mdswritefield_new(fn,64,glf,'RL',Nr+Nrphys,
-     .                           nlevels(listnum),qtmp1,n,myIter,myThid)
-c                                        kdiag(m),qtmp1,n,myIter,myThid)
+
+#ifdef ALLOW_MDSIO
+C        Prepare for mdsio optionality
+C        IF (diag_use_mdsio) THEN
+         IF (diag_use_mdsio) THEN
+           call mdswritefield_new(fn,64,glf,'RL',Nr+Nrphys,
+     .          nlevels(listnum),qtmp1,n,myIter,myThid)
+c               kdiag(m),qtmp1,n,myIter,myThid)
+         ENDIF
+C        ENDIF
+#endif /*  ALLOW_MDSIO  */
+
+#ifdef ALLOW_MNC
+         IF (useMNC) THEN
+           IF (diag_use_mnc) THEN
+C            CALL MNC_CW_SET_UDIM('diagnostics',-1,myThid)
+C            CALL MNC_CW_RL_W('D','state',0,0,'U', uVel, myThid)
+           ENDIF
+         ENDIF
+#endif /*  ALLOW_MNC  */
+
         endif
        enddo
       enddo

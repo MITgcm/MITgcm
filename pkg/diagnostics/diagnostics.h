@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.14 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.15 2004/07/05 04:44:51 edhill Exp $
 C $Name:  $
 
 C ======================================================================
@@ -1804,6 +1804,14 @@ C diag_choices common
       _RL levs (numperlist,numlists)
       character*8 flds (numperlist,numlists)
       character*8 fnames(numlists)
+      logical diag_use_mdsio
+      logical diag_use_mnc
 
-      common /diag_choices/ levs,flds,fnames,freq,nlevels,nfields,nlists
+      common /diag_choices/ 
+     &     levs, flds, fnames, freq, nlevels, nfields, nlists,
+     &     diag_use_mdsio, diag_use_mnc
 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.7 2004/06/14 21:54:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.8 2004/07/05 04:44:51 edhill Exp $
 C $Name:  $
 
       subroutine diag_readparms (myThid)
@@ -32,11 +32,14 @@ c -----------------------
       integer frequency(ndim)        ! Frequency of Output (hhmmss)
       _RL levels (ndim,ndim)         ! List Output Levels
       character*8 fields(ndim,ndim)  ! List Output Fields
-      character*8 filename(ndim)    ! List Output Filename
+      character*8 filename(ndim)     ! List Output Filename
       character*8 blank
       INTEGER ioUnit
+      LOGICAL use_mdsio, use_mnc
 
-      namelist / diagnostics_list / frequency,levels,fields,filename
+      namelist / diagnostics_list /
+     &     frequency, levels, fields, filename,
+     &     use_mdsio, use_mnc
 
 C **********************************************************************
 C ****           Initialize and Read Diagnostics Namelist           ****
@@ -47,12 +50,15 @@ C **********************************************************************
       blank  = '        '
 
       do n = 1,ndim
-      frequency(n) = 0
-      do m = 1,ndim
-      levels (n,m) = undef
-      fields (n,m) = blank
+        frequency(n) = 0
+        do m = 1,ndim
+          levels (n,m) = undef
+          fields (n,m) = blank
+        enddo
       enddo
-      enddo
+
+      use_mdsio = .true.
+      use_mnc   = .false.
 
       WRITE(msgBuf,'(A)') ' DIAG_READPARMS: opening data.diagnostics'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -84,24 +90,32 @@ C **********************************************************************
 
       do n = 1,numlists
         if( frequency(n).ne.0 ) then
-           nlists = nlists + 1
-           freq(n)   = frequency(n)
-           fnames(n)    = filename (n)
-           nlevels(n) = 0
-           nfields(n) = 0
+          nlists = nlists + 1
+          freq(n)   = frequency(n)
+          fnames(n)    = filename (n)
+          nlevels(n) = 0
+          nfields(n) = 0
           do m=1,ndim
-          if( levels(m,n).ne.undef ) nlevels(n) = nlevels(n) + 1
-          if( fields(m,n).ne.blank ) nfields(n) = nfields(n) + 1
+            if( levels(m,n).ne.undef ) nlevels(n) = nlevels(n) + 1
+            if( fields(m,n).ne.blank ) nfields(n) = nfields(n) + 1
           enddo
           do m=1,nlevels(n)
-          levs(m,n) = levels(m,n)
+            levs(m,n) = levels(m,n)
           enddo
           do m=1,nfields(n)
-          flds(m,n) = fields(m,n)
+            flds(m,n) = fields(m,n)
           enddo
-  
         endif
       enddo
+
+CEH3  PLEASE ADD WARNING HERE !
+C     
+C     Since numlists is not necessarily equal to ndim, users should be
+C     warned when the number of diagnostics they have specified (or is
+C     it requested?) exceeds the available space.
+
+      diag_use_mdsio = use_mdsio
+      diag_use_mnc   = use_mnc
 
 C **********************************************************************
 C ****               Echo History List Data Structure               ****
