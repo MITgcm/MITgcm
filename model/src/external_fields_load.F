@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.16 2003/12/06 00:08:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.17 2004/04/22 22:17:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -234,7 +234,8 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       ENDDO
 
 C-- Diagnostics
-      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
+      IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
+        _BEGIN_MASTER( myThid )
         write(*,'(a,1p7e12.4,2i6,2e12.4)')
      &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
      &   myTime,
@@ -247,6 +248,7 @@ C-- Diagnostics
      &   myTime,
      &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
      &   aWght,bWght
+        _END_MASTER( myThid )
       ENDIF
 
 C endif for periodicForcing
