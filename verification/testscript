@@ -316,6 +316,8 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -clean     Do "make CLEAN" after compiling and testing.
  -shorttest Don't compare numeric output for mean and s.d. of variables.
  -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
+ -cleanup   Aggresively removes all model output, executables and object files
+            and then exits. Use with care.
 
 Normal usage:
  $0 *       Configure, compile, run and analyze in all experiment directories
@@ -332,6 +334,17 @@ if [ $# -eq 0 ]; then
 else
  echo $*
 fi
+}
+
+clean_up()
+{
+# Find all executables, object files, CPP'd source and model output
+# and DELETE it.
+for opt in '-name mitgcmuv*' '-name *.o' '-name *.f' '-name *.c' '-path *results -prune -o -name *.meta' '-path *results -prune -o -name *.data' '-type l'
+ do
+   echo Cleaning: find . $opt -exec rm {} \;
+   find . $opt -exec rm {} \;
+done
 }
 
 ###############################################################################
@@ -352,6 +365,7 @@ expts=''
 for arg in $@
 do
  case $arg in
+   -cleanup) clean_up; exit 0;;
    -quick) quick=1;;
    -verbose) verbose=2;;
    -debug) debug=1;;
