@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/shap_filt_relvort3.F,v 1.3 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/shap_filt_relvort3.F,v 1.4 2003/12/09 00:29:50 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "SHAP_FILT_OPTIONS.h"
 
       SUBROUTINE SHAP_FILT_RELVORT3( 
      I        bi,bj,k,
