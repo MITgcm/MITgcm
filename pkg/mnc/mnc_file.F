@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.4 2004/01/07 07:29:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.5 2004/01/08 07:24:47 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -92,99 +92,12 @@ C==================================================================
      I     sval )
 
       implicit none
-#include "netcdf.inc"
-#include "mnc_common.h"
-#include "EEPARAMS.h"
-
 C     Arguments
-      integer myThid
-      character*(*) fname
-      character*(*) atname
-      character*(*) sval
+      integer myThid, len
+      character*(*) fname, atname, sval
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
-      integer i, err, fid, ind, n1,n2
-      character*(MNC_MAX_CHAR) s1, s2
-      character*(MAX_LEN_MBUF) msgbuf
-      character*(MAX_LEN_MBUF) name
-
-C     Is the file open?
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF (ind .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       fname, ''' must be opened first'
-        CALL print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_STR'
-      ENDIF
-      fid = mnc_f_info(ind,2)
-
-C     Enter define mode
-      CALL MNC_FILE_REDEF(myThid, fname)
-
-      s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-      s2(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-      n1 = ILNBLNK(atname)
-      n2 = ILNBLNK(sval)
-      s1(1:n1) = atname(1:n1)
-      s2(1:n2) = sval(1:n2)
-
-      err = NF_PUT_ATT_TEXT(fid, NF_GLOBAL, s1, n2, s2)
-      CALL MNC_HANDLE_ERR(myThid, err, 
-     &     'adding attribute in S/R MNC_FILE_ADD_ATTR_STR')
-
-      RETURN
-      END
-
-C==================================================================
-
-      SUBROUTINE MNC_FILE_ADD_ATTR_INT( 
-     I     myThid, 
-     I     fname, 
-     I     atname, 
-     I     ival )
-
-      implicit none
-#include "netcdf.inc"
-#include "mnc_common.h"
-#include "EEPARAMS.h"
-
-C     Arguments
-      integer myThid
-      character*(*) fname, atname
-      integer ival
-
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
-      integer i, err, fid, ind, n1,n2
-      character*(MNC_MAX_CHAR) s1
-      character*(MAX_LEN_MBUF) msgbuf
-
-C     Is the file open?
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF ( ind .GT. 0 ) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       fname, ''' must be opened first'
-        CALL print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_INT'
-      ENDIF
-      fid = mnc_f_info(ind,2)
-
-C     Enter define mode
-      CALL MNC_FILE_REDEF(myThid, fname)
-
-      s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-      n1 = ILNBLNK(atname)
-      s1(1:n1) = atname(1:n1)
-
-      err = NF_PUT_ATT_INT(fid, NF_GLOBAL, s1, NF_INT, ival)
-      CALL MNC_HANDLE_ERR(myThid, err,
-     &     'adding attribute in S/R MNC_FILE_ADD_ATTR_INT')
-
+      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 1, 
+     &     sval, 0, 0.0D0, 0.0, 0 )
       RETURN
       END
 
@@ -194,22 +107,83 @@ C==================================================================
      I     myThid, 
      I     fname, 
      I     atname, 
+     I     len, 
      I     dval )
 
+      implicit none
+C     Arguments
+      integer myThid, len
+      character*(*) fname, atname
+      _RL dval
+
+      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 2, 
+     &     ' ', len, dval, 0.0, 0 )
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_ADD_ATTR_REAL( 
+     I     myThid, 
+     I     fname, 
+     I     atname, 
+     I     len, 
+     I     rval )
+
+      implicit none
+C     Arguments
+      integer myThid, len
+      character*(*) fname, atname
+      _RS rval
+
+      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 3, 
+     &     ' ', len, 0.0D0, rval, 0 )
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_ADD_ATTR_INT( 
+     I     myThid, 
+     I     fname, 
+     I     atname, 
+     I     len, 
+     I     ival )
+
+      implicit none
+C     Arguments
+      integer myThid, len, ival
+      character*(*) fname, atname
+
+      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 4, 
+     &     ' ', len, 0.0D0, 0.0, ival )
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_ADD_ATTR_ANY( 
+     I     myThid, 
+     I     fname, 
+     I     atname, 
+     I     atype, sv, len,dv,rv,iv )
+
+      implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid
-      character*(*) fname, atname
-      _RL dval
-
+      integer myThid, atype, len, iv
+      character*(*) fname, atname, sv
+      _RL dv
+      _RS rv
+      
 C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i, err, fid, ind, n1,n2
+      integer i, n, err, fid, ind, n1,n2, lens
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
       
@@ -230,7 +204,22 @@ C     Enter define mode
       n1 = ILNBLNK(atname)
       s1(1:n1) = atname(1:n1)
 
-      err = NF_PUT_ATT_DOUBLE(fid, NF_GLOBAL, s1, NF_DOUBLE, ival)
+      IF (atype .EQ. 1) THEN
+        lens = ILNBLNK(sv)
+        err = NF_PUT_ATT_TEXT(fid, NF_GLOBAL, s1, lens, sv)
+      ELSEIF (atype .EQ. 2) THEN
+        err = NF_PUT_ATT_DOUBLE(fid, NF_GLOBAL, s1, NF_DOUBLE, len, dv)
+      ELSEIF (atype .EQ. 3) THEN
+        err = NF_PUT_ATT_REAL(fid, NF_GLOBAL, s1, NF_FLOAT, len, rv)
+      ELSEIF (atype .EQ. 4) THEN
+        err = NF_PUT_ATT_INT(fid, NF_GLOBAL, s1, NF_INT, len, iv)
+      ELSE
+        write(msgbuf,'(a,i10,a)') 'MNC ERROR: atype = ''', atype, 
+     &       ''' is invalid--must be: [1-4]'
+        n = ILNBLNK(msgbuf)
+        CALL print_error(msgbuf(1:n), mythid)
+        stop 'ABNORMAL END: S/R MNC_VAR_ADD_ATTR_ANY'
+      ENDIF
       CALL MNC_HANDLE_ERR(myThid, err,
      &     'adding attribute in S/R MNC_FILE_ADD_ATTR_DBL')
 

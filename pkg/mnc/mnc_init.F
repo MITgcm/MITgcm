@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.2 2004/01/06 23:19:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.3 2004/01/08 07:24:47 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -12,7 +12,7 @@ C==================================================================
 C     Arguments
 
 C     Local Variables
-      integer i
+      integer i,j
       character blank*(MNC_MAX_CHAR)
 
 C     Write blanks or zeros to all the name and ID tables
@@ -25,10 +25,63 @@ C     Write blanks or zeros to all the name and ID tables
         mnc_g_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_v_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_d_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
-        mnc_f_info(i,1) = 0
-        mnc_f_info(i,2) = 0
-        mnc_f_info(i,3) = 0
-        mnc_fv_ids(i,1) = 0
+        DO j = 1,MNC_MAX_INFO
+          mnc_f_info(i,j) = 0
+          mnc_fv_ids(i,j) = 0
+          mnc_fg_ids(i,j) = 0
+          mnc_fd_ind(i,j) = 0
+        ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_DUMP()
+
+#include "mnc_common.h"
+
+C     Arguments
+
+C     Local Variables
+      integer i,j, n_id
+
+C     n_id = mnc_max_id
+      n_id = 4
+
+      write(*,*) 'mnc_f_names :'
+      DO i = 1,n_id
+        write(*,'(a,a40)') '  ', mnc_f_names(i)
+      ENDDO
+      write(*,*) 'mnc_g_names :'
+      DO i = 1,n_id
+        write(*,'(a,a40)') '  ', mnc_g_names(i)
+      ENDDO
+      write(*,*) 'mnc_v_names :'
+      DO i = 1,n_id
+        write(*,'(a,a40)') '  ', mnc_v_names(i)
+      ENDDO
+      write(*,*) 'mnc_d_names :'
+      DO i = 1,n_id
+        write(*,'(a,a40)') '  ', mnc_d_names(i)
+      ENDDO
+
+      write(*,*) 'mnc_f_info :'
+      DO i = 1,n_id
+        write(*,*) (mnc_f_info(i,j), j=1,20)
+      ENDDO
+      write(*,*) 'mnc_fg_ids :'
+      DO i = 1,n_id
+        write(*,*) (mnc_fg_ids(i,j), j=1,20)
+      ENDDO
+      write(*,*) 'mnc_fd_ind :'
+      DO i = 1,n_id
+        write(*,*) (mnc_fd_ind(i,j), j=1,20)
+      ENDDO
+      write(*,*) 'mnc_fv_ids :'
+      DO i = 1,n_id
+        write(*,*) (mnc_fv_ids(i,j), j=1,20)
       ENDDO
 
       RETURN

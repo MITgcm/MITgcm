@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.3 2004/01/07 07:29:13 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.4 2004/01/08 07:24:47 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -19,8 +19,7 @@ C==================================================================
 
 C     Arguments
       integer myThid
-      character*(*) fname
-      character*(*) gname
+      character*(*) fname,gname
       integer ndim
       character*(*) dnames(ndim)
 
@@ -28,8 +27,8 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,k, n, indf,indg,indd, id, fid, ngrid, ng_ind, ds_last
-      integer idd, err, dn,dnpn
+      integer i,j,k,ig, n, indf,indg,indd, id, fid, ngrid
+      integer ng_ind,lg_ind, ds_last, idd, err, dn,dnpn, dimind
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(3*MNC_MAX_CHAR) dim_names
@@ -54,7 +53,8 @@ C     Get the file ID and indicies
       IF (ngrid .EQ. 0) THEN
         ds_last = 0
       ELSE
-        ds_last = mnc_f_info(indf,(ng_ind+2))
+        lg_ind = 4 + 3*(ngrid - 1)
+        ds_last = mnc_f_info(indf,(lg_ind+2))
       ENDIF
 
 C     Check for sufficient space in memory
@@ -96,29 +96,43 @@ C     Add the dimensions
         name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
         n = ILNBLNK(dnames(i))
         name(1:n) = dnames(i)(1:n)
+
         CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_d_names, indd)
         IF (indd .LT. 1) THEN
           write(msgbuf,'(3a)') 'MNC ERROR: dimension ''',
-     &         name, ''' does not exist'
+     &         name(1:n), ''' does not exist'
           CALL print_error( msgbuf, mythid )
           stop 'ABNORMAL END: S/R MNC_GRID_INIT'
         ENDIF
         name(1:MNC_MAX_CHAR) = mnc_d_names(indd)(1:MNC_MAX_CHAR)
-        k = mnc_d_size(indd)
-        IF ( k .LT. 1 ) THEN
-          IF (i .NE. ndim) THEN
-            write(msgbuf,'(3a)') 'MNC ERROR: in file ''', fname,
-     &           ''' grid ''', gname, 
-     &           ''': only the LAST dim can be unlimited (len<0)'
-            CALL print_error( msgbuf, mythid )
-            stop 'ABNORMAL END: S/R MNC_GRID_INIT'
+
+C       Check if the dim is already defined within the file
+        CALL MNC_GRID_GET_DIMIND(indf, name, dimind)
+        if (dimind .GT. 0) THEN
+
+C         We found the dim, so use the existing indicies
+          idd  = mnc_fg_ids(indf,dimind)
+
+        ELSE
+
+C         We cannot find the dim, so create new entries
+          k = mnc_d_size(indd)
+          IF ( k .LT. 1 ) THEN
+            IF (i .NE. ndim) THEN
+              write(msgbuf,'(3a)') 'MNC ERROR: in file ''', fname,
+     &             ''' grid ''', gname, 
+     &             ''': only the LAST dim can be unlimited (len<0)'
+              CALL print_error( msgbuf, mythid )
+              stop 'ABNORMAL END: S/R MNC_GRID_INIT'
+            ENDIF
+            k = NF_UNLIMITED
           ENDIF
-          k = NF_UNLIMITED
+          err = NF_DEF_DIM(fid, name, k, idd)
+          write(msgbuf,'(5a)') 'creating dim in grid ''', gname,
+     &         ''' in file ''', fname, ''''
+          CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
         ENDIF
-        err = NF_DEF_DIM(fid, name, k, idd)
-        write(msgbuf,'(5a)') 'creating dim in grid ''', gname,
-     &       ''' in file ''', fname, ''''
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
         mnc_fg_ids(indf,j) = idd
         mnc_fd_ind(indf,j) = indd
 
@@ -143,6 +157,46 @@ C     Grid successfully added, so update file table
       mnc_f_info(indf,ng_ind+2) = ds_last + ndim
       mnc_f_info(indf,3) = ngrid + 1
       
+      RETURN
+      END
+      
+C==================================================================
+
+      SUBROUTINE MNC_GRID_GET_DIMIND( 
+     I     indf, 
+     I     dname, 
+     O     ind_fg_ids )
+
+      implicit none
+#include "mnc_common.h"
+
+C     Arguments
+      integer indf, ind_fg_ids
+      character*(*) dname
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer i,j,k,l, n,n1, ngrid, ds,de
+
+      ind_fg_ids = -1
+      n = ILNBLNK(dname)
+      ngrid = mnc_f_info(indf,3)
+      DO i = 1,ngrid
+        j = 4 + 3*(i - 1)
+        ds = mnc_f_info(indf,j+1)
+        de = mnc_f_info(indf,j+2)
+        DO k = ds,de
+          l = mnc_fd_ind(indf,k)
+          n1 = ILNBLNK(mnc_d_names(l))
+          IF ((n .EQ. n1) 
+     &         .AND. (mnc_d_names(l)(1:n1) .EQ. dname(1:n))) THEN
+            ind_fg_ids = k
+            RETURN
+          ENDIF
+        ENDDO
+      ENDDO
       RETURN
       END
       

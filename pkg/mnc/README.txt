@@ -40,8 +40,10 @@ using a simple interface such as:
   MNC_FILE_CREATE(	 myThid, fname )
   MNC_FILE_OPEN(	 myThid, fname, itype )
   MNC_FILE_ADD_ATTR_STR( myThid, fname, atname, sval )
-  MNC_FILE_ADD_ATTR_INT( myThid, fname, atname, ival )
-  MNC_FILE_ADD_ATTR_DBL( myThid, fname, atname, dval )
+  MNC_FILE_ADD_ATTR_DBL( myThid, fname, atname, len, dval )
+  MNC_FILE_ADD_ATTR_REAL(myThid, fname, atname, len, rval )
+  MNC_FILE_ADD_ATTR_INT( myThid, fname, atname, len, ival )
+  MNC_FILE_ADD_ATTR_ANY( myThid, fname, atname, atype, cs,len,dv,rv,iv )
   ...
   MNC_FILE_READ_HEADER(  myThid, fname )
 
@@ -51,15 +53,19 @@ using a simple interface such as:
   MNC_GRID_INIT(	 myThid, fname, gname, ndim, dnames )
   MNC_GRID_SET_LL(	 myThid, fname, gname, type, lats, lons )
 
-  MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, units, fillval )
-  MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units, fillval )
-  MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units, fillval )
-  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, sval )
-  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, atname, ival )
-  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, atname, dval )
+  MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_ANY(	 myThid, fname, gname, vname, units, type )
+  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, nv, sval )
+  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, atname, nv, dval )
+  MNC_VAR_ADD_ATTR_REAL( myThid, fname, vname, atname, nv, rval )
+  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, atname, nv, ival )
+  MNC_VAR_ADD_ATTR_ANY(	 myThid, fname, vname, atname, atype, cs,len,dv,rv,iv )
   MNC_VAR_WRITE_DBL(	 myThid, fname, vname, var )
   MNC_VAR_WRITE_REAL(	 myThid, fname, vname, var )
   MNC_VAR_WRITE_INT(	 myThid, fname, vname, var )
+  MNC_VAR_WRITE_ANY(	 myThid, fname, vname, vtype, dv, rv, iv )
   ...
   MNC_VAR_READ(          myThid, fname, vname, var )
 

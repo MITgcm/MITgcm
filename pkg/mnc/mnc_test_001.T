@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.4 2004/01/07 19:50:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.5 2004/01/08 07:24:47 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -21,11 +21,11 @@ C     Local Variables
       integer ndim, dims(MAX_DIM)
       integer myThid, i,j,k,l,ii, n, ind, fid
       character*(MAX_LEN_MBUF) msgbuf
-      character*(MAX_STR) blank, fname, gname, vname, units
-      character*(MAX_STR) atname, atval
+      character*(MAX_STR) blank, fname, gname1,gname2, vname1,vname2
+      character*(MAX_STR) atname, atval, units
       character*(MAX_STR) dnames(MAX_NAMES)
       REAL*8 fillval
-      REAL*8 var(MAX_STOR)
+      REAL*8 var(MAX_STOR), tvar(MAX_STOR)
 
       print*, '=== Starting Program:  mnc_test_001 ==='
 
@@ -37,8 +37,10 @@ C     Local Variables
         dnames(i)(1:MAX_STR) = blank(1:MAX_STR)
       ENDDO
       fname(1:MAX_STR) = blank(1:MAX_STR)
-      gname(1:MAX_STR) = blank(1:MAX_STR)
-      vname(1:MAX_STR) = blank(1:MAX_STR)
+      gname1(1:MAX_STR) = blank(1:MAX_STR)
+      gname2(1:MAX_STR) = blank(1:MAX_STR)
+      vname1(1:MAX_STR) = blank(1:MAX_STR)
+      vname2(1:MAX_STR) = blank(1:MAX_STR)
       units(1:MAX_STR) = blank(1:MAX_STR)
       atname(1:MAX_STR) = blank(1:MAX_STR)
       atval(1:MAX_STR) = blank(1:MAX_STR)
@@ -56,6 +58,7 @@ C     Local Variables
 C     In FORTRAN, the first variable cycles most quickly
       DO ii = 1,MAX_STOR
         var(ii) = 0.21
+        tvar(ii) = 0.23
       ENDDO
       ii = 0
       DO l = 1,dims(3)
@@ -82,24 +85,34 @@ C     In FORTRAN, the first variable cycles most quickly
       CALL MNC_FILE_CREATE(myThid, fname)
 
       print*, ' Calling MNC_GRID_INIT() ...'
-      gname(1:8) = 'XY_Grid '
-      CALL MNC_GRID_INIT(myThid, fname, gname, ndim, dnames)
+      gname1(1:10) = 'xyzt      '
+      CALL MNC_GRID_INIT(myThid, fname, gname1, ndim, dnames)
+      gname2(1:10) = 't         '
+      CALL MNC_GRID_INIT(myThid, fname, gname2, 1, dnames(4))
 
       print*, ' Calling MNC_VAR_INIT_DBL() ...'
-      vname(1:11) = 'temperature'
-      units(1:3) = 'm/s'
-      fillval = -9999.0
-      CALL MNC_VAR_INIT_DBL(myThid, fname, gname, vname, fillval)
+      vname1(1:4) = 'time'
+      units(1:19) = 'days since 1970-1-1'
+      CALL MNC_VAR_INIT_DBL(myThid, fname, gname2, vname1, units )
+      vname2(1:4) = 'temp'
+      units(1:19) = 'm/s                '
+      CALL MNC_VAR_INIT_DBL(myThid, fname, gname1, vname2, units )
 
       print*, ' Calling MNC_VAR_ADD_ATTR_STR() ...'
-      atname(1:5) = 'units'
-      atval(1:4) = 'cm/s'
-      CALL MNC_VAR_ADD_ATTR_STR(myThid, fname, vname, atname, atval)
+      atname(1:9) = 'long_name'
+      atval(1:11) = 'hours since '
+      CALL MNC_VAR_ADD_ATTR_STR(myThid,fname,vname1, atname, atval)
+      atname(1:11) = 'valid_range'
+      tvar(1) = -23.5
+      tvar(2) = 176.75
+      CALL MNC_VAR_ADD_ATTR_DBL(myThid,fname,vname2, atname, 2, tvar)
 
       print*, ' Calling MNC_VAR_WRITE_DBL() ...'
-      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname, var)
+      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname1, var)
       print*, ' Calling MNC_VAR_WRITE_DBL() ...'
-      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname, var)
+      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname2, var)
+
+C     CALL MNC_DUMP()
 
       print*, ' Calling MNC_FILE_CLOSE() ...'
       CALL MNC_FILE_CLOSE(myThid, fname)

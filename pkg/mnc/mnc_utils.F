@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.3 2004/01/07 19:50:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.4 2004/01/08 07:24:47 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -55,7 +55,7 @@ C     Functions
       integer ILNBLNK
 
 C     Locals
-      integer n, i, nf, ind
+      integer n, i, nf, ind, lenm
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Check that aname contains a valid name
@@ -63,8 +63,9 @@ C     Check that aname contains a valid name
       IF ( n .LT. 1 ) THEN
         write(msgbuf,'(a)')
      &       'MNC_GET_IND: an invalid (empty) name was specified'
-        CALL print_error( msgbuf, myThid )
-        stop 'ABNORMAL END: S/R MNC_GET_ID'
+        lenm = ILNBLNK(msgbuf)
+        CALL print_error(msgbuf(1:lenm), myThid)
+        stop 'ABNORMAL END: S/R MNC_GET_IND'
       ENDIF
 
 C     Search for the index
