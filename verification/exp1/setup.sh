@@ -93,7 +93,7 @@ foreach f ( `find . -type f` )
   endif
   if ( "$cstat" != "0" ) then
    echo "Replacing $f"
-   \cp -pr $f ${UV_BASELINE_DIR}/$f
+   \cp -r $f ${UV_BASELINE_DIR}/$f
   endif
  endif
 end
