@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.8 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.9 2004/02/26 19:34:34 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -127,6 +127,11 @@ c     Get values of climatological fields.
 
 c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
+
+      if ( debugLevel .GE. debLevB ) then
+         call debug_call( 'exf_check_range', myThid )
+         call exf_check_range( mytime, myiter, mythid )
+      endif
 
 c     Compute bulk formulae
 #ifdef ALLOW_BULKFORMULAE
