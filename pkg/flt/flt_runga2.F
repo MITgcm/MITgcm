@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.4 2004/09/07 16:24:28 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.5 2004/09/13 16:13:42 edhill Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -59,6 +59,12 @@ c     == local variables ==
       Real*8 PORT_RAND_NORM
 #else
       Real*8 PORT_RAND
+#undef _USE_INTEGERS
+#ifdef _USE_INTEGERS
+      integer seed
+#else
+      Real*8 seed
+#endif
 #endif
 
 c     == end of interface ==
@@ -125,12 +131,12 @@ c expects it to be just a normal kpart type variable.
 c When using this alternative scheme the noise probably should not be added twice.
 #else
                      if (iup(ip,bi,bj).ne.-2.) then
-                        uu = uu + uu*(PORT_RAND()-0.5)*flt_noise
-                        vv = vv + vv*(PORT_RAND()-0.5)*flt_noise
+                        uu = uu + uu*(PORT_RAND(seed)-0.5)*flt_noise
+                        vv = vv + vv*(PORT_RAND(seed)-0.5)*flt_noise
 #ifdef ALLOW_3D_FLT
 #ifdef ALLOW_FLT_3D_NOISE
                         if (iup(ip,bi,bj).eq.-1.) then
-                           ww = ww + ww*(PORT_RAND()-0.5)*flt_noise
+                           ww = ww + ww*(PORT_RAND(seed)-0.5)*flt_noise
                         endif
 #endif
 #endif
@@ -172,12 +178,12 @@ c
 #endif
 
 #else
-                        u1 = u1 + u1*(PORT_RAND()-0.5)*flt_noise
-                        v1 = v1 + v1*(PORT_RAND()-0.5)*flt_noise
+                        u1 = u1 + u1*(PORT_RAND(seed)-0.5)*flt_noise
+                        v1 = v1 + v1*(PORT_RAND(seed)-0.5)*flt_noise
 #ifdef ALLOW_3D_FLT
 #ifdef ALLOW_FLT_3D_NOISE
                         if (iup(ip,bi,bj).eq.-1.) then
-                           w1 = w1 + w1*(PORT_RAND()-0.5)*flt_noise
+                           w1 = w1 + w1*(PORT_RAND(seed)-0.5)*flt_noise
                         endif
 #endif
 #endif
