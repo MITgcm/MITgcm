@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.19 2004/10/07 01:48:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.20 2004/10/08 17:03:21 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -23,7 +23,7 @@ C     !USES:
       implicit none
 
 C     !INPUT PARAMETERS:
-      integer myThid, bi,bj, indu
+      integer myThid, bi,bj
       character*(*) stype, fbname, vtype
       __V var
       __V var_arr(1)
@@ -48,6 +48,45 @@ C !INTERFACE:
      I     myThid )
 
 C     !DESCRIPTION:
+C     A scalar version of MNC_CW_RX_W() for compilers that cannot
+C     gracefully handle the conversion on their own.
+      
+C     !USES:
+      implicit none
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj
+      character*(*) stype, fbname, vtype
+      __V var
+      __V var_arr(1)
+      INTEGER offsets(9)
+CEOP
+      INTEGER i
+
+      DO i = 1,9
+        offsets(i) = 0
+      ENDDO
+      var_arr(1) = var
+      CALL MNC_CW_RX_W_OFFSET(stype,fbname,bi,bj,vtype, var_arr, 
+     &     offsets, myThid)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MNC_CW_RX_W_OFFSET
+
+C !INTERFACE:
+      SUBROUTINE MNC_CW_RX_W_OFFSET(
+     I     stype, 
+     I     fbname, bi,bj, 
+     I     vtype, 
+     I     var, 
+     I     offsets, 
+     I     myThid )
+
+C     !DESCRIPTION:
 C     This subroutine writes one variable to a file or a file group,
 C     depending upon the tile indicies.
       
@@ -61,13 +100,14 @@ C     !USES:
 #include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid, bi,bj, indu
+      integer myThid, bi,bj
       character*(*) stype, fbname, vtype
       __V var(*)
+      INTEGER offsets(*)
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot
+      integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot, indu
       integer bis,bie, bjs,bje, uniq_tnum, nfname
       integer fid, idv, indvids, ndim, indf, err 
       integer lbi,lbj, bidim,bjdim, unlim_sz, kr
@@ -227,6 +267,10 @@ C         Set the dimensions for the in-memory array
             ELSE
               p(i) = k * p(i-1)
             ENDIF
+            IF (offsets(i) .GT. 0) THEN
+              k = 1
+              p(i) = k * p(i-1)
+            ENDIF
           ENDDO
 
 C         Set starting and ending indicies for the in-memory array and
@@ -264,9 +308,15 @@ C               Use the current unlimited dim size
             s(bjdim) = lbj
             e(bjdim) = lbj
           ENDIF
-CEH3      DO i = 1,9
-CEH3        write(*,*) 'i,p(i),s(i),e(i) = ', i,p(i),s(i),e(i)
-CEH3      ENDDO
+          
+C         Check the offsets
+          DO i = 1,9
+            IF (offsets(i) .GT. 0) THEN
+              udo(i) = udo(i) + offsets(i) - 1
+              s(i) = 1
+              e(i) = 1
+            ENDIF
+          ENDDO
 
 C         Add the global attributes
           CALL MNC_CW_SET_GATTR( fname, lbi,lbj, uniq_tnum, myThid)
@@ -290,6 +340,11 @@ C         Add the per-variable attributes
           write(msgbuf,'(5a)') 'writing variable type ''', 
      &         vtype(nvf:nvl), ''' within file ''', 
      &         fname(1:nfname), ''''
+
+C         DO i = 1,9
+C         write(*,*) 'i,p(i),s(i),e(i),udo(i),offsets(i) = ', 
+C         &        i,p(i),s(i),e(i),udo(i),offsets(i)
+C         ENDDO
 
 C         Write the variable one vector at a time
           DO j7 = s(7),e(7)
@@ -390,7 +445,7 @@ C     !USES:
       implicit none
 
 C     !INPUT PARAMETERS:
-      integer myThid, bi,bj, indu
+      integer myThid, bi,bj
       character*(*) stype, fbname, vtype
       __V var
       __V var_arr(1)
@@ -429,13 +484,13 @@ C     !USES:
 #include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid, bi,bj, indu
+      integer myThid, bi,bj
       character*(*) stype, fbname, vtype
       __V var(*)
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,k, nvf,nvl, n1,n2, igrid, ntot
+      integer i,k, nvf,nvl, n1,n2, igrid, ntot, indu
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer ind_fv_ids, ind_vt, ierr, atype, alen

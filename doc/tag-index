@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.363 2004/10/07 19:31:14 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.364 2004/10/08 17:03:43 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add ability of MNC to write local and "partial" (eg. 2D slices where 
+  the full 3D field is never actually stored) arrays to NetCDF files
+  with the correct (that is, the complete multi-dimensional) set of 
+  array indicies
+  - used in mom_vecinv() to write the diagFreq output
+  - tested (demonstrated) in verification/aim.5l_cs
 o further mnc-ification
   - add verification/lab_sea to the list with mnc setups
   - fix undefined mnc v-names in cd_code

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.24 2004/10/07 21:52:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.25 2004/10/08 17:03:21 edhill Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -126,6 +126,10 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_MNC
+      INTEGER offsets(9)
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kDown part of fverU/V is set in this subroutine
 C--   the kUp is still required
@@ -144,9 +148,16 @@ C--   (at least in part)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. snapshot_mnc .AND. writeDiag) THEN
-        CALL MNC_CW_SET_UDIM('mom_vi', -1, myThid)
-        CALL MNC_CW_I_W_S('I','mom_vi',0,0,'iter',myIter,myThid)
-        CALL MNC_CW_SET_UDIM('mom_vi', 0, myThid)
+        IF ((bi .EQ. 1).AND.(bj .EQ. 1).AND.(k .EQ. 1)) THEN
+          CALL MNC_CW_SET_UDIM('mom_vi', -1, myThid)
+          CALL MNC_CW_I_W_S('I','mom_vi',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_SET_UDIM('mom_vi', 0, myThid)
+        ENDIF
+        DO i = 1,9
+          offsets(i) = 0
+        ENDDO
+        offsets(3) = k
+C       write(*,*) 'offsets = ',(offsets(i),i=1,9)
       ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -430,8 +441,10 @@ C--   Horizontal Coriolis terms
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'fV', uCf, myThid)
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'fU', vCf, myThid)
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'fV', uCf,
+     &          offsets, myThid)
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'fU', vCf,
+     &          offsets, myThid)
          ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
@@ -473,8 +486,10 @@ c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'zV', uCf, myThid)
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'zU', vCf, myThid)
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'zV', uCf,
+     &          offsets, myThid)
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'zU', vCf,
+     &          offsets, myThid)
          ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
@@ -526,9 +541,11 @@ C--   Bernoulli term
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'KEx', uCf, myThid)
-           CALL MNC_CW_RL_W('D','mom_vi',0,0, 'KEy', vCf, myThid)
-         ENDIF
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'KEx', uCf,
+     &          offsets, myThid)
+           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'KEy', vCf,
+     &          offsets, myThid)
+        ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
 
@@ -567,14 +584,22 @@ C--   Set du/dt & dv/dt on boundaries to zero
         ENDIF
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'Ds',strain, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'Dt',tension, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'Du',uDiss, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'Dv',vDiss, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'Z3',vort3, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'W3',omega3, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'KE',KE, myThid)
-          CALL MNC_CW_RL_W('D','mom_vi',0,0,'D', hdiv, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Ds',strain,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dt',tension,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Du',uDiss,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dv',vDiss,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Z3',vort3,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'W3',omega3,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'KE',KE,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'D', hdiv,
+     &          offsets, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
       ENDIF
