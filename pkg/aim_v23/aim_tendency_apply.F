@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.3 2003/07/31 18:40:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.4 2003/12/15 02:10:26 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -88,6 +88,10 @@ C        is not supposed to be applied in stratosphere
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler .AND. kLev.EQ.1 )
+     &  CALL ATM_STORE_TAUX( bi,bj, myTime, kLev, myThid )
+#endif /* COMPONENT_MODULE */
 
 #endif /* ALLOW_AIM */
 
@@ -178,6 +182,11 @@ C        is not supposed to be applied in the stratosphere
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler .AND. kLev.EQ.1 )
+     &  CALL ATM_STORE_TAUY( bi,bj, myTime, kLev, myThid )
+#endif /* COMPONENT_MODULE */
 
 #endif /* ALLOW_AIM */
 

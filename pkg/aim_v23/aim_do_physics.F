@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.3 2003/06/12 17:59:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.4 2003/12/15 02:10:26 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -107,7 +107,7 @@ C-    AIM diagnostics : write snap-shot & cumulate for TimeAve output
       CALL AIM_AIM2DYN( bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_LAND
-        IF (useLand) THEN
+      IF (useLand) THEN
 C-    prepare Surface flux over land for land package
         CALL AIM_AIM2LAND( aim_landFr, bi, bj, 
      I                     myTime, myIter, myThid )
@@ -122,6 +122,12 @@ C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
 
       ENDIF
 #endif /* ALLOW_LAND */
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) THEN
+        CALL ATM_STORE_MY_DATA( bi, bj, myIter, myTime, myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
 #endif /* ALLOW_AIM */
 

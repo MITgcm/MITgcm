@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.2 2003/06/12 17:59:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.3 2003/12/15 02:10:26 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -35,6 +35,12 @@ c #include "AIM_GRID.h"
 #include "com_forcon.h"
 #include "com_forcing.h"
 c #include "com_physvar.h"
+
+C-- Coupled to the Ocean :
+#ifdef COMPONENT_MODULE
+#include "CPL_PARAMS.h"
+#include "ATMCPL.h"
+#endif
 
 C     == Routine arguments ==
 C     tYear  - Fraction into year
@@ -234,6 +240,46 @@ c       ENDDO
 
 C-- endif/else aim_useFMsurfBC
       ENDIF
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) THEN
+       IF ( useImportSST ) THEN
+        DO J=1,sNy
+         DO I=1,sNx
+
+c         IF ( SSTocn(I,J,bi,bj) .NE. 0. ) THEN
+          IF ( aim_landFr(i,j,bi,bj) .LT. 1. ) THEN
+           I2 = (sNx)*(J-1)+I
+C--   take SST from the ocean compon. where Sea-Ice fraction is zero
+           IF ( oice1(I2).EQ.0. ) THEN
+            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
+C--   take SST from the ocean compon. if clearly warmer than freezing
+C       and reset sea-ice fraction & albedo
+           ELSEIF ( SSTocn(i,j,bi,bj).GE. -1. _d 0)  THEN
+            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
+            IF (aim_useFMsurfBC) THEN
+             oice1(I2) = 0.
+             IF (aim_landFr(i,j,bi,bj).EQ. 0.) THEN
+              alb1(I2,myThid) = ALBSEA
+             ELSE
+C- note: this part never used with current coupled set-up (only full cell 
+C        land / sea)
+              alb_land = aim_albedo(i,j,bi,bj)
+     &        + MAX( 0. _d 0, ALBSN-aim_albedo(i,j,bi,bj) )
+     &         *MIN( 1. _d 0, RSD*snow1(I2))
+              alb_sea  = ALBSEA + DALB*oice1(I2)
+              alb1(I2,myThid) = alb_sea 
+     &         + (alb_land - alb_sea)*fMask1(I2,myThid)
+             ENDIF
+            ENDIF
+           ENDIF
+          ENDIF
+
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_LAND
       IF (useLand) THEN
