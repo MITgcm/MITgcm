@@ -4,6 +4,7 @@
 *.o
 *.data
 *.meta
+*.nc
 STD*
 output.txt
 mfile*
