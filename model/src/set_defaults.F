@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.87 2005/03/10 03:45:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.88 2005/04/06 18:25:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -221,6 +221,7 @@ C--   Time stepping parameters
       DO k=1,Nr
         dTtracerLev(k)  = 0. _d 0
       ENDDO
+      baseTime          = 0. _d 0
       nIter0            = 0
       startTime         = deltaT*float(nIter0)
       pickupSuff        = ' '

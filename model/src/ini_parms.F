@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.150 2005/03/10 03:45:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.151 2005/04/06 18:25:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -190,7 +190,7 @@ C--   Time stepping parammeters
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
      & deltaT, deltaTmom, deltaTtracer, dTtracerLev, deltaTfreesurf,
      & forcing_In_AB, abEps, tauCD, rCD,
-     & startTime, endTime, chkPtFreq,
+     & baseTime, startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
      & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq, 
      & outputTypesInclusive, 
@@ -795,33 +795,45 @@ C     o Tracer 1 climatology relaxation time scale
        lambdaTr1ClimRelax = 1./tauTr1ClimRelax
       ENDIF
 
+C     o Base time
+      IF ( nIter0.NE.0 .AND. startTime.NE.0. .AND. baseTime.EQ.0. )
+     &   baseTime = startTime - deltaTClock*float(nIter0)
 C     o Start time
       IF ( nIter0 .NE. 0 .AND. startTime .EQ. 0. )
-     &   startTime = deltaTClock*float(nIter0)
+     &   startTime = baseTime + deltaTClock*float(nIter0)
 C     o nIter0
-      IF ( nIter0 .EQ. 0 .AND. startTime .NE. 0. )
-     &   nIter0 = INT( startTime/deltaTClock )
+      IF ( nIter0 .EQ. 0 .AND. startTime .NE. baseTime )
+     &   nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
 C     o nTimeSteps 1
       IF ( nTimeSteps .EQ. 0 .AND. nEndIter .NE. 0 )
      &     nTimeSteps = nEndIter-nIter0
 C     o nTimeSteps 2
       IF ( nTimeSteps .EQ. 0 .AND. endTime .NE. 0. )
-     &     nTimeSteps = int(0.5+(endTime-startTime)/deltaTclock)
+     &     nTimeSteps = NINT((endTime-startTime)/deltaTclock)
 C     o nEndIter 1
       IF ( nEndIter .EQ. 0 .AND. nTimeSteps .NE. 0 )
      &     nEndIter = nIter0+nTimeSteps
 C     o nEndIter 2
       IF ( nEndIter .EQ. 0 .AND. endTime .NE. 0. )
-     &     nEndIter = int(0.5+endTime/deltaTclock)
+     &     nEndIter = NINT((endTime-baseTime)/deltaTclock)
 C     o End Time 1
       IF ( endTime .EQ. 0. .AND. nTimeSteps .NE. 0 )
      &     endTime = startTime + deltaTClock*float(nTimeSteps)
 C     o End Time 2
       IF ( endTime .EQ. 0. .AND. nEndIter .NE. 0 )
-     &     endTime = deltaTClock*float(nEndIter)
+     &     endTime = baseTime + deltaTClock*float(nEndIter)
 
 C     o Consistent?
+      IF ( startTime .NE. baseTime+deltaTClock*float(nIter0) ) THEN
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: startTime, baseTime and nIter0 are inconsistent'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: Perhaps more than two were set at once'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
       IF ( nEndIter .NE. nIter0+nTimeSteps ) THEN
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: nIter0, nTimeSteps and nEndIter are inconsistent'
@@ -831,7 +843,7 @@ C     o Consistent?
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-      IF ( nTimeSteps .NE. int(0.5+(endTime-startTime)/deltaTClock) )
+      IF ( nTimeSteps .NE. NINT((endTime-startTime)/deltaTClock) )
      & THEN
         WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: both endTime and nTimeSteps have been set'
