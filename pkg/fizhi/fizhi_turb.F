@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.29 2005/02/22 22:16:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.30 2005/02/22 22:51:42 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1158,32 +1158,36 @@ c     enddo
 c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
 c    1                    qdiag(1,1,ihflux,bi,bj),ijall,1,nn,.false.)
 c     endif
+      if(diagnostics_is_on('TUFLUX  ',myid) ) then
+      call diag_vegtile_fill (stuflux,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TUFLUX  ', 0, nlay, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('TVFLUX  ',myid) ) then
+      call diag_vegtile_fill (stvflux,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TVFLUX  ', 0, nlay, bi, bj, myid)
+      endif
 c     if(ituflux.gt.0) then
 c     call paste2grd(stuflux,igrd,chfrstr,istrip,nchp,
 c    1                   qdiag(1,1,ituflux,bi,bj),ijall,nlay,nn,.false.)
 c     endif
-c     if(itvflux.gt.0) then
-c     call paste2grd(stvflux,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,itvflux,bi,bj),ijall,nlay,nn,.false.)
-c     endif
-c     if(ittflux.gt.0) then
-c     do l=1,nlay
-c     do i=1,istrip
-c     sttflux(i,l) = sttflux(i,l) * cp
-c     enddo
-c     enddo
-c     call paste2grd(sttflux,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,ittflux,bi,bj),ijall,nlay,nn,.false.)
-c     endif
-c     if(itqflux.gt.0) then
-c     do l=1,nlay
-c     do i=1,istrip
-c     stqflux(i,l) = stqflux(i,l) * alhl
-c     enddo
-c     enddo
-c     call paste2grd(stqflux,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,itqflux,bi,bj),ijall,nlay,nn,.false.)
-c     endif
+      if(diagnostics_is_on('TTFLUX  ',myid) ) then
+      do l=1,nlay
+      do i=1,istrip
+      sttflux(i,l) = sttflux(i,l) * cp
+      enddo
+      enddo
+      call diag_vegtile_fill (sttflux,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TTFLUX  ', 0, nlay, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('TQFLUX  ',myid) ) then
+      do l=1,nlay
+      do i=1,istrip
+      stqflux(i,l) = stqflux(i,l) * alhl
+      enddo
+      enddo
+      call diag_vegtile_fill (stqflux,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TQFLUX  ', 0, nlay, bi, bj, myid)
+      endif
       if(diagnostics_is_on('RI      ',myid) ) then
       call diag_vegtile_fill (sri,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'RI      ', 0, nlay, bi, bj, myid)
