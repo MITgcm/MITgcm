@@ -50,6 +50,7 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=86400.0,
+#diagFreq=1.0,
 #monitorFreq=21600.,
  monitorFreq=1.,
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.58 2001/08/16 17:12:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.59 2001/08/17 18:40:30 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -365,6 +365,8 @@ C     chkPtFreq     - Frequency of rolling check pointing ( s ).
 C     pChkPtFreq    - Frequency of permanent check pointing ( s ).
 C     dumpFreq      - Frequency with which model state is written to
 C                     post-processing files ( s ).
+C     diagFreq      - Frequency with which model writes diagnostic output
+C                     of intermediate quantities.
 C     afFacMom      - Advection of momentum term tracer parameter
 C     vfFacMom      - Momentum viscosity tracer parameter
 C     pfFacMom      - Momentum pressure forcing tracer parameter
@@ -406,7 +408,8 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq, monitorFreq,
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
+     & diagFreq, taveFreq, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, 
      & tauThetaClimRelax, lambdaThetaClimRelax,
@@ -483,6 +486,7 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL chkPtFreq
       _RL pChkPtFreq
       _RL dumpFreq
+      _RL diagFreq
       _RL taveFreq
       _RL monitorFreq
       _RL afFacMom

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.1 2001/08/16 17:16:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.2 2001/08/17 18:40:30 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        phi_hyd,KappaRU,KappaRV,
      U        fVerU, fVerV,
-     I        myCurrentTime, myThid)
+     I        myCurrentTime, myIter, myThid)
 C     /==========================================================\
 C     | S/R MOM_VECINV                                           |
 C     | o Form the right hand-side of the momentum equation.     |
@@ -47,9 +47,14 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       INTEGER kUp,kDown
-      INTEGER myThid
       _RL     myCurrentTime
+      INTEGER myIter
+      INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
+
+C     == Functions ==
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local variables ==
       _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -222,17 +227,21 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
 
       IF (momViscosity) THEN
 C      Calculate del^2 u and del^2 v for bi-harmonic term
-       CALL MOM_VI_DEL2UV(
-     I                    bi,bj,k,hDiv,vort3,hFacZ,
-     O                    del2u,del2v,
-     &                    myThid)
-       CALL MOM_VI_CALC_HDIV(bi,bj,k,del2u,del2v,dStar,myThid)
-       CALL MOM_VI_CALC_RELVORT3(bi,bj,k,del2u,del2v,hFacZ,zStar,myThid)
+       IF (viscA4.NE.0.) THEN
+         CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
+     O                      del2u,del2v,
+     &                      myThid)
+         CALL MOM_VI_CALC_HDIV(bi,bj,k,del2u,del2v,dStar,myThid)
+         CALL MOM_VI_CALC_RELVORT3(
+     &                         bi,bj,k,del2u,del2v,hFacZ,zStar,myThid)
+       ENDIF
 C      Calculate dissipation terms for U and V equations
-       CALL MOM_VI_HDISSIP(
-     I                     bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
-     O                     uDiss,vDiss,
-     &                     myThid)
+C      in terms of vorticity and divergence
+       IF (viscAh.NE.0. .OR. viscA4.NE.0.) THEN
+         CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
+     O                       uDiss,vDiss,
+     &                       myThid)
+       ENDIF
       ENDIF
 
 C---- Zonal momentum equation starts here
@@ -462,6 +471,17 @@ C--   Bernoulli term
      &                    *_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
+      ENDIF
+
+      IF (
+     &  DIFFERENT_MULTIPLE(diagFreq,myCurrentTime,
+     &                     myCurrentTime-deltaTClock)
+     & ) THEN
+       CALL WRITE_LOCAL_RL('Ph','I10',Nr,phi_hyd,bi,bj,1,myIter,myThid)
+       CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('fU','I10',1,vCf,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
       ENDIF
 
       RETURN

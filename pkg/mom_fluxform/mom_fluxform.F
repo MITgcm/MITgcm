@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.1 2001/08/16 17:16:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.2 2001/08/17 18:40:30 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        phi_hyd,KappaRU,KappaRV,
      U        fVerU, fVerV,
-     I        myCurrentTime, myThid)
+     I        myCurrentTime, myIter, myThid)
 C     /==========================================================\
 C     | S/R MOM_FLUXFORM                                         |
 C     | o Form the right hand-side of the momentum equation.     |
@@ -53,8 +53,9 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       INTEGER kUp,kDown
-      INTEGER myThid
       _RL     myCurrentTime
+      INTEGER myIter
+      INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
 
 C     == Local variables ==
