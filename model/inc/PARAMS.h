@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.55 2001/07/06 21:31:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.56 2001/07/13 14:15:29 heimbach Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -173,6 +173,7 @@ C                           linear relation Phi_surf = Bo_surf*eta
 C     momStepping   - Turns momentum equation time-stepping off
 C     tempStepping  - Turns temperature equation time-stepping off
 C     saltStepping  - Turns salinity equation time-stepping off
+C     tr1Stepping   - Turns passive tracer 1 time-stepping on/off
 C     useConstantF  - Coriolis parameter set to f0
 C     useBetaPlaneF - Coriolis parameter set to f0 + beta.y
 C     useSphereF    - Coriolis parameter set to 2.omega.sin(phi)
@@ -199,15 +200,16 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
      & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
-     & momStepping, tempStepping, saltStepping,
+     & momStepping, tempStepping, saltStepping, tr1Stepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion, implicitViscosity,
-     & doThetaClimRelax, doSaltClimRelax,
+     & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, usingPCoords, usingZCoords,
      & nonHydrostatic, globalFiles,
      & allowFreezing, groundAtK1,
-     & usePickupBeforeC35, debugMode
+     & usePickupBeforeC35, debugMode,
+     & readPickupWithTracer, writePickupWithTracer
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
@@ -233,6 +235,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL momStepping
       LOGICAL tempStepping
       LOGICAL saltStepping
+      LOGICAL tr1Stepping
       LOGICAL metricTerms
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF
@@ -241,6 +244,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL implicitViscosity
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
+      LOGICAL doTr1ClimRelax
       LOGICAL periodicExternalForcing
       LOGICAL usingPCoords
       LOGICAL usingZCoords
@@ -250,6 +254,8 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
       LOGICAL debugMode
+      LOGICAL readPickupWithTracer
+      LOGICAL writePickupWithTracer
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     gg2dTargetResidual
@@ -396,9 +402,10 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
      & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
-     & cosPower,
-     & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
+     & cosPower, cAdjFreq, omega, 
+     & tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
+     & tauTr1ClimRelax, lambdaTr1ClimRelax,
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
      & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
@@ -485,6 +492,8 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL lambdaThetaClimRelax
       _RL tauSaltClimRelax
       _RL lambdaSaltClimRelax
+      _RL tauTr1ClimRelax
+      _RL lambdaTr1ClimRelax
       _RL externForcingCycle
       _RL externForcingPeriod
       _RL horiVertRatio
@@ -529,8 +538,10 @@ C Logical flags for selecting packages
       LOGICAL useGMRedi
       LOGICAL useOBCS
       LOGICAL useAIM
+      LOGICAL useGrdchk
       LOGICAL useECCO
       LOGICAL useSHAP_FILT
       COMMON /PARM_PACKAGES/
-     &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, useSHAP_FILT
+     &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, 
+     &        useSHAP_FILT, useGrdchk
 
