@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.305 2004/06/02 13:23:55 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.306 2004/06/03 16:49:35 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/land: fix problem in land_impl_temp.F when Ts arround freezing. 
 o added Sadourny discretization of Coriolis
   - moved some PARAMETERS from mom_*_coriolis.F to PARAMS.h
   - re-enabled use of omega3 (useAbsVorticity)
