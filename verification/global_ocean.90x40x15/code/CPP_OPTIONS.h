@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/CPP_OPTIONS.h,v 1.1 2001/09/28 14:53:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/CPP_OPTIONS.h,v 1.2 2003/01/27 20:55:25 jmc Exp $
 C $Name:  $
 
 C 
@@ -119,7 +119,7 @@ C   instead of the "virtual salt flux"
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
-#undef  EXACT_CONSERV
+#define EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
