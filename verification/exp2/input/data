@@ -47,6 +47,7 @@
  tauCD=321428.,
  deltaTtracer=108000.0,
  deltaTClock =108000.0,
+ cAdjFreq=-1.,
  abEps=0.1,
  pChkptFreq=0.0,
  chkptFreq=0.0,
