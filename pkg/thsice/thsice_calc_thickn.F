@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.2 2004/04/18 22:19:37 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -340,7 +340,7 @@ C     that is returned to the ocean ; needs to be done before snow/evap
 
 C- note : was not supposed to modify snowPr in THSICE_CALC_TH ;
 C         but to reproduce old results, reset to zero if Tsf >= 0
-      IF ( Tsf.ge.0. _d 0 ) snowPr = 0.
+c     IF ( Tsf.ge.0. _d 0 ) snowPr = 0.
 
       IF ( hi .LE. 0. _d 0 ) THEN 
 C-    return snow to the ocean (account for Latent heat of freezing)
