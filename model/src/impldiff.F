@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.3 1998/06/10 16:05:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.4 1998/06/16 15:20:08 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -57,8 +57,8 @@ C Beginning of forward sweep (top level)
          b(i,j)=1.-c(i,j)
          bet(i,j)=0.
          IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
-         theta(i,j,1,bi,bj)=theta(i,j,1,bi,bj)*bet(i,j)
-         salt(i,j,1,bi,bj)=salt(i,j,1,bi,bj)*bet(i,j)
+         gTnm1(i,j,1,bi,bj)=gTnm1(i,j,1,bi,bj)*bet(i,j)
+         gSnm1(i,j,1,bi,bj)=gSnm1(i,j,1,bi,bj)*bet(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -80,10 +80,10 @@ C Middle of forward sweep
           gam(i,j,k)=ckm1(i,j)*bet(i,j)
           bet(i,j)=b(i,j)-a(i,j)*gam(i,j,k)
           IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-          theta(i,j,k,bi,bj)=(theta(i,j,k,bi,bj)
-     &       -a(i,j)*theta(i,j,k-1,bi,bj))*bet(i,j)
-          salt(i,j,k,bi,bj)=(salt(i,j,k,bi,bj)
-     &       -a(i,j)*salt(i,j,k-1,bi,bj))*bet(i,j)
+          gTnm1(i,j,k,bi,bj)=(gTnm1(i,j,k,bi,bj)
+     &       -a(i,j)*gTnm1(i,j,k-1,bi,bj))*bet(i,j)
+          gSnm1(i,j,k,bi,bj)=(gSnm1(i,j,k,bi,bj)
+     &       -a(i,j)*gSnm1(i,j,k-1,bi,bj))*bet(i,j)
          ENDDO
         ENDDO
        ENDDO
@@ -103,20 +103,20 @@ C End of forward sweep (bottom level)
          gam(i,j,Nz)=ckm1(i,j)*bet(i,j)
          bet(i,j)=b(i,j)-a(i,j)*gam(i,j,Nz)
          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
-         theta(i,j,Nz,bi,bj)=(theta(i,j,Nz,bi,bj)
-     &      -a(i,j)*theta(i,j,Nz-1,bi,bj))*bet(i,j)
-         salt(i,j,Nz,bi,bj)=(salt(i,j,Nz,bi,bj)
-     &      -a(i,j)*salt(i,j,Nz-1,bi,bj))*bet(i,j)
+         gTnm1(i,j,Nz,bi,bj)=(gTnm1(i,j,Nz,bi,bj)
+     &      -a(i,j)*gTnm1(i,j,Nz-1,bi,bj))*bet(i,j)
+         gSnm1(i,j,Nz,bi,bj)=(gSnm1(i,j,Nz,bi,bj)
+     &      -a(i,j)*gSnm1(i,j,Nz-1,bi,bj))*bet(i,j)
         ENDDO
        ENDDO
 C Backward sweep
        DO k=Nz-1,1,-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          theta(i,j,k,bi,bj)=theta(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*theta(i,j,k+1,bi,bj)
-          salt(i,j,k,bi,bj)=salt(i,j,k,bi,bj)
-     &              -gam(i,j,k+1)*salt(i,j,k+1,bi,bj)
+          gTnm1(i,j,k,bi,bj)=gTnm1(i,j,k,bi,bj)
+     &              -gam(i,j,k+1)*gTnm1(i,j,k+1,bi,bj)
+          gSnm1(i,j,k,bi,bj)=gSnm1(i,j,k,bi,bj)
+     &              -gam(i,j,k+1)*gSnm1(i,j,k+1,bi,bj)
          ENDDO
         ENDDO
        ENDDO

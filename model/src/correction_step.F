@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.3 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.4 1998/06/16 15:20:08 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -55,6 +55,22 @@ C     Step forward meridional velocity
      &       -deltaTmom*hyFac*rRhonil *pSurfY(i,j)
      &                    )*_maskS(i,j,k,bi,bj)
         gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+
+C     Rotate theta/gT/gTnm1
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        theta(i,j,k,bi,bj)=gTNm1(i,j,k,bi,bj)
+        gTNm1(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+
+C     Rotate salt/gS/gSnm1
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        salt(i,j,k,bi,bj)=gSNm1(i,j,k,bi,bj)
+        gSNm1(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

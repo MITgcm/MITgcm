@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.5 1998/06/10 16:05:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.6 1998/06/16 15:20:08 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,12 +43,12 @@ c     _EXCH_XYZ_R8( Gt , myThid )
 c     _EXCH_XYZ_R8( Gs , myThid )
       _EXCH_XYZ_R8( gUNm1 , myThid )
       _EXCH_XYZ_R8( gVNm1 , myThid )
-c     _EXCH_XYZ_R8( gTNm1 , myThid )
-c     _EXCH_XYZ_R8( gSNm1 , myThid )
+      _EXCH_XYZ_R8( gTNm1 , myThid )
+      _EXCH_XYZ_R8( gSNm1 , myThid )
 c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
-      _EXCH_XYZ_R8( theta , myThid )
-      _EXCH_XYZ_R8( salt , myThid )
+c     _EXCH_XYZ_R8( theta , myThid )
+c     _EXCH_XYZ_R8( salt , myThid )
 #ifdef ALLOW_CD
       _EXCH_XYZ_R8( guCD , myThid )
       _EXCH_XYZ_R8( gvCD , myThid )
