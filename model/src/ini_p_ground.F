@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.2 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.3 2002/11/06 03:45:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -94,13 +94,16 @@ C- Convert phiRef to Z unit :
         phiRef(K) = phiRef(K)*recip_gravity
       ENDDO
 
+      _BEGIN_MASTER( myThid )
 C- Write to check :
-      write(6,'(2A)') 'INI_P_GROUND: PhiRef/g [m] at Center ',
-     & '(integer) and Interface (half-int.) levels:'
+      WRITE(standardMessageUnit,'(2A)') 
+     &  'INI_P_GROUND: PhiRef/g [m] at Center (integer) ',
+     &  'and Interface (half-int.) levels:'
       DO K=1,2*Nr+1
-        write(6,'(A,F5.1,A,F10.1,A,F12.3)') '  K=', K*0.5, 
-     &     '  ;  r=', rHalf(K), '  ;  phiRef/g=', phiRef(K)
+        WRITE(standardMessageUnit,'(A,F5.1,A,F10.1,A,F12.3)')
+     &    '  K=',K*0.5,'  ;  r=',rHalf(K),'  ;  phiRef/g=', phiRef(K)
       ENDDO
+      _END_MASTER( myThid )
 
 C- Find Po_surf : Linear between 2 half levels :
       DO bj = myByLo(myThid), myByHi(myThid)

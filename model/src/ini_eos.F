@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.7 2002/10/29 20:16:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.8 2002/11/06 03:45:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -305,7 +305,9 @@ C
          
       end if
 
+      _BEGIN_MASTER( myThid )
       call check_eos( myThid )
+      _END_MASTER( myThid )
 
       return
       end
