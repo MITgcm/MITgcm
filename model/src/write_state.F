@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.22 2003/05/13 19:14:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.23 2003/09/27 07:45:51 dimitri Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -118,8 +118,8 @@ C       - creates relatively few files but these files can become huge
 #endif /* ALLOW_NONHYDROSTATIC */
 #ifdef NONLIN_FRSURF
         CALL WRITE_REC_XYZ_RS('hFacC.',hFacC,iRec,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RS('hFacW.',hFacW,iRec,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
+        CALL WRITE_REC_XYZ_RS('hFacW.',hFacW,iRec,myIter,myThid)
+        CALL WRITE_REC_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
 #endif /* NONLIN_FRSURF */
 
 #else /* MULTIPLE_RECORD_STATE_FILES */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.2 2003/08/04 22:53:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.3 2003/09/27 07:45:51 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -52,6 +52,7 @@ C Set defaults values for parameters in PTRACERS.h
        PTRACERS_useKPP(iTracer)=useKPP
        PTRACERS_initialFile(iTracer)=' '
       ENDDO
+      PTRACERS_useRecords=.FALSE.
 
 C Open and read the data.ptracers file
       _BEGIN_MASTER(myThid)
