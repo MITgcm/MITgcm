@@ -50,3 +50,11 @@
  zonalWindFile='windx.sin_y',
  meridWindFile=,
  &
+
+# Open-boundaries
+ &PARM06
+ &
+
+# KPP Mixing scheme
+ &PARM07
+ &

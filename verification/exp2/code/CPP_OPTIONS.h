@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.3 1999/05/05 18:32:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.4 1999/05/18 18:30:37 adcroft Exp $
 C
 
 C 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 C
+
+C o Include/exclude code for KPP mixing scheme
+#undef  ALLOW_KPP
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
@@ -111,6 +114,9 @@ C o Include/exclude call to S/R CALC_ISOSLOPES
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Allow nonHydrostatic code
+#undef  ALLOW_NONHYDROSTATIC
 
 C o Use "natural" boundary conditions for salinity
 C   instead of the "virtual salt flux"

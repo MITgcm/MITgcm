@@ -72,3 +72,7 @@
  OB_Ieast=42*-1,
  OB_Iwest=42*1,
  &
+
+# KPP Mixing scheme
+ &PARM07
+ &
