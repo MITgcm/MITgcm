@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.18 2004/07/05 20:25:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.19 2004/11/17 03:04:36 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -281,8 +281,11 @@ C (This is a place-holder for the active/passive mechanism
      &      ' MDSREADFIELD: filename: ',dataFName, pfName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
           write(msgbuf,'(a)')
      &      ' MDSREADFIELD: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
           stop 'ABNORMAL END: S/R MDSREADFIELD'
          endif

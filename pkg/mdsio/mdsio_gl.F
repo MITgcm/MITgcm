@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.5 2004/10/14 18:43:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.6 2004/11/17 03:04:36 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -169,8 +169,11 @@ C (This is a place-holder for the active/passive mechanism
      &      ' MDSREADFIELD_GL: filename: ',dataFName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
           write(msgbuf,'(a)')
      &      ' MDSREADFIELD_GL: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
           stop 'ABNORMAL END: S/R MDSREADFIELD_GL'
          endif
@@ -613,8 +616,11 @@ C (This is a place-holder for the active/passive mechanism
      &      ' MDSREADFIELD_GL: filename: ',dataFName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
           write(msgbuf,'(a)')
      &      ' MDSREADFIELD_GL: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
           stop 'ABNORMAL END: S/R MDSREADFIELD_GL'
          endif
