@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.3 2001/09/06 17:59:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.4 2001/09/10 14:14:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,26 +59,30 @@ c       wBarYp=0.5*(wFld(I,J,Kp1,bi,bj)+wFld(I,J-1,Kp1,bi,bj))
 c    &              *mask_Kp1
 
 C       Transport at interface k
-        wBarYm=0.5*(wFld(I,J,K,bi,bj)*rA(i,j,bi,bj)
-     &             +wFld(I,J-1,K,bi,bj)*rA(i,j-1,bi,bj))
+        wBarYm=0.5*(
+     &    wFld(I,J,K,bi,bj)*rA(i,j,bi,bj)*maskC(i,j,Km1,bi,bj)
+     &   +wFld(I,J-1,K,bi,bj)*rA(i,j-1,bi,bj)*maskC(i,j-1,Km1,bi,bj)
+     &             )*mask_Km1
 
-C       Transport at interface k+1
-        wBarYp=0.5*(wFld(I,J,Kp1,bi,bj)*rA(i,j,bi,bj)
-     &             +wFld(I,J-1,Kp1,bi,bj)*rA(i,j-1,bi,bj))*mask_Kp1
+C       Transport at interface k+1 (here wFld is already masked)
+        wBarYp=0.5*(
+     &    wFld(I,J,Kp1,bi,bj)*rA(i,j,bi,bj)
+     &   +wFld(I,J-1,Kp1,bi,bj)*rA(i,j-1,bi,bj)
+     &             )*mask_Kp1
 
 C delta_Z( V )  @ interface k
-        vmask_Km1=mask_Km1*maskS(i,j,Km1,bi,bj)
+c       vmask_Km1=mask_Km1*maskS(i,j,Km1,bi,bj)
         vZm=(mask_Km1*vFld(I,J,Km1,bi,bj)-vFld(I,J,K,bi,bj))
 c2   &      *recip_dRC(K)
-        IF (freeslip1) vZm=vZm*vmask_Km1
-        IF (noslip1.AND.vmask_Km1.EQ.0.) vZm=vZm*2.
+c       IF (freeslip1) vZm=vZm*vmask_Km1
+c       IF (noslip1.AND.vmask_Km1.EQ.0.) vZm=vZm*2.
 
 C delta_Z( V )  @ interface k+1
-        vmask_Kp1=mask_Kp1*maskS(i,j,Kp1,bi,bj)
+c       vmask_Kp1=mask_Kp1*maskS(i,j,Kp1,bi,bj)
         vZp=(vFld(I,J,K,bi,bj)-mask_Kp1*vFld(I,J,Kp1,bi,bj))
 c2   &      *recip_dRC(Kp1)
-        IF (freeslipK) vZp=vZp*vmask_Kp1
-        IF (noslipK.AND.vmask_Kp1.EQ.0.) vZp=vZp*2.
+c       IF (freeslipK) vZp=vZp*vmask_Kp1
+c       IF (noslipK.AND.vmask_Kp1.EQ.0.) vZp=vZp*2.
 
 c1      IF (upwindShear) THEN
 c1       wBarYZ=0.5*( wBarXm + wBarXp )
