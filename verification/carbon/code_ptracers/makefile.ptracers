@@ -3,8 +3,8 @@ RM               = rm -f
 LOC              = $(PWD)
 TAMC             = tamc
 ###TAMC             = /data43/ralf/tamc/tamc
-###TAF              = taf
-TAF              = ~fastopt/bin/taf
+TAF              = taf
+###TAF              = ~fastopt/bin/taf
 DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
@@ -40,6 +40,7 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_efluxp_dummy'	\
                    -output 'fc'
 #
+#                   -output 'objf_state_final'
 #                   -output 'objf_vector'
 #                   -output 'fc'
 
@@ -64,6 +65,7 @@ SRC_MODEL	= \
 		$(PKG)/autodiff/dummy_in_stepping.flow	\
 		$(PKG)/autodiff/eesupp.flow		\
 		$(PKG)/autodiff/active_file.flow	\
+		$(PKG)/autodiff/active_file_loc.flow	\
 		$(PKG)/autodiff/write_state.flow	\
 		$(PKG)/autodiff/ecco_check_exp.flow	\
 		$(PKG)/autodiff/exch_ad.flow		\
@@ -92,7 +94,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_ivdc.f			\
 		$(SOURCE_CODE)/calc_phi_hyd.f			\
 		$(SOURCE_CODE)/calc_viscosity.f			\
-		$(SOURCE_CODE)/comm_stats.f			\
 		$(SOURCE_CODE)/convect.f			\
 		$(SOURCE_CODE)/convective_adjustment.f		\
 		$(SOURCE_CODE)/convective_adjustment_ini.f	\
@@ -148,7 +149,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_autodiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
 		$(SOURCE_CODE)/ini_cg2d.f			\
-		$(SOURCE_CODE)/ini_communication_patterns.f	\
 		$(SOURCE_CODE)/ini_cori.f			\
 		$(SOURCE_CODE)/ini_curvilinear_grid.f		\
 		$(SOURCE_CODE)/ini_depths.f			\
@@ -260,6 +260,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_tracer.f			\
 		$(SOURCE_CODE)/cost_atlantic_heat.f		\
 		$(SOURCE_CODE)/cost_vector.f			\
+		$(SOURCE_CODE)/cost_state_final.f		\
 		  						\
 		$(PKG)/autodiff/ptracers.flow			\
 		$(SOURCE_CODE)/ptracers_advection.f		\
@@ -267,6 +268,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ptracers_cycle.f			\
 		$(SOURCE_CODE)/ptracers_fields_blocking_exchanges.f\
 		$(SOURCE_CODE)/ptracers_forcing.f		\
+		$(SOURCE_CODE)/ptracers_forcing_surf.f		\
 		$(SOURCE_CODE)/ptracers_impldiff.f		\
 		$(SOURCE_CODE)/ptracers_init.f			\
 		$(SOURCE_CODE)/ptracers_integrate.f		\
