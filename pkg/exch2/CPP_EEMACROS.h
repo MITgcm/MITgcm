@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/CPP_EEMACROS.h,v 1.1 2004/01/12 20:41:59 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/CPP_EEMACROS.h,v 1.2 2004/04/02 15:33:58 cnh Exp $
 C $Name:  $
 
 CBOP
@@ -119,6 +119,9 @@ C     performance.
 #define _EXCH_XYZ_RS(a,b) CALL EXCH2_XYZ_RL ( a, b )
 #define _EXCH_XY_RL(a,b) CALL EXCH2_XY_RL ( a, b )
 #define _EXCH_XYZ_RL(a,b) CALL EXCH2_XYZ_RL ( a, b )
+
+#define _R4 Real*4
+#define _R8 Real*8
 
 C--   Control use of JAM routines for Artic network
 C     These invoke optimized versions of "exchange" and "sum" that

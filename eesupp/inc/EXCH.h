@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.4 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.5 2004/04/02 15:33:58 cnh Exp $
 C $Name:  $
 C
 CBOP
@@ -196,7 +196,15 @@ C      xxxxRecvBuf - Buffer used for receiving data from another tile.
      &  westSendBuf_RS, eastSendBuf_RS, 
      &  southSendBuf_RS, northSendBuf_RS,
      &  westRecvBuf_RS, eastRecvBuf_RS, 
-     &  southRecvBuf_RS, northRecvBuf_RS
+     &  southRecvBuf_RS, northRecvBuf_RS,
+     &  westSendBuf_R8, eastSendBuf_R8, 
+     &  southSendBuf_R8, northSendBuf_R8,
+     &  westRecvBuf_R8, eastRecvBuf_R8, 
+     &  southRecvBuf_R8, northRecvBuf_R8,
+     &  westSendBuf_R4, eastSendBuf_R4, 
+     &  southSendBuf_R4, northSendBuf_R4,
+     &  westRecvBuf_R4, eastRecvBuf_R4, 
+     &  southRecvBuf_R4, northRecvBuf_R4
        _RL   westSendBuf_RL( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
      &                       nSx, nSy )
        _RL   eastSendBuf_RL( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
@@ -228,6 +236,38 @@ C      xxxxRecvBuf - Buffer used for receiving data from another tile.
        _RS  southRecvBuf_RS( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
      &                       nSx, nSy )
        _RS  northRecvBuf_RS( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8   westSendBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8   eastSendBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8  southSendBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8  northSendBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8   westRecvBuf_R8( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8   eastRecvBuf_R8( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8  southRecvBuf_R8( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R8  northRecvBuf_R8( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4   westSendBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4   eastSendBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4  southSendBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4  northSendBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4   westRecvBuf_R4( L_WBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4   eastRecvBuf_R4( L_EBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4  southRecvBuf_R4( L_SBUFFER, NUMBER_OF_BUFFER_LEVELS, 
+     &                       nSx, nSy )
+       _R4  northRecvBuf_R4( L_NBUFFER, NUMBER_OF_BUFFER_LEVELS, 
      &                       nSx, nSy )
 
 C--    COMMON / EXCH_I / INTEGER common arrays for exchanges
