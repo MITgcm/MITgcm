@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/Attic/ini_curvilinear_grid.F,v 1.1 2001/07/31 18:30:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/Attic/ini_curvilinear_grid.F,v 1.2 2001/07/31 19:40:30 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -189,22 +189,22 @@ c        DXG(J,sNy+1,bi,bj)=DXG(J,1,bi,bj)
 cs-   end block
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
 
-      write(10) XC
-      write(10) YC
-      write(10) DXF
-      write(10) DYF
-      write(10) RA
-      write(10) XG
-      write(10) YG
-      write(10) DXV
-      write(10) DYU
-      write(10) RAZ
-      write(10) DXC
-      write(10) DYC
-      write(10) RAW
-      write(10) RAS
-      write(10) DXG
-      write(10) DYG
+c     write(10) XC
+c     write(10) YC
+c     write(10) DXF
+c     write(10) DYF
+c     write(10) RA
+c     write(10) XG
+c     write(10) YG
+c     write(10) DXV
+c     write(10) DYU
+c     write(10) RAZ
+c     write(10) DXC
+c     write(10) DYC
+c     write(10) RAW
+c     write(10) RAS
+c     write(10) DXG
+c     write(10) DYG
 
       RETURN
       END
