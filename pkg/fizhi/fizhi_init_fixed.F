@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.10 2004/06/10 20:17:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.11 2004/06/15 21:18:18 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -29,6 +29,7 @@ c-----------------------------------------------------------------------
 #include "fizhi_chemistry_coms.h"
 #include "fizhi_earth_coms.h"
 #include "fizhi_land_coms.h"
+#include "fizhi_ocean_coms.h"
 #include "chronos.h"
 #include "gridalt_mapping.h"
 #include "GRID.h"
@@ -40,16 +41,17 @@ c-----------------------------------------------------------------------
        integer nymdb,nhmsb
        character*40 vegdata
        _RL pressure(Nrphys)
-       _RL lats(sNx,sNy,nSx,nSy), lons(sNx,sNy,nSx,nSy)
+       _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
+       _RL fracland(sNx,sNy,Nsx,Nsy)
 
-       im1 = 1-OLx
-       im2 = sNx+OLx
-       jm1 = 1-OLy
-       jm2 = sNy+OLy
-       idim1 = 1
-       idim2 = sNx
-       jdim1 = 1
-       jdim2 = sNy
+       idim1 = 1-OLx
+       idim2 = sNx+OLx
+       jdim1 = 1-OLy
+       jdim2 = sNy+OLy
+       im1 = 1
+       im2 = sNx
+       jm1 = 1
+       jm2 = sNy
        nymdb = nymd0
        nhmsb = nhms0
 
@@ -68,6 +70,22 @@ c-----------------------------------------------------------------------
        call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,
      .                 nSx*nPx,nSy*nPy,maxtyp,nchp,lons,lats,
      .            surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
+
+C And now fill the earth export landtype
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        call get_landfrac(im2,jm2,Nsx,Nsy,bi,bj,maxtyp,
+     .        surftype,tilefrac,fracland)
+        do j=jm1,jm2
+        do i=im1,im2
+         landtype(i,j,bi,bj) = surftype(i,j,1,bi,bj)
+         if(fracland(i,j).ge.0.3.and.surftype(i,j,1,bi,bj).ge.100)
+     .            landtype(i,j,bi,bj) = surftype(i,j,2,bi,bj)
+         if(sice(i,j,bi,bj).ne.0.0)landtype(i,j,bi,bj) = 101
+        enddo
+        enddo
+       enddo
+       enddo
 
 C Compute pressure profile to get methane and n2o values (bottom-up)
 

@@ -1,11 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.7 2004/06/15 20:22:26 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.8 2004/06/15 21:18:18 molod Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
        subroutine do_fizhi(uphy,vphy,thphy,sphy,pephy,lons,lats,
-     .     ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .     idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
-     .     nchp,
-     .     duphy,dvphy,dthphy,dsphy)
+     .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     .   sst,sice,phis_var,landtype,emiss,albnidr,albnirdf,
+     .   albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
+     .   tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
+     .   o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
+     .   idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
+     .   nchp,
+     .   duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - call geos-3 driver
 c Purpose of this routine is to pull things from model common blocks
