@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.1 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.2 2005/02/11 03:10:03 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -57,6 +57,10 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C Routine arguments
       character*(*) fName
@@ -81,6 +85,17 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+#ifdef ALLOW_EXCH2
+      integer tn
+#endif /* ALLOW_EXCH2 */
+      integer x_size,y_size
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      PARAMETER ( x_size = exch2_domain_nxt * sNx )
+      PARAMETER ( y_size = exch2_domain_nyt * sNy )
+#else
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+#endif
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -212,12 +227,24 @@ C Create meta-file for each tile if we are tiling
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+         tn = W2_myTileList(bi)
+         dimList(1,1)=x_size
+         dimList(2,1)=exch2_txGlobalo(tn)
+         dimList(3,1)=exch2_txGlobalo(tn)+sNx-1
+         dimList(1,2)=y_size
+         dimList(2,2)=exch2_tyGlobalo(tn)
+         dimList(3,2)=exch2_tyGlobalo(tn)+sNy-1
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+C- jmc: if MISSING_TILE_IO, keep meta files unchanged
+C       to stay consistent with global file structure
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
          dimList(3,1)=myXGlobalLo+bi*sNx-1
          dimList(1,2)=Ny
          dimList(2,2)=myYGlobalLo+(bj-1)*sNy
          dimList(3,2)=myYGlobalLo+bj*sNy-1
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
          dimList(1,3)=Nr
          dimList(2,3)=1
          dimList(3,3)=Nr
