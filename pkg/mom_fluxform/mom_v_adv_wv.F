@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.4 2002/12/10 03:02:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.5 2003/01/24 17:15:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,6 +47,7 @@ C  advectiveFluxWV      :: advective flux
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER I,J
+      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef NONLIN_FRSURF
@@ -80,11 +81,15 @@ C     (linear) Free-surface correction at k=1
 
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        advectiveFluxWV(i,j) =
-     &     0.5*(
+c       advectiveFluxWV(i,j) =
+c    &     0.5*(
+c    &        wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
+c    &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
+c    &         )*vFld(i,j,k,bi,bj)
+        tmpFld(i,j) = 0.5 _d 0*(
      &        wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
-     &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
-     &         )*vFld(i,j,k,bi,bj)
+     &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj) )
+        advectiveFluxWV(i,j) = tmpFld(i,j)*vFld(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -93,11 +98,16 @@ C     (linear) Free-surface correction at k=1
 C     Vertical advection - interior ; assume vFld & wFld are masked 
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        advectiveFluxWV(i,j) =
-     &    0.25*(
+c       advectiveFluxWV(i,j) =
+c    &    0.25*(
+c    &        wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
+c    &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
+c    &         )*( vFld(i,j,k,bi,bj)+vFld(i,j,k-1,bi,bj) )
+        tmpFld(i,j) = 0.5 _d 0*(
      &        wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
-     &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
-     &         )*( vFld(i,j,k,bi,bj)+vFld(i,j,k-1,bi,bj) )
+     &       +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj) )
+        advectiveFluxWV(i,j) = tmpFld(i,j)*0.5 _d 0
+     &          *( vFld(i,j,k,bi,bj)+vFld(i,j,k-1,bi,bj) )
        ENDDO
       ENDDO
 
