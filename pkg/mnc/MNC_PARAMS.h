@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.6 2005/02/07 18:37:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.7 2005/04/03 05:16:43 edhill Exp $
 C $Name:  $
 C
 
@@ -32,19 +32,20 @@ C     pickup_write_mnc :: use mnc to write pickups
 C     pickup_read_mnc  :: use mnc to read  pickups
 C     mon_write_mnc    :: use mnc to write monitor output
 C     readgrid_mnc     :: read INI_CURVILINEAR_GRID() info using mnc
+C     seaice_mnc       :: use mnc for the seaice package
 
       COMMON /PARM_MNC_L/ 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
-     &     readgrid_mnc
+     &     readgrid_mnc, seaice_mnc
       LOGICAL 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
-     &     readgrid_mnc
+     &     readgrid_mnc, seaice_mnc
 
 C     ===  PARM_MNC_R Common Block  ===
 C     mnc_max_fsize    :: maximum file size

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.19 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.20 2005/04/03 05:16:44 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -220,6 +220,11 @@ C     yet been tried nor thought through.
 
 C--   Summarise pkg/seaice cofiguration
       CALL SEAICE_SUMMARY( myThid )
+
+C     Initialize MNC variable information for SEAICE
+      IF ( useMNC ) THEN
+        CALL SEAICE_MNC_INIT( myThid )
+      ENDIF
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.148 2005/03/10 17:58:21 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.149 2005/04/03 05:16:43 edhill Exp $
 C $Name:  $
 C
 
@@ -275,6 +275,7 @@ C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
+C     seaice_mdsio       :: use mdsio for seaice output
 C     monitor_stdio      :: use stdio for monitor output
 C     calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
 C                      for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
@@ -310,7 +311,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & usePickupBeforeC35, usePickupBeforeC54, debugMode,
      & readPickupWithTracer, writePickupWithTracer,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
-     & timeave_mdsio, snapshot_mdsio, monitor_stdio,
+     & timeave_mdsio, snapshot_mdsio, monitor_stdio, seaice_mdsio,
      & outputTypesInclusive, 
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
      & calendarDumps
@@ -388,6 +389,7 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
+      LOGICAL seaice_mdsio
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
       LOGICAL calendarDumps

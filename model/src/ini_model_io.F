@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.16 2005/02/23 05:17:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.17 2005/04/03 05:16:43 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -225,6 +225,54 @@ C     &     'potential_temperature', myThid)
       CALL MNC_CW_ADD_VNAME('W3', 'Cen_xy_Hn__C__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('KE', 'Cen_xy_Hn__C__t', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('D',  'Cen_xy_Hn__C__t', 0,0, myThid)
+
+C     Define variables from FFIELDS.h
+      CALL MNC_CW_ADD_VNAME('fu', 'U_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fu','units','N/m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fu','description',
+     &     'Zonal surface wind stress', myThid)
+
+      CALL MNC_CW_ADD_VNAME('fv', 'V_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fv','units','N/m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fv','description',
+     &     'Meridional surface wind stress', myThid)
+
+      CALL MNC_CW_ADD_VNAME('Qnet', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Qnet','units','W/m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Qnet','description',
+     &     'Net upward surface heat flux (including shortwave)', 
+     &     myThid)
+
+      CALL MNC_CW_ADD_VNAME('Qsw', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Qsw','units','W/m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Qsw','description',
+     &     'Net upward shortwave radiation', myThid)
+
+      CALL MNC_CW_ADD_VNAME('dQdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dQdt','units',
+     &     'W/m^2/degrees', myThid)
+
+      CALL MNC_CW_ADD_VNAME('EmPmR', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','description',
+     &     'Net upward freshwater flux', myThid)
+
+      CALL MNC_CW_ADD_VNAME('saltFlux', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','units',
+     &     'psu.kg/m^2/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','description',
+     &     'Net upward salt flux', myThid)
+
+      CALL MNC_CW_ADD_VNAME('SST', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('SST','units','deg C', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('SST','description',
+     &     ' Sea surface temperature for relaxation', myThid)
+
+      CALL MNC_CW_ADD_VNAME('SSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('SSS','units','psu', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('SSS','description',
+     &     'Sea surface salinity for relaxation', myThid)
+
 
 #ifdef ALLOW_AUTODIFF_MONITOR
       CALL AUTODIFF_INI_MODEL_IO( myThid )

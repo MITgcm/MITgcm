@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.9 2005/02/20 11:46:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.10 2005/04/03 05:16:44 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,6 +19,9 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_FFIELDS.h"
 #include "SEAICE.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     == Routine arguments ==
 C     myTime        - Current time of simulation ( s )
@@ -42,18 +45,36 @@ C     == Local variables ==
          IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,
      &        myTime-deltaTClock) ) THEN
             
-            WRITE(suff,'(I10.10)') myIter
-            _BARRIER
-            _BEGIN_MASTER( myThid )
-            CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
-            _END_MASTER( myThid )
-            _BARRIER
+#ifdef ALLOW_MNC
+           IF (useMNC .AND. seaice_mnc) THEN
+             CALL MNC_CW_SET_UDIM('sice', -1, myThid)
+             CALL MNC_CW_I_W_S('I','sice',0,0,'T', myIter, myThid)
+             CALL MNC_CW_SET_UDIM('sice', 0, myThid)
+             CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
+     &            myTime,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'UWIND',uwind,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'VWIND',vwind,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'FU',fu,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'FV',fv,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'EmPmR',EmPmR,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'Qnet',Qnet,myThid)
+             CALL MNC_CW_RL_W('D','sice',0,0,'Qsw',Qsw,myThid)
+           ENDIF
+#endif
+           IF (seaice_mdsio) THEN
+             WRITE(suff,'(I10.10)') myIter
+             _BARRIER
+             _BEGIN_MASTER( myThid )
+             CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
+             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
+             _END_MASTER( myThid )
+             _BARRIER
+           ENDIF
 
 #ifdef SEAICE_DEBUG
        CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
@@ -241,20 +262,49 @@ C      Normalize by integrated time
         ENDDO
        ENDDO
 
-       WRITE(suff,'(I10.10)') myIter
-       _BARRIER
-       _BEGIN_MASTER( myThid )
-       CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('EmPmRtave.',suff,EmPmRtave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('QNETtave.' ,suff,QNETtave ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('QSWtave.'  ,suff,QSWtave  ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('UICEtave.' ,suff,UICEtave ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('VICEtave.' ,suff,VICEtave ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
-       _END_MASTER( myThid )
-       _BARRIER
+#ifdef ALLOW_MNC
+       IF (useMNC .AND. seaice_mnc) THEN
+         CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
+         CALL MNC_CW_I_W_S('I','sice_tave',0,0,'T', myIter, myThid)
+         CALL MNC_CW_SET_UDIM('sice_tave', 0, myThid)
+         CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'model_time',
+     &        myTime,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'UICEtave',UICEtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'VICEtave',VICEtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'FUtave',FUtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'FVtave',FVtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'EmPmRtave',EmPmRtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'QNETtave',QNETtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'QSWtave',QSWtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'HEFFtave',HEFFtave,myThid)
+         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+     &        'AREAtave',AREAtave,myThid)
+       ENDIF
+#endif
+       IF (seaice_mdsio) THEN
+         WRITE(suff,'(I10.10)') myIter
+         _BARRIER
+         _BEGIN_MASTER( myThid )
+         CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('EmPmRtave.',suff,EmPmRtave,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('QNETtave.' ,suff,QNETtave ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('QSWtave.'  ,suff,QSWtave  ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('UICEtave.' ,suff,UICEtave ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('VICEtave.' ,suff,VICEtave ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
+         CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
+         _END_MASTER( myThid )
+         _BARRIER
+       ENDIF
        
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
