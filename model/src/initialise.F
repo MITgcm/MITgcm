@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.3 1998/04/24 02:10:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.4 1998/06/10 02:41:10 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -51,6 +51,10 @@ C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
 C     stored files.
       CALL INI_FIELDS( myThid )
+      _BARRIER
+
+C--   Initialise time-stepping (predictor variables are carried in G)
+      CALL INIT_PREDICTOR( myThid )
       _BARRIER
 
 C--   Set coriolis operators

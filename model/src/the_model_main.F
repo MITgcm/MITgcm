@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.9 1998/06/01 20:36:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.10 1998/06/10 02:41:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -22,6 +22,63 @@ C     | =====                                                    |
 C     | C*P* comments indicating place holders for which code is |
 C     |      presently being developed.                          |
 C     \==========================================================/
+C
+C     Call Tree
+C     =========
+C     
+C      main ( eesupp )
+C       |
+C       .
+C       .
+C       . Generic environment initialisation ( see eesupp/src and
+C       .                                      eesupp/inc )      
+C       . multiple threads and/or processes are created in here
+C       .
+C       .
+C       .
+C       |
+C       |-THE_MODEL_MAIN - Begin specific model. One instance
+C       |  |               of this codes exists for each thread
+C       |  |               and/or instance. Each instance manages
+C       |  |               a specifc set of tiles.               
+C       |  |
+C       |  |--INITIALISE
+C       |  |   o Set initial conditions and model configuration
+C       |  |     Topography, hydrography, timestep, grid, etc..
+C       |  | 
+C  ==>  |  | ** Time stepping loop starts here **
+C  |    |  |
+C /|\   |  |
+C  |    |  |--LOAD_EXTERNAL_DATA
+C /|\   |  |   o Load and/or set time dependent forcing fields
+C  |    |  |
+C /|\   |  |--DYNAMICS
+C  |    |  |   o Evaluate "forward" terms
+C /|\   |  |
+C  |    |  |--DO_THE_MODEL_IO
+C /|\   |  |   o Write model state
+C  |    |  |
+C /|\   |  |--SOLVE_FOR_PRESSURE
+C  |    |  |   o Find pressure field to keep flow non-divergent
+C /|\   |  |
+C  |    |  |--DO_GTERM_BLOCKING_EXCHANGES
+C /|\   |  |   o Update overlap regions
+C  |    |  |
+C /|\   |  |--WRITE_CHECKPOINT
+C  |    |  |   o Write restart file(s)
+C /|\   |  |
+C  |    |  |
+C  |<== |  | ** Time stepping loop finishes here **
+C       |  |
+C       |  |--WRITE_STATE
+C       |  |--WRITE_CHECKPOINT
+C       |
+C       .
+C       .
+C       . Generic environment termination ( see eesupp/src and
+C       .                                      eesupp/inc )      
+C       .
+C       .
 
 C     == Global variables ===
 #include "SIZE.h"
@@ -50,9 +107,6 @@ C--   Set model initial conditions
       CALL INITIALISE( myThid )
       myCurrentTime = startTime
       myCurrentIter = nIter0
-
-C--   Initialise time-stepping (predictor variables are carried in G)
-      CALL INIT_PREDICTOR( myThid )
 
 C--   Begin time stepping loop
       DO I=1, nTimeSteps
