@@ -25,7 +25,7 @@
 # $XFree86: xc/config/util/mdepend.cpp,v 3.2 1997/06/29 07:54:20 dawes Exp $
 #
 
-CPPARGS="-traditional -Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE  -D_GNU_SOURCE  "
+CPPARGS="-Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE  -D_GNU_SOURCE  "
 
 if test -r ./genmake_optfile ; then
     . ./genmake_optfile
