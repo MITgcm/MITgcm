@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.11 2004/12/17 21:28:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.12 2004/12/18 19:13:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -148,7 +148,6 @@ C     Create the dim within the file
 
 C       Create and write the associated CF-convention
 C       coordinate variable
-        write(*,*) 'bi,bj = ',bi,',',bj,'   dname = ', dname(dnf:dnl)
         IF (bi .GT. -1) THEN
           CALL MNC_CW_WRITE_CVAR(fname, dname(dnf:dnl), 
      &         mnc_f_info(indf,2), idd, bi, bj, myThid)
