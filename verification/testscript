@@ -8,9 +8,10 @@
 # This is the number of least-significant digits allows to be
 # in error before the test is classified as a "fail".
 
+set on_error_die
 set passaccuracy=7
 printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' " " Make " " " " Exact "# of" " " > summary.txt
-printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits experiment >> summary.txt
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits Experiment >> summary.txt
 
 # Pass any arguments
 foreach arg ($argv)
@@ -30,6 +31,10 @@ foreach arg ($argv)
    end
    rm -f summary.txt
    exit 0
+   breaksw
+  case -nodie:
+   unset on_error_die
+   breaksw
   default:
    echo Unknown argument given to $0
    exit 1
@@ -54,15 +59,11 @@ foreach dr ([a-zA-Z01-9]*)
   set untested=($untested $dr)
  else
   set config=NO
-  set makedepend=NO
-  set compile=NO
-  set execute=NO
-  set exactmatch=NO
-  set accuracy=-
   cd input
   echo -n "  generating Makefile ..."
   ../../../tools/genmake -mods=../code >&! make.log
   if ($status == 0) set config=Yes
+  set makedepend=NO
   echo " done."
   echo -n "  make depend ..."
   make cleanlinks depend >>& make.log
@@ -73,15 +74,21 @@ foreach dr ([a-zA-Z01-9]*)
   if ($status) then
    echo "               ***** An error occurred during make *****"
    cat make.log
-   exit 1
+   echo The error during compilation occured in \"$dr\"
+   set compile=NO
+   if ($?on_error_die) exit 1
   else
    set compile=Yes
+   set execute=NO
   endif
   echo " done."
   echo -n "  running model ..."
+  if ($compile == 'Yes') then
   ./mitgcmuv | & grep "D iters" > output.txt
   if ($status == 0) then
     set execute=Yes
+    set exactmatch=NO
+    set accuracy=-
     echo " done."
     sed 's/.*D iters, err =//' output.txt \
     | grep "   0    " \
@@ -134,15 +141,18 @@ foreach dr ([a-zA-Z01-9]*)
     endif
   else
     echo " error"
-    echo "               ***** An error occured running the mode *****"
+    echo "               ***** An error occured running the model *****"
     tail output.txt
-    exit 1
+    echo The runtime error occured in \"$dr\"
+    if ($?on_error_die) exit 1
+  endif
   endif
   cd ..
  endif
  echo ""
  cd ..
 # Pretty summary
+ printresults:
  printf '  %s\t  %s\t  %s\t  %s\t  %s\t  %s\t%s\n' $config $makedepend $compile $execute $exactmatch $accuracy $dr >> summary.txt
 end
 echo ==============================================================================
