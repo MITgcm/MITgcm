@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.43 2004/10/07 18:24:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.44 2004/10/15 20:02:31 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -66,8 +66,10 @@ C Argument list declarations
       _RL qstr(im2,jm2,Nrphin,Nsxin,Nsyin)
       _RL co2,cfc11,cfc12,cfc22,n2o(Nrphin),methane(Nrphin)
 
-      integer iras,nlwcld,nlwlz,nswcld,nswlz
-      integer imstturbsw,imstturblw
+      integer iras(Nsxin,Nsyin)
+      integer nlwcld(Nsxin,Nsyin),nlwlz(Nsxin,Nsyin)
+      integer nswcld(Nsxin,Nsyin),nswlz(Nsxin,Nsyin)
+      integer imstturbsw(Nsxin,Nsyin),imstturblw(Nsxin,Nsyin)
       _RL cldtotlwin(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL cldraslwin(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL cldlsplwin(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -162,13 +164,13 @@ C***********************************************************************
        _BEGIN_MASTER(myid)
        if(myid.eq.1) print *,' Initializing fizhi arrays '
        _END_MASTER(myid)
-       imstturblw = 0
-       imstturbsw = 0
-       iras = 0
-       nlwcld = 0
-       nlwlz = 0
-       nswcld = 0
-       nswlz = 0
+       imstturblw(bi,bj) = 0
+       imstturbsw(bi,bj) = 0
+       iras(bi,bj) = 0
+       nlwcld(bi,bj) = 0
+       nlwlz(bi,bj) = 0
+       nswcld(bi,bj) = 0
+       nswlz(bi,bj) = 0
        do L = 1,Nrphys
        do j = jm1,jm2
        do i = im1,im2
@@ -298,11 +300,11 @@ C compute pressures - all pressure are converted here to hPa
      . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
      . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
      . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
-     . rainlsp,raincon,snowfall,iras,
-     . nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
-     . nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
-     . imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw,
-     . qq(1,1,1,bi,bj))
+     . rainlsp,raincon,snowfall,iras(bi,bj),
+     . nlwcld(bi,bj),cldtot_lw,cldras_lw,cldlsp_lw,nlwlz(bi,bj),lwlz,
+     . nswcld(bi,bj),cldtot_sw,cldras_sw,cldlsp_sw,nswlz(bi,bj),swlz,
+     . imstturbsw(bi,bj),imstturblw(bi,bj),qliqavesw,qliqavelw,
+     . fccavesw,fccavelw,qq(1,1,1,bi,bj))
 
       do L = 1,Nrphys
       do j = jm1,jm2
@@ -316,6 +318,33 @@ C compute pressures - all pressure are converted here to hPa
        dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
      .                                    /p(i,j,bi,bj)
       enddo
+      enddo
+      enddo
+
+      do L = 1,Nrphys
+      do j = jm1,jm2
+      do i = im1,im2
+       cldtotlwin(i,j,L,bi,bj) = cldtot_lw(i,j,L)
+       cldlsplwin(i,j,L,bi,bj) = cldlsp_lw(i,j,L)
+       cldraslwin(i,j,L,bi,bj) = cldras_lw(i,j,L)
+       lwlzin(i,j,L,bi,bj) = lwlz(i,j,L)
+       qliqavelwin(i,j,L,bi,bj) = qliqavelw(i,j,L)
+       fccavelwin(i,j,L,bi,bj) = fccavelw(i,j,L)
+       cldtotswin(i,j,L,bi,bj) = cldtot_sw(i,j,L)
+       cldlspswin(i,j,L,bi,bj) = cldlsp_sw(i,j,L)
+       cldrasswin(i,j,L,bi,bj) = cldras_sw(i,j,L)
+       swlzin(i,j,L,bi,bj) = swlz(i,j,L)
+       qliqaveswin(i,j,L,bi,bj) = qliqavesw(i,j,L)
+       fccaveswin(i,j,L,bi,bj) = fccavesw(i,j,L)
+      enddo
+      enddo
+      enddo
+
+      do j = jm1,jm2
+      do i = im1,im2
+       rainconin(i,j,bi,bj) = raincon(i,j)
+       rainlspin(i,j,bi,bj) = rainlsp(i,j)
+       snowfallin(i,j,bi,bj) = snowfall(i,j)
       enddo
       enddo
 
