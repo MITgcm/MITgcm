@@ -13,4 +13,5 @@ seaice_model.f
 seaice_pickup.f
 seaice_readparms.f
 seaice_exch.f
+seaice_exch_uv.f
 lsr.f
