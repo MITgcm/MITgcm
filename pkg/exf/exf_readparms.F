@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.6 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.7 2003/03/06 00:47:33 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -103,7 +103,23 @@ c     Surface flux data.
      &    exf_outscal_hfl,    exf_outscal_ust,exf_outscal_vst,
      &    exf_outscal_swf,    exf_outscal_sst,exf_outscal_sss,
      &    exf_outscal_sfl,  exf_outscal_apressure,
-     &     EXFwindOnBgrid
+     &         hfluxconst,
+     &         atempconst,
+     &         aqhconst,
+     &         sfluxconst,
+     &         evapconst,
+     &         precipconst,
+     &         runoffconst,
+     &         ustressconst,
+     &         vstressconst,
+     &         uwindconst,
+     &         vwindconst,
+     &         swfluxconst,
+     &         lwfluxconst,
+     &         swdownconst,
+     &         lwdownconst,
+     &         apressureconst,
+     &         EXFwindOnBgrid
 
       _BEGIN_MASTER(mythid)
 
@@ -113,62 +129,77 @@ c     Calendar data.
       hfluxstartdate1    = 0
       hfluxstartdate2    = 0
       hfluxperiod        = 0.0 _d 0
+      hfluxconst         = 0.0 _d 0
 
       atempstartdate1    = 0
       atempstartdate2    = 0
       atempperiod        = 0.0 _d 0
+      atempconst         = 0.0 _d 0
 
       aqhstartdate1      = 0
       aqhstartdate2      = 0
       aqhperiod          = 0.0 _d 0
+      aqhconst           = 0.0 _d 0
 
       sfluxstartdate1    = 0
       sfluxstartdate2    = 0
       sfluxperiod        = 0.0 _d 0
+      sfluxconst         = 0.0 _d 0
 
       evapstartdate1   = 0
       evapstartdate2   = 0
       evapperiod       = 0.0 _d 0
+      evapconst        = 0.0 _d 0
 
       precipstartdate1   = 0
       precipstartdate2   = 0
       precipperiod       = 0.0 _d 0
+      precipconst        = 0.0 _d 0
 
       runoffstartdate1   = 0
       runoffstartdate2   = 0
       runoffperiod       = 0.0 _d 0
+      runoffconst        = 0.0 _d 0
 
       ustressstartdate1  = 0
       ustressstartdate2  = 0
       ustressperiod      = 0.0 _d 0
+      ustressconst       = 0.0 _d 0
 
       vstressstartdate1  = 0
       vstressstartdate2  = 0
       vstressperiod      = 0.0 _d 0
+      vstressconst       = 0.0 _d 0
 
       uwindstartdate1    = 0
       uwindstartdate2    = 0
       uwindperiod        = 0.0 _d 0
+      uwindconst         = 0.0 _d 0
 
       vwindstartdate1    = 0
       vwindstartdate2    = 0
       vwindperiod        = 0.0 _d 0
+      vwindconst         = 0.0 _d 0
 
       swfluxstartdate1   = 0
       swfluxstartdate2   = 0
       swfluxperiod       = 0.0 _d 0
+      swfluxconst        = 0.0 _d 0
 
       lwfluxstartdate1   = 0
       lwfluxstartdate2   = 0
       lwfluxperiod       = 0.0 _d 0
+      lwfluxconst        = 0.0 _d 0
 
       swdownstartdate1   = 0
       swdownstartdate2   = 0
       swdownperiod       = 0.0 _d 0
+      swdownconst        = 0.0 _d 0
 
       lwdownstartdate1   = 0
       lwdownstartdate2   = 0
       lwdownperiod       = 0.0 _d 0
+      lwdownconst        = 0.0 _d 0
 
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
@@ -189,6 +220,7 @@ c     Calendar data.
       apressurestartdate1    = 0
       apressurestartdate2    = 0
       apressureperiod        = 0.0 _d 0
+      apressureconst         = 0.0 _d 0
 
       repeatPeriod           = 0.0 _d 0
 

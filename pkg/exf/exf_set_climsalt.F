@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.5 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.6 2003/03/06 00:47:33 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 

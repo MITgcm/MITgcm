@@ -146,7 +146,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              apressure(i,j,bi,bj)  = 0. _d 0
+              apressure(i,j,bi,bj)  = apressureconst
               apressure0(i,j,bi,bj) = 0. _d 0
               apressure1(i,j,bi,bj) = 0. _d 0
             enddo

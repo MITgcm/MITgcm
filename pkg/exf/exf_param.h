@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.6 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.7 2003/03/06 00:47:33 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -37,6 +37,7 @@ c     Calendar data.
       integer hfluxstartdate2
       integer hfluxstartdate(4)
       _RL     hfluxperiod
+      _RL     hfluxconst
       character*1 hfluxmask
       parameter(  hfluxmask = 's' )
 
@@ -44,6 +45,7 @@ c     Calendar data.
       integer atempstartdate2
       integer atempstartdate(4)
       _RL     atempperiod
+      _RL     atempconst
       character*1 atempmask
       parameter(  atempmask = 's' )
 
@@ -51,6 +53,7 @@ c     Calendar data.
       integer aqhstartdate2
       integer aqhstartdate(4)
       _RL     aqhperiod
+      _RL     aqhconst
       character*1 aqhmask
       parameter(  aqhmask = 's' )
 
@@ -58,6 +61,7 @@ c     Calendar data.
       integer sfluxstartdate2
       integer sfluxstartdate(4)
       _RL     sfluxperiod
+      _RL     sfluxconst
       character*1 sfluxmask
       parameter(  sfluxmask = 's' )
 
@@ -65,6 +69,7 @@ c     Calendar data.
       integer evapstartdate2
       integer evapstartdate(4)
       _RL     evapperiod
+      _RL     evapconst
       character*1 evapmask
       parameter(  evapmask = 's' )
 
@@ -72,6 +77,7 @@ c     Calendar data.
       integer precipstartdate2
       integer precipstartdate(4)
       _RL     precipperiod
+      _RL     precipconst
       character*1 precipmask
       parameter(  precipmask = 's' )
 
@@ -79,6 +85,7 @@ c     Calendar data.
       integer runoffstartdate2
       integer runoffstartdate(4)
       _RL     runoffperiod
+      _RL     runoffconst
       character*1 runoffmask
       parameter(  runoffmask = 's' )
 
@@ -86,6 +93,7 @@ c     Calendar data.
       integer ustressstartdate2
       integer ustressstartdate(4)
       _RL     ustressperiod
+      _RL     ustressconst
       character*1 ustressmask
       parameter(  ustressmask = 'u' )
 
@@ -93,6 +101,7 @@ c     Calendar data.
       integer vstressstartdate2
       integer vstressstartdate(4)
       _RL     vstressperiod
+      _RL     vstressconst
       character*1 vstressmask
       parameter(  vstressmask = 'v' )
 
@@ -100,6 +109,7 @@ c     Calendar data.
       integer uwindstartdate2
       integer uwindstartdate(4)
       _RL     uwindperiod
+      _RL     uwindconst
       character*1 uwindmask
       parameter(  uwindmask = 'u' )
 
@@ -107,6 +117,7 @@ c     Calendar data.
       integer vwindstartdate2
       integer vwindstartdate(4)
       _RL     vwindperiod
+      _RL     vwindconst
       character*1 vwindmask
       parameter(  vwindmask = 'v' )
 
@@ -114,6 +125,7 @@ c     Calendar data.
       integer swfluxstartdate2
       integer swfluxstartdate(4)
       _RL     swfluxperiod
+      _RL     swfluxconst
       character*1 swfluxmask
       parameter(  swfluxmask = 's' )
 
@@ -121,6 +133,7 @@ c     Calendar data.
       integer lwfluxstartdate2
       integer lwfluxstartdate(4)
       _RL     lwfluxperiod
+      _RL     lwfluxconst
       character*1 lwfluxmask
       parameter(  lwfluxmask = 's' )
 
@@ -128,6 +141,7 @@ c     Calendar data.
       integer swdownstartdate2
       integer swdownstartdate(4)
       _RL     swdownperiod
+      _RL     swdownconst
       character*1 swdownmask
       parameter(  swdownmask = 's' )
 
@@ -135,6 +149,7 @@ c     Calendar data.
       integer lwdownstartdate2
       integer lwdownstartdate(4)
       _RL     lwdownperiod
+      _RL     lwdownconst
       character*1 lwdownmask
       parameter(  lwdownmask = 's' )
 
@@ -162,6 +177,7 @@ c     Calendar data.
       integer apressurestartdate2
       integer apressurestartdate(4)
       _RL     apressureperiod
+      _RL     apressureconst
       character*1 apressuremask
       parameter(  apressuremask = 's' )
 
@@ -246,7 +262,23 @@ c     File names.
      &                          obcsSperiod,
      &                          obcsEperiod,
      &                          obcsWperiod,
-     &                          apressureperiod
+     &                          apressureperiod,
+     &                          hfluxconst,
+     &                          atempconst,
+     &                          aqhconst,
+     &                          sfluxconst,
+     &                          evapconst,
+     &                          precipconst,
+     &                          runoffconst,
+     &                          ustressconst,
+     &                          vstressconst,
+     &                          uwindconst,
+     &                          vwindconst,
+     &                          swfluxconst,
+     &                          lwfluxconst,
+     &                          swdownconst,
+     &                          lwdownconst,
+     &                          apressureconst
 
       common /exf_param_c/
      &                          hfluxfile,

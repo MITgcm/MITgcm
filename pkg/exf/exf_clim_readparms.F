@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.2 2003/03/06 00:47:33 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -44,10 +44,10 @@ c     Surface flux data.
       namelist /exf_clim_nml/
      & climtempstartdate1, climtempstartdate2, climtempperiod,
      & climsaltstartdate1, climsaltstartdate2, climsaltperiod,
-     &  climsststartdate1,  climsststartdate2, climsstperiod,
-     &  climsssstartdate1,  climsssstartdate2, climsssperiod,
-     &       climtempfile,       climsaltfile,   climsstfile,
-     &        climsssfile,
+     &  climsststartdate1,  climsststartdate2,  climsstperiod,
+     &  climsssstartdate1,  climsssstartdate2,  climsssperiod,
+     &       climtempfile,       climsaltfile,    climsstfile,
+     &        climsssfile,       climsstconst,   climsssconst,
      &     exf_clim_iprec, exf_clim_yftype
 
       _BEGIN_MASTER(mythid)
@@ -77,13 +77,17 @@ c     Data files.
       climsstfile        = ' '
       climsssfile        = ' '
 
-c       Initialise the date arrays.
+c     Initialise the date arrays.
       do i = 1,4
          climtempstartdate(i) = 0
          climsaltstartdate(i) = 0
          climsststartdate(i)  = 0
          climsssstartdate(i)  = 0
       enddo
+
+c     Initialise constant values for relax. to constant SST, SSS
+      climsstconst = 0. _d 0
+      climsssconst = 0. _d 0
 
 c     Initialise file type and field precision
       exf_clim_iprec  = 32

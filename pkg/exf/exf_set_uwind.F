@@ -145,7 +145,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              uwind(i,j,bi,bj)  = 0. _d 0
+              uwind(i,j,bi,bj)  = uwindconst
               uwind0(i,j,bi,bj) = 0. _d 0
               uwind1(i,j,bi,bj) = 0. _d 0
             enddo

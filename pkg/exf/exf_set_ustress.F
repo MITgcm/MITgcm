@@ -146,7 +146,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              ustress(i,j,bi,bj)  = 0. _d 0
+              ustress(i,j,bi,bj)  = ustressconst
               ustress0(i,j,bi,bj) = 0. _d 0
               ustress1(i,j,bi,bj) = 0. _d 0
             enddo

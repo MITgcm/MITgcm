@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.5 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.6 2003/03/06 00:47:33 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -171,7 +171,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              climsss (i,j,bi,bj) = 0. _d 0
+              climsss (i,j,bi,bj) = climsssconst
               climsss0(i,j,bi,bj) = 0. _d 0
               climsss1(i,j,bi,bj) = 0. _d 0
             enddo

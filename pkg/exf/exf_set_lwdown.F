@@ -144,7 +144,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              lwdown(i,j,bi,bj)  = 0. _d 0
+              lwdown(i,j,bi,bj)  = lwdownconst
               lwdown0(i,j,bi,bj) = 0. _d 0
               lwdown1(i,j,bi,bj) = 0. _d 0
             enddo

@@ -145,7 +145,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              evap(i,j,bi,bj)  = 0. _d 0
+              evap(i,j,bi,bj)  = evapconst
 #ifdef EXF_READ_EVAP
               evap0(i,j,bi,bj) = 0. _d 0
               evap1(i,j,bi,bj) = 0. _d 0

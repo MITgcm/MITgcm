@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.9 2003/02/25 06:35:46 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.10 2003/03/06 00:47:33 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -309,9 +309,8 @@ CHPF$  INDEPENDENT
 
           k = 1
 
-cdm? can olx, oly be eliminated?
-          do j = 1-oly,sny+oly
-            do i = 1-olx,snx+olx
+          do j = 1,sny
+            do i = 1,snx
 
 #ifdef ALLOW_BULKFORMULAE
 
@@ -593,8 +592,9 @@ c             Salt flux from Precipitation and Evaporation.
 c     Update the tile edges.
       _EXCH_XY_R8(hflux,   mythid)
       _EXCH_XY_R8(sflux,   mythid)
-      _EXCH_XY_R8(ustress, mythid)
-      _EXCH_XY_R8(vstress, mythid)
+c      _EXCH_XY_R8(ustress, mythid)
+c      _EXCH_XY_R8(vstress, mythid)
+       CALL EXCH_UV_XY_RL(ustress, vstress, .TRUE., myThid)
 
 #ifdef SHORTWAVE_HEATING
       _EXCH_XY_R8(swflux, mythid)

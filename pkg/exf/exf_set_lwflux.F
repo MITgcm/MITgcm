@@ -145,7 +145,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              lwflux(i,j,bi,bj)  = 0. _d 0
+              lwflux(i,j,bi,bj)  = lwfluxconst
               lwflux0(i,j,bi,bj) = 0. _d 0
               lwflux1(i,j,bi,bj) = 0. _d 0
             enddo
