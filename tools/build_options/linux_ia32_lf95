@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_lf95,v 1.1 2003/12/04 22:42:29 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_lf95,v 1.2 2004/02/21 21:59:51 cnh Exp $
 #
 
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='/lib/cpp -traditional -P'
 FC='lf95'
 # FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
