@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.21 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.22 2005/02/28 19:29:52 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -50,7 +50,7 @@ C     myThid - Thread number for this instance of the routine.
       integer myiter
       _RL     mytime 
 
-#ifdef ALLOW_ADJOINT_RUN
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
 C     !LOCAL VARIABLES:
@@ -128,6 +128,17 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+c
+#ifdef ALLOW_EXF
+        CALL WRITE_FLD_XY_RL ( 'ADJustress.',
+     &       suff, adustress, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJvstress.',
+     &       suff, advstress, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJhflux.',
+     &       suff, adhflux, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJsflux.',
+     &       suff, adsflux, myIter, myThid)
+#endif
 c
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr, 
