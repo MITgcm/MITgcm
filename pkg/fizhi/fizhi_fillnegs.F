@@ -1,4 +1,4 @@
-      SUBROUTINE PQCHECK ( PQZ,PZ,DSIG,IM,JM,LM,delt)
+      SUBROUTINE PQCHECK ( PQZ,PZ,DP,IM,JM,LM,delt)
 C***********************************************************************
 C  Purpose                                                              
 C     Check Specific Humidity Field for Negative values                 
@@ -6,7 +6,7 @@ C
 C  Argument Description
 C     PQZ ........ (ps-ptop)*Specific Humidity (mb g/g)                                  
 C     PZ ......... Pi = ps-ptop (mb)                                  
-C     DSIG ....... Delta Sigma                                              
+C     DP .......   Delta Pressure                                              
 C     IM ......... Zonal      Dimension
 C     JM ......... Meridional Dimension
 C     LM ......... Vertical   Dimension
@@ -19,7 +19,7 @@ C***********************************************************************
       integer im,jm,lm
       real delt
 
-      real     PQZ(IM,JM,LM), DSIG(LM)                        
+      real     PQZ(IM,JM,LM), DP(IM,JM,LM)                        
       real      PZ(IM,JM)
 
       integer i,j,L,LM1
@@ -32,9 +32,9 @@ c Fill Negative Specific Humidities
 c ---------------------------------
       DO  L = 2,LM
       LM1   = L-1                                                     
-      DDSIG = DSIG(LM1)/DSIG(L)                                     
       do j=1,jm
       do i=1,im
+      DDSIG = DP(I,J,LM1)/DP(I,J,L)                                     
       IF( PQZ(I,j,LM1).LT.0.0 ) THEN                                
           PQZ(I,j,L  ) = PQZ(I,j,L) + PQZ(I,j,LM1)*DDSIG                   
           PQZ(I,j,LM1) = 0.0
@@ -52,7 +52,7 @@ c ---------------------------------
       RETURN                                                            
       END                                                               
 
-      subroutine tracer_fill ( pq,im,jm,lm,dlam,dphi,dsig)
+      subroutine tracer_fill ( pq,im,jm,lm,dlam,dphi,dp)
 C***********************************************************************
 C  PURPOSE                                                              
 C     Fill negative tracer values using local borrowing
@@ -64,10 +64,11 @@ C     jm ..... Meridional Dimension
 C     lm ..... Vertical   Dimension
 C     dlam ... Zonal      Grid Increment
 C     dphi ... Meridional Grid Increment
-C     dsig ... Vertical   Grid Increment
+C     dp ..... Vertical   Grid Increment
 C                                                                       
 C  Note:
-C     If no immediate surrounding value is large enough to fill negative value,
+C     If no immediate surrounding value is large enough to fill negative 
+C     value,
 C     the sum of immediate surrounding positive values is tried.  
 C     If sum is not large enough, tracer is simply set to zero.
 C                                                                       
@@ -80,7 +81,7 @@ C***********************************************************************
 c Input Variables
 c ---------------
       integer im,jm,lm
-      real    pq(im,jm,lm),dlam(im),dphi(jm),dsig(lm)
+      real    pq(im,jm,lm),dlam(im),dphi(jm),dp(im,jm,lm)
 
 c Local Variables
 c ---------------
@@ -202,29 +203,29 @@ C *********************************************************
 
       if( pq(i,j,L).lt.0.0 ) then
 
-      qval     = pq(i  ,j,L)*d2p(i  ,j)*dsig(L)
-      array(1) = pq(ip1,j,L)*d2p(ip1,j)*dsig(L)
-      array(2) = pq(im1,j,L)*d2p(im1,j)*dsig(L)
+      qval     = pq(i  ,j,L)*d2p(i  ,j)*dp(i,j,L)
+      array(1) = pq(ip1,j,L)*d2p(ip1,j)*dp(i,j,L)
+      array(2) = pq(im1,j,L)*d2p(im1,j)*dp(i,j,L)
 
       if( j.eq.jm-1 ) then
       array(3) = -undef
       else
-      array(3) = pq(i,j+1,L)*d2p(i,j+1)*dsig(L)
+      array(3) = pq(i,j+1,L)*d2p(i,j+1)*dp(i,j,L)
       endif
       if( j.eq.2    ) then
       array(4) = -undef
       else
-      array(4) = pq(i,j-1,L)*d2p(i,j-1)*dsig(L)
+      array(4) = pq(i,j-1,L)*d2p(i,j-1)*dp(i,j,L)
       endif
       if( L.eq.1    ) then
       array(5) = -undef
       else
-      array(5) = pq(i,j,L-1)*d2p(i,j)*dsig(L-1)
+      array(5) = pq(i,j,L-1)*d2p(i,j)*dp(i,j,L)1)
       endif
       if( L.eq.lm   ) then
       array(6) = -undef
       else
-      array(6) = pq(i,j,L+1)*d2p(i,j)*dsig(L+1)
+      array(6) = pq(i,j,L+1)*d2p(i,j)*dp(i,j,L)1)
       endif
 
       call maxval (array,6,-qval,qmax,imax)
@@ -247,12 +248,18 @@ C *********************************************************
                pq(i,j,L) = 0.0
              endif
       else
-          if( imax.eq.1 ) pq(ip1,j,L) = pq(ip1,j,L) + pq(i,j,L)*d2p(i,j)/d2p(ip1,j)
-          if( imax.eq.2 ) pq(im1,j,L) = pq(im1,j,L) + pq(i,j,L)*d2p(i,j)/d2p(im1,j)
-          if( imax.eq.3 ) pq(i,j+1,L) = pq(i,j+1,L) + pq(i,j,L)*d2p(i,j)/d2p(i,j+1)
-          if( imax.eq.4 ) pq(i,j-1,L) = pq(i,j-1,L) + pq(i,j,L)*d2p(i,j)/d2p(i,j-1)
-          if( imax.eq.5 ) pq(i,j,L-1) = pq(i,j,L-1) + pq(i,j,L)*dsig(L) /dsig(L-1)
-          if( imax.eq.6 ) pq(i,j,L+1) = pq(i,j,L+1) + pq(i,j,L)*dsig(L) /dsig(L+1)
+          if( imax.eq.1 ) pq(ip1,j,L) = pq(ip1,j,L) + 
+     .                                 pq(i,j,L)*d2p(i,j)/d2p(ip1,j)
+          if( imax.eq.2 ) pq(im1,j,L) = pq(im1,j,L) + 
+     .                                 pq(i,j,L)*d2p(i,j)/d2p(im1,j)
+          if( imax.eq.3 ) pq(i,j+1,L) = pq(i,j+1,L) + 
+     .                                 pq(i,j,L)*d2p(i,j)/d2p(i,j+1)
+          if( imax.eq.4 ) pq(i,j-1,L) = pq(i,j-1,L) + 
+     .                                 pq(i,j,L)*d2p(i,j)/d2p(i,j-1)
+          if( imax.eq.5 ) pq(i,j,L-1) = pq(i,j,L-1) + 
+     .                                 pq(i,j,L)*dp(i,j,L) /dp(i,j,L-1)
+          if( imax.eq.6 ) pq(i,j,L+1) = pq(i,j,L+1) + 
+     .                                 pq(i,j,L)*dp(i,j,L) /dp(i,j,L+1)
                           pq(i,j,L)   = 0.0
       endif
 
