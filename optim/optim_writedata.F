@@ -149,7 +149,9 @@ c--   Write the header.
       write( funit ) (nWetcGlobal(k), k=1,nr)
       write( funit ) (nWetsGlobal(k), k=1,nr)
       write( funit ) (nWetwGlobal(k), k=1,nr)
+#ifdef ALLOW_CTRL_WETV
       write( funit ) (nWetvGlobal(k), k=1,nr)
+#endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL

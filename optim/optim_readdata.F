@@ -154,7 +154,9 @@ cph)
       read( funit ) (nWetcGlobal(k), k=1,nr)
       read( funit ) (nWetsGlobal(k), k=1,nr)
       read( funit ) (nWetwGlobal(k), k=1,nr)
+#ifdef ALLOW_CTRL_WETV
       read( funit ) (nWetvGlobal(k), k=1,nr)
+#endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL
