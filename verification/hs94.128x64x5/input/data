@@ -69,4 +69,5 @@
 
 # Input datasets
  &PARM05
+ hydrogThetaFile='T.init',
  &
