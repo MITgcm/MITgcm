@@ -1,0 +1,41 @@
+#include "CPP_EEOPTIONS.h"
+
+CStartofinterface
+      SUBROUTINE TIMEAVER_FINAL_XYZ( fldtave, timeave, bi, bj, K, myThid )
+C     /==========================================================\
+C     | SUBROUTINE TIMEAVER_FINAL_XY                             |
+C     | o Get final average of field                             |
+C     \==========================================================/
+
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     == Routine arguments ==
+C     myThid - Thread number for this instance of the routine.
+C     timeave - time averaged
+C     fldtave - time averaged Field
+      INTEGER bi, bj, K, myThid
+      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      REAL timeave(Nz,nSx,nSy)
+
+CEndofinterface
+
+C     == Local variables ==
+C     i,j,k,bi,bj  - Loop counters
+      INTEGER i, j
+ 
+C     DO bj = myByLo(myThid), myByHi(myThid)
+C      DO bi = myBxLo(myThid), myBxHi(myThid)
+C       DO k=1,Nz
+         DO j=1,sNy
+          DO i=1,sNx
+             fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj) / timeave(k,bi,bj)
+          ENDDO
+         ENDDO
+C       ENDDO
+C      ENDDO
+C     ENDDO
+ 
+      RETURN
+      END

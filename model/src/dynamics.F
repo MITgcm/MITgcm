@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.22 1998/06/23 02:35:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.23 1998/07/01 19:49:36 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -379,6 +379,16 @@ C--      Diagnose barotropic divergence of predicted fields
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       xA,yA,
      I       myThid)
+
+C--      Cumulative diagnostic calculations (ie. time-averaging)
+#ifdef ALLOW_DIAGNOSTICS
+         IF (taveFreq.GT.0.) THEN
+          CALL DO_TIME_AVERAGES(
+     I                           myTime, myIter, bi, bj, K, kUp, kDown,
+     I                           K13, K23, wVel,
+     I                           myThid )
+         ENDIF
+#endif
 
         ENDDO ! K
 

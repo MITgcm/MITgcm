@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.20 1998/06/18 13:56:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.21 1998/07/01 19:49:36 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -383,6 +383,23 @@ C     o Time step count
       ENDIF
 C     o Finish time
       IF ( endTime .EQ. 0. ) endTime = FLOAT(nTimeSteps)*deltaTClock
+
+C     o If taveFreq is finite, then we must make sure the diagnostics
+C       code is being compiled
+#ifndef ALLOW_DIAGNOSTICS
+      IF (taveFreq.NE.0.) THEN
+        WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: taveFreq <> 0  but you have'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'not compiled the model with the diagnostics routines.'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with:  #define ALLOW_DIAGNOSTICS  or  -DALLOW_DIAGNOSTICS'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
+#endif
  
 C--   Grid parameters
 C     In cartesian coords distances are in metres

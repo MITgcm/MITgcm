@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.16 1998/06/30 17:21:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.17 1998/07/01 19:49:36 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -70,8 +70,8 @@ C /|\   |  |
 C  |    |  |
 C  |<== |  | ** Time stepping loop finishes here **
 C       |  |
-C       |  |--WRITE_CHECKPOINT 
 C       |  |--WRITE_STATE
+C       |  |--WRITE_CHECKPOINT
 C       |
 C       .
 C       .
@@ -122,9 +122,11 @@ C--    Step forward fields and calculate time tendency terms
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
 
 C--    Do time averages
+#ifdef ALLOW_DIAGNOSTICS
        IF (taveFreq.GT.0.) THEN
-         CALL DO_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+        CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
        ENDIF
+#endif
 
 C--    Do IO if needed.
 C      Note:
@@ -169,9 +171,11 @@ C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
       CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
 
 C--   Do time averages
+#ifdef ALLOW_DIAGNOSTICS
       IF (taveFreq.GT.0.) THEN
-        CALL DO_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+        CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
       ENDIF
+#endif
 
 C--   Dump for end state
       CALL WRITE_STATE( .FALSE., myCurrentTime, myCurrentIter, myThid )
