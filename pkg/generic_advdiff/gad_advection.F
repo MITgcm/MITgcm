@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.11 2002/03/06 02:01:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.12 2002/03/24 02:12:50 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -266,7 +266,6 @@ CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
        CALL GAD_DST3FL_ADV_X(
      &       bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
       ELSE
-       write(0,*) advectionScheme
        STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
       ENDIF
 
@@ -389,6 +388,8 @@ c     kp1=min(Nr,k+1)
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE localTijk(:,:,k)  
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE rTrans(:,:)  
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
