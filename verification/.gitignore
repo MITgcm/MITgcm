@@ -1,3 +1,5 @@
 *.log
 tr_*
 summary.txt
+tmp_*
+
