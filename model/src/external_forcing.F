@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.21 2003/12/06 00:08:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.22 2003/12/11 21:23:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,7 +52,7 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
        kSurface = 0
       elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
@@ -133,7 +133,7 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
        kSurface = 0
       elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
@@ -221,7 +221,7 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
        kSurface = 0
       elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
@@ -319,7 +319,7 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
        kSurface = 0
       elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
