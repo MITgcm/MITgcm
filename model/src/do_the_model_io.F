@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.40 2004/03/02 08:45:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.41 2004/03/11 14:49:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,7 +99,7 @@ C--   Do AIM time averages
 #ifdef ALLOW_LAND
 C--   Do LAND time averages
       IF ( useLAND )
-     &  CALL LAND_WRITE_TAVE( myTime, myIter, myThid )
+     &  CALL LAND_WRITE_DIAGS( myTime, myIter, myThid )
 #endif                                                             
 
 #ifdef ALLOW_OBCS
