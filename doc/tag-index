@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.185 2003/10/10 23:04:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.186 2003/10/16 16:29:58 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o added an include barrier to the default CPP_OPTIONS.h and 
+  removed the #include "PACKAGES_CONFIG.h" from it
 
 checkpoint51j_post
 o Added some AD-related initialisations in mom_vecinv/ mom_fluxform/
