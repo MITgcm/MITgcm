@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.12 2003/02/18 15:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.13 2003/03/07 23:46:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -212,7 +212,8 @@ C     of sea water at p
      I        myThid ) 
 
          CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
-     &        locPres, theta, salt, rhoLoc, myThid )
+     &        kRef, theta, salt, rhoLoc, myThid )
+
          CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
      &        locPres, theta, salt, rhoDen, myThid )
 
@@ -437,7 +438,8 @@ C     of sea water at p
      I        myThid ) 
 
          CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
-     &        locPres, theta, salt, rhoLoc, myThid )
+     &        kRef, theta, salt, rhoLoc, myThid )
+
          CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
      &        locPres, theta, salt, rhoDen, myThid )
          
