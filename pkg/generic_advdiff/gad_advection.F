@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.21 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.22 2004/06/25 18:19:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -398,12 +398,19 @@ c       kp1=min(Nr,k+1)
         if (k.EQ.Nr) kp1Msk=0.
 
 C-- Compute Vertical transport
-        IF (k.EQ.1) THEN
+#ifdef ALLOW_AIM
+C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
+        IF ( k.EQ.1 .OR.
+     &     (useAIM .AND. tracerIdentity.EQ.GAD_SALINITY .AND. k.EQ.Nr)
+     &              ) THEN
+#else
+        IF ( k.EQ.1 ) THEN
+#endif
 
 C- Surface interface :
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           rTransKp1(i,j) = rTrans(i,j)
+           rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            rTrans(i,j) = 0.
            fVerT(i,j,kUp) = 0.
            af(i,j) = 0.

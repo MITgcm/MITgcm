@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.24 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.25 2004/06/25 18:19:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -309,7 +309,14 @@ C-    Bi-harmonic flux in Y
 
 C--   Compute vertical flux fVerT(kUp) at interface k (between k-1 & k):
 C-    Advective flux in R
+#ifdef ALLOW_AIM
+C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
+      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2 .AND.
+     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.K.LT.Nr)
+     &   ) THEN
+#else
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2) THEN
+#endif
 C-    Compute vertical advective flux in the interior:
        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
         CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
