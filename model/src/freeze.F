@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/freeze.F,v 1.10 2003/11/13 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/freeze.F,v 1.11 2005/01/25 22:26:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,7 +38,7 @@ C     Tfreezing :: Freezing threshold temperature.
       _RL Tfreezing
 CEOP
 
-      Tfreezing=-1.9
+      Tfreezing=-1.9 _d 0
 
 C     Check for water that should have frozen
        DO j=jMin,jMax
