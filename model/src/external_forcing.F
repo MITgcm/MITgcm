@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.23 2003/12/15 23:00:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.24 2004/04/08 04:04:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,12 +208,6 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#ifdef SHORTWAVE_HEATING
-      integer two
-      _RL minusone
-      parameter (two=2,minusone=-1.)
-      _RL swfracb(two)
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -233,6 +227,13 @@ C     Loop counters
       INTEGER I, J
 C     number of surface interface layer
       INTEGER kSurface
+#ifdef SHORTWAVE_HEATING
+      integer two
+      _RL minusone
+      parameter (two=2,minusone=-1.)
+      _RL swfracb(two)
+      INTEGER kp1
+#endif
 CEOP
 
       if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
@@ -269,16 +270,22 @@ C     Add heat in top-layer
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
+      kp1 = klev+1
       swfracb(1)=abs(rF(klev))
       swfracb(2)=abs(rF(klev+1))
-      call SWFRAC(
+      CALL SWFRAC(
      I     two,minusone,
      I     myCurrentTime,myThid,
      U     swfracb)
+      IF (klev.EQ.Nr) THEN
+        kp1 = klev
+        swfracb(2)=0. _d 0
+      ENDIF
       DO j=jMin,jMax
        DO i=iMin,iMax
         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) 
-     &   -maskC(i,j,klev,bi,bj)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
+     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
+     &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*recip_rhoConst*recip_drF(klev)
        ENDDO
       ENDDO
