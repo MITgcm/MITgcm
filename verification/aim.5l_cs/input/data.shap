@@ -11,4 +11,5 @@
 #Shap_uvLength=140000.,
 #Shap_Trtau=3600.,
 #Shap_uvtau=3600.,
+#Shap_diagFreq=2592000.,
  &
