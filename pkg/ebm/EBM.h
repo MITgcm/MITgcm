@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/EBM.h,v 1.3 2004/05/21 21:45:35 heimbach Exp $
+C $Name:  $
+C
 C     CountX - number of ocean points in each latitude band
 C     ZonalMeanSST - zonal mean sea surface temperature
 C     TmlS   - Average mid-latitude temperature in the 
@@ -35,8 +38,11 @@ C     Constant parameters
       _RL t_mlt, lv, cp, rho_air
       PARAMETER (t_mlt = 273.15, lv = 2.5e6, cp = 1004., rho_air = 1.27)
 C     sin(lat) and Legendre polynomials
-      _RL S(1-OLy:sNy+OLy,nSy)
-      _RL P2(1-OLy:sNy+OLy,nSy), P4(1-OLy:sNy+OLy,nSy)
+cph We will make these three (i,j) arrays to
+cph avoid AD recomputations
+      _RL S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
+      _RL P2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
+      _RL P4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSy)
 C     Shortwave and albedo parameters
       _RL SW(1-OLy:sNy+OLy,nSy)
       _RL Q0, Q2, A0, A2, A4

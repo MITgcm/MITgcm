@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -19,6 +19,10 @@ C     === Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_EBM
 # include "EBM.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C     === Routine arguments ===
@@ -117,8 +121,6 @@ C--   Sum over the tiles
        ENDDO
       ENDDO
 
-      print *, 'ph-ebm a ', TmlS
-
       _GLOBAL_SUM_R8( TmlS, myThid )
       _GLOBAL_SUM_R8( TmlN, myThid )
       _GLOBAL_SUM_R8( TtS, myThid )
@@ -129,12 +131,16 @@ c
       _GLOBAL_SUM_R8( CounttS, myThid )
       _GLOBAL_SUM_R8( CounttN, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE CountmlS = comlev1, key = ikey_dynamics
+CADJ STORE CountmlN = comlev1, key = ikey_dynamics
+CADJ STORE CounttS  = comlev1, key = ikey_dynamics
+CADJ STORE CounttN  = comlev1, key = ikey_dynamics
+#endif
       if ( CountmlS .NE. 0.) TmlS = TmlS/CountmlS + t_mlt
       if ( CountmlN .NE. 0.) TmlN = TmlN/CountmlN + t_mlt
       if ( CounttS .NE. 0.) TtS = TtS/CounttS + t_mlt
       if ( CounttN .NE. 0.) TtN = TtN/CounttN + t_mlt
-
-      print *, 'ph-ebm b ', TmlS
 
 #endif /* ALLOW_EBM */
 

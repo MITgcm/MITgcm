@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -18,6 +18,10 @@ C     === Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_EBM
 # include "EBM.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C     === Routine arguments ===
@@ -62,10 +66,10 @@ C--   Calculate the zonal mean
           CountX_tile(j,bi,bj) = CountX_tile(j,bi,bj) +  
      &         maskC(i,j,k,bi,bj)
          ENDDO
+         ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj) + 
+     &    ZonalMean_tile(j,bi,bj)
+         CountX(j,bj) = CountX(j,bj) + CountX_tile(j,bi,bj)
         ENDDO
-        ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj) + 
-     &   ZonalMean_tile(j,bi,bj)
-        CountX(j,bj) = CountX(j,bj) + CountX_tile(j,bi,bj)
        ENDDO
       ENDDO
 
@@ -73,6 +77,14 @@ C--   Calculate the zonal mean
        DO j=1-OLy,sNy+OLy
         _GLOBAL_SUM_R8( CountX(j,bj), myThid )
         _GLOBAL_SUM_R8( ZonalMeanSST(j,bj), myThid )
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE CountX = comlev1, key = ikey_dynamics
+#endif
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO j=1-OLy,sNy+OLy
         IF ( CountX(j,bj) .GT. 0.0) THEN
           ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj)/CountX(j,bj)
         ENDIF

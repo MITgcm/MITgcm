@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -65,10 +65,13 @@ C--   Surface Fluxes :
 
 c     Zonal wind stress fu:
           surfaceTendencyU(i,j,bi,bj) = 
-     &      surfaceTendencyU(i,j,bi,bj) + winPert(i,j,bi,bj)
+     &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacW(i,j,kSurface,bi,bj)
+     &           + winPert(i,j,bi,bj)
 c     Meridional wind stress fv:
           surfaceTendencyV(i,j,bi,bj) = 
-     &      surfaceTendencyV(i,j,bi,bj)
+     &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &           *recip_drF(kSurface)*recip_hFacS(i,j,kSurface,bi,bj)
 c     Net heat flux Qnet:
           surfaceTendencyT(i,j,bi,bj) = 
      &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst

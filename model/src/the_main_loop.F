@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.50 2004/03/01 19:13:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.51 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,6 +78,9 @@ c They provide the fields to be stored.
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+# endif
+# ifdef ALLOW_EBM
+#  include "EBM.h"
 # endif
 # ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #  include "mpif.h"
@@ -224,6 +227,7 @@ CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
 c--
 #ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
+CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nsx*nsy*nr
 #endif /* ALLOW_KPP */
 c--
 #ifdef ALLOW_GMREDI

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.67 2004/05/14 21:08:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.68 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -102,8 +102,8 @@ C     == Global variables ===
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
 # endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI.h"
+# ifdef ALLOW_EBM
+#  include "EBM.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -447,7 +447,7 @@ C       relaxation terms, etc.
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
-        CALL EXTERNAL_FORCING_SURF(
+         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC

@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.1 2004/05/14 21:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.2 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE EBM_WIND_PERTURB(iMin,iMax,jMin,jMax, 
-     I     bi, bj, myCurrentTime,myThid)
+      SUBROUTINE EBM_WIND_PERTURB( myTime, myIter, myThid )
 C     |==========================================================|
 C     | S/R EBM_WIND_PERTURB                                     |
 C     | o Calculated random wind perturbations.                  |
@@ -24,8 +23,9 @@ C     == Global data ==
 #endif
 
 C     == Routine arguments ==
-      _RL     myCurrentTime
-      INTEGER myThid, bi, bj, iMin, iMax, jMin, jMax
+      _RL    myTime
+      INTEGER myIter
+      INTEGER myThid
 CEndOfInterface
 
 #ifdef ALLOW_EBM
@@ -33,7 +33,7 @@ CEndOfInterface
 
 C     == Local variables ==
 C     Loop counters
-      INTEGER i, j
+      INTEGER i, j, bi, bj
       _RS ya(1-OLy:sNy+OLy), ya2(1-OLy:sNy+OLy) 
       _RS xa(1-OLx:sNx+OLx), xa2(1-OLx:sNx+OLx)  
       _RS y(1-OLy:sNy+OLy), x(1-OLx:sNx+OLx)
@@ -48,6 +48,9 @@ C     Loop counters
      &          0.023, 0.029, 0.032, 0.038, 0.048, 0.058, 0.065,
      &          0.067, 0.063, 0.060, 0.062, 0.064 /
 
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
       DO j = 1-OLy, sNy+OLy
          y(j) = 0.0
@@ -113,6 +116,9 @@ c     0.98 for the momentum timescale.
      &        stdev(j)*(1.0/6.0)*
      &        ((y(j)-ya(j))*temp2(i,INT(ya2(j)))+
      &        (6.0-y(j)+ya(j))*temp2(i,INT(ya(j)))))
+       ENDDO
+      ENDDO
+
        ENDDO
       ENDDO
 

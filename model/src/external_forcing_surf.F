@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.20 2004/05/14 21:08:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.21 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -225,11 +225,12 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
 #ifdef ALLOW_EBM
 c--    Values for surfaceTendencyT, surfaceTendencyS
 c      are overwritten by those produced by EBM
-      IF ( useEBM ) THEN
+cph    AD recomputation problems if these IF useEBM are used
+cph      IF ( useEBM ) THEN
        CALL EBM_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime,myIter,myThid )
-      ENDIF
+cph      ENDIF
 #endif
 
 #ifdef ALLOW_TIMEAVE

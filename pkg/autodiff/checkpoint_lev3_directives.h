@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.19 2004/05/21 21:45:35 heimbach Exp $
+C $Name:  $
 c
 c     store directives for checkpoint level 3
 c
@@ -15,9 +17,9 @@ CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
 CADJ STORE totphihyd = tapelev3, key = ilev_3
 CADJ STORE surfacetendencyTice = tapelev3, key = ilev_3
+CADJ STORE empmr     = tapelev3, key = ilev_3
 
 #ifdef EXACT_CONSERV
-CADJ STORE empmr     = tapelev3, key = ilev_3
 CADJ STORE etaH      = tapelev3, key = ilev_3
 CADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif /* EXACT_CONSERV */
@@ -69,3 +71,12 @@ CADJ STORE pload1  = tapelev3, key = ilev_3
 #ifdef ALLOW_SEAICE
 # include "seaice_ad_check_lev3_dir.h"
 #endif /* ALLOW_SEAICE */
+
+#ifdef ALLOW_EBM
+CADJ STORE fu   = tapelev3, key = ilev_3
+CADJ STORE fv   = tapelev3, key = ilev_3
+CADJ STORE qnet = tapelev3, key = ilev_3
+CADJ STORE qsw  = tapelev3, key = ilev_3
+CADJ STORE sss  = tapelev3, key = ilev_3
+# include "ebm_ad_check_lev3_dir.h"
+#endif /* ALLOW_EBM */

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.33 2004/05/14 21:08:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.34 2004/05/21 21:45:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -56,6 +57,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "DYNVARS.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -114,6 +120,7 @@ cph#endif
 #endif
 
 #ifdef ALLOW_AUTODIFF
+CADJ STORE theta = tapelev3, key = 1
 c--   Initialise auxiliary xx_ fields
       CALL CTRL_INIT_VARIABLES ( mythid )
 c--   Map the control variables onto the model state.
@@ -129,6 +136,9 @@ cph#else
 cph#endif
 
 #ifdef ALLOW_EBM
+# ifdef ALLOW_AUTODIFF
+CADJ STORE theta = tapelev3, key = 1
+# endif
       IF (useEBM) CALL EBM_INI_VARS( mythid )
 #endif
 
