@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.13 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.14 2004/09/07 08:47:31 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -81,6 +81,7 @@ C     SEAICE_snowConduct - snow conductivity
 C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity
 C     SEAICE_snowThick   - cutoff snow thickness
 C     SEAICE_shortwave   - penetration shortwave radiation factor
+C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
 C     A22                - parameter used in growth.F
@@ -108,8 +109,8 @@ C
       _RL SEAICE_waterAlbedo, SEAICE_strength
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
-      _RL SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag
-      _RL LSR_ERROR,DIFF1,A22,HO
+      _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
+      _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
       _RL SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod
@@ -123,8 +124,8 @@ C
      &    SEAICE_waterAlbedo, SEAICE_strength,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
-     &    SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag,
-     &    LSR_ERROR, DIFF1, A22, HO,
+     &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
+     &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
      &    SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,

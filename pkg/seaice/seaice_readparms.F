@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.15 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.16 2004/09/07 08:47:31 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,7 @@ C--   SEAICE parameters
      & SEAICE_waterAlbedo, SEAICE_strength,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
-     & SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag,
+     & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & uwindFile, vwindFile, atempFile, aqhFile, lwdownFile,
      & swdownFile, precipFile, evapFile, runoffFile, HeffFile,
      & LSR_ERROR, DIFF1, A22, HO,
@@ -94,6 +94,7 @@ C--   set default sea ice parameters
       SEAICE_emissivity  = 5.5    _d -08
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
+      SEAICE_freeze      = -1.96  _d 0
       uwindFile  = ' '
       vwindFile  = ' '
       atempFile  = ' '
