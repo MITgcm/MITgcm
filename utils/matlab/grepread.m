@@ -16,7 +16,7 @@ end
 tfile=sprintf('/tmp/grepexpr%15.15f',rand);
 for k=1:nargin-1;
  try
-  eval(['!grep ' varargin{k} ' ' file ' | sed s/.\*=// >! ' tfile])
+  eval(['!grep ' varargin{k} ' ' file ' | sed s/.\*=// | sed s/NAN/1.23456789/ >! ' tfile])
   vals(:,k)=textread(tfile,'%f');
   delete(tfile)
  catch
