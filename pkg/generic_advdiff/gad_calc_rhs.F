@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.22 2003/09/25 03:01:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.23 2004/01/07 21:35:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,9 +9,11 @@ C !ROUTINE: GAD_CALC_RHS
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_CALC_RHS( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I           uVel, vVel, wVel,
      I           diffKh, diffK4, KappaRT, Tracer,
-     I           tracerIdentity, advectionScheme, calcAdvection,
+     I           tracerIdentity, advectionScheme, 
+     I           calcAdvection, implicitAdvection,
      U           fVerT, gTracer,
      I           myThid )
 
@@ -40,7 +42,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "SURFACE.h"
 #include "GAD.h"
 
@@ -57,7 +58,9 @@ C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
 C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
 C  xA,yA                :: areas of X and Y face of tracer cells
 C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
+C  rTransKp1            :: 2-D array of volume transport at W pt, interface k+1
 C  maskUp               :: 2-D array for mask at W points
+C  uVel, vVel, wVel     :: 3 components of the velcity field (3-D array)
 C  diffKh               :: horizontal diffusion coefficient
 C  diffK4               :: bi-harmonic diffusion coefficient
 C  KappaRT              :: 3-D array for vertical diffusion coefficient
@@ -65,6 +68,7 @@ C  Tracer               :: tracer field
 C  tracerIdentity       :: identifier for the tracer (required for KPP and GM)
 C  advectionScheme      :: advection scheme to use
 C  calcAdvection        :: =False if Advec terms computed with multiDim scheme
+C  implicitAdvection    :: =True if vertical Advec term is computed implicitly
 C  myThid               :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k,kUp,kDown,kM1
@@ -73,13 +77,18 @@ C  myThid               :: thread number
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL diffKh, diffK4
       _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme
       LOGICAL calcAdvection
+      LOGICAL implicitAdvection
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -103,6 +112,7 @@ C  localT               :: local copy of tracer field
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL advFac, rAdvFac
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -111,6 +121,11 @@ C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
 #endif
 
+      advFac  = 0. _d 0
+      IF (calcAdvection) advFac = 1. _d 0
+      rAdvFac = rkFac*advFac
+      IF (implicitAdvection) rAdvFac = 0. _d 0
+
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         fZon(i,j)      = 0. _d 0
@@ -118,7 +133,6 @@ C--   the kDown is still required
         fVerT(i,j,kUp) = 0. _d 0
         df(i,j)        = 0. _d 0
         df4(i,j)       = 0. _d 0
-        localT(i,j)    = 0. _d 0
        ENDDO
       ENDDO
 
@@ -291,25 +305,9 @@ C-    Bi-harmonic flux in Y
        ENDDO
       ENDIF
 
-#ifdef NONLIN_FRSURF
-C--   Compute vertical flux fVerT(kDown) at interface k+1 (between k & k+1):
-      IF ( calcAdvection .AND. K.EQ.Nr .AND.
-     &     useRealFreshWaterFlux .AND.
-     &     buoyancyRelation .EQ. 'OCEANICP' ) THEN   
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         fVerT(i,j,kDown) = convertEmP2rUnit*PmEpR(i,j,bi,bj)
-     &     *rA(i,j,bi,bj)*maskC(i,j,k,bi,bj)*Tracer(i,j,k,bi,bj)
-        ENDDO
-       ENDDO 
-      ENDIF
-#endif /* NONLIN_FRSURF */
-
 C--   Compute vertical flux fVerT(kUp) at interface k (between k-1 & k):
 C-    Advective flux in R
-      IF (calcAdvection) THEN
-C     Note: wVel needs to be masked 
-      IF (K.GE.2) THEN
+      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2) THEN
 C-    Compute vertical advective flux in the interior:
        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
         CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
@@ -329,28 +327,12 @@ C-    Compute vertical advective flux in the interior:
        ELSE
         STOP 'GAD_CALC_RHS: Bad advectionScheme (R)'
        ENDIF
-C-    Surface "correction" term at k>1 :
+C-     add the advective flux to fVerT
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         af(i,j) = af(i,j)
-     &           + (maskC(i,j,k,bi,bj)-maskC(i,j,k-1,bi,bj))*
-     &             rTrans(i,j)*Tracer(i,j,k,bi,bj)
+         fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
         ENDDO
-       ENDDO 
-      ELSE
-C-    Surface "correction" term at k=1 :
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         af(i,j) = rTrans(i,j)*Tracer(i,j,k,bi,bj)
-        ENDDO
-       ENDDO 
-      ENDIF
-C-    add the advective flux to fVerT
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
        ENDDO
-      ENDDO
       ENDIF
 
 C-    Diffusive flux in R
@@ -426,38 +408,17 @@ C--   Divergence of fluxes
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
-     &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &    *recip_rA(i,j,bi,bj)
-     &    *(
-     &    +( fZon(i+1,j)-fZon(i,j) )
-     &    +( fMer(i,j+1)-fMer(i,j) )
-     &    +( fVerT(i,j,kUp)-fVerT(i,j,kDown) )*rkFac
+     &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
+     &   *( (fZon(i+1,j)-fZon(i,j))
+     &     +(fMer(i,j+1)-fMer(i,j))
+     &     +(fVerT(i,j,kUp)-fVerT(i,j,kDown))*rkFac
+     &     -localT(i,j)*( (uTrans(i+1,j)-uTrans(i,j))
+     &                   +(vTrans(i,j+1)-vTrans(i,j))
+     &                   +(rTrans(i,j)-rTransKp1(i,j))*rAdvFac
+     &                  )*advFac
      &    )
        ENDDO
       ENDDO
-
-#ifdef NONLIN_FRSURF
-C-- account for 3.D divergence of the flow in rStar coordinate:
-      IF (calcAdvection .AND. select_rStar.GT.0) THEN
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
-         gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &     - (rStarExpC(i,j,bi,bj) - 1. _d 0)/deltaTfreesurf
-     &       *tracer(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
-      IF (calcAdvection .AND. select_rStar.LT.0) THEN
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
-         gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &     - rStarDhCDt(i,j,bi,bj)
-     &       *tracer(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* NONLIN_FRSURF */
-      
 
       RETURN
       END

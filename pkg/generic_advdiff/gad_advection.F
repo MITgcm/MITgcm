@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.17 2004/01/03 00:46:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.18 2004/01/07 21:35:00 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -385,61 +385,71 @@ C--   Apply open boundary conditions
 C--   End of Y direction
       ENDIF
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        localTijk(i,j,k)=localTij(i,j)
-       ENDDO
-      ENDDO
-
 C--   End of ipass loop
       ENDDO
+
+      IF ( implicitAdvection ) THEN
+C-    explicit advection is done ; store tendency in gTracer:
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          gTracer(i,j,k,bi,bj)=
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
+         ENDDO
+        ENDDO
+      ELSE
+C-    horizontal advection done; store intermediate result in 3D array:
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         localTijk(i,j,k)=localTij(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   End of K loop for horizontal fluxes
       ENDDO
 
+      IF ( .NOT.implicitAdvection ) THEN
 C--   Start of k loop for vertical flux
-      DO k=Nr,1,-1
+       DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC 
          kkey = (igadkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
-
 C--   kup    Cycles through 1,2 to point to w-layer above
 C--   kDown  Cycles through 2,1 to point to w-layer below
-      kup  = 1+MOD(k+1,2)
-      kDown= 1+MOD(k,2)
-c     kp1=min(Nr,k+1)
-      kp1Msk=1.
-      if (k.EQ.Nr) kp1Msk=0.
+        kup  = 1+MOD(k+1,2)
+        kDown= 1+MOD(k,2)
+c       kp1=min(Nr,k+1)
+        kp1Msk=1.
+        if (k.EQ.Nr) kp1Msk=0.
 
 C-- Compute Vertical transport
-C     Note: wVel needs to be masked 
+        IF (k.EQ.1) THEN
 
-      IF (k.EQ.1) THEN
 C- Surface interface :
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           rTransKp1(i,j) = rTrans(i,j)
+           rTrans(i,j) = 0.
+           fVerT(i,j,kUp) = 0.
+           af(i,j) = 0.
+          ENDDO
+         ENDDO
 
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         rTransKp1(i,j) = rTrans(i,j)
-         rTrans(i,j) = 0.
-         fVerT(i,j,kUp) = 0.
-         af(i,j) = 0.
-        ENDDO
-       ENDDO
-
-      ELSE
+        ELSE
 C- Interior interface :
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         rTransKp1(i,j) = kp1Msk*rTrans(i,j)
-         rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
-     &               *maskC(i,j,k-1,bi,bj)
-         af(i,j) = 0.
-        ENDDO
-       ENDDO
+
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+           rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+     &                 *maskC(i,j,k-1,bi,bj)
+           af(i,j) = 0.
+          ENDDO
+         ENDDO
 
 #ifdef ALLOW_GMREDI
 C--   Residual transp = Bolus transp + Eulerian transp
-       IF (useGMRedi) 
+         IF (useGMRedi) 
      &   CALL GMREDI_CALC_WFLOW(
      &                    rTrans, bi, bj, k, myThid)
 #endif /* ALLOW_GMREDI */
@@ -451,30 +461,28 @@ CADJ STORE rTrans(:,:)
 CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       IF ( .NOT.implicitAdvection ) THEN
 C-    Compute vertical advective flux in the interior:
-        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-         CALL GAD_FLUXLIMIT_ADV_R(
+         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-         CALL GAD_DST3_ADV_R(
+         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-         CALL GAD_DST3FL_ADV_R(
+         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-        ELSE
-         STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
-        ENDIF
-       ENDIF
+         ELSE
+          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+         ENDIF
 C-    add the advective flux to fVerT
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         fVerT(i,j,kUp) = af(i,j)
-        ENDDO
-       ENDDO
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           fVerT(i,j,kUp) = af(i,j)
+          ENDDO
+         ENDDO
 
 C- end Surface/Interior if bloc
-      ENDIF
+        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE rTrans(:,:)  
@@ -483,22 +491,24 @@ CADJ STORE rTranskp1(:,:)
 CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Divergence of fluxes
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        localTij(i,j)=localTijk(i,j,k)-deltaTtracer*
-     &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &    *recip_rA(i,j,bi,bj)
-     &    *( fVerT(i,j,kUp)-fVerT(i,j,kDown)
-     &      -tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))
-     &     )*rkFac
-        gTracer(i,j,k,bi,bj)=
-     &   (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
-       ENDDO
-      ENDDO
+C--   Divergence of vertical fluxes
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          localTij(i,j)=localTijk(i,j,k)-deltaTtracer*
+     &     _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &     *recip_rA(i,j,bi,bj)
+     &     *( fVerT(i,j,kUp)-fVerT(i,j,kDown)
+     &       -tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))
+     &      )*rkFac
+          gTracer(i,j,k,bi,bj)=
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
+         ENDDO
+        ENDDO
  
 C--   End of K loop for vertical flux
-      ENDDO
+       ENDDO
+C--   end of if not.implicitAdvection block
+      ENDIF 
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.1 2004/01/03 00:43:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.2 2004/01/07 21:35:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -53,6 +53,9 @@ C     == Local variables ==
       _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rTransKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL limitDf  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rFlx
 CEOP
 
@@ -75,6 +78,28 @@ C--   Initialise
        ENDDO
       ENDDO
       diagonalNumber = 1
+
+C--   Non-Linear Advection scheme: keep a local copy of tracer field
+      IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT .OR. 
+     &     advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+        IF ( multiDimAdvection ) THEN
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            localTijk(i,j,k) = gTracer(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            localTijk(i,j,k) = tracer(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+      ENDIF
 
       IF (implicitDiffusion) THEN
 C--   set the tri-diagonal matrix to solve the implicit diffusion problem
@@ -115,45 +140,82 @@ C--   end if implicitDiffusion
 
       IF (implicitAdvection) THEN
 
-       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-         diagonalNumber = 3
-C note: a) this should go into a separated gad_ S/R
-         DO k=2,Nr
+       DO k=Nr,1,-1
 
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+C--    Compute transport
+        IF (k.EQ.Nr) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            rTransKp1(i,j) = 0.
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            rTransKp1(i,j) = rTrans(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+
+        IF (k.EQ.1) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            rTrans(i,j) = 0.
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
             rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
      &                   *maskC(i,j,k-1,bi,bj)
-           ENDDO
           ENDDO
+         ENDDO
 #ifdef ALLOW_GMREDI
 C--   Residual transp = Bolus transp + Eulerian transp
           IF (useGMRedi)
      &      CALL GMREDI_CALC_WFLOW(
      &                    rTrans, bi, bj, k, myThid)
 #endif /* ALLOW_GMREDI */
-
-C-       space Centered advection scheme, Flux form:
-          DO j=jMin,jMax
-           DO i=iMin,iMax
-            rFlx = 0.5 _d 0 *deltaTtracer*rTrans(i,j)
-     &                      *recip_rA(i,j,bi,bj)*rkFac
-            b5d(i,j,k) = b5d(i,j,k)
-     &                 + rFlx*recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-            c5d(i,j,k) = c5d(i,j,k)
-     &                 + rFlx*recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-            c5d(i,j,k-1) = c5d(i,j,k-1)
-     &                 - rFlx*recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
-            d5d(i,j,k-1) = d5d(i,j,k-1)
-     &                 - rFlx*recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
-           ENDDO
+        ENDIF
+        DO j=jMin,jMax
+          DO i=iMin,iMax
+c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj) 
+           gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
+     &      + deltaTtracer*recip_rA(i,j,bi,bj)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))*rkFac
           ENDDO
+        ENDDO
 
-C--      end k loop
-         ENDDO
-       ELSE
-         STOP 'GAD_IMPLICIT_R: Adv.Scheme in Impl form not yet coded'
-       ENDIF
+        IF (K.GE.2) THEN
+
+         IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
+          diagonalNumber = 3
+          CALL GAD_C2_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
+     I                        deltaTtracer, rTrans,
+     U                        b5d, c5d, d5d,
+     I                        myThid)
+         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          diagonalNumber = 3
+          CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
+     I                        deltaTtracer, rTrans, localTijk,
+     U                        b5d, c5d, d5d,
+     I                        myThid)
+         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
+     &           advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+          diagonalNumber = 5
+          CALL GAD_U3C4_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
+     I                        advectionScheme, deltaTtracer, rTrans,
+     U                        a5d, b5d, c5d, d5d, e5d,
+     I                        myThid)
+         ELSE
+          STOP 'GAD_IMPLICIT_R: Adv.Scheme in Impl form not yet coded'
+         ENDIF
+
+        ENDIF
+
+C--     end k loop
+       ENDDO
 
 C--   end if implicitAdvection
       ENDIF
@@ -167,6 +229,16 @@ C--   Solve tri-diagonal system :
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
           STOP 'GAD_IMPLICIT_R: error when solving 3-Diag problem'
+        ENDIF
+      ELSEIF ( diagonalNumber .EQ. 5 ) THEN
+C--   Solve penta-diagonal system :
+        CALL SOLVE_PENTADIAGONAL( iMin,iMax, jMin,jMax,
+     I                            a5d, b5d, c5d, d5d, e5d,
+     U                            gTracer,
+     O                            errCode,
+     I                            bi, bj, myThid )
+        IF (errCode.GE.1) THEN
+          STOP 'GAD_IMPLICIT_R: error when solving 5-Diag problem'
         ENDIF
       ELSEIF ( diagonalNumber .NE. 1 ) THEN
         STOP 'GAD_IMPLICIT_R: no solver available'
