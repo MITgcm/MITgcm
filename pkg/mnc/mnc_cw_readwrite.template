@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.20 2004/10/08 17:03:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.21 2004/10/11 18:25:50 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -57,8 +57,7 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, bi,bj
       character*(*) stype, fbname, vtype
-      __V var
-      __V var_arr(1)
+      __V var(*)
       INTEGER offsets(9)
 CEOP
       INTEGER i
@@ -66,8 +65,7 @@ CEOP
       DO i = 1,9
         offsets(i) = 0
       ENDDO
-      var_arr(1) = var
-      CALL MNC_CW_RX_W_OFFSET(stype,fbname,bi,bj,vtype, var_arr, 
+      CALL MNC_CW_RX_W_OFFSET(stype,fbname,bi,bj,vtype, var, 
      &     offsets, myThid)
 
       RETURN
