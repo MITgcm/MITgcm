@@ -20,9 +20,17 @@ fid=fopen('topog.bin','w',ieee); fwrite(fid,H,prec); fclose(fid);
 Lx=dx*nx;
 Ly=dy*(ny-1);  % Solid wall in North
 
+% Variable resolution
+y=(1:ny)/(ny-0)-0.5;
+dy=1-0.3*exp( -(5*y).^2 );
+%dy=ones(1,ny);              % Constant resolution
+dy=dy/sum(dy(1:ny-1))*Ly;
+fid=fopen('dy.bin','w',ieee); fwrite(fid,dy,prec); fclose(fid);
+
 % Coordinates
 xc=((1:nx)-0.5)*dx;
-yc=((1:ny)-0.5)*dy-Ly/2;
+yf=-Ly/2+[0 cumsum(dy)];
+yc=(yf(1:end-1)+yf(2:end))/2;
 zf=[0 -cumsum(dz)];
 zc=(zf(1:end-1)+zf(2:end))/2;
 [X,Y]=ndgrid(xc,yc);
