@@ -1,0 +1,21 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every multiple of |frequency| (iter)
+#               > 0 : write time-average output every multiple of frequency (iter)
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file 
+#                 for the list of all available diag. in this particular config)
+#-----------------
+ &diagnostics_list
+  diag_mnc=.TRUE.,
+  frequency(1) = 72,
+  fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
+  filename(1) = 'spiceflx',
+  frequency(2) = 72,
+  fields(1,2) = 'UVELTH  ','VVELTH ','WVELTH ',
+  filename(2) = 'thetaflx',
+ /
+
