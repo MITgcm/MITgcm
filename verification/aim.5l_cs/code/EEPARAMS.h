@@ -1,13 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.1 2001/06/18 17:40:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.2 2003/08/03 03:43:10 jmc Exp $
 C $Name:  $
+CBOP
+C     !ROUTINE: EEPARAMS.h
+C     !INTERFACE:
+C     include "EEPARAMS.h"
 C
-C     /==========================================================\
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | EEPARAMS.h                                               |
-C     |==========================================================|
+C     *==========================================================*
 C     | Parameters for "execution environemnt". These are used   |
-C     | by both the particular numerical model and the "execution|
-C     | environment" support routines.                           |
-C     \==========================================================/
+C     | by both the particular numerical model and the execution |
+C     | environment support routines.                            |
+C     *==========================================================*
+CEOP
 
 C     MAX_LEN_MBUF         - Default message buffer max. size
 C     MAX_LEN_FNAM         - Default file name max. size
@@ -68,10 +74,13 @@ C                           an edge exchange.
 
 C     FORWARD_SIMULATION
 C     REVERSE_SIMULATION
+C     TANGENT_SIMULATION
       INTEGER FORWARD_SIMULATION
       INTEGER REVERSE_SIMULATION
+      INTEGER TANGENT_SIMULATION
       PARAMETER ( FORWARD_SIMULATION = 0,
-     &            REVERSE_SIMULATION = 1 )
+     &            REVERSE_SIMULATION = 1,
+     &            TANGENT_SIMULATION = 2 )
 
 
 C     Particularly weird and obscure voodoo numbers
@@ -104,7 +113,7 @@ C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
       INTEGER MAX_NO_PROCS
       PARAMETER ( MAX_NO_PROCS   =  128 )
       INTEGER MAX_NO_BARRIERS
-      PARAMETER ( MAX_NO_BARRIERS =   1 )
+      PARAMETER ( MAX_NO_BARRIERS = 1 )
 
 C--   COMMON /EEPARAMS_L/ Execution environment public logical variables.
 C     eeBootError - Flag indicating error during multi-processing
