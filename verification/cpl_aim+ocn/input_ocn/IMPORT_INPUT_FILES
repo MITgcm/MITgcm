@@ -10,7 +10,7 @@ echo 'Import Input files from dir:' $impDir
 echo ''
 cd $impDir
 
-listF=`ls *.bin`
+listF=`ls *.bin *.mitgrid`
 for xx in $listF
 do
  if test -f $dirOcn/$xx

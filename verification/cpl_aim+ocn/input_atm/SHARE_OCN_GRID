@@ -10,7 +10,8 @@ dirAtm=`pwd`
 echo 'Import CS-grid files from dir:' $impDir
 
 cd $impDir
-listF=`ls RA*.bin DX?.bin DY?.bin LON?.bin LAT?.bin`
+#listF=`ls RA*.bin DX?.bin DY?.bin LON?.bin LAT?.bin`
+listF=`ls *.mitgrid`
 echo ' list of files:' $listF
 
 
