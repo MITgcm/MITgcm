@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.12 1999/07/30 15:42:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.13 1999/08/26 17:43:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,8 +43,9 @@ C     I,J,K
       INTEGER iC, jC, iD, jD
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER I, J, K
+      INTEGER I, J, K, localWarnings
       _RL     rad, rD
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BARRIER
 
@@ -90,6 +91,7 @@ C--    Initialise temperature field to the vertical reference profile
        _END_MASTER(myThid)
       ENDIF
 C     Set initial tendency terms
+      localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
@@ -98,11 +100,22 @@ C     Set initial tendency terms
            gt   (I,J,K,bi,bj) = 0. _d 0
            gtNM1(I,J,K,bi,bj) = 0. _d 0
            IF (hFacC(I,J,K,bi,bj).EQ.0) theta(I,J,K,bi,bj) = 0.
+           IF (hFacC(I,J,K,bi,bj).NE.0.AND.theta(I,J,K,bi,bj).EQ.0.)
+     &      THEN
+             localWarnings=localWarnings+1
+            ENDIF
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+      IF (localWarnings.NE.0) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_THETA: theta = 0 identically. If this is intentional',
+     &  'you will need to edit ini_theta.F to avoid this safety check'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_THETA'
+      ENDIF
 C
       _EXCH_XYZ_R8(theta , myThid )
       _EXCH_XYZ_R8(gt , myThid )
