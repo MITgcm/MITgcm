@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.13 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.14 2003/10/10 23:00:01 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -179,6 +179,10 @@ C     Initialise intermediate terms
         fMer(i,j) = 0.
         rTransU(i,j) = 0.
         rTransV(i,j) = 0.
+        fVerU(i,j,1) = 0. _d 0
+        fVerU(i,j,2) = 0. _d 0
+        fVerV(i,j,1) = 0. _d 0
+        fVerV(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
 

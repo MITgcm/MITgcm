@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.3 2001/09/05 17:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.4 2003/10/10 23:00:01 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,6 +30,14 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 
 C     == Local variables ==
       INTEGER i,j
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO J=1-Oly,sNy+Oly
+       DO I=1-Olx,sNx+Olx
+        vort3(I,J) = 0. _d 0
+       ENDDO
+      ENDDO
+#endif
 
       DO J=2-Oly,sNy+Oly
        DO I=2-Olx,sNx+Olx

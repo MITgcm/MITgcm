@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.7 2003/08/03 02:49:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.8 2003/10/10 23:00:01 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,8 +78,6 @@ C     == Local variables ==
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -151,6 +149,14 @@ C     Initialise intermediate terms
         vort3(i,j) = 0.
         omega3(i,j) = 0.
         ke(i,j) = 0.
+#ifdef ALLOW_AUTODIFF_TAMC
+        strain(i,j)  = 0. _d 0
+        tension(i,j) = 0. _d 0
+        fVerU(i,j,1) = 0. _d 0
+        fVerU(i,j,2) = 0. _d 0
+        fVerV(i,j,1) = 0. _d 0
+        fVerV(i,j,2) = 0. _d 0
+#endif
        ENDDO
       ENDDO
 
@@ -214,14 +220,6 @@ C     Make local copies of horizontal flow field
        DO i=1-OLx,sNx+OLx
         uFld(i,j) = uVel(i,j,k,bi,bj)
         vFld(i,j) = vVel(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-C     Calculate velocity field "volume transports" through tracer cell faces.
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        uTrans(i,j) = uFld(i,j)*xA(i,j)
-        vTrans(i,j) = vFld(i,j)*yA(i,j)
        ENDDO
       ENDDO
 
@@ -310,6 +308,7 @@ C-     No-slip BCs impose a drag at walls...
         ENDDO
        ENDDO
       ENDIF
+
 C-    No-slip BCs impose a drag at bottom
       IF (momViscosity.AND.bottomDragTerms) THEN
        CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
