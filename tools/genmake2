@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.8 2003/09/23 15:53:02 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.9 2003/09/26 18:16:38 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -833,7 +833,7 @@ echo -n 'SRCFILES = '    > srclist.inc
 echo -n 'CSRCFILES = '   > csrclist.inc
 echo -n 'F90SRCFILES = ' > f90srclist.inc
 echo -n 'HEADERFILES = ' > hlist.inc
-alldirs=". $SOURCEDIRS $INCLUDEDIRS"
+alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] )`
