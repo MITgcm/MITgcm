@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.8 2003/08/03 03:12:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.9 2004/06/26 01:15:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -23,10 +23,10 @@ C     === Routine arguments ===
 #ifdef ALLOW_SHAP_FILT
 
       NAMELIST /SHAP_PARM01/
-     & Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
-     &    nShapT,  nShapTrPhys, Shap_Trtau, Shap_TrLength,
-     &    nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
-     &    Shap_noSlip, Shap_diagFreq
+     &   Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
+     &   nShapT,nShapS, nShapTrPhys, Shap_Trtau, Shap_TrLength,
+     &   nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
+     &   Shap_noSlip, Shap_diagFreq
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -54,6 +54,7 @@ C--   Default flags and values for Shapiro Filter
       shap_filt_uvStar =.TRUE. 
       shap_filt_TrStagg=.TRUE.
       nShapT = 0
+      nShapS = -1
       nShapUV = 0
       nShapTrPhys = 0
       nShapUVPhys = 0
@@ -75,13 +76,19 @@ C--   Read parameters from open data file
 C--   Close the open data file
       CLOSE(iUnit)
 
+C     for backward compatibility:
+      IF (nShapS.EQ.-1) nShapS = nShapT
+
 C- print out some kee parameters :
       CALL WRITE_0D_I( Shap_funct, INDEX_NONE,
      & 'Shap_funct =',
      & '   /* select Shapiro filter function */')  
       CALL WRITE_0D_I( nShapT , INDEX_NONE,
-     & 'nShapTr =',
-     & '   /* power of Shapiro filter for Tracers */')  
+     & 'nShapT =',
+     & '   /* power of Shapiro filter for Temperat */')  
+      CALL WRITE_0D_I( nShapS , INDEX_NONE,
+     & 'nShapS =',
+     & '   /* power of Shapiro filter for Salinity */')  
       CALL WRITE_0D_I( nShapUV, INDEX_NONE,
      & 'nShapUV =',
      & '   /* power of Shapiro filter for momentum */')  

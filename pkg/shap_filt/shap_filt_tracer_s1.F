@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s1.F,v 1.4 2002/03/04 02:28:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s1.F,v 1.5 2004/06/26 01:15:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: SHAP_FILT_TRACER_S1
 C     !INTERFACE:
       SUBROUTINE SHAP_FILT_TRACER_S1( 
      U           field, tmpFld,
-     I           kSize, myTime, myThid )
+     I           nShapTr, kSize, myTime, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R SHAP_FILT_TRACER_S1
@@ -32,10 +32,11 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments
 C     field :: cell-centered 2D field on which filter applies
 C     tmpFld :: working temporary array
+C     nShapTr :: (total) power of the filter for this tracer
 C     kSize :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
 C     myTime :: Current time in simulation
 C     myThid :: Thread number for this instance of SHAP_FILT_TRACER_S1
-      INTEGER kSize
+      INTEGER nShapTr, kSize
       _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
@@ -50,7 +51,7 @@ C     == Local variables ==
       _RL tmpScal
 CEOP
 
-      IF (nShapT.gt.0) THEN
+      IF (nShapTr.gt.0) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -67,7 +68,7 @@ CEOP
 
 C      d_xx^n tmpFld 
 
-       DO N=1,nShapT
+       DO N=1,nShapTr
 
         IF (kSize.EQ.Nr) THEN
           _EXCH_XYZ_R8( tmpFld, myThid )
@@ -120,7 +121,7 @@ C      F <-  [1 - d_xx^n *deltaT/tau].F
 
 C      d_yy^n tmpFld 
 
-       DO N=1,nShapT
+       DO N=1,nShapTr
 
         IF (kSize.EQ.Nr) THEN
           _EXCH_XYZ_R8( tmpFld, myThid )
