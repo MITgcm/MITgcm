@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.87 2003/10/06 20:38:40 stephd Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.88 2003/10/20 06:25:16 dimitri Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -567,11 +567,13 @@ switch ($platform$USEMPI$USEARPACK)
     set CPP = ( '/lib/cpp -traditional -P' )
     set DEFINES = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
     set FC = ( 'efc' )
-    set FFLAGS = ( '-WB -Vaxlib -u -w' )
+#    set FFLAGS = ( '-WB -Vaxlib -u -w' )
 #    set FOPTIM = ( '-O2 -ftz' )
+    set FFLAGS = ( '-132 -i4 -w95 -W0 -WB' )
     set FOPTIM = ( '-O3 -mp' )
     set LINK = ( 'efc' )
-    set LIBS       = ( '-lmpi -lscs -lpthread' )
+#    set LIBS       = ( '-lmpi -lscs -lpthread' )
+    set LIBS       = ( '-lPEPCF90 -lmpi' )
     breaksw
   case Linux-alpha+mpi:
     echo "Configuring with MPI"

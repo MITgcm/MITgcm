@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.188 2003/10/17 00:44:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.189 2003/10/20 06:25:15 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-not yet tagged:
+
+checkpoint51l_post
+o changes to pkg/cal and pkg/exf that allow and speed-up long integrations
+ - faster algorithm for cal_addtime.F
+ - higher precision arithmetic, where needed
+ - pkg/exf *startdate variables changed from calendar date to
+   model integration time
+
+checkpoint51l_pre
 o add salt flux to forcing fields (used when salty sea-ice forms or melts)
 o enable to apply restoring on S & T only in a latitude band.
 o update output (external_forcing_surf modif. change truncation errors)

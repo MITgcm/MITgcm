@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.9 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.10 2003/10/20 06:25:16 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -34,8 +34,9 @@ c
 c              Curtis Heisey cheisey@mit.edu    19-Dec-2002
 c              - added "repeatPeriod" for cycling of forcing datasets
 c
-c              Dimitris Menemenlis menemenlis@jpl.nasa.gov 27-Dec-2002
-c              - bug fix for verification/global_with_exf
+c     menemenlis@jpl.nasa.gov
+c     27-Dec-2002 bug fix for verification/global_with_exf
+c     8-Oct-2003 speed-up computations for long integration interval
 c
 c     ==================================================================
 c     SUBROUTINE exf_GetFFieldRec
@@ -52,7 +53,7 @@ c cal: modelstart, modelstep
 
 c     == routine arguments ==
 
-      integer fldstartdate(4)
+      _RL     fldstartdate
       _RL     fldperiod
       _RL     fac
       logical first
@@ -83,16 +84,25 @@ c     == end of interface ==
 
 c     Determine offset in seconds from beginning of input data
 c     to current date.
-      call cal_GetDate( myiter, mytime, mydate, mythid )
-      call cal_TimePassed( fldstartdate, mydate, difftime, mythid )
-      call cal_ToSeconds( difftime, fldsecs, mythid )
+
+c     This is very slow for a long integration interval.
+c     call cal_GetDate( myiter, mytime, mydate, mythid )
+c     call cal_TimePassed( fldstartdate, mydate, difftime, mythid )
+c     call cal_ToSeconds( difftime, fldsecs, mythid )
+
+      fldsecs = mytime - fldstartdate
 
 c     Variables needed to set switches for reading new records.
       first = ((mytime - modelstart) .lt. 0.5*modelstep)
       if ( .not. first ) then
-       call cal_GetDate(myiter-1,mytime-modelstep,previousdate,mythid)
-       call cal_TimePassed(fldstartdate,previousdate,difftime,mythid )
-       call cal_ToSeconds( difftime, prevfldsecs, mythid )
+
+c      This is very slow for a long integration interval.
+c      call cal_GetDate(myiter-1,mytime-modelstep,previousdate,mythid)
+c      call cal_TimePassed(fldstartdate,previousdate,difftime,mythid )
+c      call cal_ToSeconds( difftime, prevfldsecs, mythid )
+
+       prevfldsecs = fldsecs - modelstep
+
       else
        prevfldsecs = 0
       endif

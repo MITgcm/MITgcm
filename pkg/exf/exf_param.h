@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.10 2003/08/07 02:31:29 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.11 2003/10/20 06:25:16 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -35,7 +35,7 @@ c     Calendar data.
 
       integer hfluxstartdate1
       integer hfluxstartdate2
-      integer hfluxstartdate(4)
+      _RL     hfluxstartdate
       _RL     hfluxperiod
       _RL     hfluxconst
       character*1 hfluxmask
@@ -43,7 +43,7 @@ c     Calendar data.
 
       integer atempstartdate1
       integer atempstartdate2
-      integer atempstartdate(4)
+      _RL     atempstartdate
       _RL     atempperiod
       _RL     atempconst
       character*1 atempmask
@@ -51,7 +51,7 @@ c     Calendar data.
 
       integer aqhstartdate1
       integer aqhstartdate2
-      integer aqhstartdate(4)
+      _RL     aqhstartdate
       _RL     aqhperiod
       _RL     aqhconst
       character*1 aqhmask
@@ -59,7 +59,7 @@ c     Calendar data.
 
       integer sfluxstartdate1
       integer sfluxstartdate2
-      integer sfluxstartdate(4)
+      _RL     sfluxstartdate
       _RL     sfluxperiod
       _RL     sfluxconst
       character*1 sfluxmask
@@ -67,7 +67,7 @@ c     Calendar data.
 
       integer evapstartdate1
       integer evapstartdate2
-      integer evapstartdate(4)
+      _RL     evapstartdate
       _RL     evapperiod
       _RL     evapconst
       character*1 evapmask
@@ -75,7 +75,7 @@ c     Calendar data.
 
       integer precipstartdate1
       integer precipstartdate2
-      integer precipstartdate(4)
+      _RL     precipstartdate
       _RL     precipperiod
       _RL     precipconst
       character*1 precipmask
@@ -83,7 +83,7 @@ c     Calendar data.
 
       integer runoffstartdate1
       integer runoffstartdate2
-      integer runoffstartdate(4)
+      _RL     runoffstartdate
       _RL     runoffperiod
       _RL     runoffconst
       character*1 runoffmask
@@ -91,7 +91,7 @@ c     Calendar data.
 
       integer ustressstartdate1
       integer ustressstartdate2
-      integer ustressstartdate(4)
+      _RL     ustressstartdate
       _RL     ustressperiod
       _RL     ustressconst
       character*1 ustressmask
@@ -99,7 +99,7 @@ c     Calendar data.
 
       integer vstressstartdate1
       integer vstressstartdate2
-      integer vstressstartdate(4)
+      _RL     vstressstartdate
       _RL     vstressperiod
       _RL     vstressconst
       character*1 vstressmask
@@ -107,7 +107,7 @@ c     Calendar data.
 
       integer uwindstartdate1
       integer uwindstartdate2
-      integer uwindstartdate(4)
+      _RL     uwindstartdate
       _RL     uwindperiod
       _RL     uwindconst
       character*1 uwindmask
@@ -115,7 +115,7 @@ c     Calendar data.
 
       integer vwindstartdate1
       integer vwindstartdate2
-      integer vwindstartdate(4)
+      _RL     vwindstartdate
       _RL     vwindperiod
       _RL     vwindconst
       character*1 vwindmask
@@ -123,7 +123,7 @@ c     Calendar data.
 
       integer swfluxstartdate1
       integer swfluxstartdate2
-      integer swfluxstartdate(4)
+      _RL     swfluxstartdate
       _RL     swfluxperiod
       _RL     swfluxconst
       character*1 swfluxmask
@@ -131,7 +131,7 @@ c     Calendar data.
 
       integer lwfluxstartdate1
       integer lwfluxstartdate2
-      integer lwfluxstartdate(4)
+      _RL     lwfluxstartdate
       _RL     lwfluxperiod
       _RL     lwfluxconst
       character*1 lwfluxmask
@@ -139,7 +139,7 @@ c     Calendar data.
 
       integer swdownstartdate1
       integer swdownstartdate2
-      integer swdownstartdate(4)
+      _RL     swdownstartdate
       _RL     swdownperiod
       _RL     swdownconst
       character*1 swdownmask
@@ -147,7 +147,7 @@ c     Calendar data.
 
       integer lwdownstartdate1
       integer lwdownstartdate2
-      integer lwdownstartdate(4)
+      _RL     lwdownstartdate
       _RL     lwdownperiod
       _RL     lwdownconst
       character*1 lwdownmask
@@ -155,27 +155,27 @@ c     Calendar data.
 
       integer obcsNstartdate1
       integer obcsNstartdate2
-      integer obcsNstartdate(4)
+      _RL     obcsNstartdate
       _RL     obcsNperiod
 
       integer obcsSstartdate1
       integer obcsSstartdate2
-      integer obcsSstartdate(4)
+      _RL     obcsSstartdate
       _RL     obcsSperiod
 
       integer obcsEstartdate1
       integer obcsEstartdate2
-      integer obcsEstartdate(4)
+      _RL     obcsEstartdate
       _RL     obcsEperiod
 
       integer obcsWstartdate1
       integer obcsWstartdate2
-      integer obcsWstartdate(4)
+      _RL     obcsWstartdate
       _RL     obcsWperiod
 
       integer apressurestartdate1
       integer apressurestartdate2
-      integer apressurestartdate(4)
+      _RL     apressurestartdate
       _RL     apressureperiod
       _RL     apressureconst
       character*1 apressuremask
@@ -220,49 +220,29 @@ c     File names.
      &                          obcsSstartdate1,   obcsSstartdate2,
      &                          obcsEstartdate1,   obcsEstartdate2,
      &                          obcsWstartdate1,   obcsWstartdate2,
-     &                          apressurestartdate1,apressurestartdate2,
-     &                          hfluxstartdate,
-     &                          atempstartdate,
-     &                          aqhstartdate,
-     &                          sfluxstartdate,
-     &                          evapstartdate,
-     &                          precipstartdate,
-     &                          runoffstartdate,
-     &                          ustressstartdate,
-     &                          vstressstartdate,
-     &                          uwindstartdate,
-     &                          vwindstartdate,
-     &                          swfluxstartdate,
-     &                          lwfluxstartdate,
-     &                          swdownstartdate,
-     &                          lwdownstartdate,
-     &                          obcsNstartdate,
-     &                          obcsSstartdate,
-     &                          obcsEstartdate,
-     &                          obcsWstartdate,
-     &                          apressurestartdate
+     &                          apressurestartdate1,apressurestartdate2
 
       common /exf_param_r/
-     &                          hfluxperiod,
-     &                          atempperiod,
-     &                          aqhperiod,
-     &                          sfluxperiod,
-     &                          evapperiod,
-     &                          precipperiod,
-     &                          runoffperiod,
-     &                          ustressperiod,
-     &                          vstressperiod,
-     &                          uwindperiod,
-     &                          vwindperiod,
-     &                          swfluxperiod,
-     &                          lwfluxperiod,
-     &                          swdownperiod,
-     &                          lwdownperiod,
-     &                          obcsNperiod,
-     &                          obcsSperiod,
-     &                          obcsEperiod,
-     &                          obcsWperiod,
-     &                          apressureperiod,
+     &                          hfluxperiod,       hfluxstartdate,
+     &                          atempperiod,       atempstartdate,
+     &                          aqhperiod,         aqhstartdate,
+     &                          sfluxperiod,       sfluxstartdate,
+     &                          evapperiod,        evapstartdate,
+     &                          precipperiod,      precipstartdate,
+     &                          runoffperiod,      runoffstartdate,
+     &                          ustressperiod,     ustressstartdate,
+     &                          vstressperiod,     vstressstartdate,
+     &                          uwindperiod,       uwindstartdate,
+     &                          vwindperiod,       vwindstartdate,
+     &                          swfluxperiod,      swfluxstartdate,
+     &                          lwfluxperiod,      lwfluxstartdate,
+     &                          swdownperiod,      swdownstartdate,
+     &                          lwdownperiod,      lwdownstartdate,
+     &                          obcsNperiod,       obcsNstartdate,
+     &                          obcsSperiod,       obcsSstartdate,
+     &                          obcsEperiod,       obcsEstartdate,
+     &                          obcsWperiod,       obcsWstartdate,
+     &                          apressureperiod,   apressurestartdate,
      &                          hfluxconst,
      &                          atempconst,
      &                          aqhconst,

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_param.h,v 1.4 2003/08/07 02:31:29 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_param.h,v 1.5 2003/10/20 06:25:16 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -9,6 +9,9 @@ c     o Header for the climatology part of the external forcing package.
 c
 c     started: Ralf Giering 15-Jan-2001
 c
+c     menemenlis@jpl.nasa.gov 8-Oct-2003
+c     speed-up computations for long integration interval
+c
 c     ==================================================================
 c     HEADER exf_clim_param
 c     ==================================================================
@@ -16,28 +19,28 @@ c     ==================================================================
 c     Calendar data.
       integer climtempstartdate1
       integer climtempstartdate2
-      integer climtempstartdate(4)
+      _RL     climtempstartdate
       _RL     climtempperiod
       character*1 climtempmask
       parameter(  climtempmask = 's' )
 
       integer climsaltstartdate1
       integer climsaltstartdate2
-      integer climsaltstartdate(4)
+      _RL     climsaltstartdate
       _RL     climsaltperiod
       character*1 climsaltmask
       parameter(  climsaltmask = 's' )
 
       integer climsststartdate1
       integer climsststartdate2
-      integer climsststartdate(4)
+      _RL     climsststartdate
       _RL     climsstperiod
       character*1 climsstmask
       parameter(  climsstmask = 's' )
 
       integer climsssstartdate1
       integer climsssstartdate2
-      integer climsssstartdate(4)
+      _RL     climsssstartdate
       _RL     climsssperiod
       character*1 climsssmask
       parameter(  climsssmask = 's' )
@@ -49,11 +52,7 @@ c     Calendar data.
      &                        climtempstartdate1, climtempstartdate2,
      &                        climsaltstartdate1, climsaltstartdate2,
      &                        climsststartdate1,  climsststartdate2,
-     &                        climsssstartdate1,  climsssstartdate2,
-     &                        climtempstartdate,
-     &                        climsaltstartdate,
-     &                        climsststartdate,
-     &                        climsssstartdate
+     &                        climsssstartdate1,  climsssstartdate2
 
       common /exf_clim_c/
      &                        climtempfile,
@@ -62,12 +61,11 @@ c     Calendar data.
      &                        climsssfile
 
       common /exf_clim_r/
-     &                        climtempperiod,
-     &                        climsaltperiod,
-     &                        climsstperiod,
-     &                        climsssperiod,
-     &                        climsstconst,
-     &                        climsssconst
+     &                        climtempperiod,     climtempstartdate,
+     &                        climsaltperiod,     climsaltstartdate,
+     &                        climsstperiod,      climsststartdate,
+     &                        climsssperiod,      climsssstartdate,
+     &                        climsstconst,       climsssconst
 
 c     File names.
       character*(128) climtempfile

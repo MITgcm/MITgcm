@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.7 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.8 2003/10/20 06:25:16 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -42,9 +42,7 @@ c     == local variables ==
     defined(ALLOW_CLIMSALT_RELAXATION) || \
     defined(ALLOW_CLIMSST_RELAXATION ) || \
     defined(ALLOW_CLIMSSS_RELAXATION )
-      integer i
       integer il
-      integer timeint(4)
 #endif
 
       character*(max_len_mbuf) msgbuf
@@ -147,22 +145,19 @@ c     number of intervals during a given year.
 #ifdef ALLOW_CLIMTEMP_RELAXATION
 c     Relaxation to pot. temperature climatology.
       il = ilnblnk(climtempfile)
-      call cal_TimeInterval( climtempperiod, 'secs', timeint, mythid )
-
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological pot. temperature starts at         ',
-     &    (climtempstartdate(i), i=1,2),
-     & dayofweek(climtempstartdate(4)),'.'
+     &    climtempstartdate
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological pot. temperature period is         ',
-     &    (timeint(i), i=1,2)
+     &    climtempperiod
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
@@ -179,21 +174,18 @@ c     Relaxation to pot. temperature climatology.
 #ifdef ALLOW_CLIMSALT_RELAXATION
 c     Relaxation to salinity climatology.
       il = ilnblnk(climsaltfile)
-      call cal_TimeInterval( climsaltperiod, 'secs', timeint, mythid )
-
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological salinity starts at         ',
-     &    (climsaltstartdate(i), i=1,2),
-     & dayofweek(climsaltstartdate(4)),'.'
+     &    climsaltstartdate
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological salinity period is         ',
-     &    (timeint(i), i=1,2)
+     &    climsaltperiod
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -209,21 +201,18 @@ c     Relaxation to salinity climatology.
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Relaxation to SST climatology.
       il = ilnblnk(climsstfile)
-      call cal_TimeInterval( climsstperiod, 'secs', timeint, mythid )
-
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological SST starts at         ',
-     &    (climsststartdate(i), i=1,2),
-     & dayofweek(climsststartdate(4)),'.'
+     &    climsststartdate
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological SST period is         ',
-     &    (timeint(i), i=1,2)
+     &    climsstperiod
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -239,21 +228,18 @@ c     Relaxation to SST climatology.
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Relaxation to SSS climatology.
       il = ilnblnk(climsssfile)
-      call cal_TimeInterval( climsssperiod, 'secs', timeint, mythid )
-
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological SSS starts at         ',
-     &    (climsssstartdate(i), i=1,2),
-     & dayofweek(climsssstartdate(4)),'.'
+     &    climsssstartdate
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8,i7.6)')
+      write(msgbuf,'(a,f12.0)')
      &'   Climatological SSS period is         ',
-     &    (timeint(i), i=1,2)
+     &    climsssperiod
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.12 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.13 2003/10/20 06:25:16 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -60,6 +60,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer i
+      integer date_array(4), difftime(4)
 
 c     == external ==
 
@@ -282,29 +283,27 @@ c     Data files.
       lwdownfile         = ' '
       apressurefile      = ' '
 
-c     Initialise the date arrays.
-      do i = 1,4
-         hfluxstartdate(i)    = 0
-         atempstartdate(i)    = 0
-         aqhstartdate(i)      = 0
-         evapstartdate(i)     = 0
-         precipstartdate(i)   = 0
-         sfluxstartdate(i)    = 0
-         runoffstartdate(i)   = 0
-         ustressstartdate(i)  = 0
-         vstressstartdate(i)  = 0
-         uwindstartdate(i)    = 0
-         vwindstartdate(i)    = 0
-         swfluxstartdate(i)   = 0
-         lwfluxstartdate(i)   = 0
-         swdownstartdate(i)   = 0
-         lwdownstartdate(i)   = 0
-         obcsNstartdate(i)    = 0
-         obcsSstartdate(i)    = 0
-         obcsEstartdate(i)    = 0
-         obcsWstartdate(i)    = 0
-         apressurestartdate(i)= 0
-      enddo
+c     Start dates.
+      hfluxstartdate     = 0
+      atempstartdate     = 0
+      aqhstartdate       = 0
+      evapstartdate      = 0
+      precipstartdate    = 0
+      sfluxstartdate     = 0
+      runoffstartdate    = 0
+      ustressstartdate   = 0
+      vstressstartdate   = 0
+      uwindstartdate     = 0
+      vwindstartdate     = 0
+      swfluxstartdate    = 0
+      lwfluxstartdate    = 0
+      swdownstartdate    = 0
+      lwdownstartdate    = 0
+      obcsNstartdate     = 0
+      obcsSstartdate     = 0
+      obcsEstartdate     = 0
+      obcsWstartdate     = 0
+      apressurestartdate = 0
 
 c     Initialise file type and field precision
       exf_iprec       = 32
@@ -376,77 +375,137 @@ c     check for consistency
       end if
 
 #ifdef ALLOW_ATM_WIND
-      call cal_FullDate(    uwindstartdate1,    uwindstartdate2,
-     &                      uwindstartdate ,             mythid )
-      call cal_FullDate(    vwindstartdate1,    vwindstartdate2,
-     &                      vwindstartdate ,             mythid )
+      call cal_FullDate  ( uwindstartdate1    ,      uwindstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,      uwindstartdate     ,mythid )
+      uwindstartdate     = modelstart   + uwindstartdate
+      call cal_FullDate  ( vwindstartdate1    ,      vwindstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,      vwindstartdate     ,mythid )
+      vwindstartdate     = modelstart   + vwindstartdate
 #else
-      call cal_FullDate(  ustressstartdate1,  ustressstartdate2,
-     &                    ustressstartdate ,             mythid )
-      call cal_FullDate(  vstressstartdate1,  vstressstartdate2,
-     &                    vstressstartdate ,             mythid )
+      call cal_FullDate  ( ustressstartdate1  ,    ustressstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,    ustressstartdate     ,mythid )
+      ustressstartdate   = modelstart + ustressstartdate
+      call cal_FullDate  ( vstressstartdate1  ,    vstressstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,    vstressstartdate     ,mythid )
+      vstressstartdate   = modelstart + vstressstartdate
 #endif
 
 #ifdef ALLOW_ATM_TEMP
-      call cal_FullDate(    atempstartdate1,    atempstartdate2,
-     &                      atempstartdate ,             mythid )
-      call cal_FullDate(      aqhstartdate1,      aqhstartdate2,
-     &                        aqhstartdate ,             mythid )
-      call cal_FullDate(   lwfluxstartdate1,   lwfluxstartdate2,
-     &                     lwfluxstartdate ,             mythid )
-      call cal_FullDate(   precipstartdate1,   precipstartdate2,
-     &                     precipstartdate ,             mythid )
+      call cal_FullDate  ( atempstartdate1    ,      atempstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,      atempstartdate     ,mythid )
+      atempstartdate     = modelstart   + atempstartdate
+      call cal_FullDate  ( aqhstartdate1      ,        aqhstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,        aqhstartdate     ,mythid )
+      aqhstartdate       = modelstart     + aqhstartdate
+      call cal_FullDate  ( lwfluxstartdate1   ,     lwfluxstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     lwfluxstartdate     ,mythid )
+      lwfluxstartdate    = modelstart  + lwfluxstartdate
+      call cal_FullDate  ( precipstartdate1   ,     precipstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     precipstartdate     ,mythid )
+      precipstartdate    = modelstart  + precipstartdate
 #else
-      call cal_FullDate(    hfluxstartdate1,    hfluxstartdate2,
-     &                      hfluxstartdate ,             mythid )
-      call cal_FullDate(    sfluxstartdate1,    sfluxstartdate2,
-     &                      sfluxstartdate ,             mythid )
+      call cal_FullDate  ( hfluxstartdate1    ,      hfluxstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,      hfluxstartdate     ,mythid )
+      hfluxstartdate     = modelstart   + hfluxstartdate
+      call cal_FullDate  ( sfluxstartdate1    ,      sfluxstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,      sfluxstartdate     ,mythid )
+      sfluxstartdate     = modelstart   + sfluxstartdate
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      call cal_FullDate(   swfluxstartdate1,   swfluxstartdate2,
-     &                     swfluxstartdate ,             mythid )
+      call cal_FullDate  ( swfluxstartdate1   ,     swfluxstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     swfluxstartdate     ,mythid )
+      swfluxstartdate    = modelstart  + swfluxstartdate
 #endif
 
 #ifdef EXF_READ_EVAP
-      call cal_FullDate(     evapstartdate1,     evapstartdate2,
-     &                       evapstartdate ,             mythid )
+      call cal_FullDate  ( evapstartdate1     ,       evapstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,       evapstartdate     ,mythid )
+      evapstartdate      = modelstart    + evapstartdate
 #endif
 
 #ifdef ALLOW_RUNOFF
-      call cal_FullDate(   runoffstartdate1,   runoffstartdate2,
-     &                     runoffstartdate ,             mythid )
+      call cal_FullDate  ( runoffstartdate1   ,     runoffstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     runoffstartdate     ,mythid )
+      runoffstartdate    = modelstart  + runoffstartdate
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-      call cal_FullDate(   swdownstartdate1,   swdownstartdate2,
-     &                     swdownstartdate ,             mythid )
-      call cal_FullDate(   lwdownstartdate1,   lwdownstartdate2,
-     &                     lwdownstartdate ,             mythid )
+      call cal_FullDate  ( swdownstartdate1   ,     swdownstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     swdownstartdate     ,mythid )
+      swdownstartdate    = modelstart  + swdownstartdate
+      call cal_FullDate  ( lwdownstartdate1   ,     lwdownstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     lwdownstartdate     ,mythid )
+      lwdownstartdate    = modelstart  + lwdownstartdate
 #endif
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCS_NORTH
-      call cal_FullDate(    obcsNstartdate1,    obcsNstartdate2,
-     &                      obcsNstartdate ,             mythid )
+      call cal_FullDate  ( obcsNstartdate1    ,      obcsNstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     obcsNstartdate      ,mythid )
+      obcsNstartdate     = modelstart + obcsNstartdate
 #endif
 #ifdef ALLOW_OBCS_SOUTH
-      call cal_FullDate(    obcsSstartdate1,    obcsSstartdate2,
-     &                      obcsSstartdate ,             mythid )
+      call cal_FullDate  ( obcsSstartdate1    ,      obcsSstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     obcsSstartdate      ,mythid )
+      obcsSstartdate     = modelstart + obcsSstartdate
 #endif
 #ifdef ALLOW_OBCS_EAST
-      call cal_FullDate(    obcsEstartdate1,    obcsEstartdate2,
-     &                      obcsEstartdate ,             mythid )
+      call cal_FullDate  ( obcsEstartdate1    ,      obcsEstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,     obcsEstartdate      ,mythid )
+      obcsEstartdate     = modelstart + obcsEstartdate
 #endif
 #ifdef ALLOW_OBCS_WEST
-      call cal_FullDate(    obcsWstartdate1,    obcsWstartdate2,
-     &                      obcsWstartdate ,             mythid )
+      call cal_FullDate  ( obcsWstartdate1    ,      obcsWstartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,    obcsWstartdate       ,mythid )
+      obcsWstartdate     = modelstart + obcsWstartdate
 #endif
 #endif /* ALLOW_OBCS */
 
 #ifdef ATMOSPHERIC_LOADING
-      call cal_FullDate(apressurestartdate1,apressurestartdate2,
-     &                  apressurestartdate ,             mythid )
+      call cal_FullDate  ( apressurestartdate1,  apressurestartdate2,
+     &                     date_array                        ,mythid )
+      call cal_TimePassed( modelstartdate,date_array,difftime,mythid )
+      call cal_ToSeconds ( difftime,    apressurestartdate   ,mythid )
+      apressurestartdate = modelstart + apressurestartdate
 #endif
 
       _END_MASTER( mythid )

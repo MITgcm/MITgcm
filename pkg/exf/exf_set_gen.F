@@ -40,8 +40,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer genstartdate(4)
-      _RL     genperiod
+      _RL     genstartdate, genperiod
       _RL     exf_inscal_gen
       _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
