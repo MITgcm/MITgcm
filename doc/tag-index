@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.361 2004/09/29 12:27:09 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.362 2004/10/01 16:15:29 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o non-hydrostatic code
+  - added horizontal viscosity parameter viscAhW for w, that replaces viscAh
+    in calc_gw.F
+  - defaults to viscAh
+  - this is useful, when I want to use viscAh=0 (e.g., only biharmonic
+    friction or Leith) in non-hydrostatic mode, as long as there is 
+    no biharmonic friction and/or Leigth or equivalent for vertical velocity.
 o pkg/cost
   extend simple cost functions to treat time mean quantities
   (T,U,V) via cost_accumulate_state from cost_tile

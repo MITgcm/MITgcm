@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.16 2004/06/25 13:09:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.17 2004/10/01 16:15:29 mlosch Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -135,7 +135,7 @@ C     at the southern face
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
            Flx_NS(I,J,bi,bj)=
      &     tmp_VbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I,J-1,K,bi,bj))
-     &    -viscAh*_recip_dyC(I,J,bi,bj)  
+     &    -viscAhW*_recip_dyC(I,J,bi,bj)  
      &       *(hFacStmp*(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
      &        +(1. _d 0 - hFacStmp)*(1. _d 0 - slipSideFac)
      &         *wVel(I,J,K,bi,bj))
@@ -159,7 +159,7 @@ C     at the western face
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
            Flx_EW(I,J,bi,bj)=
      &     tmp_UbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I-1,J,K,bi,bj))
-     &    -viscAh*_recip_dxC(I,J,bi,bj)
+     &    -viscAhW*_recip_dxC(I,J,bi,bj)
      &      *(hFacWtmp*(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
      &       +(1 _d 0 - hFacWtmp)*(1 _d 0 - slipSideFac)
      &        *wVel(I,J,K,bi,bj) )
