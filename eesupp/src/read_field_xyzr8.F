@@ -1,4 +1,4 @@
-C $Id: read_field_xyzr8.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/read_field_xyzr8.F,v 1.2 1998/04/23 20:37:31 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 

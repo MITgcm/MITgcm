@@ -1,4 +1,4 @@
-C $Id: eeset_parms.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -181,4 +181,4 @@ C
       RETURN
       END
 
-C $Id: eeset_parms.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Id: eeset_parms.F,v 1.2 1998/04/23 20:37:30 cnh Exp $

@@ -1,4 +1,4 @@
-C $Id: check_threads.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.2 1998/04/23 20:37:29 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -83,5 +83,3 @@ C
 C
       RETURN
       END
-
-C $Id: check_threads.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $

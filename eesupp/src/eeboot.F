@@ -1,4 +1,4 @@
-C $Id: eeboot.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.2 1998/04/23 20:37:29 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -112,4 +112,4 @@ C       execution at this stage.
   999 CONTINUE
       RETURN
       END
-C $Id: eeboot.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Id: eeboot.F,v 1.2 1998/04/23 20:37:29 cnh Exp $
