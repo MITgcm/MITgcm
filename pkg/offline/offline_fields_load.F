@@ -52,9 +52,7 @@ C     myIter - Simulation timestep number
 
 c     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*18 fn2
-      CHARACTER*15 fn3
-      CHARACTER*19 fn4
+      CHARACTER*(MAX_LEN_FNAM) fn2
       INTEGER prec
 
  
@@ -105,6 +103,9 @@ c     _RS  tmp      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER bi,bj,i,j,k,intime0,intime1
       _RL aWght,bWght,rdt, KGM
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      INTEGER I1, I2
+      INTEGER  IFNBLNK, ILNBLNK
+      EXTERNAL IFNBLNK, ILNBLNK
 
 #ifdef ALLOW_OFFLINE
       CALL TIMER_START('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
@@ -174,90 +175,134 @@ c if reading own files setup reading here
 c
        IF ( Uvelfile      .NE. ' '  ) THEN
         WRITE(fn2,'(A)') Uvelfile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel1,   1,myThid)
        ENDIF
 c      
        IF ( Vvelfile      .NE. ' '  ) THEN
         WRITE(fn2,'(A)') Vvelfile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel1,   1,myThid)
        ENDIF
 c      
        IF (Wvelfile      .NE. ' '  ) THEN
         WRITE(fn2,'(A)') Wvelfile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel1,   1,myThid)
        ENDIF
 
        IF (Thetfile      .NE. ' '  ) THEN
-        WRITE(fn3,'(A)') Thetfile
-        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') Thetfile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave1,   1,myThid)
        ENDIF
 
        IF (Saltfile       .NE. ' ' ) THEN
-        WRITE(fn3,'(A)') Saltfile
-        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') Saltfile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save1,   1,myThid)
        ENDIF
 
        IF (ConvFile       .NE. ' ' ) THEN
         WRITE(fn2,'(A)') ConvFile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv1,   1,myThid)
        ENDIF
 c
 
        IF (GMwxFile       .NE. ' ' ) THEN
         WRITE(fn2,'(A)') GMwxFile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx1,   1,myThid)
        ENDIF
 
        IF (GMwyFile       .NE. ' ') THEN
         WRITE(fn2,'(A)') GMwyFile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky1,   1,myThid)
        ENDIF
 c
        IF (GMwzFile       .NE. ' ') THEN
         WRITE(fn2,'(A)') GMwzFile
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz1,   1,myThid)
        ENDIF
 c
        IF (HFluxFile      .NE. ' ') THEN
-        WRITE(fn4,'(A)') HFluxFile
-        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') HFluxFile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,hflx0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,hflx1,   1,myThid)
        ENDIF
 c
        IF (SFluxFile      .NE. ' ') THEN
-        WRITE(fn4,'(A)') SFluxFile
-        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') SFluxFile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,sflx0,   1,myThid)
-        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,sflx1,   1,myThid)
        ENDIF
 c
