@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.1 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.2 2005/03/31 04:54:04 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,9 +47,19 @@ C     e.g. U.0000000100
       ENDIF
 C
       fType='RL'
-      CALL MDS_WRITELOCAL(
-     &     fullName, writeBinaryPrec, globalFile,
-     &     fType, nNr, field, bi, bj, iRec, myIter, myThid )
+      IF (nSx.EQ.1.AND.nSy.EQ.1) THEN
+C The hack below replaces MDS_WRITELOCAL with MDSWRITEFIELD_LOC for
+C single-threaded execution because the former does not support the
+C singleCpuIo option. This is a placeholder until MDS_WRITELOCAL
+C functionality is superseded by pkg/diagnostics.
+         CALL MDSWRITEFIELD_LOC(
+     &        fullName, writeBinaryPrec, globalFile,
+     &        fType, nNr, field, iRec, myIter, myThid )
+      ELSE
+         CALL MDS_WRITELOCAL(
+     &        fullName, writeBinaryPrec, globalFile,
+     &        fType, nNr, field, bi, bj, iRec, myIter, myThid )
+      ENDIF
 C
       RETURN
       END
