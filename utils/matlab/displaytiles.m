@@ -6,6 +6,10 @@ function [] = displaytiles(A)
 global cmin cmax
 clf
 
+if size(A,3)==1
+ A=tiles(A,1:6);
+end
+
 cmin=min(min(min(A)));
 cmax=max(max(max(A)));
 if isnan(cmin)
@@ -34,9 +38,9 @@ myplot(A(:,:,6)')
 
 %Colorbar
 subplot(3,10,30)
-x=1;
+x=[0 1];
 y=(0:63)'/63*(cmax-cmin)+cmin;
-pcol(x,y,y);
+pcol(x,y,[y y]);
 set(gca,'XTickLabel',[]);
 
 function [] = myplot( Q )

@@ -1,4 +1,4 @@
-function [a] = tile(b,n)
+function [a] = tile(b,varargin)
 % a=tile(b,n);
 %
 % Extract single tile from cubed array
@@ -7,6 +7,11 @@ function [a] = tile(b,n)
 %
 % n can be vector of integers between 1 and 6
 
+if nargin==1
+ n=1:6;
+else
+ n=varargin{1};
+end
 
 if min(n)<1 | max(n)>6
  disp(sprintf('n=',n));

@@ -63,7 +63,7 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.16 2003/04/03 22:33:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.17 2004/06/04 17:03:50 adcroft Exp $
 
 AA=[];
 iters=[];
@@ -109,6 +109,7 @@ for ind=1:size(varargin,2);
    end
    disp([ sprintf('Found %i time levels, reading %i',size(iters,2),iters(end)) ]);
    iters=iters(end);
+% elseif prod(double(arg>=0)) & prod(double(round(arg)==arg))
 % elseif prod(arg>=0) & prod(round(arg)==arg)
   elseif min(arg)>=0 & isempty(find(round(arg)~=arg))
    if arg>=9999999999

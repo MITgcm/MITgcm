@@ -33,16 +33,16 @@ else
 end
 Q=C;
 
-if ndims(X)==2 & size(X,1)==6*size(X,2)
+if ndims(Q)==2 & size(Q,1)==6*size(Q,2)
  [nx ny nt]=size(X);
  X=permute( reshape(X,[nx/6 6 ny]),[1 3 2]);
  Y=permute( reshape(Y,[nx/6 6 ny]),[1 3 2]);
  Q=permute( reshape(Q,[nx/6 6 ny]),[1 3 2]);
-elseif ndims(X)==3 & size(X,2)==6
+elseif ndims(Q)==3 & size(Q,2)==6
  X=permute( X,[1 3 2]);
  Y=permute( Y,[1 3 2]);
  Q=permute( Q,[1 3 2]);
-elseif ndims(X)==3 & size(X,3)==6
+elseif ndims(Q)==3 & size(Q,3)==6
  [nx ny nt]=size(X);
 else
  size(XX)
@@ -67,8 +67,8 @@ if size(X,1)==size(Q,1)
 end
 [nx ny nt]=size(X);
 
-Q(end+1,:,:)=0;
-Q(:,end+1,:)=0;
+Q(end+1,:,:)=NaN;
+Q(:,end+1,:)=NaN;
 Q(end,:,[1 3 5])=Q(1,:,[2 4 6]);
 Q(:,end,[2 4 6])=Q(:,1,[3 5 1]);
 Q(:,end,[1 3 5])=squeeze(Q(1,end:-1:1,[3 5 1]));
