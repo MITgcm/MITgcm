@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.34 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.35 2003/03/05 23:39:53 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,11 +30,14 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
+c**************************************
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "cost.h"
+
+c These includes are needed for 
+c AD-checkpointing. 
+c They provide the fields to be stored.
+
 # include "GRID.h"
 # include "DYNVARS.h"
 # include "FFIELDS.h"
@@ -49,7 +52,27 @@ C     == Global variables ==
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
 # endif
-#endif
+# ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#  include "exf_fields.h"
+#  include "exf_clim_fields.h"
+#  ifdef ALLOW_BULKFORMULAE
+#   include "exf_constants.h"
+#  endif
+# endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+# ifdef ALLOW_SEAICE
+#  include "SEAICE.h"
+# endif
+# ifdef ALLOW_DIVIDED_ADJOINT_MPI
+#  include "mpif.h"
+# endif
+
+# include "tamc.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "cost.h"
+
+#endif /* ALLOW_AUTODIFF_TAMC */
+c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
