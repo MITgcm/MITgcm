@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.42 2004/10/07 03:20:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.43 2004/10/07 18:24:24 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -221,7 +221,7 @@ C***********************************************************************
       enddo
       enddo
 
-      call astro ( 20040315,nhms, xlats,xlons, im2*jm2, cosz,ra )
+      call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
       do j=jm1,jm2
       do i=im1,im2
        radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
