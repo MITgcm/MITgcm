@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.6 2004/08/06 21:12:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.7 2004/09/29 22:23:29 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -35,10 +35,10 @@ C     !LOCAL VARIABLES:
      &     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup
 
 C     Set defaults
-      fizhi_mdsio_read_pickup = .FALSE.
-      fizhi_mdsio_write_pickup = .FALSE.
-      fizhi_mnc_write_pickup = .TRUE.
-      fizhi_mnc_read_pickup = .TRUE.
+      fizhi_mdsio_read_pickup = .TRUE.
+      fizhi_mdsio_write_pickup = .TRUE.
+      fizhi_mnc_write_pickup = .FALSE.
+      fizhi_mnc_read_pickup = .FALSE.
 
 C     Read Fizhi Namelist
       WRITE(msgBuf,'(A)') ' FIZHI_READPARMS: opening data.fizhi'
