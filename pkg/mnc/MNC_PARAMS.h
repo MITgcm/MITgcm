@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.5 2004/10/21 13:38:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.6 2005/02/07 18:37:19 edhill Exp $
 C $Name:  $
 C
 
@@ -31,17 +31,20 @@ C     mnc_echo_gvtypes :: echo type names (fails on many platforms)
 C     pickup_write_mnc :: use mnc to write pickups
 C     pickup_read_mnc  :: use mnc to read  pickups
 C     mon_write_mnc    :: use mnc to write monitor output
+C     readgrid_mnc     :: read INI_CURVILINEAR_GRID() info using mnc
 
       COMMON /PARM_MNC_L/ 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
-     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc
+     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
+     &     readgrid_mnc
       LOGICAL 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
-     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc
+     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
+     &     readgrid_mnc
 
 C     ===  PARM_MNC_R Common Block  ===
 C     mnc_max_fsize    :: maximum file size

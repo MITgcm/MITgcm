@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.17 2004/09/23 21:27:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.18 2005/02/07 18:37:19 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,6 +31,9 @@ C     === Global variables ===
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 #ifndef ALLOW_EXCH2
 C- note: default is to use "new" grid files (OLD_GRID_IO undef) with EXCH2
@@ -48,6 +51,9 @@ C     == Local variables ==
       INTEGER bi,bj, myTile, myiter
       INTEGER I,J
       CHARACTER*(15) fName
+#ifdef ALLOW_MNC
+      CHARACTER*(80) mncFn
+#endif
       _RL buf(sNx+1,sNy+1)
       INTEGER iG, iL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -88,6 +94,59 @@ C--   Set everything to zero everywhere
 
        ENDDO
       ENDDO
+
+
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. readgrid_mnc) THEN
+
+        _BEGIN_MASTER(myThid)
+        DO i = 1,80
+          mncFn(i:i) = ' '
+        ENDDO
+        write(mncFn,'(a)') 'mitgrid'
+        DO i = 1,MAX_LEN_MBUF
+          msgBuf(i:i) = ' '
+        ENDDO
+        WRITE(msgBuf,'(2A)') msgBuf,' ; Reading grid info using MNC'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(mncFn, myThid)
+        CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'XC', XC,  myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'XG', XG,  myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'YC', YC,  myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'YG', YG,  myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxC',DXC, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyC',DYC, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxF',DXF, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyF',DYF, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxG',DXG, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyG',DYG, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxV',DXV, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyU',DYU, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'rA', RA,  myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAz',RAZ, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAw',RAW, myThid)
+        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAs',RAS, myThid)
+
+        _END_MASTER(myThid)
+
+        CALL EXCH_XY_RS(XC,myThid)
+        CALL EXCH_XY_RS(YC,myThid)
+#ifdef HRCUBE
+        CALL EXCH_XY_RS(DXF,myThid)
+        CALL EXCH_XY_RS(DYF,myThid)
+#endif
+        CALL EXCH_XY_RS(RA,myThid )
+        CALL EXCH_Z_XY_RS(XG,myThid)
+        CALL EXCH_Z_XY_RS(YG,myThid)
+        CALL EXCH_Z_XY_RS(RAZ,myThid)
+        CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
+        CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
+        CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+
+      ELSE
+#endif
 
 C     Here we make no assumptions about grid symmetry and simply
 C     read the raw grid data from files
@@ -337,6 +396,7 @@ C--   Only do I/O if I am the master thread
 
        ENDDO
       ENDDO
+
       _END_MASTER(myThid)
 
       CALL EXCH_XY_RS(XC,myThid)
@@ -358,6 +418,10 @@ c     CALL EXCH_Z_XY_RS(DYU,myThid)
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
 
 #endif /* OLD_GRID_IO */
+
+#ifdef ALLOW_MNC
+      ENDIF
+#endif /* ALLOW_MNC */
 
 c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,0,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,0,0,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.16 2004/11/19 16:01:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.17 2005/02/07 18:37:20 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -37,7 +37,8 @@ C     !LOCAL VARIABLES:
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
-     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc,
+     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
+     &     readgrid_mnc,
      &     mnc_outdir_str, mnc_indir_str, mnc_max_fsize
       LOGICAL  exst
 
@@ -63,6 +64,7 @@ C     Set default values for MNC run-time parameters
       autodiff_mnc          =  .FALSE.
 C     2GB is 2147483648 bytes or approx: 2.1475e+09
       mnc_max_fsize         =  2.1 _d 9
+      readgrid_mnc          =  .FALSE.
 
 C     Set the file name
       DO i=1,MAX_LEN_MBUF
