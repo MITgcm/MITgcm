@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.62 2002/02/27 21:19:59 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.63 2002/03/04 15:27:30 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o real fresh water flux implemented with non-linear free-surface.
+o Shap_filt: a) new shap_filt S/R to use no-slip BC with S2 filter
+             b) enable to filter 2D fields.
 
 checkpoint44e_pre,post
 o re-wrote convective adjustment to use pre-calculated weights
@@ -22,6 +23,8 @@ o added timer_stats.c routine for IBM SP3
 o removed variables in dynamics
 !!! I forgot to create tag chkpt44d_pre !!!
 !!! But chkpt44d_pre = chkpt44c_post    !!!
+
+o real fresh water flux implemented with non-linear free-surface.
 
 chkpt44c_pre,post
 o few fix (mask in shap_s2, EmPmR in external_field_load, 
