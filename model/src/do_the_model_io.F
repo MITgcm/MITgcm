@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.15 2000/04/05 19:04:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.16 2000/06/21 19:09:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,9 +30,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
-#ifdef ALLOW_KPP
-#include "KPPMIX.h"
-#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -68,25 +65,30 @@ C--    Write "text-plots" of certain fields
        CALL PLOT_FIELD_XYRL( cg2d_x, 'Current cg2d_x ' , 
      &                        myIter, myThid )
 
-#ifdef ALLOW_KPP
-       IF (KPPmixingMaps) THEN
-        CALL PLOT_FIELD_XYRL  ( KPPhbl    , 'KPPhbl'    ,
-     &                          myIter, myThid )
-        CALL PLOT_FIELD_XYZRL ( KPPviscAz , 'KPPviscAz' ,
-     &                          Nr, myIter, myThid )
-        CALL PLOT_FIELD_XYZRL ( KPPdiffKzT, 'KPPdiffKzT',
-     &                          Nr, myIter, myThid )
-        CALL PLOT_FIELD_XYZRL ( KPPghat   , 'KPPghat'   ,
-     &                          Nr, myIter, myThid )
-       ENDIF
-#endif
-
       ENDIF
 
 C--   Write model state to binary file
       CALL WRITE_STATE( forceOutput, myCurrentTime, myIter, myThid )
 
-C
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+C--   Do time averages
+      IF (taveFreq.GT.0.) THEN
+       CALL WRITE_TIME_AVERAGES( myCurrentTime, myIter, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_GMREDI
+C--   Do KPP diagnostics.
+      IF (use_GMRedi)
+     & CALL GMREDI_DIAGS( myCurrentTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_KPP
+C--   Do KPP diagnostics.
+      IF (use_KPPmixing)
+     & CALL KPP_DO_DIAGS( myCurrentTime, myIter, myThid )
+#endif
+
       RETURN
       END
  
