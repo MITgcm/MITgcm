@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.3 2004/07/20 17:46:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.4 2004/12/10 20:15:10 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -65,6 +65,13 @@ c    &               +vFld(i-1,j)+vFld(i-1,j+1))
           vort3u=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &               +omega3(i,j+1)*r_hFacZ(i,j+1))
          ENDIF
+
+cph(
+cph The following block with 'interlaced' comments
+cph is bad for TAMC and will be replaced
+cph)
+#undef THIS_IS_BAD_FOR_TAMC
+#ifdef THIS_IS_BAD_FOR_TAMC
          uCoriolisTerm(i,j)=
 C high order vorticity advection term
      &   +vort3u*vBarXY*recip_dxc(i,j,bi,bj)
@@ -78,6 +85,12 @@ c    &          fCori(I-1,J,bi,bj)*vBarY(I-1,J,K,bi,bj)  )
 C original form of Coriolis term (copied from calc_mom_rhs)
 c    &   +0.5*(fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj))*vBarXY
      &   *_maskW(I,J,K,bi,bj)
+#else
+         uCoriolisTerm(i,j)=
+     &   +vort3u*vBarXY*recip_dxc(i,j,bi,bj)
+     &   *_maskW(I,J,K,bi,bj)
+#endif
+
         ENDDO
        ENDDO
 

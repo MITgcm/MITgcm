@@ -3,7 +3,6 @@ gmredi_calc_psi_b.f
 gmredi_calc_tensor.f
 gmredi_calc_uvflow.f
 gmredi_calc_wflow.f
-gmredi_diags.f	
 gmredi_init.f	
 gmredi_rtransport.f
 gmredi_slope_limit.f

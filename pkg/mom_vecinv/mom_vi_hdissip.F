@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.13 2004/11/02 23:57:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.14 2004/12/10 20:15:10 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -6,9 +6,15 @@ C $Name:  $
       SUBROUTINE MOM_VI_HDISSIP(
      I        bi,bj,k,
      I        hDiv,vort3,hFacZ,dStar,zStar,
-c    I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        uDissip,vDissip,
      I        myThid)
+
+cph(
+cph The following line was commented in the parameter list
+cph TAMC cannot digest commented lines within continuing lines
+c    I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
+cph)
+
       IMPLICIT NONE
 C
 C     Calculate horizontal dissipation terms

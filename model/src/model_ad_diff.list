@@ -41,6 +41,7 @@ ini_cartesian_grid.f
 ini_cg2d.f	
 ini_cori.f	
 ini_curvilinear_grid.f
+ini_cylinder.f
 ini_depths.f	
 ini_fields.f	
 ini_forcing.f	

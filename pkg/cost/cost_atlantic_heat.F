@@ -100,8 +100,6 @@ c
      &                      *maskS(i,j,k,bi,bj)
      &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
              theta_bar(k) = theta_bar(k) +
-cph     &                      theta(i,j,k,bi,bj)*dxG(i,j,bi,bj)
-cph     &                      *maskC(i,j,k,bi,bj)
      &            0.5*( cMeanTheta(i,j,k,bi,bj)
      &                 +cMeanTheta(i,j-1,k,bi,bj) )
      &                 *maskS(i,j,k,bi,bj)*dxG(i,j,bi,bj)
@@ -146,8 +144,6 @@ c
      &                      *maskW(i,j,k,bi,bj)
      &                      *maskC(i,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
              theta_bar(k) = theta_bar(k) +
-cph     &                      + theta(i,j,k,bi,bj)*dyG(i,j,bi,bj)
-cph     &                      *maskC(i,j,k,bi,bj)
      &            0.5*( cMeanTheta(i,j,k,bi,bj)
      &                 +cMeanTheta(i-,j,k,bi,bj) )
      &                 *maskW(i,j,k,bi,bj)*dyG(i,j,bi,bj)

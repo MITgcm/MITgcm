@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.14 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.15 2004/12/10 20:15:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,16 +146,11 @@ C jmc: do not know precisely where to put this call (bf or af thSIce ?)
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
-
       DO bj=myByLo(myThid),myByHi(myThid)
-
 #ifdef ALLOW_AUTODIFF_TAMC
-C--    HPF directive to help TAMC
-CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
-CHPF$&                  ,utrans,vtrans,xA,yA
-CHPF$&                  )
+C--   HPF directive to help TAMC
+CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
-
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -4,3 +4,10 @@ C subroutine  ini_parms
 C----------------------------------------
 CADJ SUBROUTINE ini_parms INPUT  = 1
 CADJ SUBROUTINE ini_parms OUTPUT =
+
+C----------------------------------------
+C subroutine  READSYMTILE_RS
+C----------------------------------------
+CADJ SUBROUTINE READSYMTILE_RS INPUT  = 1,2 ,4,5 ,7
+CADJ SUBROUTINE READSYMTILE_RS OUTPUT =    3,   6
+
