@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.5 2002/07/13 03:01:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.6 2003/10/10 22:43:28 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -42,9 +42,15 @@ C     == Local variables
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
-      iLocOut =  80
-      jLocOut =  30
-      kLocOut =  1
+      if ( useCubedSphereExchange) then
+         iLocOut =  7
+         jLocOut =  28
+         kLocOut =  1
+      else
+         iLocOut =  80
+         jLocOut =  30
+         kLocOut =  1
+      endif
 
 ce    some reference temperature
       thetaRef = 24.0D0
