@@ -321,6 +321,12 @@ c ----------------
       cdiag(257) = 'USLTMASS'
       cdiag(258) = 'VSLTMASS'
       cdiag(259) = 'WSLTMASS'
+      cdiag(260) = 'UVELTH  '
+      cdiag(261) = 'VVELTH  '
+      cdiag(262) = 'WVELTH  '
+      cdiag(263) = 'UVELSLT '
+      cdiag(264) = 'VVELSLT '
+      cdiag(265) = 'WVELSLT '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -656,6 +662,12 @@ c ----------------------------------------------------------------------
       tdiag(257)  = 'Zonal Mass-Weight Transp of Salt (m-kg/s-kg)'
       tdiag(258)  = 'Meridional Mass-Weight Transp of Salt (m-kg/s-kg)'
       tdiag(259)  = 'Vertical Mass-Weight Transp of Salt (m-kg/s-kg)'
+      tdiag(260)  = 'Zonal Transp of Pot Temp (m-K/s)'
+      tdiag(261)  = 'Meridional Transp of Pot Temp (m-K/s)'
+      tdiag(262)  = 'Vertical Transp of Pot Temp (m-K/s)'
+      tdiag(263)  = 'Zonal Transp of Salt (m-kg/s-kg)'
+      tdiag(264)  = 'Meridional Transp of Salt (m-kg/s-kg)'
+      tdiag(265)  = 'Vertical Transp of Salt (m-kg/s-kg)'
 
 c Diagnostic Units
 c ----------------
@@ -918,6 +930,12 @@ c ----------------
       udiag(257) = 'm-kg/s-kg       '
       udiag(258) = 'm-kg/s-kg       '
       udiag(259) = 'm-kg/s-kg       '
+      udiag(260) = 'm-K/sec         '
+      udiag(261) = 'm-K/sec         '
+      udiag(262) = 'm-K/sec         '
+      udiag(263) = 'm-kg/s-kg       '
+      udiag(264) = 'm-kg/s-kg       '
+      udiag(265) = 'm-kg/s-kg       '
 
 c Diagnostic Parms
 c ----------------
@@ -1180,6 +1198,12 @@ c ----------------
       gdiag(257) = 'UU   258M       '
       gdiag(258) = 'VV   257M       '
       gdiag(259) = 'WM      M       '
+      gdiag(260) = 'UU   261M       '
+      gdiag(261) = 'VV   260M       '
+      gdiag(262) = 'WM      M       '
+      gdiag(263) = 'UU   264M       '
+      gdiag(264) = 'VV   263M       '
+      gdiag(265) = 'WM      M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1442,6 +1466,12 @@ c -----------------
       KDIAG(257)= Nr
       KDIAG(258)= Nr
       KDIAG(259)= Nr
+      KDIAG(260)= Nr
+      KDIAG(261)= Nr
+      KDIAG(262)= Nr
+      KDIAG(263)= Nr
+      KDIAG(264)= Nr
+      KDIAG(265)= Nr
 
       do n=1,ndiagt
       idiag (n) = 0

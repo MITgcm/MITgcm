@@ -284,6 +284,12 @@ C diagarrays common
       CHARACTER*8   CUSLTMASS
       CHARACTER*8   CVSLTMASS
       CHARACTER*8   CWSLTMASS
+      CHARACTER*8   CUVELTH
+      CHARACTER*8   CVVELTH
+      CHARACTER*8   CWVELTH
+      CHARACTER*8   CUVELSLT
+      CHARACTER*8   CVVELSLT
+      CHARACTER*8   CWVELSLT
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -536,6 +542,12 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(257),  CUSLTMASS )
       EQUIVALENCE ( CDIAG(258),  CVSLTMASS )
       EQUIVALENCE ( CDIAG(259),  CWSLTMASS )
+      EQUIVALENCE ( CDIAG(260),  CUVELTH   )
+      EQUIVALENCE ( CDIAG(261),  CVVELTH   )
+      EQUIVALENCE ( CDIAG(262),  CWVELTH   )
+      EQUIVALENCE ( CDIAG(263),  CUVELSLT  )
+      EQUIVALENCE ( CDIAG(264),  CVVELSLT  )
+      EQUIVALENCE ( CDIAG(265),  CWVELSLT  )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -788,6 +800,12 @@ C diagarrays common
       integer       iUSLTMASS, kUSLTMASS, nUSLTMASS
       integer       iVSLTMASS, kVSLTMASS, nVSLTMASS
       integer       iWSLTMASS, kVSLTMASS, nVSLTMASS
+      integer       iUVELTH  , kUVELTH,   nUVELTH
+      integer       iVVELTH  , kVVELTH,   nVVELTH
+      integer       iWVELTH  , kWVELTH,   nWVELTH
+      integer       iUVELSLT , kUVELSLT,  nUVELSLT
+      integer       iVVELSLT , kVVELSLT,  nVVELSLT
+      integer       iWVELSLT , kWVELSLT,  nWVELSLT
 
 
 c Diagnostic Pointers
@@ -1043,6 +1061,12 @@ c -------------------
       EQUIVALENCE ( IDIAG(257),  IUSLTMASS )
       EQUIVALENCE ( IDIAG(258),  IVSLTMASS )
       EQUIVALENCE ( IDIAG(259),  IWSLTMASS )
+      EQUIVALENCE ( IDIAG(260),  IUVELTH   ) 
+      EQUIVALENCE ( IDIAG(261),  IVVELTH   )
+      EQUIVALENCE ( IDIAG(262),  IWVELTH   )
+      EQUIVALENCE ( IDIAG(263),  IUVELSLT  )
+      EQUIVALENCE ( IDIAG(264),  IVVELSLT  )
+      EQUIVALENCE ( IDIAG(265),  IWVELSLT  )
 
 
 c Diagnostic Levels
@@ -1298,6 +1322,12 @@ c -----------------
       EQUIVALENCE ( KDIAG(257),  KUSLTMASS )
       EQUIVALENCE ( KDIAG(258),  KVSLTMASS )
       EQUIVALENCE ( KDIAG(259),  KWSLTMASS )
+      EQUIVALENCE ( KDIAG(260),  KUVELTH   ) 
+      EQUIVALENCE ( KDIAG(261),  KVVELTH   )
+      EQUIVALENCE ( KDIAG(262),  KWVELTH   )
+      EQUIVALENCE ( KDIAG(263),  KUVELSLT  )
+      EQUIVALENCE ( KDIAG(264),  KVVELSLT  )
+      EQUIVALENCE ( KDIAG(265),  KWVELSLT  )
 
 
 c Diagnostic Counters
@@ -1553,6 +1583,12 @@ c -------------------
       EQUIVALENCE ( NDIAG(257),  NUSLTMASS )
       EQUIVALENCE ( NDIAG(258),  NVSLTMASS )
       EQUIVALENCE ( NDIAG(259),  NWSLTMASS )
+      EQUIVALENCE ( NDIAG(260),  NUVELTH   ) 
+      EQUIVALENCE ( NDIAG(261),  NVVELTH   )
+      EQUIVALENCE ( NDIAG(262),  NWVELTH   )
+      EQUIVALENCE ( NDIAG(263),  NUVELSLT  )
+      EQUIVALENCE ( NDIAG(264),  NVVELSLT  )
+      EQUIVALENCE ( NDIAG(265),  NWVELSLT  )
 
 
 C diagnostics common
