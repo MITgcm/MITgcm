@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.82 2004/06/30 01:19:29 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.83 2004/07/06 18:06:49 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1797,7 +1797,7 @@ echo 'F90FILES =  $(F90SRCFILES:.F=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .F .p .'$FS' .c .F90 .'$FS90 >> $MAKEFILE
+echo '.SUFFIXES: .o .'$FS' .p .F .c .'$FS90' .F90' >> $MAKEFILE
 rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
 rm -f ad_flow_files.inc
 
