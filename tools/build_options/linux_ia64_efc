@@ -10,7 +10,7 @@ CPP='/lib/cpp  -traditional -P'
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 else
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
