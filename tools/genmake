@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.48 2001/09/04 17:17:47 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.49 2001/09/05 20:28:26 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -386,7 +386,7 @@ switch ($platform$USEMPI)
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-fast -O3' )
+    set FOPTIM     = ( '-dalign -O3' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
     breaksw
@@ -396,7 +396,7 @@ switch ($platform$USEMPI)
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-fast -O3' )
+    set FOPTIM     = ( '-dalign -O3' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
                        '-lsocket -lnsl' )
