@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.83 2001/09/27 20:12:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.84 2001/11/16 03:25:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,7 +113,6 @@ C      |
 C      |-- OBCS_APPLY_UV
 C      |
 C      |-- CALL TIMEAVE_CUMUL_1T
-C      |-- CALL TIMEAVE_CUMULATE
 C      |-- CALL DEBUG_STATS_RL
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -157,9 +156,6 @@ C                      index into fVerTerm.
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-
-C This is currently used by IVDC and Diagnostics
-      _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -465,10 +461,6 @@ Cjmc(end)
         IF (taveFreq.GT.0.) THEN 
           CALL TIMEAVE_CUMUL_1T(phiHydtave, phiHyd, Nr,
      I                              deltaTclock, bi, bj, myThid)
-          IF (ivdc_kappa.NE.0.) THEN
-            CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,
-     I                              deltaTclock, bi, bj, myThid)
-          ENDIF
         ENDIF
 #endif /* ALLOW_TIMEAVE */
 
