@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.4 2004/10/14 11:53:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.5 2004/10/14 11:56:43 heimbach Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -40,6 +40,7 @@ c     == local variables ==
 
       logical first, changed
       integer count0, count1
+      integer year0, year1
       _RL     fac
 
 c     == end of interface ==
