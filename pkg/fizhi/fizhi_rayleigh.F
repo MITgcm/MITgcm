@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.5 2004/10/26 01:01:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.6 2004/10/26 19:29:10 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -88,7 +88,7 @@ C **********************************************************************
       do L=1,lm
        do j=1,jm
        do i=1,im
-        rf(i,j,L) = dampcoef*(1+tanh((z(i,j,L)-80000.)/5000.))/86400.
+        rf(i,j,L) = dampcoef*(1+tanh((z(i,j,L)-50000.)/5000.))/86400.
         rfu(i,j,L) = - rf(i,j,L) * u(i,j,L)
         rfv(i,j,L) = - rf(i,j,L) * v(i,j,L)
         rft(i,j,L) = -(u(i,j,L)*rfu(i,j,L) + v(i,j,L)*rfv(i,j,L) )*cpinv
