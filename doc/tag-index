@@ -1,10 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.47 2001/08/21 16:38:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.48 2001/09/05 16:56:23 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-checkpoint40
-o all changes of checkpoint40pre?
+checkpoint40pre8
 o new package rw/
   Added method for dumping intermediate local arrays:
   mdsio_writetile - same as mdsio_writefield except works from inside
