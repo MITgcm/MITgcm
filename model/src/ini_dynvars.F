@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.12 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.13 2003/12/14 23:24:55 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -28,9 +27,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
-#endif
-#ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -70,13 +66,6 @@ C-      3D arrays
            gTnm1(I,J,K,bi,bj)=0. _d 0
            gSnm1(I,J,K,bi,bj)=0. _d 0
 
-#ifdef ALLOW_CD_CODE
-           uNM1(I,J,K,bi,bj)=0. _d 0
-           vNM1(I,J,K,bi,bj)=0. _d 0
-           uVeld(I,J,K,bi,bj)=0. _d 0
-           vVeld(I,J,K,bi,bj)=0. _d 0
-#endif
-
 #ifdef ALLOW_NONHYDROSTATIC
 ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
            gW(I,J,K,bi,bj)=0. _d 0
@@ -93,9 +82,6 @@ C-      2D arrays
          DO I=1-Olx,sNx+Olx
           etaN(I,J,bi,bj)=0. _d 0
           etaH(I,J,bi,bj)=0. _d 0
-#ifdef ALLOW_CD_CODE
-          etaNm1(I,J,bi,bj)=0. _d 0
-#endif
           phiHydLow(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
