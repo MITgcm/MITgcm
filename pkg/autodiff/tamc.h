@@ -112,7 +112,8 @@ c     and writing data.
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
-      INTEGER kkey, passkey, igadkey
+      INTEGER iikey, kkey, passkey, igadkey, 
+     &        itdkey, idynkey, igmkey, ikppkey, iicekey
 
 c     ================================================================
 c     END OF HEADER TAMC

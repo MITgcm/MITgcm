@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.2 2003/06/23 22:29:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.3 2003/06/24 16:07:07 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 

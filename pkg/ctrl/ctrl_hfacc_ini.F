@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.1 2002/11/29 13:38:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.2 2003/06/24 16:07:06 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 

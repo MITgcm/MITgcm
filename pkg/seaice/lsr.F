@@ -3,7 +3,7 @@ C $Header:
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE lsr( myThid )
+      SUBROUTINE lsr( ilcall, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  lsr                                          |
 C     | o Solve ice momentum equation with an LSR dynamics solver|
@@ -23,9 +23,13 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_GRID.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
+      INTEGER ilcall
       INTEGER myThid
 CEndOfInterface
 
@@ -37,6 +41,8 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2, SOLV_MAX_ITERS, SOLV_NCHECK
+      INTEGER phexit
+
       _RL  RADIUS, RADIUS2
       _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL  AA1, AA2, AA3, AA4, AA5, AA6, S1, S2, S1A, S2A
@@ -81,6 +87,16 @@ C SET SOME VALUES
       ICOUNT2=SOLV_MAX_ITERS
 
 C SOLVE FOR UICE
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph That's an important one! Note, that
+cph * lsr is called twice, thus the icall index
+cph * this storing is still outside the iteration loop
+CADJ STORE uice = comlev1_lsr, 
+CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vice = comlev1_lsr, 
+CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -222,8 +238,19 @@ C SOLVE FOR UICE
 C NOW DO ITERATION
 100   CONTINUE
 
+cph--- iteration starts here
+cph--- need to kick out goto
+      phexit = -1
+
+C ITERATION START -----------------------------------------------------
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ LOOP = iteration uice
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       DO 8000 M=1, solv_max_iters
-        
+cph(
+      IF ( phexit .EQ. -1 ) THEN
+cph)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET U(3)=U(1)
@@ -300,14 +327,24 @@ C SAFEGUARD AGAINST BAD FORCING ETC
        S1A=S1
        IF(S1.LT.LSR_ERROR) THEN
         ICOUNT1=M
-        GO TO 8001
+cph(
+cph        GO TO 8001
+        phexit = 1
+cph)
        END IF
       END IF
       CALL SEAICE_EXCH ( UICE, myThid )
 
+cph(
+      END IF
+cph)
+
 8000  CONTINUE
-8001  CONTINUE
-      write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
+cph 8001  CONTINUE
+C ITERATION END -----------------------------------------------------
+
+
+       write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
 
 C NOW FOR VICE
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -415,7 +452,19 @@ C NOW FOR VICE
 C NOW DO ITERATION
 300   CONTINUE
 
+cph--- iteration starts here
+cph--- need to kick out goto
+      phexit = -1
+
+C ITERATION START -----------------------------------------------------
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ LOOP = iteration vice
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       DO 9000 M=1, solv_max_iters
+cph(
+      IF ( phexit .EQ. -1 ) THEN
+cph)
 C NOW SET U(3)=U(1)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -426,7 +475,7 @@ C NOW SET U(3)=U(1)
          END DO
         END DO
 
-        DO 1300 I=1,sNx
+        DO I=1,sNx
          DO J=1,sNy
            IF(J.EQ.1) THEN
             AA2=ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj)
@@ -474,7 +523,7 @@ C NOW SET U(3)=U(1)
           VICE(I,J,1,bi,bj)=VICE(I,J,3,bi,bj)
      &        +WFAV*(VRT(J)-VICE(I,J,3,bi,bj))
          END DO
-1300    CONTINUE
+        ENDDO
 
        ENDDO
       ENDDO
@@ -498,14 +547,24 @@ C SAFEGUARD AGAINST BAD FORCING ETC
        S2A=S2
        IF(S2.LT.LSR_ERROR) THEN
         ICOUNT2=M
-        GO TO 9001
+cph(
+cph        GO TO 9001
+        phexit = 1
+cph)
        END IF
       END IF
 
       CALL SEAICE_EXCH ( VICE, myThid )
 
+cph(
+      END IF
+cph)
+
 9000  CONTINUE
-9001  CONTINUE
+cph 9001  CONTINUE
+C ITERATION END -----------------------------------------------------
+
+
       write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
 
 C NOW END

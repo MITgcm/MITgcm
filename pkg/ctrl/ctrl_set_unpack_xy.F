@@ -13,6 +13,11 @@ c
 c     o Unpack the control vector such that the land points are filled
 c       in.
 c
+c     changed: heimbach@mit.edu 17-Jun-2003
+c              merged Armin's changes to replace write of
+c              nr * globfld2d by 1 * globfld3d
+c              (ad hoc fix to speed up global I/O)
+c
 c     ==================================================================
 
       implicit none
@@ -52,7 +57,7 @@ c     == local variables ==
       integer i,j,k
       integer ii
       integer il
-      integer irec
+      integer irec,nrec_nl
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -142,7 +147,68 @@ c--   Only the master thread will do I/O.
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, mythid)
 
-      do irec = 1, ncvarrecs(ivartype)
+      nrec_nl=int(ncvarrecs(ivartype)/Nr)
+      do irec = 1, nrec_nl
+         do k = 1,Nr
+         read(cunit) filencvarindex(ivartype)
+         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
+     &        then
+            print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
+     &           filencvarindex(ivartype), ncvarindex(ivartype)
+            STOP 'in S/R ctrl_unpack'
+         endif
+         read(cunit) filej
+         read(cunit) filei
+            cbuffindex = nwetglobal(1)
+            if ( cbuffindex .gt. 0 ) then
+               read(cunit) filencbuffindex
+               if (filencbuffindex .NE. cbuffindex) then
+                  print *, 'WARNING: wrong cbuffindex ',
+     &                 filencbuffindex, cbuffindex
+                  STOP 'in S/R ctrl_unpack'
+               endif
+               read(cunit) filek
+               if (filek .NE. 1) then
+                  print *, 'WARNING: wrong k ',
+     &                 filek, 1
+                  STOP 'in S/R ctrl_unpack'
+               endif
+               read(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+            cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                  if ( globmsk(i,bi,ip,j,bj,jp,1) .ne. 0. ) then
+                     cbuffindex = cbuffindex + 1
+                     globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                     globfld3d(i,bi,ip,j,bj,jp,k) =
+     &                    globfld3d(i,bi,ip,j,bj,jp,k)/
+     &                    sqrt(globfld2d(i,bi,ip,j,bj,jp))
+#endif
+                  else
+                     globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
+                 endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c
+         enddo
+
+         call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
+     &                             NR, globfld3d,
+     &                             irec,  optimcycle, mythid)
+
+      enddo
+
+      do irec = nrec_nl*Nr+1,ncvarrecs(ivartype)
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &        then

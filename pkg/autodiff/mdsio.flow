@@ -10,6 +10,8 @@ C subroutine mdsreadfield
 C----------------------------------------
 CADJ SUBROUTINE mdsreadfield  INPUT  = 1,2,3,4,  6,7
 CADJ SUBROUTINE mdsreadfield  OUTPUT =         5
+CADJ SUBROUTINE mdsreadfield  DEPEND = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mdsreadfield  REQUIRED
 
 C----------------------------------------
 C subroutine mdswritefield

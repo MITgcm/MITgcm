@@ -197,7 +197,13 @@ C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
       ENDDO
 
 #ifdef SEAICE_ALLOW_DYNAMICS
+
       IF ( SEAICEuseDYNAMICS ) THEN
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C DO PSEUDO-TIMESTEPS TO OBTAIN AN ACCURATE VISCOUS-PLASTIC SOLUTION
 C 1 PSEUDO-TIMESTEP IS SUGGESTED FOR LSR SLOVER
@@ -211,11 +217,16 @@ crg what about DWAIN,DRAGS,DRAGA,ETA,ZETA
 
 crg later c$taf loop = iteration uice,vice
 
+#ifndef ALLOW_AUTODIFF_TAMC
       DO 5000 KII=1,NPSEUDO
+#else
+      IF ( NPSEUDO .GT. 1 ) THEN
+       STOP 'S/R DYNSOLVER: NPSEUDO NEEDS TO BE = 1 FOR ADJOINT'
+      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 cdm c$taf store uice,vice = comlev1_seaice_ds,
 cdm c$taf&                key = kii + (ikey_dynamics-1)*NPSEUDO
-
 C NOW DO PREDICTOR TIME STEP
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -319,12 +330,16 @@ C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 C OR  ADI SCHEME (ZHANG-J/ROTHROCK 1999)
 #ifdef ALLOW_AUTODIFF_TAMC
-      CALL LSR( myThid )
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+      CALL LSR( 1, myThid )
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
 #else /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEuseADI ) THEN
          CALL ADI( myThid )
       ELSE
-         CALL LSR( myThid )
+         CALL LSR( 1, myThid )
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -445,16 +460,18 @@ C GET READY FOR SECOND CALL OF ADI
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 C OR  ADI SCHEME (ZHANG-J/ROTHROCK 1999)
 #ifdef ALLOW_AUTODIFF_TAMC
-      CALL LSR( myThid )
+      CALL LSR( 2, myThid )
 #else /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEuseADI ) THEN
          CALL ADI( myThid )
       ELSE
-         CALL LSR( myThid )
+         CALL LSR( 2, myThid )
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifndef ALLOW_AUTODIFF_TAMC
 5000  CONTINUE
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 
@@ -465,8 +482,13 @@ C Calculate ocean surface stress
       CALL OSTRES ( DWATN, COR_ICE, myThid )
 
 #ifdef SEAICE_ALLOW_DYNAMICS
+
       IF ( SEAICEuseDYNAMICS ) THEN
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 c Put a cap on ice velocity
 c limit velocity to 0.40 m s-1 to avoid potential CFL violations
 c in open water areas (drift of zero thickness ice)
@@ -484,6 +506,18 @@ c     &     ,vice(i,j,1,bi,bj)
 #endif /* SEAICE_DEBUG */
           UICE(i,j,1,bi,bj)=min(UICE(i,j,1,bi,bj),0.40 _d +00)
           VICE(i,j,1,bi,bj)=min(VICE(i,j,1,bi,bj),0.40 _d +00)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           UICE(i,j,1,bi,bj)=max(UICE(i,j,1,bi,bj),-0.40 _d +00)
           VICE(i,j,1,bi,bj)=max(VICE(i,j,1,bi,bj),-0.40 _d +00)
          ENDDO

@@ -3,7 +3,7 @@
 
 
       subroutine ctrl_set_pack_xyz(
-     &     cunit, ivartype, fname, masktype,
+     &     cunit, ivartype, fname, masktype, weighttype,
      &     weightfld, lxxadxx, mythid)
 
 c     ==================================================================
@@ -12,6 +12,11 @@ c     ==================================================================
 c
 c     o Compress the control vector such that only ocean points are
 c       written to file.
+c
+c     o Use a more precise nondimensionalization that depends on (x,y)
+c       Added weighttype to the argument list so that I can geographically
+c       vary the nondimensionalization.
+c       gebbie@mit.edu, 18-Mar-2003
 c
 c     ==================================================================
 
@@ -37,6 +42,7 @@ c     == routine arguments ==
       integer ivartype
       character*( 80) fname
       character*  (5) masktype
+      character*( 80) weighttype
       _RL     weightfld( nr,nsx,nsy )
       logical lxxadxx
       integer mythid
@@ -63,6 +69,11 @@ c     == local variables ==
       _RL     cbuff    ( snx*nsx*npx*sny*nsy*npy )
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
+#ifdef CTRL_PACK_PRECISE
+      _RL   weightfld3d( snx,nsx,npx,sny,nsy,npy,nr )
+#endif
+
+      character*(80) weightname
 
 c     == external ==
 
@@ -105,6 +116,16 @@ c     Initialise temporary file
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
+#ifdef CTRL_PACK_PRECISE
+      il=ilnblnk( weighttype)
+      write(weightname(1:80),'(80a)') ' '
+      write(weightname(1:80),'(a)') weighttype(1:il)
+
+      call MDSREADFIELD_3D_GL(
+     &     weightname, ctrlprec, 'RL',
+     &     Nr, weightfld3d, 1, mythid)
+#endif
+
       call MDSREADFIELD_3D_GL( 
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, mythid)
@@ -131,15 +152,23 @@ c--   Only the master thread will do I/O.
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
+# ifdef CTRL_PACK_PRECISE
+     &                       sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
+# else
      &                       sqrt(weightfld(k,bi,bj))
+# endif
                      else
                         cbuff(cbuffindex) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
+# ifdef CTRL_PACK_PRECISE
+     &                       sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
+# else
      &                       sqrt(weightfld(k,bi,bj))
+# endif
                      endif
-#else
+#else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
-#endif
+#endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                   endif
                  enddo
                 enddo

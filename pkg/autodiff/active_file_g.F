@@ -385,8 +385,10 @@ C     !INTERFACE:
      I                            active_var,
      I                            irec,
      I                            myOptimIter,
-     I                            mythid
-     I                         , dummy
+     I                            mythid,
+     I                            dummy,
+     I                            g_active_var,
+     I                            g_dummy
      &                          )
 
 C     !DESCRIPTION: \bv
@@ -415,10 +417,12 @@ c     myOptimIter:     number of optimization iteration (default: 0)
 c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL     active_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     g_active_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer irec
       integer myOptimIter
       integer mythid
       _RL     dummy
+      _RL     g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -440,7 +444,11 @@ CEOP
       write(fname(1:2),'(a)') pref
       write(fname(3:2+il),'(a)') active_var_file(1:il)
 
-      call active_write_rl( fname, active_var, globalfile,
+      call active_write_rl( active_var_file, active_var, globalfile,
+     &                      irec, mynr,
+     &                      FORWARD_SIMULATION, myOptimIter, mythid )
+
+      call active_write_rl( fname, g_active_var, globalfile,
      &                      irec, mynr,
      &                      TANGENT_SIMULATION, myOptimIter, mythid )
 
@@ -457,8 +465,10 @@ C     !INTERFACE:
      I                             active_var,
      I                             irec,
      I                             myOptimIter,
-     I                             mythid
-     I                         , dummy
+     I                             mythid,
+     I                             dummy,
+     I                             g_active_var,
+     I                             g_dummy
      &                           )
 
 C     !DESCRIPTION: \bv
@@ -487,10 +497,12 @@ c     myOptimIter:     number of optimization iteration (default: 0)
 c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL active_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL g_active_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer irec
       integer myOptimIter
       integer mythid
       _RL     dummy
+      _RL     g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -512,7 +524,11 @@ CEOP
       write(fname(1:2),'(a)') pref
       write(fname(3:2+il),'(a)') active_var_file(1:il)
 
-      call active_write_rl(fname, active_var, globalfile,
+      call active_write_rl( active_var_file, active_var, globalfile,
+     &                     irec, mynr,
+     &                     FORWARD_SIMULATION, myOptimIter, mythid)
+
+      call active_write_rl( fname, g_active_var, globalfile,
      &                     irec, mynr,
      &                     TANGENT_SIMULATION, myOptimIter, mythid)
 
@@ -529,8 +545,10 @@ C     !INTERFACE:
      I                            active_var,
      I                            irec,
      I                            myOptimIter,
-     I                            mythid
-     I                         , dummy
+     I                            mythid,
+     I                            dummy,
+     I                            g_active_var,
+     I                            g_dummy
      &                          )
 
 C     !DESCRIPTION: \bv
@@ -559,10 +577,12 @@ c     myOptimIter:     number of optimization iteration (default: 0)
 c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL     active_var(1-olx:snx+olx,nsx,nsy)
+      _RL     g_active_var(1-olx:snx+olx,nsx,nsy)
       integer irec
       integer myOptimIter
       integer mythid
       _RL     dummy
+      _RL     g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -584,7 +604,11 @@ CEOP
       write(fname(1:2),'(a)') pref
       write(fname(3:2+il),'(a)') active_var_file(1:il)
 
-      call active_write_xz_rl( fname, active_var, globalfile,
+      call active_write_xz_rl( active_var_file, active_var, globalfile,
+     &                      irec, mynr,
+     &                      FORWARD_SIMULATION, myOptimIter, mythid )
+
+      call active_write_xz_rl( fname, g_active_var, globalfile,
      &                      irec, mynr,
      &                      TANGENT_SIMULATION, myOptimIter, mythid )
 
@@ -601,8 +625,10 @@ C     !INTERFACE:
      I                            active_var,
      I                            irec,
      I                            myOptimIter,
-     I                            mythid
-     I                         , dummy
+     I                            mythid,
+     I                            dummy,
+     I                            g_active_var,
+     I                            g_dummy
      &                          )
 
 C     !DESCRIPTION: \bv
@@ -631,10 +657,12 @@ c     myOptimIter:     number of optimization iteration (default: 0)
 c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL     active_var(1-oly:sny+oly,nsx,nsy)
+      _RL     g_active_var(1-oly:sny+oly,nsx,nsy)
       integer irec
       integer myOptimIter
       integer mythid
       _RL     dummy
+      _RL     g_dummy
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -656,7 +684,11 @@ CEOP
       write(fname(1:2),'(a)') pref
       write(fname(3:2+il),'(a)') active_var_file(1:il)
 
-      call active_write_yz_rl( fname, active_var, globalfile,
+      call active_write_yz_rl( active_var_file, active_var, globalfile,
+     &                      irec, mynr,
+     &                      FORWARD_SIMULATION, myOptimIter, mythid )
+
+      call active_write_yz_rl( fname, g_active_var, globalfile,
      &                      irec, mynr,
      &                      TANGENT_SIMULATION, myOptimIter, mythid )
 

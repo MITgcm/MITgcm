@@ -74,11 +74,7 @@ c     Initialise temporary file
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-#ifdef ALLOW_TANGENTLINEAR_RUN
                            globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-#else
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-#endif
                         enddo
                      enddo
                   enddo

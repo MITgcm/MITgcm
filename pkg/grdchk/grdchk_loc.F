@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.5 2003/02/28 02:34:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.6 2003/06/24 16:08:45 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -10,6 +10,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.5 2003/02/28 02:34:56 h
      O                     itile,
      O                     jtile,
      O                     layer,
+     O                     obcspos,
      O                     itilepos,
      O                     jtilepos,
      O                     itest,
@@ -49,6 +50,7 @@ c     == routine arguments ==
       integer       jtile
       integer       itile
       integer       layer
+      integer       obcspos
       integer       itilepos
       integer       jtilepos
       integer       itest
@@ -60,14 +62,17 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
+      integer iobcs
       integer biwrk,bjwrk
       integer iwrk, jwrk, kwrk
+      integer iobcswrk
       integer irec, irecwrk
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
       integer icomptest
+      integer nobcsmax
 
 c     == end of interface ==
 
@@ -89,41 +94,51 @@ c     initialise parameters
        if ( icomp .le. ncvarcomp ) then
 c--     A valid component of the control variable has been selected.
          if ( ichknum .EQ. 1 ) then
-          itest     = 0
-          icomptest = 0
-          irecwrk   = 1
-          bjwrk     = 1
-          biwrk     = 1
-          kwrk      = 1
-          jwrk      = 1
-          iwrk      = 1
+            itest     = 0
+            icomptest = 0
+            irecwrk   = 1
+            bjwrk     = 1
+            biwrk     = 1
+            kwrk      = 1
+            iobcswrk  = 1
+            jwrk      = 1
+            iwrk      = 1
          else
-          itest     = itestmem(ichknum-1)
-          icomptest = icompmem(ichknum-1)
-          irecwrk   = irecmem(ichknum-1)
-          bjwrk     = bjmem  (ichknum-1)
-          biwrk     = bimem  (ichknum-1)
-          kwrk      = klocmem(ichknum-1)
-          jwrk      = jlocmem(ichknum-1)
-          iwrk      = ilocmem(ichknum-1)
-          iwrk      = iwrk + 1
+            itest     = itestmem (ichknum-1)
+            icomptest = icompmem (ichknum-1)
+            irecwrk   = irecmem  (ichknum-1)
+            bjwrk     = bjmem    (ichknum-1)
+            biwrk     = bimem    (ichknum-1)
+            kwrk      = klocmem  (ichknum-1)
+            iobcswrk  = iobcsmem (ichknum-1)
+            jwrk      = jlocmem  (ichknum-1)
+            iwrk      = ilocmem  (ichknum-1)
+            iwrk      = iwrk + 1
          end if
+
+c--   set max loop index for obcs multiplicities
+        if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+           nobcsmax = nobcs
+        else
+           nobcsmax = 1
+        endif
 
 c--   Start to loop over records.
         do irec = irecwrk, ncvarrecs(grdchkvarindex)
          do bj = bjwrk, jthi
           do bi = biwrk, ithi
            do k = kwrk, ncvarnrmax(grdchkvarindex)
+            do iobcs = iobcswrk, nobcsmax
 
-            if ( (ierr .ne. 0) .and.
-     &           (icomp .gt. itest) .and.
-     &           (icomp .le. itest + nwettile(bi,bj,k))) then
-               icvrec = irec
+             if ( (ierr .ne. 0) .and.
+     &              (icomp .gt. itest) .and.
+     &              (icomp .le. itest + nwettile(bi,bj,k,iobcs))) then
+               icvrec = iobcs + (irec-1)*nobcsmax
                itile  = bi
                jtile  = bj
 
-               do j = jwrk, sny
-                do i = iwrk, snx
+               do j = jwrk, ncvarymax(grdchkvarindex)
+                do i = iwrk, ncvarxmax(grdchkvarindex)
                  if (ierr .ne. 0) then
                   if ( ncvargrd(grdchkvarindex) .eq. 'c' ) then
                      if ( maskC(i,j,k,bi,bj) .gt. 0.) then
@@ -137,11 +152,38 @@ c--   Start to loop over records.
                      if ( _maskW(i,j,k,bi,bj) .gt. 0.) then
                         icomptest = icomptest + 1
                      endif
+                  else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+                     if ( grdchkvarindex .EQ. 11 ) then
+#ifdef ALLOW_OBCSN_CONTROL
+                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                           icomptest = icomptest + 1
+                        endif
+#endif
+                     else if ( grdchkvarindex .EQ. 12 ) then
+#ifdef ALLOW_OBCSS_CONTROL
+                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.) then
+                           icomptest = icomptest + 1
+                        endif
+#endif
+                     else if ( grdchkvarindex .EQ. 13 ) then
+#ifdef ALLOW_OBCSW_CONTROL
+                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                           icomptest = icomptest + 1
+                        endif
+#endif
+                     else if ( grdchkvarindex .EQ. 14 ) then
+#ifdef ALLOW_OBCSE_CONTROL
+                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.) then
+                           icomptest = icomptest + 1
+                        endif
+#endif
+                     endif
                   endif
                   if ( icomp .eq. icomptest ) then
                      itilepos = i
                      jtilepos = j
                      layer    = k
+                     obcspos  = iobcs
                      ierr     = 0
                   endif
                  endif
@@ -149,25 +191,28 @@ c--   Start to loop over records.
                 iwrk = 1
                enddo
                jwrk = 1
-              else if (ierr .NE. 0) then
-                 itest     = itest + nwettile(bi,bj,k)
-                 iwrk      = 1
-                 jwrk      = 1
-              else
+             else if (ierr .NE. 0) then
+                itest     = itest + nwettile(bi,bj,k,iobcs)
+                iwrk      = 1
+                jwrk      = 1
+             else
 c
-              endif
-c--   End of loop over k
+             endif
+c--   End of loop over iobcs
              enddo
-             kwrk = 1
-c--   End of loop over bi
+             iobcswrk = 1
+c--   End of loop over k
             enddo
-            biwrk = 1
-c--   End of loop over bj
+            kwrk = 1
+c--   End of loop over bi
            enddo
-           bjwrk = 1
-c--   End of loop over records.
+           biwrk = 1
+c--   End of loop over bj
           enddo
-          else
+          bjwrk = 1
+c--   End of loop over records.
+         enddo
+        else
             if ( icomp .gt. maxncvarcomps ) then
 c--           Such a component does not exist.
               ierr     = -4
@@ -175,6 +220,7 @@ c--           Such a component does not exist.
               jtile    = -1
               itile    = -1
               layer    = -1
+              obcspos  = -1
               jtilepos = -1
               itilepos = -1
             else
@@ -184,11 +230,12 @@ c--           The component is a land point.
               jtile    = -1
               itile    = -1
               layer    = -1
+              obcspos  = -1
               jtilepos = -1
               itilepos = -1
             endif
-          endif
-        else
+        endif
+       else
           if ( icomp .lt. 0 ) then
 c--         Such a component does not exist.
             ierr     = -2
@@ -196,6 +243,7 @@ c--         Such a component does not exist.
             jtile    = -1
             itile    = -1
             layer    = -1
+            obcspos  = -1
             jtilepos = -1
             itilepos = -1
           else
@@ -205,10 +253,11 @@ c--         Component zero.
             jtile    = -1
             itile    = -1
             layer    = -1
+            obcspos  = -1
             jtilepos = -1
             itilepos = -1
           endif
-        endif
+       endif
 
       _END_MASTER( mythid )
 

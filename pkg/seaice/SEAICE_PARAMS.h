@@ -78,7 +78,8 @@ C     SEAICE_initialHEFF - initial sea-ice thickness                  (m)
 C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
-C     SEAICE_albedo      - summer albedo
+C     SEAICE_dryIceAlb   - winter albedo
+C     SEAICE_wetIceAlb   - summer albedo
 C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
 C     SEAICE_waterAlbedo - water albedo
@@ -111,8 +112,8 @@ C     StartingYear       - Starting year of integration
 C     EndingYear         - Ending year of integration
 C
       _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
-      _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo
-      _RL SEAICE_drySnowAlb, SEAICE_wetSnowAlb
+      _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
+      _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
       _RL SEAICE_waterAlbedo, SEAICE_strength
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
@@ -125,8 +126,8 @@ C
       _RL StartingYear,     EndingYear
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
-     &    SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo,
-     &    SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
+     &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      &    SEAICE_waterAlbedo, SEAICE_strength,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,

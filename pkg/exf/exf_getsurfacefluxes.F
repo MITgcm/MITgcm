@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.4 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.5 2003/06/24 16:07:32 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -32,6 +32,20 @@ c     ==================================================================
 
       implicit none
 
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+#include "exf_fields.h"
+#if (defined (ALLOW_ADJOINT_RUN) || \
+     defined (ALLOW_TANGENTLINEAR_RUN) || \
+     defined (ALLOW_ECCO_OPTIMIZATION))
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
+
 c     == routine arguments ==
 
       _RL mytime
@@ -43,27 +57,43 @@ c     == global variables ==
 c     == end of interface ==
 
 #ifdef ALLOW_HFLUX_CONTROL
-      call ctrl_getheatflux ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
+     &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SFLUX_CONTROL
-      call ctrl_getsaltflux ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
+     &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_USTRESS_CONTROL
-      call ctrl_getzonstress ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
+     &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_VSTRESS_CONTROL
-      call ctrl_getmerstress ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
+     &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SWFLUX_CONTROL
-      call ctrl_getswflux ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+NOT YET IMPLEMENTED
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_LWFLUX_CONTROL
-      call ctrl_getlwflux ( mytime, myiter, mythid )
+      call ctrl_get_gen ( 
+NOT YET IMPLEMENTED
+     &     mytime, myiter, mythid )
 #endif
 
       end

@@ -18,6 +18,10 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_GRID.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
+
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
@@ -41,6 +45,7 @@ C     i,j,k,bi,bj - Loop counters
       _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_ALLOW_DYNAMICS
+
       IF ( SEAICEuseDYNAMICS ) THEN
 
 C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
@@ -75,6 +80,10 @@ C NOW REARRANGE H'S
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff  = comlev1, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
       DO bj=myByLo(myThid),myByHi(myThid)

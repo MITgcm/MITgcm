@@ -1828,1004 +1828,272 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_salt.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_diffkr.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: windx.bin
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauu.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =   2.57877486725677E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325845E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609801247E-18
- COST TRACER vor   0.
- COST TRACER nach  4.62019432E+13
- cg2d: Sum(rhs),rhsMax =  -1.30315680121895E-15  1.40313573789951E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274147383817E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504238629147E-18
- COST TRACER vor   4.62019432E+13
- COST TRACER nach  9.22837309E+13
- cg2d: Sum(rhs),rhsMax =  -1.81902019488756E-16  1.25851185802842E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087712416E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209030157509E-18
- COST TRACER vor   9.22837309E+13
- COST TRACER nach  1.38236409E+14
- cg2d: Sum(rhs),rhsMax =  -1.01795741974664E-15  1.07326528172587E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976979886375E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950315224488E-18
- COST TRACER vor   1.38236409E+14
- COST TRACER nach  1.84044933E+14
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044933E+14
-  --> objf_atl(bi,bj) =  0.
-  fc =   1.84044933E+14
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_1_the_main_loop_gsnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_2_the_main_loop_gtnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_3_the_main_loop_gunm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_4_the_main_loop_gvnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_5_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_6_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_7_the_main_loop_uvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_8_the_main_loop_vvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_9_the_main_loop_wvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_10_the_main_loop_etan.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_11_the_main_loop_gu.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_12_the_main_loop_gv.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_13_the_main_loop_totphihyd.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_14_the_main_loop_empmr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_15_the_main_loop_uveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_16_the_main_loop_vveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_17_the_main_loop_etanm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_18_the_main_loop_unm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_19_the_main_loop_vnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_20_the_main_loop_tr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_21_the_main_loop_gtr1nm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_22_the_main_loop_etah.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_23_the_main_loop_hdivflow.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_24_the_main_loop_taux0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_25_the_main_loop_taux1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_26_the_main_loop_tauy0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_27_the_main_loop_tauy1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_28_the_main_loop_qnet0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_29_the_main_loop_qnet1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_30_the_main_loop_empmr0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_31_the_main_loop_empmr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_32_the_main_loop_sst0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_33_the_main_loop_sst1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_34_the_main_loop_sss0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_35_the_main_loop_sss1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_36_the_main_loop_pload0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_37_the_main_loop_pload1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =   2.57877486725677E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325845E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609801247E-18
- cg2d: Sum(rhs),rhsMax =  -1.30315680121895E-15  1.40313573789951E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274147383817E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504238629147E-18
- cg2d: Sum(rhs),rhsMax =  -1.81902019488756E-16  1.25851185802842E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087712416E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209030157509E-18
- cg2d: Sum(rhs),rhsMax =  -1.01795741974664E-15  1.07326528172587E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976979886375E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950315224488E-18
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_1_the_main_loop_gsnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_2_the_main_loop_gtnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_3_the_main_loop_gunm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_4_the_main_loop_gvnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_5_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_6_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_7_the_main_loop_uvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_8_the_main_loop_vvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_9_the_main_loop_wvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_10_the_main_loop_etan.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_11_the_main_loop_gu.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_12_the_main_loop_gv.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_13_the_main_loop_totphihyd.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_14_the_main_loop_empmr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_15_the_main_loop_uveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_16_the_main_loop_vveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_17_the_main_loop_etanm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_18_the_main_loop_unm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_19_the_main_loop_vnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_20_the_main_loop_tr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_21_the_main_loop_gtr1nm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_22_the_main_loop_etah.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_23_the_main_loop_hdivflow.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_24_the_main_loop_taux0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_25_the_main_loop_taux1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_26_the_main_loop_tauy0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_27_the_main_loop_tauy1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_28_the_main_loop_qnet0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_29_the_main_loop_qnet1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_30_the_main_loop_empmr0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_31_the_main_loop_empmr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_32_the_main_loop_sst0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_33_the_main_loop_sst1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_34_the_main_loop_sss0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_35_the_main_loop_sss1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_36_the_main_loop_pload0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_37_the_main_loop_pload1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =   2.57877486725677E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325845E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609801247E-18
- cg2d: Sum(rhs),rhsMax =  -1.30315680121895E-15  1.40313573789951E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274147383817E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504238629147E-18
- cg2d: Sum(rhs),rhsMax =  -1.81902019488756E-16  1.25851185802842E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087712416E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209030157509E-18
- cg2d: Sum(rhs),rhsMax =  -1.01795741974664E-15  1.07326528172587E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976979886375E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950315224488E-18
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- cg2d: Sum(rhs),rhsMax =   1.31059713862763E-16  2.14234970233690E+05
- cg2d: Sum(rhs),rhsMax =  -6.12696200198715E-16  2.93924622558318E+05
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =   3.63267020088952E-17  2.35160215659108E+06
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_hflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
-(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
-(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
-(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
-(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
-(PID.TID 0000.0001)     40 ..........................................................................................
-(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
-(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
-(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
-(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
-(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
-(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
-(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
-(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
-(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
-(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
-(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
-(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
-(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
-(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
-(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
-(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
-(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
-(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
-(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
-(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
-(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
-(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
-(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
-(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
-(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
-(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
-(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
-(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
-(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
-(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
-(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
-(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
-(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
-(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
-(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
-(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
-(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
-(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
-(PID.TID 0000.0001)      1 ..........................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
-(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
-(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
-(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
-(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
-(PID.TID 0000.0001)     40 ..........................................................................................
-(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
-(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
-(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
-(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
-(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
-(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
-(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
-(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
-(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
-(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
-(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
-(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
-(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
-(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
-(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
-(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
-(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
-(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
-(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
-(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
-(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
-(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
-(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
-(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
-(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
-(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
-(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
-(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
-(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
-(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
-(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
-(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
-(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
-(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
-(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
-(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
-(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
-(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
-(PID.TID 0000.0001)      1 ..........................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) Start initial hydrostatic pressure computation
-(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
-(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
-(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
-(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
-(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
-(PID.TID 0000.0001)     40 ..........................................................................................
-(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
-(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
-(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
-(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
-(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
-(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
-(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
-(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
-(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
-(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
-(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
-(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
-(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
-(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
-(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
-(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
-(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
-(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
-(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
-(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
-(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
-(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
-(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
-(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
-(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
-(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
-(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
-(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
-(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
-(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
-(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
-(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
-(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
-(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
-(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
-(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
-(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
-(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
-(PID.TID 0000.0001)      1 ..........................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
-(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
-(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
-(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
-(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
-(PID.TID 0000.0001) //                  0.0: .
-(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
-(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
-(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) K =   1
-(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
-(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
-(PID.TID 0000.0001)     40 ..........................................................................................
-(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
-(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
-(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
-(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
-(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
-(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
-(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
-(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
-(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
-(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
-(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
-(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
-(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
-(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
-(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
-(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
-(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
-(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
-(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
-(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
-(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
-(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
-(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
-(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
-(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
-(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
-(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
-(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
-(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
-(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
-(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
-(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
-(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
-(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
-(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
-(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
-(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
-(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
-(PID.TID 0000.0001)      1 ..........................................................................................
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // END OF FIELD                                          =
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) Start initial hydrostatic pressure computation
-(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
+ cg2d: Sum(rhs),rhsMax =  -2.06367041510891E-15  1.40313573789951E+01
+ cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
+ cg2d: Sum(rhs),rhsMax =   1.37311494639858E-15  1.25851185802842E+01
+ cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
+ cg2d: Sum(rhs),rhsMax =  -1.20107916667944E-15  1.07326528172587E+01
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_salt.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_hflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_hflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskW.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_tauu.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskS.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_diffkr.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_tr1.0000000000.001.001.data
  ph-grd 3 -------------------------------
  ph-grd 3  proc    #    i    j    k            fc ref        fc + eps        fc - eps
- ph-grd 3  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+ ph-grd 3  proc    #    i    j    k          tlm grad         fd grad      1 - fd/tlm
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
+(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
+(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
+(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
+(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
+(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
+(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
+(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
+(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
+(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
+(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
+(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
+(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
+(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
+(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
+(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
+(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
+(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
+(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
+(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
+(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
+(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
+(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
+(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
+(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
+(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
+(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
+(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
+(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
+(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
+(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
+(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
+(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
+(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
+(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
+(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
+(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
+(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Start initial hydrostatic pressure computation
+(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial TR1 at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ------...................................................................---.........-----
+(PID.TID 0000.0001)     38 ----......................................................................--........------
+(PID.TID 0000.0001)     37 --........................................................................---...----..----
+(PID.TID 0000.0001)     36 -..........................................-----..........................----.-----------
+(PID.TID 0000.0001)     35 --.................................----.----------.------..................-------------..
+(PID.TID 0000.0001)     34 ....................................----------------------..................------------..
+(PID.TID 0000.0001)     33 ....................................-----------------------...............--.------------.
+(PID.TID 0000.0001)     32 ....................................-----------------------...............--------------..
+(PID.TID 0000.0001)     31 ....................................-----------------------.............---------------...
+(PID.TID 0000.0001)     30 ...................................------------------------............-----------------..
+(PID.TID 0000.0001)     29 ...............................------------------------------.........------------------..
+(PID.TID 0000.0001)     28 ..............................-------------------------------......--.-----------------...
+(PID.TID 0000.0001)     27 ...............................--------------------------------...--------------------....
+(PID.TID 0000.0001)     26 ...............---....-.....------------------------------------..-.------------------....
+(PID.TID 0000.0001)     25 .............-----..----...---.----------------------------------....-----------------....
+(PID.TID 0000.0001)     24 ............-------.----...---.-------------------------------------.---.-------------....
+(PID.TID 0000.0001)     23 .............-----------.--------------------------------------------......------------...
+(PID.TID 0000.0001)     22 --..........------------..--..----------------------------------------.......-------------
+(PID.TID 0000.0001)     21 --.........--------------.....----------------------------------------........------------
+(PID.TID 0000.0001)     20 ---.......---------------.......-...---------------------------------............---------
+(PID.TID 0000.0001)     19 ---.......-----------------.------...---------------------------------...........---------
+(PID.TID 0000.0001)     18 ---.......----------------------....-----------------------------------..........---------
+(PID.TID 0000.0001)     17 ---.......-..------------------......----------------------------------..........---------
+(PID.TID 0000.0001)     16 ---......--.-----------------........-----------------------------------........----------
+(PID.TID 0000.0001)     15 ---......--.----------------..........----------------------------------.......-----------
+(PID.TID 0000.0001)     14 ----....--------------------...........---------------------------------......------------
+(PID.TID 0000.0001)     13 ----...---------------------..........----------------------------------.....-------------
+(PID.TID 0000.0001)     12 -----------------------------.----....----------------------------------....--------------
+(PID.TID 0000.0001)     11 -------------------------------------------.---------------------------....---------------
+(PID.TID 0000.0001)     10 ------------------------------------------.----------------------------...----------------
+(PID.TID 0000.0001)      9 -----------------------------------------------------------------------...----------------
+(PID.TID 0000.0001)      8 -----------------------------------------------------------------------..-----------------
+(PID.TID 0000.0001)      7 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      6 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      5 -------------------------.------------------------------------------------.---------------
+(PID.TID 0000.0001)      4 --------.-..............................--------------------------------...---------------
+(PID.TID 0000.0001)      3 ...........................................----------------------..........-----------....
+(PID.TID 0000.0001)      2 ...........................................--------...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windx.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   9.54097911787244E-17  1.70944607456598E-02
+ cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =  -3.08474097485037E-16  2.33168365315890E-02
+ cg2d: Sum(rhs),rhsMax =  -2.06367041510891E-15  1.40313573789951E+01
+ cg2d: Sum(rhs),rhsMax =  -1.75893957508290E-16  2.46622304931466E-02
+ cg2d: Sum(rhs),rhsMax =   1.37311494639858E-15  1.25851185802842E+01
+ cg2d: Sum(rhs),rhsMax =   6.20154159889002E-17  2.52382382996428E-02
+ cg2d: Sum(rhs),rhsMax =  -1.20107916667944E-15  1.07326528172587E+01
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
@@ -3282,10 +2550,225 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
  ph-grd 3     0    1   44    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
- ph-grd 3     0    1    1    1    0   0.174865284E+09 0.174865312E+09 -.161924595E-06
+ ph-grd 3     0    1    1    1    0   0.174865284E+09 0.174865312E+09 -.161924596E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
+(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
+(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
+(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
+(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
+(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
+(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
+(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
+(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
+(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
+(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
+(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
+(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
+(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
+(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
+(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
+(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
+(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
+(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
+(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
+(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
+(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
+(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
+(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
+(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
+(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
+(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
+(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
+(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
+(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
+(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
+(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
+(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
+(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
+(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
+(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
+(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
+(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Start initial hydrostatic pressure computation
+(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial TR1 at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ------...................................................................---.........-----
+(PID.TID 0000.0001)     38 ----......................................................................--........------
+(PID.TID 0000.0001)     37 --........................................................................---...----..----
+(PID.TID 0000.0001)     36 -..........................................-----..........................----.-----------
+(PID.TID 0000.0001)     35 --.................................----.----------.------..................-------------..
+(PID.TID 0000.0001)     34 ....................................----------------------..................------------..
+(PID.TID 0000.0001)     33 ....................................-----------------------...............--.------------.
+(PID.TID 0000.0001)     32 ....................................-----------------------...............--------------..
+(PID.TID 0000.0001)     31 ....................................-----------------------.............---------------...
+(PID.TID 0000.0001)     30 ...................................------------------------............-----------------..
+(PID.TID 0000.0001)     29 ...............................------------------------------.........------------------..
+(PID.TID 0000.0001)     28 ..............................-------------------------------......--.-----------------...
+(PID.TID 0000.0001)     27 ...............................--------------------------------...--------------------....
+(PID.TID 0000.0001)     26 ...............---....-.....------------------------------------..-.------------------....
+(PID.TID 0000.0001)     25 .............-----..----...---.----------------------------------....-----------------....
+(PID.TID 0000.0001)     24 ............-------.----...---.-------------------------------------.---.-------------....
+(PID.TID 0000.0001)     23 .............-----------.--------------------------------------------......------------...
+(PID.TID 0000.0001)     22 --..........------------..--..----------------------------------------.......-------------
+(PID.TID 0000.0001)     21 --.........--------------.....----------------------------------------........------------
+(PID.TID 0000.0001)     20 ---.......---------------.......-...---------------------------------............---------
+(PID.TID 0000.0001)     19 ---.......-----------------.------...---------------------------------...........---------
+(PID.TID 0000.0001)     18 ---.......----------------------....-----------------------------------..........---------
+(PID.TID 0000.0001)     17 ---.......-..------------------......----------------------------------..........---------
+(PID.TID 0000.0001)     16 ---......--.-----------------........-----------------------------------........----------
+(PID.TID 0000.0001)     15 ---......--.----------------..........----------------------------------.......-----------
+(PID.TID 0000.0001)     14 ----....--------------------...........---------------------------------......------------
+(PID.TID 0000.0001)     13 ----...---------------------..........----------------------------------.....-------------
+(PID.TID 0000.0001)     12 -----------------------------.----....----------------------------------....--------------
+(PID.TID 0000.0001)     11 -------------------------------------------.---------------------------....---------------
+(PID.TID 0000.0001)     10 ------------------------------------------.----------------------------...----------------
+(PID.TID 0000.0001)      9 -----------------------------------------------------------------------...----------------
+(PID.TID 0000.0001)      8 -----------------------------------------------------------------------..-----------------
+(PID.TID 0000.0001)      7 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      6 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      5 -------------------------.------------------------------------------------.---------------
+(PID.TID 0000.0001)      4 --------.-..............................--------------------------------...---------------
+(PID.TID 0000.0001)      3 ...........................................----------------------..........-----------....
+(PID.TID 0000.0001)      2 ...........................................--------...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windx.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   1.04083408558608E-16  3.27719468837424E-02
+ cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =   3.77147644338453E-16  3.80179863873623E-02
+ cg2d: Sum(rhs),rhsMax =  -2.06367041510891E-15  1.40313573789951E+01
+ cg2d: Sum(rhs),rhsMax =   1.17170199643113E-16  3.76721950805465E-02
+ cg2d: Sum(rhs),rhsMax =   1.37311494639858E-15  1.25851185802842E+01
+ cg2d: Sum(rhs),rhsMax =   1.47970331564526E-16  3.90295039958746E-02
+ cg2d: Sum(rhs),rhsMax =  -1.20107916667944E-15  1.07326528172587E+01
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
@@ -3742,10 +3225,225 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
  ph-grd 3     0    2   45    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
- ph-grd 3     0    2    2    2    0   0.131884845E+09 0.131884844E+09 0.983060310E-08
+ ph-grd 3     0    2    2    2    0   0.131884845E+09 0.131884844E+09 0.983059972E-08
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
+(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
+(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
+(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
+(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
+(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
+(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
+(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
+(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
+(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
+(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
+(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
+(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
+(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
+(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
+(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
+(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
+(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
+(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
+(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
+(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
+(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
+(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
+(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
+(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
+(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
+(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
+(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
+(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
+(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
+(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
+(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
+(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
+(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
+(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
+(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
+(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
+(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Start initial hydrostatic pressure computation
+(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial TR1 at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ------...................................................................---.........-----
+(PID.TID 0000.0001)     38 ----......................................................................--........------
+(PID.TID 0000.0001)     37 --........................................................................---...----..----
+(PID.TID 0000.0001)     36 -..........................................-----..........................----.-----------
+(PID.TID 0000.0001)     35 --.................................----.----------.------..................-------------..
+(PID.TID 0000.0001)     34 ....................................----------------------..................------------..
+(PID.TID 0000.0001)     33 ....................................-----------------------...............--.------------.
+(PID.TID 0000.0001)     32 ....................................-----------------------...............--------------..
+(PID.TID 0000.0001)     31 ....................................-----------------------.............---------------...
+(PID.TID 0000.0001)     30 ...................................------------------------............-----------------..
+(PID.TID 0000.0001)     29 ...............................------------------------------.........------------------..
+(PID.TID 0000.0001)     28 ..............................-------------------------------......--.-----------------...
+(PID.TID 0000.0001)     27 ...............................--------------------------------...--------------------....
+(PID.TID 0000.0001)     26 ...............---....-.....------------------------------------..-.------------------....
+(PID.TID 0000.0001)     25 .............-----..----...---.----------------------------------....-----------------....
+(PID.TID 0000.0001)     24 ............-------.----...---.-------------------------------------.---.-------------....
+(PID.TID 0000.0001)     23 .............-----------.--------------------------------------------......------------...
+(PID.TID 0000.0001)     22 --..........------------..--..----------------------------------------.......-------------
+(PID.TID 0000.0001)     21 --.........--------------.....----------------------------------------........------------
+(PID.TID 0000.0001)     20 ---.......---------------.......-...---------------------------------............---------
+(PID.TID 0000.0001)     19 ---.......-----------------.------...---------------------------------...........---------
+(PID.TID 0000.0001)     18 ---.......----------------------....-----------------------------------..........---------
+(PID.TID 0000.0001)     17 ---.......-..------------------......----------------------------------..........---------
+(PID.TID 0000.0001)     16 ---......--.-----------------........-----------------------------------........----------
+(PID.TID 0000.0001)     15 ---......--.----------------..........----------------------------------.......-----------
+(PID.TID 0000.0001)     14 ----....--------------------...........---------------------------------......------------
+(PID.TID 0000.0001)     13 ----...---------------------..........----------------------------------.....-------------
+(PID.TID 0000.0001)     12 -----------------------------.----....----------------------------------....--------------
+(PID.TID 0000.0001)     11 -------------------------------------------.---------------------------....---------------
+(PID.TID 0000.0001)     10 ------------------------------------------.----------------------------...----------------
+(PID.TID 0000.0001)      9 -----------------------------------------------------------------------...----------------
+(PID.TID 0000.0001)      8 -----------------------------------------------------------------------..-----------------
+(PID.TID 0000.0001)      7 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      6 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      5 -------------------------.------------------------------------------------.---------------
+(PID.TID 0000.0001)      4 --------.-..............................--------------------------------...---------------
+(PID.TID 0000.0001)      3 ...........................................----------------------..........-----------....
+(PID.TID 0000.0001)      2 ...........................................--------...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windx.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   7.19910242530375E-17  4.21739002938553E-02
+ cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =   2.05503691152217E-16  4.78335242203060E-02
+ cg2d: Sum(rhs),rhsMax =  -2.06367041510891E-15  1.40313573789951E+01
+ cg2d: Sum(rhs),rhsMax =  -1.04391195335973E-16  4.73876469130464E-02
+ cg2d: Sum(rhs),rhsMax =   1.37311494639858E-15  1.25851185802842E+01
+ cg2d: Sum(rhs),rhsMax =  -2.70462284824188E-16  4.93514918518754E-02
+ cg2d: Sum(rhs),rhsMax =  -1.20107916667944E-15  1.07326528172587E+01
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
@@ -4202,10 +3900,225 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
  ph-grd 3     0    3   46    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
- ph-grd 3     0    3    3    3    0   0.196420904E+08 0.196420312E+08 0.300940762E-05
+ ph-grd 3     0    3    3    3    0   0.196420904E+08 0.196420312E+08 0.300940782E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: salt.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
+(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
+(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
+(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
+(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
+(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
+(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
+(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
+(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
+(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
+(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
+(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
+(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
+(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
+(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
+(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
+(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
+(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
+(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
+(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
+(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
+(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
+(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
+(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
+(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
+(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
+(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
+(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
+(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
+(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
+(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
+(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
+(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
+(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
+(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
+(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
+(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
+(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Start initial hydrostatic pressure computation
+(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial TR1 at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ------...................................................................---.........-----
+(PID.TID 0000.0001)     38 ----......................................................................--........------
+(PID.TID 0000.0001)     37 --........................................................................---...----..----
+(PID.TID 0000.0001)     36 -..........................................-----..........................----.-----------
+(PID.TID 0000.0001)     35 --.................................----.----------.------..................-------------..
+(PID.TID 0000.0001)     34 ....................................----------------------..................------------..
+(PID.TID 0000.0001)     33 ....................................-----------------------...............--.------------.
+(PID.TID 0000.0001)     32 ....................................-----------------------...............--------------..
+(PID.TID 0000.0001)     31 ....................................-----------------------.............---------------...
+(PID.TID 0000.0001)     30 ...................................------------------------............-----------------..
+(PID.TID 0000.0001)     29 ...............................------------------------------.........------------------..
+(PID.TID 0000.0001)     28 ..............................-------------------------------......--.-----------------...
+(PID.TID 0000.0001)     27 ...............................--------------------------------...--------------------....
+(PID.TID 0000.0001)     26 ...............---....-.....------------------------------------..-.------------------....
+(PID.TID 0000.0001)     25 .............-----..----...---.----------------------------------....-----------------....
+(PID.TID 0000.0001)     24 ............-------.----...---.-------------------------------------.---.-------------....
+(PID.TID 0000.0001)     23 .............-----------.--------------------------------------------......------------...
+(PID.TID 0000.0001)     22 --..........------------..--..----------------------------------------.......-------------
+(PID.TID 0000.0001)     21 --.........--------------.....----------------------------------------........------------
+(PID.TID 0000.0001)     20 ---.......---------------.......-...---------------------------------............---------
+(PID.TID 0000.0001)     19 ---.......-----------------.------...---------------------------------...........---------
+(PID.TID 0000.0001)     18 ---.......----------------------....-----------------------------------..........---------
+(PID.TID 0000.0001)     17 ---.......-..------------------......----------------------------------..........---------
+(PID.TID 0000.0001)     16 ---......--.-----------------........-----------------------------------........----------
+(PID.TID 0000.0001)     15 ---......--.----------------..........----------------------------------.......-----------
+(PID.TID 0000.0001)     14 ----....--------------------...........---------------------------------......------------
+(PID.TID 0000.0001)     13 ----...---------------------..........----------------------------------.....-------------
+(PID.TID 0000.0001)     12 -----------------------------.----....----------------------------------....--------------
+(PID.TID 0000.0001)     11 -------------------------------------------.---------------------------....---------------
+(PID.TID 0000.0001)     10 ------------------------------------------.----------------------------...----------------
+(PID.TID 0000.0001)      9 -----------------------------------------------------------------------...----------------
+(PID.TID 0000.0001)      8 -----------------------------------------------------------------------..-----------------
+(PID.TID 0000.0001)      7 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      6 ------------------------------------------------------------------------------------------
+(PID.TID 0000.0001)      5 -------------------------.------------------------------------------------.---------------
+(PID.TID 0000.0001)      4 --------.-..............................--------------------------------...---------------
+(PID.TID 0000.0001)      3 ...........................................----------------------..........-----------....
+(PID.TID 0000.0001)      2 ...........................................--------...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_diffkr.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windx.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
+(PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauu.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_tauv.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_sflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =  -2.44379169678233E-16  5.76343019680647E-02
+ cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =  -2.59786105041971E-16  6.24122894670281E-02
+ cg2d: Sum(rhs),rhsMax =  -2.06367041510891E-15  1.40313573789951E+01
+ cg2d: Sum(rhs),rhsMax =   2.20634098384361E-16  6.22205587686615E-02
+ cg2d: Sum(rhs),rhsMax =   1.37311494639858E-15  1.25851185802842E+01
+ cg2d: Sum(rhs),rhsMax =  -2.88083720782819E-16  6.59295391364651E-02
+ cg2d: Sum(rhs),rhsMax =  -1.20107916667944E-15  1.07326528172587E+01
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
@@ -4673,15 +4586,15 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  EPS =  0.100E-03
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
-(PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
+(PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    TLM GRAD(FC)  1-FDGRD/TLMGRD
 (PID.TID 0000.0001) grdchk output:                 0               1              44               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.174865312E+09 0.174865284E+09 -.161924595E-06
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.174865312E+09 0.174865284E+09 -.161924596E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2              45               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.131884844E+09 0.131884845E+09 0.983060310E-08
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.131884844E+09 0.131884845E+09 0.983059972E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3              46               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.196420312E+08 0.196420904E+08 0.300940762E-05
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.196420312E+08 0.196420904E+08 0.300940782E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4              47               2               1 0.000000000E+00 -.100000000E-03
 (PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 -.999875000E+07 -.999869525E+07 -.547565834E-05
@@ -4691,143 +4604,144 @@
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) %CHECKPOINT         4 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  27.8400002
-(PID.TID 0000.0001)         System time:  5.67999983
-(PID.TID 0000.0001)     Wall clock time:  46.621533
+(PID.TID 0000.0001)           User time:  40.1599982
+(PID.TID 0000.0001)         System time:  5.57000017
+(PID.TID 0000.0001)     Wall clock time:  52.669499
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.170000002
-(PID.TID 0000.0001)         System time:  0.0500000007
-(PID.TID 0000.0001)     Wall clock time:  0.230082989
+(PID.TID 0000.0001)           User time:  0.119999995
+(PID.TID 0000.0001)         System time:  0.0900000036
+(PID.TID 0000.0001)     Wall clock time:  0.221557975
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_UNPACK      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.260000005
-(PID.TID 0000.0001)         System time:  0.100000005
-(PID.TID 0000.0001)     Wall clock time:  0.37500906
+(PID.TID 0000.0001)           User time:  0.219999999
+(PID.TID 0000.0001)         System time:  0.0699999928
+(PID.TID 0000.0001)     Wall clock time:  0.332230091
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
-(PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  10.57
-(PID.TID 0000.0001)         System time:  2.42999992
-(PID.TID 0000.0001)     Wall clock time:  21.548519
+(PID.TID 0000.0001)   Seconds in section "G_THE_MAIN_LOOP           [TANGENT RUN]":
+(PID.TID 0000.0001)           User time:  4.47999993
+(PID.TID 0000.0001)         System time:  0.659999996
+(PID.TID 0000.0001)     Wall clock time:  5.950212
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
-(PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00303709507
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00103318691
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  11.3800083
-(PID.TID 0000.0001)         System time:  1.50000006
-(PID.TID 0000.0001)     Wall clock time:  16.0535719
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10000205
-(PID.TID 0000.0001)         System time:  0.0299999714
-(PID.TID 0000.0001)     Wall clock time:  0.163812637
-(PID.TID 0000.0001)          No. starts: 80
-(PID.TID 0000.0001)           No. stops: 80
-(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.29999983
-(PID.TID 0000.0001)         System time:  0.720000565
-(PID.TID 0000.0001)     Wall clock time:  6.08227861
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.649990082
-(PID.TID 0000.0001)         System time:  0.0699996948
-(PID.TID 0000.0001)     Wall clock time:  0.863856912
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.750007391
-(PID.TID 0000.0001)         System time:  0.170000076
-(PID.TID 0000.0001)     Wall clock time:  1.16129863
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.50999427
-(PID.TID 0000.0001)         System time:  1.13000053
-(PID.TID 0000.0001)     Wall clock time:  4.58636248
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000934958458
-(PID.TID 0000.0001)          No. starts: 40
-(PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.159999847
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.181864023
+(PID.TID 0000.0001)           User time:  0.119999886
+(PID.TID 0000.0001)         System time:  0.030000031
+(PID.TID 0000.0001)     Wall clock time:  0.175386071
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  16.6800003
-(PID.TID 0000.0001)         System time:  3.0999999
-(PID.TID 0000.0001)     Wall clock time:  24.285841
+(PID.TID 0000.0001)           User time:  35.0700006
+(PID.TID 0000.0001)         System time:  4.59000003
+(PID.TID 0000.0001)     Wall clock time:  45.7031881
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADJOINT SPIN-UP":
-(PID.TID 0000.0001)           User time:  1.44999981
-(PID.TID 0000.0001)         System time:  0.299999952
-(PID.TID 0000.0001)     Wall clock time:  2.14484227
+(PID.TID 0000.0001)           User time:  1.33000278
+(PID.TID 0000.0001)         System time:  0.40999949
+(PID.TID 0000.0001)     Wall clock time:  1.92372203
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.20999908
-(PID.TID 0000.0001)         System time:  0.150000095
-(PID.TID 0000.0001)     Wall clock timeSTOP NORMAL END statement executed
-:  1.65442097
+(PID.TID 0000.0001)           User time:  1.08000278
+(PID.TID 0000.0001)         System time:  0.209999919
+(PID.TID 0000.0001)     Wall clock time:  1.46141791
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_STATE         [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.240000725
-(PID.TID 0000.0001)         System time:  0.149999857
-(PID.TID 0000.0001)     Wall clock time:  0.489786983
+(PID.TID 0000.0001)           User time:  0.25
+(PID.TID 0000.0001)         System time:  0.199999571
+(PID.TID 0000.0001)     Wall clock time:  0.461784124
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  14.920001
-(PID.TID 0000.0001)         System time:  2.71000075
-(PID.TID 0000.0001)     Wall clock time:  21.2712939
+(PID.TID 0000.0001)           User time:  15.2599974
+(PID.TID 0000.0001)         System time:  1.96000016
+(PID.TID 0000.0001)     Wall clock time:  19.6575671
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  14.9100008
-(PID.TID 0000.0001)         System time:  2.71000075
-(PID.TID 0000.0001)     Wall clock time:  21.2654948
+(PID.TID 0000.0001)           User time:  15.2499971
+(PID.TID 0000.0001)         System time:  1.96000016
+(PID.TID 0000.0001)     Wall clock time:  19.6485832
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
-(PID.TID 0000.0001)   Seconds in section "COST_TILE           [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00213587284
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000793576241
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  9.25999641
+(PID.TID 0000.0001)         System time:  0.750001073
+(PID.TID 0000.0001)     Wall clock time:  11.411356
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.119999886
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.154298544
+(PID.TID 0000.0001)          No. starts: 64
+(PID.TID 0000.0001)           No. stops: 64
+(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  3.4299984
+(PID.TID 0000.0001)         System time:  0.360000134
+(PID.TID 0000.0001)     Wall clock time:  4.3337301
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.530004501
+(PID.TID 0000.0001)         System time:  0.029999733
+(PID.TID 0000.0001)     Wall clock time:  0.667528749
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.679994583
+(PID.TID 0000.0001)         System time:  0.0800001621
+(PID.TID 0000.0001)     Wall clock time:  0.841785073
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  1.20000267
+(PID.TID 0000.0001)         System time:  0.739999056
+(PID.TID 0000.0001)     Wall clock time:  2.20340931
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.0100002289
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00374901295
+(PID.TID 0000.0001)     Wall clock time:  0.000777125359
+(PID.TID 0000.0001)          No. starts: 32
+(PID.TID 0000.0001)           No. stops: 32
+(PID.TID 0000.0001)   Seconds in STOP NORMAL END statement executed
+section "COST_TILE           [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  0.0100002289
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00386810303
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000261068344
+(PID.TID 0000.0001)     Wall clock time:  0.000269174576
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  2.0980835E-05
+(PID.TID 0000.0001)           User time:  0.149997711
+(PID.TID 0000.0001)         System time:  0.130000114
+(PID.TID 0000.0001)     Wall clock time:  0.286587954
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
@@ -4845,8 +4759,8 @@
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          29368
+(PID.TID 0000.0001) //            No. barriers =          41612
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          29368
+(PID.TID 0000.0001) //     Total barrier spins =          41612
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00

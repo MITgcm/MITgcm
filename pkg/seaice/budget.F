@@ -135,8 +135,8 @@ C FIRST PUT MINIMUM ON ICE THICKNESS
 C NOW DECIDE ON ALBEDO                       
          DO J=1,sNy
           DO I=1,sNx
-           ALB(I,J)=0.75 _d +00
-           IF(TICE(I,J,bi,bj).GT.TMELTP) ALB(I,J)=SEAICE_albedo
+           ALB(I,J)=SEAICE_dryIceAlb
+           IF(TICE(I,J,bi,bj).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb
            ASNOW=SEAICE_drySnowAlb
            IF(TICE(I,J,bi,bj).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
            IF(HSNOW(I,J,bi,bj).GT.HCUT) THEN

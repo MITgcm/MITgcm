@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.7 2003/02/28 02:34:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.8 2003/06/24 16:08:45 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -309,6 +309,98 @@ c--   == end of interface ==
      &                        mythid, dummy)
 
 #endif /* ALLOW_VWIND_CONTROL */
+
+#ifdef ALLOW_OBCSN_CONTROL
+      else if ( grdchkvarindex .eq. 11 ) then
+         il=ilnblnk( xx_obcsn_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_obcsn_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_obcsn_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xz( fname, tmpfldxz, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_xz( fname, tmpfldxz, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_OBCSN_CONTROL */
+
+#ifdef ALLOW_OBCSS_CONTROL
+      else if ( grdchkvarindex .eq. 12 ) then
+         il=ilnblnk( xx_obcss_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_obcss_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_obcss_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xz( fname, tmpfldxz, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_xz( fname, tmpfldxz, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_OBCSS_CONTROL */
+
+#ifdef ALLOW_OBCSW_CONTROL
+      else if ( grdchkvarindex .eq. 13 ) then
+         il=ilnblnk( xx_obcsw_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_obcsw_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_obcsw_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_yz( fname, tmpfldyz, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_yz( fname, tmpfldyz, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_OBCSW_CONTROL */
+
+#ifdef ALLOW_OBCSE_CONTROL
+      else if ( grdchkvarindex .eq. 14 ) then
+         il=ilnblnk( xx_obcse_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_obcse_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_obcse_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_yz( fname, tmpfldyz, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_yz( fname, tmpfldyz, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_OBCSE_CONTROL */
 
 #ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then

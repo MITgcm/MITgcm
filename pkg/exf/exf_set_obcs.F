@@ -140,33 +140,35 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      if ( first ) then
-        if ( obcs_file .NE. ' ' )
-     &        call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
-     &                     , obcs_yz_1, count0, mythid
-     &                     )
-      endif
+      if ( obcs_file .NE. ' ' ) then
 
-      if (( first ) .or. ( changed )) then
-        call exf_swapffields_yz( obcs_yz_0, obcs_yz_1, mythid )
+         if ( first ) then
+            call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
+     &           , obcs_yz_1, count0, mythid
+     &           )
+         endif
 
-        if ( obcs_file .NE. ' ' )
-     &       call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
-     &                     , obcs_yz_1, count1, mythid
-     &                     )
-      endif
+         if (( first ) .or. ( changed )) then
+            call exf_swapffields_yz( obcs_yz_0, obcs_yz_1, mythid )
 
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
-          do k = 1,Nr
-            do j = 1,sny
-              obcs_fld_yz(j,k,bi,bj) = 
-     &              fac             *obcs_yz_0(j,k,bi,bj) +
-     &              (exf_one - fac) *obcs_yz_1(j,k,bi,bj)
+            call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
+     &           , obcs_yz_1, count1, mythid
+     &           )
+         endif
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do k = 1,Nr
+                  do j = 1,sny
+                     obcs_fld_yz(j,k,bi,bj) = 
+     &                    fac             *obcs_yz_0(j,k,bi,bj) +
+     &                    (exf_one - fac) *obcs_yz_1(j,k,bi,bj)
+                  enddo
+               enddo
             enddo
-          enddo
-        enddo
-      enddo
+         enddo
+
+      endif
 
 #endif
 

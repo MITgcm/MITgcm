@@ -1,0 +1,162 @@
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.2 2003/06/24 16:08:45 heimbach Exp $
+
+#include "CTRL_CPPOPTIONS.h"
+
+
+      subroutine grdchk_get_obcs_mask( mythid )
+
+c     ==================================================================
+c     SUBROUTINE grdchk_get_obcs_mask
+c     ==================================================================
+c
+c     o Get obcs masks from file
+c
+c     started: heimbach@mit.edu: 22-Apr-2003
+c
+c     ==================================================================
+c     SUBROUTINE grdchk_get_obcs_mask
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "GRID.h"
+#include "ctrl.h"
+#include "grdchk.h"
+
+c     == routine arguments ==
+
+      integer mythid
+
+#if (defined (ALLOW_GRADIENT_CHECK) && defined (ALLOW_OBCS_CONTROL))
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer irec,iobcs
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      
+      _RL dummy
+
+      character*( 80) fname
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
+
+c     == end of interface ==
+
+      jtlo = 1
+      jthi = nsy
+      itlo = 1
+      ithi = nsx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+      _BEGIN_MASTER( mythid )
+
+#ifdef ALLOW_OBCSN_CONTROL
+      write(fname(1:80),'(80a)') ' '
+      write(fname(1:80),'(a)') 'maskobcsn'
+c
+      do iobcs = 1,nobcs
+         call active_read_xz(  fname, tmpfldxz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+c
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,nr
+                  do i = imin,imax
+                     grdchk_maskxz(i,k,bi,bj,iobcs) = 
+     &                    tmpfldxz(i,k,bi,bj)
+                  enddo
+               enddo
+            enddo
+         enddo
+c
+      enddo
+#endif
+
+#ifdef ALLOW_OBCSS_CONTROL
+      write(fname(1:80),'(80a)') ' '
+      write(fname(1:80),'(a)') 'maskobcss'
+c
+      do iobcs = 1,nobcs
+         call active_read_xz(  fname, tmpfldxz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+c
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,nr
+                  do i = imin,imax
+                     grdchk_maskxz(i,k,bi,bj,iobcs) = 
+     &                    tmpfldxz(i,k,bi,bj)
+                  enddo
+               enddo
+            enddo
+         enddo
+c
+      enddo
+#endif
+
+#ifdef ALLOW_OBCSW_CONTROL
+      write(fname(1:80),'(80a)') ' '
+      write(fname(1:80),'(a)') 'maskobcsw'
+c
+      do iobcs = 1,nobcs
+         call active_read_yz(  fname, tmpfldyz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+c
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,nr
+                  do j = jmin,jmax
+                     grdchk_maskyz(j,k,bi,bj,iobcs) = 
+     &                    tmpfldyz(j,k,bi,bj)
+                  enddo
+               enddo
+            enddo
+         enddo
+c
+      enddo
+#endif
+
+#ifdef ALLOW_OBCSE_CONTROL
+      write(fname(1:80),'(80a)') ' '
+      write(fname(1:80),'(a)') 'maskobcse'
+c
+      do iobcs = 1,nobcs
+         call active_read_yz(  fname, tmpfldyz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+c
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,nr
+                  do j = jmin,jmax
+                     grdchk_maskyz(j,k,bi,bj,iobcs) = 
+     &                    tmpfldyz(j,k,bi,bj)
+                  enddo
+               enddo
+            enddo
+         enddo
+c
+      enddo
+#endif
+
+      _END_MASTER( mythid )
+
+      _BARRIER
+
+#endif /* ALLOW_GRADIENT_CHECK */
+
+      end
+

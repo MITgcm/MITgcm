@@ -120,6 +120,22 @@ CADJ STORE xx_tauu1      = tapelev2, key = ilev_2
 CADJ STORE xx_tauv0      = tapelev2, key = ilev_2
 CADJ STORE xx_tauv1      = tapelev2, key = ilev_2
 #endif
+# ifdef ALLOW_UWIND_CONTROL
+CADJ STORE xx_uwind0     = tapelev2, key = ilev_2
+CADJ STORE xx_uwind1     = tapelev2, key = ilev_2
+# endif
+# ifdef ALLOW_VWIND_CONTROL
+CADJ STORE xx_vwind0     = tapelev2, key = ilev_2
+CADJ STORE xx_vwind1     = tapelev2, key = ilev_2
+# endif
+# ifdef ALLOW_ATEMP_CONTROL
+CADJ STORE xx_atemp0     = tapelev2, key = ilev_2
+CADJ STORE xx_atemp1     = tapelev2, key = ilev_2
+# endif
+# ifdef ALLOW_AQH_CONTROL
+CADJ STORE xx_aqh0       = tapelev2, key = ilev_2
+CADJ STORE xx_aqh1       = tapelev2, key = ilev_2
+# endif
 
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
@@ -148,10 +164,8 @@ CADJ STORE pload1  = tapelev2, key = ilev_2
 
 #ifdef ALLOW_OBCS
 
-#if  (defined (BAROTROPIC_OBVEL_CONTROL) || \
-      defined (BALANCE_CONTROL_VOLFLUX_GLOBAL))      
 CADJ STORE shiftvel = tapelev2, key = ilev_2
-#endif
+
 #ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNt     = tapelev2, key = ilev_2
 CADJ STORE OBNs     = tapelev2, key = ilev_2
@@ -225,5 +239,9 @@ CADJ STORE heff     = tapelev2, key = ilev_2
 CADJ STORE hsnow    = tapelev2, key = ilev_2
 CADJ STORE tice     = tapelev2, key = ilev_2
 CADJ STORE runoff   = tapelev2, key = ilev_2
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE uice     = tapelev2, key = ilev_2
+CADJ STORE vice     = tapelev2, key = ilev_2
+# endif
 #endif /* ALLOW_SEAICE */
 

@@ -1,0 +1,150 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.2 2003/06/24 16:07:06 heimbach Exp $
+
+#include "CTRL_CPPOPTIONS.h"
+
+
+      subroutine ctrl_get_gen(
+     I          xx_gen_file, xx_genstartdate, xx_genperiod,
+     I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy, 
+     I          mytime, myiter, mythid
+     &                     )
+
+c     ==================================================================
+c     SUBROUTINE ctrl_get_gen
+c     ==================================================================
+c
+c     o new generic routine for reading time dependent control variables
+c       heimbach@mit.edu 12-Jun-2003
+c
+c     ==================================================================
+c     SUBROUTINE ctrl_get_gen
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+#include "ctrl.h"
+#include "ctrl_dummy.h"
+#include "optim.h"
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# include "exf_fields.h"
+#endif
+
+c     == routine arguments ==
+
+      character*(MAX_LEN_FNAM) xx_gen_file
+      integer xx_genstartdate(4)
+      _RL     xx_genperiod
+      _RL     genmask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     xx_gen_dummy
+
+      _RL     mytime
+      integer myiter
+      integer mythid
+
+c     == local variables ==
+
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer ilgen
+
+      _RL     genfac
+      logical genfirst
+      logical genchanged
+      integer gencount0
+      integer gencount1
+
+      logical doglobalread
+      logical ladinit
+
+      character*(80) fnamegen
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
+
+c     == end of interface ==
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+c--   Now, read the control vector.
+      doglobalread = .false.
+      ladinit      = .false.
+
+      if (optimcycle .ge. 0) then
+        ilgen=ilnblnk( xx_gen_file )
+        write(fnamegen(1:80),'(2a,i10.10)') 
+     &       xx_gen_file(1:ilgen), '.', optimcycle
+      endif
+
+c--   Get the counters, flags, and the interpolation factor.
+      call ctrl_get_gen_rec(
+     I                   xx_genstartdate, xx_genperiod,
+     O                   genfac, genfirst, genchanged,
+     O                   gencount0,gencount1,
+     I                   mytime, myiter, mythid )
+
+      if ( genfirst ) then
+        call active_read_xy( fnamegen, xx_gen1, gencount0,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gen_dummy )
+#ifdef ALLOW_CTRL_SMOOTH
+          call ctrl_smooth(xx_gen1,genmask)
+#endif
+      endif
+
+      if (( genfirst ) .or. ( genchanged )) then
+        call exf_SwapFFields( xx_gen0, xx_gen1, mythid )
+
+        call active_read_xy( fnamegen, xx_gen1 , gencount1,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gen_dummy )
+#ifdef ALLOW_CTRL_SMOOTH
+          call ctrl_smooth(xx_gen1,genmask)
+#endif
+      endif
+
+c--   Add control to model variable.
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+c--       Calculate mask for tracer cells (0 => land, 1 => water).
+          k = 1
+          do j = 1,sny
+            do i = 1,snx
+              genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
+     &                         + genfac            *xx_gen0(i,j,bi,bj)
+     &                         + (1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
+              genfld(i,j,bi,bj) = genfld(i,j,bi,bj)*genmask(i,j,k,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+
+      end
+

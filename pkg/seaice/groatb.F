@@ -19,6 +19,11 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_FFIELDS.h"
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
+
        COMMON /SEAICE_BOUND_RL/
      &    MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      &    SEAICE_EPS, SEAICE_EPS_SQ
@@ -53,10 +58,29 @@ C if this is not done before then do it here
       _EXCH_XY_R8(UWIND, myThid)
       _EXCH_XY_R8(VWIND, myThid)
 
-c$taf loop = parallel
+CADJ loop = parallel
       DO bj=myByLo(myThid),myByHi(myThid)
-c$taf loop = parallel
+CADJ loop = parallel
        DO bi=myBxLo(myThid),myBxHi(myThid)
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
 
 C DETERMINE AMOUNT OF OPEN WATER AND ICE THICKNESS
         DO J=1,sNy
@@ -66,6 +90,14 @@ C DETERMINE AMOUNT OF OPEN WATER AND ICE THICKNESS
 #ifdef SEAICE_MULTILEVEL
           FICEP(I,J)=0.0 _d 0
 #endif
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
           HICE(I,J)=HEFF(I,J,2,bi,bj)/AREA(I,J,2,bi,bj)
          ENDDO
         ENDDO
@@ -95,10 +127,23 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
          ENDDO
         ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE atemp(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+CADJ STORE lwdown(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C NOW DETERMINE GROWTH RATES
 C FIRST DO OPEN WATER
         KOPEN=-1
         CALL BUDGET(UG, TMIX, HICE, FO, KOPEN, bi, bj)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE atemp(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+CADJ STORE lwdown(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C NOW DO ICE
         KOPEN=1
 #ifdef SEAICE_MULTILEVEL

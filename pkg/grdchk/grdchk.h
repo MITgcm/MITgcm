@@ -62,21 +62,29 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                  nwettile,
      &                  irecmem,
      &                  bimem, bjmem,
-     &                  ilocmem,jlocmem,klocmem,
+     &                  ilocmem,jlocmem,klocmem,iobcsmem,
      &                  ichkmem, icompmem, itestmem, ierrmem
       integer ncvarcomp
       integer maxncvarcomps
-      integer nwettile( nsx,nsy,nr )
+      integer nwettile( nsx,nsy,nr,nobcs )
       integer irecmem ( maxgrdchecks )
       integer bjmem   ( maxgrdchecks )
       integer bimem   ( maxgrdchecks )
       integer klocmem ( maxgrdchecks )
+      integer iobcsmem( maxgrdchecks )
       integer jlocmem ( maxgrdchecks )
       integer ilocmem ( maxgrdchecks )
       integer ichkmem ( maxgrdchecks )
       integer icompmem( maxgrdchecks )
       integer itestmem( maxgrdchecks )
       integer ierrmem ( maxgrdchecks )
+
+#ifdef ALLOW_OBCS_CONTROL
+      _RL     grdchk_maskxz(1-olx:snx+olx,nr,nsx,nsy,nobcs)
+      _RL     grdchk_maskyz(1-oly:sny+oly,nr,nsx,nsy,nobcs)
+#endif
+
+
 
 c     ==================================================================
 c     END OF HEADER GRADIENT_CHECK

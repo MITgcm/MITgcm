@@ -1,25 +1,37 @@
 
 #include "CTRL_CPPOPTIONS.h"
 
-CBOP
-C     !ROUTINE: ctrl_pack
-C     !INTERFACE:
-      subroutine ctrl_pack( myiter, mytime, mythid )
 
-C     !DESCRIPTION: \bv
-c     *=================================================================
-c     | SUBROUTINE ctrl_pack
-c     | Pack the control vector
-c     | * All control variable and adjoint variable fields are
-c     |   read from disk.
-c     | * Wet points are extracted, and elements are
-c     |   normalized (optional)
-c     | * A single control vector containing only (normalized
-c     |   wet points is written to file.
-c     *=================================================================
-C     \ev
+      subroutine ctrl_pack(
+     I                      myiter,
+     I                      mytime,
+     I                      mythid
+     &                    )
 
-C     !USES:
+c     ==================================================================
+c     SUBROUTINE ctrl_pack
+c     ==================================================================
+c
+c     o Compress the control vector such that only ocean points are
+c       written to file.
+c
+c     started: Christian Eckert eckert@mit.edu  10-Mar=2000
+c
+c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
+c              - Transferred some filename declarations
+c                from here to namelist in ctrl_init
+c  
+c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
+c              - single file name convention with or without
+c                ALLOW_ECCO_OPTIMIZATION
+c
+c              G. Gebbie, added open boundary control packing,
+c                  gebbie@mit.edu  18 -Mar- 2003
+c
+c     ==================================================================
+c     SUBROUTINE ctrl_pack
+c     ==================================================================
+
       implicit none
 
 c     == global variables ==
@@ -247,16 +259,20 @@ c--       Header information.
 
 #ifdef ALLOW_THETA0_CONTROL
           ivartype = 1
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wtheta"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_theta, "hFacC",
-     &         wtheta, lxxadxx, mythid)
+     &         weighttype, wtheta, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_SALT0_CONTROL
           ivartype = 2
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsalt"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_salt, "hFacC",
-     &         wsalt, lxxadxx, mythid)
+     &         weighttype, wsalt, lxxadxx, mythid)
 #endif
 
 #if (defined (ALLOW_HFLUX_CONTROL) || \
@@ -337,51 +353,65 @@ c--       Header information.
 
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype = 11
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcsn"
           call ctrl_set_pack_xz(
      &         cunit, ivartype, adfname_obcsn, "maskobcsn",
-     &         wobcsn, lxxadxx, mythid)
+     &         weighttype, wobcsn, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_OBCSS_CONTROL
           ivartype = 12
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcss"
           call ctrl_set_pack_xz(
      &         cunit, ivartype, adfname_obcss, "maskobcss",
-     &         wobcss, lxxadxx, mythid)
+     &         weighttype, wobcss, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_OBCSW_CONTROL
           ivartype = 13
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcsw"
           call ctrl_set_pack_yz(
      &         cunit, ivartype, adfname_obcsw, "maskobcsw",
-     &         wobcsw, lxxadxx, mythid)
+     &         weighttype, wobcsw, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_OBCSE_CONTROL
           ivartype = 14
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcse"
           call ctrl_set_pack_yz(
      &         cunit, ivartype, adfname_obcse, "maskobcse",
-     &         wobcse, lxxadxx, mythid)
+     &         weighttype, wobcse, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
           ivartype = 15
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wdiffkr"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_diffkr, "hFacC",
-     &         wunit, lxxadxx, mythid)
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
           ivartype = 16
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wkapgm"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_kapgm, "hFacC",
-     &         wunit, lxxadxx, mythid)
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_TR10_CONTROL
           ivartype = 17
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wtr1"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_tr1, "hFacC",
-     &         wunit, lxxadxx, mythid)
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_SST0_CONTROL
@@ -404,31 +434,35 @@ c--       Header information.
 
 #ifdef ALLOW_HFACC_CONTROL
           ivartype = 20
-#ifdef ALLOW_HFACC3D_CONTROL
-          call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_hfacc, "hFacC",
-     &         wunit, lxxadxx, mythid)
-#else
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whfacc"
+# ifdef ALLOW_HFACC3D_CONTROL
+          call ctrl_set_pack_xyz(
+     &         cunit, ivartype, adfname_hfacc, "hFacC",
+     &         weighttype, wunit, lxxadxx, mythid)
+# else
           call ctrl_set_pack_xy(
      &         cunit, ivartype, adfname_hfacc, "hFacC", weighttype,
      &         lxxadxx, mythid)
-#endif
+# endif
 #endif
 
 #ifdef ALLOW_EFLUXY0_CONTROL
           ivartype = 21
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wefluxy0"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_efluxy, "hFacS",
-     &         wunit, lxxadxx, mythid)
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_EFLUXP0_CONTROL
           ivartype = 22
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wefluxp0"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, adfname_efluxp, "hFacV",
-     &         wunit, lxxadxx, mythid)
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL

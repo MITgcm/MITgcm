@@ -23,6 +23,9 @@ C     === Global variables ===
 #include "SEAICE_FFIELDS.h"
 #include "SEAICE_EXTERNAL.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
@@ -52,6 +55,30 @@ C     i,j,bi,bj - Loop counters
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+c
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE atemp(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
         DO J=1,sNy
          DO I=1,sNx
 C Adjust surface air temperature according to ice conditions
@@ -61,8 +88,26 @@ C Adjust surface air temperature according to ice conditions
           ENDIF
           SEAICE_SALT(I,J,bi,bj)=ZERO
           WATR(I,J,bi,bj)=ZERO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
           AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),
      &         HEFF(I,J,2,bi,bj)*1.0 _d +04)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
 C NOW BALANCE THE HEAT IN OCEAN FIRT LEVEL
 C Here the units of YNEG are m of sea-ice.
 C The factor dRf(1)/72.0764, used to convert temperature
@@ -100,15 +145,55 @@ C Units are degrees/s (>0 for ocean warming).
           surfaceTendencyTice(I,J,bi,bj)=YNEG(I,J,bi,bj)/deltaTtracer
          ENDDO
         ENDDO
+c
        ENDDO
       ENDDO
 
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area   = comlev1, key = ikey_dynamics
+CADJ STORE atemp  = comlev1, key = ikey_dynamics
+CADJ STORE heff   = comlev1, key = ikey_dynamics
+CADJ STORE hsnow  = comlev1, key = ikey_dynamics
+CADJ STORE lwdown = comlev1, key = ikey_dynamics
+CADJ STORE tice   = comlev1, key = ikey_dynamics
+CADJ STORE uwind  = comlev1, key = ikey_dynamics
+CADJ STORE vwind  = comlev1, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
 C GROWTH SUBROUTINE CALCULATES TOTAL GROWTH TENDENCIES,
 C INCLUDING SNOWFALL
       CALL GROATB(A22,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+c
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE fo(:,:,bi,bj)     = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE fice(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
 C NOW CALCULATE CORRECTED GROWTH
         DO J=1,sNy
          DO I=1,sNx
@@ -256,9 +341,25 @@ C NOW ZERO OUTSIDE POINTS
 C NOW SET AREA(I,J,1,bi,bj)=0 WHERE NO ICE IS
           AREA(I,J,1,bi,bj)=MIN(AREA(I,J,1,bi,bj)
      &                         ,HEFF(I,J,1,bi,bj)/.0001 _d 0)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
 C NOW TRUNCATE AREA
 #ifdef DO_WE_NEED_THIS
           AREA(I,J,1,bi,bj)=MIN(ONE,AREA(I,J,1,bi,bj))
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO J=1,sNy
+         DO I=1,sNx
           AREA(I,J,1,bi,bj)=MAX(ZERO,AREA(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)=MAX(ZERO,HSNOW(I,J,bi,bj))
 #endif

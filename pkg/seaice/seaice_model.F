@@ -29,12 +29,12 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_EXTERNAL.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
+#ifdef SEAICE_EXTERNAL_FORCING
+# include "SEAICE_FFIELDS.h"
 #endif
 
-#ifdef SEAICE_EXTERNAL_FORCING
-#include "SEAICE_FFIELDS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     === Routine arguments ===
@@ -91,9 +91,26 @@ c     &     ,vVel(i,j+1,3,bi,bj),vVel(i+1,j+1,3,bi,bj)
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uwind = comlev1, key = ikey_dynamics
+CADJ STORE vwind = comlev1, key = ikey_dynamics
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE heff  = comlev1, key = ikey_dynamics
+CADJ STORE area  = comlev1, key = ikey_dynamics
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C solve ice momentum equations and calculate ocean surface stress
       CALL DYNSOLVER ( myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE heff  = comlev1, key = ikey_dynamics
+CADJ STORE area  = comlev1, key = ikey_dynamics
+CADJ STORE uice  = comlev1, key = ikey_dynamics
+CADJ STORE vice  = comlev1, key = ikey_dynamics
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 C NOW DO ADVECTION
       CALL ADVECT( UICE, VICE, HEFF, HEFFM, myThid )
       CALL ADVECT( UICE, VICE, AREA, HEFFM, myThid )

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.2 2003/05/23 18:37:31 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.3 2003/06/24 16:07:32 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -133,12 +133,12 @@ c     == routine arguments ==
       integer mycurrentiter
       _RL     mycurrenttime
 
+#ifdef ALLOW_BULKFORMULAE
+
 c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-
-#ifdef ALLOW_BULKFORMULAE
 
       _RL     aln
 
@@ -182,21 +182,17 @@ c     == local variables ==
       _RL     hl(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     hfl
 
-#endif /* ALLOW_BULKFORMULAE */
-
 c     == external functions ==
 
       integer  ilnblnk
       external ilnblnk
 
-#ifdef ALLOW_BULKFORMULAE
       _RL       exf_BulkqSat
       external  exf_BulkqSat
       _RL       exf_BulkCdn
       external  exf_BulkCdn
       _RL       exf_BulkRhn
       external  exf_BulkRhn
-#endif /* ALLOW_BULKFORMULAE */
 
 #ifndef ALLOW_ATM_WIND
       _RL       TMP1
@@ -208,11 +204,9 @@ c     == external functions ==
 
 c     == end of interface ==
 
-#ifdef ALLOW_BULKFORMULAE
 cph   This statement cannot be a PARAMETER statement in the header,
 cph   but must come here; it's not fortran77 standard
       aln = log(ht/zref)
-#endif
 
 c--   Use atmospheric state to compute surface fluxes.
 
@@ -232,8 +226,6 @@ CHPF$  INDEPENDENT
 
           do j = 1,sny
             do i = 1,snx
-
-#ifdef ALLOW_BULKFORMULAE
 
 #ifdef ALLOW_AUTODIFF_TAMC
                act1 = bi - myBxLo(myThid)
@@ -496,11 +488,11 @@ c             Salt flux from Precipitation and Evaporation.
               sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
 #endif /* ALLOW_ATM_TEMP */
 
-#endif /* ALLOW_BULKFORMULAE */
-
             enddo
           enddo
         enddo
       enddo
+
+#endif /* ALLOW_BULKFORMULAE */
 
       end

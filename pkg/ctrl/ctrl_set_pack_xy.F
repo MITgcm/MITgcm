@@ -13,6 +13,11 @@ c
 c     o Compress the control vector such that only ocean points are
 c       written to file.
 c
+c     changed: heimbach@mit.edu 17-Jun-2003
+c              merged Armin's changes to replace write of
+c              nr * globfld2d by 1 * globfld3d
+c              (ad hoc fix to speed up global I/O)
+c
 c     ==================================================================
 
       implicit none
@@ -52,7 +57,7 @@ c     == local variables ==
       integer i,j,k
       integer ii
       integer il
-      integer irec
+      integer irec,nrec_nl
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -121,7 +126,56 @@ c--   Only the master thread will do I/O.
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, mythid)
 
-      do irec = 1, ncvarrecs(ivartype)
+      nrec_nl=int(ncvarrecs(ivartype)/Nr)
+      do irec = 1, nrec_nl
+
+         call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
+     &        Nr, globfld3d, irec, mythid)
+         do k = 1, Nr
+         write(cunit) ncvarindex(ivartype)
+         write(cunit) 1
+         write(cunit) 1
+            cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                  if (globmsk(i,bi,ip,j,bj,jp,1)  .ne. 0. ) then
+                     cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                     if (lxxadxx) then
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k) *
+     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+                     else
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k) /
+     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+                     endif
+#else
+                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                  endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c           --> check cbuffindex.
+           if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) 1
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+c
+c     -- end of irec loop --
+      enddo
+
+      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
 
          call MDSREADFIELD_2D_GL( fname, ctrlprec, 'RL',
      &        1, globfld3d(1,1,1,1,1,1,1), irec, mythid)

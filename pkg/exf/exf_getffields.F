@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.13 2003/05/23 18:37:31 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.14 2003/06/24 16:07:32 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -30,6 +30,13 @@ c     == global variables ==
 #include "exf_fields.h"
 #include "exf_constants.h"
 
+#if (defined (ALLOW_ADJOINT_RUN) || \
+     defined (ALLOW_TANGENTLINEAR_RUN) || \
+     defined (ALLOW_ECCO_OPTIMIZATION))
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
+
 c     == routine arguments ==
 
       integer mythid
@@ -45,7 +52,6 @@ c--   read forcing fields from files and temporal interpolation
 #ifdef ALLOW_ATM_WIND
 
 c     Zonal wind.
-cgen      call exf_set_uwind( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     uwindfile, uwindstartdate, uwindperiod, 
      &     exf_inscal_uwind,
@@ -53,7 +59,6 @@ cgen      call exf_set_uwind( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind.
-cgen      call exf_set_vwind( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     vwindfile, vwindstartdate, vwindperiod, 
      &     exf_inscal_vwind,
@@ -61,11 +66,17 @@ cgen      call exf_set_vwind( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_UWIND_CONTROL
-      call ctrl_getuwind  ( mycurrenttime, mycurrentiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
+     &     maskw, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
 #ifdef ALLOW_VWIND_CONTROL
-      call ctrl_getvwind  ( mycurrenttime, mycurrentiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
+     &     masks, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
 #else  /* ifndef ALLOW_ATM_WIND */
@@ -89,7 +100,6 @@ c     Meridional wind stress.
 #ifdef ALLOW_ATM_TEMP
 
 c     Atmospheric temperature.
-cgen      call exf_set_atemp ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     atempfile, atempstartdate, atempperiod, 
      &     exf_inscal_atemp,
@@ -97,7 +107,6 @@ cgen      call exf_set_atemp ( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Atmospheric humidity.
-cgen      call exf_set_aqh    ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     aqhfile, aqhstartdate, aqhperiod, 
      &     exf_inscal_aqh,
@@ -105,7 +114,6 @@ cgen      call exf_set_aqh    ( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Net long wave radiative flux.
-cgen      call exf_set_lwflux ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     lwfluxfile, lwfluxstartdate, lwfluxperiod, 
      &     exf_inscal_lwflux,
@@ -113,7 +121,6 @@ cgen      call exf_set_lwflux ( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Precipitation.
-cgen      call exf_set_precip ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen( 
      &     precipfile, precipstartdate, precipperiod, 
      &     exf_inscal_precip,
@@ -121,11 +128,17 @@ cgen      call exf_set_precip ( mycurrenttime, mycurrentiter, mythid )
      &     mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_ATEMP_CONTROL
-      call ctrl_getatemp  ( mycurrenttime, mycurrentiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
+     &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
 #ifdef ALLOW_AQH_CONTROL
-      call ctrl_getaqh    ( mycurrenttime, mycurrentiter, mythid )
+      call ctrl_get_gen ( 
+     &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
+     &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
 #else  /* ifndef ALLOW_ATM_TEMP */
@@ -146,7 +159,6 @@ c     Salt flux.
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 c     Net short wave radiative flux.
-cgen      call exf_set_swflux ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen  ( 
      &     swfluxfile, swfluxstartdate, swfluxperiod, exf_inscal_swflux,
      &     swflux, swflux0, swflux1, swfluxmask, 
@@ -155,7 +167,6 @@ cgen      call exf_set_swflux ( mycurrenttime, mycurrentiter, mythid )
 
 #ifdef EXF_READ_EVAP
 c     Evaporation
-cgen      call exf_set_evap   ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen  ( 
      &     evapfile, evapstartdate, evapperiod, exf_inscal_evap,
      &     evap, evap0, evap1, evapmask, 
@@ -165,14 +176,12 @@ cgen      call exf_set_evap   ( mycurrenttime, mycurrentiter, mythid )
 #ifdef ALLOW_DOWNWARD_RADIATION
 
 c     Downward shortwave radiation.
-cgen      call exf_set_swdown ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen  ( 
      &     swdownfile, swdownstartdate, swdownperiod, exf_inscal_swdown,
      &     swdown, swdown0, swdown1, swdownmask, 
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Downward longwave radiation.
-cgen      call exf_set_lwdown ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen  ( 
      &     lwdownfile, lwdownstartdate, lwdownperiod, exf_inscal_lwdown,
      &     lwdown, lwdown0, lwdown1, lwdownmask, 
@@ -182,7 +191,6 @@ cgen      call exf_set_lwdown ( mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ATMOSPHERIC_LOADING
 c     Atmos. pressure forcing
-cgen      call exf_set_apressure ( mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen  ( 
      &     apressurefile, apressurestartdate, apressureperiod, 
      &     exf_inscal_apressure,

@@ -36,8 +36,8 @@ C--   SEAICE parameters
      & SEAICEwindOnCgrid,
      & LAD, IMAX_TICE, NPSEUDO,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
-     & SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo,
-     & SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
+     & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      & SEAICE_waterAlbedo, SEAICE_strength,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
@@ -79,7 +79,8 @@ C--   set default sea ice parameters
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
-      SEAICE_albedo      = 0.66   _d 0
+      SEAICE_dryIceAlb   = 0.75   _d 0
+      SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
       SEAICE_wetSnowAlb  = 0.7    _d 0
       SEAICE_waterAlbedo = 0.1    _d +00

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.5 2003/02/28 02:34:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.6 2003/06/24 16:08:45 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -44,7 +44,7 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
 
-      integer itest
+      integer itest,iobcs
       integer icomptest
 
 c     == end of interface ==
@@ -60,13 +60,24 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
+c--   initialise
+      do bj = jtlo,jthi
+         do bi = itlo,ithi
+            do k = 1,ncvarnrmax(grdchkvarindex)
+               do iobcs = 1, nobcs
+                  nwettile(bi,bj,k,iobcs) = 0
+               enddo
+            enddo
+         enddo
+      enddo
+
 c--   Determine the number of components of the given
 c--   control variable on the current tile.
       if ( ncvargrd(grdchkvarindex) .eq. 'c' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  nwettile(bi,bj,k) = nwetctile(bi,bj,k)
+                  nwettile(bi,bj,k,1) = nwetctile(bi,bj,k)
                enddo
             enddo
          enddo
@@ -74,7 +85,7 @@ c--   control variable on the current tile.
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  nwettile(bi,bj,k) = nwetstile(bi,bj,k)
+                  nwettile(bi,bj,k,1) = nwetstile(bi,bj,k)
                enddo
             enddo
          enddo
@@ -82,7 +93,7 @@ c--   control variable on the current tile.
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  nwettile(bi,bj,k) = nwetwtile(bi,bj,k)
+                  nwettile(bi,bj,k,1) = nwetwtile(bi,bj,k)
                enddo
             enddo
          enddo
@@ -90,13 +101,48 @@ c--   control variable on the current tile.
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  nwettile(bi,bj,k) = nwetvtile(bi,bj,k)
+                  nwettile(bi,bj,k,1) = nwetvtile(bi,bj,k)
+               enddo
+            enddo
+         enddo
+      else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,ncvarnrmax(grdchkvarindex)
+                  do iobcs = 1, nobcs
+                     if ( grdchkvarindex .eq. 11 ) then
+#ifdef ALLOW_OBCSN_CONTROL
+                        nwettile(bi,bj,k,iobcs) = 
+     &                       nwetobcsn(bi,bj,k,iobcs)
+#endif
+                     else if ( grdchkvarindex .eq. 12 ) then
+#ifdef ALLOW_OBCSS_CONTROL
+                        nwettile(bi,bj,k,iobcs) = 
+     &                       nwetobcss(bi,bj,k,iobcs)
+#endif
+                     else if ( grdchkvarindex .eq. 13 ) then
+#ifdef ALLOW_OBCSW_CONTROL
+                        nwettile(bi,bj,k,iobcs) = 
+     &                       nwetobcsw(bi,bj,k,iobcs)
+#endif
+                     else if ( grdchkvarindex .eq. 14 ) then
+#ifdef ALLOW_OBCSE_CONTROL
+                        nwettile(bi,bj,k,iobcs) = 
+     &                       nwetobcse(bi,bj,k,iobcs)
+#endif
+                     endif
+                  enddo
                enddo
             enddo
          enddo
       else
 ce        --> wrong grid specification for the control variable.
       endif
+
+c--   get mask file for obcs
+#ifdef ALLOW_OBCS_CONTROL
+      call grdchk_get_obcs_mask ( mythid )
+#endif
 
 c     ----------------------------------------------------------------
 
@@ -107,8 +153,12 @@ c--   components of the given control variable.
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do k = 1,ncvarnrmax(grdchkvarindex)
-               ncvarcomp     = ncvarcomp     + nwettile(bi,bj,k)
-               maxncvarcomps = maxncvarcomps + snx*sny
+               do iobcs = 1, nobcs
+                  ncvarcomp     = ncvarcomp + nwettile(bi,bj,k,iobcs)
+                  maxncvarcomps = maxncvarcomps + 
+     &                 ncvarxmax(grdchkvarindex)*
+     &                 ncvarymax(grdchkvarindex)
+               enddo
             enddo
          enddo
       enddo

@@ -3,10 +3,11 @@
 # include "OBCS_OPTIONS.h"
 #endif
 
-      subroutine exf_getobcs ( mycurrenttime
-     I                   , mycurrentiter
-     I                   , mythid
-     &                   )
+      subroutine exf_getobcs ( 
+     I                      mycurrenttime
+     I                    , mycurrentiter
+     I                    , mythid
+     &                     )
 
 c     ==================================================================
 c     SUBROUTINE exf_getobcs
@@ -15,6 +16,7 @@ c
 c     o set open boundary conditions
 c
 c     started: heimbach@mit.edu 01-May-2001
+c              gebbie@mit.edu 18-Mar-2003 open boundary control added
 
 c     ==================================================================
 c     SUBROUTINE exf_getobcs
@@ -133,6 +135,12 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 
+#endif
+
+#ifdef ALLOW_OBCS_CONTROL
+cgg   WARNING: Assuming North Open Boundary exists and has same
+cgg    calendar information as other boundaries.
+      call ctrl_obcsbal ( mycurrenttime,mycurrentiter,mythid )
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL

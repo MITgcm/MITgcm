@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.8 2003/01/21 19:18:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.9 2003/06/24 16:07:06 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -103,8 +103,8 @@ c--   Temperature field.
               do i = imin,imax
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-cph                gtNm1(i,j,k,bi,bj) = gtNm1(i,j,k,bi,bj) +
-cph     &                               fac*tmpfld3d(i,j,k,bi,bj)
+                if(theta(i,j,k,bi,bj).lt.-2.0) 
+     &               theta(i,j,k,bi,bj)= -2.0  
               enddo
             enddo
           enddo
@@ -128,8 +128,6 @@ c--   Temperature field.
               do i = imin,imax
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-cph                gsNm1(i,j,k,bi,bj) = gsNm1(i,j,k,bi,bj) +
-cph     &                               fac*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
@@ -153,8 +151,6 @@ c--   Temperature field.
               do i = imin,imax
                 tr1(i,j,k,bi,bj) = tr1(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-cph                gtr1Nm1(i,j,k,bi,bj) = gtr1Nm1(i,j,k,bi,bj) +
-cph     &                               fac*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo

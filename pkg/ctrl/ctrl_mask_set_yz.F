@@ -24,7 +24,6 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
@@ -83,11 +82,11 @@ c     == end of interface ==
 c--   Count wet points at Northern boundary.
 c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do iobcs = 1,nobcs
+      do iobcs = 1,nobcs
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = 1-oly,sny+oly
                 maskyz(j,k,bi,bj,iobcs) = 0. _d 0
               enddo
             enddo
@@ -95,30 +94,29 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
         enddo
       enddo
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              i = OB_I(J,bi,bj)
+      do iobcs = 1,nobcs
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                i = OB_I(J,bi,bj)
                 if ( i .NE. 0 ) then
-c--               West mask for T, S
-                  if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-                    nwetobcs(bi,bj,k,1) = nwetobcs(bi,bj,k,1) + 1
-                    nwetobcs(bi,bj,k,2) = nwetobcs(bi,bj,k,2) + 1
-                    maskyz(j,k,bi,bj,1)  = 1
-                    maskyz(j,k,bi,bj,2)  = 1
-                  endif
-c--               West mask for U
-                  if (maskW(i+ip1,j,k,bi,bj) .eq. 1.) then
-                    nwetobcs(bi,bj,k,3) = nwetobcs(bi,bj,k,3) + 1
-                    maskyz(j,k,bi,bj,3)  = 1
+c--               West mask for T, S, U on East/West boundaries.
+                  if(iobcs .eq.1 .or. iobcs .eq.2 .or. iobcs .eq.3) then
+                    if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
+                      nwetobcs(bi,bj,k,iobcs) =nwetobcs(bi,bj,k,iobcs)+1
+                      maskyz(j,k,bi,bj,iobcs) = 1
+                    endif
                   endif
 c--               South mask for V
-                  if (maskS(i,j,k,bi,bj) .eq. 1.) then
-                    nwetobcs(bi,bj,k,4) = nwetobcs(bi,bj,k,4) + 1
-                    maskyz(j,k,bi,bj,4)  = 1
+                  if (iobcs .eq. 4) then
+                    if (maskS(i,j,k,bi,bj) .eq. 1.) then
+                      nwetobcs(bi,bj,k,iobcs) =nwetobcs(bi,bj,k,iobcs)+1
+                      maskyz(j,k,bi,bj,iobcs) = 1
+                    endif
                   endif
                 endif
+              enddo
             enddo
           enddo
         enddo
