@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.23 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.24 2003/10/09 21:35:56 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C CPP flags controlling particular source code features
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
-#define  INCLUDE_CD_CODE
+#undef  INCLUDE_CD_CODE
 
 C o Include/exclude temperature forcing code
 C#define  INCLUDE_T_FORCING_CODE
@@ -33,15 +33,11 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
-C o Allow nonHydrostatic code
-#define ALLOW_NONHYDROSTATIC
+C o Include/exclude nonHydrostatic code
+#undef ALLOW_NONHYDROSTATIC
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
-
-C o Use "natural" boundary conditions for salinity
-C   instead of the "virtual salt flux"
-#undef  USE_NATURAL_BCS
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
@@ -49,7 +45,7 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
-#define NONLIN_FRSURF
+#undef NONLIN_FRSURF
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
