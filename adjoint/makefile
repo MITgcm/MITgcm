@@ -41,6 +41,7 @@ SRC_MODEL	= \
 		$(PKG)/autodiff/eesupp.flow		\
 		$(PKG)/autodiff/active_file.flow	\
 		$(PKG)/autodiff/write_state.flow	\
+		$(PKG)/autodiff/ecco_check_exp.flow	\
 		$(PKG)/autodiff/exch_ad.flow		\
 		$(PKG)/autodiff/exch_z_ad.flow		\
 		$(PKG)/autodiff/exch_uv_ad.flow		\
