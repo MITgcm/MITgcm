@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.46 2004/07/18 21:27:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.47 2004/08/03 02:48:57 edhill Exp $
 #  $Name:  $
 #
 
@@ -237,7 +237,7 @@ genmakemodel()
 	    $command > make.log 2>&1
 	    RETVAL=$?
 	    #  Reduce the size of the testing emails!
-	    #  cp Makefile $CDIR
+	    head -100 Makefile > $CDIR/Makefile_head
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
 		echo "genmakemodel: genmake failed" 1>&2
