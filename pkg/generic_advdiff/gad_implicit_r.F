@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.7 2004/12/04 18:50:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.8 2004/12/16 22:28:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -72,6 +72,15 @@ C errCode   :: > 0 if singular matrix
       _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rTransKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER     kk
+      CHARACTER*8 diagName
+      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
+      EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL     DIAGNOSTICS_IS_ON
+      EXTERNAL    DIAGNOSTICS_IS_ON
+      _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#endif
 CEOP
 
 C--   no need to solve anything with only 1 level:
@@ -264,6 +273,38 @@ C--   Solve penta-diagonal system :
       ELSEIF ( diagonalNumber .NE. 1 ) THEN
         STOP 'GAD_IMPLICIT_R: no solver available'
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   Set diagnostic suffix for the current tracer
+      IF ( useDiagnostics .AND. implicitDiffusion ) THEN
+        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+        diagName = 'DFrI'//diagSufx
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         DO k= 1,Nr
+          IF ( k.EQ.1 ) THEN
+C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
+C         otherwise counter is not incremented !!
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+               df(i,j) = 0. _d 0
+             ENDDO
+            ENDDO
+          ELSE
+            DO j=1,sNy
+             DO i=1,sNx
+               df(i,j) = 
+     &              rA(i,j,bi,bj)
+     &            * KappaRX(i,j,k)*recip_drC(k)
+     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+             ENDDO
+            ENDDO
+          ENDIF
+          kk = -k
+          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+         ENDDO
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   end if Nr > 1
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.32 2004/12/04 00:20:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.33 2004/12/16 22:28:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -140,6 +140,12 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER nipass,ipass
       INTEGER myTile, nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER     kk
+      CHARACTER*8 diagName
+      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
+      EXTERNAL    GAD_DIAG_SUFX
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -162,6 +168,13 @@ CEOP
              STOP 'maxpass seems smaller than tracerIdentity'
           endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   Set diagnostic suffix for the current tracer 
+      IF ( useDiagnostics ) THEN
+        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+      ENDIF
+#endif
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -590,6 +603,16 @@ C-    horizontal advection done; store intermediate result in 3D array:
        ENDDO
       ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          kk = -k
+          diagName = 'ADVx'//diagSufx
+          CALL DIAGNOSTICS_FILL(afx,diagName, kk,1, 2,bi,bj, myThid)
+          diagName = 'ADVy'//diagSufx
+          CALL DIAGNOSTICS_FILL(afy,diagName, kk,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
+
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB
      &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
@@ -707,6 +730,15 @@ C--   Divergence of vertical fluxes
          ENDDO
         ENDDO
  
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          kk = -k
+          diagName = 'ADVr'//diagSufx
+          CALL DIAGNOSTICS_FILL( fVerT(1-Olx,1-Oly,kUp),
+     &                           diagName, kk,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
+
 C--   End of K loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.6 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.7 2004/12/16 22:28:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,6 +63,15 @@ C-- Set Temp & Salt Adams-Bashforth flag according to advection scheme used
      & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
            saltAdamsBashforth = .TRUE.
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+C--   Add diagnostics of Temp & Salt fluxes to the (long) list of diagnostics:
+        CALL GAD_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

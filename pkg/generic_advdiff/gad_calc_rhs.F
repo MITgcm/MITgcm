@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.31 2004/12/04 00:20:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.32 2004/12/16 22:29:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -107,10 +107,16 @@ C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
 C df4              :: used for storing del^2 T for bi-harmonic term
 C fZon             :: zonal flux
-C fmer             :: meridional flux
+C fMer             :: meridional flux
 C af               :: advective flux
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER     kk
+      CHARACTER*8 diagName
+      CHARACTER*4 GAD_DIAG_SUFX, diagSufx 
+      EXTERNAL    GAD_DIAG_SUFX
+#endif
       INTEGER i,j
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -125,6 +131,13 @@ CEOP
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   Set diagnostic suffix for the current tracer
+      IF ( useDiagnostics ) THEN
+        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+      ENDIF
 #endif
 
       advFac  = 0. _d 0
@@ -176,32 +189,39 @@ C--   Initialize net flux in X direction
 
 C-    Advective flux in X
       IF (calcAdvection) THEN
-      IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
-       CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
-     I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
-       CALL GAD_U3_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
-       CALL GAD_C4_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_X( bi,bj,k, dTtracerLev(k),
-     I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_X( bi,bj,k, dTtracerLev(k),
-     I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSE
-       STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
-      ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        fZon(i,j) = fZon(i,j) + af(i,j)
-       ENDDO
-      ENDDO
+        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+          CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
+     I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+          CALL GAD_U3_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+          CALL GAD_C4_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_X( bi,bj,k, dTtracerLev(k),
+     I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_X( bi,bj,k, dTtracerLev(k),
+     I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSE
+         STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
+        ENDIF
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          fZon(i,j) = fZon(i,j) + af(i,j)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          diagName = 'ADVx'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
       ENDIF
 
 C-    Diffusive flux in X
@@ -213,6 +233,11 @@ C-    Diffusive flux in X
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
+      ENDIF
+
+C-    Add bi-harmonic diffusive flux in X
+      IF (diffK4 .NE. 0.) THEN
+       CALL GAD_BIHARM_X(bi,bj,k,xA,df4,diffK4,df,myThid)
       ENDIF
 
 #ifdef ALLOW_GMREDI
@@ -232,15 +257,16 @@ C *note* should update GMREDI_XTRANSPORT to use localT and set df  *aja*
        ENDDO
       ENDDO
 
-C-    Bi-harmonic duffusive flux in X
-      IF (diffK4 .NE. 0.) THEN
-       CALL GAD_BIHARM_X(bi,bj,k,xA,df4,diffK4,df,myThid)
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         fZon(i,j) = fZon(i,j) + df(i,j)
-        ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+C-    Diagnostics of Tracer flux in X dir (mainly Diffusive term),
+C       excluding advective terms:
+      IF ( useDiagnostics .AND.
+     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
+          diagName = 'DIFx'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
       ENDIF
+#endif
 
 C--   Initialize net flux in Y direction
       DO j=1-Oly,sNy+Oly
@@ -251,32 +277,39 @@ C--   Initialize net flux in Y direction
 
 C-    Advective flux in Y
       IF (calcAdvection) THEN
-      IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
-       CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
-     I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
-       CALL GAD_U3_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
-       CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
-      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_Y( bi,bj,k, dTtracerLev(k),
-     I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_Y( bi,bj,k, dTtracerLev(k),
-     I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
-     O          af, myThid )
-      ELSE
-       STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
-      ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        fMer(i,j) = fMer(i,j) + af(i,j)
-       ENDDO
-      ENDDO
+        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+          CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
+     I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+          CALL GAD_U3_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+          CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_Y( bi,bj,k, dTtracerLev(k),
+     I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_Y( bi,bj,k, dTtracerLev(k),
+     I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
+     O            af, myThid )
+        ELSE
+          STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
+        ENDIF
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          fMer(i,j) = fMer(i,j) + af(i,j)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          diagName = 'ADVy'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
       ENDIF
 
 C-    Diffusive flux in Y
@@ -288,6 +321,11 @@ C-    Diffusive flux in Y
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
+      ENDIF
+
+C-    Add bi-harmonic flux in Y
+      IF (diffK4 .NE. 0.) THEN
+       CALL GAD_BIHARM_Y(bi,bj,k,yA,df4,diffK4,df,myThid)
       ENDIF
 
 #ifdef ALLOW_GMREDI
@@ -307,15 +345,16 @@ C *note* should update GMREDI_YTRANSPORT to use localT and set df  *aja*
        ENDDO
       ENDDO
 
-C-    Bi-harmonic flux in Y
-      IF (diffK4 .NE. 0.) THEN
-       CALL GAD_BIHARM_Y(bi,bj,k,yA,df4,diffK4,df,myThid)
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         fMer(i,j) = fMer(i,j) + df(i,j)
-        ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+C-    Diagnostics of Tracer flux in Y dir (mainly Diffusive terms),
+C       excluding advective terms:
+      IF ( useDiagnostics .AND.
+     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
+          diagName = 'DIFy'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
       ENDIF
+#endif
 
 C--   Compute vertical flux fVerT(kUp) at interface k (between k-1 & k):
 C-    Advective flux in R
@@ -328,30 +367,37 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2) THEN
 #endif
 C-    Compute vertical advective flux in the interior:
-       IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
-        CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-        CALL GAD_FLUXLIMIT_ADV_R(
-     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
-       ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
-        CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
-        CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-        CALL GAD_DST3_ADV_R(
-     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
-       ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-        CALL GAD_DST3FL_ADV_R(
-     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
-       ELSE
-        STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
-       ENDIF
+        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+          CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_R(
+     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
+          CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+        ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
+          CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_R(
+     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_R(
+     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+        ELSE
+          STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
+        ENDIF
 C-     add the advective flux to fVerT
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          diagName = 'ADVr'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
       ENDIF
 
 C-    Diffusive flux in R
@@ -384,6 +430,17 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+C-    Diagnostics of Tracer flux in R dir (mainly Diffusive terms), 
+C       Explicit terms only & excluding advective terms:
+      IF ( useDiagnostics .AND.
+     &    (.NOT.implicitDiffusion .OR. useGMRedi) ) THEN
+          diagName = 'DFrE'//diagSufx
+          kk = -k
+          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+      ENDIF
+#endif
 
 #ifdef ALLOW_KPP
 C-    Set non local KPP transport term (ghat):
