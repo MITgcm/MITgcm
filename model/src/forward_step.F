@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.48 2003/01/26 21:07:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.49 2003/02/06 22:42:11 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -151,23 +151,37 @@ c     Update the tile edges.
 C       _EXCH_XY_R8(fu     , mythid)
 C       _EXCH_XY_R8(fv     , mythid)
 cswdblk -- end add ---
-#else
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#else /* ALLOW_BULK_FORCE undef */
+# ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C     NOTE, that although the exf package is part of the
 C     distribution, it is not currently maintained, i.e.
 C     exf is disabled by default in genmake.
       CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
       CALL EXF_GETFORCING( mytime, myiter, mythid )
       CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-#else
+# else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+cph The following IF-statement creates an additional dependency
+cph for the forcing fields requiring additional storing.
+cph Therefore, the IF-statement will be put between CPP-OPTIONS,
+cph assuming that ALLOW_SEAICE has not yet been differentiated.
+#  ifdef ALLOW_SEAICE
       IF ( .NOT. useSEAICE ) THEN
+#  endif
        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
        CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
+#  ifdef ALLOW_SEAICE
       ENDIF
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#  endif
+# endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
-#ifdef ALLOW_SEAICE
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
+c--   Add control vector for forcing and parameter fields
+      if ( myiter .EQ. nIter0 )
+     &     CALL CTRL_MAP_FORCING (mythid)
+#endif
+
+# ifdef ALLOW_SEAICE
 C--   Call sea ice model to compute forcing/external data fields.  In
 C     addition to computing prognostic sea-ice variables and diagnosing the
 C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
@@ -183,7 +197,7 @@ C     theta is dumped or time-averaged.
          CALL SEAICE_MODEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
       ENDIF
-#endif ALLOW_SEAICE
+# endif ALLOW_SEAICE
 #endif ALLOW_BULK_FORCE
 
 C--     Step forward fields and calculate time tendency terms.

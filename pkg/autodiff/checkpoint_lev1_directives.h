@@ -43,8 +43,8 @@ CADJ STORE theta     = comlev1, key = ikey_dynamics
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
 cph empmr is needed for case buoyancyrelation .eq. 'OCEANICP'
-cph
-CADJ STORE empmr   = comlev1, key = ikey_dynamics
+cph Probably not anymore after some changes...
+cph CADJ STORE empmr   = comlev1, key = ikey_dynamics
 c
 CADJ STORE taux0   = comlev1, key = ikey_dynamics
 CADJ STORE taux1   = comlev1, key = ikey_dynamics

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.32 2003/01/10 23:41:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.33 2003/02/06 22:42:11 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -108,11 +108,6 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
 #endif /* EXCLUDE_MONITOR */
-
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-c--   Add control vector for forcing and parameter fields
-      CALL CTRL_MAP_FORCING (mythid)
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
       CALL TIMER_STOP ('ADJOINT SPIN-UP', mythid)

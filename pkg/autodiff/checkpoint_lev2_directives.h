@@ -74,14 +74,6 @@ CADJ STORE vstress1  = tapelev2, key = ilev_2
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
 CADJ STORE empmr   = tapelev2, key = ilev_2
-CADJ STORE fu      = tapelev2, key = ilev_2
-CADJ STORE fv      = tapelev2, key = ilev_2
-CADJ STORE qnet    = tapelev2, key = ilev_2
-CADJ STORE sss     = tapelev2, key = ilev_2
-CADJ STORE sst     = tapelev2, key = ilev_2
-#ifdef ATMOSPHERIC_LOADING
-CADJ STORE pload   = tapelev2, key = ilev_2
-#endif
 c
 CADJ STORE taux0   = tapelev2, key = ilev_2
 CADJ STORE taux1   = tapelev2, key = ilev_2
