@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.373 2004/10/21 13:38:45 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.374 2004/10/21 21:14:02 afe Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o fixed wayward endif in mom_fluxform.F that messed up cyclindrical
+  configuration 
 o give MNC the ability to create additional files rather than 
   exceeding a specified file size limit "MNC_MAX_FILESIZE" 
   - the default is just less than 2GB which is a practical limit 

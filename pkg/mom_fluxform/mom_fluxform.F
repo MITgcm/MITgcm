@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.19 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.20 2004/10/21 21:14:02 afe Exp $
 C $Name:  $
 
 CBOI
@@ -456,6 +456,7 @@ C      o Non-hydrosatic metric terms
         ENDDO
        ENDDO
                                                                                 
+      ENDIF
       IF (usingCylindricalGrid) THEN
          CALL MOM_U_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
          DO j=jMin,jMax
@@ -463,7 +464,6 @@ C      o Non-hydrosatic metric terms
              gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
           ENDDO
        ENDDO
-      ENDIF
                                                                                 
       ENDIF
 C--   Set du/dt on boundaries to zero
