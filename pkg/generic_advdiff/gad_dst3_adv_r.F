@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.3 2002/03/06 01:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.4 2005/04/03 16:05:34 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -38,6 +38,8 @@ C     wFld     :: velocity, vertical component
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
       _RL wFld
+      _RL smallNo
+      _RL Rjjm,Rjjp
 
       IF (.NOT. multiDimAdvection) THEN
 C      If using the standard time-stepping/advection schemes (ie. AB-II)
@@ -50,6 +52,12 @@ C      then the data-structures are all local arrays except
 C      for maskC(...) and wVel(...)
        bi=1
        bj=1
+      ENDIF
+
+      IF (inAdMode) THEN
+       smallNo = 1.0D-20
+      ELSE
+       smallNo = 1.0D-20
       ENDIF
 
       km2=MAX(1,k-2)
@@ -70,22 +78,27 @@ c       wFld = wVel(i,j,k,bi_arg,bj_arg)
         cfl=abs(wFld*dTarg*recip_drC(k))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
-c       thetaP=0.
-c       IF (Rj.NE.0.) thetaP=Rjm/Rj
-        thetaP=Rjm/(1.D-20+Rj)
-        psiP=d0+d1*thetaP
-c       psiP=max(0.,min(min(1.,psiP),(1.-cfl)/(1.D-20+cfl)*thetaP))
-        thetaM=Rjp/(1.D-20+Rj)
-c       thetaM=0.
-c       IF (Rj.NE.0.) thetaM=Rjp/Rj
-        psiM=d0+d1*thetaM
-c       psiM=max(0.,min(min(1.,psiM),(1.-cfl)/(1.D-20+cfl)*thetaM))
-        wT(i,j)=
-     &   0.5*(rTrans(i,j)+abs(rTrans(i,j)))
-     &      *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
-     &  +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
-     &      *( Tracer(i,j,km1,bi,bj) - psiP*Rj )
-
+        IF ( ABS(Rj).LT.smallNo .OR.
+     &       ABS(Rjm).LT.smallNo ) THEN
+         thetaP=0.
+         psiP=0.
+        ELSE
+         thetaP=(Rjm+smallNo)/(smallNo+Rj)
+         psiP=d0+d1*thetaP
+        ENDIF
+        IF ( ABS(Rj).LT.smallNo .OR.
+     &       ABS(Rjp).LT.smallNo ) THEN
+         thetaM=0.
+         psiM=0.
+        ELSE
+         thetaM=(Rjp+smallNo)/(smallNo+Rj)
+         psiM=d0+d1*thetaM
+        ENDIF
+         wT(i,j)=
+     &    0.5*(rTrans(i,j)+abs(rTrans(i,j)))
+     &       *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
+     &   +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
+     &       *( Tracer(i,j,km1,bi,bj) - psiP*Rj )
        ENDDO
       ENDDO
 
