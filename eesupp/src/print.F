@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.21 2004/01/27 15:59:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.22 2004/02/23 20:04:27 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -714,6 +714,14 @@ C--   Write field title and statistics
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
 
+      if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
+       msgBuf = 
+     &  'Model domain too big to print to terminal - skipping I/O'
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       RETURN
+      endif
+
 C--   Write field
 C     Figure out slice type and set plotting parameters appropriately
 C     acc = accross the page
@@ -1130,6 +1138,14 @@ C--   Write field title and statistics
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
+
+      if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
+       msgBuf = 
+     &  'Model domain too big to print to terminal - skipping I/O'
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       RETURN
+      endif
 
 C--   Write field
 C     Figure out slice type and set plotting parameters appropriately
