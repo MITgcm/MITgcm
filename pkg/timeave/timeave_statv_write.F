@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.15 2004/01/25 00:31:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.16 2004/03/05 22:41:08 adcroft Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -67,6 +67,8 @@ C-     Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(UStave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(VStave,   TimeAve_half,Nr,bi,bj,myThid)
 #ifndef HRCUBE
           CALL TIMEAVE_NORMALIZ(Eta2tave, TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
@@ -127,6 +129,8 @@ c      writeBinaryPrec = precFloat32
        CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('UStave.',suff,UStave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('VStave.',suff,VStave,myIter,myThid)
 #ifndef HRCUBE
        CALL WRITE_FLD_XYZ_RL('TTtave.',suff,TTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UUtave.',suff,UUtave,myIter,myThid)

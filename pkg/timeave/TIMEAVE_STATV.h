@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.13 2004/03/04 00:01:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.14 2004/03/05 22:41:08 adcroft Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -46,6 +46,8 @@ C     UVtave       :: uVel * vVel (at vorticity point, i.e. grid-corner)
 C     KEtave       :: Kinetic Energy
 C     UTtave       :: uVel * theta (* hFacW)
 C     VTtave       :: vVel * theta (* hFacS)
+C     UStave       :: uVel * salt (* hFacW)
+C     VStave       :: vVel * salt (* hFacS)
 C     WTtave       :: wVel * theta
 C     tDiffRtave   :: vertical diffusion flux of Temperature (theta)
 C     uZetatave    :: uVel*Relativ_Vorticity_3 (computed at v point)
@@ -64,7 +66,7 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave
      &                 ,etatave,uVeltave,vVeltave,wVeltave
      &                 ,thetatave,salttave
-     &                 ,UTtave,VTtave,WTtave
+     &                 ,UTtave,VTtave,WTtave,UStave,VStave
 #ifndef HRCUBE
      &                 ,Eta2tave,TTtave,UUtave,VVtave,UVtave
      &                 ,TdiffRtave
@@ -87,6 +89,8 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  UStave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  VStave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifndef HRCUBE
       _RL  eta2Tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
