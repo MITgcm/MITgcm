@@ -30,14 +30,14 @@ C     i,j,k,bi,bj  - Loop counters
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
 C       DO k=1,Nr
-         IF (timeave(k,bi,bj).NE.0.) THEN
-          DO j=1,sNy
-           DO i=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
+           IF ( timeave(k,bi,bj) .NE. 0. ) THEN
              fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj) / 
      &                              timeave(k,bi,bj)
-           ENDDO
+           ENDIF
           ENDDO
-         ENDIF
+         ENDDO
 C       ENDDO
 C      ENDDO
 C     ENDDO

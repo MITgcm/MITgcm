@@ -2,7 +2,7 @@
 
       SUBROUTINE DO_TIME_AVERAGES(
      I     myCurrentTime, myIter, bi, bj, K, kUp, kDown,
-     I     wVel,ConvectCount,
+     I     K13,K23,wVel,KapGM,ConvectCount,
      I     myThid)
 C     /==========================================================\
 C     | SUBROUTINE DO_TIME_AVERAGES                              |
@@ -28,7 +28,10 @@ C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter, bi, bj, K, kUp, kDown
       _RL     myCurrentTime
+      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     == Local variables ==
@@ -45,7 +48,10 @@ C     Initialize fields for the first call ever
          CALL TIMEAVER_INI_XYZ(vVeltave, bi, bj, K, myThid)
          CALL TIMEAVER_INI_XYZ(uttave, bi, bj, K, myThid)
          CALL TIMEAVER_INI_XYZ(vttave, bi, bj, K, myThid)
+         CALL TIMEAVER_INI_XYZ(k13tave, bi, bj, K, myThid)
+         CALL TIMEAVER_INI_XYZ(k23tave, bi, bj, K, myThid)
          CALL TIMEAVER_INI_XYZ(wVeltave, bi, bj, K, myThid)
+         IF (TOP_LEVEL) CALL TIMEAVER_INI_XY(KapGMtave, bi, bj, myThid)
          CALL TIMEAVER_INI_XYZ(ConvectCountTave, bi, bj, K, myThid)
          TimeAve(k,bi,bj)=0.
          InterTimeAve(k,bi,bj)=0.
@@ -77,8 +83,14 @@ C     Keep record of how much time has been integrated over
 
 C     Time Averages of "intermediate" fields
       DDTT=deltaTclock
+      CALL TIMEAVER_INTER_XYZ(Nr, K13, k13tave, DDTT, 
+     & bi, bj, K, K, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nr, K23, k23tave, DDTT, 
+     & bi, bj, K, K, myThid)
       CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, 
      & bi, bj, K, kUp, myThid)
+      IF (TOP_LEVEL)
+     &  CALL TIMEAVER_INTER_XY(KapGM, KapGMtave, DDTT, bi, bj, myThid)
       InterTimeAve(k,bi,bj)=InterTimeAve(k,bi,bj)+DDTT
       CALL TIMEAVER_INTER_XYZ(Nr, ConvectCount, ConvectCountTave, DDTT,
      & bi, bj, K, K, myThid)
