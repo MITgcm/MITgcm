@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.1 2004/03/20 20:35:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.2 2004/03/21 03:44:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -29,15 +29,10 @@ C     Check that this name is not already defined
       fgf = IFNBLNK(fgname)
       fgl = ILNBLNK(fgname)
       CALL MNC_GET_IND(MNC_MAX_ID, fgname, mnc_cw_fgnm, indfg, myThid)
-      IF (indfg .GT. 0) THEN
-        write(msgbuf,'(3a)') 
-     &       'MNC_CW_SET_UDIM ERROR: file group name ''',
-     &       fgname(fgf:fgl), ''' is already defined'
-        CALL print_error(msgbuf, mythid)
-        stop 'ABNORMAL END: S/R MNC_CW_SET_UDIM'
+      IF (indfg .LT. 1) THEN
+        CALL MNC_GET_NEXT_EMPTY_IND(
+     &       MNC_MAX_ID, mnc_cw_fgnm, indfg, myThid)
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(
-     &     MNC_MAX_ID, mnc_cw_fgnm, indfg, myThid)
       mnc_cw_fgnm(indfg)(1:(fgl-fgf+1)) = fgname(fgf:fgl)
       mnc_cw_fgud(indfg) = nudim
 

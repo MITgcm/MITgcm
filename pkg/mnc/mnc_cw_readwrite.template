@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.9 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.10 2004/03/21 03:44:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -8,7 +8,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_CW_RX_W_YY( 
      I     fbname, bi,bj, 
      I     vtype, 
-     I     indu, 
+C     I     indu, 
      I     var, 
      I     myThid )
 
@@ -35,6 +35,7 @@ C     Local Variables
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
+      integer indfg, fg1,fg2
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
 
@@ -52,6 +53,20 @@ C     re-shaping before passing to NetCDF
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+C     Get the current index for the unlimited dimension from the file
+C     group (or base) name
+      fg1 = IFNBLNK(fbname)
+      fg2 = ILNBLNK(fbname)
+      CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
+      IF (indfg .LT. 1) THEN
+        write(msgbuf,'(3a)') 
+     &       'MNC_CW_RX_W_YY ERROR: file group name ''', 
+     &       fbname(fg1:fg2), ''' is not defined'
+        CALL print_error(msgbuf, mythid)
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
+      ENDIF
+      indu = mnc_cw_fgud(indfg)
 
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
@@ -307,7 +322,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_CW_RX_R_YY( 
      I     fbname, bi,bj, 
      I     vtype, 
-     I     indu, 
+C     I     indu, 
      I     var, 
      I     myThid )
 
@@ -333,11 +348,12 @@ C     Local Variables
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer ind_fv_ids, ind_vt, ierr, atype, alen
-      integer f_sNx,f_sNy, ires
+      integer f_sNx,f_sNy
       integer p(9),s(9),e(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
+      integer indfg, fg1,fg2
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
@@ -353,6 +369,20 @@ C     re-shaping before passing to NetCDF
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+C     Get the current index for the unlimited dimension from the file
+C     group (or base) name
+      fg1 = IFNBLNK(fbname)
+      fg2 = ILNBLNK(fbname)
+      CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
+      IF (indfg .LT. 1) THEN
+        write(msgbuf,'(3a)') 
+     &       'MNC_CW_RX_W_YY ERROR: file group name ''', 
+     &       fbname(fg1:fg2), ''' is not defined'
+        CALL print_error(msgbuf, mythid)
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
+      ENDIF
+      indu = mnc_cw_fgud(indfg)
 
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)

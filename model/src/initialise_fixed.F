@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.26 2004/03/20 23:51:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.27 2004/03/21 03:44:23 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,7 +79,6 @@ C     an input file called data.
 
 #ifdef ALLOW_MNC
 C     Initialize MNC look-up tables
-      write(*,*) 'INITIALISE_FIXED: useMNC = ',useMNC
       IF (useMNC) THEN
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
