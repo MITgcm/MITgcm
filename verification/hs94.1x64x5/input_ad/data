@@ -31,7 +31,6 @@
  writeBinaryPrec=64,
 # globalFiles=.TRUE.,
  staggerTimestep=.TRUE.,
- tr1Stepping=.TRUE.,
  &
 
 # Elliptic solver parameters
