@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.18 2004/09/08 01:49:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.19 2004/12/13 21:58:25 jmc Exp $
 C $Name:  $
 
 C ======================================================================
 C  Common blocks for diagnostics package.
 C  - diagarrays contains the master list of diagnostics and parameters
+C        ndiagt :: total number of available diagnostics
 C         cdiag - character names
 C         idiag - slot number in large diagnostic array
 C         kdiag - number of levels associated with the diagnostic
@@ -13,26 +14,30 @@ C         gdiag - parser field with characteristics of the diagnostics
 C         udiag - physical units of the diagnostic field
 C  - diagnostics contains the large array containing diagnostic fields
 C         qdiag - diagnostic fields array
+C         jdiag - short-list (active diag.) to long-list (available diag.)
+C                 pointer
 C  - diag_choices contains the user-chosen list of fields to store
 C ======================================================================
 
 C diagarrays common
 
       integer        ndiagt
-      parameter    ( ndiagt = 500)
 
-      character*8    cdiag(ndiagt)
-      integer        idiag(ndiagt)
-      integer        kdiag(ndiagt)
-      integer        ndiag(ndiagt)
-      character*80   tdiag(ndiagt)
-      character*16   gdiag(ndiagt)
-      character*16   udiag(ndiagt)
+      character*8    cdiag(ndiagMax)
+      integer        idiag(ndiagMax)
+      integer        kdiag(ndiagMax)
+      integer        ndiag(ndiagMax)
+      integer        mdiag(ndiagMax)
+      character*80   tdiag(ndiagMax)
+      character*16   gdiag(ndiagMax)
+      character*16   udiag(ndiagMax)
 
+      common /diagarrays/ ndiagt 
       common /diagarrays/ cdiag
       common /diagarrays/ idiag
       common /diagarrays/ kdiag
       common /diagarrays/ ndiag
+      common /diagarrays/ mdiag
       common /diagarrays/ tdiag
       common /diagarrays/ gdiag
       common /diagarrays/ udiag
@@ -327,8 +332,6 @@ C diagarrays common
       CHARACTER*8   CENPREC
       CHARACTER*8   CVISCA4
       CHARACTER*8   CVISCAH
-      CHARACTER*8   CdRhoDr
-      CHARACTER*8   CdEtaDt2
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -621,8 +624,6 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(297),  CENPREC   )
       EQUIVALENCE ( CDIAG(298),  CVISCA4   )
       EQUIVALENCE ( CDIAG(299),  CVISCAH   )
-      EQUIVALENCE ( CDIAG(300),  CdRhoDr   )
-      EQUIVALENCE ( CDIAG(301),  CdEtaDt2  )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -915,8 +916,6 @@ C diagarrays common
       integer       iENPREC  , kENPREC ,  nENPREC
       integer       iVISCA4  , kVISCA4 ,  nVISCA4
       integer       iVISCAH  , kVISCAH ,  nVISCAH
-      integer       idRhoDr  , kdRhoDr ,  ndRhoDr
-      integer       idEtaDt2 , kdEtaDt2,  ndEtaDt2
 
 
 c Diagnostic Pointers
@@ -1212,8 +1211,6 @@ c -------------------
       EQUIVALENCE ( IDIAG(297),  IENPREC   )
       EQUIVALENCE ( IDIAG(298),  IVISCA4   )
       EQUIVALENCE ( IDIAG(299),  IVISCAH   )
-      EQUIVALENCE ( IDIAG(300),  IdRhoDr   )
-      EQUIVALENCE ( IDIAG(301),  IdEtaDt2  )
 
 
 c Diagnostic Levels
@@ -1509,8 +1506,6 @@ c -----------------
       EQUIVALENCE ( KDIAG(297),  KENPREC   )
       EQUIVALENCE ( KDIAG(298),  KVISCA4   )
       EQUIVALENCE ( KDIAG(299),  KVISCAH   )
-      EQUIVALENCE ( KDIAG(300),  KdRhoDr   )
-      EQUIVALENCE ( KDIAG(301),  KdEtaDt2  )
 
 
 c Diagnostic Counters
@@ -1806,34 +1801,36 @@ c -------------------
       EQUIVALENCE ( NDIAG(297),  NENPREC   )
       EQUIVALENCE ( NDIAG(298),  NVISCA4   )
       EQUIVALENCE ( NDIAG(299),  NVISCAH   )
-      EQUIVALENCE ( NDIAG(300),  NdRhoDr   )
-      EQUIVALENCE ( NDIAG(301),  NdEtaDt2  )
 
 
 C diagnostics common
 
-      _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,Nsx,Nsy)
+      _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,nSx,nSy)
 
       common /diagnostics/ qdiag
 
 C diag_choices common
+C     nfields(n) :: number of active diagnostics for output stream # n
+C     nActive(n) :: number of active diagnostics (including counters)
+C                   for output stream # n
 
-      integer numlists, numperlist
       integer nlists
-      parameter    ( numlists = 10, numperlist = 50)
 
       integer freq(numlists)
       integer nlevels(numlists)
       integer nfields(numlists)
-      _RL levs (numperlist,numlists)
+      integer nActive(numlists)
+      _RL levs (numLevels,numlists)
+      integer jdiag(numperlist,numlists)
       character*8 flds (numperlist,numlists)
       character*8 fnames(numlists)
-      logical diag_use_mdsio
-      logical diag_use_mnc
+      logical diag_mdsio
+      logical diag_mnc
 
       common /diag_choices/ 
-     &     levs, flds, fnames, freq, nlevels, nfields, nlists,
-     &     diag_use_mdsio, diag_use_mnc
+     &     levs, jdiag, flds, fnames, 
+     &     freq, nlevels, nfields, nActive, nlists,
+     &     diag_mdsio, diag_mnc
 
 
 CEH3 ;;; Local Variables: ***
