@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.4 1998/09/09 15:04:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.5 1998/09/09 15:19:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -25,6 +25,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER i,j,Km1
       _RL halfLayer
+      _RL gamma
 
       if (K.eq.1) then
        Km1=1
@@ -34,14 +35,20 @@ C     == Local variables ==
        halfLayer=1.0 _d 0
       endif
 
+C--   Scale factor for hydrostatic relation except for ocean in pressure coords.
+      gamma = 1. _d 0
+C--   Scale factor for hydrostatic relation for ocean in pressure coords.
+      IF ( buoyancyRelation .EQ. 'OCEANIC' .AND. usingPCoords ) THEN
+       gamma = recip_Gravity*recip_rhoConst
+      ENDIF
+
 C--   Contribution to phiHyd(:,:,K) from buoy(:,:,K-1) + buoy(:,:,K)
 C     (This is now the actual hydrostatic pressure|height at the T/S points)
       DO j=jMin,jMax
        DO i=iMin,iMax
         phiHyd(i,j,K)=phiHyd(i,j,Km1)-rhoConst*halfLayer
-     &  *0.5 _d 0*( drF(Km1)+drF(K) )*recip_HoriVertRatio
+     &  *0.5 _d 0*( drF(Km1)+drF(K) )*gamma
      &  *0.5 _d 0*( buoyKM1(i,j)+buoyKP1(i,j) )
-C    &  *rkFac
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.31 1998/09/09 15:04:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.32 1998/09/09 15:19:07 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -208,6 +208,7 @@ C     delR      - Vertical grid spacing ( units of r ).
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   - Accel. due to gravity ( m/s^2 )
+C     recip_gravity and its inverse
 C     gBaro     - Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     ronil     - Reference density
 C     rhoConst  - Vertically constant reference density 
@@ -312,7 +313,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
      & diffKhS, diffKzS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz, 
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
-     & gravity, gBaro, rhonil, recip_rhonil, 
+     & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
@@ -370,6 +371,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
       _RL GMkbackground
       _RL GMmaxval
       _RL gravity
+      _RL recip_gravity
       _RL gBaro
       _RL rhonil
       _RL recip_rhonil

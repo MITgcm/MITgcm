@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.32 1998/09/09 15:04:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.33 1998/09/09 15:19:07 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -351,6 +351,14 @@ C--   z,p,r coord input switching.
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_rhoConst = 1.D0 / rhoConst
+      ENDIF
+      IF ( gravity .LE. 0. ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: gravity must be greater than 0.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSE
+       recip_gravity = 1.D0 / gravity
       ENDIF
 
 C--   Elliptic solver parameters
