@@ -1,12 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.59 2003/08/03 03:17:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.60 2003/09/25 03:01:59 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS_OPTIONS.h"
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
 cswdptr -- add --
 #ifdef ALLOW_GCHEM
 # include "GCHEM_OPTIONS.h"

@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.47 2003/09/24 04:52:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.48 2003/09/25 03:01:59 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_GMREDI
 #  include "GMREDI_OPTIONS.h"
@@ -12,6 +9,9 @@ C $Name:  $
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 CBOP

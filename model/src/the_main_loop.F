@@ -1,9 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.38 2003/06/27 01:51:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.39 2003/09/25 03:01:59 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS_OPTIONS.h"
-# endif
 
 CBOP
 C     !ROUTINE: THE_MAIN_LOOP

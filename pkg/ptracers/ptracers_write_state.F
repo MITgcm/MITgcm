@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.2 2003/09/25 03:01:59 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,7 +18,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PTRACERS.h"
-#include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myIter               :: time-step number
