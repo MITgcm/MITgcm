@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.42 2001/07/13 20:20:12 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.43 2001/07/30 20:47:52 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint40pre4
+o added re-initialisations of utrans,vtrans,rtrans in
+  calc_common_factors which are crucial for TAF.
+o extended iMin,jMin range for calc_common_factors,
+  calc_diffusivity
+o added option ALLOW_PASSIVE_TRACER
+o a few minor updates and fixes
+
 checkpoint40pre3
 o created calc_gtr1.F for gad package
 o split the_main_loop and re-introduced forward_step
