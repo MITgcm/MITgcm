@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.55 2003/11/18 22:59:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.56 2003/12/28 17:04:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -65,7 +65,7 @@ C     Vertical gridding
 
 C     Horizontal gridding
 C     In cartesian coords distances are in metres
-      usingCartesianGrid = .TRUE.
+      usingCartesianGrid = .FALSE.
       DO i=1,Nx
        delX(i) = UNSET_RL
       ENDDO

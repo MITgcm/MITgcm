@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.102 2003/11/18 22:59:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.103 2003/12/28 17:04:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -829,10 +829,16 @@ C--   Check for conflicting grid definitions.
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( goptCount .LT. 1 ) THEN
+C-     No horizontal grid is specified => use Cartesian grid as default:
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: No coordinate system requested'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_PARMS'
+     &  'S/R INI_PARMS: No horizontal grid requested'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: => Use Cartesian Grid as default'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       usingCartesianGrid = .TRUE.
       ENDIF
 C--   Make metric term settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
