@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.1 2003/10/30 18:44:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.2 2004/11/10 01:55:01 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -106,10 +106,11 @@ C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        af(i,j) = -_maskS(i,j,k,bi,bj)*(
-     &            _recip_dyC(i,j,bi,bj)*(pf(i,j)-pf(i,j-1))
-     &           +phyFac*dPhiHydY(i,j) )
-     &          + gvFld(i,j)
+        af(i,j) =
+     &        (  gvFld(i,j)
+     &          -( _recip_dyC(i,j,bi,bj)*(pf(i,j)-pf(i,j-1))
+     &            +phyFac*dPhiHydY(i,j) )
+     &        )*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Average to Vd point and add coriolis
@@ -160,10 +161,11 @@ C--   Meridional velocity coriolis term
 C     gradx(p)+gU
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
-        af(i,j) = -_maskW(i,j,k,bi,bj)*(
-     &            _recip_dxC(i,j,bi,bj)*(pf(i,j)-pf(i-1,j))
-     &           +phxFac*dPhiHydX(i,j) )
-     &          + guFld(i,j)
+        af(i,j) =
+     &        (  guFld(i,j)
+     &          -( _recip_dxC(i,j,bi,bj)*(pf(i,j)-pf(i-1,j))
+     &            +phxFac*dPhiHydX(i,j) )
+     &        )*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Average to Ud point and add coriolis
