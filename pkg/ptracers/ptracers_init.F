@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.8 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.9 2004/07/18 01:12:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -68,7 +68,7 @@ C Initialize arrays in common blocks :
          ENDDO
          DO j=1-Oly,sNy+OLy
           DO i=1-Olx,sNx+Olx
-           surfaceTendencyPtr(i,j,bi,bj,iTracer) = 0. _d 0
+           surfaceForcingPtr(i,j,bi,bj,iTracer) = 0. _d 0
           ENDDO
          ENDDO
 

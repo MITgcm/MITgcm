@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.15 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.16 2004/07/18 01:12:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -136,7 +136,7 @@ cswdptr - end add ---
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceTendencyPtr(1-Olx,1-Oly,1,1,iTracer),
+     I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
 cswdptr --add---
 #endif
@@ -169,7 +169,7 @@ cswdptr - end add ---
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceTendencyPtr(1-Olx,1-Oly,1,1,iTracer),
+     I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
 cswdptr - add--
 #endif

@@ -29,7 +29,7 @@ C  myIter               :: current timestep
 C  myTime               :: current time
 C  bi,bj                :: tile indices
 C  PTR_ALK              :: alkalinity field
-C  GALK                 :: tendency term of alkalinity
+C  GALK                 :: surface flux of alkalinity
       INTEGER myIter, myThid
       _RL myTime
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -57,7 +57,7 @@ C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
 cQQ           GALK(i,j)=gsm_ALK*ftotflux(i,j,bi,bj)/gsm_S
-              GALK(i,j)=gsm_ALK*surfaceTendencyS(i,j,bi,bj)/gsm_S
+              GALK(i,j)=gsm_ALK*surfaceForcingS(i,j,bi,bj)/gsm_S
 c OR
 c let virtual flux be zero
 c             GALK(i,j)=0.d0

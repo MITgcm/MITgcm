@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.5 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.6 2004/07/18 01:12:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -43,7 +43,7 @@ C     myTime - Current time of simulation ( s )
 C     == Local variables ==
       INTEGER iTracer, i, j, k
       _RL DDTT
-      _RL tempArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL tempArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C-    Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
@@ -83,23 +83,26 @@ C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
  
 C-    Time Averages of surface fluxes
-       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-        k=Nr
-       ELSE
-        k=1
-       ENDIF
+c      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+c       k=Nr
+c      ELSE
+c       k=1
+c      ENDIF
 
 C     ptracerFlux
        DO iTracer=1,PTRACERS_numInUse
-        DO j=1,sNy
-         DO i=1,sNx
-          tempArray(i,j,bi,bj)=maskC(i,j,k,bi,bj)*
-     &     surfaceTendencyPtr(i,j,bi,bj,iTracer)*
-     &     drF(k)*hFacC(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
+c       DO j=1,sNy
+c        DO i=1,sNx
+c         tempArray(i,j,bi,bj)=maskC(i,j,k,bi,bj)*
+c    &     surfaceForcingPtr(i,j,bi,bj,iTracer)*
+c    &     drF(k)*hFacC(i,j,k,bi,bj)
+c        ENDDO
+c       ENDDO
+c       CALL TIMEAVE_CUMULATE(ptracerFluxtave(1-Olx,1-Oly,1,1,iTracer),
+c    &                        tempArray,1,deltaTclock,bi,bj,myThid)
         CALL TIMEAVE_CUMULATE(ptracerFluxtave(1-Olx,1-Oly,1,1,iTracer),
-     &                        tempArray,1,deltaTclock,bi,bj,myThid)
+     &                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
+     &                                  1,deltaTclock,bi,bj,myThid)
        ENDDO
 
        DO K=1,Nr

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.6 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.7 2004/07/18 01:13:50 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -42,7 +42,7 @@ c  PTR_CO2              :: DIC tracer field
       INTEGER iMin,iMax,jMin,jMax, bi, bj
 
 C !OUTPUT PARAMETERS: ===================================================
-c GDC                   :: tendency term due to air-sea exchange
+c GDC                   :: surface flux due to air-sea exchange
       _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
@@ -172,7 +172,7 @@ C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
 C ...so here, VirtualFLux = dC/dt!
-              VirtualFlux(i,j)=gsm_DIC*surfaceTendencyS(i,j,bi,bj)/gsm_s
+              VirtualFlux(i,j)=gsm_DIC*surfaceForcingS(i,j,bi,bj)/gsm_s
 c OR
 c let virtual flux be zero
 c              VirtualFlux(i,j)=0.d0
@@ -187,7 +187,7 @@ C update tendency
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            GDC(i,j)= maskC(i,j,kLev,bi,bj)*(
-     &                    FluxCO2(i,j,bi,bj)*recip_drF(kLev)
+     &                    FluxCO2(i,j,bi,bj)
      &                    + VirtualFlux(i,j)
      &                                              )
           ENDDO

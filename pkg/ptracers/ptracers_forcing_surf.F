@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.2 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.3 2004/07/18 01:12:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,7 +24,7 @@ C !USES: ===============================================================
 #include "PTRACERS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
+c #include "DYNVARS.h"
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -48,8 +48,8 @@ C Example of how to add forcing at the surface
        DO iTracer=1,PTRACERS_numInUse
           DO j = jMin, jMax
              DO i = iMin, iMax
-                surfaceTendencyPtr(i,j,bi,bj,iTracer) =
-     &               surfaceTendencyS(i,j,bi,bj)
+                surfaceForcingPtr(i,j,bi,bj,iTracer) =
+     &               surfaceForcingS(i,j,bi,bj)
              ENDDO
           ENDDO
        ENDDO
