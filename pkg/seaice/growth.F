@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.18 2004/07/05 20:05:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.19 2004/07/06 06:35:04 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,8 +41,6 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  TBC, salinity_ice, SDF, Q0, QS
-      _RL  theta_new
-
       _RL GAREA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL GHEFF( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL AR   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
@@ -111,34 +109,24 @@ CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-C NOW BALANCE THE HEAT IN OCEAN FIRT LEVEL
-C Here the units of YNEG are m of sea-ice.
-C The factor dRf(1)/72.0764, used to convert temperature
-C change in deg K to m of sea-ice, is approximately:
-C dRf(1) * (sea water heat capacity = 3996 J/kg/K)
+C--   Create or melt sea-ice so that first-level oceanic temperature
+C     is approximately at the freezing point when there is sea-ice.
+C     Initially the units of YNEG are m of sea-ice.
+C     The factor dRf(1)/72.0764, used to convert temperature
+C     change in deg K to m of sea-ice, is approximately:
+C     dRf(1) * (sea water heat capacity = 3996 J/kg/K)
 C        * (density of sea-water = 1026 kg/m^3)
 C        / (latent heat of fusion of sea-ice = 334000 J/kg)
 C        / (density of sea-ice = 910 kg/m^3)
+C     Negative YNEG leads to ice growth.
+C     Positive YNEG leads to ice melting.
           YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
-          IF(YNEG(I,J,bi,bj).LE.ZERO) THEN
-C SUPERCOOLING, CONVERT TO ICE
-           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj)
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)-YNEG(I,J,bi,bj)
-C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH SUPER-COOLING
-           YNEG(I,J,bi,bj)=TBC-theta(I,J,1,bi,bj)
-          ELSE
-C NOW CORRECT ICE THICKNESS
-           GHEFF(I,J)=HEFF(I,J,1,bi,bj)
-           HEFF(I,J,3,bi,bj)=HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj)
-           HEFF(I,J,1,bi,bj)=MAX(ZERO,HEFF(I,J,3,bi,bj))
-C NOW CORRECT YNEG
-           YNEG(I,J,bi,bj)=HEFF(I,J,1,bi,bj)-HEFF(I,J,3,bi,bj)
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &                          +(HEFF(I,J,1,bi,bj)-GHEFF(I,J))
-           theta_new=     (YNEG(I,J,bi,bj)*72.0764 _d 0/dRf(1)+TBC)
-C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH NO SUPER-COOLING
-           YNEG(I,J,bi,bj)=theta_new -theta(I,J,1,bi,bj)
-          ENDIF
+          GHEFF(I,J)=HEFF(I,J,1,bi,bj)
+          HEFF(I,J,1,bi,bj)=MAX(ZERO,HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj))
+          YNEG(I,J,bi,bj)=GHEFF(I,J)-HEFF(I,J,1,bi,bj)
+          SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)-YNEG(I,J,bi,bj)
+C--   Now convert YNEG back to deg K.
+          YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)*recip_dRf(1)*72.0764 _d 0
          ENDDO
         ENDDO
 c
@@ -269,7 +257,7 @@ C NOW GET TOTAL QNET AND QSW
 #endif
 C Add YNEG contribution to QNET
           QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
-     &         -YNEG(I,J,bi,bj)/SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
+     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
      &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
