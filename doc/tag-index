@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.404 2004/12/05 23:29:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.405 2004/12/06 06:08:24 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o switch back to "sflux = sflux - runoff" in exf_getforcing.F
 o implement Implicit Vertical advection for pTracers
 o depth convergence accelerator: replace deltaTtracer by dTtracerLev(k)
   (implemented also for implicit vertical diffusion & advection)
