@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.4 1998/07/03 18:45:03 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.5 1998/07/03 20:43:44 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -161,16 +161,16 @@ if ( $#flist ) then
  echo -n "OBJFILES = " > objlist.inc
  foreach ff ( ${flist} )
   set fname = ( ${ff:t}       )
-  echo " \\" >> srclist.inc
+  echo ' \' >> srclist.inc
   echo -n "           " ${fname:r}.F >> srclist.inc
-  echo " \\" >> f77list.inc
+  echo ' \' >> f77list.inc
   echo -n "           " ${fname:r}.f >> f77list.inc
-  echo " \\" >> objlist.inc
+  echo ' \' >> objlist.inc
   echo -n "           " ${fname:r}.o >> objlist.inc
  end
- echo >> srclist.inc
- echo >> f77list.inc
- echo >> objlist.inc
+ echo " " >> srclist.inc
+ echo " " >> f77list.inc
+ echo " " >> objlist.inc
 else
  echo No source files found...\!
  exit
@@ -254,8 +254,10 @@ LIBS = ${LIBS}
 
 EOF
 
-cat srclist.inc f77list.inc objlist.inc >> ${mfile}
-rm -f srclist.inc f77list.inc objlist.inc
+cat srclist.inc >> ${mfile}
+cat f77list.inc >> ${mfile}
+cat objlist.inc >> ${mfile}
+#rm -f srclist.inc f77list.inc objlist.inc
 
 cat >> ${mfile} <<EOF
 
