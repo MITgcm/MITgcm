@@ -1,9 +1,12 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.6 2003/08/07 02:31:29 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.7 2004/07/11 06:21:44 dimitri Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML
+#
+ repeatPeriod      = 31622400
+#
  hfluxstartdate1   = 19781216,
  hfluxstartdate2   = 180000,
  hfluxperiod       = 2635200.0,
