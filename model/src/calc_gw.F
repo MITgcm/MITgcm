@@ -40,7 +40,7 @@ C     == Local variables ==
       _RL    flx_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    flx_Up(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     I,J,K - Loop counters
-      INTEGER i,j,k, kP1
+      INTEGER i,j,k, kP1, kUp
       _RL  wOverride
       _RS  hFacROpen
       _RS  hFacRClosed
@@ -173,6 +173,19 @@ caja           and an hFacUS (above V points) too...
            gWNM1(i,j,k,bi,bj) = gW(i,j,k,bi,bj) 
           ENDDO
          ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   This call is aesthetic: it makes the W field
+C     consistent with the OBs but this has no algorithmic
+C     impact. This is purely for diagnostic purposes.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO K=1,Nr
+         Kup=max(1,K-1)
+c        CALL APPLY_OBCS3( bi, bj, K, Kup, rTrans, rVel,
+c    I                        myThid )
         ENDDO
        ENDDO
       ENDDO
