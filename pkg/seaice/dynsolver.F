@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.13 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.14 2004/12/22 00:49:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,8 +42,8 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj, kii
-      _RL DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
-      _RL GRAV, ECCEN, ECM2, RADIUS, DELT1, DELT2, PSTAR, AAA
+      _RL RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
+      _RL ECCEN, ECM2, RADIUS, DELT1, DELT2, PSTAR, AAA
       _RL TEMPVAR, U1, V1
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -60,11 +60,8 @@ C     i,j,bi,bj - Loop counters
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 C--   FIRST SET UP BASIC CONSTANTS
-      DWAT=0.59 _d 0
-      DAIR=0.01462 _d 0
       RHOICE=0.91 _d +03
       RHOAIR=1.3 _d 0
-      GRAV=9.832 _d 0
       ECCEN=TWO
       ECM2=ONE/(ECCEN**2)
       RADIUS=6370. _d 3
@@ -165,7 +162,7 @@ CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-crg what about DWAIN,DRAGS,DRAGA,ETA,ZETA
+crg what about DRAGS,DRAGA,ETA,ZETA
 
 crg later c$taf loop = iteration uice,vice
 

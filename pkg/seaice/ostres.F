@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.10 2004/03/03 05:17:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.11 2004/12/22 00:49:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,17 +46,51 @@ c do not introduce turning angle
       SINWAT=ZERO
       COSWAT=ONE
 
+#ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
+C--   Following formulation is problematic and is no longer used.
+#ifdef SEAICE_ALLOW_DYNAMICS
+      IF ( SEAICEuseDYNAMICS ) THEN
+C--   Compute ice-affected wind stress
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
+     &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,1,bi,bj))
+     &          -SINWAT*(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
+           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
+     &          *(SINWAT*(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
+     &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,1,bi,bj)))
+           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
+     &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
+           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
+     &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
+           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,1,bi,bj)
+     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
+           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,1,bi,bj)
+     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           WINDX(I,J,bi,bj)=-WINDX(I,J,bi,bj)
+           WINDY(I,J,bi,bj)=-WINDY(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /*  SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_ORIGINAL_BAD_ICE_STRESS */
+
 C--   Update overlap regions
       CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
 
 #ifndef SEAICE_EXTERNAL_FLUXES
-cdm !!! NOTE that wind stress under sea-ice is set to the      !!!
-cdm !!! same value as it would be if there was no sea-ice.     !!!
-cdm !!! This is a placeholder until a more physically-sensible !!!
-cdm !!! stable solution is developed.  Apparently ocean stress !!!
-cdm !!! that is based on sea-ice velocity can cause trouble in !!!
-cdm !!! Arctic Ocean configurations.  This temporary solution  !!!
-cdm !!! also corresponds to that adopted by CCSM-2.            !!!
 C--   Interpolate wind stress (N/m^2) from South-West B-grid
 C     to South-West C-grid for forcing ocean model.
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -73,6 +107,30 @@ C     to South-West C-grid for forcing ocean model.
       ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 #endif /* ifndef SEAICE_EXTERNAL_FLUXES */
+
+#ifdef SEAICE_TEST_ICE_STRESS_1
+C--   Compute ice-affected wind stress
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)*
+     &          (UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))
+           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)*
+     &          (UICEC(I,J,bi,bj)-GWATX(I,J,bi,bj))
+           fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
+     &          HALF*AREA(I,J,1,bi,bj)*
+     &          (WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
+           fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+
+     &          HALF*AREA(I,J,1,bi,bj)*
+     &          (WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
+#endif /* SEAICE_TEST_ICE_STRESS_1 */
 
 #endif /* ALLOW_SEAICE */
 
