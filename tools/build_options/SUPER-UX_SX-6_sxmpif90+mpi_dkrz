@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-6_sxmpif90+mpi_dkrz,v 1.1 2004/08/02 18:45:51 heimbach Exp $
+#
+# for use on hurrikan.dkrz.de
+# compile on cross.dkrz.de using cross compiler
+# module load cross-compiler
+# heimbach@mit.edu, edhill@mit.edu
+
+MAKE='sxgmake'
+CPP='/lib/cpp  -traditional -P'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_NEC_SX -DWORDLENGTH=1'
+#ph: on cross.dkrz.de set environment var.
+#ph: setenv F_UFMTENDIAN big
+FC='sxmpif90 -c'
+CC='sxcc'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+LINK='sxmpif90'
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -sx6 -Pstack'
+INCLUDES='-I/SX/usr/include'

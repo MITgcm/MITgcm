@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-6_sx90_dkrz,v 1.1 2004/08/02 18:45:51 heimbach Exp $
+#
+# for use on hurrikan.dkrz.de
+# compile on cross.dkrz.de using cross compiler
+# module load cross-compiler
+# heimbach@mit.edu, edhill@mit.edu
+
+MAKE='sxgmake'
+CPP='/lib/cpp  -traditional -P'
+#ph: on cross.dkrz.de set environment var.
+#ph: setenv F_UFMTENDIAN big
+DEFINES='-DTARGET_NEC_SX -DWORDLENGTH=1'
+FC='sxf90'
+CC='sxc++'
+LINK='sxf90'
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -Pstack'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+#FFLAGS= '-ew'
+#FOPTIM='-Cvopt'
+NOOPTFLAGS='-Cssafe'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
