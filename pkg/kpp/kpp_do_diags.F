@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.8 2004/05/05 07:15:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.9 2004/07/23 19:43:56 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -200,15 +200,15 @@ C     Normalize by integrated time
 #ifdef MULTIPLE_RECORD_KPP_STATE_FILES
 C       Write each snap-shot as a new record in one file per variable
 C       - creates relatively few files but these files can become huge
-         CALL WRITE_REC_XYZ_RS('KPPviscAz-T',KPPviscAzTave,
+         CALL WRITE_REC_XYZ_RL('KPPviscAz-T',KPPviscAzTave,
      &                         kpp_drctrecTave,myIter,myThid)
-         CALL WRITE_REC_XYZ_RS('KPPdiffKzT-T',KPPdiffKzTTave,
+         CALL WRITE_REC_XYZ_RL('KPPdiffKzT-T',KPPdiffKzTTave,
      &                         kpp_drctrecTave,myIter,myThid)
-         CALL WRITE_REC_XYZ_RS('KPPdiffKzS-T',KPPdiffKzSTave,
+         CALL WRITE_REC_XYZ_RL('KPPdiffKzS-T',KPPdiffKzSTave,
      &                         kpp_drctrecTave,myIter,myThid)
-         CALL WRITE_REC_XYZ_RS('KPPghat-T',KPPghatTave,
+         CALL WRITE_REC_XYZ_RL('KPPghat-T',KPPghatTave,
      &                         kpp_drctrecTave,myIter,myThid)
-         CALL WRITE_REC_XY_RS('KPPhbl-T',KPPhblTave,
+         CALL WRITE_REC_XY_RL('KPPhbl-T',KPPhblTave,
      &                         kpp_drctrecTave,myIter,myThid)
 C--   Increment record counter
          kpp_drctrecTave = kpp_drctrecTave + 1
@@ -219,15 +219,15 @@ C       Write each snap-shot as a new file
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
             WRITE(suff,'(I10.10)') myIter
-         CALL WRITE_FLD_XYZ_RS('KPPviscAz-T.',suff,KPPviscAzTave,
+         CALL WRITE_FLD_XYZ_RL('KPPviscAz-T.',suff,KPPviscAzTave,
      &                         myIter,myThid)
-         CALL WRITE_FLD_XYZ_RS('KPPdiffKzT-T.',suff,KPPdiffKzTTave,
+         CALL WRITE_FLD_XYZ_RL('KPPdiffKzT-T.',suff,KPPdiffKzTTave,
      &                         myIter,myThid)
-         CALL WRITE_FLD_XYZ_RS('KPPdiffKzS-T.',suff,KPPdiffKzSTave,
+         CALL WRITE_FLD_XYZ_RL('KPPdiffKzS-T.',suff,KPPdiffKzSTave,
      &                         myIter,myThid)
-         CALL WRITE_FLD_XYZ_RS('KPPghat-T.',suff,KPPghatTave,
+         CALL WRITE_FLD_XYZ_RL('KPPghat-T.',suff,KPPghatTave,
      &                         myIter,myThid)
-         CALL WRITE_FLD_XY_RS('KPPhbl-T.',suff,KPPhblTave,
+         CALL WRITE_FLD_XY_RL('KPPhbl-T.',suff,KPPhblTave,
      &                         myIter,myThid)
 #endif /* MULTIPLE_RECORD_KPP_STATE_FILES */          
          
