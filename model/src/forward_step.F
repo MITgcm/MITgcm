@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.112 2005/01/28 01:00:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.113 2005/02/04 11:01:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -247,6 +247,10 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 #ifdef ALLOW_PTRACERS
 # ifdef ALLOW_GCHEM
         IF ( useGCHEM ) THEN 
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
+#endif /* ALLOW_DEBUG */
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
         ENDIF
 # endif
@@ -328,11 +332,11 @@ C     which is needed for KPP is not set properly. ptracerForcingSurf must
 C     be treated differently depending on whether GCHEM_SEPARATE_FORCING
 C     is define or not. TBD.
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB ) 
-     &      CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
-#endif
        IF ( useGCHEM ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &       CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
+#endif
         CALL TIMER_START('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
         CALL TIMER_STOP ('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
@@ -568,11 +572,11 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
 #ifdef ALLOW_GCHEM
 C     Add separate timestepping of chemical/biological/forcing
 C     of ptracers here in GCHEM_FORCING_SEP
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
-#endif /* ALLOW_DEBUG */
         IF ( useGCHEM ) THEN 
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
+#endif /* ALLOW_DEBUG */
          CALL TIMER_START('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
          CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
          CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
