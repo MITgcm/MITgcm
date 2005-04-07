@@ -36,7 +36,7 @@ c     == routine arguments ==
       integer cunit
       integer ivartype
       character*( 80) fname
-      character*  (5) masktype
+      character*(  9) masktype
       character*( 80) weighttype
       _RL     weightfld( nr,nsx,nsy )
       logical lxxadxx

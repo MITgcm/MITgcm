@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.4 2005/02/09 21:16:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.5 2005/04/07 23:38:43 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -452,12 +452,11 @@ c
 
 c     write masks and weights to files to be read by a master process
 c
-      call active_write_xyz( 'hFacC', hFacC,   1, 0, mythid, dummy)
-      call active_write_xyz( 'maskC', maskC,   1, 0, mythid, dummy)
-      call active_write_xyz( 'maskW', maskW,   1, 0, mythid, dummy)
-      call active_write_xyz( 'maskS', maskS,   1, 0, mythid, dummy)
+      call active_write_xyz( 'maskCtrlC', maskC, 1, 0, mythid, dummy)
+      call active_write_xyz( 'maskCtrlW', maskW, 1, 0, mythid, dummy)
+      call active_write_xyz( 'maskCtrlS', maskS, 1, 0, mythid, dummy)
 #if (defined (ALLOW_EFLUXP0_CONTROL))
-      call active_write_xyz( 'hFacV', hFacV,   1, 0, mythid, dummy)
+      call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
 
       return

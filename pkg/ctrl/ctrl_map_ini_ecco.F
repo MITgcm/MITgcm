@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.2 2005/02/28 17:29:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.3 2005/04/07 23:38:43 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -66,10 +66,7 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*( 80)   fnametheta
-      character*( 80)   fnamesalt
-      character*( 80)   fnameedtaux
-      character*( 80)   fnameedtauy
+      character*( 80)   fnamegeneric
 
 c     == external ==
 
@@ -102,9 +99,9 @@ c     == end of interface ==
 #ifdef ALLOW_THETA0_CONTROL
 c--   Temperature field.
       il=ilnblnk( xx_theta_file )
-      write(fnametheta(1:80),'(2a,i10.10)')
+      write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnametheta, tmpfld3d, 1,
+      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_theta_dummy )
 cph(
@@ -170,9 +167,9 @@ cph)
 #ifdef ALLOW_SALT0_CONTROL
 c--   Temperature field.
       il=ilnblnk( xx_salt_file )
-      write(fnamesalt(1:80),'(2a,i10.10)')
+      write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_salt_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnamesalt, tmpfld3d, 1,
+      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_salt_dummy )
 
@@ -226,9 +223,9 @@ CADJ STORE salt = tapelev_init, key = ikey
 #ifdef ALLOW_EDTAUX_CONTROL
 c-- zonal eddy stress : edtaux
       il=ilnblnk( xx_edtaux_file )
-      write(fnameedtaux(1:80),'(2a,i10.10)')
+      write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtaux_file(1:il),'.',optimcycle
-      call active_read_xyz( fnameedtaux, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_edtaux_dummy )
       do bj = jtlo,jthi
@@ -248,9 +245,9 @@ c-- zonal eddy stress : edtaux
 #ifdef ALLOW_EDTAUY_CONTROL
 c-- meridional eddy stress : edtauy
       il=ilnblnk( xx_edtauy_file )
-      write(fnameedtauy(1:80),'(2a,i10.10)')
+      write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtauy_file(1:il),'.',optimcycle
-      call active_read_xyz( fnameedtauy, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_edtauy_dummy )
       do bj = jtlo,jthi
@@ -267,6 +264,110 @@ c-- meridional eddy stress : edtauy
       enddo
 #endif
 
+#ifdef ALLOW_UVEL0_CONTROL
+c-- initial zonal velocity
+      il=ilnblnk( xx_uvel_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_uvel_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_uvel_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) +
+     &                              tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_VVEL0_CONTROL
+c-- initial merid. velocity
+      il=ilnblnk( xx_vvel_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_vvel_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_vvel_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) +
+     &                              tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_ETAN0_CONTROL
+c--   initial Eta.
+      il=ilnblnk( xx_etan_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_etan_file(1:il),'.',optimcycle
+      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_etan_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_RELAXSST_CONTROL
+c--   SST relaxation coefficient.
+      il=ilnblnk( xx_relaxsst_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_relaxsst_file(1:il),'.',optimcycle
+      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_relaxsst_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              lambdaThetaClimRelax(i,j,bi,bj) = 
+     &              lambdaThetaClimRelax(i,j,bi,bj) 
+     &              + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_RELAXSSS_CONTROL
+c--   SSS relaxation coefficient.
+      il=ilnblnk( xx_relaxsss_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_relaxsss_file(1:il),'.',optimcycle
+      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_relaxsss_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              lambdaSaltClimRelax(i,j,bi,bj) = 
+     &              lambdaSaltClimRelax(i,j,bi,bj) 
+     &              + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
 
 c--   Update the tile edges.
 
@@ -282,6 +383,25 @@ c--   Update the tile edges.
        STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
 #endif
 
+#ifdef ALLOW_UVEL0_CONTROL
+      _EXCH_XYZ_R8( uVel, mythid)
+#endif
+
+#ifdef ALLOW_VVEL0_CONTROL
+      _EXCH_XYZ_R8( vVel, mythid)
+#endif
+
+#ifdef ALLOW_ETAN0_CONTROL
+      _EXCH_XY_R8( etaN, mythid )
+#endif
+
+#ifdef ALLOW_RELAXSST_CONTROL
+      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
+#endif
+
+#ifdef ALLOW_RELAXSSS_CONTROL
+      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
+#endif
 
 #endif
 

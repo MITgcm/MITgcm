@@ -36,7 +36,7 @@ c     == routine arguments ==
       integer cunit
       integer ivartype
       character*( 80) fname, fnameGlobal
-      character*(  5) masktype
+      character*(  9) masktype
       character*( 80) weighttype
       logical lxxadxx
       integer mythid

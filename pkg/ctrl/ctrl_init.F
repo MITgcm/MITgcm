@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.15 2005/02/28 17:29:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.16 2005/04/07 23:38:43 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -132,7 +132,7 @@ cph    index 21-22          for efluxy, efluxp
 cph    index 23-24          for bottom drag
 cph)
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_THETA0_CONTROL
 c--   Initial state temperature contribution.
@@ -141,7 +141,7 @@ c--   Initial state temperature contribution.
      &     snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_THETA0_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SALT0_CONTROL
 c--   Initial state salinity contribution.
@@ -154,7 +154,7 @@ c--   ===========================
 c--   Surface flux contributions.
 c--   ===========================
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_HFLUX_CONTROL))
 c--   Heat flux.
@@ -208,7 +208,7 @@ c--   initial forcing only
 
 #endif /* ALLOW_HFLUX_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_SFLUX_CONTROL))
 c--   Salt flux.
@@ -262,7 +262,7 @@ c--   initial forcing only
 
 #endif /* ALLOW_SFLUX_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_USTRESS_CONTROL))
 c--   Zonal wind stress.
@@ -316,7 +316,7 @@ c--   initial forcing only
 
 #endif /* ALLOW_USTRESS_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #if (defined (ALLOW_VSTRESS_CONTROL))
 c--   Meridional wind stress.
@@ -375,7 +375,7 @@ c--   ===========================
 c--   Open boundary contributions.
 c--   ===========================
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSN_CONTROL
 c--   Northern obc.
@@ -401,7 +401,7 @@ c--   Northern obc.
 
 #endif /* ALLOW_OBCSN_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSS_CONTROL
 c--   Southern obc.
@@ -427,7 +427,7 @@ c--   Southern obc.
 
 #endif /* ALLOW_OBCSS_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSW_CONTROL
 c--   Western obc.
@@ -453,7 +453,7 @@ c--   Western obc.
 
 #endif  /* ALLOW_OBCSW_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_OBCSE_CONTROL
 c--   Eastern obc.
@@ -479,7 +479,7 @@ c--   Eastern obc.
 
 #endif /* ALLOW_OBCSE_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_DIFFKR_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -487,7 +487,7 @@ c--
      &       snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_DIFFKR_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPGM_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -495,7 +495,7 @@ c--
      &       snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_KAPGM_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_TR10_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -503,7 +503,7 @@ c--
      &       snx, sny, nr, 'c', '3d', mythid )
 #endif /* ALLOW_TR10_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SST0_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -511,7 +511,7 @@ c--
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_SST0_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_SSS0_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -519,7 +519,7 @@ c--
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_SSS0_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_HFACC_CONTROL
 # ifdef ALLOW_HFACC3D_CONTROL
@@ -533,7 +533,7 @@ c--
 # endif /*ALLOW_HFACC3D_CONTROL*/
 #endif /* ALLOW_HFACC_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EFLUXY0_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -541,7 +541,7 @@ c--
      &       snx, sny, nr, 's', '3d', mythid )
 #endif /* ALLOW_EFLUXY0_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EFLUXP0_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -549,7 +549,7 @@ c--
      &       snx, sny, nr, 'v', '3d', mythid )
 #endif /* ALLOW_EFLUXP0_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
         call ctrl_init_ctrlvar ( 
@@ -557,7 +557,7 @@ c--
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_BOTTOMDRAG_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EDTAUX_CONTROL
         call ctrl_init_ctrlvar (
@@ -565,7 +565,7 @@ c--
      &       snx, sny, nr, 'w', '3d', mythid )
 #endif /* ALLOW_EDTAUX_CONTROL */
 
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_EDTAUY_CONTROL
         call ctrl_init_ctrlvar (
@@ -573,9 +573,49 @@ c--
      &       snx, sny, nr, 's', '3d', mythid )
 #endif /* ALLOW_EDTAUY_CONTROL */
 
-c-------------------------------------------------------------------------------
-c-------------------------------------------------------------------------------
-c-------------------------------------------------------------------------------
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_UVEL0_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_uvel_file, 27, 127, 1, 1, 1,
+     &       snx, sny, nr, 'w', '3d', mythid )
+#endif /* ALLOW_UVEL0_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_VVEL0_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_vvel_file, 28, 128, 1, 1, 1,
+     &       snx, sny, nr, 's', '3d', mythid )
+#endif /* ALLOW_VVEL0_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_ETAN0_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_etan_file, 29, 129, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_VVEL0_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_RELAXSST_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_relaxsst_file, 30, 130, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_RELAXSST_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_RELAXSSS_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_relaxsss_file, 31, 131, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_RELAXSSS_CONTROL */
+
+c----------------------------------------------------------------------
+c----------------------------------------------------------------------
+c----------------------------------------------------------------------
 
         call ctrl_init_wet( mythid )
         

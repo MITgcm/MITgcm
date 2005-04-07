@@ -22,14 +22,18 @@ c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
 c                       south (s), and western (w) mask, resp. .
 
       integer     maxcvars
-      parameter ( maxcvars = 30 )
+      parameter ( maxcvars = 40 )
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be
 cph set to 64 by default.
 cph Need to put this in namelist at some point!
       integer     ctrlprec
+#ifdef CTRL_SET_PREC_32
+      parameter ( ctrlprec = 32 )
+#else
       parameter ( ctrlprec = 64 )
+#endif
 
 #ifdef ALLOW_ADMTLM
       integer admtlmrec
@@ -383,6 +387,11 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_bottomdrag_file
      &                    , xx_edtaux_file
      &                    , xx_edtauy_file
+     &                    , xx_uvel_file
+     &                    , xx_vvel_file
+     &                    , xx_etan_file
+     &                    , xx_relaxsst_file
+     &                    , xx_relaxsss_file
      &                    , xx_theta_ini_fin_file
      &                    , xx_salt_ini_fin_file
 
@@ -411,6 +420,11 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_bottomdrag_file
       character*(MAX_LEN_FNAM) xx_edtaux_file
       character*(MAX_LEN_FNAM) xx_edtauy_file
+      character*(MAX_LEN_FNAM) xx_uvel_file
+      character*(MAX_LEN_FNAM) xx_vvel_file
+      character*(MAX_LEN_FNAM) xx_etan_file
+      character*(MAX_LEN_FNAM) xx_relaxsst_file
+      character*(MAX_LEN_FNAM) xx_relaxsss_file
       character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
       character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
 
@@ -581,6 +595,11 @@ c                         control part.
       character*( 80)   fname_bottomdrag(2)
       character*( 80)   fname_edtaux(2)
       character*( 80)   fname_edtauy(2)
+      character*( 80)   fname_uvel(2)
+      character*( 80)   fname_vvel(2)
+      character*( 80)   fname_etan(2)
+      character*( 80)   fname_relaxsst(2)
+      character*( 80)   fname_relaxsss(2)
 
 c     ==================================================================
 c     END OF HEADER CONTROLVARS

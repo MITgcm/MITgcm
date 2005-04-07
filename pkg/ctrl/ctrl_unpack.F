@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.18 2005/02/28 17:29:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.19 2005/04/07 23:38:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,6 +138,11 @@ c--   Assign file names.
       call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
       call ctrl_set_fname(xx_edtaux_file, fname_edtaux, mythid)
       call ctrl_set_fname(xx_edtauy_file, fname_edtauy, mythid)
+      call ctrl_set_fname(xx_uvel_file, fname_uvel, mythid)
+      call ctrl_set_fname(xx_vvel_file, fname_vvel, mythid)
+      call ctrl_set_fname(xx_etan_file, fname_etan, mythid)
+      call ctrl_set_fname(xx_relaxsst_file, fname_relaxsst, mythid)
+      call ctrl_set_fname(xx_relaxsss_file, fname_relaxsss, mythid)
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -295,7 +300,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtheta"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_theta(ictrlgrad), "hFacC",
+     &         fname_theta(ictrlgrad), "maskCtrlC",
      &         weighttype, wtheta, nwetcglobal, mythid)
 #endif
 
@@ -304,7 +309,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsalt"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_salt(ictrlgrad), "hFacC",
+     &         fname_salt(ictrlgrad), "maskCtrlC",
      &         weighttype, wsalt, nwetcglobal, mythid)
 #endif
 
@@ -314,7 +319,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whflux"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_hflux(ictrlgrad), "hFacC",
+     &         fname_hflux(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -324,7 +329,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsflux"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_sflux(ictrlgrad), "hFacC",
+     &         fname_sflux(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -334,7 +339,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_tauu(ictrlgrad), "maskW",
+     &         fname_tauu(ictrlgrad), "maskCtrlW",
      &         weighttype, nwetwglobal, mythid)
 #endif
 
@@ -344,7 +349,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_tauv(ictrlgrad), "maskS",
+     &         fname_tauv(ictrlgrad), "maskCtrlS",
      &         weighttype, nwetsglobal, mythid)
 #endif
 
@@ -353,7 +358,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "watemp"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_atemp(ictrlgrad), "hFacC",
+     &         fname_atemp(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -362,7 +367,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "waqh"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_aqh(ictrlgrad), "hFacC",
+     &         fname_aqh(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -371,7 +376,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wuwind"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_uwind(ictrlgrad), "maskW",
+     &         fname_uwind(ictrlgrad), "maskCtrlW",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -380,7 +385,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wvwind"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_vwind(ictrlgrad), "maskS",
+     &         fname_vwind(ictrlgrad), "maskCtrlS",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -425,7 +430,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wdiffkr"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_diffkr(ictrlgrad), "hFacC",
+     &         fname_diffkr(ictrlgrad), "maskCtrlC",
      &         weighttype, wunit, nwetcglobal, mythid)
 #endif
 
@@ -434,7 +439,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wkapgm"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_kapgm(ictrlgrad), "hFacC",
+     &         fname_kapgm(ictrlgrad), "maskCtrlC",
      &         weighttype, wunit, nwetcglobal, mythid)
 #endif
 
@@ -443,7 +448,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtr1"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_tr1(ictrlgrad), "hFacC",
+     &         fname_tr1(ictrlgrad), "maskCtrlC",
      &         weighttype, wunit, nwetcglobal, mythid)
 #endif
 
@@ -452,7 +457,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsst"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_sst(ictrlgrad), "hFacC",
+     &         fname_sst(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -461,7 +466,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsss"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_sss(ictrlgrad), "hFacC",
+     &         fname_sss(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -471,11 +476,11 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(a)') "whfacc"
 # ifdef ALLOW_HFACC3D_CONTROL
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_hfacc(ictrlgrad), "hFacC",
+     &         fname_hfacc(ictrlgrad), "maskCtrlC",
      &         wunit, nwetcglobal, mythid)
 # else
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_hfacc(ictrlgrad), "hFacC",
+     &         fname_hfacc(ictrlgrad), "maskCtrlC",
      &         weighttype, weighttype, nwetcglobal, mythid)
 # endif
 #endif
@@ -485,7 +490,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wefluxy0"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_efluxy(ictrlgrad), "hFacS",
+     &         fname_efluxy(ictrlgrad), "maskCtrlS",
      &         weighttype, wefluxy, nwetsglobal, mythid)
 #endif
 
@@ -494,7 +499,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wefluxp0"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_efluxp(ictrlgrad), "hFacV",
+     &         fname_efluxp(ictrlgrad), "maskhFacV",
      &         weighttype, wefluxp, nwetvglobal, mythid)
 #endif
 
@@ -503,7 +508,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wbottomdrag"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_bottomdrag(ictrlgrad), "hFacC",
+     &         fname_bottomdrag(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 
@@ -512,7 +517,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtaux"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_edtaux(ictrlgrad), "maskW",
+     &         fname_edtaux(ictrlgrad), "maskCtrlW",
      &         weighttype, wunit, nwetwglobal, mythid)
 #endif
 
@@ -521,8 +526,53 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtauy"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_edtauy(ictrlgrad), "maskS",
+     &         fname_edtauy(ictrlgrad), "maskCtrlS",
      &         weighttype, wunit, nwetsglobal, mythid)
+#endif
+
+#ifdef ALLOW_UVEL0_CONTROL
+          ivartype = 27
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wuvel"
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+     &         fname_uvel(ictrlgrad), "maskCtrlW",
+     &         weighttype, wunit, nwetwglobal, mythid)
+#endif
+
+#ifdef ALLOW_VVEL0_CONTROL
+          ivartype = 28
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wvvel"
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+     &         fname_vvel(ictrlgrad), "maskCtrlS",
+     &         weighttype, wunit, nwetsglobal, mythid)
+#endif
+
+#ifdef ALLOW_ETAN0_CONTROL
+          ivartype = 29
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wetan"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_etan(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_RELAXSST_CONTROL
+          ivartype = 30
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wrelaxsst"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_relaxsst(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_RELAXSSS_CONTROL
+          ivartype = 31
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wrelaxsss"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_relaxsss(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
 #endif
 
          close ( cunit )
