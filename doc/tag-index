@@ -1,10 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.472 2005/04/06 20:19:34 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.473 2005/04/07 23:40:07 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o make lambda[Theta,Salt]ClimRelax spatially varying
   (default remains spatially uniform constant based on tau)
+o added new control variables
+  * init. uVel, vVel, etanN
+  * lambda[Theta,Salt]ClimRelax
+o separate masks used for ctrl_pack/unpack 'from write_grid' output
+  (suggested by G. Forget)
 
 checkpoint57f_post
 o add parameter "baseTime" = model base time = time at iteration zero
