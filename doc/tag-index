@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.473 2005/04/07 23:40:07 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.474 2005/04/08 18:31:46 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -39,7 +39,7 @@ o adjoint-related modifications
 
 checkpoint57e_post
 o Adding eddy stress controls a la Ferreira et al.
-checkpoint57e_pre
+checkpoint57e_pre (actually was tagged: eckpoint57e_pre)
 
 o fizhi pkg: fix AtoC and CtoA when called with same input & output array
   update output.txt of exp. fizhi-gridalt-hs
