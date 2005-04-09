@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.4 2004/07/18 01:06:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.5 2005/04/09 21:22:44 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -83,8 +83,8 @@ C     Net Salt Flux :
      &      EmPmR(i,j,bi,bj)*convertFW2Salt*convertEmP2rUnit
      &      +Run(i,j,bi,bj)*scale_runoff
      &         *convertFW2Salt*convertEmP2rUnit
-     &      -lambdaSaltClimRelax*maskC(i,j,kSurface,bi,bj)*
-     &         (salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+     &      -lambdaSaltClimRelax(i,j,bi,bj)*maskC(i,j,kSurface,bi,bj)
+     &        *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
      &        *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
 
          ENDDO
