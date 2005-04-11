@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.89 2005/04/06 20:18:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.90 2005/04/11 14:47:24 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,7 +111,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       diffKrBL79Ho        = -2000.D0
       viscA4              = 0.D11
       viscA4Grid          = 0.D0
-      viscA4GridMax       = 0.D0
+      viscA4GridMax       = 1.D21
       viscA4GridMin       = 0.D0
       viscA4Max           = 1.D21
       viscC4leith         = 0.D0
@@ -143,6 +143,7 @@ Cml      sBeta               = 7.4D-4
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
       useFullLeith        = .FALSE.
+      useAnisotropicViscAGridMax = .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       momImplVertAdv      = .FALSE.

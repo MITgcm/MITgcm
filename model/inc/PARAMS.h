@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.152 2005/04/06 22:02:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.153 2005/04/11 14:47:24 dimitri Exp $
 C $Name:  $
 C
 
@@ -220,6 +220,9 @@ C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
 C     useFullLeith   :: Set to true to use full Leith viscosity (may be unstable
 C                       on irregular grids)
+C     useAnisotropicViscAGridMax :: Set to true to use Alistair's latest
+C              anisotropic length scale.  It is used only for maximum viscosity
+C              calculations.  Alistair recommends a value of viscA*GridMax=.25
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
@@ -293,7 +296,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & tempAdvection, tempForcing,
      & saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
-     & useFullLeith,
+     & useFullLeith, useAnisotropicViscAGridMax,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
@@ -339,7 +342,7 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL saltAdvection
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
-      LOGICAL useFullLeith
+      LOGICAL useFullLeith, useAnisotropicViscAGridMax
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv

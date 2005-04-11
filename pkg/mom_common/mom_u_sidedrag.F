@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.4 2004/11/02 23:57:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.5 2005/04/11 14:47:24 dimitri Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -61,9 +61,7 @@ C     - Laplacian  and bi-harmonic terms
      &            viscAhMax)
         A4tmp=min(viscA4+viscA4Grid*(rAw(i,j,bi,bj)**2)/deltaTmom,
      &            viscA4Max)
-        IF (viscA4GridMax.GT.0.) THEN
-           A4tmp=min(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
-        ENDIF
+        A4tmp=min(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
         A4tmp=max(A4tmp,viscA4GridMin*(rAw(i,j,bi,bj)**2)/deltaTmom)
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)

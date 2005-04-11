@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.152 2005/04/06 20:18:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.153 2005/04/11 14:47:24 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,8 +135,8 @@ C--   Continuous equation parameters
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith,
-     & useFullLeith, viscC2leithD, viscC4leithD, 
-     & viscC2Smag,
+     & useFullLeith, useAnisotropicViscAGridMax,
+     & viscC2leithD, viscC4leithD, viscC2Smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
@@ -478,6 +478,11 @@ C--  horizontal viscosity (acting on Divergence or Vorticity)
       IF ( viscAhZ .EQ. UNSET_RL ) viscAhZ = viscAh
       IF ( viscA4D .EQ. UNSET_RL ) viscA4D = viscA4
       IF ( viscA4Z .EQ. UNSET_RL ) viscA4Z = viscA4
+C--  useAnisotropicViscAGridMax requires that viscA*GridMax be set
+      IF ( useAnisotropicViscAGridMax ) THEN
+         IF ( viscAhGridMax .EQ. 1.D21 ) viscAhGridMax = 0.25
+         IF ( viscA4GridMax .EQ. 1.D21 ) viscA4GridMax = 0.25
+      ENDIF
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( viscAp .NE. UNSET_RL ) pCoordInputData = .TRUE.
@@ -1187,4 +1192,3 @@ C--   Everyone else must wait for the parameters to be loaded
 C
       RETURN
       END
-

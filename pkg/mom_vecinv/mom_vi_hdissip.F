@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.24 2005/04/03 15:58:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.25 2005/04/11 14:47:24 dimitri Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -49,9 +49,6 @@ C     == Local variables ==
       _RL vg2,vg2Min,vg2Max,vg4,vg4Min,vg4Max
       _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
       LOGICAL useVariableViscosity
-      LOGICAL useSophisticatedLengthScale
-
-      useSophisticatedLengthScale=.FALSE.
 
       useVariableViscosity=
      &      (viscAhGrid.NE.0.)
@@ -83,7 +80,7 @@ C These are (powers of) length scales used in the Leith viscosity calculation
          L3=(L2**1.5)
          L4=(L2**2)
          L5=0.125*(L2**2.5)
-         IF (useSophisticatedLengthScale) THEN
+         IF (useAnisotropicViscAGridMax) THEN
          L2rdt=recip_dt/( 2.*(recip_DXF(I,J,bi,bj)**2
      &                       +recip_DYF(I,J,bi,bj)**2) )
          L4rdt=recip_dt/( 6.*(recip_DXF(I,J,bi,bj)**4
@@ -147,11 +144,9 @@ c This approximation is good to the same order as above...
 C  Harmonic Modified Leith on Div.u points
          Alin=viscAhD+vg2*L2+Alth2
          viscAh_D(i,j)=min(viscAhMax,Alin)
-         IF (useSophisticatedLengthScale) THEN
-         IF (viscAhGridMax.GT.0.) THEN
+         IF (useAnisotropicViscAGridMax) THEN
             AlinMax=viscAhGridMax*L2rdt
             viscAh_D(i,j)=min(AlinMax,viscAh_D(i,j))
-         ENDIF
          ELSE
          IF (vg2Max.GT.0.) THEN
             AlinMax=vg2Max*L2
@@ -164,11 +159,9 @@ C  Harmonic Modified Leith on Div.u points
 C  BiHarmonic Modified Leith on Div.u points
          Alin=viscA4D+vg4*L4+Alth4
          viscA4_D(i,j)=min(viscA4Max,Alin)
-         IF (useSophisticatedLengthScale) THEN
-         IF (viscA4GridMax.GT.0.) THEN
+         IF (useAnisotropicViscAGridMax) THEN
             AlinMax=viscA4GridMax*L4rdt
             viscA4_D(i,j)=min(AlinMax,viscA4_D(i,j))
-         ENDIF
          ELSE
          IF (vg4Max.GT.0.) THEN
             AlinMax=vg4Max*L4
@@ -183,7 +176,7 @@ C These are (powers of) length scales used in the Leith viscosity calculation
          L3=(L2**1.5)
          L4=(L2**2)
          L5=0.125*(L2**2.5)
-         IF (useSophisticatedLengthScale) THEN
+         IF (useAnisotropicViscAGridMax) THEN
          L2rdt=recip_dt/( 2.*(recip_DXV(I,J,bi,bj)**2
      &                       +recip_DYU(I,J,bi,bj)**2) )
          L4rdt=recip_dt/( 6.*(recip_DXV(I,J,bi,bj)**4
@@ -245,11 +238,9 @@ C This if statement is just to prevent bitwise changes when leithd=0
 C  Harmonic Modified Leith on Zeta points
          Alin=viscAhZ+vg2*L2+Alth2
          viscAh_Z(i,j)=min(viscAhMax,Alin)
-         IF (useSophisticatedLengthScale) THEN
-         IF (viscAhGridMax.GT.0.) THEN
+         IF (useAnisotropicViscAGridMax) THEN
             AlinMax=viscAhGridMax*L2rdt
             viscAh_Z(i,j)=min(AlinMax,viscAh_Z(i,j))
-         ENDIF
          ELSE
          IF (vg2Max.GT.0.) THEN
             AlinMax=vg2Max*L2
@@ -262,11 +253,9 @@ C  Harmonic Modified Leith on Zeta points
 C  BiHarmonic Modified Leith on Zeta Points
          Alin=viscA4Z+vg4*L4+Alth4
          viscA4_Z(i,j)=min(viscA4Max,Alin)
-         IF (useSophisticatedLengthScale) THEN
-         IF (viscA4GridMax.GT.0.) THEN
+         IF (useAnisotropicViscAGridMax) THEN
             AlinMax=viscA4GridMax*L4rdt
             viscA4_Z(i,j)=min(AlinMax,viscA4_Z(i,j))
-         ENDIF
          ELSE
          IF (vg4Max.GT.0.) THEN
             AlinMax=vg4Max*L4
