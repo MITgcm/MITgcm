@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.7 2005/04/07 23:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.8 2005/04/12 22:12:54 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -410,7 +410,7 @@ cph                wsst(i,j,bi,bj) = wtheta(k,bi,bj)*10.
 cph                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*10.
 cph       factor 5. by D Stammer
                 wsst(i,j,bi,bj) = wtheta(k,bi,bj)*frame(i,j)
-                wsss(i,j,bi,bj) = wsalt2(i,j,k,bi,bj)*frame(i,j)
+                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*frame(i,j)
               endif
             enddo
           enddo
@@ -815,6 +815,9 @@ c--   Units have to be checked!
               endif
               if (wsst(i,j,bi,bj) .ne. 0.) then
                 wsst(i,j,bi,bj) = 1./wsst(i,j,bi,bj)/wsst(i,j,bi,bj)
+              endif
+              if (wsss(i,j,bi,bj) .ne. 0.) then
+                wsss(i,j,bi,bj) = 1./wsss(i,j,bi,bj)/wsss(i,j,bi,bj)
               endif
               if (wp(i,j,bi,bj) .ne. 0.) then
                 wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
