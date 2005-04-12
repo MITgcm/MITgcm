@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.20 2005/04/03 05:16:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.21 2005/04/12 18:23:15 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -97,6 +97,7 @@ C--   set default sea ice parameters
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
+      seaice_mdsio = .TRUE.
       uwindFile  = ' '
       vwindFile  = ' '
       atempFile  = ' '
