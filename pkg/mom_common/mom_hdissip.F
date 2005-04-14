@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.2 2005/03/10 03:45:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.3 2005/04/14 14:22:51 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -38,6 +38,7 @@ C     == Local variables ==
       _RL viscA_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ASmag, smagfac
       _RL vg2Min, vg2Max, AlinMax, AlinMin
+      _RL lenA2, lenAz2
 
       IF (deltaTmom.NE.0.) THEN
        vg2Min=viscAhGridMin/deltaTmom
@@ -52,30 +53,37 @@ C     - Calculate Smagorinsky Coefficients
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
         IF (viscC2smag.NE.0.) THEN
-         Asmag=smagfac*rA(i,j,bi,bj)
+C    Geometric Mean is used as length scale
+         lenA2=(2*rA(i,j,bi,bj)/
+     &	    (dxF(I,J,bi,bj)+dyF(I,J,bi,bj)))**2
+
+         Asmag=smagfac*lenA2
      &    *sqrt(tension(i,j)**2
      &          +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
      &                +strain(i-1, j )**2+strain( i ,j-1)**2))
          viscA_t(i,j)=min(viscAhMax,max(viscAt,Asmag))
 
          IF (vg2Max.GT.0.) THEN
-            AlinMax=vg2Max*(rA ( i , j ,bi,bj))
+            AlinMax=vg2Max*lenA2
             viscA_t(i,j)=min(AlinMax,viscA_t(i,j))
          ENDIF
-         AlinMin=vg2Min*(rA ( i , j ,bi,bj))
+         AlinMin=vg2Min*lenA2
          viscA_t(i,j)=max(AlinMin,viscA_t(i,j))
 
-         Asmag=smagfac*rAz(i,j,bi,bj)
+C    Geometric Mean is used as length scale
+         lenAz2=(2*rAz(i,j,bi,bj)/
+     &       (dxV(I,J,bi,bj)+dyU(I,J,bi,bj)))**2
+         Asmag=smagfac*lenAz2
      &    *sqrt(strain(i,j)**2
      &          +0.25*(tension( i , j )**2+tension( i ,j+1)**2
      &                +tension(i+1, j )**2+tension(i+1,j+1)**2))
          viscA_s(i,j)=min(viscAhMax,max(viscAs,Asmag))
 
          IF (vg2Max.GT.0.) THEN
-            AlinMax=vg2Max*(rAz( i , j ,bi,bj))
+            AlinMax=vg2Max*lenAz2
             viscA_s(i,j)=min(AlinMax,viscA_s(i,j))
          ENDIF
-         AlinMin=vg2Min*(rAz( i , j ,bi,bj))
+         AlinMin=vg2Min*lenAz2
          viscA_s(i,j)=max(AlinMin,viscA_s(i,j))
  
         ELSE
