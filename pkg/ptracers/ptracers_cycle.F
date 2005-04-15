@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.2 2004/07/13 16:47:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.3 2005/04/15 14:23:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -37,27 +37,18 @@ C  none
 
 C !LOCAL VARIABLES: ====================================================
 C  iTracer 		:: loop indices
-C  iMin,iMax,jMin,jMax	:: Loop ranges
       INTEGER iTracer
-      INTEGER iMin,iMax,jMin,jMax
 CEOP
-
-C Loop ranges
-      iMin = 1-OLx+1
-      iMax = sNx+OLx
-      jMin = 1-OLy+1
-      jMax = sNy+OLy
 
 C Loop over passive tracers
       DO iTracer=1,PTRACERS_numInUse
 
 C Cycle time-stepping arrays
       CALL CYCLE_TRACER(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,
+     I           bi,bj,k,
      U           pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      U           gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     U           gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     I           myTime,myThid )
+     I           myTime,myIter,myThid )
 
 C End of tracer loop
       ENDDO
