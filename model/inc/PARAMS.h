@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.153 2005/04/11 14:47:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.154 2005/04/15 13:30:21 jmc Exp $
 C $Name:  $
 C
 
@@ -250,6 +250,7 @@ C     multiDimAdvection :: Flag that enable multi-dimension advection
 C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
 C     forcing_In_AB :: if False, put forcing (Temp,Salt,Tracers) contribution
 C                      out off Adams-Bashforth time stepping.
+C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup 
 C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
@@ -314,11 +315,10 @@ C                      calendar months and years.  Requires pkg/cal.
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, groundAtK1,
-     & usePickupBeforeC35, usePickupBeforeC54, debugMode,
-     & readPickupWithTracer, writePickupWithTracer,
+     & usePickupBeforeC35, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio, seaice_mdsio,
-     & outputTypesInclusive, 
+     & outputTypesInclusive, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
      & calendarDumps
 
@@ -389,9 +389,8 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
       LOGICAL usePickupBeforeC54
+      LOGICAL startFromPickupAB2
       LOGICAL debugMode
-      LOGICAL readPickupWithTracer
-      LOGICAL writePickupWithTracer
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
@@ -508,6 +507,9 @@ C     deltaTfreesurf :: Timestep for free-surface equation ( s )
 C     freesurfFac  :: Parameter to turn implicit free surface term on or off
 C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
+C     abEps        :: Adams-Bashforth-2 stabilizing weight
+C     alph_AB      :: Adams-Bashforth-3 primary factor
+C     beta_AB      :: Adams-Bashforth-3 secondary factor
 C     implicSurfPress :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of Surface Pressure Gradient ( 0-1 )
 C     implicDiv2Dflow :: parameter of the Crank-Nickelson time stepping :
@@ -569,7 +571,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, delX, delY,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
-     & abeps,
+     & abEps, alph_AB, beta_AB,
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
@@ -616,7 +618,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL deltaTmom
       _RL dTtracerLev(Nr)
       _RL deltaTfreesurf
-      _RL abeps
+      _RL abEps, alph_AB, beta_AB
       _RL phiMin
       _RL thetaMin
       _RL rSphere
