@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cycle_tracer.F,v 1.6 2002/10/07 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cycle_tracer.F,v 1.7 2005/04/15 14:06:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C     !ROUTINE: CYCLE_TRACER
 C     !INTERFACE:
       SUBROUTINE CYCLE_TRACER(
-     I                   bi, bj, iMin, iMax, jMin, jMax, K,
-     U                   tracer, gTracer, gTrNm1,
-     I                   myTime, myThid )
+     I                   bi, bj, k,
+     U                   tracer, gTracer,
+     I                   myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R CYCLE_TRACER                                          
@@ -25,17 +25,19 @@ C Common
 #include "PARAMS.h"
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj,iMin,iMax,jMin,jMax, K :: Loop counters
+C     bi,bj,k,iMin,iMax,jMin,jMax  :: Loop counters
 C     tracer, gTracer, gTrNm1      :: Tracer field, with tendencies
+C     myTime                       :: Current simulation time for this instance.
+C     myIter                       :: Current time-step number
 C     myThid                       :: Instance number for 
 C                                     this call to S/R CORRECTION_STEP
-C     myTime                       :: Current simulation time for this instance.
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,K
+      INTEGER bi,bj,k
+c     INTEGER iMin,iMax,jMin,jMax
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER myThid
+c     _RL gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myTime
+      INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==

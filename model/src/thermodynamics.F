@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.89 2005/03/25 00:29:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.90 2005/04/15 14:06:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -439,7 +439,7 @@ CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           jMax = sNy+OLy-1
 
 C--      Calculate active tracer tendencies (gT,gS,...)
-C        and step forward storing result in gTnm1, gSnm1, etc.
+C        and step forward storing result in gT, gS, etc.
 #ifndef ALLOW_OFFLINE
          IF ( tempStepping ) THEN
            CALL CALC_GT(
@@ -649,17 +649,19 @@ C--   end bi,bj loops.
        CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,theta,'Theta (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,salt,'Salt (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gt,'Gt (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,Gs,'Gs (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,GsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,gT,'Gt (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,gS,'Gs (THERMODYNAMICS)',myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
+       CALL DEBUG_STATS_RL(Nr,gtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,gsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
+#endif
 #ifdef ALLOW_PTRACERS
        IF ( usePTRACERS ) THEN
          CALL PTRACERS_DEBUG(myThid)
        ENDIF
 #endif /* ALLOW_PTRACERS */
       ENDIF
-#endif
+#endif /* ALLOW_DEBUG */
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 

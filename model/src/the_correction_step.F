@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.28 2004/12/03 00:26:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.29 2005/04/15 14:06:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -94,17 +94,17 @@ C-        Update velocity fields:  V(n) = V** - dt * grad Eta
      I         bi,bj,iMin,iMax,jMin,jMax,K,
      I         phiSurfX,phiSurfY,myTime,myThid )
 
-C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
+C-        Update tracer fields:  T(n) = T**
           IF (tempStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,
-     U           theta,gT,gTNm1,
-     I           myTime,myThid )
+     I           bi,bj,K,
+     U           theta,gT,
+     I           myTime,myIter,myThid )
           IF (saltStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,
-     U           salt,gS,gSNm1,
-     I           myTime,myThid )
+     I           bi,bj,K,
+     U           salt,gS,
+     I           myTime,myIter,myThid )
 
 #ifdef    ALLOW_OBCS
           IF (useOBCS) THEN

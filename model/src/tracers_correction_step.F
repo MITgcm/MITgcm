@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.5 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.6 2005/04/15 14:06:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,31 +58,24 @@ CEOP
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C       Loop range: Gradients of Eta are evaluated so valid
-C       range is all but first row and column in overlaps.
-        iMin = 1-OLx+1
-        iMax = sNx+OLx
-        jMin = 1-OLy+1
-        jMax = sNy+OLy
-
 C--     Loop over all layers, top to bottom
         DO K=1,Nr
 
-C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
+C-        Update tracer fields:  T(n) = T**
 #ifndef ALLOW_OFFLINE
           IF (tempStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,
-     U           theta,gT,gTNm1,
-     I           myTime,myThid )
+     I           bi,bj,K,
+     U           theta,gT,
+     I           myTime,myIter,myThid )
           IF (saltStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,
-     U           salt,gS,gSNm1,
-     I           myTime,myThid )
+     I           bi,bj,k,
+     U           salt,gS,
+     I           myTime,myIter,myThid )
 #endif
 #ifdef ALLOW_PTRACERS
-C-        Update passive tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
+C-        Update passive tracer fields:  T(n) = T**
           IF (usePTRACERS)
      &        CALL PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
 #endif /* ALLOW_PTRACERS */

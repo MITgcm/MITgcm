@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.16 2004/11/02 19:09:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.17 2005/04/15 14:06:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,11 +35,21 @@ c     _EXCH_XYZ_R8( Gu , myThid )
 c     _EXCH_XYZ_R8( Gv , myThid )
 c     _EXCH_XYZ_R8( Gt , myThid )
 c     _EXCH_XYZ_R8( Gs , myThid )
-      CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
-c     _EXCH_XYZ_R8( gUNm1 , myThid )
-c     _EXCH_XYZ_R8( gVNm1 , myThid )
-      _EXCH_XYZ_R8( gTNm1 , myThid )
-      _EXCH_XYZ_R8( gSNm1 , myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+C_jmc: requires to pass "myIter" as argument !!!
+C_jmc: leave it commented since this S/R is never called
+c     m1 = 1 + mod(myIter+1,2)
+c     CALL EXCH_UV_XYZ_RL(guNm(1-Olx,1-Oly,1,1,1,m1),
+c    &                    gvNm(1-Olx,1-Oly,1,1,1,m1),.TRUE.,myThid)
+c     _EXCH_XYZ_R8( gtNm(1-Olx,1-Oly,1,1,1,m1), myThid )
+c     _EXCH_XYZ_R8( gsNm(1-Olx,1-Oly,1,1,1,m1), myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      CALL EXCH_UV_XYZ_RL(guNm1,gvNm1,.TRUE.,myThid)
+c     _EXCH_XYZ_R8( guNm1 , myThid )
+c     _EXCH_XYZ_R8( gvNm1 , myThid )
+      _EXCH_XYZ_R8( gtNm1 , myThid )
+      _EXCH_XYZ_R8( gsNm1 , myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
 c     _EXCH_XYZ_R8( theta , myThid )
