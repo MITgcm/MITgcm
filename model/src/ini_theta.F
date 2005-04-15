@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.20 2003/11/13 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.21 2005/04/15 22:07:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,18 +40,11 @@ C     myThid -  Number of this instance of INI_THETA
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     iC, jC - Center of domain
-C     iD, jD - Disitance from domain center.
-C     rad    - Radius of initial patch
-C     rD     - Radial displacement of point I,J
-C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     I,J,K
-      INTEGER iC, jC, iD, jD
-      INTEGER iG, jG
       INTEGER bi, bj
       INTEGER I, J, K, localWarnings
-      _RL     rad, rD, Tfreezing
+      _RL     Tfreezing
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -80,15 +73,21 @@ C--   Apply mask and test consistency
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
-           IF (hFacC(I,J,K,bi,bj).EQ.0) theta(I,J,K,bi,bj) = 0.
-           IF (hFacC(I,J,K,bi,bj).NE.0.AND.theta(I,J,K,bi,bj).EQ.0.
-     &      .AND. tRef(k).NE.0.) THEN
-             localWarnings=localWarnings+1
-            ENDIF
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           IF (maskC(I,J,K,bi,bj).EQ.0.) theta(I,J,K,bi,bj) = 0.
           ENDDO
          ENDDO
+         IF ( tRef(k).NE.0. ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            IF (  maskC(I,J,K,bi,bj).NE.0.
+     &      .AND. theta(I,J,K,bi,bj).EQ.0. ) THEN
+              localWarnings=localWarnings+1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
         ENDDO
        ENDDO
       ENDDO
@@ -118,7 +117,7 @@ C--   Check that there are no values of temperature below freezing point.
        ENDDO
       ENDIF
 
-      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , 
+      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' ,
      &                       Nr, 1, myThid )
 
       RETURN

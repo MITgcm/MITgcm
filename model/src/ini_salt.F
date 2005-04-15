@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.14 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.15 2005/04/15 22:07:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,7 +43,7 @@ C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
-      INTEGER  I,  J, K, localWarnings
+      INTEGER I, J, K, localWarnings
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -72,15 +72,21 @@ C     Apply mask and test consistancy
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
-           IF (hFacC(I,J,K,bi,bj).EQ.0) salt(I,J,K,bi,bj) = 0.
-           IF (hFacC(I,J,K,bi,bj).NE.0.AND.salt(I,J,K,bi,bj).EQ.0.
-     &      .AND. sRef(k).NE.0.) THEN
-             localWarnings=localWarnings+1
-            ENDIF
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           IF (maskC(I,J,K,bi,bj).EQ.0.) salt(I,J,K,bi,bj) = 0.
           ENDDO
          ENDDO
+         IF ( sRef(k).NE.0. ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            IF ( maskC(I,J,K,bi,bj).NE.0.
+     &      .AND. salt(I,J,K,bi,bj).EQ.0. ) THEN
+              localWarnings=localWarnings+1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
         ENDDO
        ENDDO
       ENDDO
