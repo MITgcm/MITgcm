@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.153 2005/04/11 14:47:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.154 2005/04/15 14:02:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -167,7 +167,6 @@ C--   Continuous equation parameters
      & allowFreezing, useOldFreezing, ivdc_kappa,
      & bottomDragLinear,bottomDragQuadratic,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
-     & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, tempVertAdvScheme, 
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
@@ -189,7 +188,8 @@ C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
      & deltaT, deltaTmom, deltaTtracer, dTtracerLev, deltaTfreesurf,
-     & forcing_In_AB, abEps, tauCD, rCD,
+     & forcing_In_AB, abEps, alph_AB, beta_AB, startFromPickupAB2, 
+     & tauCD, rCD,
      & baseTime, startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
      & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq, 

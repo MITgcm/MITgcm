@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.90 2005/04/11 14:47:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.91 2005/04/15 14:02:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -162,8 +162,6 @@ Cml      sBeta               = 7.4D-4
       usePickupBeforeC35    = .FALSE.
       usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.
-      readPickupWithTracer  = .FALSE.
-      writePickupWithTracer = .FALSE.
       tempAdvScheme       = 2
       saltAdvScheme       = 2
       multiDimAdvection   = .TRUE.
@@ -231,6 +229,15 @@ C--   Time stepping parameters
       endTime           = deltaT*float(nEndIter)
       forcing_In_AB     = .TRUE.
       abEps             = 0.01
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      alph_AB           = 0.5 _d 0
+      beta_AB           = 5. _d 0 / 12. _d 0
+      startFromPickupAB2= .FALSE.
+#else
+      alph_AB           = UNSET_RL
+      beta_AB           = UNSET_RL
+      startFromPickupAB2= .TRUE.
+#endif
       pchkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
       outputTypesInclusive = .FALSE.

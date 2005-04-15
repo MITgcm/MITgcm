@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.72 2005/04/06 18:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.73 2005/04/15 14:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -372,8 +372,16 @@ C     zcoord ::
      &'   /* Convective adjustment interval ( s ) */')
       CALL WRITE_0D_L( forcing_In_AB,INDEX_NONE,'forcing_In_AB =',
      &'   /* put T,S Forcing in Adams-Bash. stepping */')
-      CALL WRITE_0D_R8( abeps, INDEX_NONE,'abeps =',
-     &'   /* Adams-Bashforth stabilizing weight */')
+      CALL WRITE_0D_R8( abEps, INDEX_NONE,'abEps =',
+     &'   /* Adams-Bashforth-2 stabilizing weight */')
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      CALL WRITE_0D_R8( alph_AB, INDEX_NONE,'alph_AB =',
+     &'   /* Adams-Bashforth-3 primary factor */')
+      CALL WRITE_0D_R8( beta_AB, INDEX_NONE,'beta_AB =',
+     &'   /* Adams-Bashforth-3 secondary factor */')
+      CALL WRITE_0D_L( startFromPickupAB2, INDEX_NONE,
+     & 'startFromPickupAB2=',' /* start from AB-2 pickup */')
+#endif
       IF (useCDscheme) THEN
       CALL WRITE_0D_R8( tauCD, INDEX_NONE,'tauCD =',
      &'   /* CD coupling time-scale ( s ) */')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.21 2005/04/06 18:29:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.22 2005/04/15 14:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,18 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonHydrostatic is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+#ifndef ALLOW_ADAMSBASHFORTH_3
+      IF ( alph_AB.NE.UNSET_RL .OR. beta_AB.NE.UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   '#undef ALLOW_ADAMSBASHFORTH_3 but alph_AB,beta_AB'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,1P2E20.7)')
+     &   'CONFIG_CHECK: are set to:',alph_AB,beta_AB
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
