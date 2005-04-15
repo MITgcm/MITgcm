@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.26 2004/07/01 21:44:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.27 2005/04/15 13:28:51 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -22,7 +22,7 @@ C     uVel  - zonal velocity (m/s, i=1 held at western face)
 C     vVel  - meridional velocity (m/s, j=1 held at southern face)
 C     theta - potential temperature (oC, held at pressure/tracer point)
 C     salt  - salinity (ppt, held at pressure/tracer point)
-C     gX, gXNM1 - Time tendencies at current and prvious time levels.
+C     gX, gxNm1 - Time tendencies at current and previous time levels.
 C     etaH   - surface r-anomaly, advanced in time consistently 
 C              with 2.D flow divergence (Exact-Conservation): 
 C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)   
@@ -30,10 +30,19 @@ C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
 C        b) same as etaN but not necessarely at the same time, e.g.:
 C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
 
+#ifdef ALLOW_ADAMSBASHFORTH_3
       COMMON /DYNVARS_R/
      &                   etaN, etaH,
      &                   uVel,vVel,wVel,theta,salt,
-     &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
+     &                   gU,   gV,   gT,   gS,
+     &                   guNm, gvNm, gtNm, gsNm
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      COMMON /DYNVARS_R/
+     &                   etaN, etaH,
+     &                   uVel,vVel,wVel,theta,salt,
+     &                   gU,   gV,   gT,   gS,
+     &                   guNm1,gvNm1,gtNm1,gsNm1
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -41,14 +50,21 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      _RL  gvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      _RL  gtNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      _RL  gsNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+#else /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  guNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /DYNVARS_NH/ phi_nh
