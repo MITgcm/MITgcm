@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.475 2005/04/15 13:09:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.476 2005/04/15 16:10:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57g_post
+o add Adams-Bashforth 3rd Order time stepping:
+  - default remains AB-2 (#undef ALLOW_ADAMSBASHFORTH_3)
+  - not yet implemented with NH, CD_Scheme, pTracers, MNC_pickup ...
 checkpoint57g_pre
 
 o make lambda[Theta,Salt]ClimRelax spatially varying
