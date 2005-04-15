@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.474 2005/04/08 18:31:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.475 2005/04/15 13:09:21 jmc Exp $
+$Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57g_pre
 
 o make lambda[Theta,Salt]ClimRelax spatially varying
   (default remains spatially uniform constant based on tau)
