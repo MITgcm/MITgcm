@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.36 2004/11/10 03:02:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.37 2005/04/15 14:17:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,55 +135,65 @@ C--   Forcing term inside the Adams-Bashforth:
      I     myTime,myThid)
       ENDIF
 
-C-    Compute effective gU,gV_[n+1/2] terms (including Adams-Bashforth weights)
-C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        gUtmp(i,j) = ab15*gU(i,j,k,bi,bj)
-     &             + ab05*guNm1(i,j,k,bi,bj)  
-        gVtmp(i,j) = ab15*gV(i,j,k,bi,bj)
-     &             + ab05*gvNm1(i,j,k,bi,bj)  
-        guNm1(i,j,k,bi,bj)= gU(i,j,k,bi,bj) 
-        gvNm1(i,j,k,bi,bj)= gV(i,j,k,bi,bj)
-        gU(i,j,k,bi,bj) = gUtmp(i,j)
-        gV(i,j,k,bi,bj) = gVtmp(i,j)
-       ENDDO
-      ENDDO
-      
-C--   Forcing term outside the Adams-Bashforth:
-C     (not recommanded with CD-scheme ON)
-      IF (momForcing .AND. .NOT.momForcing_In_AB) THEN
-        CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
-        CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
-       IF (useCDscheme) THEN
-C-     for CD-scheme, compute gU,Vtmp = gU,V^n + forcing 
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gUtmp(i,j) = gU(i,j,k,bi,bj)-gUtmp(i,j)
-     &               + guNm1(i,j,k,bi,bj)
-          gVtmp(i,j) = gV(i,j,k,bi,bj)-gVtmp(i,j)
-     &               + gvNm1(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ELSE
+      IF (useCDscheme) THEN
+C-     for CD-scheme, store gU,Vtmp = gU,V^n + forcing 
         DO j=jMin,jMax
          DO i=iMin,iMax
           gUtmp(i,j) = gU(i,j,k,bi,bj)
           gVtmp(i,j) = gV(i,j,k,bi,bj)
          ENDDO
         ENDDO
-       ENDIF
-      ELSEIF ( useCDscheme) THEN
+      ENDIF
+
+C-    Compute effective gU,gV_[n+1/2] terms (including Adams-Bashforth weights)
+C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      CALL ADAMS_BASHFORTH3(
+     I                        bi, bj, k,
+     U                        gU, guNm,
+     I                        myIter, myThid )
+      CALL ADAMS_BASHFORTH3(
+     I                        bi, bj, k,
+     U                        gV, gvNm,
+     I                        myIter, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      CALL ADAMS_BASHFORTH2(
+     I                        bi, bj, k,
+     U                        gU, guNm1,
+     I                        myIter, myThid )
+      CALL ADAMS_BASHFORTH2(
+     I                        bi, bj, k,
+     U                        gV, gvNm1,
+     I                        myIter, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      
+C--   Forcing term outside the Adams-Bashforth:
+C     (not recommanded with CD-scheme ON)
+      IF (momForcing .AND. .NOT.momForcing_In_AB) THEN
+       IF (useCDscheme) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gUtmp(i,j) = guNm1(i,j,k,bi,bj)
-          gVtmp(i,j) = gvNm1(i,j,k,bi,bj)
+          gUtmp(i,j) = gUtmp(i,j) - gU(i,j,k,bi,bj)
+          gVtmp(i,j) = gVtmp(i,j) - gV(i,j,k,bi,bj)
          ENDDO
         ENDDO
+       ENDIF
+        CALL EXTERNAL_FORCING_U(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myTime,myThid)
+        CALL EXTERNAL_FORCING_V(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myTime,myThid)
+
+C-     for CD-scheme, compute gU,Vtmp = gU,V^n + forcing 
+       IF (useCDscheme) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gUtmp(i,j) + gU(i,j,k,bi,bj)
+          gVtmp(i,j) = gVtmp(i,j) + gV(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 #ifdef ALLOW_CD_CODE
@@ -202,8 +212,17 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
      &               + gvCor(i,j)
          ENDDO
         ENDDO
-      ENDIF
+      ELSE
 #endif /* ALLOW_CD_CODE */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gU(i,j,k,bi,bj)
+          gVtmp(i,j) = gV(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_CD_CODE
+      ENDIF
+#endif
 
 #ifdef NONLIN_FRSURF
       IF (.NOT. vectorInvariantMomentum 
