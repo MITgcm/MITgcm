@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.39 2004/12/03 15:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.40 2005/04/15 14:18:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,6 +87,7 @@ CEOP
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     === Local variables ===
       LOGICAL calcAdvection
+      INTEGER iterNb
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverS is set in this subroutine
@@ -112,10 +113,19 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
      I     myTime,myThid)
 
       IF ( saltAdamsBashforth ) THEN
+        iterNb = myIter
+        IF (staggerTimeStep) iterNb = myIter - 1
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL ADAMS_BASHFORTH3(
+     I                        bi, bj, k,
+     U                        gS, gsNm,
+     I                        iterNb, myThid )
+#else
         CALL ADAMS_BASHFORTH2(
-     I                        bi, bj, K,
-     U                        gS, gSnm1,
-     I                        myIter, myThid )
+     I                        bi, bj, k,
+     U                        gS, gsNm1,
+     I                        iterNb, myThid )
+#endif
       ENDIF
 
 C--   External salinity forcing term(s) outside Adams-Bashforth:
@@ -127,14 +137,26 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
 #ifdef NONLIN_FRSURF
       IF (nonlinFreeSurf.GT.0) THEN
         CALL FREESURF_RESCALE_G(
-     I                          bi, bj, K,
+     I                          bi, bj, k,
      U                          gS,
      I                          myThid )
-        IF ( saltAdamsBashforth )
-     &  CALL FREESURF_RESCALE_G(
-     I                          bi, bj, K,
-     U                          gSnm1,
+        IF ( saltAdamsBashforth ) THEN
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL FREESURF_RESCALE_G(
+     I                          bi, bj, k,
+     U                          gsNm(1-OLx,1-OLy,1,1,1,1),
      I                          myThid )
+        CALL FREESURF_RESCALE_G(
+     I                          bi, bj, k,
+     U                          gsNm(1-OLx,1-OLy,1,1,1,2),
+     I                          myThid )
+#else
+        CALL FREESURF_RESCALE_G(
+     I                          bi, bj, k,
+     U                          gsNm1,
+     I                          myThid )
+#endif
+        ENDIF
       ENDIF
 #endif /* NONLIN_FRSURF */
 
