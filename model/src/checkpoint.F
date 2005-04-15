@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.52 2005/04/06 18:29:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.53 2005/04/15 14:02:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,7 +77,8 @@ C     !LOCAL VARIABLES:
 C     oldPrec :: Temp. for hold I/O precision information
 C     prec    
 C     fn      :: Temp. for building file name.
-      INTEGER i, oldPrec, prec
+      INTEGER oldPrec, prec
+      INTEGER i, j, nj
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
 
@@ -108,16 +109,16 @@ C       Read model fields
 C       Raw fields
         CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter,myThid)
-        CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'guNm1',  guNm1, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter,myThid)
-        CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gvNm1',  gvNm1, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter,myThid)
-        CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gtNm1',  gtNm1, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter,myThid)
-        CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gsNm1',  gsNm1, 1,myIter,myThid)
         CALL READ_REC_XY_RL (  'etaN',   etaN, 1,myIter,myThid)
         
 #ifdef ALLOW_NONHYDROSTATIC
@@ -135,20 +136,24 @@ C       Reset default IO precision
       
         prec = precFloat64
 
+#ifdef ALLOW_MDSIO
+
 C       Read model fields
         IF ( usePickupBeforeC54 ) THEN
+#ifndef ALLOW_ADAMSBASHFORTH_3
           CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,guNm1,  3,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   4,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,gV,     5,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  6,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gvNm1,  6,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  7,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,gT,     8,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  9,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gtNm1,  9,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,  10,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,gS,    11,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gsNm1, 12,myThid)
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef NONLIN_FRSURF
           IF (nonlinFreeSurf .GE. 0) THEN
@@ -156,21 +161,52 @@ C       Read model fields
           ENDIF
 #endif
         ELSE 
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          j = 3
+          IF ( startFromPickupAB2 ) j = 2
+          nj = 0
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel, nj+1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                guNm(1-Olx,1-Oly,1,1,1,1),  nj+2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                guNm(1-Olx,1-Oly,1,1,1,2),  nj+j,myThid)
+          nj = j
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel, nj+1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gvNm(1-Olx,1-Oly,1,1,1,1),  nj+2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gvNm(1-Olx,1-Oly,1,1,1,2),  nj+j,myThid)
+          nj = 2*j
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,nj+1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gtNm(1-Olx,1-Oly,1,1,1,1),  nj+2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gtNm(1-Olx,1-Oly,1,1,1,2),  nj+j,myThid)
+          nj = 3*j
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,salt, nj+1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gsNm(1-Olx,1-Oly,1,1,1,1),  nj+2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,
+     &                gsNm(1-Olx,1-Oly,1,1,1,2),  nj+j,myThid)
+          nj = 4*j
+#else /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,guNm1,  2,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   3,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  4,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gvNm1,  4,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  5,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  6,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gtNm1,  6,myThid)
           CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,   7,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1,  8,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL', 1,etaN, 8*Nr+1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gsNm1,  8,myThid)
+          nj = 8
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
+          CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,    nj*Nr+1,myThid)
 #ifdef EXACT_CONSERV
           IF (exactConserv) THEN
-            CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,8*Nr+2,myThid)
+            CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,nj*Nr+2,myThid)
           ENDIF
           IF (nonlinFreeSurf .GT. 0) THEN 
-            CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   8*Nr+3,myThid)
+            CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   nj*Nr+3,myThid)
           ENDIF
 #endif
         ENDIF 
@@ -188,6 +224,8 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
         ENDIF
 #endif
 
+#endif /* ALLOW_MDSIO */
+
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
       ENDIF
@@ -201,10 +239,12 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',gUnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gVnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gTnm1, myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gSnm1, myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
+        CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',guNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gvNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gtNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gsNm1, myThid)
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 C#ifdef NONLIN_FRSURF
 C        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
 C     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
@@ -234,19 +274,28 @@ C#endif
       
 C     Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-      CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
-      CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
       _EXCH_XYZ_R8(theta , myThid )
-      _EXCH_XYZ_R8(gt    , myThid )
-      _EXCH_XYZ_R8(gtNM1 , myThid )
       _EXCH_XYZ_R8(salt  , myThid )
-      _EXCH_XYZ_R8(gs    , myThid )
-      _EXCH_XYZ_R8(gsNM1 , myThid )
+c     CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
+c     _EXCH_XYZ_R8(gt    , myThid )
+c     _EXCH_XYZ_R8(gs    , myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      CALL EXCH_UV_XYZ_RL(guNm(1-Olx,1-Oly,1,1,1,1),
+     &                    gvNm(1-Olx,1-Oly,1,1,1,1),.TRUE.,myThid)
+      _EXCH_XYZ_R8( gtNm(1-Olx,1-Oly,1,1,1,1), myThid )
+      _EXCH_XYZ_R8( gsNm(1-Olx,1-Oly,1,1,1,1), myThid )
+      CALL EXCH_UV_XYZ_RL(guNm(1-Olx,1-Oly,1,1,1,2),
+     &                    gvNm(1-Olx,1-Oly,1,1,1,2),.TRUE.,myThid)
+      _EXCH_XYZ_R8( gtNm(1-Olx,1-Oly,1,1,1,2), myThid )
+      _EXCH_XYZ_R8( gsNm(1-Olx,1-Oly,1,1,1,2), myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      CALL EXCH_UV_XYZ_RL(guNm1,gvNm1,.TRUE.,myThid)
+      _EXCH_XYZ_R8(gtNm1 , myThid )
+      _EXCH_XYZ_R8(gsNm1 , myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
       _EXCH_XY_R8 (etaN, myThid )
-      _EXCH_XY_R8( etaH, myThid )
-
-#ifdef EXACT_CONSERV
       _EXCH_XY_R8( etaH,    myThid )
+#ifdef EXACT_CONSERV
       _EXCH_XY_R8( detaHdt, myThid )
 #endif
 
@@ -416,12 +465,11 @@ C     !LOCAL VARIABLES:
 C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
-      INTEGER i, oldPrec, prec
+      INTEGER oldPrec, prec
+      INTEGER i, nj
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL lgf
-      COMMON /PCKP_SWAP/ pickup_ext
-      CHARACTER*(1) pickup_ext
 
 C     Write model fields
       DO i = 1,MAX_LEN_FNAM
@@ -474,20 +522,47 @@ C       Reset binary precision
         prec = precFloat64
         lgf = globalFile
 
+#ifdef ALLOW_MDSIO
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     guNm(1-Olx,1-Oly,1,1,1,1), 2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     guNm(1-Olx,1-Oly,1,1,1,2), 3,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gvNm(1-Olx,1-Oly,1,1,1,1), 5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gvNm(1-Olx,1-Oly,1,1,1,2), 6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gtNm(1-Olx,1-Oly,1,1,1,1), 8,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gtNm(1-Olx,1-Oly,1,1,1,2), 9,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gsNm(1-Olx,1-Oly,1,1,1,1),11,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+     &                     gsNm(1-Olx,1-Oly,1,1,1,2),12,myIter,myThid)
+        nj = 12
+#else /*  ALLOW_ADAMSBASHFORTH_3 */
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel, 1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1,2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guNm1,2,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel, 3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1,4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvNm1,4,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta,5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1,6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gtNm1,6,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 7,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,8,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN, 8*Nr+1,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gsNm1,8,myIter,myThid)
+        nj = 8
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,   nj*Nr+1,
      &       myIter,myThid)
 #ifdef EXACT_CONSERV
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,dEtaHdt,8*Nr+2,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,dEtaHdt,nj*Nr+2,
      &       myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaHnm1,8*Nr+3,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaHnm1,nj*Nr+3,
      &       myIter,myThid)
 #endif /* EXACT_CONSERV */
         IF ( useDynP_inEos_Zc ) THEN
@@ -515,6 +590,8 @@ C         &    myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
+#endif /* ALLOW_MDSIO */
+
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
       ENDIF
@@ -529,10 +606,12 @@ C         &    myIter,myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Temp', theta, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gVnm1, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gTnm1, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gSnm1, myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
+        CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', guNm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gvNm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gtNm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gsNm1, myThid)
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 #ifdef EXACT_CONSERV
         CALL MNC_CW_RL_W('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
