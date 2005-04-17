@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.20 2005/04/03 05:16:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.21 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -38,7 +38,7 @@ C     !LOCAL VARIABLES:
      &     mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
-     &     readgrid_mnc, seaice_mnc,
+     &     readgrid_mnc,
      &     mnc_outdir_str, mnc_indir_str, mnc_max_fsize
       LOGICAL  exst
 
@@ -65,7 +65,6 @@ C     Set default values for MNC run-time parameters
 C     2GB is 2147483648 bytes or approx: 2.1475e+09
       mnc_max_fsize         =  2.1 _d 9
       readgrid_mnc          =  .FALSE.
-      seaice_mnc            =  .TRUE.
 
 C     Set the file name
       DO i=1,MAX_LEN_MBUF
@@ -190,8 +189,6 @@ C     simple:
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
       IF ( (.NOT. outputTypesInclusive) 
      &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive) 
-     &     .AND. seaice_mnc ) seaice_mdsio = .FALSE.
 
 C     Reads are always an exclusive relationship
       IF (pickup_read_mnc) pickup_read_mdsio = .FALSE.

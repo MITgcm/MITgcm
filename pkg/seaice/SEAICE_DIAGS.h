@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.5 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.6 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -27,3 +27,7 @@ C     Storage arrays for time-averages
      &        UICEtave, VICEtave, HEFFtave, AREAtave
 
 #endif /* ALLOW_TIMEAVE */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.9 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.10 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -110,3 +110,7 @@ C--   Define forcing fields internally.
       _RS  SSTsi1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* SEAICE_EXTERNAL_FORCING */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

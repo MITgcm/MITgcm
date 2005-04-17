@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.11 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.12 2005/04/17 00:25:46 edhill Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -63,3 +63,7 @@ C     following options are available.
 #undef SEAICE_TEST_ICE_STRESS_1
 
 #endif /* SEAICE_OPTIONS_H */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

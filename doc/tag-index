@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.476 2005/04/15 16:10:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.477 2005/04/17 00:25:45 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o fix mnc flags in pkg/seaice so that they are "owned" by seaice,
+  not mnc -- this mistake was found by JMC and is now corrected
 
 checkpoint57g_post
 o add Adams-Bashforth 3rd Order time stepping:

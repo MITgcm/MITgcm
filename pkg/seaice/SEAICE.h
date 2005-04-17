@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.14 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.15 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -91,3 +91,7 @@ CEOP
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       integer KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

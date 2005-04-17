@@ -6,4 +6,5 @@
       SEAICE_deltaTdyn   = 3600.,
 #     SEAICEuseDYNAMICS  =.FALSE.,
       LSR_ERROR          = 1.E-12,
+#     seaice_mnc         = .TRUE.,
  &

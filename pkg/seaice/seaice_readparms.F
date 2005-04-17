@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.21 2005/04/12 18:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.22 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,7 +50,7 @@ C--   SEAICE parameters
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
-     & SEAICE_EPS, SEAICE_EPS_SQ
+     & SEAICE_EPS, SEAICE_EPS_SQ, seaice_mnc
 
       _BEGIN_MASTER(myThid)
 
@@ -98,6 +98,7 @@ C--   set default sea ice parameters
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
       seaice_mdsio = .TRUE.
+      seaice_mnc   = .FALSE.
       uwindFile  = ' '
       vwindFile  = ' '
       atempFile  = ' '
@@ -223,7 +224,9 @@ C--   Summarise pkg/seaice cofiguration
       CALL SEAICE_SUMMARY( myThid )
 
 C     Initialize MNC variable information for SEAICE
-      IF ( useMNC ) THEN
+      IF ( (.NOT. outputTypesInclusive)
+     &     .AND. seaice_mnc ) seaice_mdsio = .FALSE.
+      IF ( useMNC .and. seaice_mnc) THEN
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
 

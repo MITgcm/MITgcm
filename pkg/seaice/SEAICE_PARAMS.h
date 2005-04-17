@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.15 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.16 2005/04/17 00:25:46 edhill Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -10,13 +10,15 @@ C--   COMMON /SEAICE_PARM_L/ Logical parameters of sea ice model.
 C
 C     SEAICEwriteState  - If true, write sea ice state to file;
 C                         default is false.
-C
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
-C
+C     seaice_mdsio       :: use mdsio for seaice output
+C     seaice_mnc         :: use mnc for the seaice package
       LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS
+      LOGICAL seaice_mnc, seaice_mdsio
       COMMON /SEAICE_PARM_L/
-     &        SEAICEwriteState, SEAICEuseDYNAMICS
+     &     SEAICEwriteState, SEAICEuseDYNAMICS,
+     &     seaice_mnc, seaice_mdsio
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
@@ -149,3 +151,8 @@ C--   Constants used by sea-ice model
       parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
       _RL         QUART            , HALF
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
+
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
