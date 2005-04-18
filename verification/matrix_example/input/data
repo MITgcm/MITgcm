@@ -1,0 +1,90 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=20.,
+ sRef=10.,
+ viscAr=1.E-2,
+ viscAh=5.E3,
+ diffKhT=5.E3,
+ diffKrT=1.E-2,
+# diffKhS=0.E3,
+# diffKrS=1.E-5,
+ rhonil=1035.,
+ gravity=9.81,
+ eosType='LINEAR',
+# ivdc_kappa=50.,
+# implicitViscosity=.TRUE., 
+# implicitDiffusion=.TRUE.,
+# useOldFreezing=.TRUE.,
+ useCDscheme=.FALSE.,
+# useNHMTerms=.TRUE.,
+# turn on looped cells
+# hFacMin=.2,
+# hFacMindr=50.,
+# set precision of data files
+# readBinaryPrec=32,
+ globalFiles=.TRUE., 
+ useSingleCpuIO=.TRUE. 
+ beta=1.E-11,
+# f0=1.e-4,
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+# gBaro=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+# tempAdvScheme       = 2
+# saltAdvScheme       = 2
+ writeBinaryPrec=64,
+ multiDimAdvection   = .TRUE.
+ /
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-7,
+ /
+
+# Time stepping parameters
+ &PARM03
+#startTime = 0.,
+ nIter0  = 200000,
+ nTimeSteps = 1,
+ deltaTmom = 20000.0,
+# tauCD = 172800.,
+ deltaTtracer = 20000.0,
+ deltaTClock = 20000.0,
+ abEps = 0.1,
+#cAdjFreq = -1,
+ pChkptFreq= 500000000.0,
+ dumpFreq=   200000000.0,
+ taveFreq=   0.,
+# taveDumpFreq=155520000.,
+ monitorFreq=0.,
+# tauThetaClimRelax = 864000.0,
+# tauSaltClimRelax = 0.0,
+# periodicExternalForcing=.FALSE.,
+ /
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ delX=31*50E3,
+ delY=31*50E3,
+ delR=5000.,
+# phiMin=0.,
+ /
+
+# Input datasets
+ &PARM05
+ bathyFile='topog.box',
+ hydrogThetaFile=,
+ hydrogSaltFile=,
+ zonalWindFile='windx.cos_y',
+ meridWindFile=,
+ thetaClimFile=,
+ saltClimFile=,
+ /

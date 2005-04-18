@@ -1,0 +1,4 @@
+ &MATRIX_PARM01
+ expMatrixWriteTime=20000.0,
+ impMatrixWriteTime=20000.0
+ /
