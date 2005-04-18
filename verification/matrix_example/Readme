@@ -1,0 +1,24 @@
+Example to test pkg/matrix
+
+Instructions for building:
+
+1) mkdir build
+2) cd build
+3) run genmake with: -mods=../code and -enable=matrix
+e.g.,
+../../../tools/genmake2  "-mods=../code" "-optfile=../../../tools/build_options/darwin_ppc_xlf_spk" "-enable=matrix"
+
+4) make depend
+5) make
+
+Instructions for running:
+
+1) mkdir run
+2) cd run
+3) cp -p ../input/* .
+4) ./mitgcmuv > output.txt
+
+Results:
+
+compare with results/output.txt
+
