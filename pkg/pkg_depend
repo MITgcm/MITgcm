@@ -54,6 +54,8 @@ rw              +mdsio
 flt             +mdsio
 sbo             +mdsio
 exf             +mdsio
+matrix          +ptracers
+matrix          -gchem
 
 #  Need more information on the following:
 
