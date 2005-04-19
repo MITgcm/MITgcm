@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.5 2005/04/19 13:12:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.6 2005/04/19 14:36:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,7 +18,7 @@ C     *==========================================================*
 C     |   this version is specific to 1 component (ocean)
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -71,22 +71,23 @@ C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
-      cpl_earlyExpImpCall = .TRUE. 
-      useImportHFlx = .TRUE. 
+      cpl_earlyExpImpCall = .TRUE.
+      useImportHFlx = .TRUE.
       useImportFW   = .TRUE.
       useImportTau  = .TRUE.
       useImportSLP  = .TRUE.
       useImportSIce = .TRUE.
       cpl_taveFreq  = taveFreq
-      cpl_snapshot_mnc = .FALSE.
-      cpl_timeave_mnc  = .FALSE.
 #ifdef ALLOW_MNC
       cpl_snapshot_mnc = snapshot_mnc
       cpl_timeave_mnc  = timeave_mnc
+#else
+      cpl_snapshot_mnc = .FALSE.
+      cpl_timeave_mnc  = .FALSE.
 #endif
-      
+
       _BEGIN_MASTER(myThid)
-      
+
       WRITE(msgBuf,'(A)') ' CPL_READPARMS: opening data.cpl'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
@@ -98,10 +99,10 @@ C--   Read parameters from open data file:
 C-    Parameters for coupling interface:
       READ(UNIT=iUnit,NML=CPL_OCN_PARAM)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &   ' CPL_READPARMS: finished reading data.cpl'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
- 
+
 C--   Close the open data file
       CLOSE(iUnit)
 
@@ -124,7 +125,7 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
 #ifndef ATMOSPHERIC_LOADING
       IF ( useImportSLP ) THEN
         WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: useImportSLP is set but' 
+     &  'CPL_READPARMS: useImportSLP is set but'
         CALL PRINT_ERROR( msgBuf , myThid)
       ELSEIF ( useImportSIce ) THEN
         WRITE(msgBuf,'(A)')
@@ -154,11 +155,17 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
       ENDIF
 
 C     Set IO flags
-      IF ( (.NOT. outputTypesInclusive) 
-     &     .AND. cpl_snapshot_mnc )  cpl_snapshot_mdsio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive) 
-     &     .AND. cpl_timeave_mnc )  cpl_timeave_mdsio = .FALSE.
-      
+      cpl_snapshot_mdsio = .TRUE.
+      cpl_timeave_mdsio  = .TRUE.
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. cpl_snapshot_mnc )  cpl_snapshot_mdsio = .FALSE.
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. cpl_timeave_mnc )   cpl_timeave_mdsio  = .FALSE.
+      ENDIF
+#endif
+
 C-    derive other parameters:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -177,29 +184,35 @@ C--   Print out parameter values :
 C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( cpl_earlyExpImpCall, INDEX_NONE,
      &                 'cpl_earlyExpImpCall=',
-     &   ' /* call coupler early in the time-stepping */')       
+     &   ' /* call coupler early in the time-stepping */')
        CALL WRITE_0D_L( useImportHFlx, INDEX_NONE,
      &                 'useImportHFlx=',
-     &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')       
+     &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')
        CALL WRITE_0D_L( useImportFW  , INDEX_NONE,
      &                 'useImportFW  =',
-     &   ' /* use Imported Fresh-Water fr Cpl. on/off flag */')       
+     &   ' /* use Imported Fresh-Water fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportTau , INDEX_NONE,
      &                 'useImportTau =',
-     &   ' /* use Imported Wind-Stress fr Cpl. on/off flag */')       
+     &   ' /* use Imported Wind-Stress fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportSLP , INDEX_NONE,
      &                 'useImportSLP =',
-     &   ' /* use Imported Sea-level Atm Press on/off flag */')       
+     &   ' /* use Imported Sea-level Atm Press on/off flag */')
        CALL WRITE_0D_L( useImportSIce , INDEX_NONE,
      &                 'useImportSIce=',
-     &   ' /* use Imported Sea-Ice loading on/off flag */')       
+     &   ' /* use Imported Sea-Ice loading on/off flag */')
        CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
+       CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,
+     &                 'cpl_timeave_mnc =',
+     &   ' /* write TimeAv to MNC file on/off flag */')
+       CALL WRITE_0D_L( cpl_timeave_mdsio , INDEX_NONE,
+     &                 'cpl_timeave_mdsio =',
+     &   ' /* write TimeAv to MDSIO file on/off flag */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
- 
+
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
