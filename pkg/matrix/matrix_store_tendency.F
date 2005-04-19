@@ -1,16 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_store_tendency.F,v 1.1 2005/04/18 19:42:16 spk Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_store_tendency.F,v 1.2 2005/04/19 18:44:50 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
       
-C !ROUTINE MATRIX_STORE_TENDENCY_EXP.F
-C This routine accumalates the explicit tendency matrix. Note 
-C that on entry gPtr is the tracer field after explicit advection-
-C diffusion. On exit, gPtr is set to the initial tracer field for 
-C the next step (implicit matrix calculation).
+C     !ROUTINE MATRIX_STORE_TENDENCY_EXP
+C     This routine accumalates the explicit tendency matrix. Note that
+C     on entry gPtr is the tracer field after explicit advection-
+C     diffusion. On exit, gPtr is set to the initial tracer field for
+C     the next step (implicit matrix calculation).
 
-      SUBROUTINE MATRIX_STORE_TENDENCY_EXP( bi, bj, myTime, myIter, myThid )
+      SUBROUTINE MATRIX_STORE_TENDENCY_EXP( 
+     &     bi, bj, myTime, myIter, myThid )
       
       IMPLICIT NONE
 #include "SIZE.h" 
@@ -51,12 +52,13 @@ C the next step (implicit matrix calculation).
       RETURN 
       END
       
-C !ROUTINE MATRIX_STORE_TENDENCY_IMP.F
-C This routine accumalates the implicit update matrix. Note that 
-C on entry PTR is the tracer field after implicit advection-
-C diffusion. On exit, PTR is set to the initial tracer field.
+C     !ROUTINE MATRIX_STORE_TENDENCY_IMP
+C     This routine accumalates the implicit update matrix. Note that on
+C     entry PTR is the tracer field after implicit advection-
+C     diffusion. On exit, PTR is set to the initial tracer field.
 
-      SUBROUTINE MATRIX_STORE_TENDENCY_IMP( bi, bj, myTime, myIter, myThid )
+      SUBROUTINE MATRIX_STORE_TENDENCY_IMP( 
+     &     bi, bj, myTime, myIter, myThid )
       
       IMPLICIT NONE
 #include "SIZE.h" 

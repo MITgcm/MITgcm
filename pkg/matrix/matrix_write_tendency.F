@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_write_tendency.F,v 1.1 2005/04/18 19:40:31 spk Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_write_tendency.F,v 1.2 2005/04/19 18:44:50 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,8 +31,10 @@ C to file.
       DATA expMatrixWriteCount /0/
       DATA impMatrixWriteCount /0/
 
-      IF ((mod(myTime-startTime,expMatrixWriteTime).EQ.(0.0 _d 0))) THEN        
-        recipExpDeltaTtracer = (1. _d 0)/(expMatrixCounter*dTtracerLev(1))
+      IF ( (mod(myTime-startTime,expMatrixWriteTime)
+     &     .EQ. (0.0 _d 0))) THEN
+        recipExpDeltaTtracer = 
+     &       (1. _d 0)/(expMatrixCounter*dTtracerLev(1))
         IF (expMatrixWriteCount.EQ.0) expMatrixWriteCount=1
         iRec=expMatrixWriteCount
         DO iTracer=1,PTRACERS_numInUse
@@ -42,14 +44,16 @@ C to file.
                 DO j=1-Oly, sNy+Oly
                   DO i=1-Olx, sNx+Olx
                     MATRIX(i,j,k,bi,bj,iTracer,1) =
-     &                   MATRIX(i,j,k,bi,bj,iTracer,1)*recipExpDeltaTtracer
+     &                   MATRIX(i,j,k,bi,bj,iTracer,1)
+     &                   *recipExpDeltaTtracer
                   ENDDO
                 ENDDO
               ENDDO
             ENDDO
           ENDDO
           WRITE(suff,'(A9,I2.2)') 'MATRIXEXP',iTracer
-          write(*,*)'Writing explicit matrix :',iTracer, expMatrixWriteCount, expMatrixCounter
+          write(*,*)'Writing explicit matrix :',iTracer, 
+     &         expMatrixWriteCount, expMatrixCounter
           CALL WRITE_REC_XYZ_RL(suff,
      &         MATRIX(1-Olx,1-Oly,1,1,1,iTracer,1),iRec,myIter,myThid)
         ENDDO
@@ -71,7 +75,8 @@ C       Reset explicit matrix
         ENDDO
       ENDIF
         
-      IF ((mod(myTime-startTime,impMatrixWriteTime).EQ.(0.0 _d 0))) THEN        
+      IF ( (mod(myTime-startTime,impMatrixWriteTime)
+     &     .EQ.(0.0 _d 0)) ) THEN
         recipImpMatrixCounter = (1. _d 0)/dble(impMatrixCounter)
         IF (impMatrixWriteCount.EQ.0) impMatrixWriteCount=1
         iRec=impMatrixWriteCount
@@ -82,14 +87,16 @@ C       Reset explicit matrix
                 DO j=1-Oly, sNy+Oly
                   DO i=1-Olx, sNx+Olx
                     MATRIX(i,j,k,bi,bj,iTracer,2) =
-     &                   MATRIX(i,j,k,bi,bj,iTracer,2)*recipImpMatrixCounter
+     &                   MATRIX(i,j,k,bi,bj,iTracer,2)
+     &                   *recipImpMatrixCounter
                   ENDDO
                 ENDDO
               ENDDO
             ENDDO
           ENDDO
           WRITE(suff,'(A9,I2.2)') 'MATRIXIMP',iTracer
-          write(*,*)'Writing implicit matrix :',iTracer, impMatrixWriteCount, impMatrixCounter
+          write(*,*)'Writing implicit matrix :',iTracer, 
+     &         impMatrixWriteCount, impMatrixCounter
           CALL WRITE_REC_XYZ_RL(suff,
      &         MATRIX(1-Olx,1-Oly,1,1,1,iTracer,2),iRec,myIter,myThid)
         ENDDO  

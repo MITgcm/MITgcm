@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.1 2005/04/18 19:41:44 spk Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.2 2005/04/19 18:44:50 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-C !ROUTINE: MATRIX_READPARMS
+C     !ROUTINE: MATRIX_READPARMS
 
       SUBROUTINE MATRIX_READPARMS( myThid )
 
-C !DESCRIPTION:
+C     !DESCRIPTION:
 C     Initialize MATRIX parameters, read in data.matrix
 
       IMPLICIT NONE
@@ -18,20 +18,20 @@ C     Initialize MATRIX parameters, read in data.matrix
 #include "PTRACERS.h"
 #include "MATRIX.h"
 
-C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
+C     !INPUT PARAMETERS:
+C     myThid            :: thread number
       INTEGER myThid
 
-C !OUTPUT PARAMETERS: ==================================================
-C  none
-C !LOCAL VARIABLES: ====================================================
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C     !OUTPUT PARAMETERS:
+C     none
+C     !LOCAL VARIABLES:
+C     iUnit		:: unit number for I/O
+C     msgBuf		:: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_MATRIX
-C Open and read the data.matrix file
+C     Open and read the data.matrix file
 
       expMatrixWriteTime = 10. _d 10
       impMatrixWriteTime = 10. _d 10

@@ -51,7 +51,7 @@
  &PARM03
 #startTime = 0.,
  nIter0  = 200000,
- nTimeSteps = 1,
+ nTimeSteps = 10,
  deltaTmom = 20000.0,
 # tauCD = 172800.,
  deltaTtracer = 20000.0,
@@ -62,7 +62,7 @@
  dumpFreq=   200000000.0,
  taveFreq=   0.,
 # taveDumpFreq=155520000.,
- monitorFreq=0.,
+ monitorFreq=2.,
 # tauThetaClimRelax = 864000.0,
 # tauSaltClimRelax = 0.0,
 # periodicExternalForcing=.FALSE.,
