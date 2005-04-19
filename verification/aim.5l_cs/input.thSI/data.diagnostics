@@ -30,4 +30,13 @@
                  'DQCONV  ', 'DQLS    ',
 #                'SWCLR   ', 'LWCLR   ',
    filename(4) = 'aimDDT',
+  frequency(5) = 10,
+   fields(1,5) = 'SI_Fract', 'SI_Thick', 'SI_SnowH',
+                 'SI_Tsrf ', 'SI_Tice1', 'SI_Tice2',
+#                'SI_Qice1', 'SI_Qice2', 'SIsnwAge',
+                 'SIsnwPrc', 'SIalbedo',
+                 'SIflx2oc', 'SIfrw2oc', 'SIsaltFx',
+#                'SIflxAtm', 'SIfrwAtm',
+#                'SItOcMxL', 'SIsOcMxL',
+   filename(5) = 'thSIceDiag',
  &end
