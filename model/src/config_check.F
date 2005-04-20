@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.22 2005/04/15 14:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.23 2005/04/20 15:46:07 spk Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -245,6 +245,15 @@ C     o If calendarDumps is set, pkg/cal is required
       ENDIF
 #endif
 
+#ifndef ALLOW_MATRIX
+      IF (useMATRIX) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: useMATRIX is TRUE and #undef ALLOW_MATRIX'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-  check parameter consistency :
@@ -441,6 +450,20 @@ C- jmc: but ultimately, this block can/will be removed.
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
+      IF ( useMATRIX .AND. useGCHEM ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: cannot set both: useMATRIX & useGCHEM'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( useMATRIX .AND. .NOT.usePTRACERS ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: cannot set useMATRIX without setting usePTRACERS'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF      
+      
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)
