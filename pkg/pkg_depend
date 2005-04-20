@@ -1,5 +1,5 @@
 #
-#  $ID$
+#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.14 2005/04/20 14:18:40 edhill Exp $
 #
 
 #  This file contains a terse list of package dependencies that
@@ -44,6 +44,7 @@ exf		-bulk_force
 bulk_force	-exf
 gchem           +ptracers
 dic             +gchem
+cfc             +gchem
 fizhi           -aim
 fizhi           +gridalt
 fizhi           +diagnostics
