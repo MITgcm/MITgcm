@@ -1,5 +1,8 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=1,
+ PTRACERS_dumpFreq=0.,
+ PTRACERS_taveFreq=0.,
+ PTRACERS_monitorFreq=0.,
 # tracer 1 
  PTRACERS_advScheme(1)=30,
  PTRACERS_diffKh(1)=5.E3,
