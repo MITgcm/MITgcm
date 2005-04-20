@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.26 2004/11/19 01:33:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.27 2005/04/20 15:47:50 spk Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,7 +68,8 @@ C     data.pkg namelists
      &          usegridalt,
      &          usediagnostics,
      &          useEBM,
-     &          useMNC
+     &          useMNC,
+     &          useMATRIX
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -108,6 +109,7 @@ C--   Default package configuration
       usediagnostics=.FALSE.
       useEBM=.FALSE.
       useMNC=.FALSE.
+      useMATRIX=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

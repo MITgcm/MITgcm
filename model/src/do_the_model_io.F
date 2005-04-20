@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.51 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.52 2005/04/20 15:47:13 spk Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,6 +163,12 @@ C     Do seaice output.
 C--   Do ptracer output.
       IF ( usePTRACERS )
      & CALL PTRACERS_OUTPUT( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_MATRIX
+C--   Do matrix output
+      IF (useMATRIX) 
+     & CALL MATRIX_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GCHEM
