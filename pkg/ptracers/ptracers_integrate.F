@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.23 2005/04/15 14:23:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.24 2005/04/20 15:54:57 spk Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -121,9 +121,15 @@ C External forcing term(s)
      I                      myIter,myTime,myThid)
 
 C If using Adams-Bashforth II, then extrapolate tendancies
+C gPtr is now the tracer tendency for explicit advection/diffusion
       IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
      & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
      & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH ) THEN
+#ifdef ALLOW_MATRIX
+C  If matrix is being computed, block call to S/R ADAMS_BASHFORTH2 to 
+C  prevent gPtr from being replaced by the average of gPtr and gPtrNm1.    
+        IF (.NOT.useMATRIX) THEN
+#endif          
         iterNb = myIter
         IF (staggerTimeStep) iterNb = myIter - 1
         CALL ADAMS_BASHFORTH2(
@@ -131,6 +137,9 @@ C If using Adams-Bashforth II, then extrapolate tendancies
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      U                        gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                        iterNb, myThid )
+#ifdef ALLOW_MATRIX
+        ENDIF
+#endif     
       ENDIF
 
 C External forcing term(s)

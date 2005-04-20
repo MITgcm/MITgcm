@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.90 2005/04/15 14:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.91 2005/04/20 15:52:22 spk Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -107,6 +107,9 @@ C     == Global variables ===
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_MATRIX
+# include "MATRIX.h"
+#endif /* ALLOW_MATRIX */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -513,6 +516,16 @@ CADJ &   , key = kkey, byte = isbyte
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
+
+C       All explicit advection/diffusion/sources should now be 
+C       done. The updated tracer field is in gPtr. Accumalate 
+C       explicit tendency and also reset gPtr to initial tracer 
+C       field for implicit matrix calculation
+
+#ifdef ALLOW_MATRIX
+        IF (useMATRIX) 
+     &    CALL MATRIX_STORE_TENDENCY_EXP( bi, bj, myTime, myIter, myThid )
+#endif 
 
         iMin = 1
         iMax = sNx

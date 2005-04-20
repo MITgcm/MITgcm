@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.6 2005/04/15 14:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.7 2005/04/20 15:53:06 spk Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,6 +126,11 @@ C--     Convectively adjust new fields to be statically stable
 #ifdef ALLOW_OPPS
         ENDIF
 #endif /* ALLOW_OPPS */
+
+#ifdef ALLOW_MATRIX
+      IF (useMATRIX)
+     &  CALL MATRIX_STORE_TENDENCY_IMP( bi, bj, myTime, myIter, myThid )
+#endif
 
 C--    End of 2nd bi,bj loop
        ENDDO

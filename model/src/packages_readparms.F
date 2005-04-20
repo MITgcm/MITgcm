@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.38 2004/12/13 22:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.39 2005/04/20 15:51:55 spk Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -239,6 +239,11 @@ CAMM
 C--   set diagnostics choices
       IF ( useDiagnostics ) CALL DIAGNOSTICS_READPARMS( myThid )
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_MATRIX
+C--    Initialize matrix package parameters
+       IF (useMATRIX) CALL MATRIX_READPARMS ( myThid )
+#endif
 
       RETURN
       END
