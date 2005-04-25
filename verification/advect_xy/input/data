@@ -13,7 +13,6 @@
  momStepping=.FALSE.,
  tempAdvScheme=33,
  saltAdvScheme=33,
- multiDimAdvection=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -28,6 +27,8 @@
  endTime=200000.,
  deltaT=2500.0,
  abEps=0.1,
+#alph_AB=0.6,
+#beta_AB=0.,
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=40000.0,
@@ -35,7 +36,6 @@
 
 # Gridding parameters
  &PARM04
- usingSphericalPolarGrid=.FALSE.,
  usingCartesianGrid=.TRUE.,
  delZ=1*10.E3,
  dXspacing=10.E3,
