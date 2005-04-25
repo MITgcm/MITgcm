@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.477 2005/04/17 00:25:45 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.478 2005/04/25 23:25:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o test AB-3 code with 4th.Order advection scheme (advect_xy/input.ab3_c4)
 o fix mnc flags in pkg/seaice so that they are "owned" by seaice,
   not mnc -- this mistake was found by JMC and is now corrected
 
