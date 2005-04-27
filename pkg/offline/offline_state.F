@@ -1,5 +1,6 @@
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_state.F,v 1.3 2005/04/27 14:10:06 jmc Exp $
+C $Name:  $
+
 #include "OFFLINE_OPTIONS.h"
 
 #undef  MULTIPLE_RECORD_STATE_FILES

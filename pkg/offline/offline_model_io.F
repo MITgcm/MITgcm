@@ -1,5 +1,6 @@
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.4 2005/04/27 14:10:06 jmc Exp $
+C $Name:  $
+
 #include "OFFLINE_OPTIONS.h"
 
 CBOP

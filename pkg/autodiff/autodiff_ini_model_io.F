@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.5 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.6 2005/04/27 14:10:06 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: AUTODIFF_INI_MODEL_IO

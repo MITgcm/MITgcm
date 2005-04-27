@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.9 2005/01/27 16:38:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.10 2005/04/27 14:10:06 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

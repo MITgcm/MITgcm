@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.2 2005/04/06 18:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.3 2005/04/27 14:10:06 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OPPS_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: OPPS_INTERFACE
