@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.7 2004/07/20 17:46:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.8 2005/04/28 14:57:22 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -96,7 +96,7 @@ c--      test a different formulation (relatively to hFac)
 
         IF (useJamartMomAdv)
      &   vBarXY = vBarXY * 4. _d 0 * hFacW(i,j,k,bi,bj)
-     &   * MAX( epsil, hFacS( i , j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj)
+     &   / MAX( epsil, hFacS( i , j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj)
      &                +hFacS( j ,i+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj) )
 
         uCoriolisTerm(i,j)=
