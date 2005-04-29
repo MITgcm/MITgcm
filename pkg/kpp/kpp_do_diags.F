@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.18 2005/04/06 18:41:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.19 2005/04/29 18:47:02 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -302,7 +302,18 @@ C       Reset averages to zero
       ENDIF
       
 #endif /* ALLOW_TIMEAVE */
-      
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(KPPviscAz ,'KPPviscA',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(KPPdiffKzS,'KPPdiffS',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(KPPdiffKzT,'KPPdiffT',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(KPPghat   ,'KPPghat ',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(KPPhbl    ,'KPPhbl  ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(KPPfrac   ,'KPPfrac ',0,1 ,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+     
 #endif /* ALLOW_KPP */
       
       RETURN

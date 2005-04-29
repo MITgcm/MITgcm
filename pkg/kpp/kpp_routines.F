@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.22 2005/02/10 05:41:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.23 2005/04/29 18:47:02 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -1398,6 +1398,9 @@ c
 c     written  by: jan morzel,   feb. 10, 1995 (converted from "sigma" version)
 c     modified by: d. menemenlis,    june 1998 : for use with MIT GCM UV
 c
+c     28 april 05: added computation of mixed layer depth KPPmld
+c     for a deltaRho equivalent to a deltaTheta of 0.8 deg C
+
 c-----------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -1407,6 +1410,7 @@ c-----------------------------------------------------------------------
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
 
 c-------------- Routine arguments -----------------------------------------
       INTEGER bi, bj, myThid
@@ -1425,7 +1429,7 @@ c
 c     rhok         - density of t(k  ) & s(k  ) at depth k
 c     rhokm1       - density of t(k-1) & s(k-1) at depth k
 c     rho1k        - density of t(1  ) & s(1  ) at depth k
-c     work1, work2 - work arrays for holding horizontal slabs
+c     work1,2,3    - work arrays for holding horizontal slabs
 
       _RL RHOK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL RHOKM1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1433,6 +1437,11 @@ c     work1, work2 - work arrays for holding horizontal slabs
       _RL WORK1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL WORK2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL WORK3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+c     KPPMLD - mixed layer depth based on density criterion
+      _RL KPPMLD(1    :sNx    ,1    :sNy    )
+#endif /* ALLOW_DIAGNOSTICS */
+
       INTEGER I, J, K
       INTEGER ikppkey, kkppkey
 
@@ -1470,6 +1479,18 @@ CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
             DBSFC(I,J,1)   = 0.
          END DO
       END DO
+
+#ifdef ALLOW_DIAGNOSTICS
+c     work3 - density of t(1)-.8 & s(1  ) at depth 1
+      IF ( useDiagnostics ) THEN
+         DO J = 1, sNy
+            DO I = 1, sNx
+               KPPMLD(I,J) = ABS(R_low(I,J,bi,bj))
+               WORK3 (I,J) = WORK1(I,J) - 0.8 * WORK2(I,J)
+            END DO
+         END DO
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 c calculate alpha, beta, and gradients in interior layers
 
@@ -1533,6 +1554,34 @@ CADJ STORE rho1k (:,:)          = comlev1_kpp_k, key=kkppkey
             END DO
          END DO
 
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( useDiagnostics ) THEN
+c     work1 - density of t(k-1)  & s(k-1) at depth 1
+c     work2 - density of t(k  )  & s(k  ) at depth 1
+c     work3 - density of t(1)-.8 & s(1  ) at depth 1
+            call FIND_RHO(
+     I           bi, bj, 1, sNx, 1, sNy, K-1, 1, theta, salt,
+     O           WORK1,
+     I           myThid )
+            call FIND_RHO(
+     I           bi, bj, 1, sNx, 1, sNy, K  , 1, theta, salt,
+     O           WORK2,
+     I           myThid )
+            DO J = 1, sNy
+               DO I = 1, sNx
+                  IF ( k .LE. klowC(I,J,bi,bj) .AND.
+     &                 WORK1(I,J) .LT. WORK3(I,J) .AND.
+     &                 WORK2(I,J) .GE. WORK3(I,J) ) THEN
+                     KPPMLD(I,J) = MIN ( KPPMLD(I,J),
+     &                    ABS(((WORK3(I,J)-WORK1(I,J))*rC(k)+
+     &                    (WORK2(I,J)-WORK3(I,J))*rC(k-1))/
+     &                    (WORK2(I,J)-WORK1(I,J))))
+                  ENDIF
+               END DO
+            END DO
+         ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
       END DO
 
 c     compute arrays for K = Nrp1
@@ -1543,6 +1592,12 @@ c     compute arrays for K = Nrp1
             DBLOC(I,J,Nr)     = 0.
          END DO
       END DO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(KPPmld,'KPPmld  ',0,1,3,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_KPP */
 

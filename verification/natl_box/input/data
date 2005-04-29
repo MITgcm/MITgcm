@@ -53,6 +53,7 @@
  no_slip_bottom     = .TRUE.,
  no_slip_sides      = .FALSE.,
  readBinaryPrec     = 32,
+ globalFiles        = .TRUE.
  &
 
 # Elliptic solver parameters
@@ -89,7 +90,7 @@
  abEps      = 0.1,
  pChkptFreq = 0.0,
  chkptFreq  = 0.0,
- dumpFreq   = 864000.0,
+ dumpFreq   = 39600.0,
  tauSaltClimRelax = 2592000.0,
  tauThetaClimRelax = 2592000.0,
  periodicExternalForcing = .TRUE.,

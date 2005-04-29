@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.36 2005/02/15 01:54:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.37 2005/04/29 18:47:02 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,8 @@ C       |
 C       |-- CD_CODE_INIT_FIXED
 C       |
 C       |-- GMREDI_INIT_FIXED
+C       |
+C       |-- KPP_INIT_FIXED
 C       |
 C       |-- OPPS_INIT
 C       |
@@ -99,6 +101,13 @@ C--   Initialize fixed params for GAD
 C--   Initialize fixed arrays for GM-Redi
       IF ( useGMRedi ) THEN
        CALL GMREDI_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_KPP
+C--   Initialize fixed arrays for KPP
+      IF ( useKPP ) THEN
+       CALL KPP_INIT_FIXED( myThid )
       ENDIF
 #endif
 
