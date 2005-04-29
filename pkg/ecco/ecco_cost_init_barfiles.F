@@ -82,9 +82,6 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      print *, 'ph-cost-ave ndaysrec, nmonsrec ', 
-     &         ndaysrec, nmonsrec
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax

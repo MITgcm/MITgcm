@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.6 2005/04/29 10:31:56 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -198,8 +198,10 @@ c--           Compute model data misfit and cost function term for
 c             the salinity field.
               do j = jmin,jmax
                 do i = imin,imax
-                  if ( _hFacC(i,j,k,bi,bj) .ne. 0. .AND.
-     &                 _hFacC(i,j,13,bi,bj) .ne. 0. ) then
+cph(
+cph no more discard of data for z < 1000
+cph)
+                  if ( _hFacC(i,j,k,bi,bj) .ne. 0. ) then
                      fctile = fctile +
      &                    (wsalt(k,bi,bj)*cmask(i,j)*
      &                    (sbar(i,j,k,bi,bj) - sdat(i,j,k,bi,bj))*
