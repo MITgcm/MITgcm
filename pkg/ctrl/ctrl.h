@@ -37,7 +37,7 @@ cph Need to put this in namelist at some point!
 
 #ifdef ALLOW_ADMTLM
       integer admtlmrec
-      parameter( admtlmrec = 2315 )
+      parameter( admtlmrec = Nx*Ny*(4*Nr+1) )
       common / controlvars_admtlm_r /
      &                       cbuffGlobal
       _RL cbuffGlobal( admtlmrec )
