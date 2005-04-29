@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.3 2004/11/17 03:06:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.4 2005/04/29 10:36:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -146,6 +146,9 @@ C     == Global variables ===
 # include "tamc.h"
 # include "ctrl.h"
 # include "optim.h"
+# include "cost.h"
+# include "adcost.h"
+# include "g_cost.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -155,7 +158,7 @@ C     == Routine arguments ==
 C     == PARAMETERS ==
       integer          maxm, maxn, maxnev, maxncv, ldv, ldu
 cph(
-      parameter       (maxm = 2*admtlmrec, maxn=2*admtlmrec, 
+      parameter       (maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1), 
      &                maxnev=15, maxncv=30, 
      &                ldu = maxm, ldv=maxn )
       character*(80)   fnameGlobal
@@ -263,8 +266,8 @@ c     | The following sets dimensions for this problem. |
 c     %-------------------------------------------------%
 c
 cph(
-      m = 2*admtlmrec
-      n = 2*admtlmrec
+      m = admtlmrec
+      n = admtlmrec
 cph)
 c
 c     %------------------------------------------------%
@@ -438,11 +441,12 @@ cph)
             enddo
 
             if (optimcycle .GT. 0 ) then
-               write(fnameGlobal(1:80),'(a)') ' '
-               write(fnameGlobal,'(a,i4.4)') 
-     &              'admtlm_vector.it', optimcycle
-               call mdswritevector( fnameGlobal, 64, .false., 'RL',
-     &              2*admtlmrec, phtmpin, 1, 1, 1, 0, mythid )
+ccc               write(fnameGlobal(1:80),'(a)') ' '
+ccc               write(fnameGlobal,'(a,i4.4)') 
+ccc     &              'admtlm_vector.it', optimcycle
+ccc               call mdswritevector( fnameGlobal, 64, .false., 'RL',
+ccc     &              2*admtlmrec, phtmpin, 1, 1, 1, 0, mythid )
+              call admtlm_dsvd2model( phtmpin, mythid )
             endif
 
 c--          MWMWMWMWMWMWMW
@@ -450,11 +454,12 @@ c--          MWMWMWMWMWMWMW
 cph            call box_main( phtmpin, phtmpout, metricLoc, ldoadjoint )
 c--          MWMWMWMWMWMWMW
 
-            write(fnameGlobal(1:80),'(a)') ' '
-            write(fnameGlobal,'(a,i4.4)') 
-     &           'admtlm_vector.it', optimcycle
-            call mdsreadvector( fnameGlobal, 64, 'RL',
-     &           2*admtlmrec, phtmpout, 1, 1, 1, mythid )
+ccc            write(fnameGlobal(1:80),'(a)') ' '
+ccc            write(fnameGlobal,'(a,i4.4)') 
+ccc     &           'admtlm_vector.it', optimcycle
+ccc            call mdsreadvector( fnameGlobal, 64, 'RL',
+ccc     &           2*admtlmrec, phtmpout, 1, 1, 1, mythid )
+            call admtlm_model2dsvd( phtmpout, mythid )
 
             do l = 1, n
                workd(ipntr(2)+l) = phtmpout(l)

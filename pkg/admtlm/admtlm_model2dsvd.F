@@ -1,7 +1,7 @@
 
 #include "CPP_OPTIONS.h"
 
-      subroutine admtlm_map( myThid )
+      subroutine admtlm_model2dsvd( tmpstate, mythid )
 C     /==========================================================\
 C     | subroutine admtlm_map                                    |
 C     | o This routine assigns final T,S to cost function        |
@@ -20,6 +20,7 @@ C     == Global variables ===
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
       integer myThid
+      _RL tmpstate (snx,sny,nsx,nsy,4*Nr+1)
 
 #ifdef ALLOW_ADMTLM
 C     ========= Local variables =========================
@@ -31,16 +32,15 @@ C     ========= Local variables =========================
         DO j=1,sNy
          DO i=1,sNx
           DO k=1,4*Nr
-            adobjf_state_final(i,j,bi,bj,k) = 
-     &       g_objf_state_final(i,j,bi,bj,k)
+             tmpstate(i,j,bi,bj,k) = 
+     &            adobjf_state_final(i,j,bi,bj,k)
           END DO
-           adobjf_state_final(i,j,bi,bj,4*Nr+1) = 
-     &      g_objf_state_final(i,j,bi,bj,4*Nr+1)
+          tmpstate(i,j,bi,bj,4*Nr+1) = 
+     &         adobjf_state_final(i,j,bi,bj,4*Nr+1)
          END DO
         END DO
        END DO
       END DO
-
 #endif
       
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.3 2004/11/17 03:06:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.4 2005/04/29 10:36:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -53,23 +53,17 @@ CEOP
       yadprefix = 'g_'
 
       IF (optimcycle .GT. 0 ) THEN
-         _BEGIN_MASTER( mythid )
-         IF ( myProcId .eq. 0 ) THEN
-            CALL CTRL_UNPACK( .false., mythid )
-         ENDIF
-         _END_MASTER( mythid )
+cph         _BEGIN_MASTER( mythid )
+cph         IF ( myProcId .eq. 0 ) THEN
+cph            CALL CTRL_UNPACK( .false., mythid )
+cph         ENDIF
+cph         _END_MASTER( mythid )
          CALL ADMTLM_UPXX( mythid )
       ENDIF
 c
       CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
       CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
-c
-c      _BEGIN_MASTER( mythid )
-c      IF ( myProcId .eq. 0) THEN
-c         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
-c      ENDIF
-c      _END_MASTER( mythid )
 c
       CALL ADMTLM_METRIC ( mythid )
       CALL ADMTLM_MAP ( mythid )
@@ -78,23 +72,17 @@ c
       myCurrentIter = nIter0
       yadprefix = 'ad'
 c
-c      _BEGIN_MASTER( mythid )
-c      IF (myProcId .eq. 0) THEN
-c         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
-c      ENDIF
-c      _END_MASTER( mythid )
-c
       CALL CTRL_INIT( mythid )
 c
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
       CALL ADTHE_MAIN_LOOP (  myCurrentTime, myCurrentIter, mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 c
-      _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0 ) THEN
-         call CTRL_PACK( .FALSE., mythid )
-      ENDIF
-      _END_MASTER( mythid )
+cph      _BEGIN_MASTER( mythid )
+cph      IF ( myProcId .eq. 0 ) THEN
+cph         call CTRL_PACK( .FALSE., mythid )
+cph      ENDIF
+cph      _END_MASTER( mythid )
 c
 #endif
 
