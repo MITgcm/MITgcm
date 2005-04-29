@@ -9,12 +9,13 @@ C--   heimbach@mit.edu 11-Jan-2001
 #ifdef ALLOW_AUTODIFF_MONITOR
 
       common /addynvars_r/ 
-     &                     adetan,
+     &                     adetan, adetah,
      &                     aduvel, advvel, adwvel, 
      &                     adtheta, adsalt, 
      &                     adgu, adgv, adgt, adgs, 
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
