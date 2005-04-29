@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.22 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.23 2005/04/29 20:50:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -118,7 +118,11 @@ C        / (latent heat of fusion of sea-ice = 334000 J/kg)
 C        / (density of sea-ice = 910 kg/m^3)
 C     Negative YNEG leads to ice growth.
 C     Positive YNEG leads to ice melting.
+          if ( .NOT. inAdMode ) then
           YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
+          else
+          YNEG(I,J,bi,bj)= 0.
+          endif
           GHEFF(I,J)=HEFF(I,J,1,bi,bj)
           HEFF(I,J,1,bi,bj)=MAX(ZERO,HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj))
           YNEG(I,J,bi,bj)=GHEFF(I,J)-HEFF(I,J,1,bi,bj)
