@@ -4,3 +4,9 @@ C subroutine exf_check_range
 C----------------------------------------
 CADJ SUBROUTINE exf_check_range  INPUT  = 1,2,3
 CADJ SUBROUTINE exf_check_range  OUTPUT =
+
+C----------------------------------------
+C subroutine exf_interp_read
+C----------------------------------------
+CADJ SUBROUTINE exf_interp_read INPUT  = 1,2, 4,5,6,7,8,9,10,11,12,13,14
+CADJ SUBROUTINE exf_interp_read OUTPUT =    3

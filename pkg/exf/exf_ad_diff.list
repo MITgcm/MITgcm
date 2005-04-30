@@ -24,3 +24,5 @@ exf_set_climsalt.f
 exf_set_climtemp.f
 exf_set_climsss.f
 exf_set_climsst.f
+exf_set_uv.f
+exf_interp.f
