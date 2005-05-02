@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.12 2005/04/04 22:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.13 2005/05/02 21:24:12 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -249,8 +249,19 @@ C-        end of empty diag / not empty block
 #ifdef ALLOW_MDSIO
 C         Prepare for mdsio optionality
           IF (diag_mdsio) THEN
-            CALL mdswritefield_new(fn,writeBinaryPrec,glf,'RL',
-     &           Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
+            IF (fflags(listnum)(1:1) .EQ. ' ') THEN
+C             This is the old default behavior
+              CALL mdswritefield_new(fn,writeBinaryPrec,glf,'RL',
+     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
+            ELSEIF (fflags(listnum)(1:1) .EQ. 'R') THEN
+C             Force it to be 32-bit precision
+              CALL mdswritefield_new(fn,precFloat32,glf,'RL',
+     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
+            ELSEIF (fflags(listnum)(1:1) .EQ. 'D') THEN
+C             Force it to be 64-bit precision
+              CALL mdswritefield_new(fn,precFloat64,glf,'RL',
+     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
+            ENDIF
           ENDIF
 #endif /*  ALLOW_MDSIO  */
 
@@ -333,9 +344,15 @@ C           Time dimension
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'units',
      &             udiag(m),myThid)
 
-            CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+            IF ((fflags(listnum)(1:1) .EQ. ' ')
+     &           .OR. (fflags(listnum)(1:1) .EQ. 'R')) THEN
+              CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
      &             cdiag(m), qtmp1, myThid)
-
+            ELSEIF (fflags(listnum)(1:1) .EQ. 'D') THEN
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+     &             cdiag(m), qtmp1, myThid)
+            ENDIF
+            
             CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
             CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 

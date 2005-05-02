@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.480 2005/04/29 18:47:02 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.481 2005/05/02 21:24:12 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add fflags() to pkg/diagnostics which allows one to specify, on a
+  per-file basis, the file precision [default behavior is unchanged]
 o added diagnostics to pkg/kpp, including computation of mixed layer
   depth based on a temperature/density criterion
 o updated verification/natl_box to test the new pkg/kpp diagnostics

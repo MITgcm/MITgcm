@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.6 2005/03/17 01:22:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.7 2005/05/02 21:24:12 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,6 +41,7 @@ C     filename  :: List Output Filename
       _RL         levels(kdimLoc,ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
       CHARACTER*80 filename(ldimLoc), blkFilName
+      CHARACTER*8 fileflags(ldimLoc)
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ku, stdUnit
@@ -50,7 +51,7 @@ C     filename  :: List Output Filename
       EXTERNAL ILNBLNK
 
       NAMELIST / diagnostics_list /
-     &     frequency, levels, fields, filename,
+     &     frequency, levels, fields, filename, fileflags,
      &     diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
@@ -67,6 +68,8 @@ C     Initialize and Read Diagnostics Namelist
       DO l = 1,ldimLoc
         frequency(l) = 0
         filename (l) = blkFilName
+C       eight spaces:        12345678
+        fileflags(l)(1:8) = '        '
         DO k = 1,kdimLoc
           levels (k,l) = undef
         ENDDO
@@ -127,6 +130,7 @@ C     Fill Diagnostics Common Block with Namelist Info
          n = nlists + 1
          freq(n)    = frequency(l)
          fnames(n)  = filename (l)
+         fflags(n)  = fileflags(l)
          nlevels(n) = 0
          IF ( levels(1,l).NE.undef ) THEN
            DO k=1,kdimLoc
