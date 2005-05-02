@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.1 2005/04/29 18:47:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.2 2005/05/02 03:19:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -73,14 +73,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'KPPhbl  '
-        diagTitle = 'KPP mixing layer depth based on bulk Ri criterion'
+        diagTitle = 'KPP boundary layer depth, bulk Ri criterion'
         diagUnits = 'm               '
         diagCode  = 'SM P     1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'KPPmld  '
-        diagTitle = 'Mixed layer depth for dT=.8degC density criterion'
+        diagTitle = 'Mixed layer depth, dT=.8degC density criterion'
         diagUnits = 'm               '
         diagCode  = 'SM P     1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
