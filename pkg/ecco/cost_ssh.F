@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.4 2005/04/29 10:31:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.5 2005/05/02 14:30:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -76,9 +76,7 @@ c     == local variables ==
       _RL junk
 
       character*(80) fname
-#ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
-#endif
 
 c     == external functions ==
 
@@ -178,16 +176,17 @@ c--   Do a global summation.
 
       if (offset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
-        print*
-        print*,' cost_ssh: offset_sum = zero!'
-        print*
+        write(msgbuf,'(a)') ' cost_ssh: offset_sum = zero!'
+        call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
         stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
-        print*
-        print*,' cost_ssh: offset_sum = ',offset_sum
-        print*
+        write(msgbuf,'(a,d22.15)') 
+     &  	' cost_ssh: offset_sum = ',offset_sum
+        call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
       endif
 

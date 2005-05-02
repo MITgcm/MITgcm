@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.5 2005/05/02 14:30:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -168,11 +168,6 @@ c--         Compute cost rel. to monthly SCAT field.
             objf_scatx(bi,bj)  = objf_scatx(bi,bj)  + fctile_scatx
             fcthread_scaty     = fcthread_scaty + fctile_scaty
             objf_scaty(bi,bj)  = objf_scaty(bi,bj)  + fctile_scaty
-
-cph(
-            print *, 'ph-scat c ', irec,
-     &           objf_scatx(1,1), objf_scaty(1,1)
-cph)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost fscat for each tile in each thread.
