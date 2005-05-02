@@ -58,9 +58,6 @@ C
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#ifdef ALLOW_USE_MPI
-# include "EESUPPORT.h"
-#endif /* ALLOW_USE_MPI */
 #include "PARAMS.h"
 
 C subroutine variables
