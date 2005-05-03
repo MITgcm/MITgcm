@@ -1,0 +1,17 @@
+Some tools (matlab scripts for now) specific to the Cubed-Sphere grid :
+
+split_C_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
+        apply to cell-centered CS-field ; extend the face array by 
+        adding 1 row & 1 column (like the exchanges)
+split_Z_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
+        apply to cell-corner CS-field ; extend the face array by 
+        adding 1 row & 1 column (like the exchanges)
+split_UV_cub.m  :: split the 2 C-grid components of a vector 
+        (2d,3d global CS-field) into 6 faces ; extend the face array 
+        by adding 1 row or 1 column (like the exchanges)
+
+cubeZ2latlon.m  :: interpolate a CS-field to regular Lat-lon grid ;
+        similar to cube2latlon.m but apply to a field that is
+        located at the corner point of the C-grid cell.
+        (deal with the 2 "missing corners")
+
