@@ -41,12 +41,14 @@ C     == Routine arguments ==
 #ifdef ALLOW_CFC
 C     == Local variables ==
       _RL  SURCFC12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  xintp(1-OLy:sNy+OLy)
        INTEGER I,J
        INTEGER myYear, lastYear, thisYear
        _RL dtinc, aWght, bWght
        _RL ACFC12north, ACFC12south
        _RL maxYear
        _RL a1, a2
+       _RL yNorth, ySouth
 
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -74,7 +76,11 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC12north = ACFC12(thisYear,1)
          ACFC12south = ACFC12(thisYear,1)
        endif
- 
+c provide gradient between N and S values
+#define OCMIP_GRAD
+#undef STEPH_GRAD
+c STEPH'S INITIAL VERSION
+#ifdef STEPH_GRAD
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           if ((j.gt.int(sNy/2)+3.and.j.le.sNy).or.j.lt.1) then
@@ -91,7 +97,29 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
           endif
         ENDDO
        ENDDO
+#endif
+c OCMIP VERSION
+#ifdef OCMIP_GRAD
+       yNorth =  10.0
+       ySouth = -10.0
+       DO j=1-OLy,sNy+OLy
+          i=1
+          IF(yC(i,j,bi,bj) .GE. yNorth) THEN
+             xintp(j) = 1.0
+          ELSE IF(yC(i,j,bi,bj) .LE. ySouth) THEN
+             xintp(j) = 0.0
+          ELSE
+             xintp(j) = (yC(i,j,bi,bj) - ySouth)/
+     &                           (yNorth - ySouth)
+          ENDIF
+          DO i=1-OLx,sNx+OLx
+           ATMOSCFC12(i,j,bi,bj)= xintp(j) * ACFC12north
+     &               + (1.0 - xintp(j))*ACFC12south
 
+          ENDDO
+c         print*,'QQ cfc12', j, ATMOSCFC12(1,j,bi,bj)
+       ENDDO
+#endif
 c cfc12 air-sea interaction
        CALL CFC12_SURFFORCING( PTR_CFC12, SURCFC12,
      &                    bi,bj,imin,imax,jmin,jmax,
