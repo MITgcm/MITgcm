@@ -28,6 +28,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CFC.h"
+#include "GCHEM.h"
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -58,7 +59,7 @@ C     == Local variables ==
          ENDDO
 
 c find atmospheric CFC
-       myYear=float(myIter-nIter0)*deltaTclock
+       myYear=float(myIter-tIter0)*deltaTclock
      &                       /(360.d0*24.d0*3600.d0)
        lastYear=1+int(myYear+0.5)
        thisYear=lastYear+1

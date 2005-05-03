@@ -28,6 +28,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CFC.h"
+#include "GCHEM.h"
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -43,7 +44,7 @@ C     == Local variables ==
       _RL  SURCFC12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  xintp(1-OLy:sNy+OLy)
        INTEGER I,J
-       INTEGER myYear, lastYear, thisYear
+       _RL myYear, lastYear, thisYear
        _RL dtinc, aWght, bWght
        _RL ACFC12north, ACFC12south
        _RL maxYear
@@ -57,17 +58,17 @@ C     == Local variables ==
          ENDDO
 
 c find atmospheric CFC
-       myYear=float(myIter-nIter0)*deltaTclock
+       myYear=float(myIter-tIter0)*deltaTclock
      &                       /(360.d0*24.d0*3600.d0)
        lastYear=1+int(myYear+0.5)
        thisYear=lastYear+1
        maxYear=cfc_yearend-cfc_yearbeg
        if (thisYear.lt.maxYear) then
-         dtinc=myYear-float(lastYear-1)
+         dtinc=myYear-(lastYear-1.d0)
          aWght=0.5d0+dtinc
          bWght=1.d0-aWght
 c        IF (bi*bj.eq.1)
-c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
+c    &      write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC12north = ACFC12(lastYear,1)*bWght
      &                + ACFC12(thisYear,1)*aWght
          ACFC12south = ACFC12(lastYear,2)*bWght
@@ -76,6 +77,8 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC12north = ACFC12(thisYear,1)
          ACFC12south = ACFC12(thisYear,1)
        endif
+       print*,'YEAR,ACFC12north,ACFC12south',  myYear,
+     &        ACFC12north,ACFC12south
 c provide gradient between N and S values
 #define OCMIP_GRAD
 #undef STEPH_GRAD
