@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.4 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.5 2005/05/03 17:01:22 stephd Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -44,7 +44,7 @@ C--   Do time averages
 c       CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
 #ifdef ALLOW_PTRACERS
        IF ( usePTRACERS )
-     & CALL PTRACERS_STATV_WRITE( myTime, myIter, myThid )
+     & CALL PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
 #endif
       ENDIF
 #endif

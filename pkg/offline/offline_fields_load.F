@@ -32,7 +32,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
-#include "GMREDI_DIAGS.h"
+#include "GMREDI_TAVE.h"
 #endif
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
