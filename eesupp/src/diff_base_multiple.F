@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/diff_base_multiple.F,v 1.1 2005/04/06 18:17:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/diff_base_multiple.F,v 1.2 2005/05/04 18:56:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -55,7 +55,8 @@ C         o This case is more complex because of round-off error
           v3 = val1 + step
 
 C         Test v1 to see if its a "closest multiple"
-          v4 = base + NINT((v1-base)/freq)*freq
+c         v4 = base + NINT((v1-base)/freq)*freq
+          v4 = NINT(v1/freq)*freq
           d1 = v1-v4
           d2 = v2-v4
           d3 = v3-v4
