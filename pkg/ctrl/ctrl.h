@@ -22,7 +22,11 @@ c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
 c                       south (s), and western (w) mask, resp. .
 
       integer     maxcvars
+#ifdef CTRL_SET_OLD_MAXCVARS_30
+      parameter ( maxcvars = 30 )
+#else
       parameter ( maxcvars = 40 )
+#endif
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be
