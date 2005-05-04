@@ -155,8 +155,6 @@ c--   Only the master thread will do I/O.
 
       nrec_nl=int(ncvarrecs(ivartype)/Nr)
       do irec = 1, nrec_nl
-	 print *, 'ph-pack nrec_nl = ', irec, nrec_nl, ivartype,
-     &          ncvarrecs(ivartype)
          do k = 1,Nr
          irectrue = (irec-1)*nr + k
          read(cunit) filencvarindex(ivartype)
@@ -236,8 +234,6 @@ cph)
       enddo
 
       do irec = nrec_nl*Nr+1,ncvarrecs(ivartype)
-         print  *, 'ph-pack nrec_nl+irec ', irec, nrec_nl, ivartype, 
-     &             ncvarrecs(ivartype) 
 #ifndef ALLOW_ADMTLM
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
