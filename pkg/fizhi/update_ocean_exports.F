@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.20 2005/03/08 22:14:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.21 2005/05/04 22:13:46 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -198,7 +198,6 @@ C---------- Read in Header file ----------------------------------
 
       if( iyear.ne.iyearbc ) then
 
-       close(iunit)
        open (iunit,file=sicedata,form='unformatted',access='direct',
      .                                         recl=xsize*ysize*4)
        nrec = 1
@@ -336,6 +335,7 @@ C---------- Fill sice with depth of ice ------------------------------------
       enddo
       enddo
 C---------------------------------------------------------------------------
+      close(iunit)
  
       return
       end
@@ -446,7 +446,6 @@ C---------- Read in Header file ----------------------------------
 
       if( iyear.ne.iyearbc ) then
 
-       close(iunit)
        open (iunit,file=sstdata,form='unformatted',access='direct',
      .                                        recl=xsize*ysize*4)
        nrec = 1
@@ -569,6 +568,8 @@ C---------- Interpolate SST data ------------------------------------
       enddo
       enddo
  
+      close(iunit)
+
       return
       end
 
