@@ -72,7 +72,7 @@ c     conversion from mol/(m^3 * atm) to mol/(m3 * pptv)
 C Determine surface flux (Fcfc11)
               Csat(i,j) = SolCFC11(i,j)*AtmosP(i,j,bi,bj)
      &                     *AtmosCFC11(i,j,bi,bj)
-              Kwexch(i,j) = pisvel(i,j,bi,bj)
+              Kwexch(i,j) = (1.0 - fice(i,j,bi,bj))*pisvel(i,j,bi,bj)
      &                    / sqrt(SchmidtNoCFC11(i,j)/660.0)
               FluxCFC11(i,j) =
      &        Kwexch(i,j)*(Csat(i,j) - PTR_CFC11(i,j,1))

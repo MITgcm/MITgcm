@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.4 2004/11/28 23:53:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.5 2005/05/04 19:57:16 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -138,8 +138,8 @@ C
            ENDIF
 c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
-c QQ         also need to check units, and conversion factors
-           pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
+c following Wannikof (1992)
+           pisvel(i,j,bi,bj)  =(0.31*wind(i,j,bi,bj)**2)/3.6e5
            IF ( AtmospFile .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
      &                        +aWght*atmosp1(i,j,bi,bj)
