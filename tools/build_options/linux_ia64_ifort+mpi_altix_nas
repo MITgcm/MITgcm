@@ -8,14 +8,14 @@ CPP='/lib/cpp  -traditional -P'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
-FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
 
 FOPTIM='-O3 -align'
 LIBS='-L/opt/sgi/mpt/1.11-85/lib -lmpi'
 
 FC=ifort
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=1'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 
 INCLUDES='-I/opt/sgi/mpt/1.11-85/include'
 INCLUDEDIRS='/opt/sgi/mpt/1.11-85/include'
