@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.21 2005/03/07 20:01:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.22 2005/05/04 22:15:17 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -76,6 +76,7 @@ C***********************************************************************
       open(kveg,file=vegdata,form='unformatted',access='sequential', 
      .                      iostat=ierr1)
       if( ierr1.eq.0 ) then
+          rewind(kveg)
           read(kveg)im_32,jm_32,Nxg_32,Nyg_32,IVEG_32,VEG_32
       else
        print *

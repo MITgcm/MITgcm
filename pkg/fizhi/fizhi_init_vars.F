@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.17 2005/04/06 18:40:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.18 2005/05/04 22:15:17 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -203,7 +203,7 @@ c Zero out fizhi tendency arrays on the dynamics grid
         enddo
         enddo
 
-c Initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
+c Initialize vegetation tile tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
         if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
          print *,' Cold Start: Zero out Turb second moments '
          do i = 1,nchp
@@ -224,19 +224,10 @@ c Initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
          stop
         endif
 
-c Now initialize land state too - tcanopy, etc... SET FOR NOW, 
-c                                              READ CLIM FOR REAL
-        do i = 1,nchp
-        tcanopy(i,bi,bj) = 283.
-        tdeep(i,bi,bj) = 282.5
-        ecanopy(i,bi,bj) = 2.e-2
-        swetshal(i,bi,bj) = 0.6
-        swetroot(i,bi,bj) = 0.5
-        swetdeep(i,bi,bj) = 0.5
-        capac(i,bi,bj) = 0.
-        snodep(i,bi,bj) = 0.
-        enddo
+c Now initialize vegetation tile land state too - tcanopy, etc... 
+        call fizhi_init_vegsurftiles( nymd,nhms, 'D', myThid )
 
+c Now initialize fizhi arrays that will be on a pickup
         print *,' Initialize fizhi arrays that will be on pickup '
         imstturblw(bi,bj) = 0
         imstturbsw(bi,bj) = 0
