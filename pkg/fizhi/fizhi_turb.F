@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.36 2005/03/21 18:47:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.37 2005/05/05 14:41:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2207,6 +2207,14 @@ CB
       KH(I,LMINQ1)=XQ(I,LMINQ1)*KH(I,LMINQ1)+KHBG
 9126  CONTINUE
 CE
+      do L = 1,nlev-1
+        do i = 1,irun
+         if(pl(i,L).le.150.) then
+          kh(i,L) = 5.
+          km(i,L) = 5.
+         endif
+        enddo
+      enddo
 C
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: TH AND S
 C
