@@ -1,0 +1,21 @@
+# This was tested on the Altix Itanium IC cluster at GFDL 5/4/05
+# by Baylor Fox-Kemper
+
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-3.6.0-p1.tar.gz
+
+tar -xzvf netcdf-3.6.0-p1.tar.gz
+
+cd netcdf-3.6.0-p1/src
+
+export FC='/opt/ifort/8.1.026/bin/ifort'
+export F90='/opt/ifort/8.1.026/bin/ifort'
+export CC=gcc
+export CPPFLAGS=-DpgiFortran
+export FFLAGS=-i-static
+export FLIBS=-L/opt/ifort/8.1.026/lib/
+
+./configure --prefix=/home/bfk/fortran/netcdf-3.6.0-p1/ic
+make
+make install
+
+
