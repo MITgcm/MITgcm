@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.24 2005/03/09 00:35:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.25 2005/05/05 18:40:42 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -121,11 +121,11 @@ C*********************************************************************
         tmpij(i,j) = 0.
        enddo
        enddo
-       do i = 1,nchptot(bi,bj)
+       do i = 1,nchpland(bi,bj)
         tmpchp(i) = tcanopy(i,bi,bj)
        enddo
        call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,
-     .                    nchp,nchptot(bi,bj),fracl,tmpij,im2,jm2)
+     .                    nchp,nchpland(bi,bj),fracl,tmpij,im2,jm2)
        do j = jm1,jm2
        do i = im1,im2
         tgz(i,j,bi,bj) = tmpij(i,j)
