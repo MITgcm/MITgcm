@@ -313,7 +313,7 @@ c     ==================================================================
       REAL    A, B, E, F, Q, DA, DB, XLAT
 
 ce      IF (LMAX.GT.LMAXLMT) CALL ABORT('LMAX.GT.LMAXLMT')
-      IF (LMAX.GT.LMAXLMT) CALL shcError('LMAX.GT.LMAXLMT',1)
+cph      IF (LMAX.GT.LMAXLMT) CALL shcError('LMAX.GT.LMAXLMT',1)
 
       DEG2RAD = ACOS(-1.0)/180.0
       XLAT = 0.5*(XLAT1+XLAT2)
@@ -403,7 +403,7 @@ C
       INTEGER JP, I1, I2
 
 ce      IF(LMAX.GT.LMAXLMT) CALL ABORT('LMAX.GT.LMAXLMT')
-      IF(LMAX.GT.LMAXLMT) CALL shcError('LMAX.GT.LMAXLMT',1)
+cph      IF(LMAX.GT.LMAXLMT) CALL shcError('LMAX.GT.LMAXLMT',1)
 
       IF(XLAT1 .LT. -90.0+1.E-10) THEN
         do i = 1,(1+lmax)*(1+lmax)

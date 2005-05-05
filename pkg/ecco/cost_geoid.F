@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_geoid.F,v 1.3 2005/02/17 20:10:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_geoid.F,v 1.4 2005/05/05 23:47:57 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -17,13 +17,14 @@ c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 c
 c     changed: Christian Eckert eckert@mit.edu 25-Feb-2000
-c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     changed: Ralf Giering Ralf.Giering@FastOpt.de 12-Jun-2001
-c
 c              - totally rewrite for parallel processing
+c
+c              heimbach@mit.edu 05-May-2005
+c              - debugged and restructuted
 c
 c     ==================================================================
 c     SUBROUTINE cost_geoid
@@ -38,7 +39,12 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ecco_cost.h"
-#include "cost_sph.h"
+#ifdef ALLOW_SPHERE
+# include "sphere.h"
+#else
+      integer ncShc
+      parameter (ncShc=1)
+#endif
 
 c     == routine arguments ==
 
@@ -54,23 +60,15 @@ c     == local variables ==
 
       integer i,j
       integer ilo,ihi
-      integer ilnblnk
-      integer ifnblnk
       integer ireads
-      integer egmunit
       integer egmsize
       parameter( egmsize = 8 )
 
-      integer jsize, joff, jbeg, jend, j
+      integer jsize, joff, jbeg, jend
+      integer reclength
 
       _RL factor
       _RL recip_rr
-
-c     == external functions ==
-      integer  ilnblnk
-      external ilnblnk
-      integer  ifnblnk
-      external ifnblnk
 
 c     == end of interface ==
 
@@ -87,23 +85,6 @@ c--   to allow usage of global_sum_r8
 c--   Initialise variables.
       recip_rr = recip_rsphere*recip_rsphere
 
-c--   Open the geoid error covariance data file.
-      call mdsfindunit( egmunit, mythid )
-      ilo = ifnblnk(geoid_covariancefile)
-      ihi = ilnblnk(geoid_covariancefile)
-
-      print*
-      print*,' cost_Geoid: egmunit              = ',egmunit
-      print*,'             geoid_covariancefile = ',
-     &                     geoid_covariancefile(ilo:ihi)
-      print*,'             opening file ...'
-
-      open(egmunit, file   = geoid_covariancefile(ilo:ihi),
-     &              form   = 'unformatted',
-     &              access = 'direct',
-     &              recl   = ncshc*egmsize,
-     &              status = 'old' )
-
 c--   round up the quotient to get jsize
       jsize = ncshc / numberOfProcs
       if (jsize*numberOfProcs .lt. ncshc ) then
@@ -114,13 +95,17 @@ c--   compute sub-intervall of 1..ncshc for this processor
       joff = myProcId*jsize
       jbeg = 1 + joff
       jend = min( ncshc, joff+jsize )
+      reclength = ncshc*egmsize
 
 c--   read part of geoid error covariance matrix
 c--   and compute corresponding part of cost contribution
 CADJ loop = parallel
       do j = jbeg,jend
 
-         read(egmunit,rec=j) pinv
+         call cost_readgeoid(
+     I       geoid_covariancefile, reclength, j,
+     O       pinv,
+     I       mythid )
 
          factor = 0.
          do i = 1,ncShc
@@ -128,9 +113,6 @@ CADJ loop = parallel
          enddo
          sphcost = sphcost + factor*shc(j)
       enddo
-
-c--   close geoid error covariance file
-      close(egmunit)
 
       _END_MASTER( mythid )
 

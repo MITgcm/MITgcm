@@ -4,3 +4,9 @@ C subroutine  ecco_check_exp
 C----------------------------------------
 CADJ SUBROUTINE ecco_check_exp INPUT  = 1,2,3,4
 CADJ SUBROUTINE ecco_check_exp OUTPUT =
+
+C----------------------------------------
+C subroutine  cost_readgeoid
+C----------------------------------------
+CADJ SUBROUTINE cost_readgeoid INPUT  = 1,2,3,  5
+CADJ SUBROUTINE cost_readgeoid OUTPUT =       4

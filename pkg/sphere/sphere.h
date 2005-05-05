@@ -47,7 +47,7 @@ c     dphishc   -  meridional grid spacing
       parameter( lonshc    = Nx )
 
       integer    latshc
-      parameter( latshc    = 160.0/dphishc )
+      parameter( latshc    = 180.0/dphishc )
 
 c     ==================================================================
 c     END OF HEADER SPHERE

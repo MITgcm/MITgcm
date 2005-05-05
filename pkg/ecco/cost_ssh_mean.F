@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.3 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.4 2005/05/05 23:47:57 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -25,6 +25,8 @@ c              heimbach@mit.edu 13-Mar-2002
 c              - several wrong i-loop boundaries (spotted by G. Gebbie)
 c              - nprocs need to be replaced by nPx*nPy
 c              - geoid error does not work as of now
+c              heimbach@mit.edu 05-May-2005
+c              - debugged and restructuted
 c
 c     ==================================================================
 c     SUBROUTINE cost_ssh_mean
@@ -41,8 +43,13 @@ c     == global variables ==
 #include "ecco_cost.h"
 
 #ifdef ALLOW_EGM96_ERROR_COV
-# include "EESUPPORT.h"
-# include "cost_sph.h"
+# if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
+#  include "EESUPPORT.h"
+# else
+      INTEGER nProcs
+      PARAMETER (nProcs=1)
+# endif
+# include "sphere.h"
 #endif
 
 c     == routine arguments ==
@@ -80,6 +87,7 @@ c     == local variables ==
 
       _RL diff
       Real*8 sumc
+      character*(max_len_mbuf) msgbuf
 
 c     == end of interface ==
 
@@ -115,17 +123,28 @@ c--   compute misfit on local domain
       enddo
 
 c--   communicate to get misfit on full 2d model surface grid
+#if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
       call exch_all_2d_rl( misfit, misfitgl, mythid )
+#else
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+               misfitgl(i,j,bi,bj,1,1) = misfit(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
 
 c--   set meridional index offset,
 c--   it is non zero if the grid does no reach the poles
       joffset = (latshc - ny)/2
 
-      _BEGIN_MASTER( mythid )
-      print *
-      print *, ' cost_SSH: grid starts at point ', joffset
-     &       , ' of full earth.'
-      _END_MASTER( mythid )
+      write(msgbuf,'(a,I10)')
+     &     'cost_ssh_mean: grid starts at point ', joffset
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 
 c--   preset field
 c--   necessary if the grid does no reach the poles
@@ -141,14 +160,18 @@ c--   so far we assume that the model grid is already regular
 
       do iproc = 1, nprocs
 
+#if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
 c--     get coordinates of processor (iporc-1)
         call MPI_Cart_coords(
      I          MPI_COMM_MODEL, iproc-1, 2, mpicrd
      O        , mpirc
      &        )
-
         ipx = 1 + mpicrd(1)
         ipy = 1 + mpicrd(2)
+#else
+        ipx = 1
+        ipy = 1
+#endif
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
