@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.1 2005/05/04 22:16:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.2 2005/05/05 21:23:27 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -49,7 +49,7 @@ C     !LOCAL VARIABLES:
       _RL temptile(nchp)
 
       ihour = nhms/10000
-      WRITE(fn,'(a,I8,a,I2.2,a)') 'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
+      WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
       fileprec = 64
 
       call MDSFINDUNIT( iunit, mythid )
