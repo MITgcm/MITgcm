@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.3 2005/05/05 23:54:39 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -37,6 +37,7 @@ c     == global variables ==
 #include "CG2D.h"
 
 #include "optim.h"
+#include "cost.h"
 #include "ecco_cost.h"
 #include "ctrl_dummy.h"
 
