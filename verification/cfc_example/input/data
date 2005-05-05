@@ -39,7 +39,7 @@
 
 # Time stepping parameters
  &PARM03
- nIter0  = 4248000,
+ nIter0  = 4269600,
  nTimeSteps = 4,
 # 100 years starting from a spinup of 5900 years:
 #startTime = 1.835136E+11,
@@ -91,5 +91,5 @@
  saltClimFile=   'lev_monthly_salt.bin',
  surfQFile=      'shi_qnet.bin',
  EmPmRFile=      'shi_empmr_year.bin',
- the_run_name=   'Testing PTRACERS and MNC',
+ the_run_name=   'Testing CFC code',
  &

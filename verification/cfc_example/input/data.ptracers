@@ -5,7 +5,7 @@
 # tracer 1 - dic
  PTRACERS_names(1)='cfc11',
  PTRACERS_long_names(1)='CFC11',
- PTRACERS_units(1)='g/cm^3',
+ PTRACERS_units(1)='mol/m^3',
  PTRACERS_advScheme(1)=77,
  PTRACERS_diffKh(1)=0.E3,
  PTRACERS_diffKr(1)=5.E-5,
@@ -14,7 +14,7 @@
  PTRACERS_initialFile(1)=' ',
 # tracer 2 - alk
  PTRACERS_names(2)='cfc12',
- PTRACERS_units(2)='g/cm^3',
+ PTRACERS_units(2)='mol/m^3',
  PTRACERS_advScheme(2)=77,
  PTRACERS_diffKh(2)=0.E3,
  PTRACERS_diffKr(2)=5.E-5,
