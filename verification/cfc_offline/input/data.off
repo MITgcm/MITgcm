@@ -1,17 +1,14 @@
-#NOTE: *vel, GM*, Conv-files MUST be 18 characters long
-#NOTE: Stave, Ttave-files MUST be 15 characters long
-#NOTE: SFlux, HFlux-files MUST be 19 characters long
  &OFFLINE_PARM01
-  UvelFile= 'input_off/uVeltave',
-  VvelFile= 'input_off/vVeltave',
-  WvelFile= 'input_off/wVeltave',
-  GMwxFile= 'input_off/GM_Kwx-T',
-  GMwyFile= 'input_off/GM_Kwy-T',
-  GMwzFile= 'input_off/GM_Kwz-T',
-  ConvFile= 'input_off/Convtave',
-# SaltFile= 'input_off/Stave',
-# ThetFile= 'input_off/Ttave',
-# SFluxFile='input_off/sFluxtave',
+  UvelFile= '../input/input_off/uVeltave',
+  VvelFile= '../input/input_off/vVeltave',
+  WvelFile= '../input/input_off/wVeltave',
+  GMwxFile= '../input/input_off/GM_Kwx-T',
+  GMwyFile= '../input/input_off/GM_Kwy-T',
+  GMwzFile= '../input/input_off/GM_Kwz-T',
+  ConvFile= '../input/input_off/Convtave',
+# SaltFile= '../input/input_off/Stave',
+# ThetFile= '../input/input_off/Ttave',
+# SFluxFile='../input/input_off/sFluxtave',
 # HFluxFile=' ',
  &end
 
