@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ice.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ice.F,v 1.2 2005/05/05 23:49:05 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -56,6 +56,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#include "cost.h"
 #include "ecco_cost.h"
 #include "SEAICE.h"
 #include "DYNVARS.h"
@@ -83,9 +84,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      if ( mytime .ge. costIceStart .and. mytime .le. costIceEnd ) then
-         tempVar = 1. / ( 1. + int( ( min ( endtime, costIceEnd ) -
-     &        max ( starttime, costIceStart ) ) / deltaTClock ) )
+      if ( myTime .GT. (endTime - lastinterval) ) then
+         tempVar = 1. / 
+     &             ( ( 1. + min(endTime-startTime,lastinterval) )
+     &             / deltaTClock ) 
 
          if ( cost_ice_flag .eq. 1 ) then
 c     sea-ice volume
