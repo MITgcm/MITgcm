@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.15 2004/12/07 22:14:35 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.16 2005/05/05 23:49:59 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -118,9 +118,17 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
+      character*(max_len_mbuf) msgbuf
 
 c     == end of interface ==
 CEOP
+
+#ifdef ALLOW_ECCO_OPTIMIZATION
+      write(standardmessageunit,'(A,I10)')
+     &   'exf: myiter = ', myiter
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
 
 c     Get values of climatological fields.
       call exf_getclim( mytime, myiter, mythid )
