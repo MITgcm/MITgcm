@@ -9,10 +9,10 @@
   GMwyFile= 'input_off/GM_Kwy-T',
   GMwzFile= 'input_off/GM_Kwz-T',
   ConvFile= 'input_off/Convtave',
-  SaltFile= 'input_off/Stave',
-  ThetFile= 'input_off/Ttave',
-  SFluxFile='input_off/sFluxtave',
-  HFluxFile=' ',
+# SaltFile= 'input_off/Stave',
+# ThetFile= 'input_off/Ttave',
+# SFluxFile='input_off/sFluxtave',
+# HFluxFile=' ',
  &end
 
  &OFFLINE_PARM02
