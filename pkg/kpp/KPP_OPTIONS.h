@@ -52,13 +52,6 @@ C   estimating a surface velocity that is independent of first
 C   level thickness in the model.
 #undef KPP_ESTIMATE_UREF
 
-C o Include/exclude various time-averaged diagnostic output
-C   for saving storage space
-#ifdef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
-#define INCLUDE_DIAGNOSTICS_KPP
-#undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
-#endif
-
 C o Include/exclude KPP non/local transport terms
 #define KPP_GHAT
 

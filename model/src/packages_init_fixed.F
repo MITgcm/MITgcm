@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.37 2005/04/29 18:47:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.38 2005/05/05 16:41:53 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,8 @@ C       |
 C       |-- GAD_INIT
 C       |
 C       |-- CD_CODE_INIT_FIXED
+C       |
+C       |-- EXF_INIT_FIXED
 C       |
 C       |-- GMREDI_INIT_FIXED
 C       |
@@ -95,6 +97,13 @@ C--   Initialize fixed params for GAD
       IF (useCDscheme) THEN
        CALL CD_CODE_INIT_FIXED(mythid)
       ENDIF
+#endif
+
+#ifdef ALLOW_EXF
+C--   Initialize fixed arrays for EXF
+c     IF ( useEXF ) THEN
+       CALL EXF_INIT_FIXED( myThid )
+c     ENDIF
 #endif
 
 #ifdef ALLOW_GMREDI

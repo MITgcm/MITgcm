@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.6 2004/07/02 00:48:23 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.7 2005/05/05 16:41:54 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -497,6 +497,15 @@ c             Salt flux from Precipitation and Evaporation.
           enddo
         enddo
       enddo
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(hs    ,'EXFhs   ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(hl    ,'EXFhs   ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(lwflux,'EXFhs   ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(swflux,'EXFhs   ',0,1,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_BULKFORMULAE */
 

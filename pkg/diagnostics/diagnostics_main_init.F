@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.10 2005/02/15 20:57:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.11 2005/05/05 16:41:54 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -127,6 +127,13 @@ C-    state variables of the main code (and related quadratic var):
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'SALTanom'
+      diagTitle = 'Salt anomaly (=SALT-35; g/kg)'
+      diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
       diagName  = 'UVEL    '
       diagTitle = 'Zonal Component of Velocity (m/s)'
       diagUnits = 'm/s             '
@@ -157,6 +164,13 @@ C-    state variables of the main code (and related quadratic var):
 
       diagName  = 'SALTSQ  '
       diagTitle = 'Square of Salt or Water Vapor mix rat (g^2/kg^2)'
+      diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SALTSQan'
+      diagTitle = 'Square of Salt anomaly (=SALTSQ-35^2 (g^2/kg^2)'
       diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,

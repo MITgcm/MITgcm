@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.17 2005/02/10 16:30:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.18 2005/05/05 16:41:54 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -342,6 +342,37 @@ C--   fill tracer state-var diagnostics:
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'SALTSQ  ',0,Nr,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('SALTanom',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = salt(i,j,K,bi,bj)-35
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'SALTanom',0,Nr,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('SALTSQan',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) =
+     &               (salt(i,j,K,bi,bj)-35)*(salt(i,j,K,bi,bj)-35)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'SALTSQan',0,Nr,0,1,1,myThid)
         ENDIF
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
