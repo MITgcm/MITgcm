@@ -21,6 +21,8 @@ function [] = fancycube(XX,YY,C,H,r)
 % h=rdmds('ETOPO5');
 % fancycube(xg,yg,ps,h,0.05/5000);
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/fancycube.m,v 1.2 2005/05/06 17:32:54 adcroft Exp $
+
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=tiles(XX*180/pi,1:6);
  Y=tiles(YY*180/pi,1:6);
@@ -85,5 +87,6 @@ axis vis3d
 pos=get(gcf,'pos');set(gcf,'pos',[pos(1:2) [1 1]*480])	% Movie size (+ screen)
 set(gca,'pos',[0 0 1 1]+.25*[-1 -1 2 2]);		% Fill window
 set(gcf,'paperposition',[0 0 4 4])			% Square printing
+set(gca,'projection','perspective')
 
 
