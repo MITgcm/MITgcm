@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.5 2005/05/03 17:01:22 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.6 2005/05/06 19:02:41 stephd Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -55,6 +55,11 @@ C--   Do gchem diagnostics.
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 
+#ifdef ALLOW_PTRACERS
+C--   Do ptracer output.
+      IF ( usePTRACERS )
+     & CALL PTRACERS_OUTPUT( myTime, myIter, myThid )
+#endif
 
       RETURN
       END
