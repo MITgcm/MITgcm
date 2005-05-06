@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.6 2005/02/23 15:15:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.7 2005/05/06 20:34:16 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -42,6 +42,11 @@ C     Zero out the qdiag array which accumulates during integration
           ENDDO
         ENDDO
       ENDDO
+
+C     Zero out the counters for the qdiag array
+      do n=1,ndiagMax
+        ndiag(n) = 0
+      enddo
 
       CALL DIAGNOSTICS_READ_PICKUP( myThid )
 
