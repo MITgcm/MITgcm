@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.37 2005/05/05 14:41:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.38 2005/05/06 18:36:41 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -539,16 +539,6 @@ c we need to count up the land, sea ice and ocean points
        if( types(i).eq.100 ) nocean = nocean + 1
        if( types(i).eq.100 .and. icest(i).gt.0.0 ) nice = nice + 1
       enddo
-
-c Disable following ISTRIP check for MPI version
-c ----------------------------------------------
-c     if( (nland+nocean).ne.istrip ) then
-c     print *
-c     print *,'Error!'
-c     print *,'Problem Stripping Land/Ocean/Ice points in Turbulence'
-c     print *
-c     stop
-c     endif
 
 c Zero out velocities at the bottom edge of the model
 c ---------------------------------------------------
