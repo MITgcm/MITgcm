@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.44 2005/04/20 15:49:47 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.45 2005/05/06 20:35:36 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,6 +78,12 @@ CEOP
 #ifdef ALLOW_DEBUG
       IF (debugMode) 
      &     CALL DEBUG_ENTER('PACKAGES_INIT_VARIABLES',myThid)
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_INIT_VARIA( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_CD_CODE
@@ -253,12 +259,6 @@ C Initialize FIZHI state variables
       IF (debugMode) CALL DEBUG_CALL('FIZHI_INIT_VARS',myThid)
 #endif
       IF (useFIZHI) CALL FIZHI_INIT_VARS( mythid)
-#endif
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_INIT_VARIA( myThid )
-      ENDIF
 #endif
 
 #ifdef ALLOW_MATRIX
