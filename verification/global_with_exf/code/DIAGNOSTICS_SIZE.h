@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/DIAGNOSTICS_SIZE.h,v 1.1 2005/05/05 20:25:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/DIAGNOSTICS_SIZE.h,v 1.2 2005/05/06 03:46:40 dimitri Exp $
 C $Name:  $
 
 
@@ -15,8 +15,8 @@ C     numdiags   :: maximum size of the storage array for active diagnostics
       INTEGER    numLevels
       INTEGER    numdiags
       PARAMETER( ndiagMax = 500 )
-      PARAMETER( numlists = 7, numperlist = 1, numLevels=Nr )
-      PARAMETER( numdiags = 4*Nr+3 )
+      PARAMETER( numlists = 8, numperlist = 1, numLevels=1 )
+      PARAMETER( numdiags = 8 )
 
 
 CEH3 ;;; Local Variables: ***

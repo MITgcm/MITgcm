@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.18 2005/05/05 16:41:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.19 2005/05/06 03:46:40 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -80,6 +80,32 @@ C--   fill momentum state-var diagnostics:
         CALL DIAGNOSTICS_FILL(uVel, 'UVEL    ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(vVel, 'VVEL    ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(wVel, 'WVEL    ',0,Nr,0,1,1,myThid)
+      
+        IF ( DIAGNOSTICS_IS_ON('UVEL_k2 ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = UVEL(i,j,2,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmp1k,'UVEL_k2 ',0,1,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('VVEL_k2 ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = VVEL(i,j,2,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmp1k,'VVEL_k2 ',0,1,0,1,1,myThid)
+        ENDIF
       
         IF ( DIAGNOSTICS_IS_ON('UVELSQ  ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -312,6 +338,32 @@ C--   fill tracer state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(theta,'THETA   ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(salt, 'SALT    ',0,Nr,0,1,1,myThid)
+      
+        IF ( DIAGNOSTICS_IS_ON('SST     ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = THETA(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmp1k,'SST     ',0,1,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('SSS     ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = SALT(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmp1k,'SSS     ',0,1,0,1,1,myThid)
+        ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('THETASQ ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
