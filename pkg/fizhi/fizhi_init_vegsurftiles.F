@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.2 2005/05/05 21:23:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.3 2005/05/07 14:15:09 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -58,7 +58,6 @@ C     !LOCAL VARIABLES:
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
 
-      print *,' Opening ',fn
       open(iUnit,file=fn,status='old',access='direct',recl=recl)
       read(iunit,rec=1) globalarr
       close( iunit )
@@ -80,7 +79,7 @@ C Only do I/O if I am the master thread
        bjslot = myYGlobalLo-1+(bj-1)*sNy
 #endif /* ALLOW_EXCH2 */
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,1)
        enddo
@@ -90,7 +89,7 @@ C Only do I/O if I am the master thread
         tcanopy(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,2)
        enddo
@@ -100,7 +99,7 @@ C Only do I/O if I am the master thread
         tdeep(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,3)
        enddo
@@ -110,7 +109,7 @@ C Only do I/O if I am the master thread
         ecanopy(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,4)
        enddo
@@ -120,7 +119,7 @@ C Only do I/O if I am the master thread
         swetshal(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,5)
        enddo
@@ -130,7 +129,7 @@ C Only do I/O if I am the master thread
         swetroot(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,6)
        enddo
@@ -140,7 +139,7 @@ C Only do I/O if I am the master thread
         swetdeep(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,7)
        enddo
@@ -150,7 +149,7 @@ C Only do I/O if I am the master thread
         snodep(n,bi,bj) = temptile(n)
        enddo
 
-       do j = 1,sNx
+       do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,8)
        enddo
