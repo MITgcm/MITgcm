@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.21 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.22 2005/05/11 00:43:04 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -35,7 +35,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_echo_gvtypes,
+     &     mnc_outdir_num, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc,
@@ -54,6 +54,7 @@ C     Set default values for MNC run-time parameters
       mnc_use_outdir        =  .FALSE.
         mnc_outdir_str(1:4) =  'mnc_'
         mnc_outdir_date     =  .FALSE.
+        mnc_outdir_num      =  .TRUE.
       pickup_write_mnc      =  .TRUE.
       pickup_read_mnc       =  .TRUE.
       mnc_use_indir         =  .FALSE.
@@ -193,9 +194,17 @@ C     simple:
 C     Reads are always an exclusive relationship
       IF (pickup_read_mnc) pickup_read_mdsio = .FALSE.
 
-C     Create the MNC output directory
+C     Create and/or set the MNC output directory
       IF (mnc_use_outdir) THEN
-        CALL MNC_SET_OUTDIR(myThid)
+        IF ( mnc_outdir_num .OR. mnc_outdir_date ) THEN
+          CALL MNC_SET_OUTDIR(myThid)
+        ELSE
+          DO i = 1,MNC_MAX_CHAR
+            mnc_out_path(i:i) = ' '
+          ENDDO
+          write(mnc_out_path,'(2A)') 
+     &         mnc_outdir_str(1:ILNBLNK(mnc_outdir_str)), '/'
+        ENDIF
       ENDIF
 
       RETURN

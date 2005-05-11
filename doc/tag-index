@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.481 2005/05/02 21:24:12 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.482 2005/05/11 00:43:04 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o in mnc, let the user create the output dir if both mnc_outdir_date
+  and mnc_outdir_num are false
 o add fflags() to pkg/diagnostics which allows one to specify, on a
   per-file basis, the file precision [default behavior is unchanged]
 o added diagnostics to pkg/kpp, including computation of mixed layer
