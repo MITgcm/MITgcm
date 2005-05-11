@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.3 2005/05/07 14:15:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.4 2005/05/11 19:04:01 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -47,6 +47,7 @@ C     !LOCAL VARIABLES:
       Real*8 globalarr(Nx,Ny,8)
       _RL tempgrid(sNx,sNy)
       _RL temptile(nchp)
+      _RL fracland(sNx,sNy,Nsx,Nsy)
 
       ihour = nhms/10000
       WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
@@ -79,6 +80,9 @@ C Only do I/O if I am the master thread
        bjslot = myYGlobalLo-1+(bj-1)*sNy
 #endif /* ALLOW_EXCH2 */
 
+      call get_landfrac(sNx,sNy,Nsx,Nsy,bi,bj,maxtyp,
+     .        surftype,tilefrac,fracland)
+
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,1)
@@ -92,6 +96,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,2)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = globalarr(i+bislot,j+bjslot,1) - 0.5
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -102,6 +108,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,3)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.01
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -112,6 +120,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,4)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.7
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -122,6 +132,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,5)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.5
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -132,6 +144,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,6)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.3
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -142,6 +156,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,7)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
@@ -152,6 +168,8 @@ C Only do I/O if I am the master thread
        do j = 1,sNy
        do i = 1,sNx
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,8)
+        if (tempgrid(i,j).gt.1.e14 .and. fracland(i,j,bi,bj).gt.0.0001)
+     .    tempgrid(i,j) = 0.
        enddo
        enddo
        call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
