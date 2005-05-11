@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.12 2005/05/06 03:46:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.13 2005/05/11 02:33:28 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -198,7 +198,7 @@ C-    state variables of the main code (and related quadratic var):
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SALTSQan'
-      diagTitle = 'Square of Salt anomaly (=SALTSQ-35^2 (g^2/kg^2)'
+      diagTitle = 'Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)'
       diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
