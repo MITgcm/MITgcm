@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.482 2005/05/11 00:43:04 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.483 2005/05/12 21:59:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57h_pre
 
 o in mnc, let the user create the output dir if both mnc_outdir_date
   and mnc_outdir_num are false
