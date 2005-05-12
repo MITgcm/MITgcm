@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.22 2005/05/04 22:15:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.23 2005/05/12 15:38:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -85,6 +85,12 @@ C***********************************************************************
        call exit(101)
       endif
       close(kveg)
+#if defined( _BYTESWAPIO ) && defined( ALLOW_MDSIO )
+      call MDS_BYTESWAPI4(1,im_32)
+      call MDS_BYTESWAPI4(1,jm_32)
+      call MDS_BYTESWAPI4(1,nxg_32)
+      call MDS_BYTESWAPI4(1,nyg_32)
+#endif
 
       IF (myThid.eq.1) THEN
       imdata = im_32
@@ -110,6 +116,7 @@ C***********************************************************************
       bjglobal=bj+(myYGlobalLo-1)/jm
 #if defined( _BYTESWAPIO ) && defined( ALLOW_MDSIO )
       call MDS_BYTESWAPR4(im*jm*maxtyp,veg_32(1,1,1,biglobal,bjglobal))
+      call MDS_BYTESWAPI4(im*jm*maxtyp,iveg_32(1,1,1,biglobal,bjglobal))
 #endif
       do k = 1,maxtyp
       do j = 1,jm
