@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.5 2005/05/02 21:24:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.6 2005/05/13 18:22:52 molod Exp $
 C $Name:  $
 
 C ======================================================================
@@ -1445,7 +1445,7 @@ C     fflags(n)  :: character string with per-file flags
 
       integer nlists
 
-      integer freq(numlists)
+      _RL freq(numlists)
       integer nlevels(numlists)
       integer nfields(numlists)
       integer nActive(numlists)

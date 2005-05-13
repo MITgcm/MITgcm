@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.7 2005/05/02 21:24:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.8 2005/05/13 18:22:52 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,7 +37,7 @@ C     filename  :: List Output Filename
       PARAMETER ( ldimLoc = 2*numlists )
       PARAMETER ( kdimLoc = 2*numLevels )
       PARAMETER ( fdimLoc = 2*numperlist )
-      INTEGER     frequency(ldimLoc)
+      _RL     frequency(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
       CHARACTER*80 filename(ldimLoc), blkFilName
@@ -66,7 +66,7 @@ C     Initialize and Read Diagnostics Namelist
       ENDDO
 
       DO l = 1,ldimLoc
-        frequency(l) = 0
+        frequency(l) = 0.
         filename (l) = blkFilName
 C       eight spaces:        12345678
         fileflags(l)(1:8) = '        '
@@ -95,7 +95,7 @@ C       eight spaces:        12345678
 C     Initialise diag_choices common block
       nlists = 0
       DO n = 1,numlists
-        freq(n) = 0
+        freq(n) = 0.
         nlevels(n) = 0
         nfields(n) = 0
         fnames(n) = blkFilName
@@ -120,13 +120,13 @@ C     Fill Diagnostics Common Block with Namelist Info
 
       DO l = 1,ldimLoc
        iL = ILNBLNK(filename(l))
-       IF ( frequency(l).NE.0 .AND. iL.EQ.0 ) THEN
+       IF ( frequency(l).NE.0. .AND. iL.EQ.0 ) THEN
          WRITE(msgBuf,'(2A,I3,A,I6)') 'DIAGNOSTICS_READPARMS: ',
      &    'Empty File-name ! (list l=', l, ' ), freq:',frequency(l)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
        ENDIF
-       IF ( frequency(l).NE.0 .AND. nlists.LT.numlists ) THEN
+       IF ( frequency(l).NE.0. .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
          freq(n)    = frequency(l)
          fnames(n)  = filename (l)
@@ -176,7 +176,7 @@ C-       will set levels later, once the Nb of levels of each diag is known
          ENDDO
          nlists = nlists + 1
 c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
-       ELSEIF ( frequency(l).NE.0 ) THEN
+       ELSEIF ( frequency(l).NE.0. ) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.2 2005/02/06 23:19:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.3 2005/05/13 18:22:53 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -28,6 +28,9 @@ C     !USES:
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
+#ifdef ALLOW_FIZHI
+#include "chronos.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myIter     :: current Iteration number
@@ -42,6 +45,7 @@ C      j,m,n   :: loop index
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER newIter
       INTEGER j, m, n
+      integer realfreq,yymmdd,hhmmss,nsecf2
 
       _BEGIN_MASTER(myThid)
 
@@ -49,11 +53,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       newIter = 1 + myIter
       DO n = 1,nlists
-       IF ( freq(n).LT.0 ) THEN
+       realfreq = freq(n)
+#ifdef ALLOW_FIZHI
+      if( useFIZHI) then
+       yymmdd = int(freq(n))
+       realfreq = nsecf2(0,yymmdd,nymd) / deltaTclock
+      endif
+#endif
+
+       IF ( realfreq.LT.0 ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-c       IF ( MOD(newIter,freq(n)).EQ.0 ) THEN
-        IF ( MOD(myIter,-freq(n)).EQ.INT(-freq(n)/2) ) THEN
+c       IF ( MOD(newIter,realfreq).EQ.0 ) THEN
+        IF ( MOD(myIter,-realfreq).EQ.INT(-realfreq/2) ) THEN
 C--     switch ON diagnostics of output-stream # n
           DO m=1,nActive(n)
             j = jdiag(m,n)

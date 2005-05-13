@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.11 2005/02/20 19:41:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.12 2005/05/13 18:22:53 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,6 +21,9 @@ C***********************************************************************
 #include "DIAGNOSTICS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_FIZHI
+#include "chronos.h"
+#endif
 
       _RL     myTime
       INTEGER myIter, myThid
@@ -32,6 +35,7 @@ c ===============
       LOGICAL   dump2fileNow
       INTEGER thisdate(4), prevdate(4)
       _RL     freqSec
+      integer realfreq,nsecf2,yymmdd,hhmmss
 
       IF ( myIter.NE.nIter0 ) THEN
         myItM1 = myIter - 1
@@ -49,8 +53,16 @@ C-    Determine calendar dates for this and previous time step.
 #endif
 
         DO n = 1,nlists
-          IF ( freq(n).LT.0 ) THEN
-            dump2fileNow = MOD(myItM1,-freq(n)) .EQ. INT(-freq(n)/2)
+         realfreq = freq(n)
+#ifdef ALLOW_FIZHI
+         if( useFIZHI) then 
+          yymmdd = int(freq(n))
+          realfreq = nsecf2(0,yymmdd,nymd) / deltaTclock
+         endif
+#endif
+
+          IF ( realfreq.LT.0 ) THEN
+            dump2fileNow = MOD(myItM1,-realfreq) .EQ. INT(-realfreq/2)
 C--     write snap-shot with suffix = myIter to be consistent with 
 C       time-average diagnostics (e.g., freq=-1 & freq=1):
 c           wrIter = myIter
@@ -58,12 +70,12 @@ C--     write snap-shot with suffix = myIter-1 to be consistent with
 C       state-variable time-step:
             wrIter = myItM1
           ELSE
-            dump2fileNow = MOD(myIter,freq(n)) .EQ. 0
+            dump2fileNow = MOD(myIter,realfreq) .EQ. 0
             wrIter = myIter
           ENDIF
 
 #ifdef ALLOW_CAL
-          freqSec = freq(n) * deltaTClock
+          freqSec = realfreq * deltaTClock
           IF ( calendarDumps .AND. (
      &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
      &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 ))) THEN
@@ -87,10 +99,17 @@ C-    Yearly  freqSec:
 C-      wait for everyone before setting arrays to zero: 
         _BARRIER
         DO n = 1,nlists
-          IF ( freq(n).LT.0 ) THEN
-            dump2fileNow = MOD(myItM1,-freq(n)) .EQ. INT(-freq(n)/2)
+         realfreq = freq(n)
+#ifdef ALLOW_FIZHI
+         if( useFIZHI) then 
+          yymmdd = int(freq(n))
+          realfreq = nsecf2(0,yymmdd,nymd) / deltaTclock
+         endif
+#endif
+          IF ( realfreq.LT.0 ) THEN
+            dump2fileNow = MOD(myItM1,-realfreq) .EQ. INT(-realfreq/2)
           ELSE
-            dump2fileNow = MOD(myIter,freq(n)) .EQ. 0
+            dump2fileNow = MOD(myIter,realfreq) .EQ. 0
           ENDIF
           IF ( dump2fileNow ) CALL CLRINDX(n,myThid)
         ENDDO
