@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.3 2005/02/14 21:00:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.4 2005/05/13 20:47:10 baylor Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -71,31 +71,31 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('vVeltave',
      &     'coordinates','XV YV RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('wVeltave', 'Cen_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('wVeltave', 'Cen_xy_Hn__L__t',4,5,myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('wVeltave','units','m/s', myThid)
 
-      CALL MNC_CW_ADD_VNAME('UTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('UTtave', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('UTtave','units','degC*m/s',myThid)
 
-      CALL MNC_CW_ADD_VNAME('VTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('VTtave', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('VTtave','units','degC*m/s',myThid)
 
-      CALL MNC_CW_ADD_VNAME('WTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('WTtave', 'Cen_xy_Hn__L__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('WTtave','units','degC*m/s',myThid)
 
-      CALL MNC_CW_ADD_VNAME('UStave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('VStave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('WStave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('UStave', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('VStave', 'V_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('WStave', 'Cen_xy_Hn__L__t', 4,5, myThid)
 
       CALL MNC_CW_ADD_VNAME('TTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('UUtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('VVtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('UUtave', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('VVtave', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('UVtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('KEtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('Tdiftave', 'Cen_xy_Hn__C__t',4,5,myThid)
 
-      CALL MNC_CW_ADD_VNAME('uZtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('vZtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('uZtave', 'U_xy_Hn__L__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('vZtave', 'V_xy_Hn__L__t', 4,5, myThid)
 
       CALL MNC_CW_ADD_VNAME('PhHytave', 'Cen_xy_Hn__C__t',4,5,myThid)
 
