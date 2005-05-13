@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.17 2005/04/03 05:16:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.18 2005/05/13 20:36:58 baylor Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -182,7 +182,7 @@ C     Create MNC definitions for DYNVARS.h variables
      &     'coordinates','XC YC iter', myThid)
       CALL MNC_CW_ADD_VNAME('dEtaHdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
 
-      CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__L__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('W','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('W',
      &     'coordinates','XC YC RC iter', myThid)
@@ -190,7 +190,7 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VNAME('phiHyd', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('phiHydLow', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('phi_nh', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__L__t', 4,5, myThid)
 
 C     Write coordinates to "state" file
 C     CALL MNC_CW_SET_UDIM('state', 0, myThid)
