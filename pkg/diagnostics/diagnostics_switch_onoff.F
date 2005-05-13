@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.3 2005/05/13 18:22:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.4 2005/05/13 18:32:46 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -57,7 +57,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_FIZHI
       if( useFIZHI) then
        yymmdd = int(freq(n))
-       realfreq = nsecf2(0,yymmdd,nymd) / deltaTclock
+       hhmmss = int((freq(n) - int(freq(n)))*1.e6)
+       realfreq = nsecf2(hhmmss,yymmdd,nymd) / deltaTclock
       endif
 #endif
 
