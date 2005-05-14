@@ -56,7 +56,7 @@
  cAdjFreq=0.,
  pChkptFreq=2678400.0,
  ChkptFreq=2678400.0,
- dumpFreq=300.0,
+ dumpFreq=86400.0,
  monitorFreq=300.,
 #monitorFreq=2678400.,
  taveFreq=86400.0,
