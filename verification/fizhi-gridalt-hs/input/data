@@ -80,9 +80,4 @@
 # Input datasets
  &PARM05
  topoFile='topo.cs.bin',
- uVelInitFile='U.input',
- vVelInitFile='V.input',
-#pSurfInitFile='Eta.input',
- hydrogThetaFile='T.input',
-#hydrogSaltFile='S.input',
  &
