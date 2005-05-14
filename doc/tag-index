@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.484 2005/05/14 21:15:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.485 2005/05/14 23:44:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57h_post
+o move tIter0 from data.gchem to PTRACERS_Iter0 in data.ptracers
 o pkg/diagnostics: change output frequency, now in seconds (instead
   of Nb of iterations). This requires to change data.diagnostics.
 checkpoint57h_pre
