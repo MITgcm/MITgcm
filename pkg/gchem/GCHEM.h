@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.6 2004/11/19 21:28:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.7 2005/05/14 22:51:45 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -11,7 +11,6 @@ C    !DESCRIPTION:
 C Contains tracer parameters and input files for chemical tracers.
 C These can be read in from data.gchem
 C
-C  tIter0     : : timestep when tracer is initialized (default 0)
 C  nsubtime   : : number of chemistry timesteps per deltaTtracer
 C                 (default 1) 
 C  WindFile   : : file name of wind speeds that may be needed for
@@ -26,7 +25,6 @@ C  SilicaFile : : file name of surface silica that may be needed for
 C                 biogeochemical experiments
 
 C  
-      INTEGER tIter0
       INTEGER nsubtime
       CHARACTER*(MAX_LEN_FNAM) WindFile
       CHARACTER*(MAX_LEN_FNAM) AtmospFile
@@ -35,18 +33,9 @@ C
       CHARACTER*(MAX_LEN_FNAM) SilicaFile
 
       COMMON /GCHEM_PARAMS/
-     &                   tIter0,
      &                   WindFile,
      &                   AtmospFile,
      &                   IceFile,
-     &                   IronFile,
-     &                   SilicaFile,
-     &                   nsubtime
-      NAMELIST /GCHEM_PARM01/
-     &                   tIter0,
-     &                   WindFile,
-     &                   IceFile,
-     &                   AtmospFile,
      &                   IronFile,
      &                   SilicaFile,
      &                   nsubtime

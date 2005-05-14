@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.18 2005/02/07 19:07:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.19 2005/05/14 22:50:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -51,6 +51,7 @@ C                          are written to post-processing files.
      &     PTRACERS_diffKrNr,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,
+     &     PTRACERS_Iter0,
      &     PTRACERS_numInUse,
      &     PTRACERS_initialFile,
      &     PTRACERS_useRecords,
@@ -67,6 +68,7 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_dumpFreq    = dumpFreq
       PTRACERS_taveFreq    = taveFreq
       PTRACERS_monitorFreq = monitorFreq
+      PTRACERS_Iter0   = 0
       PTRACERS_numInUse=-1
       DO iTracer=1,PTRACERS_num
         PTRACERS_advScheme(iTracer)=saltAdvScheme
@@ -187,6 +189,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_numInUse, INDEX_NONE,
      &   'PTRACERS_numInUse =',
      &   ' /* number of tracers */')
+      CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
+     &   'PTRACERS_Iter0 =',
+     &   ' /* timestep number when tracers are initialized */')
       CALL WRITE_0D_R8(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')

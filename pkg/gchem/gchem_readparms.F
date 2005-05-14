@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.6 2004/11/19 21:28:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.7 2005/05/14 22:51:45 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -28,16 +28,28 @@ C  none
 #ifdef ALLOW_GCHEM
 
 C !LOCAL VARIABLES: ====================================================
+C  tIter0               :: retired parameter
 C  iTracer              :: loop indices
 C  iUnit		:: unit number for I/O
 C  msgBuf		:: message buffer
+      INTEGER tIter0, UNSET_I
       INTEGER iTracer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      PARAMETER ( UNSET_I      = 123456789  )
 CEOP
 
+      NAMELIST /GCHEM_PARM01/
+     &                   tIter0,
+     &                   WindFile,
+     &                   IceFile,
+     &                   AtmospFile,
+     &                   IronFile,
+     &                   SilicaFile,
+     &                   nsubtime
+
 C Set defaults values for parameters in GCHEM.h
-       tIter0=0
+       tIter0 = UNSET_I
        nsubtime=1
        windFile=' '
        atmospFile=' ' 
@@ -46,7 +58,7 @@ C Set defaults values for parameters in GCHEM.h
        SilicaFile=' '
 
 
-C Open and read the data.ptracers file
+C Open and read the data.gchem file
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
@@ -63,6 +75,21 @@ C Open and read the data.ptracers file
 
 C Close the open data file
       CLOSE(iUnit)
+
+C- Check for retired parameters:
+      IF ( tIter0 .NE. UNSET_I ) THEN
+c      nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R GCHEM_READPARMS: Paramater "tIter0" is',
+     &  ' no longer allowed in file "data.gchem"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R GCHEM_READPARMS: "tIter0" has been moved to',
+     &  ' PTRACERS_Iter0 in file "data.ptracers".'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R GCHEM_READPARMS'
+      ENDIF
+
       _END_MASTER(myThid)
 
 C Everyone else must wait for the parameters to be loaded

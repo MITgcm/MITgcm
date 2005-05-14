@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.10 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.11 2005/05/14 22:50:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,11 +24,6 @@ C     !USES:
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
-cswdptr -- add ---
-#ifdef ALLOW_GCHEM
-# include "GCHEM.h"
-#endif
-cswdptr --- end add --
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -40,10 +35,6 @@ C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj,iTracer
       CHARACTER*(10) suff
-#ifndef ALLOW_GCHEM
-      INTEGER tIter0
-      PARAMETER ( tIter0 = 0 )
-#endif
 CEOP
         
 C     Loop over tracers
@@ -77,10 +68,7 @@ C       end of Tracer loop
       ENDDO
 
 C     Now read initial conditions and always exchange
-cswdptr IF (nIter0.EQ.0) THEN
-cswdptr -- change ---
-      IF (nIter0.EQ.tIter0) THEN
-cswdptr -- end change ---
+      IF (nIter0.EQ.PTRACERS_Iter0) THEN
         DO iTracer = 1, PTRACERS_numInUse
           IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
             _BEGIN_MASTER( myThid )
@@ -111,9 +99,7 @@ cswdptr -- end add ---
       ENDIF
 
 C Read from a pickup file if needed
-cswdptr IF (nIter0.NE.0) THEN
-cswdptr -- change --
-      IF (nIter0.GT.tIter0) THEN
+      IF (nIter0.GT.PTRACERS_Iter0) THEN
 C       Suffix for pickup files
         IF (pickupSuff.EQ.' ') THEN
           WRITE(suff,'(I10.10)') nIter0
