@@ -1,29 +1,40 @@
 # Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
+#                 for the list of all available diag. in this particular config)
+#-----------------
 # This example dumps all KPP diagnostics as
 # a snapshot after ten time steps
  &diagnostics_list
-  frequency(1) = -20.,
+  frequency(1) = -864000.,
    fields(1,1) = 'EXFhs   ',
    filename(1) = 'EXFhs',
-  frequency(2) = -20.,
+  frequency(2) = -864000.,
    fields(1,2) = 'EXFhl   ',
    filename(2) = 'EXFhl',
-  frequency(3) = -20.,
+  frequency(3) = -864000.,
    fields(1,3) = 'EXFsw   ',
    filename(3) = 'EXFsw',
-  frequency(4) = -20.,
+  frequency(4) = -864000.,
    fields(1,4) = 'EXFlw   ',
    filename(4) = 'EXFlw',
-  frequency(5) = -20.,
+  frequency(5) = -864000.,
    fields(1,5) = 'SSS     ',
    filename(5) = 'SSS',
-  frequency(6) = -20.,
+  frequency(6) = -864000.,
    fields(1,6) = 'SST     ',
    filename(6) = 'SST',
-  frequency(7) = -20.,
+  frequency(7) = -864000.,
    fields(1,7) = 'UVEL_k2 ',
    filename(7) = 'UVEL_k2',
-  frequency(8) = -20.,
+  frequency(8) = -864000.,
    fields(1,8) = 'VVEL_k2 ',
    filename(8) = 'VVEL_k2',
  &end
