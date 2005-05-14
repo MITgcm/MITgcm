@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.114 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.115 2005/05/14 20:46:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,7 +132,7 @@ c**************************************
 C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_SWITCH_ONOFF( myIter, myThid )
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
       ENDIF
 #endif
 
