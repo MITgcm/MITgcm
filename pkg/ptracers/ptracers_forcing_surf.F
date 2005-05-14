@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.3 2004/07/18 01:12:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.4 2005/05/14 22:51:03 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -47,10 +47,11 @@ CEOP
 C Example of how to add forcing at the surface
        DO iTracer=1,PTRACERS_numInUse
           DO j = jMin, jMax
-             DO i = iMin, iMax
-                surfaceForcingPtr(i,j,bi,bj,iTracer) =
-     &               surfaceForcingS(i,j,bi,bj)
-             ENDDO
+           DO i = iMin, iMax
+             surfaceForcingPtr(i,j,bi,bj,iTracer) = 
+     &               0. _d 0
+c    &               surfaceForcingS(i,j,bi,bj)
+           ENDDO
           ENDDO
        ENDDO
 
