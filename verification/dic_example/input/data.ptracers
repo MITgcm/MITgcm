@@ -1,5 +1,6 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=5,
+ PTRACERS_Iter0= 2232000,
  PTRACERS_write_mnc=.TRUE.,
 #
 # tracer 1 - dic

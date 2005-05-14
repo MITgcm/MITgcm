@@ -7,7 +7,6 @@ c modified to have carbonate and biological influences: swd June 2002
 c modified for cfc: swd Sep 2003
 C
 
-#include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace
@@ -29,6 +28,8 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "CFC.h"
 #include "GCHEM.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -58,7 +59,7 @@ C     == Local variables ==
          ENDDO
 
 c find atmospheric CFC
-       myYear=float(myIter-tIter0)*deltaTclock
+       myYear=float(myIter-PTRACERS_Iter0)*deltaTclock
      &                       /(360.d0*24.d0*3600.d0)
        lastYear=1+int(myYear+0.5)
        thisYear=lastYear+1
