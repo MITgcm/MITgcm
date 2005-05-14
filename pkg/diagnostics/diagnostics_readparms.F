@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.8 2005/05/13 18:22:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.9 2005/05/14 20:45:28 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,7 +37,7 @@ C     filename  :: List Output Filename
       PARAMETER ( ldimLoc = 2*numlists )
       PARAMETER ( kdimLoc = 2*numLevels )
       PARAMETER ( fdimLoc = 2*numperlist )
-      _RL     frequency(ldimLoc)
+      _RL         frequency(ldimLoc), timePhase(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
       CHARACTER*80 filename(ldimLoc), blkFilName
@@ -51,7 +51,7 @@ C     filename  :: List Output Filename
       EXTERNAL ILNBLNK
 
       NAMELIST / diagnostics_list /
-     &     frequency, levels, fields, filename, fileflags,
+     &     frequency, timePhase, levels, fields, filename, fileflags,
      &     diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
@@ -67,6 +67,7 @@ C     Initialize and Read Diagnostics Namelist
 
       DO l = 1,ldimLoc
         frequency(l) = 0.
+        timePhase(l) = UNSET_RL
         filename (l) = blkFilName
 C       eight spaces:        12345678
         fileflags(l)(1:8) = '        '
@@ -96,6 +97,7 @@ C     Initialise diag_choices common block
       nlists = 0
       DO n = 1,numlists
         freq(n) = 0.
+        phase(n) = 0.
         nlevels(n) = 0
         nfields(n) = 0
         fnames(n) = blkFilName
@@ -129,6 +131,11 @@ C     Fill Diagnostics Common Block with Namelist Info
        IF ( frequency(l).NE.0. .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
          freq(n)    = frequency(l)
+         IF ( timePhase(l).NE. UNSET_RL ) THEN
+           phase(n) = timePhase(l)
+         ELSEIF ( frequency(l) .LT. 0. ) THEN
+           phase(n) = -0.5 _d 0 * frequency(l)
+         ENDIF
          fnames(n)  = filename (l)
          fflags(n)  = fileflags(l)
          nlevels(n) = 0
@@ -205,7 +212,9 @@ C     Echo History List Data Structure
       DO n = 1,nlists
         WRITE(msgBuf,'(2a)') 'Creating Output Stream: ',fnames(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,*) 'Frequency: ',freq(n)
+c       WRITE(msgBuf,*) 'Frequency: ',freq(n)
+        WRITE(msgBuf,'(2(A,F17.6))') 'Frequency : ',freq(n),
+     &                               ' ; Phase: ', phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         IF ( nlevels(n).EQ.-1 ) THEN
           WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'

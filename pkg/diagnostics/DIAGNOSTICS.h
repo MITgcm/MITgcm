@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.6 2005/05/13 18:22:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.7 2005/05/14 20:45:27 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -1442,10 +1442,12 @@ C     nfields(n) :: number of active diagnostics for output stream # n
 C     nActive(n) :: number of active diagnostics (including counters)
 C                   for output stream # n
 C     fflags(n)  :: character string with per-file flags
+C     freq       :: frequency (in s) to write output stream # n
+C     phase      :: phase     (in s) to write output stream # n
 
       integer nlists
 
-      _RL freq(numlists)
+      _RL freq(numlists), phase(numlists)
       integer nlevels(numlists)
       integer nfields(numlists)
       integer nActive(numlists)
@@ -1462,7 +1464,7 @@ C     fflags(n)  :: character string with per-file flags
 
       common /diag_choices/ 
      &     levs, jdiag, flds, fnames, fflags,
-     &     freq, nlevels, nfields, nActive, nlists,
+     &     freq, phase, nlevels, nfields, nActive, nlists,
      &     diag_mdsio, diag_mnc,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,

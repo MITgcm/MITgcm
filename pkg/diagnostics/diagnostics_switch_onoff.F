@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.4 2005/05/13 18:32:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.5 2005/05/14 20:45:27 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_SWITCH_ONOFF
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C-----
@@ -33,8 +33,10 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
+C     myTime     :: current Time of simulation ( s )
 C     myIter     :: current Iteration number
 C     myThid     :: my Thread Id number
+      INTEGER myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -43,30 +45,44 @@ C     !LOCAL VARIABLES:
 C      newIter :: future iteration number
 C      j,m,n   :: loop index
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER newIter
+c     INTEGER newIter
       INTEGER j, m, n
-      integer realfreq,yymmdd,hhmmss,nsecf2
+      LOGICAL time4SnapShot
+      _RL     phiSec, freqSec
+#ifdef ALLOW_FIZHI
+      integer yymmdd,hhmmss,nsecf2
+#endif
+
+      LOGICAL  DIFF_PHASE_MULTIPLE
+      EXTERNAL DIFF_PHASE_MULTIPLE
 
       _BEGIN_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      newIter = 1 + myIter
+c     newIter = 1 + myIter
       DO n = 1,nlists
-       realfreq = freq(n)
-#ifdef ALLOW_FIZHI
-      if( useFIZHI) then
-       yymmdd = int(freq(n))
-       hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-       realfreq = nsecf2(hhmmss,yymmdd,nymd) / deltaTclock
-      endif
-#endif
 
-       IF ( realfreq.LT.0 ) THEN
+       IF ( freq(n).LT.0. ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-c       IF ( MOD(newIter,realfreq).EQ.0 ) THEN
-        IF ( MOD(myIter,-realfreq).EQ.INT(-realfreq/2) ) THEN
+        freqSec = freq(n)
+        phiSec = phase(n)
+#ifdef ALLOW_FIZHI
+        if( useFIZHI) then
+         yymmdd = int(freq(n))
+         hhmmss = int((freq(n) - int(freq(n)))*1.e6)
+         freqSec = nsecf2(hhmmss,yymmdd,nymd)
+         yymmdd = int(phase(n))
+         hhmmss = int((phase(n) - int(phase(n)))*1.e6)
+         phiSec = nsecf2(hhmmss,yymmdd,nymd)
+        endif
+#endif
+
+        time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
+     &                                       myTime, deltaTclock )
+
+        IF ( time4SnapShot ) THEN
 C--     switch ON diagnostics of output-stream # n
           DO m=1,nActive(n)
             j = jdiag(m,n)

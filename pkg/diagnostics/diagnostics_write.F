@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.13 2005/05/13 18:32:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.14 2005/05/14 20:45:27 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -25,6 +25,7 @@ C***********************************************************************
 #include "chronos.h"
 #endif
 
+C     !INPUT PARAMETERS:
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -33,9 +34,16 @@ c ===============
       INTEGER   n
       INTEGER   myItM1, wrIter
       LOGICAL   dump2fileNow
+      _RL       phiSec, freqSec, wrTime
+#ifdef ALLOW_CAL
       INTEGER thisdate(4), prevdate(4)
-      _RL     freqSec
-      integer realfreq,nsecf2,yymmdd,hhmmss
+#endif
+#ifdef ALLOW_FIZHI
+      integer nsecf2,yymmdd,hhmmss
+#endif
+
+      LOGICAL  DIFF_PHASE_MULTIPLE
+      EXTERNAL DIFF_PHASE_MULTIPLE
 
       IF ( myIter.NE.nIter0 ) THEN
         myItM1 = myIter - 1
@@ -53,30 +61,36 @@ C-    Determine calendar dates for this and previous time step.
 #endif
 
         DO n = 1,nlists
-         realfreq = freq(n)
+          freqSec = freq(n)
+          phiSec = phase(n)
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
           yymmdd = int(freq(n))
           hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          realfreq = nsecf2(hhmmss,yymmdd,nymd) / deltaTclock
+          freqSec = nsecf2(hhmmss,yymmdd,nymd)
+          yymmdd = int(phase(n))
+          hhmmss = int((phase(n) - int(phase(n)))*1.e6)
+          phiSec = nsecf2(hhmmss,yymmdd,nymd)
          endif
 #endif
 
-          IF ( realfreq.LT.0 ) THEN
-            dump2fileNow = MOD(myItM1,-realfreq) .EQ. INT(-realfreq/2)
+          IF ( freqSec.LT.0. ) THEN
 C--     write snap-shot with suffix = myIter to be consistent with 
 C       time-average diagnostics (e.g., freq=-1 & freq=1):
 c           wrIter = myIter
+c           wrTime = myTime
 C--     write snap-shot with suffix = myIter-1 to be consistent with
 C       state-variable time-step:
             wrIter = myItM1
+            wrTime = myTime - deltaTclock
           ELSE
-            dump2fileNow = MOD(myIter,realfreq) .EQ. 0
             wrIter = myIter
+            wrTime = myTime
           ENDIF
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+     &                                        wrTime, deltaTclock )
 
 #ifdef ALLOW_CAL
-          freqSec = realfreq * deltaTClock
           IF ( calendarDumps .AND. (
      &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
      &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 ))) THEN
@@ -100,19 +114,23 @@ C-    Yearly  freqSec:
 C-      wait for everyone before setting arrays to zero: 
         _BARRIER
         DO n = 1,nlists
-         realfreq = freq(n)
+          freqSec = freq(n)
+          phiSec = phase(n)
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
           yymmdd = int(freq(n))
           hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          realfreq = nsecf2(hhmmss,yymmdd,nymd) / deltaTclock
+          freqSec = nsecf2(hhmmss,yymmdd,nymd)
+          yymmdd = int(phase(n))
+          hhmmss = int((phase(n) - int(phase(n)))*1.e6)
+          phiSec = nsecf2(hhmmss,yymmdd,nymd)
          endif
 #endif
-          IF ( realfreq.LT.0 ) THEN
-            dump2fileNow = MOD(myItM1,-realfreq) .EQ. INT(-realfreq/2)
-          ELSE
-            dump2fileNow = MOD(myIter,realfreq) .EQ. 0
-          ENDIF
+          wrTime = myTime
+          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+     &                                        wrTime, deltaTclock )
+
           IF ( dump2fileNow ) CALL CLRINDX(n,myThid)
         ENDDO
 
