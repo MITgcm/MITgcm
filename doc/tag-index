@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.485 2005/05/14 23:44:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.486 2005/05/15 04:00:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o remove "baseTime" (no used) from arg. list of DIFF_BASE_MULTIPLE
+  and rename it: DIFFERENT_MULTIPLE
 
 checkpoint57h_post
 o move tIter0 from data.gchem to PTRACERS_Iter0 in data.ptracers
