@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.5 2005/05/14 20:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.6 2005/05/15 03:36:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,7 +36,7 @@ C     !INPUT PARAMETERS:
 C     myTime     :: current Time of simulation ( s )
 C     myIter     :: current Iteration number
 C     myThid     :: my Thread Id number
-      INTEGER myTime
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
