@@ -29,8 +29,8 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "OBCS.h"
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -46,8 +46,7 @@ C     == Local variables ==
 C--   Generaly only thread 1 does IO here. It can not start until 
 C--   all threads fields are ready.
       IF (
-     &  DIFF_BASE_MULTIPLE(baseTime,dumpFreq,
-     &                     myCurrentTime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,deltaTClock)
      & ) THEN
 
        _BARRIER

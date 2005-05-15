@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.2 2005/04/06 18:41:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.3 2005/05/15 03:04:56 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -43,8 +43,8 @@ CEOP
 
 #ifdef ALLOW_LAND
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local Variables == 
       INTEGER k, iterWr
@@ -52,10 +52,9 @@ C     == Local Variables ==
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (
-     &    DIFF_BASE_MULTIPLE(baseTime,land_diagFreq,
-     &                       myTime+land_deltaT,land_deltaT)
-     &    .OR. myTime+land_deltaT .EQ. endTime 
+      IF ( DIFFERENT_MULTIPLE(land_diagFreq,
+     &                        myTime+land_deltaT,land_deltaT)
+     & .OR. myTime+land_deltaT .EQ. endTime 
      &   ) THEN 
        iterWr = myIter+1
        WRITE(suff,'(I10.10)') iterWr

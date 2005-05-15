@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.7 2005/04/06 18:40:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.8 2005/05/15 03:04:56 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -44,11 +44,11 @@ C     fn      :: character buffer for creating filename
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(80) fn
       logical glf
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
       IF (
-     &     DIFF_BASE_MULTIPLE(baseTime,dumpFreq,myTime,deltaTClock).OR.
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock).OR.
      &     myTime.EQ.endTime .OR.
      &     myTime.EQ.startTime
      &     ) THEN

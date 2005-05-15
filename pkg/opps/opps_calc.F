@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.4 2005/04/06 18:44:50 jmc Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.5 2005/05/15 03:04:57 jmc Exp $
 C$Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -68,8 +68,8 @@ C !USES: ============================================================
 #include "FFIELDS.h"
 #include "GRID.h"
 
-      EXTERNAL DIFF_BASE_MULTIPLE
-      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
@@ -115,7 +115,7 @@ CEOP
 
 
 C--   Check to see if should convect now
-C      IF ( DIFF_BASE_MULTIPLE(baseTime,cAdjFreq,myTime,deltaTClock) ) THEN
+C      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock) ) THEN
       IF ( .true. ) THEN
 C     local initialization
 
@@ -434,7 +434,7 @@ C     end  of k-loop
 C
       ENDDO 
 
-C--   End IF (DIFF_BASE_MULTIPLE)
+C--   End IF (DIFFERENT_MULTIPLE)
       ENDIF
 
       RETURN

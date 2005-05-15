@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.5 2005/04/06 18:46:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.6 2005/05/15 03:04:57 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -44,8 +44,8 @@ C     myThid :: Thread number for this instance of SHAP_FILT_APPLY_UV
 
 #ifdef ALLOW_SHAP_FILT
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -104,7 +104,7 @@ C-----    Diagnostic of Shapiro Filter effect on Momentum :
 C         Note: Shap_tmpFld1,2 from shap_filt_tracer_s2 (and not s1, s4)
 C               are directly proportional to Delta-U,V due to the Filter
           IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
-     &     DIFF_BASE_MULTIPLE(baseTime,Shap_diagFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,deltaTClock)
      &       ) THEN
            _BARRIER
            _BEGIN_MASTER( myThid )

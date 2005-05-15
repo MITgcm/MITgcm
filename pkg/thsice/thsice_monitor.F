@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.7 2005/04/06 18:47:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.8 2005/05/15 03:04:57 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,8 +44,8 @@ CEOP
 #ifdef ALLOW_MONITOR
 
 C     == Local variables ==
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 mon_var
       CHARACTER*2 mon_sufx(0:2)
@@ -64,7 +64,7 @@ C     == Local variables ==
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( 
-     &   DIFF_BASE_MULTIPLE(baseTime,thSIce_monFreq,myTime,deltaTclock)
+     &   DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,deltaTclock)
      &   .OR. myIter.EQ.nIter0 ) THEN
 
         mon_write_stdout = .FALSE.

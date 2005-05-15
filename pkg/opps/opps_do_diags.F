@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/Attic/opps_do_diags.F,v 1.2 2005/04/06 18:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/Attic/opps_do_diags.F,v 1.3 2005/05/15 03:04:57 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -61,8 +61,8 @@ C     myThid -  Number of this instance of INI_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
 CEOP
@@ -72,7 +72,7 @@ CMLC     Dump snapshot of OPPS variables.
 CMLC----------------------------------------------------------------
 CML
 CML      IF (
-CML     &     DIFF_BASE_MULTIPLE(baseTime,OPPSdumpFreq,
+CML     &     DIFFERENT_MULTIPLE(OPPSdumpFreq,
 CML     &     myCurrentTime,deltaTClock)
 CML     &     ) THEN
 CML         
@@ -117,9 +117,8 @@ C     Initialize averages to zero
 
 C     Time Average OPPS fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFF_BASE_MULTIPLE
-     &     (baseTime,OPPStaveFreq,myCurrentTime,deltaTClock) )
-     &     THEN
+     &     DIFFERENT_MULTIPLE(OPPStaveFreq,myCurrentTime,deltaTClock)
+     &   ) THEN
        DDTT=0.5*deltaTclock
       ELSE
        DDTT=deltaTclock
@@ -135,7 +134,7 @@ C     Keep record of how much time has been integrated over
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFF_BASE_MULTIPLE(baseTime,OPPStaveFreq,
+     &     DIFFERENT_MULTIPLE(OPPStaveFreq,
      &     myCurrentTime,deltaTClock)
      &     ) THEN
          

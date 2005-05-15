@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.37 2005/04/30 20:26:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.38 2005/05/15 03:04:56 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -66,8 +66,8 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 #ifdef ALLOW_MOM_VECINV
 
 C     == Functions ==
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local variables ==
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -114,8 +114,7 @@ C--   (at least in part)
       fVerV(1,1,kUp) = fVerV(1,1,kUp)
 #endif
 
-      writeDiag = DIFF_BASE_MULTIPLE(baseTime, diagFreq,
-     &                               myTime, deltaTClock)
+      writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. snapshot_mnc .AND. writeDiag) THEN

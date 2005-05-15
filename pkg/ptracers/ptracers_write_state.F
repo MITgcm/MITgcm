@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.10 2005/04/06 18:45:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.11 2005/05/15 03:06:01 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,17 +41,15 @@ C     iRec      :: record number
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
-      IF (
-     &     DIFF_BASE_MULTIPLE(baseTime,PTRACERS_dumpFreq,
-     &     myTime,deltaTClock) .OR. 
-     &     myTime.EQ.endTime .OR.
-     &     myTime.EQ.startTime
-     &     ) THEN
+      IF ( DIFFERENT_MULTIPLE( PTRACERS_dumpFreq, myTime, deltaTClock )
+     & .OR.myTime.EQ.endTime
+     & .OR.myTime.EQ.startTime
+     &   ) THEN
        
 C     Write to files
        _BARRIER
@@ -113,7 +111,6 @@ C     End of tracer loop
 
        _END_MASTER( myThid )
        _BARRIER
-C     DIFF_BASE_MULTIPLE
       ENDIF
 
 #endif /* ALLOW_PTRACERS */

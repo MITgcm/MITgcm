@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.3 2005/04/06 18:45:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.4 2005/05/15 03:06:01 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -23,8 +23,8 @@ C     !USES:
 #include "PTRACERS.h"
 #include "PTRACERS_STATV.h"
 C     Functions
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -57,10 +57,8 @@ C     Functions
 #endif /*  ALLOW_MNC  */
 
 C     Final Time Averages and Dump Files if needed
-c     IF ( myIter.NE.nIter0 .AND. DIFF_BASE_MULTIPLE
-c    &  (baseTime,PTRACERS_taveFreq, myTime, deltaTClock) ) THEN
-      IF ( DIFF_BASE_MULTIPLE
-     &     (baseTime,PTRACERS_taveFreq, myTime, deltaTClock) ) THEN
+      IF ( DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
+     &   ) THEN
 
 CML        WRITE(*,*) 'EH3:  myIter = ', myIter
         

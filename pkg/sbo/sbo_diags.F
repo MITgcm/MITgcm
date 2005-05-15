@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_diags.F,v 1.5 2005/04/06 18:46:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_diags.F,v 1.6 2005/05/15 03:04:57 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -33,8 +33,8 @@ c                 model time (s), xoamc, yoamc, zoamc,
 c                 xoamp, yoamp, zoamp, mass, xcom, ycom, zcom
       INTEGER bi, bj
       Real*8   sbo_diag(11)
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       _RL DDTT
       CHARACTER*(MAX_LEN_MBUF) suff
       character*(8) fName
@@ -89,9 +89,8 @@ C     Initialize averages to zero
 
 C     Time Average SBO fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFF_BASE_MULTIPLE
-     &     (baseTime,sbo_taveFreq,myCurrentTime,deltaTClock) )
-     &     THEN
+     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myCurrentTime,deltaTClock)
+     &   ) THEN
          DDTT=0.5*deltaTclock
       ELSE
          DDTT=deltaTclock
@@ -110,8 +109,7 @@ C     Keep record of how much time has been integrated over
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFF_BASE_MULTIPLE(baseTime,sbo_taveFreq,
-     &     myCurrentTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myCurrentTime,deltaTClock)
      &     ) THEN
 
 C     Normalize by integrated time

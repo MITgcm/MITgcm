@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.7 2005/04/06 18:46:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.8 2005/05/15 03:04:57 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -40,8 +40,8 @@ C sFld                  :: input and filtered salinity field
 
 #ifdef ALLOW_SHAP_FILT
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C !LOCAL VARIABLES: ====================================================
 C     == Local variables ==
@@ -101,7 +101,7 @@ C-----    Diagnostic of Shapiro Filter effect on temperature :
 C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4)
 C               is directly proportional to Delta-Tr due to the Filter
           IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
-     &     DIFF_BASE_MULTIPLE(baseTime,Shap_diagFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,deltaTClock)
      &       ) THEN
            _BARRIER
            _BEGIN_MASTER( myThid )
@@ -147,7 +147,7 @@ C-----    Diagnostic of Shapiro Filter effect on salinity :
 C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4) 
 C               is directly proportional to Delta-Tr due to the Filter
           IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
-     &     DIFF_BASE_MULTIPLE(baseTime,Shap_diagFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,deltaTClock)
      &       ) THEN
            _BARRIER
            _BEGIN_MASTER( myThid )

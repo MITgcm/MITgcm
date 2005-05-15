@@ -31,8 +31,8 @@ C     == Global variables ===
 # include "g_common.h"
 #endif
 
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -65,7 +65,7 @@ CEOP
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       IF (
-     &  DIFF_BASE_MULTIPLE(baseTime,adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
      & ) THEN
 
          write(*,*) 'myIter= ',myiter

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/checkpoint.F,v 1.2 2005/04/06 18:47:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/checkpoint.F,v 1.3 2005/05/15 03:08:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -261,8 +261,8 @@ C     == Global variables ===
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #endif
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -297,15 +297,13 @@ CEOP
 
       permCheckPoint = .FALSE.
       permCheckPoint=
-     & DIFF_BASE_MULTIPLE(baseTime,pChkptFreq,
-     &                    myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
 
       IF (
      &    (.NOT. modelEnd .AND. (
      &     permCheckPoint
      &     .OR.
-     &     DIFF_BASE_MULTIPLE(baseTime,chkptFreq,
-     &                        myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(chkptFreq,myTime,deltaTClock)
      &     ) .AND. myIter.NE.nIter0
      &    ) 
      &     .OR.
@@ -314,8 +312,7 @@ CEOP
      &     .AND. .NOT.
      &     permCheckPoint 
      &     .AND. .NOT.
-     &     DIFF_BASE_MULTIPLE(baseTime,chkptFreq,
-     &                        myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(chkptFreq,myTime,deltaTClock)
      &    )
      & ) THEN
 
