@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.52 2005/04/20 15:47:13 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.53 2005/05/15 03:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,8 +33,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.
@@ -49,7 +49,7 @@ CEOP
 C     Generaly only thread 1 does IO here. It can not start until 
 C     all threads fields are ready.
       IF (debugMode) THEN 
-        IF ( DIFF_BASE_MULTIPLE(baseTime,dumpFreq,myTime,deltaTClock)
+        IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &     ) THEN
 
           _BARRIER

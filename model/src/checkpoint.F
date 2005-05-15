@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.53 2005/04/15 14:02:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.54 2005/05/15 03:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -345,8 +345,8 @@ C     !USES:
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -372,9 +372,9 @@ C                       checkpoint (that will be permanent if permCheckPoint=T)
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
       permCheckPoint =
-     &     DIFF_BASE_MULTIPLE(baseTime,pChkptFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
       tempCheckPoint =
-     &     DIFF_BASE_MULTIPLE(baseTime, ChkptFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,deltaTClock)
 
 #ifdef ALLOW_CAL
       IF ( calendarDumps ) THEN

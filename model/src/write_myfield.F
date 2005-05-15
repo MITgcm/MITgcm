@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_myfield.F,v 1.3 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_myfield.F,v 1.4 2005/05/15 03:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,8 +34,8 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h" 
 #include "EOS.h"
-      LOGICAL  DIFF_BASE_MULTIPLE
-      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -64,7 +64,7 @@ c     == external ==
 CEOP
 
       IF ( 
-     &     DIFF_BASE_MULTIPLE(baseTime,dumpFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &     .OR. myTime.EQ.endTime
      &     .OR. myTime.EQ.startTime
      &     ) THEN
