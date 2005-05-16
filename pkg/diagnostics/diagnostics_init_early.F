@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.5 2005/05/06 20:34:16 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.6 2005/05/16 15:07:45 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -67,7 +67,6 @@ CEOP
         gdiag(n) = '                '
         udiag(n) = '                '
         tdiag(n) = ' '
-        idiag(n) = 0
       enddo
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

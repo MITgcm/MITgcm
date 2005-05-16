@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.3 2004/12/20 01:52:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.4 2005/05/16 15:07:45 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -39,9 +39,15 @@ C     == Local variables ==
       LOGICAL found
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C--   Calculate pointers for diagnostics set to non-zero frequency
 
       _BEGIN_MASTER( myThid)
+
+C--   Initialize pointer arrays to zero:
+      DO n=1,ndiagMax
+        idiag(n) = 0
+      ENDDO
+
+C--   Calculate pointers for diagnostics set to non-zero frequency
 
       ndiagcount = 0
       nActiveMax = 0
