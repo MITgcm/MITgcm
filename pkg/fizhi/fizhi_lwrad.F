@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.21 2005/02/07 20:35:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.22 2005/05/16 18:50:31 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -72,7 +72,7 @@ c ---------------
 
       _RL tmpstrip(istrip,lm)
       _RL tmpimjm(im,jm,lm)
-      _RL tempor(im,jm)
+      _RL tempor1(im,jm),tempor2(im,jm)
 
       _RL getcon,secday,convrt
 
@@ -250,14 +250,8 @@ C **********************************************************************
 C ****            PASTE AND BUMP SOME DIAGNOSTICS                   ****
 C **********************************************************************
 
-      CALL PASTE(flx(1,1),tempor,ISTRIP,im*jm,1,NN)
-
-c     IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR,bi,bj),ISTRIP,
-c    .                                                      im*jm, 1,NN)
-c     IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR,bi,bj),
-c    .                                                ISTRIP,im*jm,1,NN)
-c     IF(IOZLW.GT.0)CALL PSTBMP(OZL(1,1),QDIAG(1,1,IOZLW,bi,bj),ISTRIP,
-c    .                                                      im*jm,lm,NN)
+      CALL PASTE(flx(1,1),tempor1,ISTRIP,im*jm,1,NN)
+      CALL PASTE(flxclr(1,1),tempor2,ISTRIP,im*jm,1,NN)
 
 C **********************************************************************
 C ****                 TENDENCY UPDATES                             ****
@@ -311,21 +305,29 @@ C **********************************************************************
       enddo
       endif
 
-c     if (iudiag4.ne.0) then
-c     do L = 1,lm
-c     do j = 1,jm
-c     do i = 1,im
-c     qdiag(i,j,iudiag4+L-1,bi,bj) = qdiag(i,j,iudiag4+L-1,bi,bj) + 
-c    .  tmpimjm(i,j,L)
-c     enddo
-c     enddo
-c     enddo
-c     endif
+      if (iozlw.ne.0) then
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+      qdiag(i,j,iozlw+L-1,bi,bj) = qdiag(i,j,iozlw+L-1,bi,bj) + 
+     .                                             oz(i,j,L)
+      enddo
+      enddo
+      enddo
+      endif
 
       if (iolr.ne.0) then
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,iolr,bi,bj) = qdiag(i,j,iolr,bi,bj) + tempor(i,j)
+      qdiag(i,j,iolr,bi,bj) = qdiag(i,j,iolr,bi,bj) + tempor1(i,j)
+      enddo
+      enddo
+      endif
+
+      if (iolrclr.ne.0) then
+      do j = 1,jm
+      do i = 1,im
+      qdiag(i,j,iolrclr,bi,bj) = qdiag(i,j,iolrclr,bi,bj) + tempor2(i,j)
       enddo
       enddo
       endif
