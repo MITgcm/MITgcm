@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.2 2005/05/16 23:41:32 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -19,6 +19,9 @@ C     !USES:
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
+#ifdef ALLOW_FIZHI
+#include "PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -32,5 +35,11 @@ C--   Set number of levels for all available diagnostics:
 C--   Calculate pointers for diagnostics set to non-zero frequency
       CALL DIAGNOSTICS_SET_POINTERS( myThid )
       
+#ifdef ALLOW_FIZHI
+      if( useFIZHI) then
+      call fizhi_diagalarms(19000101,0,myThid)
+      endif
+#endif
+
       RETURN 
       END

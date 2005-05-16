@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.14 2005/05/14 20:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.15 2005/05/16 23:41:32 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -39,7 +39,8 @@ c ===============
       INTEGER thisdate(4), prevdate(4)
 #endif
 #ifdef ALLOW_FIZHI
-      integer nsecf2,yymmdd,hhmmss
+      integer nsecf2,mmdd,hhmmss,alarm2
+      character *9 tagname
 #endif
 
       LOGICAL  DIFF_PHASE_MULTIPLE
@@ -65,12 +66,9 @@ C-    Determine calendar dates for this and previous time step.
           phiSec = phase(n)
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
-          yymmdd = int(freq(n))
+          mmdd = int(freq(n))
           hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          freqSec = nsecf2(hhmmss,yymmdd,nymd)
-          yymmdd = int(phase(n))
-          hhmmss = int((phase(n) - int(phase(n)))*1.e6)
-          phiSec = nsecf2(hhmmss,yymmdd,nymd)
+          freqSec = nsecf2(hhmmss,mmdd,nymd)
          endif
 #endif
 
@@ -89,6 +87,12 @@ C       state-variable time-step:
           ENDIF
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
      &                                        wrTime, deltaTclock )
+#ifdef ALLOW_FIZHI
+         if( useFIZHI) then 
+          write(tagname,'(A,I2.2)')'diagtag',n
+          dump2fileNow = alarm2(tagname)
+         endif
+#endif
 
 #ifdef ALLOW_CAL
           IF ( calendarDumps .AND. (
@@ -118,19 +122,21 @@ C-      wait for everyone before setting arrays to zero:
           phiSec = phase(n)
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
-          yymmdd = int(freq(n))
+          mmdd = int(freq(n))
           hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          freqSec = nsecf2(hhmmss,yymmdd,nymd)
-          yymmdd = int(phase(n))
-          hhmmss = int((phase(n) - int(phase(n)))*1.e6)
-          phiSec = nsecf2(hhmmss,yymmdd,nymd)
+          freqSec = nsecf2(hhmmss,mmdd,nymd)
          endif
 #endif
           wrTime = myTime
           IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
      &                                        wrTime, deltaTclock )
-
+#ifdef ALLOW_FIZHI
+          if( useFIZHI) then 
+           write(tagname,'(A,I2.2)')'diagtag',n
+           dump2fileNow = alarm2(tagname)
+          endif
+#endif
           IF ( dump2fileNow ) CALL CLRINDX(n,myThid)
         ENDDO
 

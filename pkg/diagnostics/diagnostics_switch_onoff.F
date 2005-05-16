@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.6 2005/05/15 03:36:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.7 2005/05/16 23:41:32 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,7 +50,8 @@ c     INTEGER newIter
       LOGICAL time4SnapShot
       _RL     phiSec, freqSec
 #ifdef ALLOW_FIZHI
-      integer yymmdd,hhmmss,nsecf2
+      integer mmdd,hhmmss,nsecf2,alarm2
+      character *9 tagname
 #endif
 
       LOGICAL  DIFF_PHASE_MULTIPLE
@@ -68,19 +69,17 @@ C--    Select diagnostics list that uses instantaneous output
 
         freqSec = freq(n)
         phiSec = phase(n)
-#ifdef ALLOW_FIZHI
-        if( useFIZHI) then
-         yymmdd = int(freq(n))
-         hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-         freqSec = nsecf2(hhmmss,yymmdd,nymd)
-         yymmdd = int(phase(n))
-         hhmmss = int((phase(n) - int(phase(n)))*1.e6)
-         phiSec = nsecf2(hhmmss,yymmdd,nymd)
-        endif
-#endif
-
         time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                       myTime, deltaTclock )
+#ifdef ALLOW_FIZHI
+        if( useFIZHI) then
+         mmdd = int(freq(n))
+         hhmmss = int((freq(n) - int(freq(n)))*1.e6)
+         freqSec = nsecf2(hhmmss,mmdd,nymd)
+         write(tagname,'(A,I2.2)')'diagtag',n
+         time4SnapShot = alarm2(tagname)
+        endif
+#endif
 
         IF ( time4SnapShot ) THEN
 C--     switch ON diagnostics of output-stream # n
