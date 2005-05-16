@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.38 2005/05/06 18:36:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.39 2005/05/16 18:37:16 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -612,30 +612,6 @@ c ------------------------------------------------------------------
      . .false., 'DTSRF   ', 1, 1, bi, bj, myid)
       endif
 
-      if(2.eq.1)then
-      print *,' In turb before trbflx - strip ',nn,' out of ',numstrips
-      print *,' bi = ',bi
-      print *,' ntracers ',ntracers,' ptracers ',ptracers
-      print *,'dttrb,itrtrb,rmu,edle ',dttrb,' ',itrtrb,' ',rmu,' ',edle
-      print *,' nchp ',nchp,' nchptot ',nchptot,' nchplnd ',nchplnd
-      print *,' qbeg, tprof ',qbeg,' ',tprof
-      print *,'istrip,nlay,nymd,nhms ',istrip,' ',nlay,' ',nymd,' ',nhms
-      print *,' grav,cp,rgas,faceps,virtcon,undef ',
-     .     grav,' ',cp,' ',rgas,' ',faceps,' ',virtcon,' ',undef
-      print *,' field: th ',th
-c     print *,' field: thv ',thv
-c     print *,' field: sh ',sh
-c     print *,' field: u ',u
-c     print *,' field: v ',v
-      print *,' field: p ',p
-c     print *,' field: pe ',pe
-c     print *,' field: pk ',pk
-c     print *,' field: pke ',pke
-c     print *,' field: dpstr ',dpstr
-c     print *,' field: stwatr ',stwatr
-c     print *,' field: stz0 ',stz0
-      endif
-
 c call trbflx
 c -----------
       call trbflx(nn,th,thv,sh,u,v,qq,p,pe,pk,pke,dpstr,stwatr,stz0,
@@ -961,12 +937,6 @@ c**********************************************************************
       enddo
       enddo
  
-      if(2.eq.1)then
-      print *,' In turbio, just after updating th and sh - strip ',nn
-      print *,' field: th ',th
-      print *,' field: sh ',sh
-      endif
-
 c tendency updates
 c ----------------
       do  l=1,nlay
@@ -990,11 +960,6 @@ c ----------------
       tends(i) = ( th(i,l)-tmpstrip(i) )
       enddo
 
-      if(2.eq.1)then
-      print *,' In turbio, tendencies for strip ',nn,' level ',l
-      print *,' field: th ',tends
-      endif
-
       call pastit (tends,dtmsc(1,l),istrip,nchp,nchptot,1,nn)
 
       call strip2tile(qz(1,1,l,1),igrd,tmpstrip,nchp,ijall,
@@ -1002,11 +967,6 @@ c ----------------
       do i =1,istrip
       tends(i) = ( sh(i,l)-tmpstrip(i) )
       enddo
-
-      if(2.eq.1)then
-      print *,' In turbio, tendencies for strip ',nn,' level ',l
-      print *,' field: sh ',tends
-      endif
 
       call pastit (tends,dqmsc(1,l,1),istrip,nchp,nchptot,1,nn)
 
