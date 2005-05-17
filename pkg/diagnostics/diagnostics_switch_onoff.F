@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.7 2005/05/16 23:41:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.8 2005/05/17 00:22:00 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,7 +50,8 @@ c     INTEGER newIter
       LOGICAL time4SnapShot
       _RL     phiSec, freqSec
 #ifdef ALLOW_FIZHI
-      integer mmdd,hhmmss,nsecf2,alarm2
+      integer mmdd,hhmmss,nsecf2
+      logical alarm2
       character *9 tagname
 #endif
 
