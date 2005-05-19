@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.6 2005/05/19 01:23:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.7 2005/05/19 02:29:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -62,7 +62,7 @@ C     !LOCAL VARIABLES:
 C ===============
       INTEGER m, n, j
       INTEGER ndiagnum, ipointer, iSp, jSd
-      INTEGER region2fill(0:nRegions)
+c     INTEGER region2fill(0:nRegions)
 
 C--   2D/3D Diagnostics :
 C Run through list of active diagnostics to make sure
