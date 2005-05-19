@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.1 2005/05/12 18:56:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.2 2005/05/19 14:47:27 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -194,6 +194,34 @@ c      integer  mpi_comm_model,ierror
           alarm = (dates(n).eq.datein) .and. (times(n).eq.timein)
           else
           alarm = ( datein.gt.dates(n) .or.
+     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
+     .              modalarm( freqs(n),dates(n),times(n) ).eq.0
+          endif
+      endif
+      enddo
+
+      return
+      end
+
+      function alarm2 (tag)
+      implicit none
+      character*(*) tag
+      integer datein,timein
+      logical alarm2
+#include "chronos.h"
+
+      integer n,modalarm,nalarm,nalarm2,freq,date0,time0
+      modalarm(freq,date0,time0)=nalarm2(freq,datein,timein,date0,time0)
+
+      call get_time (datein,timein)
+
+      alarm2 = .false.
+      do n=1,ntags
+      if( tags(n).eq.tag  ) then
+          if( freqs(n).eq.0 ) then
+          alarm2 = (dates(n).eq.datein) .and. (times(n).eq.timein)
+          else
+          alarm2 = ( datein.gt.dates(n) .or.
      .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
      .              modalarm( freqs(n),dates(n),times(n) ).eq.0
           endif
@@ -501,9 +529,9 @@ C***********************************************************************
       ENDIF   
                
       NHMS = NHMSF (NSEC)
-      NYMD = 20040321
-
       ENDIF   
+
+      NYMD = 20040321
 
       RETURN  
       END    
@@ -619,6 +647,80 @@ C***********************************************************************
       IF (NTIME.LT.0 ) NTIME  = NTIME + NCYCLE                                  
                        NALARM = NTIME                                           
       IF ( MHMS.NE.0 ) NALARM = MOD( NALARM,NSECF(MHMS) )                       
+                                                                                
+      RETURN                                                                    
+      END                                                                       
+
+      FUNCTION NALARM2(MHMS,NYMD,NHMS,NYMD0,NHMS0)                              
+C***********************************************************************        
+C  PURPOSE                                                                      
+C     COMPUTES MODULO-FRACTION BETWEEN MHHS AND TOTAL TIME                      
+C  USAGE                                                                        
+C  ARGUMENTS   DESCRIPTION                                                      
+C     MHMS     INTERVAL FREQUENCY (MMDDHHMMSS)                                      
+C     NYMD     CURRENT   YYMMDD                                                 
+C     NHMS     CURRENT   HHMMSS                                                 
+C     NYMD0    BEGINNING YYMMDD                                                 
+C     NHMS0    BEGINNING HHMMSS                                                 
+C                                                                               
+C***********************************************************************        
+      implicit none
+
+      integer nalarm2,MHMS,NYMD,NHMS,NYMD0,NHMS0
+
+      integer nsday, ncycle
+      PARAMETER ( NSDAY  = 86400 )
+      PARAMETER ( NCYCLE = 1461*24*3600 )
+
+      INTEGER YEAR, MONTH, DAY, SEC, YEAR0, MONTH0, DAY0, SEC0
+
+      integer MNDY(12,4)
+      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
+     .           397,34*0 /
+
+      integer i,nsecf2,nsecf,iday,iday0,nsec,nsec0,ntime
+      integer NHMMSS,NMMDD
+
+C***********************************************************************        
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
+C***********************************************************************        
+
+      DO I=15,48
+      MNDY(I,1) = MNDY(I-12,1) + 365
+      ENDDO
+
+C***********************************************************************        
+C*                   SET CURRENT AND BEGINNING TIMES                   *        
+C***********************************************************************        
+
+      YEAR   = NYMD / 10000
+      MONTH  = MOD(NYMD,10000) / 100
+      DAY    = MOD(NYMD,100)
+      SEC    = NSECF(NHMS)
+
+      YEAR0  = NYMD0 / 10000
+      MONTH0 = MOD(NYMD0,10000) / 100
+      DAY0   = MOD(NYMD0,100)
+      SEC0   = NSECF(NHMS0)
+
+C***********************************************************************        
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
+C***********************************************************************        
+                                                                                
+      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
+      IDAY0  = (DAY0-1) + MNDY( MONTH0,MOD(YEAR0,4)+1 )                         
+                                                                                
+      NSEC   = IDAY *NSDAY + SEC                                                
+      NSEC0  = IDAY0*NSDAY + SEC0                                               
+                                                                                
+      NTIME  = NSEC-NSEC0                                      
+      IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE                                  
+      NALARM2 = NTIME                                           
+      IF(MHMS.NE.0) THEN
+       NMMDD = MHMS / 1000000
+       NHMMSS = MOD(MHMS,1000000)
+       NALARM2 = MOD(NALARM2,NSECF2(NHMMSS,NMMDD,NYMD))
+      ENDIF
                                                                                 
       RETURN                                                                    
       END                                                                       
