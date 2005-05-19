@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.12 2004/10/18 14:59:38 jmc Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.13 2005/05/19 21:46:15 ce107 Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -309,7 +309,7 @@ c     Do some printing for the protocol.
      &                         first, changed, fac
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,3(x,i6))')
+        write(msgbuf,'(a,3(1x,i6))')
      &    ' exf_GetFFieldsRec: myiter, count0, count1:',
      &                         myiter, count0, count1
         call print_message( msgbuf, standardmessageunit,

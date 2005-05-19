@@ -45,8 +45,8 @@ c
       par = 0.4       !photosynthetically reactive frac
 c
 c find day (****NOTE for year starting in winter*****)
-        dayfrac=mod(Time,360.*86400.)
-     &                    /(360.*86400.)              !fraction of year
+        dayfrac=mod(Time,360. _d 0 *86400. _d 0)
+     &                    /(360. _d 0 *86400. _d 0)          !fraction of year
         yday = 2.0*3.1416*dayfrac                         !convert to radians
         delta = (0.006918 - (0.399912*cos(yday))      !cosine zenith angle
      &          +(0.070257*sin(yday))                 !(paltridge+platt)

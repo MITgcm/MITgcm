@@ -45,10 +45,11 @@ C     == Local variables ==
       _RL  SURCFC12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  xintp(1-OLy:sNy+OLy)
        INTEGER I,J
-       _RL myYear, lastYear, thisYear
+       _RL myYear
+       INTEGER lastYear, thisYear
        _RL dtinc, aWght, bWght
        _RL ACFC12north, ACFC12south
-       _RL maxYear
+       INTEGER maxYear
        _RL a1, a2
        _RL yNorth, ySouth
 

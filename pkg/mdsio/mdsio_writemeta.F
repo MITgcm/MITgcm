@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.2 2001/08/29 14:16:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.3 2005/05/19 21:46:15 ce107 Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -67,14 +67,14 @@ C Open meta-file
      &    form='formatted' )
 
 C Write the number of dimensions
-      write(mUnit,'(x,a,i3,a)') 'nDims = [ ',ndims,' ];'
+      write(mUnit,'(1x,a,i3,a)') 'nDims = [ ',ndims,' ];'
 
 C For each dimension, write the following:
 C   1  global size  (ie. the size of the global dimension of all files)
 C   2  global start (ie. the global position of the start of this file)
 C   3  global end   (ie. the global position of the end   of this file)
 
-      write(mUnit,'(x,a)') 'dimList = ['
+      write(mUnit,'(1x,a)') 'dimList = ['
       do ii=1,ndims
        if (ii.lt.ndims) then
         write(mUnit,'(10x,3(i5,","))') (dimList(i,ii),i=1,3)
@@ -86,9 +86,9 @@ C   3  global end   (ie. the global position of the end   of this file)
 
 C Record the precision of the file
       if (filePrec .EQ. precFloat32) then
-       write(mUnit,'(x,a)') "format = [ 'float32' ];"
+       write(mUnit,'(1x,a)') "format = [ 'float32' ];"
       elseif (filePrec .EQ. precFloat64) then
-       write(mUnit,'(x,a)') "format = [ 'float64' ];"
+       write(mUnit,'(1x,a)') "format = [ 'float64' ];"
       else
        write(msgbuf,'(a)')
      &   ' MDSWRITEMETA: invalid filePrec'
@@ -99,17 +99,17 @@ C Record the precision of the file
 C Record the current record number
 C This is a proxy for the actual number of records in the file.
 C If we could read the file then we could do this properly.
-      write(mUnit,'(x,a,i5,a)') 'nrecords = [ ',nrecords,' ];'
+      write(mUnit,'(1x,a,i5,a)') 'nrecords = [ ',nrecords,' ];'
 
 C Record the file-name for the binary data
 Cveto ii=ILNBLNK( dFileName )
-Cveto write(mUnit,'(x,3a)') 'binarydatafile = [ ',dFileName(1:ii),' ];'
+Cveto write(mUnit,'(1x,3a)') 'binarydatafile = [ ',dFileName(1:ii),' ];'
 
 C Write the integer time (integer iteration number) for later record
 C keeping. If the timestep number is less than 0 then we assume
 C that the information is superfluous and do not write it.
       if (myIter .ge. 0)
-     & write(mUnit,'(x,a,i10,a)') 'timeStepNumber = [ ',myIter,' ];'
+     & write(mUnit,'(1x,a,i10,a)') 'timeStepNumber = [ ',myIter,' ];'
 
 C Close meta-file
       close(mUnit)

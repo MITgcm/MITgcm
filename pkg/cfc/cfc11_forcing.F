@@ -48,7 +48,7 @@ C     == Local variables ==
        INTEGER myYear, lastYear, thisYear
        _RL dtinc, aWght, bWght
        _RL ACFC11north, ACFC11south
-       _RL maxYear
+       INTEGER maxYear
        _RL a1, a2
        _RL yNorth, ySouth
        

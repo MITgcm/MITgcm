@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_COST.h,v 1.2 2004/09/02 19:47:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_COST.h,v 1.3 2005/05/19 21:46:15 ce107 Exp $
 C $Name:  $
 
-DIC_COST.h
+c DIC_COST.h
          _RL totcost
 c control variables
 cQQ      _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
