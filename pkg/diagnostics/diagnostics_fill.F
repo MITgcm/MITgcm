@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.5 2005/02/25 16:43:39 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.6 2005/05/19 01:23:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C***********************************************************************
-C   Wrapper routine to increment the diagnostics array with a field
+C   Wrapper routine to increment the diagnostics arrays with a field
 C***********************************************************************
 C     !USES:
       IMPLICIT NONE
@@ -60,16 +60,11 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
-      INTEGER m, n 
-      INTEGER ndiagnum, ipointer
-      INTEGER sizI1,sizI2,sizJ1,sizJ2
-      INTEGER sizTx,sizTy
-      INTEGER iRun, jRun, k, bi, bj
-      INTEGER kFirst, kLast
-      INTEGER kd, kd0, ksgn, kStore
-      CHARACTER*8 parms1
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER m, n, j
+      INTEGER ndiagnum, ipointer, iSp, jSd
+      INTEGER region2fill(0:nRegions)
 
+C--   2D/3D Diagnostics :
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
 
@@ -84,200 +79,13 @@ C we are trying to fill a valid diagnostic
        ENDDO
       ENDDO
 
-C If-sequence to see if we are a valid and an active diagnostic
-
-      IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
-
-C Increment the counter for the diagnostic (if we are at bi=bj=myThid=1)
-       _BEGIN_MASTER(myThid)
-        IF((biArg.EQ.1).AND.(bjArg.EQ.1).AND.(ABS(kLev).LE.1).and.
-     .      (bibjflg.ge.0) ) ndiag(ndiagnum) = ndiag(ndiagnum) + 1
-       _END_MASTER(myThid)
-
-C-      select range for 1rst & 2nd indices to accumulate
-C         depending on variable location on C-grid, 
-        parms1 = gdiag(ndiagnum)(1:8)
-        IF ( parms1(2:2).EQ.'M' ) THEN
-         iRun = sNx
-         jRun = sNy
-        ELSEIF ( parms1(2:2).EQ.'U' ) THEN
-         iRun = sNx+1
-         jRun = sNy
-        ELSEIF ( parms1(2:2).EQ.'V' ) THEN
-         iRun = sNx
-         jRun = sNy+1
-        ELSEIF ( parms1(2:2).EQ.'Z' ) THEN
-         iRun = sNx+1
-         jRun = sNy+1
-        ELSE
-         iRun = sNx
-         jRun = sNy
-        ENDIF
-
-C-      Dimension of the input array:
-        IF (abs(bibjflg).EQ.3) THEN
-          sizI1 = 1
-          sizI2 = sNx
-          sizJ1 = 1
-          sizJ2 = sNy
-          iRun = sNx
-          jRun = sNy
-        ELSE
-          sizI1 = 1-OLx
-          sizI2 = sNx+OLx
-          sizJ1 = 1-OLy
-          sizJ2 = sNy+OLy
-        ENDIF
-        IF (abs(bibjflg).GE.2) THEN
-         sizTx = 1
-         sizTy = 1
-        ELSE
-         sizTx = nSx
-         sizTy = nSy
-        ENDIF
-C-      Which part of inpfld to add : k = 3rd index,
-C         and do the loop >> do k=kFirst,kLast <<
-        IF (kLev.LE.0) THEN
-          kFirst = 1
-          kLast  = nLevs
-        ELSEIF ( nLevs.EQ.1 ) THEN
-          kFirst = 1
-          kLast  = 1
-        ELSEIF ( kLev.LE.nLevs ) THEN
-          kFirst = kLev
-          kLast  = kLev
-        ELSE
-          STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL kLev > nLevs > 0'
-        ENDIF
-C-      Which part of qdiag to update: kd = 3rd index, 
-C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
-        IF ( kLev.EQ.-1 ) THEN
-          ksgn = -1
-          kd0 = ipointer + nLevs
-        ELSEIF ( kLev.EQ.0 ) THEN
-          ksgn = 1
-          kd0 = ipointer - 1
-        ELSE
-          ksgn = 0
-          kd0 = ipointer + kLev - 1
-        ENDIF
-
-C-      Check for consistency with Nb of levels reserved in storage array
-        kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
-        IF ( kStore.GT.kdiag(ndiagnum) ) THEN
-         _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_FILL: ',
-     &     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FILL: ',
-     &     'for Diagnostics #', ndiagnum, ' : ', chardiag
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL ',
-     I     'with kLev,nLevs,bibjFlg=', kLev,nLevs,bibjFlg
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,I6,A)') 'DIAGNOSTICS_FILL: ',
-     I     '==> trying to store up to ', kStore, ' levels'
-          CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL'
-         _END_MASTER(myThid)
-        ENDIF
-
-        IF (abs(bibjflg).EQ.0) THEN
-         
-         DO bj=myByLo(myThid), myByHi(myThid)
-          DO bi=myBxLo(myThid), myBxHi(myThid)
-           DO k = kFirst,kLast
-            kd = kd0 + ksgn*k
-            CALL DIAGNOSTICS_DO_FILL(
-     U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
-     I                  inpfld,
-     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
-     I                  iRun,jRun,k,bi,bj,
-     I                  myThid)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSE
-          bi = MIN(biArg,sizTx)
-          bj = MIN(bjArg,sizTy)
-          DO k = kFirst,kLast
-            kd = kd0 + ksgn*k
-            CALL DIAGNOSTICS_DO_FILL(
-     U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
-     I                  inpfld,
-     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
-     I                  iRun,jRun,k,bi,bj,
-     I                  myThid)
-          ENDDO
-        ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c     ELSE
-c     IF (myThid.EQ.1) WRITE(6,1000) chardiag
-
+C if we are a valid and an active diagnostic, do the filling:
+      IF ( ipointer.NE.0 ) THEN
+        CALL DIAGNOSTICS_FILL_FIELD( inpfld, ndiagnum, ipointer,
+     I                kLev, nLevs, bibjflg, biArg, bjArg, myThid ) 
       ENDIF
 
- 1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
-     &        ' But it is not a valid (or active) name ')
-      RETURN 
-      END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP
-C     !ROUTINE: DIAGNOSTICS_DO_FILL
-C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_DO_FILL(
-     U                  cumFld,
-     I                  inpfld,
-     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
-     I                  iRun,jRun,k,bi,bj,
-     I                  myThid)
-
-C     !DESCRIPTION:
-C     Update array cumFld 
-C     by adding content of input field array inpfld
-C     over the range [1:iRun],[1:jRun]
-
-C     !USES:
-      IMPLICIT NONE
-
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
-C     cumFld      :: cumulative array (updated)
-C     inpfld      :: input field array to add to cumFld
-C     sizI1,sizI2 :: size of inpfld array: 1rst index range (min,max)
-C     sizJ1,sizJ2 :: size of inpfld array: 2nd  index range (min,max)
-C     sizK        :: size of inpfld array: 3rd  dimension
-C     sizTx,sizTy :: size of inpfld array: tile dimensions
-C     iRun,jRun   :: range of 1rst & 2nd index
-C     k,bi,bj     :: level and tile indices of inFld array 
-C                    to add to cumFld array
-C     myThid      :: my Thread Id number
-      _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER sizI1,sizI2,sizJ1,sizJ2
-      INTEGER sizK,sizTx,sizTy
-      _RL inpfld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
-      INTEGER iRun, jRun, k, bi, bj
-      INTEGER myThid
-CEOP
-
-C     !LOCAL VARIABLES:
-C     i,j    :: loop indices
-      INTEGER i, j
-
-      DO j = 1,jRun
-       DO i = 1,iRun
-C- jmc: try with fixed ranges, that are known at compiling stage 
-C        (might produce a better cash optimisation ?)
-c     DO j = 1,sNy
-c      DO i = 1,sNx
-        cumFld(i,j) = cumFld(i,j) + inpfld(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
 
       RETURN 
       END
