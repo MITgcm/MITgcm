@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.487 2005/05/19 04:10:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.488 2005/05/19 16:26:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57h_done
+  tag after changing user customized files (DIAGNOSTICS_SIZE.h, 
+  data.diagnostics, data.gchem, data.ptracers) is done.
 
 o pkg/diagnostics: prepare for Global/Regional statistics. 
   add 2nd namelist in data.diagnostics and update DIAGNOSTICS_SIZE.h 
