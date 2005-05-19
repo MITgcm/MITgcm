@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.486 2005/05/15 04:00:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.487 2005/05/19 04:10:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: prepare for Global/Regional statistics. 
+  add 2nd namelist in data.diagnostics and update DIAGNOSTICS_SIZE.h 
 o remove "baseTime" (no used) from arg. list of DIFF_BASE_MULTIPLE
   and rename it: DIFFERENT_MULTIPLE
 
