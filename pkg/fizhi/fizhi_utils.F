@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.13 2004/08/10 15:13:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.14 2005/05/20 23:30:11 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -61,6 +61,35 @@ C **********************************************************************
       implicit none
       integer ia,ib,L,K
       _RL A(IA,L), B(IB,L)                                                
+      
+      INTEGER OFFSET,Lena,i,j
+                                                                                
+      OFFSET = IB*(K-1)                                                         
+      Lena    = MIN(IB,IA-OFFSET)                                                
+      OFFSET = OFFSET+1                                                         
+                                                                                
+      IF(Lena.EQ.IB) THEN                                                        
+        DO 100 J=1,L                                                            
+        DO 100 I=1,Lena                                                          
+        B(I,J) = A(I+OFFSET-1,J)                                                
+100     CONTINUE                                                                
+      ELSE                                                                      
+        DO 200 J=1,L                                                            
+        DO 300 I=1,Lena                                                          
+        B(I,J) = A(I+OFFSET-1,J)                                                
+300     CONTINUE                                                                
+        DO 400 I=1,IB-Lena                                                       
+        B(Lena+I,J) = A(Lena+OFFSET-1,J)                                            
+400     CONTINUE                                                                
+200     CONTINUE                                                                
+      ENDIF                                                                     
+                                                                                
+      RETURN                                                                    
+      END                                                                       
+      SUBROUTINE STRIPINT(A,B,IA,IB,L,K)                                           
+      implicit none
+      integer ia,ib,L,K
+      INTEGER A(IA,L), B(IB,L)                                                
       
       INTEGER OFFSET,Lena,i,j
                                                                                 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.35 2005/03/21 17:34:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.36 2005/05/20 23:30:11 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -208,12 +208,10 @@ C ==========
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
-C Comment this out for now - run tropospheric resolutions only.
-C Need to see how to get zonal wavelengths on the cube.
+C Comment this out for now 
 
-c     call gwdrag (myid,p,pl,ple,dpres,pkht,pkl,u,v,t,q,phis_var,
-c    .   turbu,turbv,turbt,im,jm,lm,ptop,istrip,npcs,
-c    .   imglobal)
+c     call gwdrag (myid,p,pl,ple,dpres,pkl,u,v,t,q,phis_var,
+c    .   turbu,turbv,turbt,im,jm,lm,istrip,npcs,imglobal)
 
 c Add Rayleigh Friction Damping Above 70 Km
 c -----------------------------------------
