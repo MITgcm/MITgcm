@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.88 2005/02/23 21:15:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.89 2005/05/20 07:30:18 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -628,6 +628,13 @@ C--   Final checkpoint (in case the in-loop checkpoint was missed)
       CALL TIMER_STOP ('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
 
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+C       Close all diagnostics output files
+        CALL DIAGSTATS_CLOSE_IO( myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
