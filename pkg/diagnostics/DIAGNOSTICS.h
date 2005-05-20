@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.7 2005/05/14 20:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.8 2005/05/20 07:28:49 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -14,9 +14,11 @@ C         gdiag - parser field with characteristics of the diagnostics
 C         udiag - physical units of the diagnostic field
 C  - diagnostics contains the large array containing diagnostic fields
 C         qdiag - diagnostic fields array
+C        qSdiag - storage array for diagnostics of (per level) statistics 
+C  - diag_choices contains the user-chosen list of fields to store
 C         jdiag - short-list (active diag.) to long-list (available diag.)
 C                 pointer
-C  - diag_choices contains the user-chosen list of fields to store
+C  - diag_statis  contains the user-chosen list of statistics to store
 C ======================================================================
 
 C diagarrays common
@@ -27,7 +29,7 @@ C diagarrays common
       integer        idiag(ndiagMax)
       integer        kdiag(ndiagMax)
       integer        ndiag(ndiagMax)
-      integer        mdiag(ndiagMax)
+c     integer        mdiag(ndiagMax)
       character*80   tdiag(ndiagMax)
       character*16   gdiag(ndiagMax)
       character*16   udiag(ndiagMax)
@@ -37,7 +39,7 @@ C diagarrays common
       common /diagarrays/ idiag
       common /diagarrays/ kdiag
       common /diagarrays/ ndiag
-      common /diagarrays/ mdiag
+c     common /diagarrays/ mdiag
       common /diagarrays/ tdiag
       common /diagarrays/ gdiag
       common /diagarrays/ udiag
@@ -1432,18 +1434,21 @@ C -------------------
 
 
 C diagnostics common
+C      qSdiag  - storage array for (per level) statistics 
 
       _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,nSx,nSy)
+      _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
 
-      common /diagnostics/ qdiag
+      common /diagnostics/ qdiag, qSdiag
 
+	
 C diag_choices common
+C     freq       :: frequency (in s) to write output stream # n
+C     phase      :: phase     (in s) to write output stream # n
 C     nfields(n) :: number of active diagnostics for output stream # n
 C     nActive(n) :: number of active diagnostics (including counters)
 C                   for output stream # n
 C     fflags(n)  :: character string with per-file flags
-C     freq       :: frequency (in s) to write output stream # n
-C     phase      :: phase     (in s) to write output stream # n
 
       integer nlists
 
@@ -1463,13 +1468,34 @@ C     phase      :: phase     (in s) to write output stream # n
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc
 
       common /diag_choices/ 
-     &     levs, jdiag, flds, fnames, fflags,
-     &     freq, phase, nlevels, nfields, nActive, nlists,
+     &     freq, phase, levs, nlevels, 
+     &     nfields, nActive, nlists, jdiag,
+     &     flds, fnames, fflags,
      &     diag_mdsio, diag_mnc,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc
            
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _RL       diagSt_freq(numlists), diagSt_phase(numlists)
+      CHARACTER*8  diagSt_Flds(numperlist,numlists)
+      CHARACTER*80 diagSt_Fname(numlists)
+      INTEGER   iSdiag(ndiagMax)
+      INTEGER   jSdiag(numperlist,numlists)
+      INTEGER   diagSt_region(0:nRegions,numlists)
+      INTEGER   diagSt_nbFlds(numlists)
+      INTEGER   diagSt_nbActv(numlists)
+      INTEGER   diagSt_nbLists
+      INTEGER   diagSt_ioUnit(numlists)
+      LOGICAL   diagSt_ascii, diagSt_mnc
+      COMMON / DIAG_STATIS / 
+     &     diagSt_freq, diagSt_phase, 
+     &     diagSt_Flds, diagSt_Fname,
+     &     iSdiag, jSdiag, diagSt_region,
+     &     diagSt_nbFlds, diagSt_nbActv, diagSt_nbLists,
+     &     diagSt_ioUnit,
+     &     diagSt_Ascii, diagSt_mnc
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

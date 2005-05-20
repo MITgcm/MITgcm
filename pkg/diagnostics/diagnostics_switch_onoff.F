@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.8 2005/05/17 00:22:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.9 2005/05/20 07:28:50 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -28,9 +28,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
-#ifdef ALLOW_FIZHI
-#include "chronos.h"
-#endif
 
 C     !INPUT PARAMETERS:
 C     myTime     :: current Time of simulation ( s )
@@ -47,10 +44,11 @@ C      j,m,n   :: loop index
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     INTEGER newIter
       INTEGER j, m, n
+      INTEGER bi, bj, iSp
       LOGICAL time4SnapShot
       _RL     phiSec, freqSec
+      LOGICAL dBugFlag
 #ifdef ALLOW_FIZHI
-      integer mmdd,hhmmss,nsecf2
       logical alarm2
       character *9 tagname
 #endif
@@ -74,9 +72,6 @@ C--    Select diagnostics list that uses instantaneous output
      &                                       myTime, deltaTclock )
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
-         mmdd = int(freq(n))
-         hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-         freqSec = nsecf2(hhmmss,mmdd,nymd)
          write(tagname,'(A,I2.2)')'diagtag',n
          time4SnapShot = alarm2(tagname)
         endif
@@ -101,12 +96,54 @@ c           IF (ndiag(j).NE.-1) WRITE(0,*) myIter,j,ndiag(j),' ->',-1
        ENDIF
       ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
       _END_MASTER(myThid)
 
 C-jmc: do we need a "BARRIER" at this point ?
 c     _BARRIER
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO n = 1,diagSt_nbLists
+
+       IF ( diagSt_freq(n).LT.0. ) THEN
+C--    Select diagnostics list that uses instantaneous output
+
+        dBugFlag = debugLevel.GT.debLevB
+
+        freqSec = diagSt_freq(n)
+        phiSec = diagSt_phase(n)
+        time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
+     &                                       myTime, deltaTclock )
+
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          dBugFlag = dBugFlag.AND.(bi.EQ.1.AND.bj.EQ.1.AND.myThid.EQ.1)
+          IF ( time4SnapShot ) THEN
+C--     switch ON diagnostics of output-stream # n
+            DO m=1,diagSt_nbActv(n)
+              j = jSdiag(m,n)
+              iSp = iSdiag(j)
+              IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE. 0.) 
+     &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
+     &            j,' ',cdiag(j),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
+              qSdiag(0,0,iSp,bi,bj) = 0.
+            ENDDO
+          ELSE
+C--     switch OFF diagnostics of output-stream # n
+            DO m=1,diagSt_nbActv(n)
+              j = jSdiag(m,n)
+              iSp = iSdiag(j)
+              IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE.-1.) 
+     &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
+     &            j,' ',cdiag(j),' :',qSdiag(0,0,iSp,bi,bj),' ->',-1
+              qSdiag(0,0,iSp,bi,bj) = -1.
+            ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+
+       ENDIF
+      ENDDO
 
       RETURN
       END

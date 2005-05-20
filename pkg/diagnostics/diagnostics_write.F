@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.16 2005/05/17 00:22:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.17 2005/05/20 07:28:50 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,9 +21,6 @@ C***********************************************************************
 #include "DIAGNOSTICS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_FIZHI
-#include "chronos.h"
-#endif
 
 C     !INPUT PARAMETERS:
       _RL     myTime
@@ -39,7 +36,6 @@ c ===============
       INTEGER thisdate(4), prevdate(4)
 #endif
 #ifdef ALLOW_FIZHI
-      integer nsecf2,mmdd,hhmmss
       logical alarm2
       character *9 tagname
 #endif
@@ -65,13 +61,6 @@ C-    Determine calendar dates for this and previous time step.
         DO n = 1,nlists
           freqSec = freq(n)
           phiSec = phase(n)
-#ifdef ALLOW_FIZHI
-         if( useFIZHI) then 
-          mmdd = int(freq(n))
-          hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          freqSec = nsecf2(hhmmss,mmdd,nymd)
-         endif
-#endif
 
           IF ( freqSec.LT.0. ) THEN
 C--     write snap-shot with suffix = myIter to be consistent with 
@@ -116,18 +105,42 @@ C-    Yearly  freqSec:
           ENDIF
         ENDDO
 
+C---   Check to see IF its time for Statistics Diag. Output 
+
+        DO n = 1,diagSt_nbLists
+          freqSec = diagSt_freq(n)
+          phiSec = diagSt_phase(n)
+
+          IF ( freqSec.LT.0. ) THEN
+C--     write snap-shot with suffix = myIter to be consistent with 
+C       time-average diagnostics (e.g., freq=-1 & freq=1):
+c           wrIter = myIter
+c           wrTime = myTime
+C--     write snap-shot with suffix = myIter-1 to be consistent with
+C       state-variable time-step:
+            wrIter = myItM1
+            wrTime = myTime - deltaTclock
+          ELSE
+            wrIter = myIter
+            wrTime = myTime
+          ENDIF
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+     &                                        wrTime, deltaTclock )
+          IF ( dump2fileNow ) THEN
+            CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
+          ENDIF
+        ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-      wait for everyone before setting arrays to zero: 
         _BARRIER
+
+C--     Clear storage space:
+
         DO n = 1,nlists
           freqSec = freq(n)
           phiSec = phase(n)
-#ifdef ALLOW_FIZHI
-         if( useFIZHI) then 
-          mmdd = int(freq(n))
-          hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-          freqSec = nsecf2(hhmmss,mmdd,nymd)
-         endif
-#endif
+
           wrTime = myTime
           IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
@@ -139,6 +152,16 @@ C-      wait for everyone before setting arrays to zero:
           endif
 #endif
           IF ( dump2fileNow ) CALL CLRINDX(n,myThid)
+        ENDDO
+
+        DO n = 1,diagSt_nbLists
+          freqSec = diagSt_freq(n)
+          phiSec = diagSt_phase(n)
+          wrTime = myTime
+          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+     &                                        wrTime, deltaTclock )
+          IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR(n,myThid)
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

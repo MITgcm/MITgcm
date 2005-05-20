@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.7 2005/05/19 02:29:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.8 2005/05/20 07:28:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -62,7 +62,7 @@ C     !LOCAL VARIABLES:
 C ===============
       INTEGER m, n, j
       INTEGER ndiagnum, ipointer, iSp, jSd
-c     INTEGER region2fill(0:nRegions)
+      INTEGER region2fill(0:nRegions)
 
 C--   2D/3D Diagnostics :
 C Run through list of active diagnostics to make sure
@@ -86,6 +86,40 @@ C if we are a valid and an active diagnostic, do the filling:
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Global/Regional Statistics :
+
+C Run through list of active statistics-diagnostics to make sure
+C we are trying to compute & fill a valid diagnostic
+
+      ndiagnum = 0
+      iSp = 0
+      DO n=1,diagSt_nbLists
+       DO m=1,diagSt_nbActv(n)
+        IF ( chardiag.EQ.diagSt_Flds(m,n) ) THEN
+         jSd = jSdiag(m,n)
+         iSp = iSdiag(jSd)
+         IF ( iSp.NE.0 ) THEN
+           IF (qSdiag(0,0,iSp,1,1).LT.0.) iSp = 0
+         ENDIF 
+         IF ( ndiagnum.EQ.0 ) THEN
+           DO j=0,nRegions
+            region2fill(j) = diagSt_region(j,n)
+           ENDDO
+         ELSE
+           DO j=0,nRegions
+            region2fill(j) = MAX( region2fill(j), diagSt_region(j,n) )
+           ENDDO
+         ENDIF
+         ndiagnum = jSd
+        ENDIF
+       ENDDO
+      ENDDO
+
+C if we are a valid and an active diagnostic, do the filling:
+      IF ( iSp.NE.0 ) THEN
+        CALL DIAGSTATS_FILL( inpfld, ndiagnum, iSp, region2fill,
+     I                kLev, nLevs, bibjflg, biArg, bjArg, myThid ) 
+      ENDIF
 
       RETURN 
       END

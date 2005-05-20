@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_is_on.F,v 1.1 2005/05/19 01:18:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_is_on.F,v 1.2 2005/05/20 07:28:50 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,8 +33,11 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER j,n,m
+      INTEGER iSp
 
       DIAGNOSTICS_IS_ON = .FALSE.
+
+C-    search for this diag. in the active 2D/3D diagnostics list
       DO n=1,nlists
        DO m=1,nActive(n)
         IF ( diagName.EQ.flds(m,n) ) THEN
@@ -44,6 +47,22 @@ C     !LOCAL VARIABLES:
         ENDIF
        ENDDO
       ENDDO
+
+      IF ( .NOT.DIAGNOSTICS_IS_ON ) THEN
+C-    search for this diag. in the active statistics-diagnostics list
+       DO n=1,diagSt_nbLists
+        DO m=1,diagSt_nbActv(n)
+          IF ( diagName.EQ.diagSt_Flds(m,n) ) THEN
+            j = jSdiag(m,n)
+            iSp = iSdiag(j)
+            IF ( iSp.NE.0 ) THEN
+              IF (qSdiag(0,0,iSp,1,1).LT.0.) iSp = 0
+            ENDIF
+            IF ( iSp.NE.0 ) DIAGNOSTICS_IS_ON = .TRUE.
+          ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
 
       RETURN
       END
