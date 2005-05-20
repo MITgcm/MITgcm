@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.36 2005/05/20 23:30:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.37 2005/05/20 23:50:52 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -211,7 +211,7 @@ c ------------------------------
 C Comment this out for now 
 
 c     call gwdrag (myid,p,pl,ple,dpres,pkl,u,v,t,q,phis_var,
-c    .   turbu,turbv,turbt,im,jm,lm,istrip,npcs,imglobal)
+c    .   turbu,turbv,turbt,im,jm,lm,bi,bj,istrip,npcs,imglobal)
 
 c Add Rayleigh Friction Damping Above 70 Km
 c -----------------------------------------
