@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.3 2005/02/23 16:30:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.4 2005/05/20 07:17:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -124,8 +124,10 @@ C         Read the ndiag() array
      &         4,5, myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
      &         'diagnostics state',myThid)
-          CALL MNC_CW_RL_R('I',diag_mnc_bn,0,0,
-     &         d_cw_name, ndiag, myThid)
+C- jmc: get warnings when I compile this S/R because something is not right
+C       in the type or one or more arguments. commented out for now 
+c         CALL MNC_CW_RL_R('I',diag_mnc_bn,0,0,
+c    &         d_cw_name, ndiag, myThid)
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
           CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
