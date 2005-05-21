@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.7 2004/12/14 19:56:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.8 2005/05/21 23:50:13 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -35,12 +35,6 @@ C **********************************************************************
 
       implicit none
 
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
-
       integer myid,im,jm,lm,bi,bj
       _RL zsurf(im,jm),pres(im,jm,lm),pkap(im,jm,lm)
       _RL pekap(im,jm,lm+1)
@@ -52,6 +46,11 @@ C **********************************************************************
       _RL z(im,jm,lm)
       _RL dz(im,jm,lm)
       _RL cpog, cpinv, virtcon, getcon, dampcoef
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+      _RL tmpdiag(im,jm)
+#endif
 
 C **********************************************************************
 C ****   APPLY RAYLEIGH FRICTION TO WIND (INCLUDE HEATING)           ***
@@ -99,41 +98,35 @@ C **********************************************************************
 
 #ifdef ALLOW_DIAGNOSTICS
       do L=1,lm
-       if( irfu.ne.0 ) then
+
+      if(diagnostics_is_on('RFU     ',myid) ) then
        do j=1,jm
        do i=1,im
-        qdiag(i,j,irfu+L-1,bi,bj) = qdiag(i,j,irfu+L-1,bi,bj) + 
-     .                  rfu(i,j,L)*86400
+        tmpdiag(i,j) = rfu(i,j,L)*86400
        enddo
        enddo
-       endif
-
-       if( irfv.ne.0 ) then
-       do j=1,jm
-       do i=1,im
-        qdiag(i,j,irfv+L-1,bi,bj) = qdiag(i,j,irfv+L-1,bi,bj) + 
-     .                  rfv(i,j,L)*86400
-       enddo
-       enddo
-       endif
-
-       if( irft.ne.0 ) then
-       do j=1,jm
-       do i=1,im
-        qdiag(i,j,irft+L-1,bi,bj) = qdiag(i,j,irft+L-1,bi,bj) + 
-     .                  rft(i,j,L)*86400
-       enddo
-       enddo
-       endif
-      enddo
-#endif
-
-#ifdef ALLOW_DIAGNOSTICS
-      if( (bi.eq.1) .and. (bj.eq.1) ) then
-       nrfu = nrfu + 1
-       nrfv = nrfv + 1
-       nrft = nrft + 1
+       call diagnostics_fill(tmpdiag,'RFU     ',L,1,3,bi,bj,myid)
       endif
+
+      if(diagnostics_is_on('RFV     ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = rfv(i,j,L)*86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'RFV     ',L,1,3,bi,bj,myid)
+      endif
+
+      if(diagnostics_is_on('RFT     ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = rft(i,j,L)*86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'RFT     ',L,1,3,bi,bj,myid)
+      endif
+
+      enddo
 #endif
 
       return

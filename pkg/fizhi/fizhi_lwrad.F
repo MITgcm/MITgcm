@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.22 2005/05/16 18:50:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.23 2005/05/21 23:50:13 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,low_level,mid_level,
+      subroutine lwrio (nymd,nhms,bi,bj,myid,istrip,npcs,
+     .                  low_level,mid_level,
      .                  im,jm,lm,
      .                  pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,
      .                  co2,cfc11,cfc12,cfc22,methane,n2o,emissivity,
@@ -12,15 +13,10 @@ C $Name:  $
      .                  lpnt,imstturb,qliqave,fccave,landtype)
 
       implicit none
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
 
 c Input Variables
 c ---------------
-      integer nymd,nhms,istrip,npcs,bi,bj
+      integer nymd,nhms,istrip,npcs,bi,bj,myid
       integer mid_level,low_level
       integer im,jm,lm        
       _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1)
@@ -75,6 +71,11 @@ c ---------------
       _RL tempor1(im,jm),tempor2(im,jm)
 
       _RL getcon,secday,convrt
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+      _RL tmpdiag(im,jm)
+#endif
 
       logical high,  trace, cldwater
 c     data high /.true./
@@ -275,79 +276,54 @@ C **********************************************************************
 C ****                     BUMP DIAGNOSTICS                         ****
 C **********************************************************************
 
-      if(itgrlw.ne.0) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,itgrlw,bi,bj) = qdiag(i,j,itgrlw,bi,bj) + tgz(i,j)
-      enddo
-      enddo
+#ifdef ALLOW_DIAGNOSTICS
+      if(diagnostics_is_on('TGRLW   ',myid) ) then
+       call diagnostics_fill(tgz,'TGRLW   ',0,1,3,bi,bj,myid)
       endif
 
-      if (itlw.ne.0) then
       do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,itlw+L-1,bi,bj) = qdiag(i,j,itlw+L-1,bi,bj) + 
-     .                                             tz(i,j,L)*pkz(i,j,L)
+
+       if(diagnostics_is_on('TLW     ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = tz(i,j,L)*pkz(i,j,L)
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TLW     ',L,1,3,bi,bj,myid)
+       endif
+
+       if(diagnostics_is_on('SHRAD   ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = qz(i,j,L)*1000.
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'SHRAD   ',L,1,3,bi,bj,myid)
+       endif
+
+       if(diagnostics_is_on('OZLW    ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = oz(i,j,L)
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'OZLW    ',L,1,3,bi,bj,myid)
+       endif
+
       enddo
-      enddo
-      enddo
+
+      if(diagnostics_is_on('OLR     ',myid) ) then
+       call diagnostics_fill(tempor1,'OLR     ',0,1,3,bi,bj,myid)
       endif
 
-      if (ishrad.ne.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,ishrad+L-1,bi,bj) = qdiag(i,j,ishrad+L-1,bi,bj) + 
-     .                                             qz(i,j,L)*1000
-      enddo
-      enddo
-      enddo
+      if(diagnostics_is_on('OLRCLR  ',myid) ) then
+       call diagnostics_fill(tempor2,'OLRCLR  ',0,1,3,bi,bj,myid)
       endif
-
-      if (iozlw.ne.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,iozlw+L-1,bi,bj) = qdiag(i,j,iozlw+L-1,bi,bj) + 
-     .                                             oz(i,j,L)
-      enddo
-      enddo
-      enddo
-      endif
-
-      if (iolr.ne.0) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,iolr,bi,bj) = qdiag(i,j,iolr,bi,bj) + tempor1(i,j)
-      enddo
-      enddo
-      endif
-
-      if (iolrclr.ne.0) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,iolrclr,bi,bj) = qdiag(i,j,iolrclr,bi,bj) + tempor2(i,j)
-      enddo
-      enddo
-      endif
+#endif
 
 C **********************************************************************
 C ****    Increment Diagnostics Counters and Zero-Out Cloud Info    ****
 C **********************************************************************
-
-#ifdef ALLOW_DIAGNOSTICS
-      if ( (bi.eq.1) .and. (bj.eq.1) ) then
-      ntlw     = ntlw     + 1
-      nshrad   = nshrad   + 1
-      nozlw    = nozlw    + 1
-      ntgrlw   = ntgrlw   + 1
-      nolr     = nolr     + 1
-      nolrclr  = nolrclr  + 1
-
-c     nudiag4  = nudiag4  + 1
-      endif
-#endif
 
       nlwlz    = 0
       nlwcld   = 0

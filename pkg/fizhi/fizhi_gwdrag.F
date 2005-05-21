@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.1 2005/05/20 23:50:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.2 2005/05/21 23:50:13 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -38,52 +38,51 @@ C
 C***********************************************************************
       implicit none
 
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
-
 c Input Variables
 c ---------------
       integer myid,im,jm,lm,bi,bj,istrip,npcs,imglobal
-      real pz(im,jm)
-      real pl(im,jm,lm)
-      real ple(im,jm,lm+1)
-      real dpres(im,jm,lm)
-      real pkz(im,jm,lm)
-      real uz(im,jm,lm)
-      real vz(im,jm,lm)
-      real tz(im,jm,lm)
-      real qz(im,jm,lm)
-      real phis_var(im,jm)
+      _RL pz(im,jm)
+      _RL pl(im,jm,lm)
+      _RL ple(im,jm,lm+1)
+      _RL dpres(im,jm,lm)
+      _RL pkz(im,jm,lm)
+      _RL uz(im,jm,lm)
+      _RL vz(im,jm,lm)
+      _RL tz(im,jm,lm)
+      _RL qz(im,jm,lm)
+      _RL phis_var(im,jm)
 
-      real dudt(im,jm,lm)
-      real dvdt(im,jm,lm)
-      real dtdt(im,jm,lm)
+      _RL dudt(im,jm,lm)
+      _RL dvdt(im,jm,lm)
+      _RL dtdt(im,jm,lm)
 
 c Local Variables
 c ---------------
-      real tv(im,jm,lm)
-      real dragu(im,jm,lm), dragv(im,jm,lm)
-      real dragt(im,jm,lm) 
-      real dragx(im,jm), dragy(im,jm)
-      real sumu(im,jm)
+      _RL tv(im,jm,lm)
+      _RL dragu(im,jm,lm), dragv(im,jm,lm)
+      _RL dragt(im,jm,lm) 
+      _RL dragx(im,jm), dragy(im,jm)
+      _RL sumu(im,jm)
       integer nthin(im,jm),nbase(im,jm)
       integer nthini, nbasei
 
-      real phis_std(im,jm)
+      _RL phis_std(im,jm)
 
-      real std(istrip), ps(istrip)
-      real us(istrip,lm), vs(istrip,lm), ts(istrip,lm)
-      real dragus(istrip,lm), dragvs(istrip,lm) 
-      real dragxs(istrip), dragys(istrip)
-      real plstr(istrip,lm),plestr(istrip,lm),dpresstr(istrip,lm)
+      _RL std(istrip), ps(istrip)
+      _RL us(istrip,lm), vs(istrip,lm), ts(istrip,lm)
+      _RL dragus(istrip,lm), dragvs(istrip,lm) 
+      _RL dragxs(istrip), dragys(istrip)
+      _RL plstr(istrip,lm),plestr(istrip,lm),dpresstr(istrip,lm)
       integer nthinstr(istrip),nbasestr(istrip)
 
       integer n,i,j,L
-      real    getcon, pi
-      real    grav, rgas, cp, cpinv, lstar
+      _RL getcon, pi
+      _RL grav, rgas, cp, cpinv, lstar
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+      _RL tmpdiag(im,jm)
+#endif
 
 c Initialization
 c --------------
@@ -185,58 +184,53 @@ c --------------------------------------------------
 
 c Compute Diagnostics
 c -------------------
-      if( igwdu.ne.0 .or. igwdv.ne.0 .or. igwdt.ne.0 ) then
+#ifdef ALLOW_DIAGNOSTICS
       do L = 1,lm
-       if( igwdu.ne.0 ) then
-        do j = 1,jm
-        do i = 1,im
-        qdiag(i,j,igwdu+L-1,bi,bj) = qdiag(i,j,igwdu+L-1,bi,bj) + 
-     .                                         dragu(i,j,L)*86400
-        enddo
-        enddo
-       endif
-       if( igwdv.ne.0 ) then
-        do j = 1,jm
-        do i = 1,im
-        qdiag(i,j,igwdv+L-1,bi,bj) = qdiag(i,j,igwdv+L-1,bi,bj) + 
-     .                                         dragv(i,j,L)*86400
-        enddo
-        enddo
-       endif
-       if( igwdt.ne.0 ) then
-        do j = 1,jm
-        do i = 1,im
-        qdiag(i,j,igwdt+L-1,bi,bj) = qdiag(i,j,igwdt+L-1,bi,bj) + 
-     .                                         dragt(i,j,L)*86400
-        enddo
-        enddo
-       endif
-      enddo
+
+      if(diagnostics_is_on('GWDU    ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = dragu(i,j,L)*86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'GWDU    ',L,1,3,bi,bj,myid)
       endif
+
+      if(diagnostics_is_on('GWDV    ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = dragv(i,j,L)*86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'GWDV    ',L,1,3,bi,bj,myid)
+      endif
+
+      if(diagnostics_is_on('GWDT    ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = dragt(i,j,L)*86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'GWDT    ',L,1,3,bi,bj,myid)
+      endif
+
+      enddo
 
 c Gravity Wave Drag at Surface (U-Wind)
 c -------------------------------------
-      if( igwdus.ne.0 ) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,igwdus,bi,bj) = qdiag(i,j,igwdus,bi,bj) + dragx(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('GWDUS   ',myid) ) then
+       call diagnostics_fill(dragx,'GWDUS   ',0,1,3,bi,bj,myid)
       endif
 
 c Gravity Wave Drag at Surface (V-Wind)
 c -------------------------------------
-      if( igwdvs.ne.0 ) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,igwdvs,bi,bj) = qdiag(i,j,igwdvs,bi,bj) + dragy(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('GWDVS   ',myid) ) then
+       call diagnostics_fill(dragy,'GWDVS   ',0,1,3,bi,bj,myid)
       endif
 
 c Gravity Wave Drag at Model Top (U-Wind)
 c ---------------------------------------
-      if( igwdut.ne.0 ) then
+      if(diagnostics_is_on('GWDUT   ',myid) ) then
       do j = 1,jm
       do i = 1,im
       sumu(i,j) = 0.0
@@ -249,17 +243,17 @@ c ---------------------------------------
       enddo
       enddo
       enddo
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,igwdut,bi,bj) = qdiag(i,j,igwdut,bi,bj) + dragx(i,j)
-     .                  + sumu(i,j)*pz(i,j)/grav*100
-      enddo
-      enddo
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = dragx(i,j) + sumu(i,j)*pz(i,j)/grav*100
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'GWDUT   ',0,1,3,bi,bj,myid)
       endif
 
 c Gravity Wave Drag at Model Top (V-Wind)
 c ---------------------------------------
-      if( igwdvt.ne.0 ) then
+      if(diagnostics_is_on('GWDVT   ',myid) ) then
       do j = 1,jm
       do i = 1,im
       sumu(i,j) = 0.0
@@ -272,21 +266,14 @@ c ---------------------------------------
       enddo
       enddo
       enddo
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,igwdvt,bi,bj) = qdiag(i,j,igwdvt,bi,bj) + dragy(i,j)
-     .                  + sumu(i,j)*pz(i,j)/grav*100
-      enddo
-      enddo
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = dragy(i,j) + sumu(i,j)*pz(i,j)/grav*100
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'GWDVT   ',0,1,3,bi,bj,myid)
       endif
-
-      ngwdu  = ngwdu  + 1
-      ngwdv  = ngwdv  + 1
-      ngwdt  = ngwdt  + 1
-      ngwdus = ngwdus + 1
-      ngwdvs = ngwdvs + 1
-      ngwdut = ngwdut + 1
-      ngwdvt = ngwdvt + 1
+#endif
 
       return
       end
@@ -331,38 +318,38 @@ C***********************************************************************
 c Input Variables
 c ---------------
       integer irun,lm
-      real ps(irun)
-      real u(irun,lm), v(irun,lm), t(irun,lm)
-      real dudt(irun,lm), dvdt(irun,lm)
-      real xdrag(irun), ydrag(irun)
-      real std(irun)
-      real ple(irun,lm+1), pl(irun,lm), dpres(irun,lm)
-      real grav, rgas, cp
+      _RL ps(irun)
+      _RL u(irun,lm), v(irun,lm), t(irun,lm)
+      _RL dudt(irun,lm), dvdt(irun,lm)
+      _RL xdrag(irun), ydrag(irun)
+      _RL std(irun)
+      _RL ple(irun,lm+1), pl(irun,lm), dpres(irun,lm)
+      _RL grav, rgas, cp
       integer nthin(irun),nbase(irun)
-      real lstar
+      _RL lstar
 
 c Dynamic Allocation Variables
 c ----------------------------
-      real ubar(irun), vbar(irun), robar(irun)
-      real speed(irun), ang(irun)
-      real bv(irun,lm)
-      real nbar(irun)
+      _RL ubar(irun), vbar(irun), robar(irun)
+      _RL speed(irun), ang(irun)
+      _RL bv(irun,lm)
+      _RL nbar(irun)
 
-      real tstd(irun)
-      real XTENS(irun,lm+1), YTENS(irun,lm+1)
-      real TENSIO(irun,lm+1)
-      real DRAGSF(irun)
-      real RO(irun,lm), DZ(irun,lm)
+      _RL tstd(irun)
+      _RL XTENS(irun,lm+1), YTENS(irun,lm+1)
+      _RL TENSIO(irun,lm+1)
+      _RL DRAGSF(irun)
+      _RL RO(irun,lm), DZ(irun,lm)
 
       integer icrilv(irun)
 
 c Local Variables
 c ---------------
       integer  i,l
-      real a,g,stdmax,agrav,akwnmb
-      real gocp,roave,roiave,frsf,gstar,vai1,vai2
-      real vaisd,velco,deluu,delvv,delve2,delz,vsqua
-      real richsn,crifro,crif2,fro2,coef
+      _RL a,g,stdmax,agrav,akwnmb
+      _RL gocp,roave,roiave,frsf,gstar,vai1,vai2
+      _RL vaisd,velco,deluu,delvv,delve2,delz,vsqua
+      _RL richsn,crifro,crif2,fro2,coef
 
 c Initialization
 c --------------

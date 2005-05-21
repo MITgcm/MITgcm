@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.37 2005/05/20 23:50:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.38 2005/05/21 23:50:13 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -179,7 +179,7 @@ c --------------------------------
       enddo
       enddo
 
-      call lwrio ( nymd,nhms,bi,bj,istrip,npcs,
+      call lwrio ( nymd,nhms,bi,bj,myid,istrip,npcs,
      .   low_level,mid_level,im,jm,lm,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,

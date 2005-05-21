@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.31 2005/03/11 14:47:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.32 2005/05/21 23:50:13 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -13,12 +13,6 @@ C $Name:  $
      .   lpnt,myid)
 
        implicit none
-
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
 
 c Input Variables
 c ---------------
@@ -147,6 +141,12 @@ c ---------------
       _RL rkappa,p0kappa,p0kinv,ptopkap,pcheck
       _RL tice,getcon,pi
       integer ntracer,ntracedim, ntracex
+
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+      _RL tmpdiag(im,jm),tmpdiag2(im,jm)
+#endif
  
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
@@ -606,12 +606,10 @@ C     And now paste some arrays for filling diagnostics
 C (use pkegather to hold detrainment and tmpgather for cloud mass flux)
 C **********************************************************************
 
-      if(icldmas .gt.0) call paste( cldmas,tmpgather,istrip,im*jm,lm,NN)
-      if(idtrain .gt.0) call paste(detrain,pkegather,istrip,im*jm,lm,NN)
-      if(ipsubcld.gt.0) then 
+      call paste( cldmas,tmpgather,istrip,im*jm,lm,NN)
+      call paste(detrain,pkegather,istrip,im*jm,lm,NN)
       call paste(psubcld    ,psubcldg ,istrip,im*jm,1,NN)
       call paste(psubcld_cnt,psubcldgc,istrip,im*jm,1,NN)
-      endif
 
 C *********************************************************************
 C ****         RE-EVAPORATION OF PENETRATING CONVECTIVE RAIN       ****
@@ -651,19 +649,15 @@ C **********************************************************************
 
 C Paste rain evap tendencies into arrays for diagnostic output
 c ------------------------------------------------------------
-       if(idtls.gt.0)then
        DO I =1,ISTRIP
         TMP1(I,L) = ((TL(I,L)/PLK(I,L))-saveth(i,l))*plk(i,l)*sday*tminv
        ENDDO
        call paste(tmp1(1,L),deltrnev(1,L),istrip,im*jm,1,NN)
-       endif
 
-       if(idqls.gt.0)then
        DO I =1,ISTRIP
         TMP1(I,L) = (SHL(I,L)-saveq(I,L)) * 1000. * sday * tminv
        ENDDO
        call paste(tmp1(1,L),delqrnev(1,L),istrip,im*jm,1,NN)
-       endif
 
       ENDDO
 
@@ -737,10 +731,7 @@ c-------------------------------------------------------
       CALL paste (tmp1(1,1), lsp_new,ISTRIP,im*jm,1,NN)
       CALL paste (tmp1(1,2),conv_new,ISTRIP,im*jm,1,NN)
       CALL paste (tmp1(1,3),snow_new,ISTRIP,im*jm,1,NN)
-
-      if(iprecon.gt.0) then
       CALL paste (pcnet,raincgath,ISTRIP,im*jm,1,NN)
-      endif
 
 C *********************************************************************
 C ****               End Major Stripped Region                     ****
@@ -753,17 +744,12 @@ c ---------------------------------------------
       call back2grd ( lsp_new,pblindex, lsp_new,im*jm)
       call back2grd (conv_new,pblindex,conv_new,im*jm)
       call back2grd (snow_new,pblindex,snow_new,im*jm)
-
-      if(iprecon.gt.0) then
       call back2grd (raincgath,pblindex,raincgath,im*jm)
-      endif
 
 c Subcloud Layer Pressure
 c -----------------------
-      if(ipsubcld.gt.0) then
       call back2grd (psubcldg ,pblindex,psubcldg ,im*jm)
       call back2grd (psubcldgc,pblindex,psubcldgc,im*jm)
-      endif
 
       do L = 1,lm
 C Delta theta,q, convective, max and ls clouds
@@ -777,15 +763,15 @@ c --------------------------------------------
 
 C Diagnostics:
 c ------------
-       if(icldmas.gt.0)call back2grd(tmpgather(1,L),pblindex,
+       call back2grd(tmpgather(1,L),pblindex,
      .                                            tmpgather(1,L),im*jm)
-       if(idtrain.gt.0)call back2grd(pkegather(1,L),pblindex,
+       call back2grd(pkegather(1,L),pblindex,
      .                                            pkegather(1,L),im*jm)
-       if(idtls.gt.0)call back2grd(deltrnev(1,L),pblindex,
+       call back2grd(deltrnev(1,L),pblindex,
      .                                             deltrnev(1,L),im*jm)
-       if(idqls.gt.0)call back2grd(delqrnev(1,L),pblindex,
+       call back2grd(delqrnev(1,L),pblindex,
      .                                             delqrnev(1,L),im*jm)
-       if(icldnp.gt.0)call back2grd(cldsr(1,1,L),pblindex,
+       call back2grd(cldsr(1,1,L),pblindex,
      .                                              cldsr(1,1,L),im*jm)
       enddo
 
@@ -831,141 +817,137 @@ C **********************************************************************
 C                          BUMP DIAGNOSTICS
 C **********************************************************************
 
+#ifdef ALLOW_DIAGNOSTICS
 
 c Sub-Cloud Layer
 c -------------------------
-      if( ipsubcld.ne.0 ) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,ipsubcld,bi,bj) = qdiag(i,j,ipsubcld,bi,bj) + 
-     .                                           psubcldg (i,j)
-      qdiag(i,j,ipsubcldc,bi,bj) = qdiag(i,j,ipsubcldc,bi,bj) + 
-     .                                           psubcldgc(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('PSUBCLD ',myid) .and.
+     .                 diagnostics_is_on('PSUBCLDC',myid) ) then
+       call diagnostics_fill(psubcldg,'PSUBCLD ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(psubcldgc,'PSUBCLDC',0,1,3,bi,bj,myid)
       endif
- 
+
 c Non-Precipitating Cloud Fraction
 c --------------------------------
-      if( icldnp.ne.0 ) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,icldnp+L-1,bi,bj) = qdiag(i,j,icldnp+L-1,bi,bj) + 
-     .                                                  cldsr(i,j,L)
+      if(diagnostics_is_on('CLDNP   ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = cldsr(i,j,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDNP   ',L,1,3,bi,bj,myid)
       enddo
-      enddo
-      enddo
-      ncldnp = ncldnp + 1
       endif
 
 c Moist Processes Heating Rate
 c ----------------------------
-      if(imoistt.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,imoistt+L-1,bi,bj) = qdiag(i,j,imoistt+L-1,bi,bj) + 
-     .    (dtmoist(i,j,L)*sday*pkzgather(indgath,L)/pz(i,j))
-      enddo
-      enddo
+      if(diagnostics_is_on('MOISTT  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j)=(dtmoist(i,j,L)*sday*pkzgather(indgath,L)/pz(i,j))
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'MOISTT  ',L,1,3,bi,bj,myid)
       enddo
       endif
 
 c Moist Processes Moistening Rate
 c -------------------------------
-      if(imoistq.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,imoistq+L-1,bi,bj) = qdiag(i,j,imoistq+L-1,bi,bj) + 
-     .                           (dqmoist(i,j,L,1)*sday*1000.0/pz(i,j))
-      enddo
-      enddo
+      if(diagnostics_is_on('MOISTQ  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j)=(dqmoist(i,j,L,1)*sday*1000./pz(i,j))
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'MOISTQ  ',L,1,3,bi,bj,myid)
       enddo
       endif
 
 c Cloud Mass Flux
 c ---------------
-      if(icldmas.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,icldmas+L-1,bi,bj) = qdiag(i,j,icldmas+L-1,bi,bj) + 
-     .                               tmpgather(indgath,L)
-      enddo
-      enddo
-      enddo
+      if(diagnostics_is_on('CLDMAS  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j)=tmpgather(indgath,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDMAS  ',L,1,3,bi,bj,myid)
+       enddo
       endif
 
 c Detrained Cloud Mass Flux
 c -------------------------
-      if(idtrain.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,idtrain+L-1,bi,bj) = qdiag(i,j,idtrain+L-1,bi,bj) + 
-     .                                pkegather(indgath,L)
-      enddo
-      enddo
-      enddo
+      if(diagnostics_is_on('DTRAIN  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j)=pkegather(indgath,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DTRAIN  ',L,1,3,bi,bj,myid)
+       enddo
       endif
 
 c Grid-Scale Condensational Heating Rate
 c --------------------------------------
-      if(idtls.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,idtls+L-1,bi,bj) = qdiag(i,j,idtls+L-1,bi,bj) + 
-     .                               deltrnev(indgath,L)
-      enddo
-      enddo
-      enddo
+      if(diagnostics_is_on('DTLS    ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j)=deltrnev(indgath,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DTLS    ',L,1,3,bi,bj,myid)
+       enddo
       endif
 
 c Grid-Scale Condensational Moistening Rate
 c -----------------------------------------
-      if(idqls.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,idqls+L-1,bi,bj) = qdiag(i,j,idqls+L-1,bi,bj) + 
-     .                                delqrnev(indgath,L)
-      enddo
-      enddo
-      enddo
+      if(diagnostics_is_on('DQLS    ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j)=delqrnev(indgath,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DQLS    ',L,1,3,bi,bj,myid)
+       enddo
       endif
 
 c Total Precipitation
 c -------------------
-      if(ipreacc.gt.0) then
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,ipreacc,bi,bj) = qdiag(i,j,ipreacc,bi,bj)
-     .                   +  (  lsp_new(I,j)
-     .                      + snow_new(I,j)
-     .                      + conv_new(i,j) ) *sday*tminv
-      enddo
-      enddo
+      if(diagnostics_is_on('PREACC  ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = (lsp_new(I,j) + snow_new(I,j) + conv_new(i,j)) 
+     .                                                    *sday*tminv
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'PREACC  ',L,1,3,bi,bj,myid)
       endif
 
 c Convective Precipitation
 c ------------------------
-      if(iprecon.gt.0) then
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,iprecon,bi,bj) = qdiag(i,j,iprecon,bi,bj) + 
-     .                      raincgath(indgath)*sday*tminv
-      enddo
-      enddo
+      if(diagnostics_is_on('PRECON  ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        indgath = (j-1)*im + i
+        tmpdiag(i,j) = raincgath(indgath)*sday*tminv
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'PRECON  ',L,1,3,bi,bj,myid)
       endif
+
+#endif
 
 C **********************************************************************
 C ****   Fill Rainfall and Snowfall Arrays for Land Surface Model   ****
@@ -1081,31 +1063,42 @@ C **********************************************************************
 C ***       Fill Cloud Top Pressure and Temperature Diagnostic       ***
 C **********************************************************************
 
-      if(icldtmp.gt.0) then
-      do j = 1,jm
-      do i = 1,im
-         if( cldtmp(i,j).gt.0.0 ) then
-         qdiag(i,j,icldtmp,bi,bj) = qdiag(i,j,icldtmp,bi,bj) + 
-     .                       cldtmp(i,j)*totcld(i,j)/tmpimjm(i,j)
-         qdiag(i,j,icttcnt,bi,bj) = qdiag(i,j,icttcnt,bi,bj) + 
-     .                                                totcld(i,j)
-         endif
-      enddo
-      enddo
+#ifdef ALLOW_DIAGNOSTICS
+      if(diagnostics_is_on('CLDTMP  ',myid) .and.
+     .                 diagnostics_is_on('CTTCNT  ',myid) ) then
+       do j=1,jm
+       do i=1,im 
+        if( cldtmp(i,j).gt.0. ) then               
+         tmpdiag(i,j) = cldtmp(i,j)*totcld(i,j)/tmpimjm(i,j)
+         tmpdiag2(i,j) = totcld(i,j)
+        else
+         tmpdiag(i,j) = 0.
+         tmpdiag2(i,j) = 0.
+        endif
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDTMP  ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'CTTCNT  ',0,1,3,bi,bj,myid)
       endif
 
-      if(icldprs.gt.0) then
-      do j = 1,jm
-      do i = 1,im
-         if( cldprs(i,j).gt.0.0 ) then
-         qdiag(i,j,icldprs,bi,bj) = qdiag(i,j,icldprs,bi,bj) + 
-     .                       cldprs(i,j)*totcld(i,j)/tmpimjm(i,j)
-         qdiag(i,j,ictpcnt,bi,bj) = qdiag(i,j,ictpcnt,bi,bj) + 
-     .                                                totcld(i,j)
-         endif
-      enddo
-      enddo
+      if(diagnostics_is_on('CLDPRS  ',myid) .and.
+     .                 diagnostics_is_on('CTPCNTC ',myid) ) then
+       do j=1,jm
+       do i=1,im 
+        if( cldprs(i,j).gt.0. ) then               
+         tmpdiag(i,j) = cldprs(i,j)*totcld(i,j)/tmpimjm(i,j)
+         tmpdiag2(i,j) = totcld(i,j)
+        else
+         tmpdiag(i,j) = 0.
+         tmpdiag2(i,j) = 0.
+        endif
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDPRS  ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'CTPCNT  ',0,1,3,bi,bj,myid)
       endif
+
+#endif
    
 C **********************************************************************
 C ****                      INCREMENT COUNTERS                      ****
@@ -1117,22 +1110,6 @@ C **********************************************************************
        nlwcld   = nlwcld   + 1
        nswcld   = nswcld   + 1
 
-#ifdef ALLOW_DIAGNOSTICS
-       if( (bi.eq.1) .and. (bj.eq.1) ) then
-       nmoistt  = nmoistt  + 1
-       nmoistq  = nmoistq  + 1
-       npreacc  = npreacc  + 1
-       nprecon  = nprecon  + 1
-
-       ncldmas  = ncldmas  + 1
-       ndtrain  = ndtrain  + 1
-
-       ndtls  = ndtls  + 1
-       ndqls  = ndqls  + 1
-
-       endif
-#endif
- 
       RETURN
       END
       SUBROUTINE RAS( NN, LNG, LENC, K, NLTOP, nlayr, DT
