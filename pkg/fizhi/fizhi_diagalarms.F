@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.1 2005/05/16 23:41:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.2 2005/05/21 22:39:32 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -37,11 +37,21 @@ c -------------------
 c Set Alarm Clocks
 c ----------------
 
+C-    2D/3D field diagnostics:
       do n = 1,nlists
        write(tagname,'(A,I2.2)')'diagtag',n
        mmdd = int(freq(n))
        hhmmss = int((freq(n) - int(freq(n)))*1.e6)
-       nincr = mmdd * 1.e4 + hhmmss
+       nincr = mmdd * 1.e6 + hhmmss
+       call set_alarm(tagname,nymdb,nhmsb,nincr)
+      enddo
+
+C-    Global/Regional statistics diagnostics:
+      do n = 1,diagSt_nbLists
+       write(tagname,'(A,I2.2)')'diagStg',n
+       mmdd = int(diagSt_freq(n))
+       hhmmss = int((diagSt_freq(n) - int(diagSt_freq(n)))*1.e6)
+       nincr = mmdd * 1.e6 + hhmmss
        call set_alarm(tagname,nymdb,nhmsb,nincr)
       enddo
 
