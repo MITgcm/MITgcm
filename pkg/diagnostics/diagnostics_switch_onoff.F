@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.9 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.10 2005/05/21 22:33:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -114,6 +114,13 @@ C--    Select diagnostics list that uses instantaneous output
         phiSec = diagSt_phase(n)
         time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                       myTime, deltaTclock )
+
+#ifdef ALLOW_FIZHI
+        if( useFIZHI) then
+         write(tagname,'(A,I2.2)')'diagStg',n
+         time4SnapShot = alarm2(tagname)
+        endif
+#endif
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)

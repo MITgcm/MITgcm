@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.17 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.18 2005/05/21 22:33:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -126,6 +126,13 @@ C       state-variable time-step:
           ENDIF
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
      &                                        wrTime, deltaTclock )
+#ifdef ALLOW_FIZHI
+         if( useFIZHI) then 
+          write(tagname,'(A,I2.2)')'diagStg',n
+          dump2fileNow = alarm2(tagname)
+         endif
+#endif
+
           IF ( dump2fileNow ) THEN
             CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
           ENDIF
@@ -161,6 +168,12 @@ C--     Clear storage space:
           IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
      &                                        wrTime, deltaTclock )
+#ifdef ALLOW_FIZHI
+         if( useFIZHI) then 
+          write(tagname,'(A,I2.2)')'diagStg',n
+          dump2fileNow = alarm2(tagname)
+         endif
+#endif
           IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR(n,myThid)
         ENDDO
 
