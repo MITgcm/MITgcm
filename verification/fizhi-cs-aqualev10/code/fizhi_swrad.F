@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.1 2005/05/12 18:56:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.2 2005/05/21 23:47:17 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -12,11 +12,6 @@ C $Name:  $
      .        lpnt,imstturb,qliqave,fccave,landtype,xlats,xlons)
 
       implicit none
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
 
 c Input Variables
 c ---------------
@@ -94,6 +89,11 @@ c ---------------
       _RL tauc   (istrip,lm,2)
       _RL taua   (istrip,lm)
       _RL tstrip (istrip)
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+      _RL tmpdiag(im,jm),tmpdiag2(im,jm)
+#endif
 
       logical first
       data first /.true./
@@ -218,121 +218,78 @@ c --------------------------------------------------------------------------
       enddo
       enddo
 
+#ifdef ALLOW_DIAGNOSTICS
+
 c Compute Cloud Diagnostics
 c -------------------------
-      if(icldfrc.gt.0) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldfrc,bi,bj) =  qdiag(i,j,icldfrc,bi,bj) + totcld(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldfrc = ncldfrc + 1
+      if(diagnostics_is_on('CLDFRC  ',myid) ) then
+       call diagnostics_fill(totcld,'CLDFRC  ',0,1,3,bi,bj,myid)
       endif
 
-      if( icldras.gt.0 ) then
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldras+L-1,bi,bj) = qdiag(i,j,icldras+L-1,bi,bj) + 
-     .                                                     cswmo(i,j,L)
+      if(diagnostics_is_on('CLDRAS  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = cswmo(i,j,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDRAS  ',L,1,3,bi,bj,myid)
       enddo
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldras = ncldras + 1
       endif
 
-      if( icldtot.gt.0 ) then
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldtot+L-1,bi,bj) = qdiag(i,j,icldtot+L-1,bi,bj) + 
-     .                                                     cldtot(i,j,L)
+      if(diagnostics_is_on('CLDTOT  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = cldtot(i,j,L)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'CLDTOT  ',L,1,3,bi,bj,myid)
       enddo
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldtot = ncldtot + 1
       endif
 
-      if( icldlow.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldlow,bi,bj) = qdiag(i,j,icldlow,bi,bj) + cldlow(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldlow = ncldlow + 1
+      if(diagnostics_is_on('CLDLOW  ',myid) ) then
+       call diagnostics_fill(cldlow,'CLDLOW  ',0,1,3,bi,bj,myid)
       endif
 
-      if( icldmid.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldmid,bi,bj) = qdiag(i,j,icldmid,bi,bj) + cldmid(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldmid = ncldmid + 1
+      if(diagnostics_is_on('CLDMID  ',myid) ) then
+       call diagnostics_fill(cldmid,'CLDMID  ',0,1,3,bi,bj,myid)
       endif
 
-      if( icldhi.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,icldhi,bi,bj) = qdiag(i,j,icldhi,bi,bj) + cldhi(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldhi = ncldhi + 1
+      if(diagnostics_is_on('CLDHI   ',myid) ) then
+       call diagnostics_fill(cldhi,'CLDHI   ',0,1,3,bi,bj,myid)
       endif
 
-      if( ilzrad.gt.0 ) then
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,ilzrad+L-1,bi,bj) = qdiag(i,j,ilzrad+L-1,bi,bj) + 
-     .                                                     swlz(i,j,L)*1.0e6
-      enddo
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) nlzrad = nlzrad + 1
+      if(diagnostics_is_on('LZRAD   ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = swlz(i,j,L) * 1.0e6
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'LZRAD   ',L,1,3,bi,bj,myid)
+       enddo
       endif
 
 c Albedo Diagnostics
 c ------------------
-      if( ialbvisdr.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,ialbvisdr,bi,bj) = qdiag(i,j,ialbvisdr,bi,bj) + 
-     .                                                     albvisdr(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbvisdr = nalbvisdr + 1
+      if(diagnostics_is_on('ALBVISDR',myid) ) then
+       call diagnostics_fill(albvisdr,'ALBVISDR',0,1,3,bi,bj,myid)
       endif
 
-      if( ialbvisdf.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,ialbvisdf,bi,bj) = qdiag(i,j,ialbvisdf,bi,bj) + 
-     .                                                     albvisdf(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbvisdf = nalbvisdf + 1
+      if(diagnostics_is_on('ALBVISDF',myid) ) then
+       call diagnostics_fill(albvisdf,'ALBVISDF',0,1,3,bi,bj,myid)
       endif
 
-      if( ialbnirdr.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,ialbnirdr,bi,bj) = qdiag(i,j,ialbnirdr,bi,bj) + 
-     .                                                     albnirdr(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbnirdr = nalbnirdr + 1
+      if(diagnostics_is_on('ALBNIRDR',myid) ) then
+       call diagnostics_fill(albnirdr,'ALBNIRDR',0,1,3,bi,bj,myid)
       endif
 
-      if( ialbnirdf.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,ialbnirdf,bi,bj) = qdiag(i,j,ialbnirdf,bi,bj) + 
-     .                                                     albnirdf(i,j)
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbnirdf = nalbnirdf + 1
+      if(diagnostics_is_on('ALBNIRDF',myid) ) then
+       call diagnostics_fill(albnirdf,'ALBNIRDF',0,1,3,bi,bj,myid)
       endif
+
+#endif
 
 C Compute Optical Thicknesses and Diagnostics
 C -------------------------------------------
@@ -347,82 +304,96 @@ C -------------------------------------------
       enddo
       enddo
 
-      if( itauave.gt.0 ) then
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-      qdiag(i,j,itauave+L-1,bi,bj) = qdiag(i,j,itauave+L-1,bi,bj) + 
-     .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
+#ifdef ALLOW_DIAGNOSTICS
+      if(diagnostics_is_on('TAUAVE  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j) = tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'TAUAVE  ',L,1,3,bi,bj,myid)
       enddo
-      enddo
-      enddo
-      if ( (bi.eq.1) .and. (bj.eq.1) ) ntauave = ntauave + 1
       endif
 
-      if( itaucld.gt.0 ) then
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-       if( cldtot(i,j,L).ne.0.0 ) then
-        qdiag(i,j,itaucld +L-1,bi,bj) = qdiag(i,j,itaucld +L-1,bi,bj) + 
-     .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
-        qdiag(i,j,itaucldc+L-1,bi,bj) = 
-     .                             qdiag(i,j,itaucldc+L-1,bi,bj) + 1.0
-       endif
-      enddo
-      enddo
+      if(diagnostics_is_on('TAUCLD  ',myid) .and.
+     .                 diagnostics_is_on('TAUCLDC ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        if( cldtot(i,j,L).ne.0.0 ) then
+        tmpdiag(i,j) = tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
+        tmpdiag2(i,j) = 1.
+        else
+        tmpdiag(i,j) = 0.
+        tmpdiag2(i,j) = 0.
+        endif
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'TAUCLD  ',L,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag,'TAUCLDC ',L,1,3,bi,bj,myid)
       enddo
       endif
 
 c Compute Low, Mid, and High Cloud Optical Depth Diagnostics
 c ----------------------------------------------------------
-      if( itaulow.ne.0 ) then
+      if(diagnostics_is_on('TAULOW  ',myid) .and.
+     .                 diagnostics_is_on('TAULOWC ',myid) ) then
        do j = 1,jm
        do i = 1,im
+        taulow(i,j) =  0.0
         if( cldlow(i,j).ne.0.0 ) then
-         taulow(i,j) =  0.0
          do L = low_level,lm
           taulow(i,j) = taulow(i,j) + tau(i,j,L)
          enddo
-         qdiag(i,j,itaulow,bi,bj ) = qdiag(i,j,itaulow,bi,bj ) + 
-     .                                                    taulow(i,j)
-         qdiag(i,j,itaulowc,bi,bj) = qdiag(i,j,itaulowc,bi,bj) + 1.0
+         tmpdiag2(i,j) = 1.
+        else
+         tmpdiag(i,j) = 0.
         endif
        enddo
        enddo
+       call diagnostics_fill(taulow,'TAULOW  ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'TAULOWC ',0,1,3,bi,bj,myid)
       endif
 
-      if( itaumid.ne.0 ) then
+      if(diagnostics_is_on('TAUMID  ',myid) .and.
+     .                 diagnostics_is_on('TAUMIDC ',myid) ) then
        do j = 1,jm
        do i = 1,im
+        taumid(i,j) =  0.0
         if( cldmid(i,j).ne.0.0 ) then
-         taumid(i,j) =  0.0
          do L = mid_level,low_level+1
           taumid(i,j) = taumid(i,j) + tau(i,j,L)
          enddo
-         qdiag(i,j,itaumid,bi,bj ) = qdiag(i,j,itaumid,bi,bj ) + 
-     .                                                    taumid(i,j)
-         qdiag(i,j,itaumidc,bi,bj) = qdiag(i,j,itaumidc,bi,bj) + 1.0
+         tmpdiag2(i,j) = 1.
+        else
+         tmpdiag(i,j) = 0.
         endif
        enddo
        enddo
+       call diagnostics_fill(taumid,'TAUMID  ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'TAUMIDC ',0,1,3,bi,bj,myid)
       endif
 
-      if( itauhi.ne.0 ) then
+      if(diagnostics_is_on('TAUHI   ',myid) .and.
+     .                 diagnostics_is_on('TAUHIC  ',myid) ) then
        do j = 1,jm
        do i = 1,im
+        tauhi(i,j) =  0.0
         if( cldhi(i,j).ne.0.0 ) then
-         tauhi(i,j) =  0.0
          do L = 1,mid_level+1
           tauhi(i,j) = tauhi(i,j) + tau(i,j,L)
          enddo
-         qdiag(i,j,itauhi,bi,bj ) = qdiag(i,j,itauhi,bi,bj ) + 
-     .                                                   tauhi(i,j)
-         qdiag(i,j,itauhic,bi,bj) = qdiag(i,j,itauhic,bi,bj) + 1.0
+         tmpdiag2(i,j) = 1.
+        else
+         tmpdiag(i,j) = 0.
         endif
        enddo
        enddo
+       call diagnostics_fill(tauhi,'TAUHI   ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'TAUHIC  ',0,1,3,bi,bj,myid)
       endif
+#endif
 
 C***********************************************************************
 C ****                     LOOP OVER GLOBAL REGIONS                 ****
@@ -523,18 +494,27 @@ c ---------------------
 
  1000 CONTINUE
 
+#ifdef ALLOW_DIAGNOSTICS
+
 c Mean Albedo Diagnostic
 c ----------------------
-      if( ialbedo.gt.0 ) then
-      do j=1,jm
-      do i=1,im
-      if( albedo(i,j).ne.undef ) then
-      qdiag(i,j,ialbedo,bi,bj ) = qdiag(i,j,ialbedo,bi,bj )+albedo(i,j)
-      qdiag(i,j,ialbedoc,bi,bj) = qdiag(i,j,ialbedoc,bi,bj) + 1.0
+      if(diagnostics_is_on('ALBEDO  ',myid) .and.
+     .                 diagnostics_is_on('ALBEDOC ',myid) ) then
+       do j=1,jm
+       do i=1,im
+        if( albedo(i,j).ne.undef ) then
+         tmpdiag(i,j) = albedo(i,j)
+         tmpdiag2(i,j) = 1.
+        else
+         tmpdiag(i,j) = 0.
+         tmpdiag2(i,j) = 0.
+        endif
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'ALBEDO  ',0,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag2,'ALBEDOC ',0,1,3,bi,bj,myid)
       endif
-      enddo
-      enddo
-      endif
+#endif
 
 C **********************************************************************
 C ****                 ZERO-OUT OR BUMP COUNTERS                    ****
