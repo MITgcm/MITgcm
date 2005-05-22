@@ -11,7 +11,7 @@
 #                 for the list of all available diag. in this particular config)
 #-----------------
  &diagnostics_list
-  frequency(1) = 4500,,
+  frequency(1) = 4500.,
    levels(1,1) = 1.,
    fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
    filename(1) = 'surfDiag',
