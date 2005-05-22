@@ -108,7 +108,6 @@
  tauSaltClimRelax = 4142330.,
  tauThetaClimRelax = 0.,
  monitorFreq=1.,
- outputTypesInclusive=.TRUE.,
  forcing_In_AB = .FALSE.
  &
 
