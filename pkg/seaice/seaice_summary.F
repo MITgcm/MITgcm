@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.1 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.2 2005/05/22 02:06:07 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,6 +72,18 @@ c     == end of interface ==
      & 'SEAICE_dumpFreq   =', ' /* dump frequency */')
       CALL WRITE_0D_R8( SEAICE_taveFreq   ,INDEX_NONE,
      & 'SEAICE_taveFreq   =', ' /* time-averaging frequency */')
+      CALL WRITE_0D_L ( SEAICE_dump_mdsio,  INDEX_NONE,
+     & 'SEAICE_dump_mdsio =',' /* write snap-shot   using MDSIO */')
+      CALL WRITE_0D_L ( SEAICE_tave_mdsio,  INDEX_NONE,
+     & 'SEAICE_tave_mdsio =',' /* write TimeAverage using MDSIO */')
+c     CALL WRITE_0D_L ( SEAICE_mon_stdio,  INDEX_NONE,
+c    & 'SEAICE_mon_stdio  =',' /* write monitor to std-outp */')
+      CALL WRITE_0D_L ( SEAICE_dump_mnc,  INDEX_NONE,
+     & 'SEAICE_dump_mnc   =',' /* write snap-shot   using MNC */')
+      CALL WRITE_0D_L ( SEAICE_tave_mnc,  INDEX_NONE,
+     & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
+c     CALL WRITE_0D_L ( SEAICE_mon_mnc,  INDEX_NONE,
+c    & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
       CALL WRITE_0D_R8( SEAICE_initialHEFF,INDEX_NONE,
      & 'SEAICE_initialHEFF=', ' /* initial sea-ice thickness */')
       CALL WRITE_0D_R8( SEAICE_drag       ,INDEX_NONE,

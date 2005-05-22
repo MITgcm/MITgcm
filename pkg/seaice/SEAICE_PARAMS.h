@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.16 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.17 2005/05/22 02:06:07 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -12,13 +12,19 @@ C     SEAICEwriteState  - If true, write sea ice state to file;
 C                         default is false.
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
-C     seaice_mdsio       :: use mdsio for seaice output
-C     seaice_mnc         :: use mnc for the seaice package
+C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
+C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
+C     SEAICE_mon_stdio  :: write monitor to std-outp
+C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
+C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
+C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS
-      LOGICAL seaice_mnc, seaice_mdsio
+      LOGICAL SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio
+      LOGICAL SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS,
-     &     seaice_mnc, seaice_mdsio
+     &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
+     &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:

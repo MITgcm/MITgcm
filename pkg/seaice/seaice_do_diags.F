@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.12 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.13 2005/05/22 02:06:07 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,9 +19,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_FFIELDS.h"
 #include "SEAICE.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     == Routine arguments ==
 C     myTime        - Current time of simulation ( s )
@@ -46,7 +43,7 @@ C     == Local variables ==
      &      ) THEN
             
 #ifdef ALLOW_MNC
-           IF (useMNC .AND. seaice_mnc) THEN
+           IF (useMNC .AND. SEAICE_dump_mnc) THEN
              CALL MNC_CW_SET_UDIM('sice', -1, myThid)
              CALL MNC_CW_I_W_S('I','sice',0,0,'T', myIter, myThid)
              CALL MNC_CW_SET_UDIM('sice', 0, myThid)
@@ -61,7 +58,7 @@ C     == Local variables ==
              CALL MNC_CW_RL_W('D','sice',0,0,'Qsw',Qsw,myThid)
            ENDIF
 #endif
-           IF (seaice_mdsio) THEN
+           IF (SEAICE_dump_mdsio) THEN
              WRITE(suff,'(I10.10)') myIter
              _BARRIER
              _BEGIN_MASTER( myThid )
@@ -263,7 +260,7 @@ C      Normalize by integrated time
        ENDDO
 
 #ifdef ALLOW_MNC
-       IF (useMNC .AND. seaice_mnc) THEN
+       IF (useMNC .AND. SEAICE_tave_mnc) THEN
          CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
          CALL MNC_CW_I_W_S('I','sice_tave',0,0,'T', myIter, myThid)
          CALL MNC_CW_SET_UDIM('sice_tave', 0, myThid)
@@ -289,7 +286,7 @@ C      Normalize by integrated time
      &        'AREAtave',AREAtave,myThid)
        ENDIF
 #endif
-       IF (seaice_mdsio) THEN
+       IF (SEAICE_tave_mdsio) THEN
          WRITE(suff,'(I10.10)') myIter
          _BARRIER
          _BEGIN_MASTER( myThid )

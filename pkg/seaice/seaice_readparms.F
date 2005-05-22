@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.22 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.23 2005/05/22 02:06:08 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -16,6 +16,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE_PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_READPARMS
@@ -50,7 +53,9 @@ C--   SEAICE parameters
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
-     & SEAICE_EPS, SEAICE_EPS_SQ, seaice_mnc
+     & SEAICE_EPS, SEAICE_EPS_SQ, 
+     & SEAICE_tave_mnc
+c    & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
 
       _BEGIN_MASTER(myThid)
 
@@ -78,6 +83,15 @@ C--   set default sea ice parameters
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
+#ifdef ALLOW_MNC
+      SEAICE_tave_mnc = timeave_mnc
+      SEAICE_dump_mnc = snapshot_mnc
+      SEAICE_mon_mnc  = monitor_mnc
+#else
+      SEAICE_tave_mnc = .FALSE.
+      SEAICE_dump_mnc = .FALSE.
+      SEAICE_mon_mnc  = .FALSE.
+#endif
       SEAICE_initialHEFF = ZERO
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
@@ -97,8 +111,6 @@ C--   set default sea ice parameters
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
-      seaice_mdsio = .TRUE.
-      seaice_mnc   = .FALSE.
       uwindFile  = ' '
       vwindFile  = ' '
       atempFile  = ' '
@@ -220,15 +232,38 @@ C     yet been tried nor thought through.
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
+C-    Set Output type flags :
+      SEAICE_tave_mdsio = .TRUE.
+      SEAICE_dump_mdsio = .TRUE.
+      SEAICE_mon_stdio  = .TRUE.
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+C-------
+C-    seaice Monitor is (unfortunately) not independent from the main monitor
+C       => turn off MNC flags for now
+        SEAICE_mon_mnc  = .FALSE.
+C-    seaice snap-shot with MNC is not yet implemented
+C       => turn off MNC flags for now
+        SEAICE_dump_mnc = .FALSE.
+C-------
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. SEAICE_dump_mnc ) SEAICE_dump_mdsio = .FALSE.
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. SEAICE_mon_mnc  ) SEAICE_mon_stdio  = .FALSE.
+      ENDIF
+#endif
+
 C--   Summarise pkg/seaice cofiguration
       CALL SEAICE_SUMMARY( myThid )
 
 C     Initialize MNC variable information for SEAICE
-      IF ( (.NOT. outputTypesInclusive)
-     &     .AND. seaice_mnc ) seaice_mdsio = .FALSE.
-      IF ( useMNC .and. seaice_mnc) THEN
+      IF ( useMNC .AND. 
+     &    (seaice_tave_mnc.OR.seaice_dump_mnc.OR.SEAICE_mon_mnc)
+     &   ) THEN
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
 
-      return
-      end
+      RETURN
+      END
