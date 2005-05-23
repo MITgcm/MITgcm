@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.32 2005/05/21 23:50:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.33 2005/05/23 02:09:58 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -932,7 +932,7 @@ c -------------------
      .                                                    *sday*tminv
        enddo
        enddo
-       call diagnostics_fill(tmpdiag,'PREACC  ',L,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag,'PREACC  ',0,1,3,bi,bj,myid)
       endif
 
 c Convective Precipitation
@@ -944,7 +944,7 @@ c ------------------------
         tmpdiag(i,j) = raincgath(indgath)*sday*tminv
        enddo
        enddo
-       call diagnostics_fill(tmpdiag,'PRECON  ',L,1,3,bi,bj,myid)
+       call diagnostics_fill(tmpdiag,'PRECON  ',0,1,3,bi,bj,myid)
       endif
 
 #endif
