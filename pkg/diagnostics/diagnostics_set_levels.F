@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.7 2005/02/15 02:19:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.8 2005/05/23 02:22:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -75,12 +75,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     Diagnostic Levels
 c     -----------------
       DO n = 1,ndiagt
-        IF (gdiag(n)(10:10) .EQ. '0')  kdiag(n) = 0
-        IF (gdiag(n)(10:10) .EQ. '1')  kdiag(n) = 1
-        IF (gdiag(n)(10:10) .EQ. 'R')  kdiag(n) = Nr
-        IF (gdiag(n)(10:10) .EQ. 'L')  kdiag(n) = nlevs
-        IF (gdiag(n)(10:10) .EQ. 'M')  kdiag(n) = nlevs - 1
-        IF (gdiag(n)(10:10) .EQ. 'G')  kdiag(n) = nGroundLev
+        IF     (gdiag(n)(10:10) .EQ. '0') THEN
+          kdiag(n) = 0
+        ELSEIF (gdiag(n)(10:10) .EQ. '1') THEN
+          kdiag(n) = 1
+        ELSEIF (gdiag(n)(10:10) .EQ. 'R') THEN
+          kdiag(n) = Nr
+        ELSEIF (gdiag(n)(10:10) .EQ. 'L') THEN
+          kdiag(n) = nlevs
+        ELSEIF (gdiag(n)(10:10) .EQ. 'M') THEN
+          kdiag(n) = nlevs - 1
+        ELSEIF (gdiag(n)(10:10) .EQ. 'G') THEN
+          kdiag(n) = nGroundLev
+        ELSEIF (gdiag(n)(10:10) .NE. ' ') THEN
+C-      others: set 1 level:
+          kdiag(n) = 1
+        ENDIF
       ENDDO
 
       _BEGIN_MASTER( myThid )
@@ -164,7 +174,7 @@ C--   Check for multiple definition of the same diagnostic name
 
 C--   Check that number of levels to write (in data.diagnostics) does not
 C     exceeds max size: nlevs=max(Nr,NrPhys)
-C-  note: a better place would be in DIAGNOSTICS_CHECK but prefer to do it 
+C-  note: a better place would be in DIAGNOSTICS_CHECK but prefer to do it
 C         here where nlevs is defined.
       DO n=1,nlists
         IF ( nlevels(n).GT.nlevs ) THEN
