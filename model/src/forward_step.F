@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.116 2005/05/16 20:22:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.117 2005/05/23 19:31:39 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -653,17 +653,6 @@ C--   Do IO if needed.
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 #endif
-
-C AMM
-C  Update fizhi timekeeping
-C  WARNING: This call MUST remain AFTER do the model io 
-C            and BEFORE packages write pickup
-#ifdef ALLOW_FIZHI
-      if( useFIZHI) then
-         CALL FIZHI_UPDATE_TIME ( myIter, myThid, deltaTclock )
-      endif
-#endif
-C AMM
 
 C--   Save state for restarts
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
