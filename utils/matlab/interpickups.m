@@ -1,4 +1,5 @@
 function interpickups(dirin,dirout)
+%function interpickups(dirin,dirout)
 %This function interpolates the data in 
 %a set of mnc pickup files from the MITgcm
 %given in dirin/pickup.*.nc
@@ -150,8 +151,8 @@ Fieldout=NaN*ones(size(xcout));
 
     disp(['Interpolating Eta ...'])
     %Nearests used to eliminate Nans in non-periodic direction
-    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
     for ii=1:length(Fieldout(:))
        if isnan(Fieldout(ii))
          Fieldout(ii)=Fieldoutn(ii);
@@ -188,8 +189,8 @@ Fieldout=NaN*ones(size(xcout));
 
     disp(['Interpolating EtaH ...'])
     %Nearests used to eliminate Nans in non-periodic direction
-    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
     for ii=1:length(Fieldout(:))
        if isnan(Fieldout(ii))
          Fieldout(ii)=Fieldoutn(ii);
@@ -226,8 +227,8 @@ Fieldout=NaN*ones(size(xcout));
 
     disp(['Interpolating dEtaHdt ...'])
     %Nearests used to eliminate Nans in non-periodic direction
-    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
     for ii=1:length(Fieldout(:))
        if isnan(Fieldout(ii))
          Fieldout(ii)=Fieldoutn(ii);
@@ -267,8 +268,8 @@ for k=1:length(Z)
 
   disp(['Interpolating S level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -309,8 +310,8 @@ for k=1:length(Z)
 
   disp(['Interpolating gSnm1 level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -352,8 +353,8 @@ for k=1:length(Z)
 
   disp(['Interpolating Temp level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -394,8 +395,8 @@ for k=1:length(Z)
 
   disp(['Interpolating gTnm1 level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -440,8 +441,8 @@ if ~isempty(status)
 
     disp(['Interpolating phi_nh level=' num2str(k) '...'])
     %Nearests used to eliminate Nans in non-periodic direction
-    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest'); 
-    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'}); 
+    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
     for ii=1:length(Fieldout(:))
        if isnan(Fieldout(ii))
          Fieldout(ii)=Fieldoutn(ii);
@@ -486,8 +487,8 @@ if ~isempty(status)
 
     disp(['Interpolating gW level=' num2str(k) '...'])
     %Nearests used to eliminate Nans in non-periodic direction
-    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest'); 
-    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+    Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'}); 
+    Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
     for ii=1:length(Fieldout(:))
        if isnan(Fieldout(ii))
          Fieldout(ii)=Fieldoutn(ii);
@@ -536,8 +537,8 @@ for k=1:length(Z)
 
   disp(['Interpolating U level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -578,8 +579,8 @@ for k=1:length(Z)
 
   disp(['Interpolating gUnm1 level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -625,8 +626,8 @@ for k=1:length(Z)
 
   disp(['Interpolating V level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
@@ -667,8 +668,8 @@ for k=1:length(Z)
 
   disp(['Interpolating gVnm1 level=' num2str(k) '...'])
   %Nearests used to eliminate Nans in non-periodic direction
-  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest');
-  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear');
+  Fieldoutn=griddata(xcin,ycin,Fieldin,xcout,ycout,'nearest',{'Qt','Qbb','Qc','Qz'});
+  Fieldout=griddata(xcin,ycin,Fieldin,xcout,ycout,'linear',{'Qt','Qbb','Qc','Qz'});
   for ii=1:length(Fieldout(:))
      if isnan(Fieldout(ii))
        Fieldout(ii)=Fieldoutn(ii);
