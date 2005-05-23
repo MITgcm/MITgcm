@@ -1,7 +1,5 @@
 exf_init.f
 exf_init_runoff.f
-exf_readparms.f
-exf_summary.f
 exf_bulkformulae.f
 exf_bulkcdn.f
 exf_bulkqsat.f
@@ -17,8 +15,6 @@ exf_filter_rs.f
 exf_set_gen.f
 exf_set_obcs.f
 exf_clim_init.f
-exf_clim_readparms.f
-exf_clim_summary.f
 exf_getclim.f
 exf_set_climsalt.f
 exf_set_climtemp.f
