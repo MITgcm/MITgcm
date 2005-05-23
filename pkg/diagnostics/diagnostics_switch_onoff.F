@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.10 2005/05/21 22:33:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.11 2005/05/23 19:31:09 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -49,7 +49,7 @@ c     INTEGER newIter
       _RL     phiSec, freqSec
       LOGICAL dBugFlag
 #ifdef ALLOW_FIZHI
-      logical alarm2
+      logical alarm2,alarm2next
       character *9 tagname
 #endif
 
@@ -73,7 +73,7 @@ C--    Select diagnostics list that uses instantaneous output
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
          write(tagname,'(A,I2.2)')'diagtag',n
-         time4SnapShot = alarm2(tagname)
+         time4SnapShot = alarm2next(tagname,deltaT)
         endif
 #endif
 
