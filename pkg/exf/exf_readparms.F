@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.25 2005/02/21 05:32:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.26 2005/05/23 19:28:45 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -62,6 +62,9 @@ c     == local variables ==
 
       integer i
       integer date_array(4), difftime(4)
+      integer iUnit
+
+      character*(max_len_mbuf) msgbuf
 
 c     == end of interface ==
 
@@ -475,12 +478,23 @@ c     Check for the availability of the right calendar version.
       endif
 
 c     Next, read the forcing data file.
-      call nml_filter( 'data.exf', scrunit1, myThid )
-      if (scrunit1 .eq. 0) then
-         stop 'exf_readparms: reading namelist failed'
-      end if
-      read(  scrunit1, nml = exf_nml )
-      close( scrunit1 )
+        WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.exf', 'EXF_READPARMS',
+     O                          iUnit,
+     I                          myThid )
+
+      READ(  iUnit, nml = exf_nml )
+
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: finished reading data.exf'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                SQUEEZE_RIGHT , 1)
+
+      CLOSE( iUnit )
 
       call exf_check( mythid )
 

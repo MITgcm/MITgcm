@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.7 2004/12/03 00:43:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.8 2005/05/23 19:28:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -31,6 +31,8 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
+      character*(max_len_mbuf) msgbuf
+      integer iUnit
 
 c     == end of interface ==
 
@@ -50,12 +52,22 @@ c--     30*24*3600 = 2592000 = 1 model month
         lastinterval = 2592000.
 
 c--     Next, read the cost data file.
-        call nml_filter( 'data.cost', scrunit1, myThid )
-        if (scrunit1 .eq. 0) then
-           stop 'cost_readparms: reading namelist failed'
-        end if
-        read(  scrunit1, nml = cost_nml )
-        close( scrunit1 )
+        WRITE(msgBuf,'(A)') 'COST_READPARMS: opening data.cost'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.cost', 'COST_READPARMS',
+     O                          iUnit,
+     I                          myThid )
+
+        READ(  iUnit, nml = cost_nml )
+
+        WRITE(msgBuf,'(A)') 'COST_READPARMS: finished reading data.cost'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
+
+        CLOSE( iUnit )
 
         IF ( MOD(lastinterval,deltaTclock) .GT. 0. ) 
      &       lastinterval = MAX(

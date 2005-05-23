@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.14 2005/04/07 23:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.15 2005/05/23 19:28:45 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -45,7 +45,7 @@ c     == local variables ==
       integer i,j,k
       integer ntmp
       integer ivarindex
-
+      integer iUnit
       integer iobcs
       integer il
       integer errio
@@ -214,30 +214,25 @@ c--     Set default values.
         maskname            = ' '
         metaname            = ' '
 
-c--     Check versions.
+c--     Next, read the cost data file.
+        WRITE(msgBuf,'(A)') 'CTRL_READPARMS: opening data.ctrl'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
-        open(unit=scrunit1,status='scratch')
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.ctrl', 'CTRL_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
-c--     Next, read the ecco data file.
-        open(unit = modeldataunit,file = 'data.ctrl',
-     &       status = 'old', iostat = errio)
-        if ( errio .lt. 0 ) then
-          stop ' stopped in ctrl_readparms'
-        endif
+        READ(unit = iUnit, nml = ctrl_nml)
+        READ(unit = iUnit, nml = ctrl_packnames)
 
-        do while ( .true. )
-          read(modeldataunit, fmt='(a)', end=1001) record
-          il = max(ilnblnk(record),1)
-          if ( record(1:1) .ne. commentcharacter )
-     &        write(unit=scrunit1, fmt='(a)') record(:il)
-        enddo
- 1001   continue
-        close( modeldataunit )
+        WRITE(msgBuf,'(A)') 
+     &       'CTRL_READPARMS: finished reading data.ctrl'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
 
-        rewind( scrunit1 )
-        read(unit = scrunit1, nml = ctrl_nml)
-        read(unit = scrunit1, nml = ctrl_packnames)
-        close( scrunit1 )
+        CLOSE( iUnit )
 
       _END_MASTER( myThid )
 

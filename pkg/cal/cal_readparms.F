@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.5 2004/12/21 02:09:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.6 2005/05/23 19:28:44 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -85,7 +85,9 @@ c     Variables related to the calendar tool.
       character*(9) TheCalendar
       integer       startdate_1
       integer       startdate_2
+      integer       iUnit
 
+      character*(max_len_mbuf) msgbuf
       character*(max_len_prec) record
 
 c     == external ==
@@ -117,28 +119,23 @@ c       Initialise the calendar parameters
         open(unit=scrunit1,status='scratch')
 
 c       Next, read the calendar data file.
-        open(unit = modeldataunit,file = 'data.cal',
-     &       status = 'old', iostat = errio)
-        if ( errio .lt. 0 ) then
-          ierr = 1
-          call cal_PrintError( ierr, mythid )
-          stop ' stopped in cal_readparms.'
-        endif
+        WRITE(msgBuf,'(A)') 'CAL_READPARMS: opening data.cal'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
-        do while ( .true. )
-          read(modeldataunit, fmt='(a)', end=1001) record
-          il = max(ilnblnk(record),1)
-          if ( record(1:1) .ne. commentcharacter )
-     &        write(unit=scrunit1, fmt='(a)') record(:il)
-        enddo
- 1001   continue
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.cal', 'CAL_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
-        close( modeldataunit )
+        READ(unit = iUnit, nml = cal_nml)
 
-        rewind( scrunit1 )
-        read(unit = scrunit1, nml = cal_nml)
-        close( scrunit1 )
+        WRITE(msgBuf,'(A)') 
+     &     'CAL_READPARMS: finished reading data.cal'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                SQUEEZE_RIGHT , 1)
 
+        CLOSE( iUnit )
 
 c       Check consistency of the date specifications with the MITgcm
 c       startTime, endTime, and nTimeSteps, then set all the calendar

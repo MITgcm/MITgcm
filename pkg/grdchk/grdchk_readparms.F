@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.8 2004/03/23 19:42:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.9 2005/05/23 19:28:46 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -44,7 +44,9 @@ c     == local variables ==
 
       integer errio
       integer il
+      integer iUnit
 
+      character*(max_len_mbuf) msgbuf
       character*(max_len_prec) record
 
 c     == external ==
@@ -93,30 +95,25 @@ c--     Set default values.
         obcsglo         = 1
         recglo          = 1
 
-c--     Check versions.
 
-        open(unit=scrunit1,status='scratch')
+c       Next, read the calendar data file.
+        WRITE(msgBuf,'(A)') 'GRDCHK_READPARMS: opening data.grdchk'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
-c--     Next, read the forcing data file.
-        open(unit = modeldataunit,file = 'data.grdchk',
-     &       status = 'old', iostat = errio)
-        if ( errio .lt. 0 ) then
-          stop ' ... stopped in grdchk_readparms.'
-        endif
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.grdchk', 'GRDCHK_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
-        do while ( .true. )
-          read(modeldataunit, fmt='(a)', end=1001) record
-          il = max(ilnblnk(record),1)
-          if ( record(1:1) .ne. commentcharacter )
-     &        write(unit=scrunit1, fmt='(a)') record(:il)
-        enddo
- 1001   continue
+        READ(unit = iUnit, nml = grdchk_nml)
 
-        close( modeldataunit )
+        WRITE(msgBuf,'(A)') 
+     &     'GRDCHK_READPARMS: finished reading data.grdchk'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                SQUEEZE_RIGHT , 1)
 
-        rewind( scrunit1 )
-        read(unit = scrunit1, nml = grdchk_nml)
-        close( scrunit1 )
+        CLOSE( iUnit )
 
 c--     Summarize the gradient check's setup.
         call grdchk_Summary( mythid )

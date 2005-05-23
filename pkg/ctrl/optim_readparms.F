@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/optim_readparms.F,v 1.1 2001/07/13 13:40:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/optim_readparms.F,v 1.2 2005/05/23 19:28:45 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -37,8 +37,10 @@ c     == local variables ==
 
       integer errio
       integer il
+      integer iUnit
 
       character*(max_len_prec) record
+      character*(max_len_mbuf) msgbuf
 
 c     == external ==
 
@@ -70,29 +72,23 @@ c--     Set default values.
         eps           =  -1.e-6
         nupdate       =   0
 
-c--     Check versions.
+        WRITE(msgBuf,'(A)') 'OPTIM_READPARMS: opening data.optim'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
-        open(unit=scrunit1,status='scratch')
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.optim', 'OPTIM_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
-c--     Next, read the forcing data file.
-        open(unit = modeldataunit,file = 'data.optim',
-     &       status = 'old', iostat = errio)
-        if ( errio .lt. 0 ) then
-          stop ' stopped in optim_readparms.'
-        endif
+        READ(unit = iUnit, nml = optim)
 
-        do while ( .true. )
-          read(modeldataunit, fmt='(a)', end=1001) record
-          il = max(ilnblnk(record),1)
-          if ( record(1:1) .ne. commentcharacter )
-     &        write(unit=scrunit1, fmt='(a)') record(:il)
-        enddo
- 1001   continue
-        close( modeldataunit )
+        WRITE(msgBuf,'(A)') 
+     &       'OPTIM_READPARMS: finished reading data.optim'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
 
-        rewind( scrunit1 )
-        read(unit = scrunit1, nml = optim)
-        close( scrunit1 )
+        CLOSE( iUnit )
 
       _END_MASTER( mythid )
 

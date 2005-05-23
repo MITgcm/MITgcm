@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.8 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.9 2005/05/23 19:28:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -31,6 +31,10 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
+C     msgBuf      - Informational/error meesage buffer
+C     iUnit       - Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
 
 c     == end of interface ==
 
@@ -210,15 +214,23 @@ c--     Set default values.
         costIceEnd2           =      0
         cost_ice_flag         =      1
 
-c--     Check versions.
-
 c--     Next, read the cost data file.
-        call nml_filter( 'data.ecco', scrunit1, myThid )
-        if (scrunit1 .eq. 0) then
-           stop 'ecco_readparms: reading namelist failed'
-        end if
-        read(  scrunit1, nml = ecco_cost_nml )
-        close( scrunit1 )
+        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+        CALL OPEN_COPY_DATA_FILE(
+     I                          'data.ecco', 'ECCO_READPARMS',
+     O                          iUnit,
+     I                          myThid )
+
+        READ(  iUnit, nml = ecco_cost_nml )
+
+        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: finished reading data.ecco'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
+
+        CLOSE( iUnit )
 
 #ifdef ALLOW_CAL
 c--     Get the complete dates of the ...
