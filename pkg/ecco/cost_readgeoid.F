@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgeoid.F,v 1.1 2005/05/05 23:47:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgeoid.F,v 1.2 2005/05/23 16:11:38 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -9,7 +9,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgeoid.F,v 1.1 2005/05/05 23
      &                   )
 
 c     ==================================================================
-c     SUBROUTINE cost_geoid
+c     SUBROUTINE cost_readgeoid
 c     ==================================================================
 c
 c     o Evaluate the cost function of the geoid contribution.
@@ -27,7 +27,7 @@ c              heimbach@mit.edu 05-May-2005
 c              - debugged and restructuted
 c
 c     ==================================================================
-c     SUBROUTINE cost_geoid
+c     SUBROUTINE cost_readgeoid
 c     ==================================================================
 
       implicit none
@@ -46,6 +46,11 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) geoid_covariancefile
       integer reclength
       integer jrec
+#ifndef ALLOW_SPHERE
+c--   dummy declaration
+      integer ncshc
+      parameter ( ncshc = 1 )
+#endif
       Real*8  pinv( ncshc )
       integer mythid
 
@@ -65,6 +70,13 @@ c     == external functions ==
       external ifnblnk
 
 c     == end of interface ==
+
+#ifndef ALLOW_SPHERE
+      print *, 'WARNING: this routine assumes package sphere'
+      print *, 'enable sphere in packages.conf when using '
+      print *, 'CPP option ALLOW_EGM96_ERROR_COV'
+      STOP 'in S/R cost_readgeoid'
+#endif
 
 c--   Only the master thread is doing I/O
       _BEGIN_MASTER( mythid )
