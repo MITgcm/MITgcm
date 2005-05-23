@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.9 2005/05/23 02:15:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.10 2005/05/23 19:30:37 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -28,10 +28,12 @@ CEOP
 
 C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgBuf
-      integer ku
+      integer ku, ku2
       integer nymdbegin, nhmsbegin
       integer nymdcurrent, nhmscurrent
       real runlength
+      integer  nincr
+      integer mmdd,hhmmss,nsecf2
 
       namelist / fizhi_list / 
      .     nymdbegin, nhmsbegin,
@@ -55,10 +57,24 @@ C     Read Fizhi Namelist
       close (ku)
 
 C     Read Supplemental Ascii File with Current Time Info
-      open(10,file='datetime0',form='formatted')
-      read(10,1000)nymdcurrent,nhmscurrent
-      close (10)
+      CALL MDSFINDUNIT( ku2, myThid )
+      open(ku2,file='datetime0',form='formatted')
+      read(ku2,1000)nymdcurrent,nhmscurrent
+      close (ku2)
  1000 format(i8,2x,i6)
+
+C Change the length of the model run, ie, change ntimesteps
+C  if runlength has been set in the fizhi namelist
+
+      if(runlength.gt.0.) then
+       mmdd = int(runlength)
+       hhmmss = int((runlength - int(runlength))*1.e6)
+       nincr = nsecf2(hhmmss,mmdd,nymdcurrent)
+       ntimesteps = int(nincr/deltat)
+       WRITE(msgBuf,'(A,I8)') 
+     .         ' CHANGING NUMBER OF MODEL TIMESTEPS TO',ntimesteps
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
+      endif
 
 C     Fill chronos Common Block with Namelist and Other File Info
       nymd0 = nymdbegin

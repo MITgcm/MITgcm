@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.16 2005/05/16 23:41:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.17 2005/05/23 19:30:37 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -222,6 +222,40 @@ c      integer  mpi_comm_model,ierror
           alarm2 = (dates(n).eq.datein) .and. (times(n).eq.timein)
           else
           alarm2 = ( datein.gt.dates(n) .or.
+     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
+     .              modalarm( freqs(n),dates(n),times(n) ).eq.0
+          endif
+      endif
+      enddo
+
+      return
+      end
+
+      function alarm2next (tag,deltat)
+      implicit none
+      character*(*) tag
+      _RL deltat
+      integer datein,timein,ndt
+      integer dateminus,timeminus
+      logical alarm2next
+#include "chronos.h"
+
+      integer n,modalarm,nalarm,nalarm2,freq,date0,time0
+      modalarm(freq,date0,time0)=nalarm2(freq,datein,timein,date0,time0)
+
+      ndt = int(deltat)
+      call get_time (dateminus,timeminus)
+      datein = dateminus
+      timein = timeminus
+      call tick(datein,timein,ndt)
+
+      alarm2next = .false.
+      do n=1,ntags
+      if( tags(n).eq.tag  ) then
+          if( freqs(n).eq.0 ) then
+          alarm2next = (dates(n).eq.datein) .and. (times(n).eq.timein)
+          else
+          alarm2next = ( datein.gt.dates(n) .or.
      .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
      .              modalarm( freqs(n),dates(n),times(n) ).eq.0
           endif
