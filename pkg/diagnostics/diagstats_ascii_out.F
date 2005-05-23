@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.1 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.2 2005/05/23 01:58:27 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -62,7 +62,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO j=0,nRegions
         IF ( diagSt_region(j,listId).GE.1 ) THEN
          WRITE(nUnit,'(3A,I10,2(A,I4))') ' field : ', cdiag(ndId),
-     &     ' ; Iter =', myIter,' ; region #', j, ' ; nb.Lev =', klev   
+     &    ' ; Iter =',myIter,' ; region #',j, ' ; nb.Lev =',kdiag(ndId)
 c        WRITE(nUnit,'(5A)')       ' k |',
 c    &             ' --   Average  --  |', ' --   Std.Dev   -- |',
 c    &             ' --      min   --  |', ' --      max    -- |' 
