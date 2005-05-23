@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.8 2005/03/01 18:56:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.9 2005/05/23 02:15:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -19,6 +19,8 @@ C     !USES:
 #include "chronos.h"
 #include "fizhi_io_comms.h"
 #include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -29,16 +31,19 @@ C     !LOCAL VARIABLES:
       integer ku
       integer nymdbegin, nhmsbegin
       integer nymdcurrent, nhmscurrent
+      real runlength
 
       namelist / fizhi_list / 
-     &     nymdbegin, nhmsbegin,
-     &     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup
+     .     nymdbegin, nhmsbegin,
+     .     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup,
+     .     runlength
 
 C     Set defaults
       fizhi_mdsio_read_pickup = .TRUE.
       fizhi_mdsio_write_pickup = .TRUE.
       fizhi_mnc_write_pickup = .FALSE.
       fizhi_mnc_read_pickup = .FALSE.
+      runlength = 0.0
 
 C     Read Fizhi Namelist
       WRITE(msgBuf,'(A)') ' FIZHI_READPARMS: opening data.fizhi'
