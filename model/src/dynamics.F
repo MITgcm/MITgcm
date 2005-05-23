@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.116 2005/05/23 19:58:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.117 2005/05/23 20:49:37 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -495,10 +495,10 @@ Cml)
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
-             tmpFld(i,j) = totPhihyd(i,j,L,bi,bj)*totPhihyd(i,j,L,bi,bj)
+             tmpFld(i,j) = totPhihyd(i,j,k,bi,bj)*totPhihyd(i,j,k,bi,bj)
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(tmpFld,'PHIHYDSQ',L,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tmpFld,'PHIHYDSQ',k,1,2,bi,bj,myThid)
          ENDDO
         ENDDO
         ENDDO
