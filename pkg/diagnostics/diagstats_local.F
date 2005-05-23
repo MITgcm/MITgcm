@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.1 2005/05/20 07:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.2 2005/05/23 02:18:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -15,14 +15,14 @@ C     !INTERFACE:
      I                  myThid)
 
 C     !DESCRIPTION:
-C     Update array statFld 
+C     Update array statFld
 C     by adding statistics over the range [1:iRun],[1:jRun]
 C     from input field array inpFld
-C- note: 
+C- note:
 C   a) this S/R should not see DIAGNOSTICS pkg commons blocks (in DIAGNOSTICS.h)
 C   b) for main grid variables, get area & weigting factors (to compute global mean)
 C      from the main common blocks.
-C   c) for other type of grids, call a specifics S/R which include its own 
+C   c) for other type of grids, call a specifics S/R which include its own
 C      grid common blocks
 
 C     !USES:
@@ -33,11 +33,7 @@ C     !USES:
 #include "DIAGNOSTICS_SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SURFACE.h"
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-#include "gridalt_mapping.h"
-#endif
+c #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -86,13 +82,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       specialVal = 0.
       IF ( useFIZHI ) THEN
         exclSpVal = .TRUE.
-        specialVal = getcon('UNDEF') 
+        specialVal = getcon('UNDEF')
       ENDIF
-        
+
       DO n=0,nRegions
        IF (region2fill(n).NE.0) THEN
 C---   Compute statistics for this tile, level and region:
-       
+
 C-     case of a special region (no specific regional mask)
         IF ( n.EQ.0 ) THEN
 
@@ -104,48 +100,54 @@ C-     case of a special region (no specific regional mask)
           IF ( parsFld(9:9).EQ.'M') useWeight = .TRUE.
 
           IF     ( parsFld(2:2).EQ.'U' ) THEN
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskW(1-Olx,1-Oly,k,bi,bj),
-     I            hFacW(1-Olx,1-Oly,k,bi,bj), rAw(1-Olx,1-Oly,bi,bj), 
+     I            hFacW(1-Olx,1-Oly,k,bi,bj), rAw(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
 c    I            drLoc, k,bi,bj, parsFld, myThid )
           ELSEIF ( parsFld(2:2).EQ.'V' ) THEN
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskS(1-Olx,1-Oly,k,bi,bj),
-     I            hFacS(1-Olx,1-Oly,k,bi,bj), rAs(1-Olx,1-Oly,bi,bj), 
+     I            hFacS(1-Olx,1-Oly,k,bi,bj), rAs(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSE
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskC(1-Olx,1-Oly,k,bi,bj),
      I            hFacC(1-Olx,1-Oly,k,bi,bj), rA(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ENDIF
 
-#ifdef ALLOW_FIZHI
-c        ELSEIF ( parsFld(10:10) .EQ. 'L' ) THEN
-         ELSEIF ( parsFld(10:10) .EQ. 'M' ) THEN
-           drLoc = 1. _d 0
-           km = 1 + Nrphys - k
-           CALL  DIAGSTATS_R_CALC( 
+         ELSEIF ( useFIZHI .AND.
+     &           (parsFld(10:10).EQ.'L' .OR. parsFld(10:10).EQ.'M')
+     &          ) THEN
+           CALL  DIAGSTATS_LM_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskH(1-Olx,1-Oly,bi,bj),
-     I            dpphys(1-Olx,1-Oly,km,bi,bj), rA(1-Olx,1-Oly,bi,bj),
-     I            drLoc, specialVal, exclSpVal, useWeight, myThid )
-#endif
-#ifdef ALLOW_LAND
-c        ELSEIF ( parsFld(10:10) .EQ. 'G' ) THEN
-#endif
+     I            rA(1-Olx,1-Oly,bi,bj),
+     I            specialVal, exclSpVal,
+     I            k,bi,bj, parsFld, myThid )
+         ELSEIF ( useLand .AND.
+     &           (parsFld(10:10).EQ.'G' .OR. parsFld(10:10).EQ.'g')
+     &          ) THEN
+           CALL  DIAGSTATS_G_CALC(
+     O            statLoc,
+     I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            maskH(1-Olx,1-Oly,bi,bj),
+     I            rA(1-Olx,1-Oly,bi,bj),
+     I            specialVal, exclSpVal,
+     I            k,bi,bj, parsFld, myThid )
 c        ELSEIF ( parsFld(10:10) .EQ. 'I' ) THEN
 c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
          ELSE
@@ -154,26 +156,26 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
           IF ( usingPCoords ) km = Nr
           drLoc = 1. _d 0
           IF     ( parsFld(2:2).EQ.'U' ) THEN
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskW(1-Olx,1-Oly,km,bi,bj),
-     I            maskW(1-Olx,1-Oly,km,bi,bj),rAw(1-Olx,1-Oly,bi,bj), 
+     I            maskW(1-Olx,1-Oly,km,bi,bj),rAw(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSEIF ( parsFld(2:2).EQ.'V' ) THEN
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskS(1-Olx,1-Oly,km,bi,bj),
-     I            maskS(1-Olx,1-Oly,km,bi,bj),rAs(1-Olx,1-Oly,bi,bj), 
+     I            maskS(1-Olx,1-Oly,km,bi,bj),rAs(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSE
-           CALL  DIAGSTATS_R_CALC( 
+           CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
-     I            sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskH(1-Olx,1-Oly,bi,bj),
      I            maskH(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
@@ -201,7 +203,189 @@ C---   processing region "n" ends here.
        ENDIF
       ENDDO
 
-      RETURN 
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: DIAGSTATS_LM_CALC
+C     !INTERFACE:
+      SUBROUTINE DIAGSTATS_LM_CALC(
+     O                  statArr,
+     I                  inpArr,
+     I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
+     I                  regMask, arrMask, arrArea,
+     I                  specialVal, exclSpVal,
+     I                  k,bi,bj, parsFld, myThid )
+
+C     !DESCRIPTION:
+C     Compute statistics for this tile, level, region
+C     using FIZHI level thickness
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_FIZHI
+#include "fizhi_SIZE.h"
+#include "gridalt_mapping.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     statArr     :: output statistics array
+C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     nStats      :: size of output statArr
+C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
+C     iRun,jRun   :: range of 1rst & 2nd index to process
+C     regMask     :: regional mask
+C     arrMask     :: mask for this input array
+C     arrArea     :: Area weighting factor
+C     specialVal  :: special value in input array (to exclude if exclSpVal=T)
+C     exclSpVal   :: if T, exclude "specialVal" in input array
+C     k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
+C     parsFld     :: parser field with characteristics of the diagnostics
+C     myThid      :: my Thread Id number
+      INTEGER nStats,sizI1,sizI2,sizJ1,sizJ2
+      INTEGER iRun, jRun
+      _RL statArr(0:nStats)
+      _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL specialVal
+      LOGICAL exclSpVal
+      INTEGER k, bi, bj
+      CHARACTER*16 parsFld
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_FIZHI
+C     !LOCAL VARIABLES:
+      LOGICAL useWeight
+      INTEGER kl
+      _RL drLoc
+
+c     IF ( useFIZHI ) THEN
+
+        IF ( parsFld(10:10).EQ.'L' ) THEN
+          kl = 1 + Nrphys - k
+          useWeight = .TRUE.
+        ELSE
+          kl = 1
+          useWeight = .FALSE.
+        ENDIF
+        drLoc = 1. _d 0
+
+C- jmc: here we have a Problem if RL & RS are not the same:
+C    since dpphys is RL but argument is RS. leave it like this for now
+C    and will change it once the Regions are fully implemented.
+
+        CALL  DIAGSTATS_CALC(
+     O            statArr,
+     I            inpArr,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            regMask, arrMask,
+     I            dpphys(1-Olx,1-Oly,kl,bi,bj), arrArea,
+     I            drLoc, specialVal, exclSpVal, useWeight, myThid )
+
+c     ENDIF
+#endif /* ALLOW_FIZHI */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: DIAGSTATS_G_CALC
+C     !INTERFACE:
+      SUBROUTINE DIAGSTATS_G_CALC(
+     O                  statArr,
+     I                  inpArr,
+     I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
+     I                  regMask, arrArea,
+     I                  specialVal, exclSpVal,
+     I                  k,bi,bj, parsFld, myThid )
+
+C     !DESCRIPTION:
+C     Compute statistics for this tile, level, region
+C     using "ground" (land) type fraction
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+#ifdef ALLOW_LAND
+# include "LAND_SIZE.h"
+# include "LAND_PARAMS.h"
+# ifdef ALLOW_AIM
+#  include "AIM_FFIELDS.h"
+# endif
+#else
+# include "SIZE.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     statArr     :: output statistics array
+C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     nStats      :: size of output statArr
+C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
+C     iRun,jRun   :: range of 1rst & 2nd index to process
+C     regMask     :: regional mask
+C     arrArea     :: Area weighting factor
+C     specialVal  :: special value in input array (to exclude if exclSpVal=T)
+C     exclSpVal   :: if T, exclude "specialVal" in input array
+C     k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
+C     parsFld     :: parser field with characteristics of the diagnostics
+C     myThid      :: my Thread Id number
+      INTEGER nStats,sizI1,sizI2,sizJ1,sizJ2
+      INTEGER iRun, jRun
+      _RL statArr(0:nStats)
+      _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL specialVal
+      LOGICAL exclSpVal
+      INTEGER k, bi, bj
+      CHARACTER*16 parsFld
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_LAND
+C     !LOCAL VARIABLES:
+      LOGICAL useWeight
+      INTEGER kl
+      _RL drLoc
+
+c     IF ( useLand ) THEN
+
+        IF ( parsFld(10:10).EQ.'G' ) THEN
+          kl = MIN(k,land_nLev)
+          drLoc = land_dzF(kl)
+        ELSE
+          drLoc = 1. _d 0
+        ENDIF
+        useWeight = .TRUE.
+
+        CALL  DIAGSTATS_CALC(
+     O            statArr,
+     I            inpArr,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            regMask, aim_landFr(1-Olx,1-Oly,bi,bj),
+     I            aim_landFr(1-Olx,1-Oly,bi,bj), arrArea,
+     I            drLoc, specialVal, exclSpVal, useWeight, myThid )
+
+c     ENDIF
+#endif /* ALLOW_LAND */
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -209,10 +393,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DIAGSTATS_CALC
 C     !INTERFACE:
-      SUBROUTINE DIAGSTATS_R_CALC(
-     U                  statArr,
+      SUBROUTINE DIAGSTATS_CALC(
+     O                  statArr,
      I                  inpArr,
-     I                  sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
+     I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrMask, arrhFac, arrArea,
      I                  arrDr, specialVal, exclSpVal, useWeight,
      I                  myThid )
@@ -226,15 +410,12 @@ C     !USES:
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-c #include "PARAMS.h"
-c #include "GRID.h"
-c #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     statArr     :: cumulative statistics array (updated)
+C     statArr     :: output statistics array
 C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     nStats      :: size of output array: statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
 C     iRun,jRun   :: range of 1rst & 2nd index to process
@@ -249,9 +430,9 @@ C     useWeight   :: use weight factor "arrhFac"
 Cc    k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
 Cc    parsFld     :: parser field with characteristics of the diagnostics
 C     myThid      :: my Thread Id number
-      _RL statArr(0:nStats)
-      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER nStats,sizI1,sizI2,sizJ1,sizJ2
       INTEGER iRun, jRun
+      _RL statArr(0:nStats)
       _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -269,10 +450,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i,j    :: loop indices
       INTEGER i, j, n
-      INTEGER im, ix, iv
-      PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
+      INTEGER im, ix
       _RL tmpVol
 
+      im = nStats - 1
+      ix = nStats
       DO n=0,nStats
         statArr(n) = 0.
       ENDDO
@@ -328,5 +510,5 @@ c         IF ( regMask(i,j).NE.0. .AND. arrMask(i,j).NE.0. ) THEN
 
       ENDIF
 
-      RETURN 
+      RETURN
       END
