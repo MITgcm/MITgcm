@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.115 2005/04/15 14:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.116 2005/05/23 19:58:04 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -488,6 +488,22 @@ Cml)
       IF ( usediagnostics ) THEN
 
        CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
+
+       IF ( DIAGNOSTICS_IS_ON('PHIHYDSQ',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,Nr
+          DO j = 1,sNy
+           DO i = 1,sNx
+             tmpFld(i,j) = totPhihyd(i,j,L,bi,bj)*totPhihyd(i,j,L,bi,bj)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(tmpFld,'PHIHYDSQ',L,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+        ENDDO
+       ENDIF
+
        CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0,1,0,1,1,myThid)
 
        IF ( DIAGNOSTICS_IS_ON('PHIBOTSQ',myThid) ) THEN
