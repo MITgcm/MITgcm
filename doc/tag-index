@@ -1,11 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.489 2005/05/20 07:53:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.490 2005/05/23 03:08:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/diagnostics: 
-  add new capability: output of Global/Regional & per-level statistics
+  add new capability: output of Global/Regional & per-level statistics ;
+  tested against monitor output (including land & thSIce) on various exp.
+o make seaice-pkg I/O type flags (MNC/MDS) more standard.
 
 checkpoint57h_done
   tag after changing user customized files (DIAGNOSTICS_SIZE.h, 
