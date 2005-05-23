@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_initialise.F,v 1.5 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_initialise.F,v 1.6 2005/05/23 20:51:09 molod Exp $
 C $Name:  $
 
        subroutine gridalt_initialise (myThid)
@@ -11,6 +11,7 @@ c  Notes:
 c   When used with fizhi, this routine is the interface 
 c                                       to make_phys_grid
 c  Calls: make_phys_grid (define the physics grid and mappings)
+c         when diagnostics are used, call gridalt_diagnostics_init
 c-----------------------------------------------------------------------
        implicit none
 #include "PACKAGES_CONFIG.h"
@@ -56,6 +57,13 @@ c-----------------------------------------------------------------------
         enddo
         enddo
        endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      if ( useDiagnostics ) then
+        call gridalt_diagnostics_init( myThid )
+      endif
+#endif
+
 #endif
 
        return

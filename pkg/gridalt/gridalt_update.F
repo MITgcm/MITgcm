@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.6 2004/07/02 20:22:05 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.7 2005/05/23 20:51:09 molod Exp $
 C $Name:  $
 
        subroutine gridalt_update(myThid)
@@ -29,6 +29,8 @@ c
        integer im1,im2,jm1,jm2
        integer i1,i2,j1,j2,bi,bj
        integer i,j,L
+       logical  diagnostics_is_on
+       external diagnostics_is_on
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -60,7 +62,15 @@ c
        endif
 
 #endif
+
+#ifdef ALLOW_DIAGNOSTICS
+       if(useDiagnostics) then
+        IF ( DIAGNOSTICS_IS_ON('DPPHYS  ',myThid) ) THEN
+         CALL DIAGNOSTICS_FILL(dpphys, 'DPPHYS  ',0,Nrphys,0,1,1,myThid)
+        ENDIF
+       endif
 #endif
 
+#endif
        return
        end
