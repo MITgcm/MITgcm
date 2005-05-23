@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_datetime.F,v 1.2 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_datetime.F,v 1.3 2005/05/23 02:48:41 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -24,10 +24,11 @@ CEOP
 
       if( myThid.eq.1) then
 C      Write Supplemental Ascii File with Current Time Info
-       open(10,file='datetime',form='formatted')
-       write(10,1000)nymd,nhms
+       CALL MDSFINDUNIT( ku, myThid )
+       open(ku,file='datetime',form='formatted')
+       write(ku,1000)nymd,nhms
        print *,' Writing datetime file: NYMD = ',nymd,' NHMS = ',nhms
-       close (10)
+       close (ku)
       endif
  1000 format(i8,2x,i6)
 
