@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.14 2005/05/20 07:15:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.15 2005/05/23 19:52:02 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -399,6 +399,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'PHIHYD  '
       diagTitle = 'Hydrostatic (ocean) pressure / (atmos) geo-Potential'
       diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'PHIHYDSQ'
+      diagTitle = 'Square of Hyd. (ocean) press / (atmos) geoPotential'
+      diagUnits = 'm^4/s^4         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
