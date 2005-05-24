@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.23 2005/05/24 14:57:35 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.24 2005/05/24 16:29:38 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -45,6 +45,7 @@ c-----------------------------------------------------------------------
        _RL pressure(Nrphys)
        _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
+       _RL tempoverlap(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
 
        idim2 = sNx+OLx
        jdim2 = sNy+OLy
@@ -114,9 +115,19 @@ C     to send to fizhi init chem
 
 C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
         _BEGIN_MASTER( myThid )
-        CALL READ_REC_XY_RL('topvar19232.data',phis_var,1,0,mythid )
+        CALL READ_REC_XY_RL('topvar19232.data',tempoverlap,1,0,mythid )
         _END_MASTER(myThid)
         _BARRIER
+
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        do j=jm1,jm2
+        do i=im1,im2
+         phis_var(i,j,bi,bj) = tempoverlap(i,j,bi,bj)
+        enddo
+        enddo
+       enddo
+       enddo
 
        return
        end
