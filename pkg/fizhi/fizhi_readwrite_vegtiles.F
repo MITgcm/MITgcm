@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.15 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.16 2005/05/24 16:52:16 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -20,6 +20,9 @@ C     !USES:
 #include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
@@ -65,7 +68,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       endif
       
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
+      IF (useMNC.AND. pickup_write_mnc) THEN
 
 C       Write fizhi veg-space variables using the MNC package
         CALL MNC_CW_SET_UDIM(bnam, 1, myThid)
@@ -98,7 +101,7 @@ C       fizhi_earth_coms.h
         CALL MNC_CW_RL_W(prec,bnam,0,0,'chfr', chfr, myThid)
 
       ENDIF
-#else /*  Next Peice for not ALLOW_MNC  */
+#endif /*  Not ALLOW_MNC sequence */
 
 
       call MDSFINDUNIT( iunit, mythid )
@@ -268,8 +271,6 @@ C End of bi bj loop
       enddo
       enddo
 
-#endif /*  NOT ALLOW_MNC PART */
-
       RETURN
       END
 
@@ -292,6 +293,9 @@ C     !USES:
 #include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
@@ -327,7 +331,7 @@ C     !LOCAL VARIABLES:
       fileprec = 64
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
+      IF (useMNC.AND. pickup_write_mnc) THEN
 
 C       Write fizhi veg-space variables using the MNC package
         CALL MNC_FILE_CLOSE_ALL_MATCHING(bnam, myThid)
@@ -353,7 +357,7 @@ C       fizhi_land_coms.h
         CALL MNC_CW_RL_R(prec,bnam,0,0,'capac', capac, myThid)
 
       ENDIF
-#else /* Now MDSIO stuff if MNC is off */
+#endif /*  Not ALLOW_MNC sequence */
 
       call MDSFINDUNIT( iunit, mythid )
       length_of_rec=MDS_RECLEN( fileprec, nchp, mythid )
@@ -524,7 +528,6 @@ C End of bi bj loop
       enddo
       enddo
 
-#endif /*  Not ALLOW_MNC sequence */
 
       RETURN
       END
