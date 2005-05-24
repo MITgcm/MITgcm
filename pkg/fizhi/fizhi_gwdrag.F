@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.2 2005/05/21 23:50:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.3 2005/05/24 00:02:29 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -83,6 +83,8 @@ c ---------------
       external diagnostics_is_on
       _RL tmpdiag(im,jm)
 #endif
+
+      return
 
 c Initialization
 c --------------
