@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.7 2005/02/01 19:12:54 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.8 2005/05/24 00:13:26 edhill Exp $
 #
 
 FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
@@ -20,3 +20,5 @@ else
 fi
 
 INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
+LIBS='-lnetcdf'
+
