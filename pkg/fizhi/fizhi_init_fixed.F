@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.22 2005/02/25 18:14:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.23 2005/05/24 14:57:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -112,15 +112,11 @@ C     to send to fizhi init chem
      .      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
      .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 
-       do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
-        do j=jm1,jm2
-        do i=im1,im2
-         phis_var(i,j,bi,bj) = 0.
-        enddo
-        enddo
-       enddo
-       enddo
+C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
+        _BEGIN_MASTER( myThid )
+        CALL READ_REC_XY_RL('topvar19232.data',phis_var,1,0,mythid )
+        _END_MASTER(myThid)
+        _BARRIER
 
        return
        end
