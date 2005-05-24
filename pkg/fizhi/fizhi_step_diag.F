@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.15 2005/05/21 23:50:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.16 2005/05/24 21:03:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -53,6 +53,12 @@ C **********************************************************************
       pinv(i,j) = 1.0 / p(i,j,bi,bj)
       enddo
       enddo
+
+c Surface Pressure (mb)
+c ---------------------------------
+      if(diagnostics_is_on('PS      ',myid) ) then
+       call diagnostics_fill(p(1,1,bi,bj),'PS      ',0,1,3,bi,bj,myid)
+      endif
 
 c Incident Solar Radiation (W/m**2)
 c ---------------------------------
