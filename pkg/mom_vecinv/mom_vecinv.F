@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.38 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.39 2005/05/25 04:03:09 edhill Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -120,8 +120,9 @@ C--   (at least in part)
       IF (useMNC .AND. snapshot_mnc .AND. writeDiag) THEN
         IF ((bi .EQ. 1).AND.(bj .EQ. 1).AND.(k .EQ. 1)) THEN
           CALL MNC_CW_SET_UDIM('mom_vi', -1, myThid)
-          CALL MNC_CW_I_W_S('I','mom_vi',0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','mom_vi',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('mom_vi', 0, myThid)
+          CALL MNC_CW_I_W_S('I','mom_vi',0,0,'iter',myIter,myThid)
         ENDIF
         DO i = 1,9
           offsets(i) = 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.24 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.25 2005/05/25 04:03:09 edhill Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -173,8 +173,9 @@ c
           print *, 'ph-mnc in addummy myiter ', myiter
 c
           CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
-          CALL MNC_CW_I_W_S('I','adstate',0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
+          CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
      &         myThid)
 c

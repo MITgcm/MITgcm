@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.6 2005/02/23 16:30:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.7 2005/05/25 04:03:09 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -84,8 +84,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C         Update the record dimension by writing the iteration number
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
-          CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
+          CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
 
 C         Write the qdiag() array
           d_cw_name(1:NLEN) = dn_blnk(1:NLEN)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.20 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.21 2005/05/25 04:03:09 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -123,8 +123,9 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
 #ifdef ALLOW_MNC
         IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_state', -1, myThid)
-          CALL MNC_CW_I_W_S('I','kpp_state',0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','kpp_state',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
+          CALL MNC_CW_I_W_S('I','kpp_state',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W('D','kpp_state',0,0,
      &         'KPPviscAz', KPPviscAz, myThid)
           CALL MNC_CW_RL_W('D','kpp_state',0,0,
@@ -270,8 +271,9 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
 #ifdef ALLOW_MNC
         IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
-          CALL MNC_CW_I_W_S('I','kpp_timeave',0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','kpp_timeave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
+          CALL MNC_CW_I_W_S('I','kpp_timeave',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
      &         'KPPviscAz', KPPviscAzTave, myThid)
           CALL MNC_CW_RL_W('D','kpp_timeave',0,0,

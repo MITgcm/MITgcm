@@ -11,7 +11,7 @@
 #                 for the list of all available diag. in this particular config)
 #-----------------
  &diagnostics_list
-# diag_mnc     = .FALSE.,
+  diag_mnc     = .TRUE.,
   frequency(1) = 12000.,
    levels(1,1) = 1.,
    fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',

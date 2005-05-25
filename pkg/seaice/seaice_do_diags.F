@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.13 2005/05/22 02:06:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.14 2005/05/25 04:03:10 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -45,8 +45,9 @@ C     == Local variables ==
 #ifdef ALLOW_MNC
            IF (useMNC .AND. SEAICE_dump_mnc) THEN
              CALL MNC_CW_SET_UDIM('sice', -1, myThid)
-             CALL MNC_CW_I_W_S('I','sice',0,0,'T', myIter, myThid)
+             CALL MNC_CW_RL_W_S('D','sice',0,0,'T', myTime, myThid)
              CALL MNC_CW_SET_UDIM('sice', 0, myThid)
+             CALL MNC_CW_I_W_S('I','sice',0,0,'iter', myIter, myThid)
              CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
      &            myTime,myThid)
              CALL MNC_CW_RL_W('D','sice',0,0,'UWIND',uwind,myThid)
@@ -262,8 +263,9 @@ C      Normalize by integrated time
 #ifdef ALLOW_MNC
        IF (useMNC .AND. SEAICE_tave_mnc) THEN
          CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
-         CALL MNC_CW_I_W_S('I','sice_tave',0,0,'T', myIter, myThid)
+         CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'T', myTime, myThid)
          CALL MNC_CW_SET_UDIM('sice_tave', 0, myThid)
+         CALL MNC_CW_I_W_S('I','sice_tave',0,0,'iter', myIter, myThid)
          CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'model_time',
      &        myTime,myThid)
          CALL MNC_CW_RL_W('R','sice_tave',0,0,

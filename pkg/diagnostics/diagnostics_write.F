@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.19 2005/05/22 22:53:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.20 2005/05/25 04:03:09 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -101,7 +101,7 @@ C-    Yearly  freqSec:
 #endif
 
           IF ( dump2fileNow ) THEN
-            CALL DIAGNOSTICS_OUT(n,wrIter,myThid)
+            CALL DIAGNOSTICS_OUT(n,wrIter,myTime,myThid)
           ENDIF
         ENDDO
 

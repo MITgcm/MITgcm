@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.4 2005/05/15 03:06:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.5 2005/05/25 04:03:10 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -83,12 +83,17 @@ C       Write to files
 #ifdef ALLOW_MNC
         IF (useMNC .AND. PTRACERS_write_mnc) THEN
           CALL MNC_CW_SET_UDIM('ptr_tave', -1, myThid)
-          CALL MNC_CW_I_W_S('I','ptr_tave',0,0,'T',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','ptr_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('ptr_tave', 0, myThid)
+          CALL MNC_CW_I_W_S('I','ptr_tave',0,0,'iter',myIter,myThid)
+
           CALL MNC_CW_SET_UDIM('ptr_flux_tave', -1, myThid)
-          CALL MNC_CW_I_W_S('I','ptr_flux_tave',0,0,'T',myIter,
+          CALL MNC_CW_RL_W_S('D','ptr_flux_tave',0,0,'T',myTime,
      &         myThid)
           CALL MNC_CW_SET_UDIM('ptr_flux_tave', 0, myThid)
+          CALL MNC_CW_I_W_S('I','ptr_flux_tave',0,0,'iter',myIter,
+     &         myThid)
+
           DO ii = 1,PTRACERS_numInUse
             CALL MNC_CW_RL_W('D','ptr_tave',0,0,PTRACERS_names(ii),
      &           ptracertave(1-OLx,1-OLy,1,1,1,ii),myThid)
