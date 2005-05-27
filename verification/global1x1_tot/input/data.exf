@@ -1,10 +1,11 @@
-# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input/Attic/data.exf,v 1.4 2004/11/11 22:13:02 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input/Attic/data.exf,v 1.5 2005/05/27 23:34:50 heimbach Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML
 #
+ useExfCheckRange   = .TRUE.,
  useExfYearlyFields = .TRUE.,
 #
  hfluxstartdate1   = 19920101,
@@ -40,8 +41,8 @@
 #
  exf_inscal_ustress    = -1.,
  exf_inscal_vstress    = -1.,
- exf_inscal_runoff     = -1.,
+ exf_inscal_runoff     = 3.170979198E-8,
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
- /
+ &

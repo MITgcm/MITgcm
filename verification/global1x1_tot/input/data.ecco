@@ -17,14 +17,18 @@
  topexstartdate1 = 19920101,
  topexstartdate2 = 30000,
  topexperiod     = 86400.0,
- topexfile       = 'mit9yrmn_TPJ_daily_anom',
- topexmeanfile   = 'mit9yrmn_TP_mean_s',
+# topexfile       = 'mit9yrmn_TPJ_daily_anom',
+# topexmeanfile   = 'mit9yrmn_TP_mean_s',
+ topexfile       = 'PODAAC_TPJ_daily_anom_r1',
+# topexmeanfile   = 'PODAAC_TPJ_mean_s_r1_11yr',
+ topexmeanfile   = 'GGM02_DOT_col6',
+#HU! check geoid_errfile!!!
 #
  using_ers       = .TRUE.,
  ersstartdate1   = 19920101,
  ersstartdate2   = 30000,
  ersperiod       = 86400.0,
- ersfile         = 'ERS_daily',
+ ersfile         = 'ERS_ENVISAT_daily_r2',
  ssh_errfile     = 'ssh_s.err',
 #
  scatxdatfile    = 'QSCAT_ustr',
@@ -49,13 +53,18 @@
 ## sdatfile        = 'lev01_monthly_salt.bin_corK',
 ## tdatfile        = 'lev_monthly_temp_fl.bin',
 ## sdatfile        = 'lev_monthly_salt_fl.bin',
- tdatfile          = 'LEVITUS_1x1_ptmp_NEW_corK',
- sdatfile          = 'LEVITUS_1x1_salt_NEW_corK',
+## tdatfile        = 'LEVITUS_1x1_ptmp_NEW_corK',
+## sdatfile        = 'LEVITUS_1x1_salt_NEW_corK',
+## tdatfile        = 'LEV_wghc_ptmp_corK',
+## sdatfile        = 'LEV_wghc_salt_corK',
+ tdatfile        = 'LEV_wghc_ptmp_r2',
+ sdatfile        = 'LEV_wghc_salt_r2',
+#
  ctdtfile        = 'ctdT',
  ctdsfile        = 'ctdS',
- xbtfile         = 'XBT',
- argotfile       = 'ARGO_T',
- argosfile       = 'ARGO_S',
+ xbtfile         = 'XBT_r1',
+ argotfile       = 'ARGO_T_r2',
+ argosfile       = 'ARGO_S_r2',
 #
  udriftfile      = 'udrifter_1x1',
  vdriftfile      = 'vdrifter_1x1',
@@ -65,8 +74,8 @@
 #
 ## temperrfile     = 'lev01_clim_tmp_sd.bin',
 ## salterrfile     = 'lev01_clim_salt_sd.bin',
- temperrfile     = 'temp.err',
- salterrfile     = 'salt.err',
+ temperrfile     = 'temp_5.err',
+ salterrfile     = 'salt_5.err',
 #
 ## hflux_errfile   = 'NCEP_R6_turbflux_sd_1992-2003',
 ## sflux_errfile   = 'NCEP_R6_emp_sd_1992-2003',
@@ -81,7 +90,10 @@
  scatx_errfile   = 'ustr_ncep_r-qscat_yr2000_s.err',
  scaty_errfile   = 'vstr_ncep_r-qscat_yr2000_s.err',
 #
- geoid_errfile   = 'geoid_s.err',
+# geoid_errfile   = 'geoid_s.err',
+# geoid_errfile   = '4.5cm.err',
+# geoid_errfile   = 'TPJ_GRACE.err',
+ geoid_errfile   = 'TPJ_GRACE_r4.err',
 ### geoid_covariancefile = 'egm96_1x1.pinv',
  mult_hflux  = 1.,
  mult_sflux  = 1.,
@@ -95,6 +107,7 @@
  mult_salt0  = 1.,
  mult_sst    = 1.,
  mult_sss    = 1.,
+ mult_tmi    = 1.,
  mult_ctdt   = 1.,
  mult_ctds   = 1.,
  mult_xbt    = 1.,
@@ -109,4 +122,4 @@
 #
  cost_iprec  = 32,
  cost_yftype = 'RL',
- /
+ &

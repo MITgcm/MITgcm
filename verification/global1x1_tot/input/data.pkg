@@ -8,4 +8,5 @@
  useGMRedi    = .TRUE.,
  useGrdchk    = .FALSE.,
  useECCO      = .TRUE.,
- /
+ useDiagnostics = .TRUE.,
+ &

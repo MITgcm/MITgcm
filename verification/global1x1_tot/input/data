@@ -47,7 +47,7 @@
  allowFreezing=.false.,
  globalFiles=.false.,
 #ph(
- useSingleCpuIO=.FALSE.,
+ useSingleCpuIO=.TRUE.,
  useCDscheme=.TRUE.,
  useNHMTerms=.TRUE.,
  usePickupBeforeC54=.TRUE.,
@@ -57,7 +57,7 @@
 # hFacMinDz = 50,
 #ph)
  debugLevel=1, 
- /
+ &
 
 # **************************
 # Elliptic solver parameters
@@ -65,7 +65,7 @@
  &PARM02
  cg2dMaxIters=300,
  cg2dTargetResidual=1.E-7,
- /
+ &
 
 # ************************
 # Time stepping parameters
@@ -81,7 +81,9 @@
 # 11 years
 ### nTimeSteps=96398,
 # 12 years
- nTimeSteps=105120,
+# nTimeSteps=105120,
+# 13 years
+ nTimeSteps=113880,
 #
  tauCD=172800.,
  deltaTmom=3600.0,
@@ -93,11 +95,14 @@
 # chkptFreq   = 31536000.0,
 # dumpFreq    = 31536000.0,
 # adjDumpFreq = 31536000.0, 
- taveFreq    = 31536000.0,
+# 30.4d averages
+# taveFreq    = 2626560.0,
+# taveFreq    = 31536000.0,
+# 365d averages
  monitorFreq = 31536000.0,
  tauThetaClimRelax=0.,
  tauSaltClimRelax=0.,
- /
+ &
 
 # *******************
 # Gridding parameters
@@ -110,7 +115,7 @@
  delZ=10.,10.,15.,20.,20.,25.,35.,50.,75.,100.,150.,200.,275.,350.,415.,450.,500.,500.,500.,500.,500.,500.,500.,
  phimin=-80.,
  thetamin=0.,
- /
+ &
 
 # **********
 # Data Files
@@ -121,7 +126,11 @@
 ### hydrogSaltFile='lev_monthly_salt_fl.bin',
 ### hydrogThetaFile = 'lev01_monthly_ptmp.bin_corK',
 ### hydrogSaltFile  = 'lev01_monthly_salt.bin_corK',
- hydrogThetaFile = 'LEVITUS_1x1_ptmp_NEW_corK',
- hydrogSaltFile  = 'LEVITUS_1x1_salt_NEW_corK',
- /
+### hydrogThetaFile = 'LEVITUS_1x1_ptmp_NEW_corK',
+### hydrogSaltFile  = 'LEVITUS_1x1_salt_NEW_corK',
+### hydrogThetaFile = 'wghc_ptmp_corK',
+### hydrogSaltFile  = 'wghc_salt_corK',
+ hydrogThetaFile = 'wghc_ptmp_r2',
+ hydrogSaltFile  = 'wghc_salt_r2',
+ &
 

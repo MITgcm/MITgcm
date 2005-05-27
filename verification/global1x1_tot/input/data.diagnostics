@@ -1,0 +1,68 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every multiple of |frequency| (iter)
+#               > 0 : write time-average output every multiple of frequency (iter)
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file 
+#                 for the list of all available diag. in this particular config)
+#--------------------------------------------------------------------
+#
+ &diagnostics_list
+  frequency(1) = 2635200.0,
+   levels(1,1) = 1.,
+   fields(1,1) = 'ETAN    ',
+   filename(1) = 'DiaDyn2d',
+#---
+  frequency(2) = 2635200.0,
+   fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ',
+                 'THETA   ','SALT    ','RHOAnoma',
+   filename(2) = 'DiaDyn3d',
+#---
+  frequency(3) = 2635200.0,
+   fields(1,3) = 'ADVx_TH ','DIFx_TH ',
+   filename(3) = 'DiaFluXt',
+#---
+  frequency(4) = 2635200.0,
+   fields(1,4) = 'ADVx_SLT','DIFx_SLT',
+   filename(4) = 'DiaFluXs',
+#---
+  frequency(5) = 2635200.0,
+   fields(1,5) = 'ADVy_TH ','DIFy_TH ',
+   filename(5) = 'DiaFluYt',
+#---
+  frequency(6) = 2635200.0,
+   fields(1,6) = 'ADVy_SLT','DIFy_SLT',
+   filename(6) = 'DiaFluYs',
+#---
+#  frequency(5) = 2635200.0,
+#   fields(1,5) = 'ADVr_TH ','DFrE_TH ','DFrI_TH ',
+#   filename(5) = 'DiaFluR ',
+#---
+  frequency(7) = 2635200.0,
+   fields(1,7) = 'GM_PsiX ','GM_PsiY ',
+                 'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
+   filename(7) = 'DiaGM3d ',
+#---
+  frequency(8) = 2635200.0,
+   fields(1,8) = 'KPPviscA','KPPdiffS','KPPdiffT',
+   filename(8) = 'DiaKPP3d',
+#---
+  frequency(9) = 2635200.0,
+   levels(1,9) = 1.,
+   fields(1,9) = 'KPPhbl  ','KPPmld  ',
+   filename(9) = 'DiaKPP2d',
+#
+  frequency(10) = 2635200.0,
+   levels(1,10) = 1.,
+   fields(1,10) = 'TAUX    ','TAUY    ',
+                  'TFLUX   ','SFLUX   ','SWFLUX  ',
+   filename(10) = 'DiaForci',
+#
+  frequency(11) = 409708800.0,
+   fields(1,11) = 'KPPBrVaF',
+   filename(11) = 'DiaBrVaF',
+#
+ &end
