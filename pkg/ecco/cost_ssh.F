@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.5 2005/05/02 14:30:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.6 2005/05/27 22:10:26 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -127,6 +127,9 @@ c--   ============
         enddo
       enddo
 
+c--   Read mean field and generate mask
+      call cost_ReadTopexMean( mythid )
+
 c--   Loop over records for the first time.
       do irec = 1, ndaysrec
 
@@ -140,15 +143,14 @@ c--     Compute the mean over all psbar records.
             do j = jmin,jmax
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
-     &                psbar(i,j,bi,bj)*frame(i,j)/float(ndaysrec)
+     &                psbar(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)/
+     &                float(ndaysrec)
               enddo
             enddo
           enddo
         enddo
 
       enddo
-
-      call cost_ReadTopexMean( mythid )
 
 c--   Compute and remove offset for current tile and sum over all
 c--   tiles of this instance.
@@ -243,7 +245,8 @@ c--   Loop over records for the second time.
 c--             The array psobs contains SSH anomalies.
                 wwwtp(i,j) = wtp(i,j,bi,bj) *cosphi(i,j,bi,bj)
                 junk       = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
-     &                         tpobs(i,j,bi,bj))*tpmask(i,j,bi,bj)
+     &                         tpobs(i,j,bi,bj))
+     &                         *tpmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
                 tpcost   = tpcost + junk*junk*wwwtp(i,j)
                 if ( wwwtp(i,j)*junk .ne. 0. )
      &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
@@ -257,7 +260,8 @@ c--             The array psobs contains SSH anomalies.
 c--             The array ersobs contains SSH anomalies.
                 wwwers(i,j) = wers(i,j,bi,bj)*cosphi(i,j,bi,bj)
                 junk        = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
-     &                         ersobs(i,j,bi,bj))*ersmask(i,j,bi,bj)
+     &                         ersobs(i,j,bi,bj))
+     &                         *ersmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
                 erscost   = erscost + junk*junk*wwwers(i,j)
                 if ( wwwers(i,j)*junk .ne. 0. )
      &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0

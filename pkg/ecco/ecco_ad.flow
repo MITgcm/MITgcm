@@ -1,9 +1,23 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad.flow,v 1.3 2005/05/27 22:10:27 heimbach Exp $
+C $Name:  $
 
 C----------------------------------------
 C subroutine  ecco_check_exp
 C----------------------------------------
 CADJ SUBROUTINE ecco_check_exp INPUT  = 1,2,3,4
 CADJ SUBROUTINE ecco_check_exp OUTPUT =
+
+C----------------------------------------
+C subroutine  cost_trans_merid
+C----------------------------------------
+CADJ SUBROUTINE cost_trans_merid INPUT  = 1
+CADJ SUBROUTINE cost_trans_merid OUTPUT =
+
+C----------------------------------------
+C subroutine  cost_trans_zonal
+C----------------------------------------
+CADJ SUBROUTINE cost_trans_zonal INPUT  = 1
+CADJ SUBROUTINE cost_trans_zonal OUTPUT =
 
 C----------------------------------------
 C subroutine  cost_readgeoid

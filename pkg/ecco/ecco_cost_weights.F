@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.8 2005/04/12 22:12:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.9 2005/05/27 22:10:27 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -131,6 +131,12 @@ c--   Initialize variance (weight) fields.
               wp      (i,j,bi,bj) = 0. _d 0
               wudrift (i,j,bi,bj) = 0. _d 0
               wvdrift (i,j,bi,bj) = 0. _d 0
+cph(
+	      whflux2 (i,j,bi,bj) = 0. _d 0
+	      wsflux2 (i,j,bi,bj) = 0. _d 0
+	      wtauu2  (i,j,bi,bj) = 0. _d 0
+	      wtauv2  (i,j,bi,bj) = 0. _d 0
+cph)
             enddo
           enddo
         enddo
@@ -581,6 +587,9 @@ c--           Test for missing values.
               wtauu(i,j,bi,bj) = max(wtauu(i,j,bi,bj),wtau0)
               wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*maskw(i,j,k,bi,bj)
      &                            *frame(i,j)
+cph(
+              wtauu2(i,j,bi,bj) = wtau0*maskW(i,j,k,bi,bj)*frame(i,j)
+cph)
              enddo
           enddo
         enddo
@@ -640,6 +649,9 @@ c--           Test for missing values.
               wtauv(i,j,bi,bj) = max(wtauv(i,j,bi,bj),wtau0)
               wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*masks(i,j,k,bi,bj)
      &                            *frame(i,j)
+cph(
+              wtauv2(i,j,bi,bj) = wtau0*maskS(i,j,k,bi,bj)*frame(i,j)
+cph)
             enddo
           enddo
         enddo
@@ -702,6 +714,9 @@ c--           Data are in units of W/m**2.
      &                            *frame(i,j)
               whfluxm(i,j,bi,bj) = max(whfluxm(i,j,bi,bj),whflux0m)
      &                            *frame(i,j)
+cph(
+              whflux2(i,j,bi,bj) = whflux0*frame(i,j)
+cph)
             enddo
           enddo
         enddo
@@ -766,6 +781,9 @@ c--           Data are in units of m/s.
      &                            *frame(i,j)
               wsfluxm(i,j,bi,bj) = max(wsfluxm(i,j,bi,bj),wsflux0m)
      &                            *frame(i,j)
+cph(
+              wsflux2(i,j,bi,bj) = wsflux0*frame(i,j)
+cph)
             enddo
           enddo
         enddo
@@ -910,6 +928,32 @@ c--   Units have to be checked!
               if (whfluxmm(bi,bj).ne.0.) 
      &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
 
+cph(
+              if (whflux2(i,j,bi,bj) .ne. 0.) then
+                 whflux2(i,j,bi,bj) =
+     &                1./whflux2(i,j,bi,bj)/whflux2(i,j,bi,bj)
+              else
+                 whflux2(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wsflux2(i,j,bi,bj) .ne. 0.) then
+                 wsflux2(i,j,bi,bj) =
+     &                1./wsflux2(i,j,bi,bj)/wsflux2(i,j,bi,bj)
+              else
+                 wsflux2(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wtauu2(i,j,bi,bj) .ne. 0.) then
+                 wtauu2(i,j,bi,bj) = 
+     &                1./wtauu2(i,j,bi,bj)/wtauu2(i,j,bi,bj)
+              else
+                 wtauu2(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wtauv2(i,j,bi,bj) .ne. 0.) then
+                 wtauv2(i,j,bi,bj) =
+     &                1./wtauv2(i,j,bi,bj)/wtauv2(i,j,bi,bj)
+              else
+                 wtauv2(i,j,bi,bj) = 0.0 _d 0
+              endif
+cph)
             enddo
           enddo
 
@@ -979,27 +1023,31 @@ c
      &     1, 0, mythid, dummy)
 
 #if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'whflux', whflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'whflux', whflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'whflux2', whflux2, 1, 0, mythid, dummy)
 #elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'watemp', watemp, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'watemp', watemp, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'wsflux', wsflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wsflux', wsflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wsflux2', wsflux2, 1, 0, mythid, dummy)
 #elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'waqh', waqh, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'waqh', waqh, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'wtauu', wtauu,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauu', wtauu,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauu2', wtauu2,   1, 0, mythid, dummy)
 #elif (defined (ALLOW_UWIND_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'wuwind', wuwind, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wuwind', wuwind, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'wtauv', wtauv,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauv', wtauv,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
 #elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
-      call active_write_xy_loc(  'wvwind', wvwind, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
 #endif
 
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION

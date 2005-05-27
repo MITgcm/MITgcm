@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.4 2005/05/05 23:47:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.5 2005/05/27 22:10:26 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -41,6 +41,7 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ecco_cost.h"
+#include "optim.h"
 
 #ifdef ALLOW_EGM96_ERROR_COV
 # if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
@@ -67,6 +68,10 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+
+cph(
+      _RL diagnosfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+cph)
 
 #ifdef ALLOW_EGM96_ERROR_COV
       _RL cphi
@@ -232,15 +237,23 @@ c--         --> no weighting by cosphi.
      &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
               if ( wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
      &             num_hmean = num_hmean + 1. _d 0
+	      diagnosfld(i,j,bi,bj) = diff*diff
+     &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
             enddo
           enddo
         enddo
       enddo
 
+cph(
+      CALL WRITE_FLD_XY_RL( 'DiagnosSSHmean', ' ', diagnosfld,
+     &                           optimcycle, mythid )
+cph)
+
 c--   Do the global summation.
       _GLOBAL_SUM_R8( sumc, mythid )
       _GLOBAL_SUM_R8( num_hmean, mythid )
       costmean = sumc
+
 #endif
 
       end

@@ -749,6 +749,15 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wcurrentLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wbaro
 
+      common /ecco_cost_weights_2_r/
+     &                      whflux2,wsflux2,wtauu2,wtauv2
+      _RL whflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wsflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wtauu2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wtauv2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+						 
+		      
+
 #if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCSN_CONTROL))
       common /ecco_cost_weights_obcsn/
