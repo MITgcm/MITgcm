@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.5 2005/05/27 21:41:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -59,12 +59,15 @@ c     == local variables ==
       integer irec
       integer iltheta
       integer ilsalt
-      integer nf, nl
+      integer nf, nl, nfmin
+      integer minrec
 
       _RL fctilet
       _RL fctiles
       _RL fcthread_tdrift
       _RL fcthread_tdrifs
+      _RL errtannurescal
+      _RL errsannurescal
 
       character*(80) fnametheta
       character*(80) fnamesalt
@@ -96,6 +99,11 @@ c--   Read tiled data.
 
 #ifdef ALLOW_DRIFT_COST_CONTRIBUTION
 
+c--   Rescale error read from data.err to convert to error/year
+c--   (e.g. 0.08 degC year based on Levitus decadal drift 0.8 degC)
+      errtannurescal = 0.16
+      errsannurescal = 0.16
+
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
         write(fnametheta(1:80),'(2a,i10.10)')
@@ -105,14 +113,6 @@ c--   Read tiled data.
      &    sbarfile(1:ilsalt),'.',optimcycle
       endif
       
-      if (nmonsrec.lt.12) then 
-        print*
-        print*,' cost_Drift: assimilation period smaller' 
-        print*,'             than 1 year, no drift computed.'
-        print*
-        stop   '  ... stopped in cost_Drift.'
-      endif
-
       fcthread_tdrift = 0. _d 0
       fcthread_tdrifs = 0. _d 0
       
@@ -133,9 +133,18 @@ c--   Read tiled data.
       
       nf = 0
       nl = 0
+c--   Number of full years
+      nfmin = MAX(INT(FLOAT(nmonsrec)/12.),1)
+c--   Prevent code from crashing if integrated for less than a year
+      minrec = MIN(nmonsrec,12)
+cph(
+      print *, 'ph-cost-drift: nfmin, minrec ', nfmin, minrec
+      print *, 'ph-cost-drift: weight ', 
+     &         wsalt(1,1,1)/(nfmin*errsannurescal)**2
+cph)
 
 c--   Loop over records.
-      do irec = 1,12
+      do irec = 1,minrec
 
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnametheta, tbar, irec,
@@ -166,7 +175,7 @@ c--     Read time averages and the monthly mean data.
         
       enddo
         
-      do irec = nmonsrec-12+1, nmonsrec
+      do irec = nmonsrec-minrec+1, nmonsrec
 
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnametheta, tbar, irec,
@@ -214,11 +223,14 @@ c           the temperature field.
              do i = imin,imax
               if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                      fctiles = fctiles +
-     &                  (wsalt(k,bi,bj)*cosphi(i,j,bi,bj)*2.5*
+     &                  (wsalt(k,bi,bj)*cosphi(i,j,bi,bj)/
+     &          ((nfmin*errsannurescal)**2)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf))
+c
                      fctilet = fctilet +
-     &                  (wtheta(k,bi,bj)*cosphi(i,j,bi,bj)*2.5*
+     &                  (wtheta(k,bi,bj)*cosphi(i,j,bi,bj)/
+     &          ((nfmin*errtannurescal)**2)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
                      if ( wtheta(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
@@ -280,28 +292,6 @@ c        _GLOBAL_SUM_R8( fcthread_tdrifs , myThid )
      &                      SQUEEZE_RIGHT , mythid)
 #endif
 
-#else
-c--   Do not enter the calculation of the drift contribution to
-c--   the final cost function.
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_Drift: no contribution of drift between the first ',
-     &                 'and the last year to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_Drift: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return
