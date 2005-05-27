@@ -84,8 +84,8 @@ C       >>> Cost function contributions
 # undef ALLOW_VWIND_COST_CONTRIBUTION
 
 # define GENERIC_BAR_MONTH
-# undef ALLOW_THETA_COST_CONTRIBUTION
-# undef ALLOW_SALT_COST_CONTRIBUTION
+# define ALLOW_THETA_COST_CONTRIBUTION
+# define ALLOW_SALT_COST_CONTRIBUTION
 # define ALLOW_THETA0_COST_CONTRIBUTION
 # define ALLOW_SALT0_COST_CONTRIBUTION
 # define ALLOW_SST_COST_CONTRIBUTION
@@ -105,8 +105,8 @@ C       >>> Cost function contributions
 # define ALLOW_CTDT_COST_CONTRIBUTION
 # define ALLOW_CTDS_COST_CONTRIBUTION
 # define ALLOW_DRIFTER_COST_CONTRIBUTION
-# undef ALLOW_DRIFT_COST_CONTRIBUTION
-# undef ALLOW_DRIFTW_COST_CONTRIBUTION
+# define ALLOW_DRIFT_COST_CONTRIBUTION
+# define ALLOW_DRIFTW_COST_CONTRIBUTION
 C
 # define ALLOW_ARGO_THETA_COST_CONTRIBUTION
 # define ALLOW_ARGO_SALT_COST_CONTRIBUTION
@@ -133,6 +133,8 @@ C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 C 
+#define  CTRL_SET_OLD_MAXCVARS_30
+#define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
