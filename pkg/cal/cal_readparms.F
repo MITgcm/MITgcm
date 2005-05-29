@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.6 2005/05/23 19:28:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.7 2005/05/29 17:49:39 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -115,8 +115,6 @@ c       Initialise the calendar parameters
         startdate_2 = 0
         enddate_1   = 0
         enddate_2   = 0
-
-        open(unit=scrunit1,status='scratch')
 
 c       Next, read the calendar data file.
         WRITE(msgBuf,'(A)') 'CAL_READPARMS: opening data.cal'
