@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.2 2005/05/30 07:41:45 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -65,7 +65,7 @@ C     rhoK, rhoKm1 - Density below and above current interface
 C     epsilon      - small number
       INTEGER I,J,Km1
       _RL        p5    , p125      
-      PARAMETER( p5=0.5, p125=0.125 )
+      PARAMETER( p5=0.5D0, p125=0.125D0 )
       _RL tempu, tempv
       _RL epsilon
       PARAMETER    (  epsilon = 1.D-10 )

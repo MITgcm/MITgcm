@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.3 2005/04/06 18:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.4 2005/05/30 07:41:45 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -80,16 +80,16 @@ CEOP
 C     Initialize local fields
       DO J=1-Oly,sNy+Oly
        DO I=1-Olx,sNx+Olx
-	GH(I,J) = 0.
-	GM(I,J) = 0.
+	GH(I,J) = 0. _d 0
+	GM(I,J) = 0. _d 0
        ENDDO
       ENDDO
       DO K = 1, Nr
        DO J=1-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx
-         SH(I,J,K) = 0.
-         SM(I,J,K) = 0.
-         tke(I,J,K) = 0.
+         SH(I,J,K)  = 0. _d 0
+         SM(I,J,K)  = 0. _d 0
+         tke(I,J,K) = 0. _d 0
         ENDDO
        ENDDO	
       ENDDO
@@ -129,8 +129,8 @@ C     re-initilialize GM and GH for abuse, they no longer have
 C     the meaning of shear and negative  buoyancy frequency
       DO J=jMin,jMax
        DO I=iMin,iMax
-        GH(I,J) = 0.
-        GM(I,J) = 0.
+        GH(I,J) = 0. _d 0
+        GM(I,J) = 0. _d 0
        ENDDO
       ENDDO
 C     Find boundary length scale from energy weighted mean.
@@ -149,8 +149,8 @@ C     end of second k-loop
 C     compute boundary length scale MYhbl
       DO J=jMin,jMax
        DO I=iMin,iMax
-        IF ( GH(I,J) .EQ. 0. ) THEN
-         MYhbl(I,J,bi,bj) = 0.
+        IF ( GH(I,J) .EQ. 0. _d 0 ) THEN
+         MYhbl(I,J,bi,bj) = 0. _d 0
         ELSE
          MYhbl(I,J,bi,bj) = -GM(I,J)/GH(I,J)*MYhblScale
         ENDIF

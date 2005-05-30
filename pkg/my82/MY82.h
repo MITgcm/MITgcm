@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/MY82.h,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/MY82.h,v 1.2 2005/05/30 07:41:45 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_MY82
@@ -36,11 +36,11 @@ CEOP
 C     Magic parameters of Mellor&Yamada(1982):
 C     (M. Satoh, p.315)
       _RL A1, A2, B1, B2, C1
-      PARAMETER( A1 = 0.92 )
-      PARAMETER( A2 = 0.74 )
-      PARAMETER( B1 = 16.6 )
-      PARAMETER( B2 = 10.1 )
-      PARAMETER( C1 = 0.08 )
+      PARAMETER( A1 = 0.92D0 )
+      PARAMETER( A2 = 0.74D0 )
+      PARAMETER( B1 = 16.6D0 )
+      PARAMETER( B2 = 10.1D0 )
+      PARAMETER( C1 = 0.08D0 )
 
       _RL    alpha1, alpha2
       _RL    beta1, beta2, beta3, beta4

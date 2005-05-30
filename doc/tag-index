@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.491 2005/05/25 04:03:09 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.492 2005/05/30 07:41:45 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/my82: futile attempt to make results compiler-independent by adding
+  some "_d 0", etc. no effect.
 o for mnc output, fill the 'T' coordinate var with myTime and create a 
   separate 'iter' variable for iteration count
 o pkg/diagnostics: 
