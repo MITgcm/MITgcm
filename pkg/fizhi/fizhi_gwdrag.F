@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.5 2005/05/31 18:07:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.6 2005/05/31 20:14:37 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -440,9 +440,9 @@ c ---------------------------------
       enddo
 
       do  i = 1,irun
-       robar(i) = robar(i)/(ps(i)-ple(i,Lm+1-nbase(i))) * 100.0
-       ubar(i) = ubar(i)/(ps(i)-ple(i,Lm+1-nbase(i)))
-       vbar(i) = vbar(i)/(ps(i)-ple(i,Lm+1-nbase(i)))
+       robar(i) = robar(i)/(ps(i)-ple(i,Lm+1-nbase(i)-1)) * 100.0
+       ubar(i) = ubar(i)/(ps(i)-ple(i,Lm+1-nbase(i)-1))
+       vbar(i) = vbar(i)/(ps(i)-ple(i,Lm+1-nbase(i)-1))
 
        speed(i) = sqrt( ubar(i)*ubar(i) + vbar(i)*vbar(i) )
        ang(i) = atan2(vbar(i),ubar(i))
