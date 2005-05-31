@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.155 2005/04/22 21:24:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.156 2005/05/31 14:49:38 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,7 +129,7 @@ C                 or that have moved to a different input file and/or namelist.
 
 C--   Continuous equation parameters
       NAMELIST /PARM01/
-     & gravitySign,
+     & gravitySign, nh_Am2,
      & gravity, gBaro, rhonil, tAlpha, sBeta, 
      & f0, beta, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax,

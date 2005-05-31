@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.91 2005/04/15 14:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.92 2005/05/31 14:49:38 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,6 +79,7 @@ C--   Set default "physical" parameters
        tRef(K) = 30.D0 - FLOAT( K )
 Cml       sRef(K) = 35.D0
       ENDDO
+      nh_Am2              = 1.D0
       gravity             = 9.81D0
       rhoNil              = 999.8D0
 C-- jmc : the default is to set rhoConstFresh to rhoConst (=rhoNil by default)

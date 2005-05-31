@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.156 2005/04/20 15:45:16 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.157 2005/05/31 14:49:38 adcroft Exp $
 C $Name:  $
 C
 
@@ -600,9 +600,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
-     & bottomDragLinear,bottomDragQuadratic,
+     & bottomDragLinear,bottomDragQuadratic,nh_Am2,
      & tCylIn, tCylOut
 
+      _RL nh_Am2
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
       _RL cg3dTargetResidual
