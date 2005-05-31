@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.39 2005/04/20 15:51:55 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.40 2005/05/31 18:24:28 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,8 @@ C     !CALLING SEQUENCE:
 C     PACKAGES_READPARMS
 C       |
 C       |-- MNC_READPARMS + MNC_INIT + MNC_CW_INIT
+C       |
+C       |-- RUNCLOCK_READPARMS
 C       |
 C       |-- GMREDI_READPARMS
 C       |
@@ -107,6 +109,11 @@ CEH3       IF ( mnc_echo_gvtypes ) THEN
 CEH3       CALL MNC_CW_DUMP( myThid )
 CEH3       ENDIF
       ENDIF
+#endif
+
+#ifdef ALLOW_RUNCLOCK
+C--   Initialize RUNCLOCK parameters
+      IF (useRunClock) CALL RUNCLOCK_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI

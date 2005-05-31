@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.38 2005/05/05 16:41:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.39 2005/05/31 18:24:28 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,6 +18,8 @@ C     \ev
 
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
+C       |
+C       |-- RUNCLOCK_INIT
 C       |
 C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
@@ -80,6 +82,12 @@ C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
+
+#ifdef ALLOW_RUNCLOCK
+      IF ( useRunClock ) THEN
+        CALL RUNCLOCK_INIT( myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

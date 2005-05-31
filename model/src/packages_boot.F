@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.27 2005/04/20 15:47:50 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.28 2005/05/31 18:24:29 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -69,6 +69,7 @@ C     data.pkg namelists
      &          usediagnostics,
      &          useEBM,
      &          useMNC,
+     &          useRunClock,
      &          useMATRIX
 CEOP
 
@@ -109,6 +110,7 @@ C--   Default package configuration
       usediagnostics=.FALSE.
       useEBM=.FALSE.
       useMNC=.FALSE.
+      useRunClock=.FALSE.
       useMATRIX=.FALSE.
 
 C--   Read parameters from open data file

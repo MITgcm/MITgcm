@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.27 2004/12/13 22:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.28 2005/05/31 18:24:28 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,6 +38,12 @@ C     === Local variables ===
 C     msgBuf      :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+#ifdef ALLOW_RUNCLOCK
+      IF (useRunClock) CALL RUNCLOCK_CHECK( myThid )
+#else
+      IF (useRunClock) CALL PACKAGES_CHECK_ERROR('RUNCLOCK', myThid)
+#endif
 
 #ifdef ALLOW_KPP
       IF (useKPP) CALL KPP_CHECK( myThid )

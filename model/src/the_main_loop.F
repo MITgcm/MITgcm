@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.61 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.62 2005/05/31 18:24:28 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -109,8 +109,13 @@ C     myThid - thread number for this instance of the routine.
       INTEGER myIter
       _RL     myTime
 
+C     !FUNCTIONS:
+C     == Functions ==
+      LOGICAL RUNCLOCK_CONTINUE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+      LOGICAL RC_CONT
       integer iloop
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ilev_1
@@ -332,6 +337,13 @@ c--     >>> Loop body start <<<
 #ifdef ALLOW_AUTODIFF_TAMC
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
+
+#ifdef ALLOW_RUNCLOCK
+        IF (useRunClock) THEN
+         RC_CONT=RUNCLOCK_CONTINUE( myThid )
+         IF (.NOT.RC_CONT) RETURN
+        ENDIF
+#endif /* ALLOW_RUNCLOCK */
 
 c--     >>> Loop body end <<<
 
