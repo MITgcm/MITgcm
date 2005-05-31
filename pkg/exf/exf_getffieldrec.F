@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.13 2005/05/19 21:46:15 ce107 Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.14 2005/05/31 18:03:51 adcroft Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -301,7 +301,7 @@ c ---------------------------------------------------------------------
 #ifdef EXF_VERBOSE
 c     Do some printing for the protocol.
       _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
+        write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,2x,l2,2x,l2,2x,D15.8)')
@@ -314,7 +314,7 @@ c     Do some printing for the protocol.
      &                         myiter, count0, count1
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
+        write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
       _END_MASTER( mythid )
