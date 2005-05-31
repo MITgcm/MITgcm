@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.4 2005/05/25 19:27:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.5 2005/05/31 18:07:45 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -213,9 +213,9 @@ c --------------------------------------------------
       dragv(i,j,L) = sign( min(0.006,abs(dragv(i,j,L))),dragv(i,j,L) )
       dragt(i,j,L) = -( uz(i,j,L)*dragu(i,j,L)+vz(i,j,L)*dragv(i,j,L) )
      .                                                         *cpinv
-c      dudt(i,j,L) = dudt(i,j,L) + dragu(i,j,L)
-c      dvdt(i,j,L) = dvdt(i,j,L) + dragv(i,j,L)
-c      dtdt(i,j,L) = dtdt(i,j,L) + dragt(i,j,L)/pkz(i,j,L)
+       dudt(i,j,L) = dudt(i,j,L) + dragu(i,j,L)
+       dvdt(i,j,L) = dvdt(i,j,L) + dragv(i,j,L)
+       dtdt(i,j,L) = dtdt(i,j,L) + dragt(i,j,L)*pz(i,j)/pkz(i,j,L)
       enddo
       enddo
       enddo
@@ -414,7 +414,7 @@ c -------------------------
       do l = 2,Lm
       do i = 1,irun
        roiave  = ( 1./ro(i,L-1) + 1./ro(i,L) )*0.5
-       dz(i,L) = agrav*roiave*( pl(i,Lm+1-L-1)-pl(i,Lm+1-L) )
+       dz(i,L) = agrav*roiave*( pl(i,Lm+2-L)-pl(i,Lm+1-L) )
       enddo
       enddo
 
@@ -433,16 +433,16 @@ c ---------------------------------
 
       do  i = 1,irun
       do  L = 1,nbase(i)-1
-       robar(i) = robar(i) + ro(i,L) * (ple(i,Lm+1-L)-ple(i,Lm+1-L+1))
-       ubar(i) = ubar(i) + u(i,Lm+1-L) * (ple(i,Lm+1-L)-ple(i,Lm+1-L+1))
-       vbar(i) = vbar(i) + v(i,Lm+1-L) * (ple(i,Lm+1-L)-ple(i,Lm+1-L+1))
+       robar(i) = robar(i) + ro(i,L) * (ple(i,Lm+2-L)-ple(i,Lm+1-L))
+       ubar(i) = ubar(i) + u(i,Lm+1-L) * (ple(i,Lm+2-L)-ple(i,Lm+1-L))
+       vbar(i) = vbar(i) + v(i,Lm+1-L) * (ple(i,Lm+2-L)-ple(i,Lm+1-L))
       enddo
       enddo
 
       do  i = 1,irun
-       robar(i) = robar(i)/(ple(i,Lm)-ple(i,Lm+1-nbase(i))) * 100.0
-       ubar(i) = ubar(i)/(ple(i,Lm)-ple(i,Lm+1-nbase(i)))
-       vbar(i) = vbar(i)/(ple(i,Lm)-ple(i,Lm+1-nbase(i)))
+       robar(i) = robar(i)/(ps(i)-ple(i,Lm+1-nbase(i))) * 100.0
+       ubar(i) = ubar(i)/(ps(i)-ple(i,Lm+1-nbase(i)))
+       vbar(i) = vbar(i)/(ps(i)-ple(i,Lm+1-nbase(i)))
 
        speed(i) = sqrt( ubar(i)*ubar(i) + vbar(i)*vbar(i) )
        ang(i) = atan2(vbar(i),ubar(i))
@@ -469,7 +469,7 @@ c ---------------------------
       enddo
       do i = 1,irun
       do l = 2,nbase(i)
-       nbar(i) = nbar(i) + bv(i,L)*(pl(i,Lm+1-L-1)-pl(i,Lm+1-L))
+       nbar(i) = nbar(i) + bv(i,L)*(pl(i,Lm+2-L)-pl(i,Lm+1-L))
       enddo
       enddo
 
@@ -658,7 +658,7 @@ C ******************************************************
  
       do i = 1,irun
       do l = nthin(i)+1,Lm
-       coef = -grav*ple(i,Lm+1)/dpres(i,Lm+1-L)
+       coef = -grav*ps(i)/dpres(i,Lm+1-L)
        dudt(i,Lm+1-L) = coef*(xtens(i,L+1)-xtens(i,L))
        dvdt(i,Lm+1-L) = coef*(ytens(i,L+1)-ytens(i,L))
       enddo
@@ -667,7 +667,7 @@ C ******************************************************
 c Momentum change near the surface
 c --------------------------------
       do i = 1,irun
-       coef = grav*ple(i,Lm+1)/(ple(i,Lm+1-nthin(i))-ple(i,Lm+1))
+       coef = grav*ps(i)/(ple(i,Lm+1-nthin(i))-ple(i,Lm+1))
        dudt(i,Lm) = coef*(xtens(i,nthin(i)+1)-xtens(i,1))
        dvdt(i,Lm) = coef*(ytens(i,nthin(i)+1)-ytens(i,1))
       enddo
