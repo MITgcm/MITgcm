@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.492 2005/05/30 07:41:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.493 2005/05/31 18:27:24 adcroft Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o added pkg/runclock: allows user to terminate run based on wall clock
+o added non-hydrostatic scaling parameter: nh_am2
 o pkg/my82: futile attempt to make results compiler-independent by adding
   some "_d 0", etc. no effect.
 o for mnc output, fill the 'T' coordinate var with myTime and create a 
