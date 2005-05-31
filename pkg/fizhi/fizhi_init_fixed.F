@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.24 2005/05/24 16:29:38 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.25 2005/05/31 21:33:41 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -123,7 +123,11 @@ C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
        do bi = myBxLo(myThid), myBxHi(myThid)
         do j=jm1,jm2
         do i=im1,im2
-         phis_var(i,j,bi,bj) = tempoverlap(i,j,bi,bj)
+         if(fracland(i,j,bi,bj).gt.0.3) then
+          phis_var(i,j,bi,bj) = tempoverlap(i,j,bi,bj)
+         else
+          phis_var(i,j,bi,bj) = 0.
+         endif
         enddo
         enddo
        enddo
