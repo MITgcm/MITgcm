@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.6 2005/05/31 20:14:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.7 2005/06/01 18:08:33 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -120,23 +120,6 @@ c -----------------------
       enddo
       enddo
 
-      if(diagnostics_is_on('SDIAG1  ',myid) ) then
-       do j=1,jm
-       do i=1,im
-        tmpdiag(i,j) = float(nthin(i,j))
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'SDIAG1  ',0,1,3,bi,bj,myid)
-      endif
-      if(diagnostics_is_on('SDIAG2  ',myid) ) then
-       do j=1,jm
-       do i=1,im
-        tmpdiag(i,j) = float(nbase(i,j))
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'SDIAG2  ',0,1,3,bi,bj,myid)
-      endif
-
 c Compute Topography Sub-Grid Standard Deviation
 c        and constrain the Maximum Value
 c ----------------------------------------------
@@ -145,15 +128,6 @@ c ----------------------------------------------
       phis_std(i,j) = min( 400.0, sqrt( max(0.0,phis_var(i,j)) )/grav )
       enddo
       enddo
-
-      if(diagnostics_is_on('SDIAG3  ',myid) ) then
-       do j=1,jm
-       do i=1,im
-        tmpdiag(i,j) = phis_std(i,j)
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'SDIAG3  ',0,1,3,bi,bj,myid)
-      endif
 
 c Compute Virtual Temperatures
 c ----------------------------
@@ -180,27 +154,27 @@ c ------------------------------------------------
 
       do n=1,npcs
 
-      call strip ( phis_std,std,im*jm,istrip,1,n )
+      call stripit ( phis_std,std,im*jm,im*jm,istrip,1,n )
 
-      call strip ( pz,ps,im*jm,istrip,1 ,n )
-      call strip ( uz,us,im*jm,istrip,Lm,n )
-      call strip ( vz,vs,im*jm,istrip,Lm,n )
-      call strip ( tv,ts,im*jm,istrip,Lm,n )
-      call strip ( pl,plstr,im*jm,istrip,Lm,n )
-      call strip ( ple,plestr,im*jm,istrip,Lm,n )
-      call strip ( dpres,dpresstr,im*jm,istrip,Lm,n )
-      call stripint ( nthin,nthinstr,im*jm,istrip,1,n )
-      call stripint ( nbase,nbasestr,im*jm,istrip,1,n )
+      call stripit ( pz,ps,im*jm,im*jm,istrip,1 ,n )
+      call stripit ( uz,us,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( vz,vs,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( tv,ts,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( pl,plstr,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( ple,plestr,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( dpres,dpresstr,im*jm,im*jm,istrip,Lm,n )
+      call stripitint ( nthin,nthinstr,im*jm,im*jm,istrip,1,n )
+      call stripitint ( nbase,nbasestr,im*jm,im*jm,istrip,1,n )
 
       call GWDD ( ps,us,vs,ts,
      .            dragus,dragvs,dragxs,dragys,std,
      .            plstr,plestr,dpresstr,grav,rgas,cp,
      .            istrip,Lm,nthinstr,nbasestr,lstar )
 
-      call paste ( dragus,dragu,istrip,im*jm,Lm,n )
-      call paste ( dragvs,dragv,istrip,im*jm,Lm,n )
-      call paste ( dragxs,dragx,istrip,im*jm,1 ,n )
-      call paste ( dragys,dragy,istrip,im*jm,1 ,n )
+      call pastit( dragus,dragu,istrip,im*jm,im*jm,Lm,n )
+      call pastit( dragvs,dragv,istrip,im*jm,im*jm,Lm,n )
+      call pastit( dragxs,dragx,istrip,im*jm,im*jm,1 ,n )
+      call pastit( dragys,dragy,istrip,im*jm,im*jm,1 ,n )
 
       enddo
 
