@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.25 2005/05/31 21:33:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.26 2005/06/01 18:08:02 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -114,10 +114,8 @@ C     to send to fizhi init chem
      .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 
 C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
-        _BEGIN_MASTER( myThid )
-        CALL READ_REC_XY_RL('topvar19232.data',tempoverlap,1,0,mythid )
-        _END_MASTER(myThid)
-        _BARRIER
+       CALL READ_REC_XY_RL('topvar19232.data',tempoverlap,1,0,mythid )
+       _BARRIER
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
