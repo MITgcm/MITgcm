@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.2 2005/05/21 22:39:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.3 2005/06/02 22:56:52 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine fizhi_diagalarms (nymdb,nhmsb,myThid)
+      subroutine fizhi_diagalarms (myThid)
 
 C***********************************************************************        
 C  Purpose                                                                      
@@ -11,10 +11,10 @@ C     Routine to Set Alarms for diagnostic output
 C
 C  Argument Description                                                         
 C  --------------------                                                          
-C     nymdb ..... Begining Date to Start Alarm Clock 
-C     nhmsb ..... Begining Time to Start Alarm Clock 
 C     myThid .... Process ID
 C
+C NOTE: This routine ASSUMES that fizhi_init_fixed has been called
+C       IT WILL NOT WORK OTHERWISE
 C***********************************************************************        
       implicit none
 #include "SIZE.h"
@@ -26,19 +26,31 @@ C***********************************************************************
 
 c Input Parameters
 c ----------------
-      integer  nymdb,nhmsb,myThid
+      integer  myThid
 
-c Physics Frequencies
+c Local variables
 c -------------------
       integer  nhmsf, n, nincr 
       integer mmdd,hhmmss,nsecf2
       character *9 tagname
-                                                                                
+      integer  nymdb,nhmsb
+
 c Set Alarm Clocks
 c ----------------
+c To Set Begin Time for Alarm Clocks:
+c  Increment  < 1 month - counting starts at model start time
+c  Increment >= 1 month - counting starts at beginning of start month
+c ----------------------------------------------------------------------
 
 C-    2D/3D field diagnostics:
       do n = 1,nlists
+       if(freq(n).lt.100.) then
+        nymdb = nymd
+        nhmsb = nhms
+       else
+        nymdb = int(nymd/100) * 100 + 1
+        nhmsb = 0
+       endif
        write(tagname,'(A,I2.2)')'diagtag',n
        mmdd = int(freq(n))
        hhmmss = int((freq(n) - int(freq(n)))*1.e6)
@@ -48,6 +60,13 @@ C-    2D/3D field diagnostics:
 
 C-    Global/Regional statistics diagnostics:
       do n = 1,diagSt_nbLists
+       if(freq(n).lt.100.) then
+        nymdb = nymd
+        nhmsb = nhms
+       else
+        nymdb = int(nymd/100) * 100 + 1
+        nhmsb = 0
+       endif
        write(tagname,'(A,I2.2)')'diagStg',n
        mmdd = int(diagSt_freq(n))
        hhmmss = int((diagSt_freq(n) - int(diagSt_freq(n)))*1.e6)

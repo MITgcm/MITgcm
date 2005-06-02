@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.12 2005/05/24 16:28:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.13 2005/06/02 22:56:52 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -72,10 +72,10 @@ C  if runlength has been set in the fizhi namelist
        nincr = nsecf2(hhmmss,mmdd,nymdcurrent)
        ntimesteps = int(nincr/deltat)
        endTime = startTime + deltat*float(ntimeSteps)
-       WRITE(msgBuf,'(A,I8)') 
+       WRITE(msgBuf,'(A,I10)') 
      .         ' CHANGING NUMBER OF MODEL TIMESTEPS TO',ntimesteps
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,'(A,F10.2)') ' CHANGING END TIME TO',endtime
+       WRITE(msgBuf,'(A,F12.2)') ' CHANGING END TIME TO',endtime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
       endif
 
