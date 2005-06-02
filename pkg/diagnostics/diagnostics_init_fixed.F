@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.3 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.4 2005/06/02 22:57:47 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,7 +40,7 @@ C--   Calculate pointers for statistics-diags set to non-zero frequency
 
 #ifdef ALLOW_FIZHI
       if( useFIZHI) then
-      call fizhi_diagalarms(19000101,0,myThid)
+      call fizhi_diagalarms(myThid)
       endif
 #endif
 
