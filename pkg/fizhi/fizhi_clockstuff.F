@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.19 2005/06/03 22:45:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.20 2005/06/03 23:38:43 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -395,14 +395,14 @@ C***********************************************************************
       DAY    = MOD(NYMD,100)
 
       IDAY   = MNDY( MONTH ,MOD(YEAR ,4)+1 )
-      month = month - nsegm
-      If( month.lt.1 ) then
-      month = month + 12
-      year = year - 1
+      month = month + nsegm
+      If( month.gt.12 ) then
+      month = month - 12
+      year = year + 1
       endif
       IDAY2  = MNDY( MONTH ,MOD(YEAR ,4)+1 )
 
-                    nday = iday-iday2
+                    nday = iday2-iday
       if(nday.lt.0) nday = nday + 1461
                     nday = nday + nsegd
 
