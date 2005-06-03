@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.18 2005/06/03 21:48:35 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.19 2005/06/03 22:45:02 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1112,3 +1112,66 @@ c -------------------------------------------------------------
 
       return
       end
+      subroutine time2freq2(MMDD,NYMD,NHMS,timeleft)                              
+C***********************************************************************        
+C  PURPOSE                                                                      
+C     COMPUTES TIME IN SECONDS UNTIL WE REACH THE NEXT MMDD
+C                                                                               
+C  ARGUMENTS   DESCRIPTION                                                      
+C     MMDD     FREQUENCY (MMDDHHMMSS)                                      
+C     NYMD     CURRENT   YYMMDD                                                 
+C     NHMS     CURRENT   HHMMSS                                                 
+C     TIMELEFT TIME LEFT (SECONDS)
+C                                                                               
+C  NOTES - Only used when the frequency is in units of months
+C          Assumes that we always want to be at a month boundary                
+C***********************************************************************        
+      implicit none
+
+      integer time2freq2,mmdd,nymd,nhms,timeleft
+
+      integer nsday
+      parameter ( nsday  = 86400 )
+      integer year, month, day, sec 
+      integer yearnext, monthnext, daynext, secnext
+      integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
+      integer testnymd
+      integer MNDY(12,4)
+      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
+     .           397,34*0 /
+
+C***********************************************************************        
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
+C***********************************************************************        
+      DO I=15,48
+      MNDY(I,1) = MNDY(I-12,1) + 365
+      ENDDO
+C***********************************************************************        
+C*                   SET CURRENT TIME ELEMENTS                                 *        
+C***********************************************************************        
+      YEAR   = NYMD / 10000
+      MONTH  = MOD(NYMD,10000) / 100
+      DAY    = MOD(NYMD,100)
+      SEC    = NSECF(NHMS)
+C***********************************************************************        
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
+C***********************************************************************        
+      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
+      NSEC   = IDAY *NSDAY + SEC                                                
+                                                                                
+      testnymd=nymd + mmdd
+      yearnext=testnymd/10000
+      monthnext=mod(testnymd,10000)/100
+      daynext = 1
+      if(monthnext.gt.12) then
+       monthnext = monthnext - 12
+       yearnext = yearnext + 1
+      endif
+      testnymd = yearnext*10000 + monthnext*100 + daynext
+      idaynext = mndy(monthnext,mod(yearnext,4)+1)
+      nsecnext = idaynext *nsday
+
+      timeleft = nsecnext - nsec
+                                                                                
+      RETURN                                                                    
+      END                                                                       
