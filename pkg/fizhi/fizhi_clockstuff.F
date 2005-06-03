@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.17 2005/05/23 19:30:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.18 2005/06/03 21:48:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -93,7 +93,7 @@ c      integer  mpi_comm_model,ierror
 
       first = .false.
   100 format(1x,'Setting Alarm for: ',i8,2x,i6.6,',  with frequency: ',
-     .       i8,', and Tag: ',a80)
+     .       i10,', and Tag: ',a80)
       return
       end
 
@@ -395,14 +395,14 @@ C***********************************************************************
       DAY    = MOD(NYMD,100)
 
       IDAY   = MNDY( MONTH ,MOD(YEAR ,4)+1 )
-      month = month + nsegm
-      If( month.gt.12 ) then
-      month = month - 12
-      year = year + 1
+      month = month - nsegm
+      If( month.lt.1 ) then
+      month = month + 12
+      year = year - 1
       endif
       IDAY2  = MNDY( MONTH ,MOD(YEAR ,4)+1 )
 
-                    nday = iday2-iday
+                    nday = iday-iday2
       if(nday.lt.0) nday = nday + 1461
                     nday = nday + nsegd
 
@@ -709,9 +709,13 @@ C***********************************************************************
       integer MNDY(12,4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
+      INTEGER NDPM(12)
+      DATA NDPM /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
 
       integer i,nsecf2,nsecf,iday,iday0,nsec,nsec0,ntime
       integer NHMMSS,NMMDD
+      integer iloop
+      integer testnymd,testnhms,testndpm
 
 C***********************************************************************        
 C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
@@ -746,12 +750,46 @@ C***********************************************************************
       NSEC0  = IDAY0*NSDAY + SEC0                                               
                                                                                 
       NTIME  = NSEC-NSEC0                                      
-      IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE                                  
+      IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE
       NALARM2 = NTIME                                           
       IF(MHMS.NE.0) THEN
+       testnymd=nymd0
+       testnhms=nhms0
        NMMDD = MHMS / 1000000
        NHMMSS = MOD(MHMS,1000000)
-       NALARM2 = MOD(NALARM2,NSECF2(NHMMSS,NMMDD,NYMD))
+       do iloop=1,100000
+        testnymd=testnymd + nmmdd
+        testnhms=testnhms + nhmmss
+        year0=testnymd/10000
+        month0=mod(testnymd,10000)/100
+        day0 = mod(testnymd,100)
+        testndpm = ndpm(month0)
+        if( month0.eq.2  .and. mod(year0,4).eq.0) testndpm = 29
+        if(testnhms.ge.240000) then
+         testnhms = testnhms-240000
+         testnymd = testnymd + 1
+         day0 = day0 + 1
+        endif
+        if(day0.gt.testndpm) then
+         testnymd = testnymd - testndpm
+         testnymd = testnymd + 100
+         day0 = day0 - testndpm
+         month0 = month0 + 1
+        endif
+        if(month0.gt.12) then
+         month0 = month0 - 12
+         year0 = year0 + 1
+         testnymd = testnymd + 10000
+        endif
+        sec0 = nsecf(testnhms)
+        iday0 = (day0-1) + mndy(month0,mod(year0,4)+1)
+        nsec0 = iday0 *nsday + sec0
+        if( (testnymd.gt.nymd) .or. 
+     .         (testnymd.eq.testnymd) .and. (testnhms.gt.nhms) )
+     .                    go to 200
+        nalarm2 = nsec-nsec0
+       enddo
+ 200   continue
       ENDIF
                                                                                 
       RETURN                                                                    
