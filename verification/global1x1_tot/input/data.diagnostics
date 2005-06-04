@@ -66,3 +66,6 @@
    filename(11) = 'DiaBrVaF',
 #
  &end
+#
+ &DIAG_STATIS_PARMS
+ &end
