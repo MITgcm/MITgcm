@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.493 2005/05/31 18:27:24 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.494 2005/06/07 20:52:42 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add IGNORE_TIME define and -ignore_time option to genmake2 as an
+  end-run around the C/Fortran linking horror in eesup/src/timers.F
 o added pkg/runclock: allows user to terminate run based on wall clock
 o added non-hydrostatic scaling parameter: nh_am2
 o pkg/my82: futile attempt to make results compiler-independent by adding

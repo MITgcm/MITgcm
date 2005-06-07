@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.123 2005/04/28 18:01:19 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.124 2005/06/07 20:52:42 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -835,7 +835,7 @@ NOOPTFLAGS=
 MPI=
 MPIPATH=
 
-# DEFINES checked by test compilation
+# DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
@@ -843,6 +843,7 @@ HAVE_CLOC=
 HAVE_STAT=
 HAVE_NETCDF=
 HAVE_ETIME=
+IGNORE_TIME=
 
 MODS=
 TOOLSDIR=
@@ -1091,6 +1092,9 @@ for ac_option in "$@" ; do
 	    ac_prev=TAMC_EXTRA ;;
 	-tamc_extra=* | --tamc_extra=*)
 	    TAMC_EXTRA=$ac_optarg ;;
+	
+	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
+	    IGNORE_TIME="-DIGNORE_TIME" ;;
 
 	-*)
 	    echo "Error: unrecognized option: "$ac_option
@@ -1387,7 +1391,7 @@ if test "x$HAVE_NETCDF" != x ; then
 else
     echo "no"
 fi
-
+DEFINES="$DEFINES $IGNORE_TIME"
 
 printf "\n===  Setting defaults  ===\n"
 printf "  Adding MODS directories:  "

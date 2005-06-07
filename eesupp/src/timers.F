@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.18 2005/01/13 00:10:38 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.19 2005/06/07 20:52:42 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -491,6 +491,8 @@ CEOP
 C     Real*8 MPI_Wtime
 C     EXTERNAL MPI_Wtime
 
+#ifndef IGNORE_TIME
+
 CCE107 Fixed for AIX and UNICOS
 #ifdef TARGET_AIX
       ACTUAL = ETIME_(TARRAY)
@@ -524,6 +526,10 @@ CCE107 Sometimes MPI_Wtime has better resolution...
       wallClockTime = wtime
 #endif /* ALLOW_USE_MPI && USE_MPI_WTIME */
       
+#else   /* IGNORE_TIME */
+      wtime = 0.0
+#endif  /* IGNORE_TIME */
+
       RETURN
       END
 
