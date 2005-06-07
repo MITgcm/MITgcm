@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.3 2005/05/23 19:30:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.4 2005/06/07 17:43:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -93,7 +93,7 @@ c      integer  mpi_comm_model,ierror
 
       first = .false.
   100 format(1x,'Setting Alarm for: ',i8,2x,i6.6,',  with frequency: ',
-     .       i8,', and Tag: ',a80)
+     .       i10,', and Tag: ',a80)
       return
       end
 
@@ -711,9 +711,13 @@ C***********************************************************************
       integer MNDY(12,4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
+      INTEGER NDPM(12)
+      DATA NDPM /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
 
       integer i,nsecf2,nsecf,iday,iday0,nsec,nsec0,ntime
       integer NHMMSS,NMMDD
+      integer iloop
+      integer testnymd,testnhms,testndpm
 
 C***********************************************************************        
 C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
@@ -748,12 +752,46 @@ C***********************************************************************
       NSEC0  = IDAY0*NSDAY + SEC0                                               
                                                                                 
       NTIME  = NSEC-NSEC0                                      
-      IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE                                  
+      IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE
       NALARM2 = NTIME                                           
       IF(MHMS.NE.0) THEN
+       testnymd=nymd0
+       testnhms=nhms0
        NMMDD = MHMS / 1000000
        NHMMSS = MOD(MHMS,1000000)
-       NALARM2 = MOD(NALARM2,NSECF2(NHMMSS,NMMDD,NYMD))
+       do iloop=1,100000
+        testnymd=testnymd + nmmdd
+        testnhms=testnhms + nhmmss
+        year0=testnymd/10000
+        month0=mod(testnymd,10000)/100
+        day0 = mod(testnymd,100)
+        testndpm = ndpm(month0)
+        if( month0.eq.2  .and. mod(year0,4).eq.0) testndpm = 29
+        if(testnhms.ge.240000) then
+         testnhms = testnhms-240000
+         testnymd = testnymd + 1
+         day0 = day0 + 1
+        endif
+        if(day0.gt.testndpm) then
+         testnymd = testnymd - testndpm
+         testnymd = testnymd + 100
+         day0 = day0 - testndpm
+         month0 = month0 + 1
+        endif
+        if(month0.gt.12) then
+         month0 = month0 - 12
+         year0 = year0 + 1
+         testnymd = testnymd + 10000 - 1200
+        endif
+        sec0 = nsecf(testnhms)
+        iday0 = (day0-1) + mndy(month0,mod(year0,4)+1)
+        nsec0 = iday0 *nsday + sec0
+        if( (testnymd.gt.nymd) .or. 
+     .         (testnymd.eq.testnymd) .and. (testnhms.gt.nhms) )
+     .                    go to 200
+        nalarm2 = nsec-nsec0
+       enddo
+ 200   continue
       ENDIF
                                                                                 
       RETURN                                                                    
@@ -1076,3 +1114,66 @@ c -------------------------------------------------------------
 
       return
       end
+      subroutine time2freq2(MMDD,NYMD,NHMS,timeleft)                              
+C***********************************************************************        
+C  PURPOSE                                                                      
+C     COMPUTES TIME IN SECONDS UNTIL WE REACH THE NEXT MMDD
+C                                                                               
+C  ARGUMENTS   DESCRIPTION                                                      
+C     MMDD     FREQUENCY (MMDDHHMMSS)                                      
+C     NYMD     CURRENT   YYMMDD                                                 
+C     NHMS     CURRENT   HHMMSS                                                 
+C     TIMELEFT TIME LEFT (SECONDS)
+C                                                                               
+C  NOTES - Only used when the frequency is in units of months
+C          Assumes that we always want to be at a month boundary                
+C***********************************************************************        
+      implicit none
+
+      integer time2freq2,mmdd,nymd,nhms,timeleft
+
+      integer nsday
+      parameter ( nsday  = 86400 )
+      integer year, month, day, sec 
+      integer yearnext, monthnext, daynext, secnext
+      integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
+      integer testnymd
+      integer MNDY(12,4)
+      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
+     .           397,34*0 /
+
+C***********************************************************************        
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
+C***********************************************************************        
+      DO I=15,48
+      MNDY(I,1) = MNDY(I-12,1) + 365
+      ENDDO
+C***********************************************************************        
+C*                   SET CURRENT TIME ELEMENTS                                 *        
+C***********************************************************************        
+      YEAR   = NYMD / 10000
+      MONTH  = MOD(NYMD,10000) / 100
+      DAY    = MOD(NYMD,100)
+      SEC    = NSECF(NHMS)
+C***********************************************************************        
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
+C***********************************************************************        
+      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
+      NSEC   = IDAY *NSDAY + SEC                                                
+                                                                                
+      testnymd=nymd + mmdd
+      yearnext=testnymd/10000
+      monthnext=mod(testnymd,10000)/100
+      daynext = 1
+      if(monthnext.gt.12) then
+       monthnext = monthnext - 12
+       yearnext = yearnext + 1
+      endif
+      testnymd = yearnext*10000 + monthnext*100 + daynext
+      idaynext = mndy(monthnext,mod(yearnext,4)+1)
+      nsecnext = idaynext *nsday
+
+      timeleft = nsecnext - nsec
+                                                                                
+      RETURN                                                                    
+      END                                                                       
