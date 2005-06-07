@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.21 2005/06/06 16:22:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.22 2005/06/07 13:28:18 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1128,7 +1128,7 @@ C          Assumes that we always want to be at a month boundary
 C***********************************************************************        
       implicit none
 
-      integer time2freq2,mmdd,nymd,nhms,timeleft
+      integer mmdd,nymd,nhms,timeleft
 
       integer nsday
       parameter ( nsday  = 86400 )
