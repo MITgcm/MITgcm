@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.14 2005/05/15 03:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.15 2005/06/09 16:38:24 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -242,15 +242,24 @@ C     Write pickup file for diagnostics package
       ENDIF
 #endif  /* ALLOW_GGL90 */
 
-       _END_MASTER( myThid )
-       _BARRIER
+      _END_MASTER( myThid )
+      _BARRIER
 
 #ifdef ALLOW_PTRACERS
-C      Write restart file for passive tracers
-       IF (usePTRACERS) THEN
-         CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
-       ENDIF
+C     Write restart file for passive tracers
+      IF (usePTRACERS) THEN
+        CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
+      ENDIF
 #endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_OFFLINE
+C     This is quick fix for A/B checkpoints since the main model
+C     checkpoint routine will not be called in OFFLINE mode and will
+C     thus not have the chance to set the alternating A/B suffix
+      IF ( .NOT. permCheckPoint ) THEN
+        nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
+      ENDIF
+#endif /* ALLOW_OFFLINE */
 
       RETURN
       END
