@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.158 2005/05/31 18:24:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.159 2005/06/09 15:53:19 jmc Exp $
 C $Name:  $
 C
 
@@ -239,7 +239,8 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
 C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
 C     SadournyCoriolis :: use the enstrophy conserving scheme by Sadourny
 C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
-C     highOrderVorticity :: use 3rd/4th order interp. of vorticity in Coriolis
+C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
+C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
 C     useAbsVorticity :: work with f+zeta in Coriolis terms
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
@@ -304,7 +305,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
      & SadournyCoriolis, upwindVorticity, highOrderVorticity,
-     & useAbsVorticity,
+     & useAbsVorticity, upwindShear,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec, forcing_In_AB,
@@ -361,6 +362,7 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL upwindVorticity
       LOGICAL highOrderVorticity
       LOGICAL useAbsVorticity
+      LOGICAL upwindShear
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
       LOGICAL tempImplVertAdv 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.92 2005/05/31 14:49:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.93 2005/06/09 15:53:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -174,6 +174,7 @@ Cml      sBeta               = 7.4D-4
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.
+      upwindShear         = .FALSE.
       debugLevel          = debLevA
       inAdMode            = .FALSE.
       inAdExact           = .TRUE.

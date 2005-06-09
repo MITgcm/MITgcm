@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.73 2005/04/15 14:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.74 2005/06/09 15:53:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -290,6 +290,8 @@ C     zcoord ::
      & 'useAbsVorticity=',' /* Work with f+zeta in Coriolis */')
       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
      & 'highOrderVorticity=',' /* High order interp. of vort. flag */')
+      CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
+     & 'upwindShear=', ' /* Upwind vertical Shear advection flag */')
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
