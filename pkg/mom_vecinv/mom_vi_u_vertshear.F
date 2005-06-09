@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.5 2004/07/20 17:46:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.6 2005/06/09 15:59:20 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -30,16 +30,15 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J,Kp1,Km1
       _RL  mask_Kp1,mask_Km1,wBarXm,wBarXp
-      _RL  uZm,uZp,umask_Kp1,umask_K,umask_Km1
-      LOGICAL freeslipK,noslipK
-      PARAMETER(freeslipK=.TRUE.)
-      PARAMETER(noslipK=.NOT.freeslipK)
-      LOGICAL freeslip1,noslip1
-      PARAMETER(freeslip1=.TRUE.)
-      PARAMETER(noslip1=.NOT.freeslip1)
+      _RL  uZm,uZp
+c     _RL  umask_Kp1,umask_K,umask_Km1
+c     LOGICAL freeslipK,noslipK
+c     PARAMETER(freeslipK=.TRUE.)
+c     PARAMETER(noslipK=.NOT.freeslipK)
+c     LOGICAL freeslip1,noslip1
+c     PARAMETER(freeslip1=.TRUE.)
+c     PARAMETER(noslip1=.NOT.freeslip1)
 c1    _RL  wBarXZ,uZbarZ
-c1    LOGICAL upwindShear
-c1    PARAMETER(upwindShear=.FALSE.)
 
       Kp1=min(K+1,Nr)
       mask_Kp1=1.
@@ -73,6 +72,7 @@ C       Transport at interface k+1 (here wFld is already masked)
 C delta_Z( U )  @ interface k
 c       umask_Km1=mask_Km1*maskW(i,j,Km1,bi,bj)
         uZm=(mask_Km1*uFld(I,J,Km1,bi,bj)-uFld(I,J,K,bi,bj))
+c    &      *rkFac
 c2   &      *recip_dRC(K)
 c       IF (freeslip1) uZm=uZm*umask_Km1
 c       IF (noslip1.AND.umask_Km1.EQ.0.) uZm=uZm*2.
@@ -80,6 +80,7 @@ c       IF (noslip1.AND.umask_Km1.EQ.0.) uZm=uZm*2.
 C delta_Z( U )  @ interface k+1
 c       umask_Kp1=mask_Kp1*maskW(i,j,Kp1,bi,bj)
         uZp=(uFld(I,J,K,bi,bj)-mask_Kp1*uFld(I,J,Kp1,bi,bj))
+c    &      *rkFac
 c2   &      *recip_dRC(Kp1)
 c       IF (freeslipK) uZp=uZp*umask_Kp1
 c       IF (noslipK.AND.umask_Kp1.EQ.0.) uZp=uZp*2.
@@ -98,10 +99,19 @@ c1      uShearTerm(I,J)=-wBarXZ*uZbarZ*_maskW(I,J,K,bi,bj)
 
 c2      uShearTerm(I,J)=-0.5*(wBarXp*uZp+wBarXm*uZm)
 c2   &                  *_maskW(I,J,K,bi,bj)
-        uShearTerm(I,J)=-0.5*(wBarXp*uZp+wBarXm*uZm)
-     &                  *recip_raw(i,j,bi,bj)
-     &                  *recip_hFacW(i,j,k,bi,bj)
-     &                  *recip_dRF(K)
+        IF (upwindShear) THEN
+          uShearTerm(I,J)=-0.5*
+     &                   (     (wBarXp*uZp+wBarXm*uZm)
+     &                        +(ABS(wBarXp)*uZp-ABS(wBarXm)*uZm)
+     &                   )*recip_rAw(i,j,bi,bj)
+     &                    *recip_hFacW(i,j,k,bi,bj)
+     &                    *recip_drF(K)
+        ELSE
+          uShearTerm(I,J)=-0.5*(wBarXp*uZp+wBarXm*uZm)
+     &                    *recip_rAw(i,j,bi,bj)
+     &                    *recip_hFacW(i,j,k,bi,bj)
+     &                    *recip_drF(K)
+        ENDIF
        ENDDO
       ENDDO
 
