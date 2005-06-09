@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.495 2005/06/09 16:38:24 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.496 2005/06/09 17:51:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o momentum advection (VI form) options: activate 4th.O vorticity Coriolis ;
+  add 1rst Order upwind vertical Shear.
 o add a quick fix for A/B checkpointing in OFFLINE mode
 o add IGNORE_TIME define and -ignore_time option to genmake2 as an
   end-run around the C/Fortran linking horror in eesup/src/timers.F
