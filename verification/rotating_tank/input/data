@@ -10,7 +10,6 @@
  viscAz=5.0E-6,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- viscA4=0.E12,
  diffKhT=2.5E-6,
  diffKzT=2.5E-6,
  diffKhS=1.0E-6,
