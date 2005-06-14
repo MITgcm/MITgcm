@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.10 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.11 2005/06/14 22:30:02 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -58,7 +58,7 @@ C     stat_fname  :: List of statistics output Filename
       INTEGER stat_region(rdimLoc,ldimLoc)
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m
-      INTEGER iL, regionCount
+      INTEGER regionCount
       _RL undef, getcon
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -187,14 +187,7 @@ C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
-       iL = ILNBLNK(filename(l))
-       IF ( frequency(l).NE.0. .AND. iL.EQ.0 ) THEN
-         WRITE(msgBuf,'(2A,I3,A,F17.6)') 'DIAGNOSTICS_READPARMS: ',
-     &    'Empty File-name ! (list l=', l, ' ), freq:',frequency(l)
-         CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
-       ENDIF
-       IF ( frequency(l).NE.0. .AND. nlists.LT.numlists ) THEN
+       IF ( filename(L).NE.blkFilName .and. nlists.LT.numlists ) THEN
          n = nlists + 1
          freq(n)    = frequency(l)
          IF ( timePhase(l).NE. UNSET_RL ) THEN
@@ -249,7 +242,7 @@ C-       will set levels later, once the Nb of levels of each diag is known
          ENDDO
          nlists = nlists + 1
 c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
-       ELSEIF ( frequency(l).NE.0. ) THEN
+       ELSEIF (filename(L).NE.blkFilName) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )
@@ -286,14 +279,8 @@ C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
-       iL = ILNBLNK(stat_fname(l))
-       IF ( stat_freq(l).NE.0. .AND. iL.EQ.0 ) THEN
-         WRITE(msgBuf,'(2A,I3,A,F17.6)') 'DIAGNOSTICS_READPARMS: ',
-     &    'Empty File-name ! (list l=', l, ' ), stat_freq:',stat_freq(l)
-         CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
-       ENDIF
-       IF ( stat_freq(l).NE.0. .AND. diagSt_nbLists.LT.numlists ) THEN
+       IF(stat_fname(L).NE.blkFilName.AND.
+     .                            diagSt_nbLists.LT.numlists)THEN
          n = diagSt_nbLists + 1
          diagSt_freq(n) = stat_freq(l)
          IF ( stat_phase(l).NE. UNSET_RL ) THEN
@@ -346,7 +333,7 @@ C-       no region selected => default is Global statistics (region Id: 0)
          ENDDO
          diagSt_nbLists = diagSt_nbLists + 1
 c        write(6,*) 'stat-list summary:',n,diagSt_nbFlds(n),regionCount
-       ELSEIF ( stat_freq(l).NE.0. ) THEN
+       ELSEIF ( stat_fname(L).NE.blkFilName ) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )

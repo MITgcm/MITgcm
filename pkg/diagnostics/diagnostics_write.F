@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.20 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.21 2005/06/14 22:30:02 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -100,7 +100,7 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow ) THEN
+          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) THEN
             CALL DIAGNOSTICS_OUT(n,wrIter,myTime,myThid)
           ENDIF
         ENDDO
@@ -133,7 +133,7 @@ C       state-variable time-step:
          endif
 #endif
 
-          IF ( dump2fileNow ) THEN
+          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) THEN
             CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
           ENDIF
         ENDDO
@@ -175,7 +175,8 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow ) CALL CLRINDX(n,myThid)
+          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) 
+     .                             CALL CLRINDX(n,myThid)
         ENDDO
 
         DO n = 1,diagSt_nbLists
@@ -191,7 +192,8 @@ C-    Yearly  freqSec:
           dump2fileNow = alarm2(tagname)
          endif
 #endif
-          IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR(n,myThid)
+          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) 
+     .                             CALL DIAGSTATS_CLEAR(n,myThid)
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
