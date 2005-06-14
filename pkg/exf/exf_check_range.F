@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.21 2005/04/09 23:37:56 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.22 2005/06/14 23:21:05 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -123,7 +123,7 @@ c             2-m air temperature
               if ( (atemp(i,j,bi,bj) .LT. 183 .OR.
      &             atemp(i,j,bi,bj) .GT. 343 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+                 write(standardmessageunit,'(2A,2(2X,I5),2X,D22.15)')
      &                'EXF WARNING: atemp + exf_offset_atemp ',
      &                'out of range for i,j= ',
      &                i, j, atemp(i,j,bi,bj)
