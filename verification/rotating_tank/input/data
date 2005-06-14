@@ -15,7 +15,6 @@
  diffKhS=1.0E-6,
  diffKzS=1.0E-6,
  f0=0.5,
- tAlpha=2.0E-4,
  sBeta =0.,
  gravity=9.81,
  rhoConst=1000.0,
