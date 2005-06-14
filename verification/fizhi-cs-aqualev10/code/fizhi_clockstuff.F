@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.4 2005/06/07 17:43:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.5 2005/06/14 23:08:15 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -219,7 +219,7 @@ c      integer  mpi_comm_model,ierror
       do n=1,ntags
       if( tags(n).eq.tag  ) then
           if( freqs(n).eq.0 ) then
-          alarm2 = (dates(n).eq.datein) .and. (times(n).eq.timein)
+          alarm2 = .false.
           else
           alarm2 = ( datein.gt.dates(n) .or.
      .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.

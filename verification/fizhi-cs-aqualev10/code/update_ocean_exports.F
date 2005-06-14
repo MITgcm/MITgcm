@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.1 2005/05/12 18:56:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.2 2005/06/14 23:08:15 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,16 +17,45 @@ c-----------------------------------------------------------------------
 #include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 #include "chronos.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
        integer myIter, myThid
        _RL myTime
 
-       integer i, j, bi, bj, biglobal, bjglobal
+       integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-       integer nSxglobal, nSyglobal
-       integer ksst,kice
+       integer xsize, ysize
        _RL        sstmin 
        parameter ( sstmin = 273.16 )
+
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xsize = exch2_domain_nxt * sNx )
+       PARAMETER ( ysize = exch2_domain_nyt * sNy )
+#else
+       PARAMETER ( xsize = Nx )
+       PARAMETER ( ysize = Ny )
+#endif
+       _RL sst1(xsize,ysize),sst2(xsize,ysize)
+       _RL sice1(xsize,ysize),sice2(xsize,ysize)
+       integer nymd1sst(nSx,nSy),nymd2sst(nSx,nSy)
+       integer nymd1sice(nSx,nSy),nymd2sice(nSx,nSy)
+       integer nhms1sst(nSx,nSy),nhms2sst(nSx,nSy)
+       integer nhms1sice(nSx,nSy),nhms2sice(nSx,nSy)
+       integer sstdates(370,nSx,nSy),sicedates(370,nSx,nSy)
+       integer ssttimes(370,nSx,nSy),sicetimes(370,nSx,nSy)
+       logical first(nSx,nSy)
+       integer nSxnSy
+       parameter(nSxnSy = nSx*nSy)
+       data first/nSxnSy*.true./
+
+       save nymd1sst,nymd2sst,nymd1sice,nymd2sice
+       save nhms1sst,nhms2sst,nhms1sice,nhms2sice
+       save sst1, sst2, sice1, sice2
+       save sstdates, sicedates
+       save ssttimes, sicetimes
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -36,24 +65,29 @@ c-----------------------------------------------------------------------
        im2 = sNx
        jm1 = 1
        jm2 = sNy
-       nSxglobal = nSx*nPx
-       nSyglobal = nSy*nPy
 
-       call mdsfindunit( ksst, myThid )
-       call mdsfindunit( kice, myThid )
- 
 C***********************************************************************
 
        DO BJ = myByLo(myThid),myByHi(myThid)
        DO BI = myBxLo(myThid),myBxHi(myThid)
-
-       biglobal=bi+(myXGlobalLo-1)/im2
-       bjglobal=bj+(myYGlobalLo-1)/jm2
+#if defined(ALLOW_EXCH2)
+       bislot = exch2_txglobalo(W2_myTileList(bi))-1
+       bjslot = exch2_tyglobalo(W2_myTileList(bi))-1
+#else
+       bislot = myXGlobalLo-1+(bi-1)*sNx
+       bjslot = myYGlobalLo-1+(bj-1)*sNy
+#endif
 
        call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,
+     .  first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
+     .  nhms1sst(bi,bj),nhms2sst(bi,bj),sstdates(1,bi,bj),
+     .  ssttimes(1,bi,bj),sst,myThid)
        call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,
+     .  first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
+     .  nhms1sice(bi,bj),nhms2sice(bi,bj),sicedates(1,bi,bj),
+     .  sicetimes(1,bi,bj),sice,myThid)
 
 c Check for Minimum Open-Water SST
 c --------------------------------
@@ -66,13 +100,17 @@ c --------------------------------
 
        ENDDO
        ENDDO
+       _EXCH_XY_R8(sst,myThid)
+       _EXCH_XY_R8(sice,myThid)
 
        return
        end
 
        subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .     nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
-C************************************************************************
+     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .      sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .      nymdbc,nhmsbc,sice,mythid)
+C***********************************************************************
 C
 C!ROUTINE:	GETSICE
 C!DESCRIPTION:	GETSICE returns the sea ice depth.
@@ -92,12 +130,12 @@ C!      jm1       Begin of y-direction span for filling sice
 C!      jm2       End of y-direction span for filling sice
 C!      nSumx     Number of processors in x-direction (local processor)
 C!      nSumy     Number of processors in y-direction (local processor)
-C!      nPgx      Number of processors in x-direction (global)
-C!      nPgx      Number of processors in y-direction (global)
+C!      xsize      Number of processors in x-direction (global)
+C!      ysize      Number of processors in y-direction (global)
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
-C!      biglobal  Processor number in x-direction (global)
-C!      bjglobal  Processor number in y-direction (global)
+C!      bislot  Processor number in x-direction (global)
+C!      bjslot  Processor number in y-direction (global)
 C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
@@ -114,14 +152,24 @@ C--------------------------------------------------------------------------
 
       implicit none
 #include "SIZE.h"
+#include "GRID.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
 
+      _RL sicebc1(xsize,ysize)
+      _RL sicebc2(xsize,ysize)
       _RL sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
+      integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
+      logical first
+
+C Maximum number of dates in one year for the data
+      integer   ndmax
+      parameter (ndmax = 370)
+      integer nymdbc(ndmax),nhmsbc(ndmax)
 
       integer i,j
-
+ 
       do j = jm1,jm2
       do i = im1,im2
        sice(i,j,bi,bj) = 0.
@@ -131,8 +179,10 @@ C--------------------------------------------------------------------------
       return
       end
       subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
-C************************************************************************
+     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .      sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .      nymdbc,nhmsbc,sst,mythid)
+C***********************************************************************
 C
 C!ROUTINE:	GETSST
 C!DESCRIPTION:	GETSST gets the SST data.
@@ -146,18 +196,18 @@ C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
 C!      jdim2     End dimension in y-direction
-C!      im1       Begin of x-direction span for filling sice
-C!      im2       End of x-direction span for filling sice
-C!      jm1       Begin of y-direction span for filling sice
-C!      jm2       End of y-direction span for filling sice
+C!      im1       Begin of x-direction span for filling sst
+C!      im2       End of x-direction span for filling sst
+C!      jm1       Begin of y-direction span for filling sst
+C!      jm2       End of y-direction span for filling sst
 C!      nSumx     Number of processors in x-direction (local processor)
 C!      nSumy     Number of processors in y-direction (local processor)
-C!      nPgx      Number of processors in x-direction (global)
-C!      nPgy      Number of processors in y-direction (global)
+C!      xsize     x-dimension of global array
+C!      ysize     y-dimension of global array
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
-C!      biglobal  Processor number in x-direction (global)
-C!      bjglobal  Processor number in y-direction (global)
+C!      bislot    Slot number into global array in x-direction (global)
+C!      bjslot    Slot number into global array in y-direction (global)
 C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
@@ -168,7 +218,7 @@ C!ROUTINES CALLED:
 C
 C!	bcdata		Reads the data for a given unit number
 C!	bcheader	Reads the header info for a given unit number
-C!     interp_time   Returns weights for linear interpolation
+C!     interp_time      Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
 
@@ -177,9 +227,19 @@ C--------------------------------------------------------------------------
 #include "GRID.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
 
+      _RL sstbc1(xsize,ysize)
+      _RL sstbc2(xsize,ysize)
       _RL sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
+      integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
+      logical first
+
+C Maximum number of dates in one year for the data
+      integer   ndmax
+      parameter (ndmax = 370)
+      integer nymdbc(ndmax),nhmsbc(ndmax)
+
       _RL getcon, deg2rad, sinarg, cosarg1, cosarg2
 
       integer i,j
@@ -219,11 +279,11 @@ c   and now add the anomaly
 c      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. 0.523 ) then
 c       cosarg1 = xc(i,j,bi,bj)*deg2rad - 1.57
 c       cosarg2 = 1.57*yc(i,j,bi,bj)*deg2rad/0.523
-c       sst(i,j,bi,bj) = sst(i,j,bi,bj) + 
+c       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
 c    .             3.*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
 c      endif
       enddo
       enddo
- 
+
       return
       end

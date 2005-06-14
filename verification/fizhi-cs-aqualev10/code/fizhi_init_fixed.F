@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_init_fixed.F,v 1.1 2005/05/24 14:54:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_init_fixed.F,v 1.2 2005/06/14 23:08:15 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -121,6 +121,14 @@ C     to send to fizhi init chem
         enddo
        enddo
        enddo
+
+C Finally, grab unit numbers for reading sst and sea ice
+C   (held in common block fizhi ocean coms)
+
+       call mdsfindunit( kice, myThid )
+       open(kice)
+       call mdsfindunit( ksst, myThid )
+       open(ksst)
 
        return
        end
