@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.21 2005/06/14 22:30:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.22 2005/06/14 23:06:15 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -100,7 +100,8 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) THEN
+          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
+     .                                                dumpatlast) ) THEN
             CALL DIAGNOSTICS_OUT(n,wrIter,myTime,myThid)
           ENDIF
         ENDDO
@@ -133,7 +134,8 @@ C       state-variable time-step:
          endif
 #endif
 
-          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) THEN
+          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
+     .                                                dumpatlast) ) THEN
             CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
           ENDIF
         ENDDO
@@ -175,7 +177,8 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) 
+          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
+     .                                                dumpatlast) ) 
      .                             CALL CLRINDX(n,myThid)
         ENDDO
 
@@ -192,7 +195,8 @@ C-    Yearly  freqSec:
           dump2fileNow = alarm2(tagname)
          endif
 #endif
-          IF ( dump2fileNow .or. (myIter.eq.nIter0+nTimeSteps) ) 
+          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
+     .                                                dumpatlast) ) 
      .                             CALL DIAGSTATS_CLEAR(n,myThid)
         ENDDO
 

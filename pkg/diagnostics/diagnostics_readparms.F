@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.11 2005/06/14 22:30:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.12 2005/06/14 23:06:15 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,7 +66,7 @@ C     stat_fname  :: List of statistics output Filename
 C--   full level output:
       NAMELIST / diagnostics_list /
      &     frequency, timePhase, levels, fields, filename, fileflags,
-     &     diag_mnc,
+     &     dumpatlast, diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
@@ -98,6 +98,7 @@ C       eight spaces:        12345678
           fields (m,l) = blk8c
         ENDDO
       ENDDO
+      dumpatlast = .FALSE.
       diag_mnc = useMNC
       diag_pickup_read      = .FALSE.
       diag_pickup_write     = .FALSE.
