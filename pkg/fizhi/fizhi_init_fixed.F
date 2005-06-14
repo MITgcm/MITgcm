@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.26 2005/06/01 18:08:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.27 2005/06/14 18:14:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -130,6 +130,14 @@ C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
         enddo
        enddo
        enddo
+
+C Finally, grab unit numbers for reading sst and sea ice
+C   (held in common block fizhi ocean coms)
+
+       call mdsfindunit( kice, myThid )
+       open(kice)
+       call mdsfindunit( ksst, myThid )
+       open(ksst)
 
        return
        end

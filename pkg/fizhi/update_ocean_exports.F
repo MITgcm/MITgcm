@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.22 2005/05/07 14:35:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.23 2005/06/14 18:14:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -28,7 +28,6 @@ c-----------------------------------------------------------------------
        integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer xsize, ysize
-       integer ksst,kice
        _RL        sstmin 
        parameter ( sstmin = 273.16 )
 
@@ -41,8 +40,22 @@ c-----------------------------------------------------------------------
 #endif
        _RL sst1(xsize,ysize),sst2(xsize,ysize)
        _RL sice1(xsize,ysize),sice2(xsize,ysize)
+       integer nymd1sst(nSx,nSy),nymd2sst(nSx,nSy)
+       integer nymd1sice(nSx,nSy),nymd2sice(nSx,nSy)
+       integer nhms1sst(nSx,nSy),nhms2sst(nSx,nSy)
+       integer nhms1sice(nSx,nSy),nhms2sice(nSx,nSy)
+       integer sstdates(370,nSx,nSy),sicedates(370,nSx,nSy)
+       integer ssttimes(370,nSx,nSy),sicetimes(370,nSx,nSy)
+       logical first(nSx,nSy)
+       integer nSxnSy
+       parameter(nSxnSy = nSx*nSy)
+       data first/nSxnSy*.true./
 
+       save nymd1sst,nymd2sst,nymd1sice,nymd2sice
+       save nhms1sst,nhms2sst,nhms1sice,nhms2sice
        save sst1, sst2, sice1, sice2
+       save sstdates, sicedates
+       save ssttimes, sicetimes
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -53,9 +66,6 @@ c-----------------------------------------------------------------------
        jm1 = 1
        jm2 = sNy
 
-       call mdsfindunit( ksst, myThid )
-       call mdsfindunit( kice, myThid )
- 
 C***********************************************************************
 
        DO BJ = myByLo(myThid),myByHi(myThid)
@@ -69,9 +79,15 @@ C***********************************************************************
 #endif
 
        call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,sst)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,
+     .  first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
+     .  nhms1sst(bi,bj),nhms2sst(bi,bj),sstdates(1,bi,bj),
+     .  ssttimes(1,bi,bj),sst,myThid)
        call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,sice)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,
+     .  first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
+     .  nhms1sice(bi,bj),nhms2sice(bi,bj),sicedates(1,bi,bj),
+     .  sicetimes(1,bi,bj),sice,myThid)
 
 c Check for Minimum Open-Water SST
 c --------------------------------
@@ -91,8 +107,9 @@ c --------------------------------
        end
 
        subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .            nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .                                             sicebc1,sicebc2,sice)
+     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .      sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .      nymdbc,nhmsbc,sice,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSICE
@@ -137,35 +154,35 @@ C--------------------------------------------------------------------------
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
 
       _RL sicebc1(xsize,ysize)
       _RL sicebc2(xsize,ysize)
       _RL sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
+      integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
+      logical first
 
 C Maximum number of dates in one year for the data
       integer 	ndmax
       parameter (ndmax = 370)
+      integer nymdbc(ndmax),nhmsbc(ndmax)
 
       character*8  cname
       character*80 cdscrip
       character*40 sicedata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
-      logical first, found, error
+      logical found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
-      integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
-      integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
+      integer ndatebc,nrec
+      integer nymdmod
 
 
 C--------- Variable Initialization ---------------------------------
 
-      data first /.true./
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-      save first
+      save imbc,jmbc,lat0,lon0,ndatebc,undef
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -179,7 +196,7 @@ c  this only works for between 1950-2050
       sicedata='sice19232.weekly.clim'
 
 c  initialize so that first time through they have values for the check
-c  these vaules make the iyear .ne. iyearbc true anyways for
+c  these values make the iyear .ne. iyearbc true anyways for
 c  for the first time so first isnt checked below.
 
       if (first) then
@@ -188,7 +205,7 @@ c  for the first time so first isnt checked below.
         nymdbc2   = 0
         nhmsbc1   = 0
         nhmsbc2   = 0
-c       first = .false.
+        first = .false.
       endif
 
 C---------- Read in Header file ----------------------------------
@@ -198,6 +215,7 @@ C---------- Read in Header file ----------------------------------
 
       if( iyear.ne.iyearbc ) then
 
+       close(iunit)
        open (iunit,file=sicedata,form='unformatted',access='direct',
      .                                         recl=xsize*ysize*4)
        nrec = 1
@@ -248,6 +266,7 @@ C  For the last date add 1 year to the current model NYMD
         endif
 
 C  Write out header info
+        _BEGIN_MASTER( myThid )
         write(6,*) ' Updated boundary condition data'
         write(6,*) ' ---------------------------------'
         write(6,*) ' Variable: ',cname
@@ -262,6 +281,7 @@ C  Write out header info
  1000    format(3(2x,i3,':',i8,2x,i8))
         enddo
         write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
+        _END_MASTER( myThid )
        endif  
 
       endif
@@ -274,14 +294,14 @@ C---------- Read sice data if necessary -------------------------------
 c  If model time is not within the times of saved sice data 
 c  from previous call to getsice then read new data 
 
-      timemod = float(nymdmod) + float(nhms)   /1000000
-      timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
-      timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
+      timemod = dfloat(nymdmod) + dfloat(nhms)   /1000000
+      timebc1 = dfloat(nymdbc1) + dfloat(nhmsbc1)/1000000
+      timebc2 = dfloat(nymdbc2) + dfloat(nhmsbc2)/1000000
 
       if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
 
        do while (.not.found .and. nd .le. ndatebc)
-        timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
+        timebc2 = dfloat(nymdbc(nd)) + dfloat(nhmsbc(nd))/1000000
         if (timebc2 .gt. timemod) then	
          nymdbc1 = nymdbc(nd-1)
          nymdbc2 = nymdbc(nd)
@@ -335,13 +355,13 @@ C---------- Fill sice with depth of ice ------------------------------------
       enddo
       enddo
 C---------------------------------------------------------------------------
-      close(iunit)
  
       return
       end
       subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .            nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .                                                sstbc1,sstbc2,sst)
+     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .      sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .      nymdbc,nhmsbc,sst,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSST
@@ -386,35 +406,35 @@ C--------------------------------------------------------------------------
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
 
       _RL sstbc1(xsize,ysize)
       _RL sstbc2(xsize,ysize)
       _RL sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
+      integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
+      logical first
 
 C Maximum number of dates in one year for the data
       integer 	ndmax
       parameter (ndmax = 370)
+      integer nymdbc(ndmax),nhmsbc(ndmax)
 
       character*8  cname
       character*80 cdscrip
       character*20 sstdata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
-      logical first, found, error
+      logical found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
-      integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
-      integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
+      integer ndatebc,nrec
+      integer nymdmod
 
 
 C--------- Variable Initialization ---------------------------------
 
-      data first /.true./
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-      save first
+      save imbc,jmbc,lat0,lon0,ndatebc,undef
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -436,7 +456,7 @@ c  for the first time so first isnt checked below.
         nymdbc2   = 0
         nhmsbc1   = 0
         nhmsbc2   = 0
-c       first = .false.
+        first = .false.
       endif
 
 C---------- Read in Header file ----------------------------------
@@ -446,6 +466,7 @@ C---------- Read in Header file ----------------------------------
 
       if( iyear.ne.iyearbc ) then
 
+       close(iunit)
        open (iunit,file=sstdata,form='unformatted',access='direct',
      .                                        recl=xsize*ysize*4)
        nrec = 1
@@ -496,6 +517,7 @@ C  For the last date add 1 year to the current model NYMD
         endif
 
 C  Write out header info
+        _BEGIN_MASTER( myThid )
         write(6,*) ' Updated boundary condition data'
         write(6,*) ' ---------------------------------'
         write(6,*) ' Variable: ',cname
@@ -510,6 +532,7 @@ C  Write out header info
  1000    format(3(2x,i3,':',i8,2x,i8))
         enddo
         write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
+        _END_MASTER( myThid )
        endif
 
        if( error ) call my_exit (101)
@@ -524,13 +547,14 @@ C---------- Read SST data if necessary -------------------------------
 c  If model time is not within the times of saved sst data 
 c  from previous call to getsst then read new data 
 
-      timemod = float(nymdmod) + float(nhms)   /1000000
-      timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
-      timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
+      timemod = dfloat(nymdmod) + dfloat(nhms)   /1000000
+      timebc1 = dfloat(nymdbc1) + dfloat(nhmsbc1)/1000000
+      timebc2 = dfloat(nymdbc2) + dfloat(nhmsbc2)/1000000
+
       if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
 
        do while (.not.found .and. nd .le. ndatebc)
-        timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
+        timebc2 = dfloat(nymdbc(nd)) + dfloat(nhmsbc(nd))/1000000
         if (timebc2 .gt. timemod) then	
          nymdbc1 = nymdbc(nd-1)
          nymdbc2 = nymdbc(nd)
@@ -568,7 +592,6 @@ C---------- Interpolate SST data ------------------------------------
       enddo
       enddo
  
-      close(iunit)
 
       return
       end
