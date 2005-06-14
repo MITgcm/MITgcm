@@ -1,12 +1,13 @@
 # Diagnostic Package Choices
  &diagnostics_list
-  frequency(1) = 0.003,
+    dumpatlast = .TRUE.,
+  frequency(1) = 0.000,
    levels(1,1) = 1.,
-   fields(1,1) = 'PREACC  ','OLR     ',
+   fields(1,1) = 'PREACC  ',
    filename(1) = 'surface',
-  frequency(2) = 0.003,
-   levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
-   fields(1,2) = 'DIABT   ','DIABQ   ',
+  frequency(2) = 0.000,
+   levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,
+   fields(1,2) = 'UVEL    ','VVEL    ',
    filename(2) = 'fizhidt',
  &end
 
