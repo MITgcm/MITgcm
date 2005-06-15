@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.15 2005/05/23 19:52:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.16 2005/06/15 12:59:10 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -498,6 +498,12 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      diagName  = 'PRESSURE'
+      diagTitle = 'Atmospheric Pressure (Pa)     '
+      diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       RETURN
       END
