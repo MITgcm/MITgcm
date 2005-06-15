@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.7 2005/05/20 07:16:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.8 2005/06/15 12:58:03 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -1334,8 +1334,13 @@ c     gdiag(123) = 'SM      ML      '
       udiag(237) = 'm/sec/day       '
       gdiag(237) = 'VM   236ML      '
 
+      cdiag(238) = 'PLALBEDO'
+      tdiag(238) ='Planetary Albedo (Fraction)'
+      udiag(238) = 'Fraction        '
+      gdiag(238) = 'SM      L1      '
+
 c-    set the total number of available diagnostics 
-      ndiagt = 237
+      ndiagt = 238
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
