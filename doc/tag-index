@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.496 2005/06/09 17:51:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.497 2005/06/15 16:01:14 molod Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Diagnostics package was changed: diagnostic allocation is now deactivated
+  by setting an empty file name in the namelist (used to be by setting 0 frequency)
 o momentum advection (VI form) options: activate 4th.O vorticity Coriolis ;
   add 1rst Order upwind vertical Shear.
 o add a quick fix for A/B checkpointing in OFFLINE mode
