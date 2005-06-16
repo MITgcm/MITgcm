@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.2 2005/05/21 23:47:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.3 2005/06/16 16:53:24 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -169,8 +169,9 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L)=min(1.0,max(cldsw(i,j,L),fccave(i,j,L)/imstturb))
-         cldmxo(i,j,L)=min(1.0,cswmo(i,j,L))
+         cldtot(i,j,L)=min(1.0 _d 0,max(cldsw(i,j,L),fccave(i,j,L)/imstturb))
+         cldmxo(i,j,L)=min(1.0 _d 0,cswmo(i,j,L))
+
            swlz(i,j,L)=swlz(i,j,L)+qliqave(i,j,L)/imstturb
         enddo
         enddo
@@ -179,8 +180,8 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L) =  min( 1.0,cldsw(i,j,L) )
-         cldmxo(i,j,L) =  min( 1.0,cswmo(i,j,L) )
+         cldtot(i,j,L) =  min( 1.0 _d 0,cldsw(i,j,L) )
+         cldmxo(i,j,L) =  min( 1.0 _d 0,cswmo(i,j,L) )
         enddo
         enddo
         enddo
@@ -426,7 +427,7 @@ c Partition Tau between Water and Ice Particles
 c ---------------------------------------------
       do L= 1,lm
       do i= 1,istrip
-              alf = min( max((tzl(i,l)-253.15)/20.,0.) ,1.)
+              alf = min( max((tzl(i,l)-253.15)/20.,0. _d 0) ,1. _d 0)
       taua(i,L)   = 0.
 
       if( alf.ne.0.0 .and. alf.ne.1.0 ) then
@@ -586,7 +587,7 @@ c ----------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-                 alf   =  min( max(( tl(i,j,L)-233.15)/20.,0.) ,1.)
+                 alf   =  min( max(( tl(i,j,L)-233.15)/20.,0. _d 0) ,1. _d 0)
                   dp   =  ple(i,j,L+1)-ple(i,j,L)
          tau(i,j,L,1)  = 0.0
          tau(i,j,L,2)  = 0.0
@@ -606,14 +607,14 @@ c ------------------------------------------------------------------------------
 
 c Large-Scale Ice
 c ---------------
-         tauice = max( 0.0002, 0.002*min(500*lz(i,j,L)*1000,1.0) )
+         tauice = max( 0.0002 _d 0, 0.002*min(500*lz(i,j,L)*1000,1.0 _d 0) )
          tau(i,j,L,1) = fracls*(1-alf)*tauice*dp
 
 c Large-Scale Water
 c -----------------
 C Over Land
          if( lwi(i,j).le.10 ) then
-          tauh2o = max( 0.0020, 0.200*min(200*lz(i,j,L)*1000,1.0) )  
+          tauh2o = max( 0.0020 _d 0, 0.200*min(200*lz(i,j,L)*1000,1.0 _d 0) )  
           tau(i,j,L,3) = fracls*alf*tauh2o*dp
          else
 C Non-Precipitation Clouds Over Ocean
@@ -622,7 +623,7 @@ C Non-Precipitation Clouds Over Ocean
            tau(i,j,L,2) = fracls*alf*tauh2o*dp
           else
 C Over Ocean
-           tauh2o = max( 0.0020, 0.120*min( 20*lz(i,j,L)*1000,1.0) )  
+           tauh2o = max( 0.0020 _d 0, 0.120*min( 20*lz(i,j,L)*1000,1.0 _d 0) )  
            tau(i,j,L,3) = fracls*alf*tauh2o*dp
           endif
          endif
@@ -1079,7 +1080,7 @@ c-----normalize cloud cover
 
 c-----table look-up
 
-           taux=min(taux,32.)
+           taux=min(taux,32. _d 0)
 
            fm=cosz(i,j)/dm
            ft=(log10(taux)-t1)/dt
@@ -1115,7 +1116,7 @@ c     angle, optical thickness, and cloud cover.
      *     caib(im,it,ia+1)*(1.+fa))*fa*.5+caib(im,it,ia)*(1.-fa*fa)
 
            xai= xai-2.*caib(im,it,ia)
-           xai=max(xai,0.0)
+           xai=max(xai,0.0 _d 0)
      
            tauclb(i,j,k) = taux*xai
 
@@ -1130,7 +1131,7 @@ c     thickness and cover but not the solar zenith angle.
      *      caif(it,ia+1)*(1.+fa))*fa*.5+caif(it,ia)*(1.-fa*fa)
 
            xai= xai-caif(it,ia)
-           xai=max(xai,0.0)
+           xai=max(xai,0.0 _d 0)
      
            tauclf(i,j,k) = taux*xai
 
@@ -1341,8 +1342,8 @@ c     for a mixture of ice and liquid particles.
            taux=taucld(i,j,k,1)+taucld(i,j,k,2)
           if (taux.gt.0.05 .and. fcld(i,j,k).gt.0.01) then
 
-           reff1=min(reff(i,j,k,1),130.)
-           reff2=min(reff(i,j,k,2),20.0)
+           reff1=min(reff(i,j,k,1),130. _d 0)
+           reff2=min(reff(i,j,k,2),20.0 _d 0)
 
            w1=(1.-(aia(ib,1)+(aia(ib,2)+
      *         aia(ib,3)*reff1)*reff1))*taucld(i,j,k,1)
@@ -1397,7 +1398,7 @@ c-----compute reflectance and transmittance for cloudless layers
 
 c            if (ssato .gt. 0.001) then
 
-c             ssato=min(ssato,0.999999)
+c             ssato=min(ssato,0.999999 _d 0)
 c             asyto=asysto/(ssato*tauto)
 
 c             call deledd(tauto,ssato,asyto,csm(i,j), 
@@ -1429,7 +1430,7 @@ c-----compute reflectance and transmittance for cloud layers
 
               tauto=tausto+tauclb(i,j,k)
               ssato=(ssatau+ssacl(i,j,k)*tauclb(i,j,k))/tauto+1.0e-8
-              ssato=min(ssato,0.999999)
+              ssato=min(ssato,0.999999 _d 0)
               asyto=(asysto+asycl(i,j,k)*ssacl(i,j,k)*tauclb(i,j,k))/
      *              (ssato*tauto)
 
@@ -1438,7 +1439,7 @@ c-----compute reflectance and transmittance for cloud layers
 
               tauto=tausto+tauclf(i,j,k)
               ssato=(ssatau+ssacl(i,j,k)*tauclf(i,j,k))/tauto+1.0e-8
-              ssato=min(ssato,0.999999)
+              ssato=min(ssato,0.999999 _d 0)
               asyto=(asysto+asycl(i,j,k)*ssacl(i,j,k)*tauclf(i,j,k))/
      *              (ssato*tauto)
 
@@ -1732,8 +1733,8 @@ c     liquid and ice particles.  unit of reff is micrometers.
            taux=taucld(i,j,k,1)+taucld(i,j,k,2)
           if (taux.gt.0.05 .and. fcld(i,j,k).gt.0.01) then
 
-           reff1=min(reff(i,j,k,1),130.)
-           reff2=min(reff(i,j,k,2),20.0)
+           reff1=min(reff(i,j,k,1),130. _d 0)
+           reff2=min(reff(i,j,k,2),20.0 _d 0)
 
            g1=(aig(1)+(aig(2)+aig(3)*reff1)*reff1)*taucld(i,j,k,1)
            g2=(awg(1)+(awg(2)+awg(3)*reff2)*reff2)*taucld(i,j,k,2)
@@ -1784,7 +1785,7 @@ c-----compute reflectance and transmittance for cloudless layers
 
           tauto=tausto
           ssato=ssatau/tauto+1.0e-8
-          ssato=min(ssato,0.999999)
+          ssato=min(ssato,0.999999 _d 0)
           asyto=asysto/(ssato*tauto)
 
           call deledd(tauto,ssato,asyto,csm(i,j), 
@@ -1806,7 +1807,7 @@ c-----compute reflectance and transmittance for cloud layers
 
            tauto=tausto+tauclb(i,j,k)
            ssato=(ssatau+tauclb(i,j,k))/tauto+1.0e-8
-           ssato=min(ssato,0.999999)
+           ssato=min(ssato,0.999999 _d 0)
            asyto=(asysto+asycl(i,j,k)*tauclb(i,j,k))/(ssato*tauto)
 
            call deledd(tauto,ssato,asyto,csm(i,j), 
@@ -1814,7 +1815,7 @@ c-----compute reflectance and transmittance for cloud layers
 
            tauto=tausto+tauclf(i,j,k)
            ssato=(ssatau+tauclf(i,j,k))/tauto+1.0e-8
-           ssato=min(ssato,0.999999)
+           ssato=min(ssato,0.999999 _d 0)
            asyto=(asysto+asycl(i,j,k)*tauclf(i,j,k))/(ssato*tauto)
 
            call sagpol (tauto,ssato,asyto,rs2t(i,j),ts2t(i,j))

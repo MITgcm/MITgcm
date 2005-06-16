@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_turb.F,v 1.2 2005/05/19 21:46:15 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_turb.F,v 1.3 2005/06/16 16:53:24 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -275,7 +275,7 @@ c
        call get_alarm ( 'moist',ndum,ndum,ndmoist,time_left )
        timstp   = nsecf(ndturb)
        timstp2  = nsecf(ndmoist)
-       dtfac    = min( 1.0, timstp/timstp2 )
+       dtfac    = min( 1.0 _d 0, timstp/timstp2 )
 
 c delttrb is the internal turbulence time step
 c a value equal to ndturb means one internal iteration
@@ -672,7 +672,7 @@ C**********************************************************************
        saveqa(i) = qa(i)
       enddo
       do i = 1,istrip
-       cosz(i) = max(cosz(i),0.0001)
+       cosz(i) = max(cosz(i),0.0001 _d 0)
        cd(i) = scu(i)*scu(i)
        tmpnlay(i) = th(i,nlay)*pk(i,nlay)
        hlwdwn(i) = alwrad(i)+blwrad(i)*tc(i)-lwstrip(i)
