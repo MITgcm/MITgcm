@@ -1,0 +1,9 @@
+
+#
+# ***************
+# Open boundaries
+# ***************
+ &KPP_PARM01
+ KPPwriteState=.TRUE.,
+# minKPPhbl=10.,
+ /

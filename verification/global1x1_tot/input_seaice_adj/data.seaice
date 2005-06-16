@@ -1,0 +1,11 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#      SEAICE_deltaTdyn   = 43200.
+      SEAICE_initialHEFF = 1.0
+      SEAICEwriteState   = .TRUE.
+# LSR solver parameters used with SEAICE_ALLOW_DYNAMICS
+      npseudo           = 1
+      LSR_ERROR         = 1e-20
+# asynchronous stepping for uice, vice
+#      SEAICE_deltaTdyn  = 43200.
+ &
