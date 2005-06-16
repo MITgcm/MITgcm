@@ -1,5 +1,5 @@
 /*************************************************  -*- mode: C -*-
- * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_create_dir.c,v 1.2 2004/03/23 05:24:44 edhill Exp $
+ * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_create_dir.c,v 1.3 2005/06/16 16:59:02 ce107 Exp $
  * $Name:  $
  */
 
@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <string.h>
 void FC_NAMEMANGLE(mnccdir) ( int *nienc, int *ienc, int *idate )
 {
     char name[512], dname[512];
