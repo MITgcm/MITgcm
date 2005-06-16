@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.14 2005/05/20 23:30:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.15 2005/06/16 16:46:12 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -367,7 +367,7 @@ c ------------------------------------
        IF (LDQDT)  DQDT = 0.
       ELSE
        D = 1.0 / D
-       Q = MIN(QX * D,1.0)
+       Q = MIN(QX * D,1.0 _d 0)
        IF (LDQDT)  DQDT = (1.0 + ERFAC*Q) * D * DQX
       ENDIF
       RETURN

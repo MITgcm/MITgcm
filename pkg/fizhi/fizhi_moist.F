@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.33 2005/05/23 02:09:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.34 2005/06/16 16:46:12 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -992,11 +992,11 @@ c Compute Time-averaged Cloud and Water Amounts for Longwave Radiation
 c --------------------------------------------------------------------
        watnow = cldwater(i,1,L)
        if( plev.le.500.0 ) then
-        cldras = min( max( cldras_lw(i,1,L)*cldras_mem,cpen(i,1,L)),1.0)
+        cldras = min( max( cldras_lw(i,1,L)*cldras_mem,cpen(i,1,L)),1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max( cldlsp_lw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0)
+       cldlsp = min( max( cldlsp_lw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
        if( cldlsp.lt.cldmin ) cldlsp = 0.0
@@ -1013,11 +1013,11 @@ c Compute Time-averaged Cloud and Water Amounts for Shortwave Radiation
 c ---------------------------------------------------------------------
        watnow = cldwater(i,1,L)
        if( plev.le.500.0 ) then
-        cldras = min( max(cldras_sw(i,1,L)*cldras_mem, cpen(i,1,L)),1.0)
+        cldras = min( max(cldras_sw(i,1,L)*cldras_mem, cpen(i,1,L)),1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max(cldlsp_sw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0)
+       cldlsp = min( max(cldlsp_sw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
        if( cldlsp.lt.cldmin ) cldlsp = 0.0
@@ -2204,7 +2204,7 @@ C Local Variables
 C
       DO 10 I=1,lng
                            rno(i) = 1.0
-ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75, 1.0-0.0025*(400.0-pl(i)) )
+ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75 _d 0, 1.0-0.0025*(400.0-pl(i)) )
 
 ccc   IF ( PL(I).GE.P7 .AND. PL(I).LE.P9 ) THEN
 ccc     RNO(I) = ((P9-PL(I))/(P9-P7)) **2
@@ -2473,7 +2473,7 @@ C**********************************************************************
            if( rhcrit(i,L).eq.1.0 ) then
            fact = 1.0
            else
-           fact = min( 1.0, alpha + (1.0-alpha)*( rh-rhcrit(i,L)) /
+           fact = min( 1.0 _d 0, alpha + (1.0-alpha)*( rh-rhcrit(i,L)) /
      1                                          (1.0-rhcrit(i,L)) )
            endif
 
@@ -2579,7 +2579,7 @@ cfpp$ expand (qsat)
       ratio  = alpha*(rh-rhcrit)/offset
  
       if(cloud(i,L).eq.  0.0 .and. ratio.gt.0.0 ) then
-         cloud(i,L) = min( ratio,1.0 )
+         cloud(i,L) = min( ratio,1.0 _d 0)
       endif
  
       enddo
@@ -2622,7 +2622,7 @@ c -----------------------------------------------
      .    / ( 2+(1+1.608*cpoel*t)*elocp*dqsdt )
 
       s = ( (k-krd)/(kmm-krd) )
-      f = 1.0 - min( 1.0, max(0.0,1.0-exp(-s)) )
+      f = 1.0 - min( 1.0 _d 0, max(0.0 _d 0,1.0-exp(-s)) )
 
       cldfrc(i,L) = cldfrc(i,L)*f
       cldwat(i,L) = cldwat(i,L)*f

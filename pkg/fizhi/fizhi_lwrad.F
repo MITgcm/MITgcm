@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.23 2005/05/21 23:50:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.24 2005/06/16 16:46:12 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -97,8 +97,8 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L)=min(1.0,max(cldlw(i,j,L),fccave(i,j,L)/imstturb))
-         cldmxo(i,j,L) =  min( 1.0 ,      clwmo(i,j,L) )
+         cldtot(i,j,L)=min(1.0 _d 0,max(cldlw(i,j,L),fccave(i,j,L)/imstturb))
+         cldmxo(i,j,L) =  min( 1.0 _d 0,      clwmo(i,j,L) )
            lwlz(i,j,L) =  lwlz(i,j,L) + qliqave(i,j,L)/imstturb
         enddo
         enddo
@@ -107,8 +107,8 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L) =  min( 1.0,cldlw(i,j,L) )
-         cldmxo(i,j,L) =  min( 1.0,clwmo(i,j,L) )
+         cldtot(i,j,L) =  min( 1.0 _d 0,cldlw(i,j,L) )
+         cldmxo(i,j,L) =  min( 1.0 _d 0,clwmo(i,j,L) )
         enddo
         enddo
         enddo
@@ -151,8 +151,8 @@ C --------------
        IF(NLWCLD.NE.0)THEN
        DO L = 1,lm
        DO I = 1,ISTRIP
-        CLRO(I,L) = min( 1.0,clro(i,L) )
-        CLMO(I,L) = min( 1.0,clmo(i,L) )
+        CLRO(I,L) = min( 1.0 _d 0,clro(i,L) )
+        CLMO(I,L) = min( 1.0 _d 0,clmo(i,L) )
        ENDDO
        ENDDO
        ENDIF
@@ -1096,8 +1096,8 @@ c     to 0.54 and 0.95, respectively.
 
           if (taux.gt.0.02 .and. fcld(i,j,k).gt.0.01) then
 
-           reff1=min(reff(i,j,k,1),130.)
-           reff2=min(reff(i,j,k,2),20.0)
+           reff1=min(reff(i,j,k,1),130. _d 0)
+           reff2=min(reff(i,j,k,2),20.0 _d 0)
 
            w1=taucl(i,j,k,1)*(aiw(1,ib)+(aiw(2,ib)+(aiw(3,ib)
      *       +aiw(4,ib)*reff1)*reff1)*reff1)

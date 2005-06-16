@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.5 2004/07/30 18:59:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.6 2005/06/16 16:46:12 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -186,10 +186,10 @@ C**** Pre-process input arrays as necessary:
 
       DO 100 ChNo = 1, NCH
 
-      DEDQA(CHNO)  = MAX(  DEDQA(CHNO), 500./ALHE )
-      DEDTC(CHNO)  = MAX(  DEDTC(CHNO),   0. )
-      DHSDQA(CHNO) = MAX( DHSDQA(CHNO),   0. )
-      DHSDTC(CHNO) = MAX( DHSDTC(CHNO), -10. )
+      DEDQA(CHNO)  = MAX(  DEDQA(CHNO), 500. _d 0/ALHE )
+      DEDTC(CHNO)  = MAX(  DEDTC(CHNO),   0. _d 0)
+      DHSDQA(CHNO) = MAX( DHSDQA(CHNO),   0. _d 0)
+      DHSDTC(CHNO) = MAX( DHSDTC(CHNO), -10. _d 0)
 
       EM(CHNO)     = QM(CHNO) * PSUR(CHNO) / EPSILON
       EA(CHNO)     = QA(CHNO) * PSUR(CHNO) / EPSILON
@@ -205,14 +205,14 @@ C      ETURB(CHNO)  = ETURB(CHNO) / ALHX(CHNO)
       RA(CHNO)     = ONE / ( CD(CHNO) * UM(CHNO) )
       SATCAP(ChNo) = 0.1 * ZLAI(ChNo)
       CSOIL(CHNO)  = CSOIL0(ITYP(ChNo))
-      SWET(ChNo,SFCLY ) = max( min(SWET1(ChNo),1.), 0.)
-      SWET(ChNo,ROOTLY) = max( min(SWET2(ChNo),1.), 0.)
-      SWET(ChNo,RECHLY) = max( min(SWET3(ChNo),1.), 0.)
-      CAPAC(CHNO)       = max( min(CAPAC(ChNo),SATCAP(CHNO)), 0.)
+      SWET(ChNo,SFCLY ) = max( min(SWET1(ChNo),1. _d 0), 0. _d 0)
+      SWET(ChNo,ROOTLY) = max( min(SWET2(ChNo),1. _d 0), 0. _d 0)
+      SWET(ChNo,RECHLY) = max( min(SWET3(ChNo),1. _d 0), 0. _d 0)
+      CAPAC(CHNO)       = max( min(CAPAC(ChNo),SATCAP(CHNO)), 0. _d 0)
 C****
 
       SNWFRC(CHNO) = SNOW(CHNO) / ( SNOW(CHNO) + SNWMID(ITYP(CHNO)) )
-      FCAN(CHNO) = MIN( 1., MAX(0.,CAPAC(ChNo)/SATCAP(ChNo)) )
+      FCAN(CHNO) = MIN( 1. _d 0, MAX(0. _d 0,CAPAC(ChNo)/SATCAP(ChNo)) )
       POTFRC(CHNO)=1.-(1.-SNWFRC(CHNO))*(1.-FCAN(CHNO))
 
 
@@ -533,7 +533,7 @@ C**** Add to snow cover.  Melt snow if necessary.
       SNOWM = 0.
       IF( SNOW(CHNO).GT.0. .AND. TC(CHNO).GT.TF ) THEN
         SNOWM = MIN( SNOW(ChNo),
-     &       MAX( 0., (TC(ChNo)-TF)*CSOIL(ChNo)/ALHM )  )
+     &       MAX( 0. _d 0, (TC(ChNo)-TF)*CSOIL(ChNo)/ALHM )  )
         IF( SNOWM .EQ. SNOW(CHNO) ) THEN
             TC(ChNo) = TC(ChNo) - SNOWM * ALHM / CSOIL(ChNo)
             SNOW(CHNO)=0.
@@ -554,7 +554,7 @@ C**** (Time scale TIMFRL for large scale storms set to one for FWETL=1
 C**** to reflect the effective loss of "position memory" when storm 
 C**** covers entire grid square.)
 
-      XTCORR= (1.-TIMFRL) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETL )
+      XTCORR= (1.-TIMFRL) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/FWETL )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -588,7 +588,7 @@ C****
 C**** Determine XTCORR, the fraction of a storm that falls on a previously
 C**** wet surface due to the time correlation of precipitation position.
 
-      XTCORR= (1.-TIMFRC) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETC )
+      XTCORR= (1.-TIMFRC) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/FWETC )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -742,8 +742,8 @@ C**** (Note: CHIL is constrained to be >= 0.01, as in SiB calcs.)
 
 C**** Bound extinction coefficient by 50./ZLAI:
 
-      ZK =     PDIR(ChNo) *MIN( EXTK1, 50./ZLAI(ChNo) ) +
-     &    (ONE-PDIR(ChNo))*MIN( EXTK2, 50./ZLAI(ChNo) )
+      ZK =     PDIR(ChNo) *MIN( EXTK1, 50. _d 0/ZLAI(ChNo) ) +
+     &    (ONE-PDIR(ChNo))*MIN( EXTK2, 50. _d 0/ZLAI(ChNo) )
 
 C**** Now compute unstressed canopy resistance:
 
@@ -794,7 +794,7 @@ C****
 
       DO 100 ChNo = 1, NCH
 
-      WET0  = MAX(WET(CHNO),0.01)
+      WET0  = MAX(WET(CHNO),0.01 _d 0)
       WEXPB = WET0**VGBEEX(ChNo)
 
       PHR(ChNo)    = VGPSAX(ChNo) / WEXPB
@@ -919,12 +919,12 @@ C****            or outweighs any decrease due to RC changes.
 C****
 
           A21 =  -DEDTC(ChNo)*RC(ChNo) +
-     &      max(0., CONST*DESDTC(ChNo) - EHARMN*DRCDTC(ChNo) )
+     &      max(0. _d 0, CONST*DESDTC(ChNo) - EHARMN*DRCDTC(ChNo) )
           A22 = -( RC(ChNo)*DEDEA(ChNo) +
-     &               max( 0., CONST + EHARMN*DRCDEA(ChNo) )   )
+     &               max( 0. _d 0, CONST + EHARMN*DRCDEA(ChNo) )   )
 
           F0 = RC(ChNo) * (ETURB(ChNo) - EPLANT)
-          DETERM = MIN( A12*A21/(A11*A22) - 1., -0.1 )
+          DETERM = MIN( A12*A21/(A11*A22) - 1., -0.1 _d 0)
           DEA = ( Q0*A21 - A11*F0 ) / ( DETERM * A11*A22 )
           DTC = ( Q0 - A12*DEA ) / A11
  
@@ -1107,7 +1107,7 @@ c  CHANGED THIS: deep layer 2 times deeper
 
 C**** Make sure EA remains positive
 
-      EA(CHNO) = MAX(EA(CHNO), 0.0)
+      EA(CHNO) = MAX(EA(CHNO), 0.0 _d 0)
 
   200 CONTINUE
 
@@ -1149,7 +1149,7 @@ C**** -----------------------------------------------------------------
       DO 100 ChNo = 1, NCH
 C****
 c      VPDSTR(ChNo) = 1. - (ESATTC(ChNo)-EA(ChNo)) * VGDFAC(ITYP(ChNo))
-c      VPDSTR (ChNo) = MIN( 1., MAX( VPDSTR(ChNo), 1.E-10 ) )
+c      VPDSTR (ChNo) = MIN( 1. _d 0, MAX( VPDSTR(ChNo), 1. _d -10 ) )
       VPDSTR(CHNO) = 1.
 C****
  100  CONTINUE
@@ -1217,7 +1217,7 @@ C****
      &                      VGTCF3(TypPtr) )
       IF ( TC(ChNo) .LE. VGTLL(TypPtr) .OR. TC(ChNo) .GE. VGTU(TypPtr) )
      &      FTEMP (ChNo) = 1.E-10
-      FTEMP(CHNO) = MIN( 1., MAX( FTEMP(ChNo), 1.E-10 ) )
+      FTEMP(CHNO) = MIN( 1. _d 0, MAX( FTEMP(ChNo), 1. _d -10 ) )
 C****
  100  CONTINUE
 C****
@@ -1271,7 +1271,7 @@ C****
       R0 = ( VGRPLX(ChNo) + RSOIL ) / RHOW
       EEST = DEF*DR2 / ( RCUNTD*D12 + DEF*R0 )
       RSTFAC = ( DR2 - R0*EEST ) / D12
-      RSTFAC = MIN( 1., MAX( 0.001, RSTFAC ) )
+      RSTFAC = MIN( 1. _d 0, MAX( 0.001 _d 0, RSTFAC ) )
       RC(ChNo) = RCUNTD / RSTFAC
 C****
  100  CONTINUE
@@ -1311,7 +1311,7 @@ c      RSURF = RDC(ChNo) / U2 + 30. / (1.E-20 + WET(ChNo))
 
 C**** Account for subsaturated humidity at soil surface:
 C****
-      HESAT = ESATTC(CHNO) * MIN( 1., WET(CHNO)*2. )
+      HESAT = ESATTC(CHNO) * MIN( 1. _d 0, WET(CHNO)*2. _d 0)
       IF( EA(CHNO) .LT. HESAT ) THEN
           RSURF=RSURF*( 1. + (ESATTC(CHNO)-HESAT)/(HESAT-EA(CHNO)) )
         ELSE
@@ -1514,8 +1514,8 @@ C****
       SWET(ChNo,ROOTLY) = (WLAY2 - ELAY2) / VGWMAX(ROOTLY,ITYP(CHNO))
 C****
 C**** Ensure against numerical precision problems:
-      SWET(ChNo,SFCLY)  = MIN( 1., MAX( 0., SWET(ChNo,SFCLY) ) )
-      SWET(ChNo,ROOTLY) = MIN( 1., MAX( 0., SWET(ChNo,ROOTLY) ) )
+      SWET(ChNo,SFCLY)  = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,SFCLY) ) )
+      SWET(ChNo,ROOTLY) = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,ROOTLY) ) )
 C****
 C****
 C**** -------------------------------------------------
@@ -1618,7 +1618,7 @@ C****
 C**** Prevent diffusion when ground is frozen (INCLUDE RAMPING):
       TFM2=TF-2.
       FRAMP=(TC(CHNO)-TFM2)/2.
-      FRAMP=MIN(1., MAX(0.,FRAMP) )
+      FRAMP=MIN(1. _d 0, MAX(0. _d 0,FRAMP) )
       GWFLUX=GWFLUX*FRAMP
 C****
 C**** Update water contents
@@ -1657,7 +1657,7 @@ C**** Test for limits on water holding capacity:
 C****
 C**** Prevent diffusion when ground is frozen (INCLUDE RAMPING):
       FRAMP=(TC(CHNO)-TFM2)/2.
-      FRAMP=MIN(1., MAX(0.,FRAMP) )
+      FRAMP=MIN(1. _d 0, MAX(0. _d 0,FRAMP) )
       GWFLUX=GWFLUX*FRAMP
 C****
 C**** Update water contents
@@ -1675,7 +1675,7 @@ C****
 
 C**** Prevent diffusion when ground is frozen (INCLUDE RAMPING):
       FRAMP=(TC(CHNO)-TFM2)/2.
-      FRAMP=MIN(1., MAX(0.,FRAMP) )
+      FRAMP=MIN(1. _d 0, MAX(0. _d 0,FRAMP) )
       GWFLUX=GWFLUX*FRAMP
 
       GWFLUX = MIN( GWFLUX,
