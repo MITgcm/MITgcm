@@ -182,7 +182,8 @@ c--   Only the master thread will do I/O.
          do k = 1, Nr
          irectrue = (irec-1)*nr + k
             if ( doZscaleUnpack ) then
-               delZnorm = SQRT(delR(1)/delR(k))
+cph               delZnorm = SQRT(delR(1)/delR(k))
+               delZnorm = delR(1)/delR(k)
             else
                delZnorm = 1. _d 0
             endif
