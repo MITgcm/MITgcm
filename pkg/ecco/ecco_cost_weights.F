@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.9 2005/05/27 22:10:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.10 2005/06/16 15:28:46 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -329,10 +329,8 @@ c--           Test for missing values.
      $            wsalt2(i,j,k,bi,bj).eq.0) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wsalt2(i,j,k,bi,bj)=
-     $                ( ratio/(wsalt(k,bi,bj)*wsalt(k,bi,bj) 
-     $                  +wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj)) )
-     $                *frame(i,j)
+                 wsalt2(i,j,k,bi,bj)=frame(i,j)/
+     $                  ( wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj) )
               endif
              enddo
             enddo
@@ -373,10 +371,8 @@ c--           Test for missing values.
      $            wtheta2(i,j,k,bi,bj).eq.0) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wtheta2(i,j,k,bi,bj)=
-     $                ( ratio/(wtheta(k,bi,bj)*wtheta(k,bi,bj) 
-     $                  +wtheta2(i,j,k,bi,bj)*wtheta2(i,j,k,bi,bj)) )
-     $                *frame(i,j)
+                 wtheta2(i,j,k,bi,bj)= frame(i,j)/
+     $                  ( wtheta2(i,j,k,bi,bj)*wtheta2(i,j,k,bi,bj) )
               endif
              enddo
             enddo
@@ -616,7 +612,7 @@ c--           Test for missing values.
               if (wuwind(i,j,bi,bj) .lt. -9900.) then
                 wuwind(i,j,bi,bj) = 0. _d 0
               endif
-              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*0.1
+              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)
               wuwind(i,j,bi,bj) = max(wuwind(i,j,bi,bj),wwind0)
               wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*maskc(i,j,k,bi,bj)
      &                            *frame(i,j)
@@ -678,7 +674,7 @@ c--           Test for missing values.
               if (wvwind(i,j,bi,bj) .lt. -9900.) then
                 wvwind(i,j,bi,bj) = 0. _d 0
               endif
-              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*0.1
+              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)
               wvwind(i,j,bi,bj) = max(wvwind(i,j,bi,bj),wwind0)
               wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*maskc(i,j,k,bi,bj)
      &                            *frame(i,j)
@@ -744,7 +740,7 @@ c--           Test for missing values.
                 watemp(i,j,bi,bj) = 0. _d 0
               endif
 c--           Data are in units of W/m**2.
-              watemp(i,j,bi,bj) = watemp(i,j,bi,bj)/3.
+              watemp(i,j,bi,bj) = watemp(i,j,bi,bj)
               watemp(i,j,bi,bj) = max(watemp(i,j,bi,bj),watemp0)
      &                            *frame(i,j)
             enddo
@@ -811,7 +807,7 @@ c--           Test for missing values.
                 waqh(i,j,bi,bj) = 0. _d 0
               endif
 c--           Data are in units of m/s.
-              waqh(i,j,bi,bj) = waqh(i,j,bi,bj) / 3.
+              waqh(i,j,bi,bj) = waqh(i,j,bi,bj)
               waqh(i,j,bi,bj) = max(waqh(i,j,bi,bj),waqh0)
      &                            *frame(i,j)
             enddo
