@@ -1,21 +1,22 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.1 2005/04/28 18:01:19 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.2 2005/06/17 22:38:18 edhill Exp $
 #  $Name:  $
 #
 
-#  This was tested with gcc-gfortran v4.0.0 as shipped in Fedora Core
-#  4-test-2.  MITgcm successfully compiled but the gfortran-built
-#  mitgcmuv binary failed to read the "eedata" file.  The gfortran
-#  docs make it clear that there are known NAMELIST bugs in curreent
-#  versions of gfortran and that users should turn to g77 if their
-#  code encounters these bugs.  Later versions of gfortran will
-#  supposedly fix the NAMELIST implementation.
+#  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.
+#  It fixes the ' \' versus ' &' terminator problem but some 
+#  namelist problems remain.  The biggest seems to be the inability
+#  of current gfortran versions to support namelist syntax such as:
+#
+#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
+#
+#  which results in run-time errors.
 
 
 FC=gfortran
 CC=gcc
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 
