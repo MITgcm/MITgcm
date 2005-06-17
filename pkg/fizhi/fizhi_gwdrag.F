@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.9 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.10 2005/06/17 16:51:24 ce107 Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -125,7 +125,8 @@ c        and constrain the Maximum Value
 c ----------------------------------------------
       do j=1,jm
       do i=1,im
-      phis_std(i,j) = min( 400.0 _d 0, sqrt( max(0.0 _d 0,phis_var(i,j)) )/grav )
+         phis_std(i,j) = min( 400.0 _d 0, sqrt( max(0.0 _d 0,
+     $        phis_var(i,j)) )/grav )
       enddo
       enddo
 
@@ -183,8 +184,10 @@ c --------------------------------------------------
       do L = 1,Lm
       do j = 1,jm
       do i = 1,im
-      dragu(i,j,L) = sign( min(0.006 _d 0,abs(dragu(i,j,L))),dragu(i,j,L) )
-      dragv(i,j,L) = sign( min(0.006 _d 0,abs(dragv(i,j,L))),dragv(i,j,L) )
+         dragu(i,j,L) = sign( min(0.006 _d 0,abs(dragu(i,j,L))), dragu(i
+     $        ,j,L) ) 
+         dragv(i,j,L) = sign( min(0.006 _d 0,abs(dragv(i,j,L))), dragv(i
+     $        ,j,L) ) 
       dragt(i,j,L) = -( uz(i,j,L)*dragu(i,j,L)+vz(i,j,L)*dragv(i,j,L) )
      .                                                         *cpinv
        dudt(i,j,L) = dudt(i,j,L) + dragu(i,j,L)

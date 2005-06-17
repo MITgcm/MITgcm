@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.24 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.25 2005/06/17 16:51:24 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -97,8 +97,9 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L)=min(1.0 _d 0,max(cldlw(i,j,L),fccave(i,j,L)/imstturb))
-         cldmxo(i,j,L) =  min( 1.0 _d 0,      clwmo(i,j,L) )
+           cldtot(i,j,L)=min(1.0 _d 0,max(cldlw(i,j,L),fccave(i,j,L)/
+     $          imstturb))
+           cldmxo(i,j,L) =  min( 1.0 _d 0,      clwmo(i,j,L) )
            lwlz(i,j,L) =  lwlz(i,j,L) + qliqave(i,j,L)/imstturb
         enddo
         enddo

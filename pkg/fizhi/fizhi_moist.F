@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.34 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.35 2005/06/17 16:51:24 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -992,11 +992,13 @@ c Compute Time-averaged Cloud and Water Amounts for Longwave Radiation
 c --------------------------------------------------------------------
        watnow = cldwater(i,1,L)
        if( plev.le.500.0 ) then
-        cldras = min( max( cldras_lw(i,1,L)*cldras_mem,cpen(i,1,L)),1.0 _d 0)
+          cldras = min( max( cldras_lw(i,1,L)*cldras_mem,cpen(i,1,L)),
+     $         1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max( cldlsp_lw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0 _d 0)
+       cldlsp = min( max( cldlsp_lw(i,1,L)*cldlsp_mem,cldls(i,1,L)),
+     $      1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
        if( cldlsp.lt.cldmin ) cldlsp = 0.0
@@ -1013,11 +1015,13 @@ c Compute Time-averaged Cloud and Water Amounts for Shortwave Radiation
 c ---------------------------------------------------------------------
        watnow = cldwater(i,1,L)
        if( plev.le.500.0 ) then
-        cldras = min( max(cldras_sw(i,1,L)*cldras_mem, cpen(i,1,L)),1.0 _d 0)
+          cldras = min( max(cldras_sw(i,1,L)*cldras_mem, cpen(i,1,L)),
+     $         1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max(cldlsp_sw(i,1,L)*cldlsp_mem,cldls(i,1,L)),1.0 _d 0)
+       cldlsp = min( max(cldlsp_sw(i,1,L)*cldlsp_mem,cldls(i,1,L)),
+     $      1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
        if( cldlsp.lt.cldmin ) cldlsp = 0.0
@@ -2204,7 +2208,8 @@ C Local Variables
 C
       DO 10 I=1,lng
                            rno(i) = 1.0
-ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75 _d 0, 1.0-0.0025*(400.0-pl(i)) )
+ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75 _d 0, 1.0-0.0025*
+ccc  &                                 (400.0-pl(i)) )
 
 ccc   IF ( PL(I).GE.P7 .AND. PL(I).LE.P9 ) THEN
 ccc     RNO(I) = ((P9-PL(I))/(P9-P7)) **2

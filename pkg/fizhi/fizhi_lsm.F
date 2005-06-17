@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.6 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.7 2005/06/17 16:51:24 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -554,7 +554,8 @@ C**** (Time scale TIMFRL for large scale storms set to one for FWETL=1
 C**** to reflect the effective loss of "position memory" when storm 
 C**** covers entire grid square.)
 
-      XTCORR= (1.-TIMFRL) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/FWETL )
+        XTCORR= (1.-TIMFRL) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/
+     $       FWETL )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -588,7 +589,8 @@ C****
 C**** Determine XTCORR, the fraction of a storm that falls on a previously
 C**** wet surface due to the time correlation of precipitation position.
 
-      XTCORR= (1.-TIMFRC) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/FWETC )
+      XTCORR= (1.-TIMFRC) * MIN( 1. _d 0,(CAPAC(CHNO)/SATCAP(CHNO))/
+     $     FWETC )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -1514,8 +1516,10 @@ C****
       SWET(ChNo,ROOTLY) = (WLAY2 - ELAY2) / VGWMAX(ROOTLY,ITYP(CHNO))
 C****
 C**** Ensure against numerical precision problems:
-      SWET(ChNo,SFCLY)  = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,SFCLY) ) )
-      SWET(ChNo,ROOTLY) = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,ROOTLY) ) )
+      SWET(ChNo,SFCLY)  = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,SFCLY) )
+     $     )
+      SWET(ChNo,ROOTLY) = MIN( 1. _d 0, MAX( 0. _d 0, SWET(ChNo,ROOTLY)
+     $     ) )
 C****
 C****
 C**** -------------------------------------------------
