@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.16 2005/05/24 21:03:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.17 2005/06/17 01:04:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -108,6 +108,21 @@ c ---------------------------------------------------
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'OSRCLR  ',0,1,3,bi,bj,myid)
+      endif
+                                                                                
+c Planetary Albedo
+c ----------------
+      if(diagnostics_is_on('PLALBEDO',myid) ) then
+       do j=jm1,jm2
+       do i=im1,im2
+        if(radswt(i,j,bi,bj).ne.0.) then
+         tmpdiag(i,j) = osr(i,j,bi,bj)
+        else
+         tmpdiag(i,j) = 0.
+        endif
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'PLALBEDO',0,1,3,bi,bj,myid)
       endif
                                                                                 
 c Upward Longwave Flux at the Ground (W/m**2)
