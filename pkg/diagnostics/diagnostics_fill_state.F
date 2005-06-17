@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.19 2005/05/06 03:46:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.20 2005/06/17 01:03:56 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,6 +40,7 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpMk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,K,bi,bj
       INTEGER km1
@@ -328,6 +329,40 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(tmpMk,'WVELSLT ',0,Nr,0,1,1,myThid)
         ENDIF
       
+        IF ( DIAGNOSTICS_IS_ON('PRESSURE',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           do j = 1,sNy
+           do i = 1,sNx
+            do K = 1,Nr
+             tmpMk1(i,j,K,bi,bj) = 0.
+            enddo
+           enddo
+           enddo
+           do j = 1,sNy
+           do i = 1,sNx
+            if(ksurfC(i,j,bi,bj).ne.0.) 
+     .          tmpMk1(i,j,ksurfC(i,j,bi,bj),bi,bj) = 
+     .                            (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))
+           enddo
+           enddo
+           do j = 1,sNy
+           do i = 1,sNx
+            do K = ksurfC(i,j,bi,bj)+1,Nr+1
+             tmpMk1(i,j,K,bi,bj) = tmpMk1(i,j,K-1,bi,bj) - 
+     .                        drF(K-1)*hfacC(i,j,K-1,bi,bj)
+            enddo
+            do K = 1,Nr
+             tmpMk(i,j,K,bi,bj) = 
+     .           (tmpMk1(i,j,K,bi,bj) + tmpMk1(i,j,K+1,bi,bj)) /2.
+            enddo
+           enddo
+           enddo
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'PRESSURE',0,Nr,0,1,1,myThid)
+        ENDIF
+
 C--   fill momentum state-var diagnostics: end
       ENDIF
 
