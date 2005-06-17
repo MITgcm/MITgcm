@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_turb.F,v 1.3 2005/06/16 16:53:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_turb.F,v 1.4 2005/06/17 16:53:16 ce107 Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2243,8 +2243,7 @@ C
       DELSH(I,NLEVP1) = 1.
 9140  CONTINUE
 
-       CALL TRBDIF(SH,DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,NLEV,
-     .                                     2,0. _d 0,irun)
+      CALL TRBDIF(SH,DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,NLEV,2,0. _d 0,irun)
       do i = 1,irun
        eturb(i) = -1.* dthl(i)
        dedqa(i) = -1.* delthl(i)
