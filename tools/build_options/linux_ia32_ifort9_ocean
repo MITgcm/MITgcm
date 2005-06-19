@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#  Ed Hill
+#
+#  tested on faulks, 20030818
+#
+#  Build options for the intel 8.0 fortran compiler
+#  the compiler is now called ifort (not ifc) and it appears to
+#  need -DWORDLENGTH=1 and not -DWORDLENGTH=4 (which is what ifc 6.0) used to have.
+
+
+FC=ifort
+DEFINES='-DWORDLENGTH=4'
+LINK='ifort -static'
+CPP='cpp  -traditional -P'
+INCLUDES='-I/ocean/data4/ce107/netcdf-3.6.0b6/include'
+LIBS='-L/ocean/data4/ce107/netcdf-3.6.0b6/lib -lnetcdf'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -ftrapuv -fpconstant'
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+else
+    FOPTIM='-O0 -noalign -xN -pc64' 
+fi
+
