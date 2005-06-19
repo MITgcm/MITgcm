@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.6 2005/01/27 16:38:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.7 2005/06/19 21:35:07 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -134,8 +134,10 @@ C-- Compute Volume expansion term & do the integral
           vT_Mean = 0.
           vS_Mean = 0.
           vT_Heat = 0.
+          conv_th2Heat = 0.
           DO k=1,Nr
-           conv_th2Heat = atm_cp*((rC(k)/atm_po)**atm_kappa)
+           IF (fluidIsAir) conv_th2Heat = 
+     &                            atm_cp*((rC(k)/atm_po)**atm_kappa)
            DO j=1,sNy
             DO i=1,sNx
               tmpVol  = rA(i,j,bi,bj)*h0FacC(i,j,k,bi,bj)*drF(k)
@@ -144,9 +146,8 @@ C-- Compute Volume expansion term & do the integral
               vS_Mean = vS_Mean
      &          +tmpVol*rStarDhCDt(i,j,bi,bj)*salt(i,j,k,bi,bj)
 C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
-              IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-               vT_Heat = vT_Heat + tmpVol*tmpVal*conv_th2Heat
-              ENDIF
+              IF (fluidIsAir) vT_Heat = vT_Heat 
+     &                                + tmpVol*tmpVal*conv_th2Heat
             ENDDO
            ENDDO
           ENDDO             
