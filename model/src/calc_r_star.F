@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.3 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.4 2005/06/19 21:43:49 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -44,6 +45,7 @@ C     i,j,k,bi,bj  :: loop counter
 C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,k,bi,bj
+      INTEGER ii,jj
       INTEGER km, numbWrite, numbWrMax
       _RL tmpfldW, tmpfldS
 c     CHARACTER*(MAX_LEN_MBUF) suff
@@ -52,6 +54,10 @@ CEOP
       numbWrMax = Nx*Ny
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CALC_R_STAR',myThid)
+#endif
 
       IF (groundAtK1) THEN
        km = 1
@@ -213,6 +219,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 C-    2nd bi,bj loop :
 
+#ifdef ALLOW_EXCH2
+C- Note: rStarFacC was non-zero EVERYWHERE before exch, but exch2 put zeros
+C        in the corner regions of the tile (e.g.:[1-Olx:0,1-Oly:0])
+C       => need to add those lines (or to fix exch2):
+        DO j=1,Oly
+         DO i=1,Olx
+          ii = sNx+i
+          jj = sNy+j
+
+          IF (maskH(1-i,1-j,bi,bj).EQ.0.) rStarFacC(1-i,1-j,bi,bj) = 1.
+          IF (maskH(ii, 1-j,bi,bj).EQ.0.) rStarFacC(ii, 1-j,bi,bj) = 1.
+          IF (maskH(1-i,jj, bi,bj).EQ.0.) rStarFacC(1-i,jj, bi,bj) = 1.
+          IF (maskH(ii, jj, bi,bj).EQ.0.) rStarFacC(ii, jj, bi,bj) = 1.
+
+c         IF (ksurfW(1-i,1-j,bi,bj).LE.Nr) rStarFacW(1-i,1-j,bi,bj)=1.
+          IF (maskW(1-i,1-j,km,bi,bj).EQ.0.) rStarFacW(1-i,1-j,bi,bj)=1.
+          IF (maskW(ii, 1-j,km,bi,bj).EQ.0.) rStarFacW(ii, 1-j,bi,bj)=1.
+          IF (maskW(1-i,jj, km,bi,bj).EQ.0.) rStarFacW(1-i,jj, bi,bj)=1.
+          IF (maskW(ii, jj, km,bi,bj).EQ.0.) rStarFacW(ii, jj, bi,bj)=1.
+
+          IF (maskS(1-i,1-j,km,bi,bj).EQ.0.) rStarFacS(1-i,1-j,bi,bj)=1.
+          IF (maskS(ii, 1-j,km,bi,bj).EQ.0.) rStarFacS(ii, 1-j,bi,bj)=1.
+          IF (maskS(1-i,jj, km,bi,bj).EQ.0.) rStarFacS(1-i,jj, bi,bj)=1.
+          IF (maskS(ii, jj, km,bi,bj).EQ.0.) rStarFacS(ii, jj, bi,bj)=1.
+         ENDDO
+        ENDDO
+#endif /* ALLOW_EXCH2 */
+
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx 
            rStarDhCDt(i,j,bi,bj)=(rStarFacC(i,j,bi,bj) 
@@ -233,6 +267,10 @@ C-    2nd bi,bj loop :
 C-    end 2nd bi,bj loop.
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CALC_R_STAR',myThid)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* NONLIN_FRSURF */
