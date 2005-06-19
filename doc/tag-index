@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.498 2005/06/19 19:43:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.499 2005/06/19 22:22:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o fix few little things to avoid floating error with -ftrapuv (ifort v9)
+ (ini_spherical_polar_grid.F, calc_r_star.F, monitor/mon_surfcor.F)
 
 checkpoint57i_post
 o Diagnostics package was changed: diagnostic allocation is now deactivated
