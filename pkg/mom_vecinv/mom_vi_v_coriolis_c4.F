@@ -1,18 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.4 2004/12/10 20:15:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.5 2005/06/20 23:23:00 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_V_CORIOLIS_C4( 
-     I        bi,bj,K,
+CBOP
+C     !ROUTINE: MOM_VI_V_CORIOLIS_C4
+C     !INTERFACE:
+      SUBROUTINE MOM_VI_V_CORIOLIS_C4(
+     I        bi,bj,k,
      I        uFld,omega3,r_hFacZ,
      O        vCoriolisTerm,
      I        myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R MOM_VI_V_CORIOLIS_C4
+C     |==========================================================*
+C     | o Calculate zonal flux of vorticity at V point
+C     |   using 4th order interpolation
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-C     /==========================================================\
-C     | S/R MOM_VI_V_CORIOLIS                                    |
-C     |==========================================================|
-C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -20,32 +29,69 @@ C     == Global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      INTEGER bi,bj,K
+      INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
+CEOP
 
 C     == Local variables ==
-      INTEGER I,J
+      INTEGER i,j
       _RL uBarXY,vort3v,Rjp,Rjm
+      _RL uBarYm,uBarYp,oneSixth
       LOGICAL upwindVort3
       LOGICAL fourthVort3
 
-      upwindVort3=.FALSE.
-      fourthVort3=.TRUE.
+      PARAMETER(oneSixth=1.D0/6.D0)
+      PARAMETER(upwindVort3=.FALSE.)
+      PARAMETER(fourthVort3=.TRUE. )
 
-       DO J=2-Oly,sNy+Oly
-        DO I=1-Olx,sNx+Olx-1
+c     DO j=2-Oly,sNy+Oly
+c      DO i=2-Olx,sNx+Olx-2
+      DO j=1,sNy+1
+       DO i=1,sNx
+
+        IF ( SadournyCoriolis ) THEN
+C-      using SadournyCoriolis discretization:
+
+         uBarXY=1.
+         uBarYm=0.5*(
+     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj) )
+         uBarYp=0.5*(
+     &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj) )
+         IF (upwindVorticity) THEN
+          IF ( (uBarYm+uBarYp) .GT.0.) THEN
+           vort3v=uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
+          ELSE
+           vort3v=uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j)
+          ENDIF
+         ELSEIF (fourthVort3) THEN
+          Rjp = omega3(i+1,j)*r_hFacZ(i+1,j)
+     &         -oneSixth*( omega3(i+2,j)*r_hFacZ(i+2,j)
+     &                    -omega3( i ,j)*r_hFacZ( i ,j) )
+          Rjm = omega3(i,j)*r_hFacZ(i,j)
+     &         +oneSixth*( omega3(i+1,j)*r_hFacZ(i+1,j)
+     &                    -omega3(i-1,j)*r_hFacZ(i-1,j) )
+          vort3v=0.5*( uBarYm*Rjm + uBarYp*Rjp )
+         ELSE
+          vort3v=0.5*( uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
+     &                +uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j) )
+         ENDIF
+
+        ELSE
+C-      not using SadournyCoriolis discretization:
+
          uBarXY=0.25*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
      &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj))
-c        uBarXY=0.25*( uFld(i, j )+uFld(i+1, j )
-c    &                +uFld(i,j-1)+uFld(i+1,j-1))
          IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)
@@ -66,33 +112,15 @@ c    &                +uFld(i,j-1)+uFld(i+1,j-1))
      &               +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
 
-cph(
-cph The following block with 'interlaced' comments
-cph is bad for TAMC and will be replaced
-cph)
-#undef THIS_IS_BAD_FOR_TAMC
-#ifdef THIS_IS_BAD_FOR_TAMC
-         vCoriolisTerm(i,j)=
-C high order vorticity advection term
-     &   -vort3v*uBarXY*recip_dyc(i,j,bi,bj)
-C linear Coriolis term
-c    &   -0.5 *(fCoriG(I,J,bi,bj)+fCoriG(I+1,J,bi,bj))*uBarXY
-C full nonlinear Coriolis term
-c    &   -0.5*(omega3(I,J)+omega3(I+1,J))*uBarXY
-C correct energy conserving form of Coriolis term
-c    &   -0.5 *( fCori(I,J  ,bi,bj)*uBarX(I,J  ,K,bi,bj) +
-c    &           fCori(I,J-1,bi,bj)*uBarX(I,J-1,K,bi,bj)  )
-C original form of Coriolis term (copied from calc_mom_rhs)
-c    &   -0.5*(fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj))*uBarXY
-     &   *_maskS(I,J,K,bi,bj)
-#else
-         vCoriolisTerm(i,j)=
-     &   -vort3v*uBarXY*recip_dyc(i,j,bi,bj)
-     &   *_maskS(I,J,K,bi,bj)
-#endif
+C-      end if / else SadournyCoriolis
+        ENDIF
 
-        ENDDO
+        vCoriolisTerm(i,j)=
+     &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
+     &                 * _maskS(i,j,k,bi,bj)
+
        ENDDO
+      ENDDO
 
       RETURN
       END
