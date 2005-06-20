@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.40 2005/06/09 15:57:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.41 2005/06/20 23:07:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -415,15 +415,18 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
       ENDIF
 
       IF (momAdvection) THEN
-C--   Horizontal advection of relative vorticity
-       IF (useAbsVorticity) THEN
-        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
+C--   Horizontal advection of relative (or absolute) vorticity
+       IF (highOrderVorticity.AND.useAbsVorticity) THEN
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,omega3,r_hFacZ,
      &                         uCf,myThid)
        ELSEIF (highOrderVorticity) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,vort3,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,vort3, r_hFacZ,
+     &                         uCf,myThid)
+       ELSEIF (useAbsVorticity) THEN
+        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ELSE
-        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3,hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3, hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ENDIF
        DO j=jMin,jMax
@@ -431,14 +434,17 @@ C--   Horizontal advection of relative vorticity
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
         ENDDO
        ENDDO
-       IF (useAbsVorticity) THEN
-        CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
+       IF (highOrderVorticity.AND.useAbsVorticity) THEN
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
        ELSEIF (highOrderVorticity) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3, r_hFacZ,
+     &                         vCf,myThid)
+       ELSEIF (useAbsVorticity) THEN
+        CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE
-        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3,hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3, hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ENDIF
        DO j=jMin,jMax
@@ -571,7 +577,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
         ENDIF
 #endif /*  ALLOW_MNC  */
       ENDIF
-      
+
 #endif /* ALLOW_MOM_VECINV */
 
       RETURN
