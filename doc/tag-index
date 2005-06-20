@@ -1,12 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.500 2005/06/20 00:01:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.501 2005/06/20 00:32:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o fix bug in rStar code (calc_r_star.F) when used with topo/bathy. 
-  update output.txt from: aim.5l_cs (& .thSI), fizhi-gridalt-hs 
-     and global_ocean.cs32x15 (& .thsice).
+  update output.txt from: aim.5l_cs (& .thSI), cpl_aim+ocn,
+     fizhi-gridalt-hs and global_ocean.cs32x15 (& .thsice).
 o fix few little things to avoid floating error with -ftrapuv (ifort v9)
  (ini_spherical_polar_grid.F, calc_r_star.F, monitor/mon_surfcor.F)
 
