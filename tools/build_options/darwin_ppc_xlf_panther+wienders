@@ -1,19 +1,11 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.1 2005/06/08 17:30:10 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.2 2005/06/21 16:14:36 edhill Exp $
 #
-# Build options for Darwin on G5 Mac with IBM XL Fortran compilers
-# tested on G5 dual, 2GHz
-# ( Darwin eaps-dhcp-162.lcs.mit.edu 6.7.5 Darwin Kernel Version 6.7.5: Mon Aug 11 19:28:40 PDT 2003; root:xnu/xnu-344.21.73.obj~1/RELEASE_PPC  Power Macintosh powerpc )
-# cc-compiler is available only with the Apple Developer Tools, 
-# so make sure that those are installed 
-#
-# **NOTES** 
-#   o with Darwin you must remember to build on a ufs file system. The default Darwin file system (hfs) treats 
-#     upper case and lower case file names as the same file. This breaks the current MITgcm build procedure.
-#   o tim.c should use uembellished cloc() are the procedure name for XLF
-#     ETIME (timers.F) and FDATE (utils.F) are not available with Darwin+XLF so need to be switched out.
-#
+#  Notes:
+#    This optfile was created by Nicolas Wienders and Ed Hill and
+#    is known to work (complete with netCDF) on at least one Mac 
+#    system.
 
 CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
 FC=/opt/ibmcmp/xlf/8.1/bin/f77
@@ -21,9 +13,12 @@ LINK=/opt/ibmcmp/xlf/8.1/bin/f77
 FFLAGS='-qfixed=132 -qsuffix=f=for'
 FOPTIM='-O3'
 NOOPTFLAGS='-O0'
+LIBS='-L/usr/local/netcdf/lib -lnetcdf'
+INCLUDES='-I/usr/local/netcdf/include'
+SKIP_NETCDF_CHECK=t
+HAVE_NETCDF=t
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
-#MAKEDEPEND='${TOOLSDIR}/xmakedepend'
-##MAKEDEPEND=makedepend
 MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR=" /"'
