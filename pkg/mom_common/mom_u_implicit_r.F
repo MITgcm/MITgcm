@@ -1,18 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/mom_v_implicit_r.F,v 1.2 2004/12/03 15:41:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.1 2005/06/21 13:46:14 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: MOM_V_IMPLICIT_R
+C     !ROUTINE: MOM_U_IMPLICIT_R
 C     !INTERFACE:
-      SUBROUTINE MOM_V_IMPLICIT_R( 
-     I                 kappaRV,
+      SUBROUTINE MOM_U_IMPLICIT_R(
+     I                 kappaRU,
      I                 bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R MOM_V_IMPLICIT_R
+C     | S/R MOM_U_IMPLICIT_R
 C     | o Solve implicitly vertical advection & diffusion
 C     |   of momentum, meridional component
 C     *==========================================================*
@@ -30,7 +29,7 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      _RL kappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter, myThid
@@ -50,14 +49,14 @@ c     _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Solve for V-component :
+C     Solve for U-component :
 C----------------------------
 
 C--   Initialise
       iMin = 1
       jMin = 1
-      iMax = sNx
-      jMax = sNy+1
+      iMax = sNx+1
+      jMax = sNy
       DO k=1,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -79,10 +78,10 @@ C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskS(i,j,k-1,bi,bj).EQ.1.) 
+          IF (maskW(i,j,k-1,bi,bj).EQ.1.)
      &     b5d(i,j,k) = -deltaTmom
-     &                  *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &                  *kappaRV(i,j, k )*recip_drC( k )
+     &                  *recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *kappaRU(i,j, k )*recip_drC( k )
          ENDDO
         ENDDO
        ENDDO
@@ -90,10 +89,10 @@ C-     1rst upper diagonal :
        DO k=1,Nr-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskS(i,j,k+1,bi,bj).EQ.1.) 
+          IF (maskW(i,j,k+1,bi,bj).EQ.1.)
      &     d5d(i,j,k) = -deltaTmom
-     &                 *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &                 *KappaRV(i,j,k+1)*recip_drC(k+1)
+     &                 *recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                 *KappaRU(i,j,k+1)*recip_drC(k+1)
          ENDDO
         ENDDO
        ENDDO
@@ -117,10 +116,10 @@ C--   end if implicitDiffusion
           DO j=jMin,jMax
            DO i=iMin,iMax
             rTrans(i,j) = 0.5 _d 0 * (
-     &                wVel(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
-     &                                 *maskC(i, j ,k-1,bi,bj)
-     &              + wVel(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
-     &                                 *maskC(i,j-1,k-1,bi,bj)
+     &                wVel( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
+     &                                 *maskC( i ,j,k-1,bi,bj)
+     &              + wVel(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
+     &                                 *maskC(i-1,j,k-1,bi,bj)
      &                               )
            ENDDO
           ENDDO
@@ -130,15 +129,15 @@ C-          space Centered advection scheme, Advective form:
             DO j=jMin,jMax
              DO i=iMin,iMax
               rFlx = 0.5 _d 0 *deltaTmom*rTrans(i,j)
-     &                        *recip_rAs(i,j,bi,bj)*rkFac
+     &                        *recip_rAw(i,j,bi,bj)*rkFac
               b5d(i,j,k) = b5d(i,j,k)
-     &                   + rFlx*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                   + rFlx*recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k) = c5d(i,j,k)
-     &                   - rFlx*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                   - rFlx*recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
-     &                 + rFlx*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                 + rFlx*recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
-     &                 - rFlx*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                 - rFlx*recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
              ENDDO
             ENDDO
           ELSE
@@ -146,18 +145,18 @@ C-          space Centered advection scheme, Flux form:
             DO j=jMin,jMax
              DO i=iMin,iMax
               rFlx = 0.5 _d 0 *deltaTmom*rTrans(i,j)
-     &                        *recip_rAs(i,j,bi,bj)*rkFac
+     &                        *recip_rAw(i,j,bi,bj)*rkFac
               b5d(i,j,k) = b5d(i,j,k)
-     &                   + rFlx*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                   + rFlx*recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k) = c5d(i,j,k)
-     &                   + rFlx*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                   + rFlx*recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
-     &                 - rFlx*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                 - rFlx*recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
-     &                 - rFlx*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                 - rFlx*recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
              ENDDO
             ENDDO
-            STOP 'MOM_IMPLICIT_R: Flux Form not yet finished'
+            STOP 'MOM_IMPLICIT_R: Flux Form not yet finished.'
           ENDIF
 
 C--     end k loop
@@ -170,14 +169,14 @@ C--   end if momImplVertAdv
 C--   Solve tri-diagonal system :
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                          b5d, c5d, d5d,
-     U                          gV,
+     U                          gU,
      O                          errCode,
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
-          STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem'
+          STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
         ENDIF
       ELSEIF ( diagonalNumber .NE. 1 ) THEN
-        STOP 'MOM_IMPLICIT_R: no solver available'
+        STOP 'MOM_IMPLICIT_R: no solver available.'
       ENDIF
 
       RETURN
