@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.6 2003/10/15 22:53:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.7 2005/06/22 00:32:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -57,7 +57,7 @@ CEOP
      &    *0.25*(wVelBottomOverride*
      &            (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
      &            +wFld(i-1,j, k ,bi,bj)+wFld(i,j, k ,bi,bj)
-     &          )*rkFac*recip_horiVertRatio*gravitySign
+     &          )*recip_horiVertRatio*gravitySign
        ENDDO
       ENDDO
 

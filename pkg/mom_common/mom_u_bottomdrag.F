@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.3 2004/10/19 02:42:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.4 2005/06/22 00:31:47 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -63,8 +63,8 @@ C-  No-slip BCs impose a drag at bottom
       ENDIF	
       rdrckp1=recip_drC(kDownC)
       IF (k.EQ.kBottom) rdrckp1=recip_drF(k)
-      viscFac=1.
-      IF (.NOT. no_slip_bottom) viscFac=0.
+      viscFac=0.
+      IF (no_slip_bottom) viscFac=1.
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
         maskDown=_maskW(i,j,kDown,bi,bj)
@@ -72,7 +72,7 @@ C-  No-slip BCs impose a drag at bottom
         uDragTerms(i,j)=
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *( 
-     &      2.*KappaRU(i,j,kDownC)*rkFac*rdrckp1*viscFac
+     &      2.*KappaRU(i,j,kDownC)*rdrckp1*viscFac
 #if (defined (ALLOW_AUTODIFF_TAMC) && \
     defined (ALLOW_BOTTOMDRAG_CONTROL))
      &     + bottomdragfld(i,j,bi,bj)
