@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.4 2004/10/21 21:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.5 2005/06/22 00:27:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,7 +63,7 @@ CEOP
          dfr(i,j) =
      &    -_rA(i,j,bi,bj)
      &     *KappaR(i,j)*recip_drC(k)
-     &     *(Tracer(i,j,km1,bi,bj)-Tracer(i,j,k,bi,bj))*rkFac
+     &     *(Tracer(i,j,k,bi,bj)-Tracer(i,j,km1,bi,bj))*rkSign
         ENDDO
        ENDDO
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_ivdc.F,v 1.6 2004/07/01 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_ivdc.F,v 1.7 2005/06/22 00:25:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,7 +49,7 @@ C--    Where statically unstable, mix the heat and salt
        DO j=jMin,jmax
         DO i=iMin,imax
          IF ( _hFacC(i,j,k,bi,bj) .GT. 0. .AND.
-     &        (rhokm1(i,j)-rhokp1(i,j))*rkFac*gravitySign .LT. 0. ) THEN
+     &        (rhokm1(i,j)-rhokp1(i,j))*rkSign*gravitySign.GT.0. ) THEN
           IVDConvCount(i,j,k,bi,bj) = 1. _d 0
          ELSE
           IVDConvCount(i,j,k,bi,bj) = 0. _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.13 2002/03/07 14:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.14 2005/06/22 00:25:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -53,18 +53,18 @@ C-    Check that all thickness are > 0 :
 
 C-    Calculate depths of centers and interfaces
         rF(1)  = Ro_SeaLevel
-        rC(1)  = rF(1) - rkFac*delRc(1)
+        rC(1)  = rF(1) + rkSign*delRc(1)
         drC(1) = delRc(1)
         drF(1) = delRc(1)
        DO K=2,Nr
         drC(K)   = delRc(K)
         drF(K-1) =  drF(K-1) + 0.5 _d 0*delRc(K)
         drF(K)   = 0.5 _d 0*delRc(K)
-        rC(K)    = rC(K-1) - rkFac*drC(K)
-        rF(K)    = rF(K-1) - rkFac*drF(K-1)
+        rC(K)    = rC(K-1) + rkSign*drC(K)
+        rF(K)    = rF(K-1) + rkSign*drF(K-1)
        ENDDO
         drF(Nr)  = drF(Nr) + delRc(Nr+1)
-        rF(Nr+1) = rF(Nr) - rkFac*drF(Nr)
+        rF(Nr+1) = rF(Nr) + rkSign*drF(Nr)
 
       ELSE
 C-- Center at middle between 2 interfaces :
@@ -86,13 +86,13 @@ C-    Calculate depths of interfaces and centers
       rF(1) = Ro_SeaLevel
       DO K=1,Nr
        drF(K)     = delR(K)
-       rF(K+1) = rF(K)-rkFac*delR(K)
+       rF(K+1) = rF(K) + rkSign*delR(K)
       ENDDO
       drC(1)      = delR(1) * 0.5 _d 0
-      rC(1)       = rf(1)-rkFac*delR(1) * 0.5 _d 0
+      rC(1)       = rf(1) + rkSign*delR(1) * 0.5 _d 0
       DO K=2,Nr
        drC(K)     = 0.5 _d 0 *(delR(K-1)+delR(K))
-       rC(K)      = rC(K-1) - rkFac*drC(K)
+       rC(K)      = rC(K-1) + rkSign*drC(K)
       ENDDO
 
 C--

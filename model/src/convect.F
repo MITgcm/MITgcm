@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.24 2005/05/15 03:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.25 2005/06/22 00:25:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,7 +83,7 @@ C--    Where statically unstable, mix the heat and salt
        DO j=jMin,jmax
         DO i=iMin,imax
          IF ( _hFacC(i,j,k,bi,bj) .GT. 0. .AND.
-     &        (rhokm1(i,j)-rhokp1(i,j))*rkFac*gravitySign .LT. 0. 
+     &        (rhokm1(i,j)-rhokp1(i,j))*rkSign*gravitySign .GT. 0. 
      &        ) THEN
           theta(i,j,k-1,bi,bj) = tMix(i,j)/dSum(i,j)
           theta(i,j,k  ,bi,bj) = tMix(i,j)/dSum(i,j)

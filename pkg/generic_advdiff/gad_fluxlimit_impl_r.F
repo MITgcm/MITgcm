@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.5 2004/12/04 18:50:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.6 2005/06/22 00:27:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -94,8 +94,8 @@ C--   Compute the upwind fraction:
             Cr=Rjp/Rj
           ENDIF
           upwindFac(i,j) = 1. _d 0
-     &                   - Limiter(Cr) * ( 1. _d 0 + abs(w_CFL) )
-          upwindFac(i,j) = max( -1. _d 0, upwindFac(i,j) )
+     &                   - Limiter(Cr) * ( 1. _d 0 + ABS(w_CFL) )
+          upwindFac(i,j) = MAX( -1. _d 0, upwindFac(i,j) )
          ELSE
           upwindFac(i,j) = 0. _d 0
          ENDIF
@@ -105,19 +105,19 @@ C--   Compute the upwind fraction:
 C--    Add centered & upwind contributions
        DO j=jMin,jMax
          DO i=iMin,iMax
-           rCenter = 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkFac
-           rUpwind = abs(rCenter)*upwindFac(i,j)
+           rCenter = 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkSign
+           rUpwind = ABS(rCenter)*upwindFac(i,j)
            a3d(i,j,k)   = a3d(i,j,k)
-     &                  + (rCenter-rUpwind)*deltaTarg(k)
+     &                  - (rCenter+rUpwind)*deltaTarg(k)
      &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k)   = b3d(i,j,k)
-     &                  + (rCenter+rUpwind)*deltaTarg(k)
+     &                  - (rCenter-rUpwind)*deltaTarg(k)
      &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k-1) = b3d(i,j,k-1)
-     &                  - (rCenter-rUpwind)*deltaTarg(k-1)
+     &                  + (rCenter+rUpwind)*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c3d(i,j,k-1) = c3d(i,j,k-1)
-     &                  - (rCenter+rUpwind)*deltaTarg(k-1)
+     &                  + (rCenter-rUpwind)*deltaTarg(k-1)
      &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO

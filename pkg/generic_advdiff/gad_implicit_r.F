@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.9 2004/12/20 19:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.10 2005/06/22 00:27:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -205,7 +205,7 @@ c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj)
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
      &      + dTtracerLev(1)*recip_rA(i,j,bi,bj)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))*rkFac
+     &       *tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))*rkSign
           ENDDO
         ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.35 2005/04/03 16:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.36 2005/06/22 00:27:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -141,7 +141,7 @@ C--   Set diagnostic suffix for the current tracer
 
       advFac  = 0. _d 0
       IF (calcAdvection) advFac = 1. _d 0
-      rAdvFac = rkFac*advFac
+      rAdvFac = rkSign*advFac
       IF (implicitAdvection) rAdvFac = 0. _d 0
 
       DO j=1-OLy,sNy+OLy
@@ -506,10 +506,10 @@ C--   Divergence of fluxes
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
      &   *( (fZon(i+1,j)-fZon(i,j))
      &     +(fMer(i,j+1)-fMer(i,j))
-     &     +(fVerT(i,j,kUp)-fVerT(i,j,kDown))*rkFac
+     &     +(fVerT(i,j,kDown)-fVerT(i,j,kUp))*rkSign
      &     -localT(i,j)*( (uTrans(i+1,j)-uTrans(i,j))
      &                   +(vTrans(i,j+1)-vTrans(i,j))
-     &                   +(rTrans(i,j)-rTransKp1(i,j))*rAdvFac
+     &                   +(rTransKp1(i,j)-rTrans(i,j))*rAdvFac
      &                  )*advFac
      &    )
        ENDDO

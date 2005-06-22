@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.18 2005/05/15 03:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.19 2005/06/22 00:25:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,7 +97,7 @@ C-      Initialisation of Convection Counter
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-         IF ( rkFac*gravitySign .LT. 0. ) THEN
+         IF ( rkSign*gravitySign .GT. 0. ) THEN
 C-          <=> usingZCoords:
           kTop    =  2
           kBottom = Nr
