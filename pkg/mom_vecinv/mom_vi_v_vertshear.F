@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.6 2005/06/09 15:59:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.7 2005/06/22 00:33:14 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -71,16 +71,14 @@ C       Transport at interface k+1 (here wFld is already masked)
 
 C delta_Z( V )  @ interface k
 c       vmask_Km1=mask_Km1*maskS(i,j,Km1,bi,bj)
-        vZm=(mask_Km1*vFld(I,J,Km1,bi,bj)-vFld(I,J,K,bi,bj))
-c    &      *rkFac
+        vZm=(vFld(I,J,K,bi,bj)-mask_Km1*vFld(I,J,Km1,bi,bj))*rkSign
 c2   &      *recip_dRC(K)
 c       IF (freeslip1) vZm=vZm*vmask_Km1
 c       IF (noslip1.AND.vmask_Km1.EQ.0.) vZm=vZm*2.
 
 C delta_Z( V )  @ interface k+1
 c       vmask_Kp1=mask_Kp1*maskS(i,j,Kp1,bi,bj)
-        vZp=(vFld(I,J,K,bi,bj)-mask_Kp1*vFld(I,J,Kp1,bi,bj))
-c    &      *rkFac
+        vZp=(mask_Kp1*vFld(I,J,Kp1,bi,bj)-vFld(I,J,K,bi,bj))*rkSign
 c2   &      *recip_dRC(Kp1)
 c       IF (freeslipK) vZp=vZp*vmask_Kp1
 c       IF (noslipK.AND.vmask_Kp1.EQ.0.) vZp=vZp*2.

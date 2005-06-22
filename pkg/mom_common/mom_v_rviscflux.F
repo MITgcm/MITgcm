@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_rviscflux.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_rviscflux.F,v 1.2 2005/06/22 00:29:02 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -55,8 +55,8 @@ C     - Laplacian  and bi-harmonic terms
         rViscFluxV(i,j) =
      &   -KappaRV(i,j,kp1)
      &   *rAs(i,j,bi,bj)
-     &   *( vFld(i,j,k,bi,bj)-vFld(i,j,kp1,bi,bj)
-     &    )*rkFac*recip_drC(kp1)
+     &   *( vFld(i,j,kp1,bi,bj)-vFld(i,j,k,bi,bj)
+     &    )*rkSign*recip_drC(kp1)
      &    *_maskS(i,j,k,bi,bj)
      &    *_maskS(i,j,kp1,bi,bj)
        ENDDO

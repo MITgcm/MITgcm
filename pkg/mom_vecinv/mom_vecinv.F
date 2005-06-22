@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.41 2005/06/20 23:07:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.42 2005/06/22 00:33:14 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -272,8 +272,8 @@ C--   Tendency is minus divergence of the fluxes
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAw(i,j,bi,bj)
      &  *(
-     &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
-     &   )
+     &    fVerU(i,j,kDown) - fVerU(i,j,kUp)
+     &   )*rkSign
         ENDDO
        ENDDO
       ENDIF
@@ -332,8 +332,8 @@ C--   Tendency is minus divergence of the fluxes
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rAs(i,j,bi,bj)
      &  *(
-     &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
-     &   )
+     &    fVerV(i,j,kDown) - fVerV(i,j,kUp)
+     &   )*rkSign
         ENDDO
        ENDDO
       ENDIF
