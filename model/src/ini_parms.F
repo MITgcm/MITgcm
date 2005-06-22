@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.157 2005/06/09 15:53:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.158 2005/06/22 00:24:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,6 +118,8 @@ C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
 C     tempDiffusion :: diffusion of temperature on/off (flag not used)
 C     zonal_filt_lat :: Moved to package "zonal_filt"
+C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
+C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
@@ -125,6 +127,8 @@ C                 or that have moved to a different input file and/or namelist.
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
       _RL zonal_filt_lat
+      _RL rkFac
+      LOGICAL groundAtK1
       INTEGER nRetired
 
 C--   Continuous equation parameters
@@ -245,6 +249,8 @@ C--   Initialise retired parameters to unlikely value
       trac_EvPrRn     = UNSET_RL
       zonal_filt_lat  = UNSET_RL
       gravitySign     = UNSET_RL
+      rkFac           = UNSET_RL
+      groundAtK1      = .FALSE.
 
 C--   Open the parameter file
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
@@ -874,7 +880,6 @@ C     o Monitor (should also add CPP flag for monitor?)
 
 C--   Grid parameters
 C     In cartesian coords distances are in metres
-      rkFac = UNSET_RS
       DO K =1,Nr
        delZ(K) = UNSET_RL
        delP(K) = UNSET_RL
@@ -910,6 +915,22 @@ C     In spherical polar distances are in degrees
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
       ENDIF    
+
+C     Check for retired parameters still being used
+      IF ( rkFac .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "rkFac" has been replaced by -rkSign ',
+     &  ' and is no longer allowed in file "data".'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( groundAtK1 ) THEN
+c      nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "groundAtK1" is set according to vertical ',
+     &  ' coordinate and is no longer allowed in file "data".'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
 
 C     X coordinate
       IF ( delXfile .NE. ' ' ) THEN
@@ -1127,34 +1148,21 @@ C--   Input files
       ENDIF       
 
 C--   Set factors required for mixing pressure and meters as vertical coordinate.
-C     rkFac is a "sign" parameter which is used where the orientation of the vertical
+C     rkSign is a "sign" parameter which is used where the orientation of the vertical
 C     coordinate (pressure or meters) relative to the vertical index (K) is important.
-C     rkFac =  1 applies when K and the coordinate are in the opposite sense.
-C     rkFac = -1 applies when K and the coordinate are in the same sense.
+C     rkSign = -1 applies when K and the coordinate are in the opposite sense.
+C     rkSign =  1 applies when K and the coordinate are in the same sense.
 C     horiVertRatio is a parameter that maps horizontal units to vertical units.
 C     It is used in certain special cases where lateral and vertical terms are
 C     being combined and a single frame of reference is needed.
-      IF ( zCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN 
-       rkFac       = 1.D0
-       horiVertRatio = 1.D0
-      ENDIF
-      IF ( pCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN
-C- jmc: any time P-coordinate is used (ocean,atmos), it requires rkFac=1
-c      rkFac = -1.D0
-       horiVertRatio = Gravity * rhoConst
-      ENDIF
-      IF ( rCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN
-       rkFac =  1.D0
-       horiVertRatio = 1.D0
-      ENDIF
-      gravitySign = -1. _d 0
+      rkSign       = -1. _d 0
+      horiVertRatio = 1. _d 0
+      gravitySign  = -1. _d 0
       IF ( usingPCoords ) THEN
          gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
       ENDIF
       convertEmP2rUnit = rhoConstFresh*recip_rhoConst*horiVertRatio
-      IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
-      recip_rkFac = 1.D0 / rkFac
       recip_horiVertRatio = 1./horiVertRatio
 
 c-- gradually replacing debugMode by debugLevel

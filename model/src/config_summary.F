@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.74 2005/06/09 15:53:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.75 2005/06/22 00:24:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -457,12 +457,10 @@ C     zcoord ::
       CALL WRITE_0D_L( usingCylindricalGrid, INDEX_NONE,
      & 'usingCylindricalGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
-      CALL WRITE_0D_L( groundAtK1, INDEX_NONE, 'groundAtK1 =',
-     &'   /* Lower Boundary (ground) at the surface(k=1) ( T / F ) */')
       CALL WRITE_0D_R8( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
      &'   /* r(1) ( units of r ) */')
-      CALL WRITE_0D_R8( rkFac, INDEX_NONE,'rkFac =',
-     &'   /* minus Vertical index orientation  */')
+      CALL WRITE_0D_R8( rkSign, INDEX_NONE,'rkSign =',
+     &'   /* index orientation relative to vertical coordinate */')
       CALL WRITE_0D_R8( horiVertRatio, INDEX_NONE,'horiVertRatio =',
      &'   /* Ratio on units : Horiz - Vertical */')
 c     CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
