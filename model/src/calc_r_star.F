@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.5 2005/06/19 23:26:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.6 2005/06/22 00:18:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (debugMode) CALL DEBUG_ENTER('CALC_R_STAR',myThid)
 #endif
 
-      IF (groundAtK1) THEN
+      IF (usingPCoords) THEN
        km = Nr
       ELSE
        km = 1

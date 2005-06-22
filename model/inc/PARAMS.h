@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.159 2005/06/09 15:53:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.160 2005/06/22 00:21:03 jmc Exp $
 C $Name:  $
 C
 
@@ -277,7 +277,6 @@ C                       useSingleCpuIO is set, mdsio_writefield.F
 C                       outputs from master mpi process only.
 C     allowFreezing  :: Allows surface water to freeze and form ice
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
-C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
 C     pickup_write_mdsio :: use mdsio to write pickups
 C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
@@ -314,7 +313,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & fluidIsAir, fluidIsWater,
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
-     & allowFreezing, useOldFreezing, groundAtK1,
+     & allowFreezing, useOldFreezing,
      & usePickupBeforeC35, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
@@ -387,7 +386,6 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
       LOGICAL useOldFreezing
-      LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2

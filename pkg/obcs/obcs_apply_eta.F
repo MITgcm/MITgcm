@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.1 2002/01/30 04:22:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.2 2005/06/22 00:20:06 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -30,7 +30,7 @@ C     == Local variables ==
       _RL obc_mask
 
       K = 1 
-      IF (groundAtK1) K = Nr
+      IF (usingPCoords) K = Nr
 
 C     Set model variables to OB values on North/South Boundaries
       DO I=1-Olx,sNx+Olx
