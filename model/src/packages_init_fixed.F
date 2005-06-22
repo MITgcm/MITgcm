@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.39 2005/05/31 18:24:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.40 2005/06/22 21:24:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -207,7 +207,7 @@ C--   Initialise & Read Land package parameters
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
-      IF (useECCO) CALL ECCO_COST_INIT_FIXED( myThid )
+      CALL ECCO_COST_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
