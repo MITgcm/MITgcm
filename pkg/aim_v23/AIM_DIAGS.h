@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.4 2004/06/24 23:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.5 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -73,3 +73,7 @@ C
 
 
 #endif /* ALLOW_AIM */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

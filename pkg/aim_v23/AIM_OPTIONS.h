@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.6 2004/07/22 23:01:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.7 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 C  CPP options file for AIM package 
@@ -30,3 +30,7 @@ C   ( dynamics puts K=1 at bottom of atmos., AIM puts K=1 at top of atmos. )
 
 #endif /* ALLOW_AIM */
 #endif /* AIM_OPTIONS_H */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

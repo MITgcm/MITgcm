@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_SIZE.h,v 1.2 2003/06/12 17:59:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_SIZE.h,v 1.3 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -23,3 +23,6 @@ C      lwTemp2= maximum temperature for LW radiation scheme
       INTEGER NBAND, lwTemp1, lwTemp2
       PARAMETER ( NBAND=4, lwTemp1=100, lwTemp2=400 )
 
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

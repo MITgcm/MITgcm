@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.8 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.9 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -35,11 +35,14 @@ C     == Local variables ==
       INTEGER bi, bj, K
       CHARACTER*(MAX_LEN_MBUF) msgBuf, suff, fn
       LOGICAL gf
-
+#ifdef ALLOW_MNC
+      CHARACTER*(8) mncfn
+#endif
+      
 #ifdef ALLOW_AIM_TAVE
-
+      
       IF (aim_taveFreq.LE.0.) RETURN
-
+      
       IF ( myIter.EQ.nIter0 ) THEN
 C     Initialize average arrays to zero
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -108,62 +111,99 @@ C      Normalize by integrated time
        _BARRIER
        _BEGIN_MASTER( myThid )
 
-C-     find wether we are writing globalFile or tile-files:
-        CALL GET_WRITE_GLOBAL_FLD( gf )
+#ifdef ALLOW_MNC
+       IF (useMNC .AND. aim_tave_mnc) THEN
+C        C             12345678
+         mncfn(1:8) = 'aim_tave'
+         CALL MNC_CW_SET_UDIM(mncfn, -1, myThid)
+         CALL MNC_CW_RL_W_S('D',mncfn,0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM(mncfn, 0, myThid)
+         CALL MNC_CW_I_W_S('I',mncfn,0,0,'iter',myIter,myThid)
+         
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'USTRtave',  USTRtave,  myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'VSTRtave',  VSTRtave,  myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'TSRtave',   TSRtave,   myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'OLRtave',   OLRtave,   myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'SSRtave',   SSRtave,   myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'SLRtave',   SLRtave,   myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'SHFtave',   SHFtave,   myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'EVAPtave',  EVAPtave,  myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'PRECNVtave',PRECNVtave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'PRECLStave',PRECLStave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'CLOUDCtave',CLOUDCtave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'CLTOPtave', CLTOPtave, myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'CBMFtave',  CBMFtave,  myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'DRAGtave',  DRAGtave,  myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimV0tave', aimV0tave, myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimT0tave', aimT0tave, myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimQ0tave', aimQ0tave, myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'EnFxPrtave',EnFxPrtave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'albedotave',albedotave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'dTsurftave',dTsurftave,myThid)
+         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimRHtave', aimRHtave, myThid)
+       ENDIF
+#endif /*  ALLOW_MNC  */
 
-        WRITE(fn,'(A,I10.10)') 'aimPhytave.',myIter
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+       IF (aim_tave_mdsio) THEN
+
+C        find wether we are writing globalFile or tile-files:
+         CALL GET_WRITE_GLOBAL_FLD( gf )
+         
+         WRITE(fn,'(A,I10.10)') 'aimPhytave.',myIter
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,USTRtave,   1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,VSTRtave,   2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,TSRtave ,   3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,OLRtave ,   4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,SSRtave ,   5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,SLRtave ,   6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,SHFtave ,   7,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,EVAPtave,   8,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,PRECNVtave, 9,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,PRECLStave,10,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,CLOUDCtave,11,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,CLTOPtave, 12,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,CBMFtave,  13,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,DRAGtave,  14,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,aimV0tave, 15,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,aimT0tave, 16,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,aimQ0tave, 17,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,EnFxPrtave,18,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,albedotave,19,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
+         CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
      &        'RL',1,dTsurftave,20,myIter,myThid)
-
-       WRITE(suff,'(I10.10)') myIter
-       CALL WRITE_FLD_XYZ_RL('aim_RHtave.',suff,aimRHtave,
-     &                        myIter,myThid)
-
-       WRITE(msgBuf,'(A,I10)')
-     &  '// AIM Time-average  written, t-step', myIter
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )         
-       WRITE(msgBuf,'(A)') ' '
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )         
+         
+         WRITE(suff,'(I10.10)') myIter
+         CALL WRITE_FLD_XYZ_RL('aim_RHtave.',suff,aimRHtave,
+     &        myIter,myThid)
+         
+         WRITE(msgBuf,'(A,I10)')
+     &        '// AIM Time-average  written, t-step', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A)') ' '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT, myThid )
+         
+       ENDIF
 
        _END_MASTER( myThid )
        _BARRIER

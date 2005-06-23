@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.503 2005/06/22 00:51:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.504 2005/06/23 20:02:49 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o mnc-ify aim_v23 as requested by Daniel Enderton
 o remove "groundAtK1" & "rkFac" (replaced by usingPCoords & -rkSign)
 o add Sadourny like discretization to the 4th.O vorticity advection scheme
 o fix bug in rStar code (calc_r_star.F) when used with topo/bathy. 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM2DYN.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM2DYN.h,v 1.2 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -22,3 +22,7 @@ C
       _RL  aim_dSdt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #endif /* ALLOW_AIM */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

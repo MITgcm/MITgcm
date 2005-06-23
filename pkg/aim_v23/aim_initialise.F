@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.8 2004/11/14 19:54:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.9 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -24,6 +24,9 @@ C     -------------- Global variables ------------------------------------
 #include "AIM_FFIELDS.h"
 c #include "AIM_GRID.h"
 #include "AIM_DIAGS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance
@@ -46,6 +49,12 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_energPrecip = .FALSE.
       aim_splitSIOsFx = .FALSE.
       aim_clrSkyDiag  = .FALSE.
+      aim_tave_mdsio  = .TRUE.
+#ifdef ALLOW_MNC
+      aim_tave_mnc    = timeave_mnc
+#else
+      aim_tave_mnc    = .FALSE.
+#endif
       aim_MMsufx = '.bin'
       aim_MMsufxLength = 4
       aim_LandFile = ' '
@@ -60,7 +69,7 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
-      
+
 C--  Set default value for atmos. physics parameters:
       pGround = atm_Po
       DO k=1,Nr
@@ -126,6 +135,12 @@ C--   Initialise Land Fraction (in AIM_FFIELDS.h):
       IF ( aim_LandFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS(aim_LandFile,aim_landFr,1,nIter0,myThid)
       ENDIF
+
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+        CALL AIM_MNC_INIT( myThid )
+      ENDIF
+#endif /*  ALLOW_MNC  */
 
 #endif /* ALLOW_AIM */
 

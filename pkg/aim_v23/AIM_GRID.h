@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_GRID.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_GRID.h,v 1.2 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -20,3 +20,7 @@ C               (originally in com_physcon.h, common FSIGLT)
       _RL csLat (NGP,MAX_NO_THREADS)
 
 #endif /* ALLOW_AIM */ 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

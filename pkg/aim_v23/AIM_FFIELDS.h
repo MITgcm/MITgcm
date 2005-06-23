@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_FFIELDS.h,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_FFIELDS.h,v 1.3 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -58,3 +58,7 @@ C     and used directly with no time-interpolation.
       EQUIVALENCE (aim_soilWater, aim_sw10) 
 
 #endif /* ALLOW_AIM */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

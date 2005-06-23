@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.6 2004/11/14 19:54:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.7 2005/06/23 20:02:50 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -17,15 +17,19 @@ C     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
 C     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
 C                 (also land SW & LW) ; default=F as in original version
 C     aim_clrSkyDiag  :: compute clear-sky radiation for diagnostics
+C     aim_tave_mdsio  :: write TimeAverage output using MDSIO
+C     aim_tave_mnc    :: write TimeAverage output using MNC
       COMMON /AIM_PARM_L/ 
-     &  aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp,
-     &  aim_energPrecip, aim_splitSIOsFx, aim_clrSkyDiag
+     &     aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp,
+     &     aim_energPrecip, aim_splitSIOsFx, aim_clrSkyDiag,
+     &     aim_tave_mdsio,  aim_tave_mnc
       LOGICAL aim_useFMsurfBC
       LOGICAL aim_useMMsurfFc
       LOGICAL aim_surfPotTemp
       LOGICAL aim_energPrecip
       LOGICAL aim_splitSIOsFx
       LOGICAL aim_clrSkyDiag
+      LOGICAL aim_tave_mdsio,  aim_tave_mnc
 
 C--   COMMON /AIM_PARM_C/ Character valued parameters for AIM
 C     aim_LandFile :: file name for Land fraction
@@ -72,3 +76,7 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       _RL aim_tendFreq
 
 #endif /* ALLOW_AIM */ 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
