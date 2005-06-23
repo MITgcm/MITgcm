@@ -1,0 +1,12 @@
+
+C----------------------------------------
+C function myactivefunction
+C----------------------------------------
+CADJ function myactivefunction  INPUT  = 1,2
+CADJ function myactivefunction  OUTPUT = 
+CADJ function myactivefunction  ACTIVE = 1
+CADJ function myactivefunction  DEPEND = 1,2
+CADJ function myactivefunction  INFLUENCED
+CADJ function myactivefunction  REQUIRED
+CADJ function myactivefunction  ADNAME  = admyactivefunction
+CADJ function myactivefunction  FTLNAME = g_myactivefunction
