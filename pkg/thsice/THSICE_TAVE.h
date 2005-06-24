@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.2 2004/07/22 23:02:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.3 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -65,3 +65,7 @@ C     ICE_sMxL_Ave   :: cumulated ocean mixed-layer salinity [psu]
 #endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_THSICE */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

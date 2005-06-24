@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.3 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.4 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -47,6 +47,10 @@ C     == Local variables ==
       INTEGER bi, bj, kl
       CHARACTER*(MAX_LEN_MBUF) suff, fn
       LOGICAL gf
+#ifdef ALLOW_TIMEAVE
+      INTEGER i
+      CHARACTER*(MAX_LEN_MBUF) mncf
+#endif
 
 #ifdef ALLOW_TIMEAVE
 
@@ -177,50 +181,88 @@ C--    Write all time-average variables in 1 file :
        _BARRIER
        _BEGIN_MASTER( myThid )
 
-C-     find wether we are writing globalFile or tile-files:
-       CALL GET_WRITE_GLOBAL_FLD( gf )
+       IF ( thSIce_tave_mdsio ) THEN
 
-       WRITE(fn,'(A,I10.10)') 'thSIce_tave.', myIter
+C        find wether we are writing globalFile or tile-files:
+         CALL GET_WRITE_GLOBAL_FLD( gf )
 
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_fract_Ave,  1, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_iceH_Ave,   2, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_snowH_Ave,  3, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_Tsrf_Ave,   4, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_Tice1_Ave,  5, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_Tice2_Ave,  6, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_snowPr_Ave, 7, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_albedo_Ave, 8, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_flx2oc_Ave, 9, myIter, myThid )
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_frw2oc_Ave,10, myIter, myThid )
-       kl = 11
-       CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_salFx_Ave, kl, myIter, myThid )
-       IF ( fluidIsWater ) THEN
-        kl = kl+1
-        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_flxAtm_Ave,kl, myIter, myThid )
-        kl = kl+1
-        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_frwAtm_Ave,kl, myIter, myThid )
+         WRITE(fn,'(A,I10.10)') 'thSIce_tave.', myIter
+
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_fract_Ave,  1, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_iceH_Ave,   2, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_snowH_Ave,  3, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_Tsrf_Ave,   4, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_Tice1_Ave,  5, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_Tice2_Ave,  6, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_snowPr_Ave, 7, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_albedo_Ave, 8, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_flx2oc_Ave, 9, myIter, myThid )
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_frw2oc_Ave,10, myIter, myThid )
+         kl = 11
+         CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &        ice_salFx_Ave, kl, myIter, myThid )
+         IF ( fluidIsWater ) THEN
+           kl = kl+1
+           CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &          ice_flxAtm_Ave,kl, myIter, myThid )
+           kl = kl+1
+           CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &          ice_frwAtm_Ave,kl, myIter, myThid )
+         ENDIF
+         IF ( stepFwd_oceMxL ) THEN
+           kl = kl+1
+           CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &          ice_tMxL_Ave,  kl, myIter, myThid )
+           kl = kl+1
+           CALL MDSWRITEFIELD( fn, writeBinaryPrec, gf, 'RL', 1,
+     &          ice_sMxL_Ave,  kl, myIter, myThid )
+         ENDIF
+
        ENDIF
-       IF ( stepFwd_oceMxL ) THEN
-        kl = kl+1
-        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_tMxL_Ave,  kl, myIter, myThid )
-        kl = kl+1
-        CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL', 1,
-     &                     ice_sMxL_Ave,  kl, myIter, myThid )
+
+#ifdef ALLOW_MNC
+       IF ( useMNC .AND. thSIce_tave_mnc ) THEN
+         DO i = 1,MAX_LEN_MBUF
+           mncf(i:i) = ' '
+         ENDDO
+C        C             123456789 1
+         mncf(1:11) = 'thsice_tave'
+         CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'fract_ave', ice_fract_Ave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'iceH_ave',  ice_iceH_Ave,  myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'snowH_ave', ice_snowH_Ave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'Tsrf_ave',  ice_Tsrf_Ave,  myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'Tice1_ave', ice_Tice1_Ave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'Tice2_ave', ice_Tice2_Ave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'snowPr_ave',ice_snowPr_Ave,myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'albedo_ave',ice_albedo_Ave,myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'flx2oc_ave',ice_flx2oc_Ave,myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,'frw2oc_ave',ice_frw2oc_Ave,myThid)
+         IF ( fluidIsWater ) THEN
+           CALL MNC_CW_RL_W('D',fn,0,0,'flxAtm_ave',
+     &          ice_flxAtm_Ave,myThid)
+           CALL MNC_CW_RL_W('D',fn,0,0,'frwAtm_ave',
+     &          ice_frwAtm_Ave,myThid)
+         ENDIF
+         IF ( stepFwd_oceMxL ) THEN
+           CALL MNC_CW_RL_W('D',fn,0,0,'tMxL_ave',ice_tMxL_Ave,myThid)
+           CALL MNC_CW_RL_W('D',fn,0,0,'sMxL_ave',ice_sMxL_Ave,myThid)
+         ENDIF
        ENDIF
+#endif
 
        _END_MASTER( myThid )
        _BARRIER
@@ -257,34 +299,66 @@ C     Dump a snap-shot of main state variables:
      &     .OR. myTime.EQ.startTime
      &     .OR. myTime.EQ.endTime ) THEN
 
-       WRITE(suff,'(I10.10)') myIter
+        IF ( thSIce_snapshot_mdsio ) THEN
+          
+          WRITE(suff,'(I10.10)') myIter
+          
+          CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceheight,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_snowH.',  suff,snowheight,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_Tsrf.',   suff,Tsrf,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_Tice1.',  suff,Tice1,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_Tice2.',  suff,Tice2,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_Qice1.',  suff,Qice1,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_Qice2.',  suff,Qice2,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
+     &         myIter,myThid)
+          CALL WRITE_FLD_XY_RL('ice_snowAge.',suff,snowAge,
+     &         myIter,myThid)
+          IF ( stepFwd_oceMxL ) THEN
+            CALL WRITE_FLD_XY_RL('ice_tOceMxL.', suff, tOceMxL,
+     &           myIter,myThid)
+            CALL WRITE_FLD_XY_RL('ice_sOceMxL.', suff, sOceMxL,
+     &     myIter,myThid)
+          ENDIF
+          
+        ENDIF
 
-       CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceheight,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_snowH.',  suff,snowheight,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tsrf.',   suff,Tsrf,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tice1.',  suff,Tice1,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tice2.',  suff,Tice2,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Qice1.',  suff,Qice1,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Qice2.',  suff,Qice2,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_snowAge.',suff,snowAge,
-     &     myIter,myThid)
-       IF ( stepFwd_oceMxL ) THEN
-        CALL WRITE_FLD_XY_RL('ice_tOceMxL.', suff, tOceMxL,
-     &     myIter,myThid)
-        CALL WRITE_FLD_XY_RL('ice_sOceMxL.', suff, sOceMxL,
-     &     myIter,myThid)
-       ENDIF
+#ifdef ALLOW_MNC
+        IF ( thSIce_snapshot_mnc ) THEN
+          DO i = 1,MAX_LEN_MBUF
+            mncf(i:i) = ' '
+          ENDDO
+C         C             123456789 12345
+          mncf(1:15) = 'thsice_snapshot'
+          CALL MNC_CW_SET_UDIM(mncf, -1, myThid)
+          CALL MNC_CW_I_W_S('I',mncf,0,0,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(mncf, 0, myThid)
+          CALL MNC_CW_RL_W_S('D',mncf,0,0,'T', myTime, myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'iceMask',   iceMask,   myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'iceHeight', iceHeight, myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'snowHeight',snowHeight,myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'Tsrf',      Tsrf,      myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'Tice1',     Tice1,     myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'Tice2',     Tice1,     myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'Qice1',     Qice1,     myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'Qice2',     Qice2,     myThid)
+          CALL MNC_CW_RL_W('D',mncf,0,0,'snowAge',   snowAge,   myThid)
+          IF ( stepFwd_oceMxL ) THEN
+            CALL MNC_CW_RL_W('D',mncf,0,0,'tOceMxL',tOceMxL,myThid)
+            CALL MNC_CW_RL_W('D',mncf,0,0,'sOceMxL',sOceMxL,myThid)
+          ENDIF
+        ENDIF
+#endif  /* ALLOW_MNC */
+
 
       ENDIF
          

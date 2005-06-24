@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.2 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -36,6 +36,8 @@ CEOP
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      
+      IF ( .NOT. thSIce_pickup_write_mnc ) THEN
 
         WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
         CALL MDSREADFIELD(fn,prec,'RL',1,iceMask,   1,myThid)
@@ -48,10 +50,32 @@ C     == Local variables ==
         CALL MDSREADFIELD(fn,prec,'RL',1,Qice2,     8,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',1,snowAge,   9,myThid)
 
-       IF ( stepFwd_oceMxL .AND. startIceModel.EQ.0 )  THEN
-        CALL MDSREADFIELD(fn,prec,'RL',1,tOceMxL,  10,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,sOceMxL,  11,myThid)
-       ENDIF
+        IF ( stepFwd_oceMxL .AND. startIceModel.EQ.0 )  THEN
+          CALL MDSREADFIELD(fn,prec,'RL',1,tOceMxL,  10,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',1,sOceMxL,  11,myThid)
+        ENDIF
+
+      ENDIF
+
+#ifdef ALLOW_MNC
+      IF ( thSIce_pickup_write_mnc ) THEN
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'iceMask',   iceMask,   myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'iceHeight', iceHeight, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'snowHeight',snowHeight,myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Tsrf',      Tsrf,      myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Tice1',     Tice1,     myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Tice2',     Tice1,     myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Qice1',     Qice1,     myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Qice2',     Qice2,     myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'snowAge',   snowAge,   myThid)
+        IF ( stepFwd_oceMxL ) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'tOceMxL',tOceMxL,myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'sOceMxL',sOceMxL,myThid)
+        ENDIF
+      ENDIF
+#endif  /* ALLOW_MNC */
 
 #endif  /* ALLOW_THSICE */
       RETURN

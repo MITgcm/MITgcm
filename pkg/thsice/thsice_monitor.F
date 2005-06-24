@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.8 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.9 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -8,13 +8,8 @@ C     !ROUTINE: THSICE_MONITOR
 C     !INTERFACE
       SUBROUTINE THSICE_MONITOR( myTime, myIter, myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | S/R THSICE_MONITOR
-C     | o Do ICE global & Hemispheric diagnostic
-C     *==========================================================*
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Do ICE global and Hemispheric monitor output
 
 C     !USES:
       IMPLICIT NONE

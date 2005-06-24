@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.6 2004/12/17 04:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.7 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -59,16 +59,16 @@ C--   Th-Sea-ICE parameter
      &  frac_energy, hihig
  
       NAMELIST /THSICE_PARM01/
-     &         startIceModel, stepFwd_oceMxL,
-     &         thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
-     &         hMxL_default, sMxL_default, vMxL_default,
-     &         stressReduction,
-     &         thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
-c    &         thSIce_tave_mnc, thSIce_diag_mnc, thSIce_mon_mnc,
-     &                                           thSIce_mon_mnc,
-     &         thSIceFract_InitFile, thSIceThick_InitFile,
-     &         thSIceSnowH_InitFile, thSIceSnowA_InitFile,
-     &         thSIceEnthp_InitFile, thSIceTsurf_InitFile
+     &     startIceModel, stepFwd_oceMxL,
+     &     thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
+     &     hMxL_default, sMxL_default, vMxL_default,
+     &     stressReduction,
+     &     thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
+     &     thSIce_tave_mnc, thSIce_snapshot_mnc, thSIce_mon_mnc,
+     &     thSIce_pickup_read_mnc, thSIce_pickup_write_mnc,
+     &     thSIceFract_InitFile, thSIceThick_InitFile,
+     &     thSIceSnowH_InitFile, thSIceSnowA_InitFile,
+     &     thSIceEnthp_InitFile, thSIceTsurf_InitFile
 
       _BEGIN_MASTER(myThid)
 
@@ -132,13 +132,17 @@ C--   Default values (parameters)
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
 #ifdef ALLOW_MNC
-      thSIce_tave_mnc = timeave_mnc
-      thSIce_diag_mnc = snapshot_mnc
-      thSIce_mon_mnc  = monitor_mnc
+      thSIce_tave_mnc     = timeave_mnc
+      thSIce_snapshot_mnc = snapshot_mnc
+      thSIce_mon_mnc      = monitor_mnc
+      thSIce_pickup_read_mnc  = pickup_read_mnc
+      thSIce_pickup_write_mnc = pickup_write_mnc
 #else
-      thSIce_tave_mnc = .FALSE.
-      thSIce_diag_mnc = .FALSE.
-      thSIce_mon_mnc  = .FALSE.
+      thSIce_tave_mnc     = .FALSE.
+      thSIce_snapshot_mnc = .FALSE.
+      thSIce_mon_mnc      = .FALSE.
+      thSIce_pickup_read_mnc  = .FALSE.
+      thSIce_pickup_write_mnc = .FALSE.
 #endif
       thSIceFract_InitFile = ' '
       thSIceThick_InitFile = ' '
@@ -166,23 +170,23 @@ C-    Define other constants (from previous ones):
       Tmlt1=-mu_Tf*S_winton
       rhoiw = rhosw - rhoi
 
-C-    Set other parameters (from previous ones):
-      thSIce_tave_mdsio = .TRUE.
-      thSIce_diag_mdsio = .TRUE.
-      thSIce_mon_stdio  = .TRUE.
+C     Set I/O parameters
+      thSIce_tave_mdsio     = .TRUE.
+      thSIce_snapshot_mdsio = .TRUE.
+      thSIce_mon_stdio      = .TRUE.
+      thSIce_pickup_write_mdsio = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-C-------
-C-    MNC not yet available in this package => turn off MNC flags for now 
-        thSIce_tave_mnc = .FALSE.
-        thSIce_diag_mnc = .FALSE.
-C-------
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_tave_mnc ) thSIce_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive 
-     &       .AND. thSIce_diag_mnc ) thSIce_diag_mdsio = .FALSE.
+     &       .AND. thSIce_snapshot_mnc ) 
+     &       thSIce_snapshot_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_mon_mnc  ) thSIce_mon_stdio  = .FALSE.
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. thSIce_pickup_write_mnc  ) 
+     &       thSIce_pickup_write_mdsio = .FALSE.
       ENDIF
 #endif
 

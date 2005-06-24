@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_init_fixed.F,v 1.1 2005/01/04 00:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_init_fixed.F,v 1.2 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,6 +32,12 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+
+#ifdef ALLOW_MNC
+      IF ( useMNC ) THEN
+        CALL THSICE_MNC_INIT( myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

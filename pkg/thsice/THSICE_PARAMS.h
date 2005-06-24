@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.4 2004/12/17 04:29:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.5 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -119,21 +119,30 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   COMMON / THSICE_PAR_L / ice model (logical) parameters
-C     stepFwd_oceMxL  :: step forward mixed-layer T & S (slab-ocean)
-C     thSIce_tave_mdsio :: write TimeAverage output using MDSIO
-C     thSIce_diag_mdsio :: write snap-shot output   using MDSIO
-C     thSIce_mon_stdio  :: write monitor to std-outp
-C     thSIce_tave_mnc   :: write TimeAverage output using MNC
-C     thSIce_diag_mnc   :: write snap-shot output   using MNC
-C     thSIce_mon_mnc    :: write monitor to netcdf file
+C     stepFwd_oceMxL        :: step forward mixed-layer T & S (slab-ocean)
+C     thSIce_tave_mdsio     :: write TimeAverage output using MDSIO
+C     thSIce_snapshot_mdsio :: write snap-shot output   using MDSIO
+C     thSIce_mon_stdio      :: write monitor to std-outp
+C     thSIce_tave_mnc       :: write TimeAverage output using MNC
+C     thSIce_snapshot_mnc   :: write snap-shot output   using MNC
+C     thSIce_mon_mnc        :: write monitor to netcdf file
+C     thSIce_pickup_read_mnc    :: pickup read w/ MNC
+C     thSIce_pickup_write_mnc   :: pickup write w/ MNC
+C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       COMMON / THSICE_PAR_L / 
-     &  stepFwd_oceMxL,
-     &  thSIce_tave_mdsio, thSIce_diag_mdsio, thSIce_mon_stdio,
-     &  thSIce_tave_mnc,   thSIce_diag_mnc,   thSIce_mon_mnc
+     &     stepFwd_oceMxL,
+     &     thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio,
+     &     thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc,
+     &     thSIce_pickup_read_mnc, 
+     &     thSIce_pickup_write_mdsio,
+     &     thSIce_pickup_write_mnc
 
       LOGICAL stepFwd_oceMxL
-      LOGICAL thSIce_tave_mdsio, thSIce_diag_mdsio, thSIce_mon_stdio
-      LOGICAL thSIce_tave_mnc,   thSIce_diag_mnc,   thSIce_mon_mnc
+      LOGICAL thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio
+      LOGICAL thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc
+      LOGICAL thSIce_pickup_read_mnc
+      LOGICAL thSIce_pickup_write_mdsio
+      LOGICAL thSIce_pickup_write_mnc
 
 C--   COMMON / THSICE_PAR_I / ice model (integer) parameters
 c     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
@@ -191,3 +200,7 @@ C     thSIceTsurf_InitFile :: File name for initial surf. temp
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_THSICE */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

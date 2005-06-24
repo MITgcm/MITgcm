@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.504 2005/06/23 20:02:49 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.505 2005/06/24 04:36:53 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o mnc-ify aim_v23 as requested by Daniel Enderton
+o mnc-ify the thsice package as requested by Daniel Enderton
+  - the monitor--MNC output needs work
+  - many attributes need to be added (most are currently blank)
+o mnc-ify theaim_v23 package as requested by Daniel Enderton
+  - many attributes need to be added (most are currently blank)
 o remove "groundAtK1" & "rkFac" (replaced by usingPCoords & -rkSign)
 o add Sadourny like discretization to the 4th.O vorticity advection scheme
 o fix bug in rStar code (calc_r_star.F) when used with topo/bathy. 

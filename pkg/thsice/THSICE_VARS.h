@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.2 2005/01/31 19:37:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.3 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -78,3 +78,7 @@ C   v2ocMxL :: velocity (square) in the mixed layer [m2/s2]
       _RL v2ocMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_THSICE */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

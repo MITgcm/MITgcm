@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_SIZE.h,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_SIZE.h,v 1.2 2005/06/24 04:36:54 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -13,3 +13,6 @@ C     nlyr   ::   maximum number of ice layers
 
 #endif /* ALLOW_THSICE */
 
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
