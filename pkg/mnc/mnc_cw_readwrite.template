@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.29 2005/02/28 17:53:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.30 2005/06/24 19:43:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -563,6 +563,7 @@ C     integer f_sNx,f_sNy, alen, atype, ind_fv_ids, ierr, indf
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
+      character*(MNC_MAX_CHAR) fname_zs
       character*(MNC_MAX_CHAR) path_fname
       integer indfg, fg1,fg2
       REAL*8  resh_d( MNC_MAX_BUFF )
@@ -644,27 +645,24 @@ C         Add the path to the file name
             nfname = npath + nfname
           ENDIF
 
-C         Open the existing file 
-C         CALL MNC_FILE_TRY_READ( fname, ierr, indf, myThid)
+          WRITE(fname_zs,'(2a,i4.4,a1,i6.6,a3)') 
+     &         mnc_indir_str(1:npath), fbname(n1:n2), 
+     &         0, '.', uniq_tnum, '.nc'
 
-C         Check that the variable (VType) is defined within the file
-C           CALL MNC_GET_FVINDS( fname, vtype, indf, ind_fv_ids, myThid)
-C           IF ((indf .LT. 1) .OR. (ind_fv_ids .LT. 1)) THEN
-C             write(msgbuf,'(4a)') 'MNC_CW_RX_R ERROR: vtype ''', 
-C      &           vtype(nvf:nvl), ''' is not defined within file ''', 
-C      &           fname(1:nfname)
-C             CALL print_error(msgbuf, mythid)
-C             STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
-C           ENDIF
+C         The steps are:
+C         (1) open the file in a READ-ONLY mode,
+C         (2) get the var id for the current variable,
+C         (3) read the data, and then
+C         (4) close the file--theres no need to keep it open!
 
-C         The previous old junk is completely unnecessary.  All we
-C         should do is (1) open the file in a READ-ONLY mode, (2) get
-C         the var id for the current variable, (3) read the data, and
-C         then (4) quickly close the file since theres no need to keep
-C         it open.
           write(msgbuf,'(4a)') 'MNC_CW_RX_R: cannot open', 
      &         ' file ''', fname(1:nfname), ''' in read-only mode'
           err = NF_OPEN(fname, NF_NOWRITE, fid)
+          IF ( err .NE. NF_NOERR ) THEN
+C           If the initial open fails, try again using a name with a
+C           zero sequence number inserted
+            err = NF_OPEN(fname_zs, NF_NOWRITE, fid)
+          ENDIF
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
           write(msgbuf,'(6a)') 
