@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_earth_exports.F,v 1.1 2005/05/12 18:56:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_earth_exports.F,v 1.2 2005/06/25 22:10:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -121,11 +121,11 @@ C*********************************************************************
         tmpij(i,j) = 0.
        enddo
        enddo
-       do i = 1,nchpland(bi,bj)
+       do i = 1,nchptot(bi,bj)
         tmpchp(i) = tcanopy(i,bi,bj)
        enddo
        call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,
-     .                    nchp,nchpland(bi,bj),fracl,tmpij,im2,jm2)
+     .                    nchp,nchptot(bi,bj),fracl,tmpij,im2,jm2)
        do j = jm1,jm2
        do i = im1,im2
         tgz(i,j,bi,bj) = tmpij(i,j)
