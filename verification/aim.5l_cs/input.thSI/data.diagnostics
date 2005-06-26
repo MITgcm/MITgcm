@@ -65,9 +65,21 @@
 #-----------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-#   stat_fname(1)= 'dynStDiag',
-#    stat_freq(1)= -864000.,
-#   stat_phase(1)= 0.,
+ stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+    stat_fname(1)= 'dynStDiag',
+     stat_freq(1)= -3600.,
+    stat_phase(1)= 0.,
+ stat_fields(1,4)= 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
+    stat_fname(4)= 'landStDiag',
+     stat_freq(4)= -3600.,
+    stat_phase(4)= 0.,
+ stat_fields(1,5)= 'SI_Fract', 'SI_Thick', 'SI_SnowH',
+#                  'SI_Tsrf ', 'SI_Tice1', 'SI_Tice2',
+#                  'SI_Qice1', 'SI_Qice2', 'SIsnwAge',
+#                  'SIsnwPrc', 'SIalbedo',
+#                  'SIflx2oc', 'SIfrw2oc', 'SIsaltFx',
+    stat_fname(5)= 'thSIceStDiag',
+     stat_freq(5)= -3600.,
+    stat_phase(5)= 0.,
  &
 
