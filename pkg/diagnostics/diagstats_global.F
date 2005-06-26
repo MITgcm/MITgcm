@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.1 2005/05/20 07:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE DIAGSTATS_GLOBAL(
      O                    qtmp1, qtmp2,
      I                    undef, nLev, jReg,
-     I                    ndId, mate, myThid )
+     I                    ndId, mate, iSp, iSm, myThid )
 
 C     !DESCRIPTION:
 C     Retrieve averaged model diagnostic
@@ -24,14 +24,16 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     undef  ..... Undefined value
-C     nLev   ....  2nd Dimension (max Nb of levels) of qtmp1,2 arrays
-C     jReg   ..... region Index to be process.
-C     ndId     ... diagnostic Id number (in diagnostics long list)
-C     mate   ..... counter diagnostic Id number if any ; 0 otherwise
-C     myThid ..... my thread Id number
+C     undef     :: Undefined value
+C     nLev      :: 2nd Dimension (max Nb of levels) of qtmp1,2 arrays
+C     jReg      :: region Index to be process.
+C     ndId      :: diagnostic Id number (in available diagnostics list)
+C     mate      :: counter mate Id number if any ; 0 otherwise
+C     iSp       :: diagnostics  pointer to storage array
+C     iSm       :: counter-mate pointer to storage array
+C     myThid    :: my thread Id number
       _RL undef
-      INTEGER nLev, jReg, ndId, mate
+      INTEGER nLev, jReg, ndId, mate, iSp, iSm
       INTEGER myThid
 
 C     !OUTPUT PARAMETERS:
@@ -68,7 +70,7 @@ C--     Retrieve tile statistics first
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
           DO k=1,klev
-            kd = iSdiag(ndId) + k - 1
+            kd = iSp + k - 1
             IF ( qSdiag(0,jReg,kd,bi,bj).GT.0. ) THEN
              IF ( qtmp1(0,k).LE.0. ) THEN
               DO i=0,nStats
@@ -85,7 +87,7 @@ C--     Retrieve tile statistics first
           ENDDO
           IF ( mate.GT.0 ) THEN
            DO k=1,kMlev
-            kd = iSdiag(mate) + k - 1
+            kd = iSm + k - 1
             IF ( qSdiag(0,jReg,kd,bi,bj).GT.0. ) THEN
              IF ( qtmp1(0,k).LE.0. ) THEN
               DO i=0,nStats

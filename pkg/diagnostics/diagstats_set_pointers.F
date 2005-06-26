@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.1 2005/05/20 07:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,9 +33,9 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER ndiagcount
-      INTEGER m,mm,n
-      INTEGER mate, nActiveMax
-      INTEGER i,j,l
+      INTEGER md,ld,nd
+      INTEGER mm, mate, nActiveMax
+      INTEGER j, k, l
       LOGICAL found, addMate2List, inList
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -43,67 +43,73 @@ C     == Local variables ==
       _BEGIN_MASTER( myThid)
 
 C--   Initialize pointer arrays to zero:
-      DO n=1,ndiagMax
-        iSdiag(n) = 0
+      DO ld=1,numlists
+       DO md=1,numperlist
+        iSdiag(md,ld) = 0
+        jSdiag(md,ld) = 0
+        mSdiag(md,ld) = 0
+       ENDDO
       ENDDO
 
 C--   Calculate pointers for diagnostics set to non-zero frequency
 
       ndiagcount = 0
       nActiveMax = 0
-      DO n=1,diagSt_nbLists
-       diagSt_nbActv(n) = diagSt_nbFlds(n)
-       DO m=1,diagSt_nbFlds(n)
+      DO ld=1,diagSt_nbLists
+       diagSt_nbActv(ld) = diagSt_nbFlds(ld)
+       DO md=1,diagSt_nbFlds(ld)
 
          found = .FALSE.
 C        Search all possible model diagnostics
-         DO mm=1,ndiagt
-          IF ( diagSt_Flds(m,n).EQ.cdiag(mm) ) THEN
-            CALL DIAGSTATS_SETDIAG (mate,ndiagcount,mm,myThid)
+         DO nd=1,ndiagt
+          IF ( diagSt_Flds(md,ld).EQ.cdiag(nd) ) THEN
+            CALL DIAGSTATS_SETDIAG(mate,ndiagcount,md,ld,nd,myThid)
             found = .TRUE.
-            jSdiag(m,n) = mm
+            jSdiag(md,ld) = nd
           ENDIF
          ENDDO
          IF ( .NOT.found ) THEN
-           WRITE(msgBuf,'(3A)') 'DIAGSTATS_SET_POINTERS: ', 
-     &                      diagSt_Flds(m,n),' is not a Diagnostic'
+           WRITE(msgBuf,'(3A)') 'DIAGSTATS_SET_POINTERS: ',
+     &                     diagSt_Flds(md,ld),' is not a Diagnostic'
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R DIAGSTATS_SET_POINTERS'
          ENDIF
          IF ( found .AND. mate.LE.-1 ) THEN
 C-       add this fields to the active list in case regions are differents:
-           mate = -mate
            addMate2List = .FALSE.
-           DO l=1,n-1
+           DO l=1,ld-1
             inList = .FALSE.
-            DO i=1,diagSt_nbActv(l)
-              IF ( diagSt_Flds(i,l).EQ.cdiag(mate) ) inList=.TRUE.
+            DO k=1,diagSt_nbActv(l)
+              IF ( diagSt_Flds(k,l).EQ.cdiag(-mate) ) inList=.TRUE.
             ENDDO
             IF ( inList ) THEN
              DO j=0,nRegions
               addMate2List = addMate2List
-     &                 .OR. (diagSt_region(j,l).LT.diagSt_region(j,n))
+     &                 .OR. (diagSt_region(j,l).LT.diagSt_region(j,ld))
              ENDDO
             ENDIF
            ENDDO
            IF ( .NOT.addMate2List ) mate = 0
          ENDIF
-         IF ( found .AND. mate.GE.1 ) THEN
-            diagSt_nbActv(n) = diagSt_nbActv(n) + 1
-            IF ( diagSt_nbActv(n).LE.numperlist ) THEN
-             jSdiag( diagSt_nbActv(n), n ) = mate
-             diagSt_Flds( diagSt_nbActv(n), n ) = cdiag(mate)
-           ENDIF
+         IF ( found .AND. mate.NE.0 ) THEN
+            mm = diagSt_nbActv(ld) + 1
+            IF ( mm.LE.numperlist ) THEN
+             iSdiag(mm,ld) = SIGN(mSdiag(md,ld),mate)
+             mate = ABS(mate)
+             jSdiag(mm,ld) = mate
+             diagSt_Flds(mm,ld) = cdiag(mate)
+            ENDIF
+            diagSt_nbActv(ld) = mm
          ENDIF
 
        ENDDO
-       nActiveMax = MAX(diagSt_nbActv(n),nActiveMax)
+       nActiveMax = MAX(diagSt_nbActv(ld),nActiveMax)
       ENDDO
 
       IF (  ndiagcount.LE.diagSt_size .AND.
      &      nActiveMax.LE.numperlist ) THEN
         WRITE(msgBuf,'(A,I6,A)')
-     &    '  space allocated for all stats-diags:', 
+     &    '  space allocated for all stats-diags:',
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)

@@ -1,0 +1,187 @@
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.1 2005/06/26 16:51:49 jmc Exp $
+C $Name:  $
+
+#include "DIAG_OPTIONS.h"
+
+CBOP 0
+C     !ROUTINE: DIAGNOSTICS_SUMMARY
+
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+
+C     !DESCRIPTION:
+C     Write a summary of diagnostics state to ASCII file unit "dUnit"
+C     Notes: Only called after initialisation but could be called
+C            from any place in the code.
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
+
+C     !INPUT PARAMETERS:
+C     myThid :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter, myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+      INTEGER md, ld, ipt, im
+      INTEGER j, k, k1, k2, l
+      INTEGER  dUnit, stdUnit, iLen
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(72) ccLine, ccFlds, ccList
+      LOGICAL  outpSummary
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      _BEGIN_MASTER( myThid )
+      stdUnit = standardMessageUnit
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( debugLevel.GE.debLevA ) THEN
+       IF ( myIter.EQ.nIter0 ) THEN
+        outpSummary = .TRUE.
+        dUnit = standardMessageUnit
+        WRITE(msgBuf,'(A,I6)')
+     &   ' write diagnostics summary to file ioUnit: ',dUnit
+        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+       ELSE
+        outpSummary = ( myXGlobalLo.EQ.1 .AND. myYGlobalLo.EQ.1 )
+        IF ( outpSummary ) THEN
+         WRITE(fn,'(A,I10.10,A)') 'diagnostics_status.',myIter,'.txt'
+         iLen = ILNBLNK(fn)
+         CALL MDSFINDUNIT( dUnit, mythid )
+         OPEN(dUnit,file=fn(1:iLen),status='unknown',form='formatted')
+         WRITE(msgBuf,'(2A)')
+     &   ' write diagnostics summary to file: ',fn(1:iLen)
+         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ENDIF
+       ENDIF
+      ENDIF
+
+      IF ( outpSummary .AND. debugLevel.GE.debLevA ) THEN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     write a summary diagnostics state:
+
+        DO l=1,LEN(ccLine)
+         ccLine(l:l) = '-'
+        ENDDO
+        WRITE(ccList,'(2A)')
+     &   ' nFlds, nActive,       freq     &   phase        , nLev'
+        WRITE(ccFlds,'(2A)')
+     &   ' diag#| name   | ipt  | iMate| kLev| count | mate.C|'
+
+        WRITE(dUnit,'(A,I10,A,1PE21.13)')
+     &   'Iter.Nb:',myIter,' ; Time(s):', myTime
+        WRITE(dUnit,'(A)') ccLine
+        WRITE(dUnit,'(A,I6)')
+     &   '2D/3D diagnostics: Number of lists:', nlists
+        WRITE(dUnit,'(A)') ccLine
+
+        DO ld=1,nlists
+         iLen = ILNBLNK(fnames(ld))
+         WRITE(dUnit,'(A,I4,2A)') 'listId=', ld,
+     &                            ' ; file name: ',fnames(ld)(1:iLen)
+         WRITE(dUnit,'(A)') ccList
+         WRITE(dUnit,'(I4,A,I4,A,2F17.6,A,I4)')
+     &    nfields(ld), '  |',nActive(ld), '  |',
+     &    freq(ld), phase(ld), ' |', nlevels(ld)
+         DO k1=1,nlevels(ld),50
+          k2 = MIN(nlevels(ld),k1+49)
+          WRITE(dUnit,'(A,50I4)')' levels:',(nint(levs(k,ld)),k=k1,k2)
+         ENDDO
+         WRITE(dUnit,'(A)') ccFlds
+         DO md=1,nActive(ld)
+           WRITE(msgBuf,'(I5,3A,I5,A,I5,A,I4,A)')
+     &       jdiag(md,ld),' |', flds(md,ld),'|',idiag(md,ld),' |',
+     &       mdiag(md,ld),' |', kdiag(jdiag(md,ld)),' |'
+           ipt = ABS(idiag(md,ld))
+           IF (ipt.NE.0) THEN
+            iLen = ILNBLNK(msgBuf)
+            WRITE(msgBuf,'(A,I6,A)') msgBuf(1:iLen),ndiag(ipt,1,1),' |'
+           ENDIF
+           im = mdiag(md,ld)
+           IF (im.NE.0) THEN
+            iLen = ILNBLNK(msgBuf)
+            WRITE(msgBuf,'(A,I6,A)') msgBuf(1:iLen),ndiag(im,1,1),' |'
+           ENDIF
+           iLen = ILNBLNK(msgBuf)
+           WRITE(dUnit,'(A)') msgBuf(1:iLen)
+         ENDDO
+c        WRITE(dUnit,'(A)') ccFlds
+         WRITE(dUnit,'(A)') ccLine
+
+        ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+c       WRITE(dUnit,'(A)') ccLine
+        WRITE(dUnit,'(A,I6)')
+     &   'Global & Regional Statistics diagnostics: Number of lists:',
+     &     diagSt_nbLists
+        WRITE(dUnit,'(A)') ccLine
+
+        WRITE(ccList,'(2A)')
+     &   ' nFlds, nActive,       freq     &   phase        |'
+        WRITE(ccFlds,'(2A)')
+     &   ' diag#| name   | ipt  | iMate|    Volume   |   mate-Vol. |'
+
+        DO ld=1,diagSt_nbLists
+         iLen = ILNBLNK(diagSt_Fname(ld))
+         WRITE(dUnit,'(A,I4,2A)') 'listId=', ld,
+     &                     ' ; file name: ',diagSt_Fname(ld)(1:iLen)
+         WRITE(dUnit,'(A)') ccList
+         WRITE(dUnit,'(I4,A,I4,A,2F17.6,A,I4)')
+     &    diagSt_nbFlds(ld), '  |',diagSt_nbActv(ld), '  |',
+     &    diagSt_freq(ld), diagSt_phase(ld), ' |'
+         WRITE(msgBuf,'(A)') ' Regions: '
+         iLen = 10
+         DO j=0,nRegions
+           IF ( diagSt_region(j,ld).GE.1
+     &          .AND. iLen+3.LE.MAX_LEN_MBUF) THEN
+             WRITE(msgBuf,'(A,I3)') msgBuf(1:iLen),j
+             iLen = iLen+3
+           ENDIF
+         ENDDO
+         WRITE(dUnit,'(A)') msgBuf(1:iLen)
+
+         WRITE(dUnit,'(A)') ccFlds
+         DO md=1,diagSt_nbActv(ld)
+           WRITE(msgBuf,'(I5,3A,I5,A,I5,A,I4,A)')
+     &       jSdiag(md,ld),' |', diagSt_Flds(md,ld),'|',iSdiag(md,ld),
+     &       ' |', mSdiag(md,ld),' |'
+           ipt = ABS(iSdiag(md,ld))
+           IF (ipt.NE.0) THEN
+            iLen = ILNBLNK(msgBuf)
+            WRITE(msgBuf,'(A,1PE12.5,A)') msgBuf(1:iLen),
+     &                         qSdiag(0,0,ipt,1,1),' |'
+           ENDIF
+           im = mSdiag(md,ld)
+           IF (im.NE.0) THEN
+            iLen = ILNBLNK(msgBuf)
+            WRITE(msgBuf,'(A,1PE12.5,A)') msgBuf(1:iLen),
+     &                         qSdiag(0,0,im, 1,1),' |'
+           ENDIF
+           iLen = ILNBLNK(msgBuf)
+           WRITE(dUnit,'(A)') msgBuf(1:iLen)
+         ENDDO
+c        WRITE(dUnit,'(A)') ccFlds
+         WRITE(dUnit,'(A)') ccLine
+
+        ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+        IF ( dUnit.NE.standardMessageUnit ) CLOSE(dUnit)
+      ENDIF
+
+      _END_MASTER( myThid )
+
+      RETURN
+      END

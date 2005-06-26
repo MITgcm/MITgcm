@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.22 2005/06/14 23:06:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.23 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
-      SUBROUTINE DIAGNOSTICS_WRITE ( myTime, myIter, myThid ) 
+      SUBROUTINE DIAGNOSTICS_WRITE ( myTime, myIter, myThid )
 C***********************************************************************
 C  Purpose
 C  -------
@@ -13,7 +13,7 @@ C  Arguments  Description
 C  ----------------------
 C     myTime :: Current time of simulation ( s )
 C     myIter :: Current Iteration Number
-C     myThid :: my thread Id number
+C     myThid :: my Thread Id number
 C***********************************************************************
        IMPLICIT NONE
 #include "SIZE.h"
@@ -30,7 +30,7 @@ c Local variables
 c ===============
       INTEGER   n
       INTEGER   myItM1, wrIter
-      LOGICAL   dump2fileNow
+      LOGICAL   dump2fileNow, write2file
       _RL       phiSec, freqSec, wrTime
 #ifdef ALLOW_CAL
       INTEGER thisdate(4), prevdate(4)
@@ -58,12 +58,13 @@ C-    Determine calendar dates for this and previous time step.
         ENDIF
 #endif
 
+        write2file = .FALSE.
         DO n = 1,nlists
           freqSec = freq(n)
           phiSec = phase(n)
 
           IF ( freqSec.LT.0. ) THEN
-C--     write snap-shot with suffix = myIter to be consistent with 
+C--     write snap-shot with suffix = myIter to be consistent with
 C       time-average diagnostics (e.g., freq=-1 & freq=1):
 c           wrIter = myIter
 c           wrTime = myTime
@@ -75,7 +76,7 @@ C       state-variable time-step:
             wrIter = myIter
             wrTime = myTime
           ENDIF
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
@@ -100,20 +101,21 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
-     .                                                dumpatlast) ) THEN
+          IF ( dump2fileNow .OR.
+     &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
+            write2file = .TRUE.
             CALL DIAGNOSTICS_OUT(n,wrIter,myTime,myThid)
           ENDIF
         ENDDO
 
-C---   Check to see IF its time for Statistics Diag. Output 
+C---   Check to see IF its time for Statistics Diag. Output
 
         DO n = 1,diagSt_nbLists
           freqSec = diagSt_freq(n)
           phiSec = diagSt_phase(n)
 
           IF ( freqSec.LT.0. ) THEN
-C--     write snap-shot with suffix = myIter to be consistent with 
+C--     write snap-shot with suffix = myIter to be consistent with
 C       time-average diagnostics (e.g., freq=-1 & freq=1):
 c           wrIter = myIter
 c           wrTime = myTime
@@ -125,7 +127,7 @@ C       state-variable time-step:
             wrIter = myIter
             wrTime = myTime
           ENDIF
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
@@ -134,15 +136,22 @@ C       state-variable time-step:
          endif
 #endif
 
-          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
-     .                                                dumpatlast) ) THEN
+          IF ( dump2fileNow .OR.
+     &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
+            write2file = .TRUE.
             CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
           ENDIF
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-      wait for everyone before setting arrays to zero: 
-        _BARRIER
+
+        IF ( write2file ) THEN
+          IF ( debugLevel.GE.debLevB ) THEN
+            CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+          ENDIF
+C-      wait for everyone before setting arrays to zero:
+          _BARRIER
+        ENDIF
 
 C--     Clear storage space:
 
@@ -152,7 +161,7 @@ C--     Clear storage space:
 
           wrTime = myTime
           IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
           if( useFIZHI) then 
@@ -177,9 +186,9 @@ C-    Yearly  freqSec:
           ENDIF
 #endif
 
-          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
-     .                                                dumpatlast) ) 
-     .                             CALL CLRINDX(n,myThid)
+          IF ( dump2fileNow .OR.
+     &        (myTime.EQ.endTime .AND. dumpatlast)
+     &       ) CALL DIAGNOSTICS_CLEAR(n,myThid)
         ENDDO
 
         DO n = 1,diagSt_nbLists
@@ -187,7 +196,7 @@ C-    Yearly  freqSec:
           phiSec = diagSt_phase(n)
           wrTime = myTime
           IF ( freqSec.LT.0. ) wrTime = myTime - deltaTclock
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec, 
+          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
          if( useFIZHI) then 
@@ -195,13 +204,13 @@ C-    Yearly  freqSec:
           dump2fileNow = alarm2(tagname)
          endif
 #endif
-          IF ( dump2fileNow .or. ((myIter.eq.nIter0+nTimeSteps).and.
-     .                                                dumpatlast) ) 
-     .                             CALL DIAGSTATS_CLEAR(n,myThid)
+          IF ( dump2fileNow .OR.
+     &        (myTime.EQ.endTime .AND. dumpatlast)
+     &       ) CALL DIAGSTATS_CLEAR( n, myThid )
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 
-      RETURN 
+      RETURN
       END

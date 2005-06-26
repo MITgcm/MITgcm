@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.1 2005/05/20 07:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -15,7 +15,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Write output for diagnostics fields.
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -41,7 +41,7 @@ C     myThid  :: my Thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER j, m, ndId
+      INTEGER j, m, ndId, iSp, iSm
       CHARACTER*8 parms1
       CHARACTER*3 mate_index
       INTEGER mate
@@ -63,7 +63,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO m = 1,diagSt_nbFlds(listId)
        ndId = jSdiag(m,listId)
        parms1 = gdiag(ndId)(1:8)
-       IF ( iSdiag(ndId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
+       IF ( iSdiag(m,listId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
 C--    Start processing 1 Fld :
 
          IF ( parms1(5:5).EQ.'C' ) THEN
@@ -77,10 +77,12 @@ C          --------------------------------------
 
          DO j=0,nRegions
           IF ( diagSt_region(j,listId).GT.0 ) THEN
+            iSp = ABS(iSdiag(m,listId))
+            iSm = mSdiag(m,listId)
             CALL DIAGSTATS_GLOBAL(
      O                       statGlob(0,0,j), tmp_Glob,
-     I                       undef, nLev,
-     I                       j, ndId,mate,myThid)
+     I                       undef, nLev, j,
+     I                       ndId, mate, iSp, iSm, myThid )
 
 C-          Check for empty Diag (= not filled or using empty mask)
             IF ( statGlob(0,0,j).EQ.0. ) THEN
@@ -108,11 +110,11 @@ C-          Check for empty Diag (= not filled or using empty mask)
 
             IF ( debugLevel .GE. debLevA ) THEN
              _BEGIN_MASTER( myThid )
-              WRITE(ioUnit,'(A,I3,3A,I3,A,1PE10.3,2A)') 
+              WRITE(ioUnit,'(A,I3,3A,I3,A,1PE10.3,2A)')
      &         ' Compute Stats, Diag. # ',ndId, '  ', cdiag(ndId),
      &         '  vol(',j,' ):', statGlob(0,0,j),'  Parms: ',gdiag(ndId)
              IF ( mate.GT.0 ) THEN
-              WRITE(ioUnit,'(A,I3,3A,I3,2(A,1PE10.3))') 
+              WRITE(ioUnit,'(A,I3,3A,I3,2(A,1PE10.3))')
      &         '    use Counter Mate  # ', mate,'  ',cdiag(mate),
      &         '  vol(',j,' ):',tmp_Glob(0,0), ' integral',tmp_Glob(1,0)
              ENDIF
@@ -131,7 +133,7 @@ C--    end of Processing Fld # m
        ENDIF
       ENDDO
 
-      RETURN 
+      RETURN
       END
-                                                                    
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

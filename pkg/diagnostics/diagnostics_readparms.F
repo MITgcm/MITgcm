@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.12 2005/06/14 23:06:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.13 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,7 +35,7 @@ C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     filename  :: List Output Filename
 C--   per level statistics output:
-C     stat_freq   :: Frequency (in s) of statistics output 
+C     stat_freq   :: Frequency (in s) of statistics output
 C     stat_phase  :: phase (in s) to write statistics output
 C     stat_region :: List of statistics output Regions
 C     stat_fields :: List of statistics output Fields
@@ -58,7 +58,7 @@ C     stat_fname  :: List of statistics output Filename
       INTEGER stat_region(rdimLoc,ldimLoc)
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m
-      INTEGER regionCount
+      INTEGER iLen, regionCount
       _RL undef, getcon
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -72,9 +72,9 @@ C--   full level output:
 
 C--   per level statistics output:
       NAMELIST / DIAG_STATIS_PARMS /
-     &     stat_freq, stat_phase, stat_region, stat_fields, 
-     &     stat_fname, 
-     &     diagSt_mnc 
+     &     stat_freq, stat_phase, stat_region, stat_fields,
+     &     stat_fname,
+     &     diagSt_mnc
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -142,7 +142,6 @@ C-    set default for statistics output according to the main flag
      &     ' read namelist "DIAG_STATIS_PARMS": start'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-c     STOP 'before reading namelist: DIAG_STATIS_PARMS'
       READ  (ku,NML=DIAG_STATIS_PARMS)
       WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_READPARMS,',
      &     ' read namelist "DIAG_STATIS_PARMS": OK'
@@ -151,7 +150,7 @@ c     STOP 'before reading namelist: DIAG_STATIS_PARMS'
 
       CLOSE (ku)
 
-C     Initialise diag_choices common block
+C     Initialise diag_choices common block (except pointers)
       nlists = 0
       DO n = 1,numlists
         freq(n) = 0.
@@ -164,7 +163,6 @@ C     Initialise diag_choices common block
         ENDDO
         DO m = 1,numperlist
           flds(m,n) = blk8c
-          jdiag(m,n) = 0
         ENDDO
       ENDDO
 
@@ -188,7 +186,9 @@ C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
-       IF ( filename(L).NE.blkFilName .and. nlists.LT.numlists ) THEN
+       iLen = ILNBLNK(filename(l))
+C-     Only lists with non-empty file name (iLen>0) are considered
+       IF ( iLen.GE.1 .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
          freq(n)    = frequency(l)
          IF ( timePhase(l).NE. UNSET_RL ) THEN
@@ -243,7 +243,7 @@ C-       will set levels later, once the Nb of levels of each diag is known
          ENDDO
          nlists = nlists + 1
 c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
-       ELSEIF (filename(L).NE.blkFilName) THEN
+       ELSEIF ( iLen.GE.1 ) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )
@@ -259,7 +259,7 @@ c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     Initialise DIAG_STATIS common block
+C     Initialise DIAG_STATIS common block (except pointers)
       diagSt_nbLists = 0
       DO n = 1,numlists
         diagSt_freq(n) = 0.
@@ -272,7 +272,6 @@ C     Initialise DIAG_STATIS common block
         ENDDO
         DO m = 1,numperlist
           diagSt_Flds(m,n) = blk8c
-          jSdiag(m,n) = 0
         ENDDO
       ENDDO
 
@@ -280,8 +279,9 @@ C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
-       IF(stat_fname(L).NE.blkFilName.AND.
-     .                            diagSt_nbLists.LT.numlists)THEN
+       iLen = ILNBLNK(stat_fname(l))
+C-     Only lists with non-empty file name (iLen>0) are considered
+       IF ( iLen.GE.1 .AND. diagSt_nbLists.LT.numlists)THEN
          n = diagSt_nbLists + 1
          diagSt_freq(n) = stat_freq(l)
          IF ( stat_phase(l).NE. UNSET_RL ) THEN
@@ -323,7 +323,7 @@ C-       no region selected => default is Global statistics (region Id: 0)
      &        'Exceed Max.Num. of Fields/list numperlist=', numperlist
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I3,3A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &        'when trying to add stat_field (m=', m, 
+     &        'when trying to add stat_field (m=', m,
      &        ' ): ',stat_fields(m,l)
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
@@ -334,7 +334,7 @@ C-       no region selected => default is Global statistics (region Id: 0)
          ENDDO
          diagSt_nbLists = diagSt_nbLists + 1
 c        write(6,*) 'stat-list summary:',n,diagSt_nbFlds(n),regionCount
-       ELSEIF ( stat_fname(L).NE.blkFilName ) THEN
+       ELSEIF ( iLen.GE.1 ) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )
@@ -392,7 +392,7 @@ C     Echo History List Data Structure
         WRITE(msgBuf,'(2(A,F17.6))') 'Frequency : ',diagSt_freq(n),
      &                               ' ; Phase: ', diagSt_phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(A)') ' Regions : ' 
+        WRITE(msgBuf,'(A)') ' Regions : '
         l = 12
         DO j=0,nRegions
          IF ( diagSt_region(j,n).GE.1 ) THEN

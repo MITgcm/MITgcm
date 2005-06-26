@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.11 2005/05/23 19:31:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.12 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -43,8 +43,8 @@ C      newIter :: future iteration number
 C      j,m,n   :: loop index
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     INTEGER newIter
-      INTEGER j, m, n
-      INTEGER bi, bj, iSp
+      INTEGER m, n, nd
+      INTEGER bi, bj, ip, iSp
       LOGICAL time4SnapShot
       _RL     phiSec, freqSec
       LOGICAL dBugFlag
@@ -55,8 +55,6 @@ c     INTEGER newIter
 
       LOGICAL  DIFF_PHASE_MULTIPLE
       EXTERNAL DIFF_PHASE_MULTIPLE
-
-      _BEGIN_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -77,29 +75,30 @@ C--    Select diagnostics list that uses instantaneous output
         endif
 #endif
 
-        IF ( time4SnapShot ) THEN
-C--     switch ON diagnostics of output-stream # n
-          DO m=1,nActive(n)
-            j = jdiag(m,n)
-c           IF (ndiag(j).NE.0) WRITE(0,*) myIter,j,ndiag(j),' ->',0
-            ndiag(j) = 0
-          ENDDO
-        ELSE
-C--     switch OFF diagnostics of output-stream # n
-          DO m=1,nActive(n)
-            j = jdiag(m,n)
-c           IF (ndiag(j).NE.-1) WRITE(0,*) myIter,j,ndiag(j),' ->',-1
-            ndiag(j) = -1
-          ENDDO
-        ENDIF
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          IF ( time4SnapShot ) THEN
+C--       switch ON diagnostics of output-stream # n
+            DO m=1,nActive(n)
+c             nd = jdiag(m,n)
+c             IF (ndiag(nd).NE.0) WRITE(0,*) myIter,nd,ndiag(nd),' ->',0
+              ip = idiag(m,n)
+              IF (ip.GT.0) ndiag(ip,bi,bj) = 0
+            ENDDO
+          ELSE
+C--       switch OFF diagnostics of output-stream # n
+            DO m=1,nActive(n)
+c             nd = jdiag(m,n)
+c             IF (ndiag(nd).NE.-1) WRITE(0,*) myIter,nd,ndiag(nd),' ->',-1
+              ip = idiag(m,n)
+              IF (ip.GT.0) ndiag(ip,bi,bj) = -1
+            ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
 
        ENDIF
       ENDDO
-
-      _END_MASTER(myThid)
-
-C-jmc: do we need a "BARRIER" at this point ?
-c     _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -128,22 +127,26 @@ C--    Select diagnostics list that uses instantaneous output
           IF ( time4SnapShot ) THEN
 C--     switch ON diagnostics of output-stream # n
             DO m=1,diagSt_nbActv(n)
-              j = jSdiag(m,n)
-              iSp = iSdiag(j)
-              IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE. 0.) 
+             iSp = iSdiag(m,n)
+             IF (iSp.GT.0) THEN
+               nd = jSdiag(m,n)
+               IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE. 0.)
      &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
-     &            j,' ',cdiag(j),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
-              qSdiag(0,0,iSp,bi,bj) = 0.
+     &           nd,' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
+               qSdiag(0,0,iSp,bi,bj) = 0.
+             ENDIF
             ENDDO
           ELSE
 C--     switch OFF diagnostics of output-stream # n
             DO m=1,diagSt_nbActv(n)
-              j = jSdiag(m,n)
-              iSp = iSdiag(j)
-              IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE.-1.) 
+             iSp = iSdiag(m,n)
+             IF (iSp.GT.0) THEN
+               nd = jSdiag(m,n)
+               IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE.-1.)
      &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
-     &            j,' ',cdiag(j),' :',qSdiag(0,0,iSp,bi,bj),' ->',-1
-              qSdiag(0,0,iSp,bi,bj) = -1.
+     &           nd,' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->',-1
+               qSdiag(0,0,iSp,bi,bj) = -1.
+             ENDIF
             ENDDO
           ENDIF
          ENDDO

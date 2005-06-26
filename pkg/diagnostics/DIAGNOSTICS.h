@@ -1,21 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.9 2005/06/14 23:06:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.10 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 C ======================================================================
 C  Common blocks for diagnostics package.
 C  - diagarrays contains the master list of diagnostics and parameters
 C        ndiagt :: total number of available diagnostics
-C         cdiag - character names
-C         idiag - slot number in large diagnostic array
 C         kdiag - number of levels associated with the diagnostic
-C         ndiag - counter for number of times diagnostic is added
+C         cdiag - character names
 C         tdiag - description of field in diagnostic
 C         gdiag - parser field with characteristics of the diagnostics
 C         udiag - physical units of the diagnostic field
 C  - diagnostics contains the large array containing diagnostic fields
 C         qdiag - diagnostic fields array
-C        qSdiag - storage array for diagnostics of (per level) statistics 
+C        qSdiag - storage array for diagnostics of (per level) statistics
+C         ndiag - counter for number of times diagnostic is added
 C  - diag_choices contains the user-chosen list of fields to store
+C         idiag - slot number in large diagnostic array
+C         mdiag - slot number in large diagnostic array for the mate
 C         jdiag - short-list (active diag.) to long-list (available diag.)
 C                 pointer
 C  - diag_statis  contains the user-chosen list of statistics to store
@@ -25,24 +26,26 @@ C diagarrays common
 
       integer        ndiagt
 
-      character*8    cdiag(ndiagMax)
-      integer        idiag(ndiagMax)
       integer        kdiag(ndiagMax)
-      integer        ndiag(ndiagMax)
+c     integer        idiag(ndiagMax)
+c     integer        ndiag(ndiagMax)
 c     integer        mdiag(ndiagMax)
+      character*8    cdiag(ndiagMax)
       character*80   tdiag(ndiagMax)
       character*16   gdiag(ndiagMax)
       character*16   udiag(ndiagMax)
 
-      common /diagarrays/ ndiagt 
-      common /diagarrays/ cdiag
-      common /diagarrays/ idiag
+      common /diagarrays/ ndiagt
       common /diagarrays/ kdiag
-      common /diagarrays/ ndiag
+c     common /diagarrays/ idiag
+c     common /diagarrays/ ndiag
 c     common /diagarrays/ mdiag
+      common /diagarrays/ cdiag
       common /diagarrays/ tdiag
       common /diagarrays/ gdiag
       common /diagarrays/ udiag
+
+#ifdef ALLOW_DIRECT_FILLING_WITH_EQUIV
 
       CHARACTER*8   CUFLUX
       CHARACTER*8   CVFLUX
@@ -1432,14 +1435,16 @@ C -------------------
       EQUIVALENCE ( NDIAG(236),  NGWCU     )
       EQUIVALENCE ( NDIAG(237),  NGWCV     )
 
+#endif /* ALLOW_DIRECT_FILLING_WITH_EQUIV */
 
 C diagnostics common
-C      qSdiag  - storage array for (per level) statistics 
+C      qSdiag  - storage array for (per level) statistics
 
       _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,nSx,nSy)
       _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
+      integer  ndiag(numdiags,nSx,nSy)
 
-      common /diagnostics/ qdiag, qSdiag
+      common /diagnostics/ qdiag, qSdiag, ndiag
 
 	
 C diag_choices common
@@ -1453,49 +1458,52 @@ C     fflags(n)  :: character string with per-file flags
       integer nlists
 
       _RL freq(numlists), phase(numlists)
+      _RL levs (numLevels,numlists)
       integer nlevels(numlists)
       integer nfields(numlists)
       integer nActive(numlists)
-      _RL levs (numLevels,numlists)
+      integer idiag(numperlist,numlists)
+      integer mdiag(numperlist,numlists)
       integer jdiag(numperlist,numlists)
       character*8 flds (numperlist,numlists)
       character*80 fnames(numlists)
       character*8 fflags(numlists)
-      logical dumpatlast, 
-     &     diag_mdsio, diag_mnc,
-     &     diag_pickup_read,        diag_pickup_write,
-     &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
-     &     diag_pickup_read_mnc,    diag_pickup_write_mnc
+      logical dumpatlast, diag_mdsio,  diag_mnc
+      logical diag_pickup_read,        diag_pickup_write
+      logical diag_pickup_read_mdsio,  diag_pickup_write_mdsio
+      logical diag_pickup_read_mnc,    diag_pickup_write_mnc
 
-      common /diag_choices/ 
-     &     freq, phase, levs, nlevels, 
-     &     nfields, nActive, nlists, jdiag,
-     &     flds, fnames, fflags, dumpatlast,
-     &     diag_mdsio, diag_mnc,
+      common /diag_choices/
+     &     freq, phase, levs, nlevels,
+     &     nfields, nActive, nlists,
+     &     idiag, mdiag, jdiag,
+     &     dumpatlast, diag_mdsio, diag_mnc,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
-     &     diag_pickup_read_mnc,    diag_pickup_write_mnc
-           
+     &     diag_pickup_read_mnc,    diag_pickup_write_mnc,
+     &     flds, fnames, fflags
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _RL       diagSt_freq(numlists), diagSt_phase(numlists)
       CHARACTER*8  diagSt_Flds(numperlist,numlists)
       CHARACTER*80 diagSt_Fname(numlists)
-      INTEGER   iSdiag(ndiagMax)
+      INTEGER   iSdiag(numperlist,numlists)
       INTEGER   jSdiag(numperlist,numlists)
+      INTEGER   mSdiag(numperlist,numlists)
       INTEGER   diagSt_region(0:nRegions,numlists)
       INTEGER   diagSt_nbFlds(numlists)
       INTEGER   diagSt_nbActv(numlists)
       INTEGER   diagSt_nbLists
       INTEGER   diagSt_ioUnit(numlists)
       LOGICAL   diagSt_ascii, diagSt_mnc
-      COMMON / DIAG_STATIS / 
-     &     diagSt_freq, diagSt_phase, 
-     &     diagSt_Flds, diagSt_Fname,
-     &     iSdiag, jSdiag, diagSt_region,
+      COMMON / DIAG_STATIS /
+     &     diagSt_freq, diagSt_phase,
+     &     iSdiag, jSdiag, mSdiag, diagSt_region,
      &     diagSt_nbFlds, diagSt_nbActv, diagSt_nbLists,
      &     diagSt_ioUnit,
-     &     diagSt_Ascii, diagSt_mnc
+     &     diagSt_Ascii, diagSt_mnc,
+     &     diagSt_Flds, diagSt_Fname
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

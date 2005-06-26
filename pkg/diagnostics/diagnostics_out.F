@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.14 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.15 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -9,14 +9,14 @@ C     !ROUTINE: DIAGNOSTICS_OUT
 
 C     !INTERFACE:
       SUBROUTINE  DIAGNOSTICS_OUT(
-     I     listnum,
+     I     listId,
      I     myIter,
      I     myTime,
      I     myThid )
 
 C     !DESCRIPTION:
 C     Write output for diagnostics fields.
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -35,18 +35,27 @@ C     !USES:
 
 
 C     !INPUT PARAMETERS:
-C     listnum :: Diagnostics list number being written
+C     listId  :: Diagnostics list number being written
 C     myIter  :: current iteration number
+C     myTime  :: current time of simulation (s)
 C     myThid  :: my Thread Id number
       _RL     myTime
-      INTEGER listnum, myIter, myThid
+      INTEGER listId, myIter, myThid
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER i, j, k, m, n, bi, bj
+C     i,j,k :: loop indices
+C     md    :: field number in the list "listId".
+C     ndId  :: diagnostics  Id number (in available diagnostics list)
+C     mate  :: counter mate Id number (in available diagnostics list)
+C     ip    :: diagnostics  pointer to storage array
+C     im    :: counter-mate pointer to storage array
+      INTEGER i, j, k
+      INTEGER bi, bj
+      INTEGER md, ndId, ip, im
+      INTEGER mate, mVec
       CHARACTER*8 parms1
       CHARACTER*3 mate_index
-      INTEGER mate, mVec
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
       _RL undef, getcon
       EXTERNAL getcon
@@ -79,8 +88,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       undef = getcon('UNDEF')
       glf = globalFiles
       WRITE(suff,'(I10.10)') myIter
-      ilen = ILNBLNK(fnames(listnum))
-      WRITE( fn, '(A,A,A)' ) fnames(listnum)(1:ilen),'.',suff(1:10)
+      ilen = ILNBLNK(fnames(listId))
+      WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. diag_mnc) THEN
@@ -90,7 +99,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO i = 1,NLEN
           dn_blnk(i:i) = ' '
         ENDDO
-        WRITE( diag_mnc_bn, '(A)' ) fnames(listnum)(1:ilen)
+        WRITE( diag_mnc_bn, '(A)' ) fnames(listId)(1:ilen)
 
 C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
@@ -98,10 +107,10 @@ C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
 
         dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-        WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listnum)
-        dim(1) = nlevels(listnum)
+        WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listId)
+        dim(1) = nlevels(listId)
         ib(1)  = 1
-        ie(1)  = nlevels(listnum)
+        ie(1)  = nlevels(listId)
 
         CALL MNC_CW_ADD_GNAME('diag_levels', 1, 
      &       dim, dn, ib, ie, myThid)
@@ -112,7 +121,7 @@ C       Update the record dimension by writing the iteration number
      &       myThid)
         
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
-     &       'diag_levels', levs(1,listnum), myThid)
+     &       'diag_levels', levs(1,listId), myThid)
 
         CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
         CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
@@ -121,7 +130,7 @@ C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
         ctmp(1:5) = 'mul  '
         DO i = 1,3
           dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-          WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listnum)
+          WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listId)
           CALL MNC_CW_ADD_GNAME(dn(1), 1, dim, dn, ib, ie, myThid)
           CALL MNC_CW_ADD_VNAME(dn(1), dn(1), 0,0, myThid)
 
@@ -134,22 +143,22 @@ C                          + rC(INT(CEIL(levs(j,l)))) )
 C                        / ( levs(j,l) - FLOOR(levs(j,l)) )
 C         for averaged levels.
           IF (i .EQ. 1) THEN
-            DO j = 1,nlevels(listnum)
-              ztmp(j) = rC(NINT(levs(j,listnum)))
+            DO j = 1,nlevels(listId)
+              ztmp(j) = rC(NINT(levs(j,listId)))
             ENDDO
             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &           'Dimensional coordinate value at the mid point',
      &           myThid)
           ELSEIF (i .EQ. 2) THEN
-            DO j = 1,nlevels(listnum)
-              ztmp(j) = rF(NINT(levs(j,listnum)) + 1)
+            DO j = 1,nlevels(listId)
+              ztmp(j) = rF(NINT(levs(j,listId)) + 1)
             ENDDO
             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &           'Dimensional coordinate value at the upper point',
      &           myThid)
           ELSEIF (i .EQ. 3) THEN
-            DO j = 1,nlevels(listnum)
-              ztmp(j) = rF(NINT(levs(j,listnum)))
+            DO j = 1,nlevels(listId)
+              ztmp(j) = rF(NINT(levs(j,listId)))
             ENDDO
             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &           'Dimensional coordinate value at the lower point',
@@ -163,37 +172,40 @@ C         for averaged levels.
       ENDIF
 #endif /*  ALLOW_MNC  */
 
-      DO n = 1,nfields(listnum)
-        m = jdiag(n,listnum)
-        parms1 = gdiag(m)(1:8)
-        IF ( idiag(m).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
+      DO md = 1,nfields(listId)
+        ndId = jdiag(md,listId)
+        parms1 = gdiag(ndId)(1:8)
+        IF ( idiag(md,listId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
 
-          IF ( ndiag(m).EQ.0 ) THEN
+          ip = ABS(idiag(md,listId))
+          im = mdiag(md,listId)
+          IF ( ndiag(ip,1,1).EQ.0 ) THEN
 C-        Empty diagnostics case :
 
             _BEGIN_MASTER( myThid )
             WRITE(msgBuf,'(A,I10)')
      &        '- WARNING - from DIAGNOSTICS_OUT at iter=', myIter
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             WRITE(msgBuf,'(A,I4,3A,I3,2A)')
-     &       '- WARNING -   diag.#',m, ' : ',flds(n,listnum), 
-     &       ' (#',n,' ) in outp.Stream: ',fnames(listnum)
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+     &       '- WARNING -   diag.#',ndId, ' : ',flds(md,listId),
+     &       ' (#',md,' ) in outp.Stream: ',fnames(listId)
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             WRITE(msgBuf,'(A,I2,A)')
-     &       '- WARNING -   has not been filled (ndiag=',ndiag(m),' )'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+     &       '- WARNING -   has not been filled (ndiag=',
+     &       ndiag(ip,1,1), ' )'
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             WRITE(msgBuf,'(A)')
      &       'WARNING DIAGNOSTICS_OUT  => write ZEROS instead'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             _END_MASTER( myThid )
             DO bj = myByLo(myThid), myByHi(myThid)
               DO bi = myBxLo(myThid), myBxHi(myThid)
-                DO k = 1,nlevels(listnum)
+                DO k = 1,nlevels(listId)
                   DO j = 1-OLy,sNy+OLy
                     DO i = 1-OLx,sNx+OLx
                       qtmp1(i,j,k,bi,bj) = 0. _d 0
@@ -206,16 +218,19 @@ C-        Empty diagnostics case :
           ELSE
 C-        diagnostics is not empty :
 
-            IF ( myThid.EQ.1 ) 
-     &             WRITE(ioUnit,2000) m,cdiag(m),ndiag(m),gdiag(m)
+            IF ( myThid.EQ.1 ) WRITE(ioUnit,'(A,I3,3A,I8,2A)')
+     &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
+     &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
 
             IF ( parms1(5:5).EQ.'C' ) THEN
 C             Check for Mate of a Counter Diagnostic
 C             --------------------------------------
               mate_index = parms1(6:8)
               READ (mate_index,'(I3)') mate
-              IF ( myThid.EQ.1 )
-     &                 WRITE(ioUnit,2003) cdiag(m),mate,cdiag(mate)
+              IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,2A)')
+     &         '       use Counter Mate for  ', cdiag(ndId),
+     &         '     Diagnostic # ',mate, '  ', cdiag(mate)
+
             ELSE
               mate = 0
 
@@ -224,23 +239,27 @@ C             -------------------------------------
               IF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
                 mate_index = parms1(6:8)
                 READ (mate_index,'(I3)') mVec
-                IF ( idiag(mVec).NE.0 ) THEN
-                  IF ( myThid.EQ.1 )
-     &                 WRITE(ioUnit,2001) cdiag(m),mVec,cdiag(mVec)
+                IF ( im.GT.0 .AND. ndiag(MAX(1,im),1,1).GT.0 ) THEN
+                 IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,3A)')
+     &             '           Vector  Mate for  ', cdiag(ndId),
+     &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
+     &             ' exists '
                 ELSE
-                  IF ( myThid.EQ.1 )
-     &                 WRITE(ioUnit,2002) cdiag(m),mVec,cdiag(mVec)
+                 IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,3A)')
+     &             '           Vector  Mate for  ', cdiag(ndId),
+     &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
+     &             ' not enabled'
                 ENDIF
               ENDIF
             ENDIF
 
             DO bj = myByLo(myThid), myByHi(myThid)
              DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO k = 1,nlevels(listnum)
+              DO k = 1,nlevels(listId)
                 CALL GETDIAG(
-     I                       levs(k,listnum),undef,
+     I                       levs(k,listId),undef,
      O                       qtmp1(1-OLx,1-OLy,k,bi,bj),
-     I                       m,mate,bi,bj,myThid)
+     I                       ndId,mate,ip,im,bi,bj,myThid)
               ENDDO
              ENDDO
             ENDDO
@@ -251,18 +270,18 @@ C-        end of empty diag / not empty block
 #ifdef ALLOW_MDSIO
 C         Prepare for mdsio optionality
           IF (diag_mdsio) THEN
-            IF (fflags(listnum)(1:1) .EQ. ' ') THEN
+            IF (fflags(listId)(1:1) .EQ. ' ') THEN
 C             This is the old default behavior
-              CALL mdswritefield_new(fn,writeBinaryPrec,glf,'RL',
-     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
-            ELSEIF (fflags(listnum)(1:1) .EQ. 'R') THEN
+              CALL MDSWRITEFIELD_NEW(fn,writeBinaryPrec,glf,'RL',
+     &             Nr+Nrphys,nlevels(listId),qtmp1,md,myIter,myThid)
+            ELSEIF (fflags(listId)(1:1) .EQ. 'R') THEN
 C             Force it to be 32-bit precision
-              CALL mdswritefield_new(fn,precFloat32,glf,'RL',
-     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
-            ELSEIF (fflags(listnum)(1:1) .EQ. 'D') THEN
+              CALL MDSWRITEFIELD_NEW(fn,precFloat32,glf,'RL',
+     &             Nr+Nrphys,nlevels(listId),qtmp1,md,myIter,myThid)
+            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
 C             Force it to be 64-bit precision
-              CALL mdswritefield_new(fn,precFloat64,glf,'RL',
-     &             Nr+Nrphys,nlevels(listnum),qtmp1,n,myIter,myThid)
+              CALL MDSWRITEFIELD_NEW(fn,precFloat64,glf,'RL',
+     &             Nr+Nrphys,nlevels(listId),qtmp1,md,myIter,myThid)
             ENDIF
           ENDIF
 #endif /*  ALLOW_MDSIO  */
@@ -282,31 +301,31 @@ C           subtlety within MNC.  Basically, each MNC-wrapped file is
 C           caching its own concept of what each "grid name" (that is, a
 C           dimension group name) means.  So one cannot re-use the same
 C           "grid" name for different collections of dimensions within a
-C           given file.  By appending the "m" values to each name, we
+C           given file.  By appending the "ndId" values to each name, we
 C           guarantee uniqueness within each MNC-produced file.
-            WRITE(d_cw_name,'(a,i6.6)') 'd_cw_',m
+            WRITE(d_cw_name,'(a,i6.6)') 'd_cw_',ndId
 
 C           XY dimensions
             dim(1)       = sNx + 2*OLx
             dim(2)       = sNy + 2*OLy
             ib(1)        = OLx + 1
             ib(2)        = OLy + 1
-            IF (gdiag(m)(2:2) .EQ. 'M') THEN 
+            IF (gdiag(ndId)(2:2) .EQ. 'M') THEN 
               dn(1)(1:2) = 'X'
               ie(1)      = OLx + sNx
               dn(2)(1:2) = 'Y'
               ie(2)      = OLy + sNy
-            ELSEIF (gdiag(m)(2:2) .EQ. 'U') THEN
+            ELSEIF (gdiag(ndId)(2:2) .EQ. 'U') THEN
               dn(1)(1:3) = 'Xp1'
               ie(1)      = OLx + sNx + 1
               dn(2)(1:2) = 'Y'
               ie(2)      = OLy + sNy
-            ELSEIF (gdiag(m)(2:2) .EQ. 'V') THEN
+            ELSEIF (gdiag(ndId)(2:2) .EQ. 'V') THEN
               dn(1)(1:2) = 'X'
               ie(1)      = OLx + sNx
               dn(2)(1:3) = 'Yp1'
               ie(2)      = OLy + sNy + 1
-            ELSEIF (gdiag(m)(2:2) .EQ. 'Z') THEN
+            ELSEIF (gdiag(ndId)(2:2) .EQ. 'Z') THEN
               dn(1)(1:3) = 'Xp1'
               ie(1)      = OLx + sNx + 1
               dn(2)(1:3) = 'Yp1'
@@ -314,22 +333,22 @@ C           XY dimensions
             ENDIF
             
 C           Z is special since it varies
-            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listnum)
-            IF ( (gdiag(m)(10:10) .EQ. 'R')
-     &           .AND. (gdiag(m)(9:9) .EQ. 'M') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listnum)
+            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listId)
+            IF ( (gdiag(ndId)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(ndId)(9:9) .EQ. 'M') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listId)
             ENDIF
-            IF ( (gdiag(m)(10:10) .EQ. 'R')
-     &           .AND. (gdiag(m)(9:9) .EQ. 'L') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listnum)
+            IF ( (gdiag(ndId)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(ndId)(9:9) .EQ. 'L') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listId)
             ENDIF
-            IF ( (gdiag(m)(10:10) .EQ. 'R')
-     &           .AND. (gdiag(m)(9:9) .EQ. 'U') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listnum)
+            IF ( (gdiag(ndId)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(ndId)(9:9) .EQ. 'U') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listId)
             ENDIF
             dim(3) = Nr+Nrphys
             ib(3)  = 1
-            ie(3)  = nlevels(listnum)
+            ie(3)  = nlevels(listId)
 
 C           Time dimension
             dn(4)(1:1) = 'T'
@@ -339,23 +358,23 @@ C           Time dimension
 
             CALL MNC_CW_ADD_GNAME(d_cw_name, 4, 
      &             dim, dn, ib, ie, myThid)
-            CALL MNC_CW_ADD_VNAME(cdiag(m), d_cw_name, 
+            CALL MNC_CW_ADD_VNAME(cdiag(ndId), d_cw_name, 
      &             4,5, myThid)
-            CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'description',
-     &             tdiag(m),myThid)
-            CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'units',
-     &             udiag(m),myThid)
+            CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'description',
+     &             tdiag(ndId),myThid)
+            CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'units',
+     &             udiag(ndId),myThid)
 
-            IF ((fflags(listnum)(1:1) .EQ. ' ')
-     &           .OR. (fflags(listnum)(1:1) .EQ. 'R')) THEN
+            IF ((fflags(listId)(1:1) .EQ. ' ')
+     &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
               CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
-     &             cdiag(m), qtmp1, myThid)
-            ELSEIF (fflags(listnum)(1:1) .EQ. 'D') THEN
+     &             cdiag(ndId), qtmp1, myThid)
+            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
               CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
-     &             cdiag(m), qtmp1, myThid)
+     &             cdiag(ndId), qtmp1, myThid)
             ENDIF
             
-            CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
+            CALL MNC_CW_DEL_VNAME(cdiag(ndId), myThid)
             CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
             _END_MASTER( myThid )
@@ -363,20 +382,11 @@ C           Time dimension
           ENDIF
 #endif /*  ALLOW_MNC  */
 
-C--     end of Processing Fld # n
+C--     end of Processing Fld # md
         ENDIF
       ENDDO
 
- 2000 format(1x,'Computing Diagnostic # ',i3,2x,a8,5x,
-     &     'Counter:',i8,3x,'Parms: ',a16)
- 2001 format(1x,'          Vector  Mate for  ',a8,5x,
-     &     'Diagnostic # ',i3,2x,a8,' exists ')
- 2002 format(1x,'          Vector  Mate for  ',a8,5x,
-     &     'Diagnostic # ',i3,2x,a8,' not enabled')
- 2003 format(1x,'      use Counter Mate for  ',a8,5x,
-     &     'Diagnostic # ',i3,2x,a8)
-      
-      RETURN 
+      RETURN
       END
-                                                                    
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

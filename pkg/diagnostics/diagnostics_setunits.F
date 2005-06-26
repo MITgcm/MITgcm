@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.6 2004/12/13 21:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.7 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -39,7 +39,7 @@ C     we are trying to fill a valid diagnostic
       do n = 1,ndiagt
         if(chardiag.eq.cdiag(n)) then
           ndiagnum = n
-          ipointer = idiag(n)
+c         ipointer = idiag(n)
         endif
       enddo
       if( ndiagnum.ne.0 .and. ipointer.ne.0 ) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.20 2005/05/19 01:18:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.21 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE GETDIAG(
      I                    levreal, undef,
      O                    qtmp,
-     I                    ipoint, mate, bi, bj, myThid )
+     I                    ndId, mate, ip, im, bi, bj, myThid )
 
 C     !DESCRIPTION:
 C     Retrieve averaged model diagnostic
@@ -24,16 +24,18 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     levreal .... Diagnostic LEVEL
-C     undef  ..... UNDEFINED VALUE
-C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU
-C     mate   ..... counter DIAGNOSTIC NUMBER if any ; 0 otherwise
-C     bi     ..... X-direction tile number
-C     bj     ..... Y-direction tile number
-C     myThid ..... my thread Id number
+C     levreal :: Diagnostic LEVEL
+C     undef   :: UNDEFINED VALUE
+C     ndId    :: DIAGNOSTIC NUMBER FROM MENU
+C     mate    :: counter DIAGNOSTIC NUMBER if any ; 0 otherwise
+C     ip      :: pointer to storage array location for diag.
+C     im      :: pointer to storage array location for mate
+C     bi      :: X-direction tile number
+C     bj      :: Y-direction tile number
+C     myThid  :: my thread Id number
       _RL levreal
       _RL undef
-      INTEGER ipoint, mate
+      INTEGER ndId, mate, ip, im
       INTEGER bi,bj, myThid
 
 C     !OUTPUT PARAMETERS:
@@ -46,19 +48,17 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, ipnt,ipCt
       INTEGER lev, levCt, klev
 
-      IF (ipoint.GE.1) THEN
+      IF (ndId.GE.1) THEN
        lev = NINT(levreal)
-       klev = kdiag(ipoint)
+       klev = kdiag(ndId)
        IF (lev.LE.klev) THEN
 
         IF ( mate.EQ.0 ) THEN
 C-      No counter diagnostics => average = Sum / ndiag :
 
-          ipnt = idiag(ipoint) + lev - 1
-c         factor = 1.0
-c         if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
-          factor = FLOAT(ndiag(ipoint))
-          IF (ndiag(ipoint).NE.0) factor = 1. _d 0 / factor
+          ipnt = ip + lev - 1
+          factor = FLOAT(ndiag(ip,bi,bj))
+          IF (ndiag(ip,bi,bj).NE.0) factor = 1. _d 0 / factor
 
           DO j = 1,sNy+1
             DO i = 1,sNx+1
@@ -73,9 +73,9 @@ c         if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
         ELSE
 C-      With counter diagnostics => average = Sum / counter:
 
-          ipnt = idiag(ipoint) + lev - 1
+          ipnt = ip + lev - 1
           levCt= MIN(lev,kdiag(mate))
-          ipCt = idiag(mate) + levCt - 1
+          ipCt = im + levCt - 1
           DO j = 1,sNy+1
             DO i = 1,sNx+1
               IF ( qdiag(i,j,ipCt,bi,bj) .NE. 0. ) THEN
@@ -96,96 +96,11 @@ C-      With counter diagnostics => average = Sum / counter:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine clrindx (listnum, myThid)
-C***********************************************************************
-C
-C  PURPOSE
-C     DRIVER TO CLEAR DIAGNOSTICS SPECIFIED IN DIAGNOSTIC INDEX LIST
-C
-C  ARGUMENT DESCRIPTION
-C     listnum ....  diagnostics list number
-C
-C***********************************************************************
-
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-
-      integer myThid, listnum
-
-      integer m, n
-      character*8 parms1
-      character*3 mate_index
-      integer mate
-
-      do n=1,nfields(listnum)
-       do m=1,ndiagt
-        if( flds(n,listnum).eq.cdiag(m) .and. idiag(m).ne.0 ) then
-         call clrdiag (m, myThid)
-
-c Check for Counter Diagnostic
-c ----------------------------
-         parms1 =  gdiag(m)(1:8)
-         if ( parms1(5:5).eq.'C' ) then
-          mate_index = parms1(6:8)
-          read (mate_index,'(I3)') mate
-          call clrdiag (mate, myThid)
-         endif
-        endif
-       enddo
-      enddo
-
-      RETURN
-      END
-
-
-      subroutine clrdiag (index, myThid)
-C***********************************************************************
-C  PURPOSE
-C     ZERO OUT MODEL DIAGNOSTIC ARRAY ELEMENTS
-C***********************************************************************
-
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-
-      integer myThid, index
-
-      integer bi,bj
-      integer i,j,k
-
-C **********************************************************************
-C ****              SET DIAGNOSTIC AND COUNTER TO ZERO              ****
-C **********************************************************************
-
-      do bj=myByLo(myThid), myByHi(myThid)
-       do bi=myBxLo(myThid), myBxHi(myThid)
-        do k = 1,kdiag(index)
-         do j = 1-OLy,sNy+OLy
-          do i = 1-OLx,sNx+OLx
-           qdiag(i,j,idiag(index)+k-1,bi,bj) = 0.0
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
-
-      ndiag(index) = 0
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP 0
 C     !ROUTINE: DIAGNOSTICS_COUNT
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_COUNT (chardiag, 
-     I                              biArg, bjArg, myThid) 
+      SUBROUTINE DIAGNOSTICS_COUNT (chardiag,
+     I                              biArg, bjArg, myThid)
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -216,54 +131,37 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
-      INTEGER m, n 
-      INTEGER ndiagnum, ipointer
-c     INTEGER bi, bj
+      INTEGER m, n
+      INTEGER bi, bj
+      INTEGER ipt
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C Run through list of active diagnostics to make sure
-C we are trying to increment a valid diagnostic-counter
-
-      ndiagnum = 0
-      ipointer = 0
+C--   Run through list of active diagnostics to find which counter
+C     to increment (needs to be a valid & active diagnostic-counter)
       DO n=1,nlists
        DO m=1,nActive(n)
-        IF ( chardiag.EQ.flds(m,n) ) THEN
-         ndiagnum = jdiag(m,n)
-         IF (ndiag(ndiagnum).GE.0) ipointer = idiag(ndiagnum)
+        IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
+         ipt = idiag(m,n)
+         IF (ndiag(ipt,1,1).GE.0) THEN
+C-    Increment the counter for the diagnostic
+          IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
+           DO bj=myByLo(myThid), myByHi(myThid)
+            DO bi=myBxLo(myThid), myBxHi(myThid)
+             ndiag(ipt,bi,bj) = ndiag(ipt,bi,bj) + 1
+            ENDDO
+           ENDDO
+          ELSE
+             bi = MIN(biArg,nSx)
+             bj = MIN(bjArg,nSy)
+             ndiag(ipt,bi,bj) = ndiag(ipt,bi,bj) + 1
+          ENDIF
+C-    Increment is done
+         ENDIF
         ENDIF
        ENDDO
       ENDDO
 
-C If-sequence to see if we are a valid and an active diagnostic
-
-      IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
-
-C Increment the counter for the diagnostic (if we are at bi=bj=myThid=1)
-       _BEGIN_MASTER(myThid)
-        IF ( (biArg.EQ.1 .AND. bjArg.EQ.1) .OR. 
-     &       (biArg.EQ.0 .AND. bjArg.EQ.0) )
-     &                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
-       _END_MASTER(myThid)
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C-- note: counter could become a tiled array, and then it would be:
-c       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
-c        DO bj=myByLo(myThid), myByHi(myThid)
-c         DO bi=myBxLo(myThid), myBxHi(myThid)
-c          ndiag(ndiagnum,bi,bj) = ndiag(ndiagnum,bi,bj) + 1
-c         ENDDO
-c        ENDDO
-c       ELSE
-c          bi = MIN(biArg,nSx)
-c          bj = MIN(bjArg,nSy)
-c          ndiag(ndiagnum,bi,bj) = ndiag(ndiagnum,bi,bj) + 1
-c       ENDIF
-
-      ENDIF
-
-      RETURN 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -272,13 +170,13 @@ CBOP 0
 C     !ROUTINE: DIAGS_MK_UNITS
 
 C     !INTERFACE:
-      CHARACTER*16 FUNCTION DIAGS_MK_UNITS( 
+      CHARACTER*16 FUNCTION DIAGS_MK_UNITS(
      I                            diagUnitsInPieces, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | FUNCTION DIAGS_MK_UNITS
-C     | o Return the diagnostic units string (16c) removing 
+C     | o Return the diagnostic units string (16c) removing
 C     |   blanks from the input string
 C     *==========================================================*
 
@@ -287,7 +185,7 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-C     diagUnitsInPieces :: string for diagnostic units: in several 
+C     diagUnitsInPieces :: string for diagnostic units: in several
 C                          pieces, with blanks in between
 C     myThid            ::  my thread Id number
       CHARACTER*(*) diagUnitsInPieces
@@ -298,9 +196,9 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,n
 
-      DIAGS_MK_UNITS = '          ' 
+      DIAGS_MK_UNITS = '          '
       n = LEN(diagUnitsInPieces)
-      
+
       j = 0
       DO i=1,n
        IF (diagUnitsInPieces(i:i) .NE. ' ' ) THEN

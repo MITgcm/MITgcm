@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_clear.F,v 1.1 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_clear.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -27,12 +27,13 @@ C     myThid  :: my Thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER l, n
+      INTEGER m, ndId, iSp
 
-      DO l=1,diagSt_nbActv(listId)
-       n = jSdiag(l,listId)
-       IF ( iSdiag(n).NE.0 ) THEN
-         CALL DIAGSTATS_CLRDIAG( n, myThid )
+      DO m=1,diagSt_nbActv(listId)
+       IF ( iSdiag(m,listId).GT.0 ) THEN
+         ndId = jSdiag(m,listId)
+         iSp  = iSdiag(m,listId)
+         CALL DIAGSTATS_CLRDIAG( ndId, iSp, myThid )
        ENDIF
       ENDDO
 
@@ -45,10 +46,10 @@ CBOP 0
 C     !ROUTINE: DIAGSTATS_CLEAR
 
 C     !INTERFACE:
-      SUBROUTINE DIAGSTATS_CLRDIAG( ndId, myThid )
+      SUBROUTINE DIAGSTATS_CLRDIAG( ndId, iSp, myThid )
 
 C     !DESCRIPTION:
-C     Zero out 1 statistics-diagnostic array 
+C     Zero out 1 statistics-diagnostic array
 
 C     !USES:
       IMPLICIT NONE
@@ -59,8 +60,9 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
 C     ndId    :: Diagnostics Id Number (in available diag. list) to zero out
+C     iSp     :: diagnostic pointer to storage array
 C     myThid  :: my Thread Id number
-      INTEGER ndId, myThid
+      INTEGER ndId, iSp, myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -73,7 +75,7 @@ C **********************************************************************
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k = iSdiag(ndId),iSdiag(ndId)+kdiag(ndId)-1
+        DO k = iSp,iSp+kdiag(ndId)-1
          DO j = 0,nRegions
           DO i = 0,nStats
            qSdiag(i,j,k,bi,bj) = 0.

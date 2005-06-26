@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.8 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.9 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C     !ROUTINE: DIAGNOSTICS_INIT_VARIA
@@ -13,7 +13,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Initialize the qdiag array which accumulates during integration
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -27,7 +27,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER i,j,k,n,bi,bj
+      INTEGER i,j,k,bi,bj
 
 C     Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -38,19 +38,16 @@ C     Zero out the qdiag array which accumulates during integration
                 qdiag(i,j,k,bi,bj) = 0. _d 0
               ENDDO
             ENDDO
+C     Zero out the counters for the qdiag array
+            ndiag(k,bi,bj) = 0
           ENDDO
         ENDDO
       ENDDO
 
-C     Zero out the counters for the qdiag array
-      do n=1,ndiagMax
-        ndiag(n) = 0
-      enddo
-
 C     Zero out the qSdiag array (statistics) which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO k = 1,diagSt_size 
+          DO k = 1,diagSt_size
             DO j = 0,nRegions
               DO i = 0,nStats
                 qSdiag(i,j,k,bi,bj) = 0. _d 0
@@ -64,5 +61,7 @@ C     Zero out the qSdiag array (statistics) which accumulates during integratio
 
       CALL DIAGSTATS_INI_IO( myThid )
 
-      RETURN 
+      CALL DIAGNOSTICS_SUMMARY( startTime, nIter0, myThid )
+
+      RETURN
       END

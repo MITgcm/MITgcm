@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.5 2005/02/23 16:01:54 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.6 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -74,23 +74,16 @@ C we are trying to fill a valid diagnostic
       ipointer = 0
       DO n=1,nlists
        DO m=1,nActive(n)
-        IF ( chardiag.EQ.flds(m,n) ) THEN
+        IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
          ndiagnum = jdiag(m,n)
-         IF (ndiag(ndiagnum).GE.0) ipointer = idiag(ndiagnum)
-        ENDIF
-       ENDDO
-      ENDDO
+         ipointer = idiag(m,n)
+         IF ( ndiagnum.NE.0 .AND. ndiag(ipointer,1,1).GE.0 ) THEN
+C--   do the filling: start here:
 
-C If-sequence to see if we are a valid and an active diagnostic
-
-      IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
-
-C Increment the counter for the diagnostic (if we are at bi=bj=myThid=1)
-       _BEGIN_MASTER(myThid)
-       IF((bi.EQ.1).AND.(bj.EQ.1).AND.(ABS(kLev).LE.1)
-     .         .AND.(npeice.eq.1)) 
-     .                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
-       _END_MASTER(myThid)
+       IF ( (ABS(kLev).LE.1) .AND. (npeice.eq.1) ) THEN
+C Increment the counter for the diagnostic
+         ndiag(ipointer,bi,bj) = ndiag(ipointer,bi,bj) + 1
+       ENDIF
 
        offset = ib*(npeice-1)
        Lena    = min(ib,numpts-offset)
@@ -168,9 +161,11 @@ C-      Check for consistency with Nb of levels reserved in storage array
         endif
        ENDDO
 
-      ELSE
-C     IF (myThid.EQ.1) WRITE(6,1000) chardiag
-      ENDIF
+C--   do the filling: ends here.
+         ENDIF
+        ENDIF
+       ENDDO
+      ENDDO
 
  1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
      .        ' But it is not a valid (or active) name ')

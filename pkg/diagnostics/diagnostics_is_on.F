@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_is_on.F,v 1.2 2005/05/20 07:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_is_on.F,v 1.3 2005/06/26 16:51:49 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -32,18 +32,17 @@ C     myThid     ::  my thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER j,n,m
-      INTEGER iSp
+      INTEGER n,m
+      INTEGER ip,iSp
 
       DIAGNOSTICS_IS_ON = .FALSE.
 
 C-    search for this diag. in the active 2D/3D diagnostics list
       DO n=1,nlists
        DO m=1,nActive(n)
-        IF ( diagName.EQ.flds(m,n) ) THEN
-          j = jdiag(m,n)     
-          IF ( idiag(j).NE.0 .AND. ndiag(j).GE.0 ) 
-     &         DIAGNOSTICS_IS_ON = .TRUE.
+        IF ( diagName.EQ.flds(m,n) .AND. idiag(m,n).NE.0 ) THEN
+          ip = ABS(idiag(m,n))
+          IF ( ndiag(ip,1,1).GE.0 ) DIAGNOSTICS_IS_ON = .TRUE.
         ENDIF
        ENDDO
       ENDDO
@@ -52,14 +51,11 @@ C-    search for this diag. in the active 2D/3D diagnostics list
 C-    search for this diag. in the active statistics-diagnostics list
        DO n=1,diagSt_nbLists
         DO m=1,diagSt_nbActv(n)
-          IF ( diagName.EQ.diagSt_Flds(m,n) ) THEN
-            j = jSdiag(m,n)
-            iSp = iSdiag(j)
-            IF ( iSp.NE.0 ) THEN
-              IF (qSdiag(0,0,iSp,1,1).LT.0.) iSp = 0
-            ENDIF
-            IF ( iSp.NE.0 ) DIAGNOSTICS_IS_ON = .TRUE.
-          ENDIF
+         IF ( diagName.EQ.diagSt_Flds(m,n) 
+     &               .AND.iSdiag(m,n).NE.0 ) THEN
+           iSp = ABS(iSdiag(m,n))
+           IF (qSdiag(0,0,iSp,1,1).GE.0.) DIAGNOSTICS_IS_ON = .TRUE.
+         ENDIF
         ENDDO
        ENDDO
       ENDIF
