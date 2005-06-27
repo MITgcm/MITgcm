@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.41 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.42 2005/06/27 18:57:37 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1182,10 +1182,10 @@ c ---------------------------------------------------------------------
       if( (icethk(i).gt.0.).and.(tground(i).gt.tice) ) tground(i)=tice
       enddo
 
-c Update tcanopy and ecanopy from the land points of the 
+c Update tcanopy and ecanopy from the points of the 
 c           tground and qground arrays
 c ---------------------------------------------------------------------
-      do i =1,nchplnd
+      do i =1,nchptot
        tcanopy(i) = tground(i)
        ecanopy(i) = qground(i)
       enddo
