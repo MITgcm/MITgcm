@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.30 2005/06/24 19:43:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.31 2005/06/27 20:19:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -192,9 +192,17 @@ C         Create the file name
           fname(1:ntot) = fbname(n1:n2)
           ntot = ntot + 1
           fname(ntot:ntot) = '.'
-          write(fname((ntot+1):(ntot+14)),'(i4.4,a1,i6.6,a3)') 
-     &         iseq,'.',uniq_tnum, '.nc'
-          nfname = ntot + 14
+          IF ( mnc_use_name_ni0 ) THEN
+            write(fname((ntot+1):(ntot+17)),'(i10.10,a1,i6.6)') 
+     &           nIter0,'.',uniq_tnum
+            write(fname((ntot+18):(ntot+25)),'(a1,i4.4,a3)') 
+     &           '.', iseq, '.nc'
+            nfname = ntot + 25
+          ELSE
+            write(fname((ntot+1):(ntot+14)),'(i4.4,a1,i6.6,a3)') 
+     &           iseq,'.',uniq_tnum, '.nc'
+            nfname = ntot + 14
+          ENDIF
 
 C         Add the path to the file name
           IF (mnc_use_outdir) THEN

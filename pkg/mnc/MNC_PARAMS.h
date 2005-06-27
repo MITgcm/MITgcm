@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.9 2005/05/11 00:43:04 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.10 2005/06/27 20:19:52 edhill Exp $
 C $Name:  $
 C
 
@@ -28,6 +28,7 @@ C     mnc_use_indir    :: use "mnc_indir_str" as input filename prefix
 C     mnc_use_outdir   :: use "mnc_outdir_str" as output filename prefix
 C     mnc_outdir_date  :: use a date string within the output dir name
 C     mnc_outdir_num   :: use a seq. number within the output dir name 
+C     mnc_use_name_ni0 :: use nIter0 in all the file names
 C     mnc_echo_gvtypes :: echo type names (fails on many platforms)
 C     pickup_write_mnc :: use mnc to write pickups
 C     pickup_read_mnc  :: use mnc to read  pickups
@@ -36,13 +37,13 @@ C     readgrid_mnc     :: read INI_CURVILINEAR_GRID() info using mnc
 
       COMMON /PARM_MNC_L/ 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_outdir_num, mnc_echo_gvtypes,
+     &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc
       LOGICAL 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_outdir_num, mnc_echo_gvtypes,
+     &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc

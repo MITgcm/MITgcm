@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.22 2005/05/11 00:43:04 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.23 2005/06/27 20:19:52 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -35,7 +35,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_outdir_num, mnc_echo_gvtypes,
+     &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc,
@@ -55,6 +55,7 @@ C     Set default values for MNC run-time parameters
         mnc_outdir_str(1:4) =  'mnc_'
         mnc_outdir_date     =  .FALSE.
         mnc_outdir_num      =  .TRUE.
+      mnc_use_name_ni0      =  .FALSE.
       pickup_write_mnc      =  .TRUE.
       pickup_read_mnc       =  .TRUE.
       mnc_use_indir         =  .FALSE.
