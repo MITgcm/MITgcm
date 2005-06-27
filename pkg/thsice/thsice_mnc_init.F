@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_mnc_init.F,v 1.1 2005/06/24 04:36:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_mnc_init.F,v 1.2 2005/06/27 19:09:11 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -60,16 +60,16 @@ C     =====  Fields for the pickups and snapshot output =====
 
 C     =====  Fields for the tave output  =====
       CALL MNC_CW_ADD_VNAME('fract_ave','Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('fract','units','---', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fract_ave','units','---', myThid)
 
       CALL MNC_CW_ADD_VNAME('iceH_ave','Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('iceH','units','---', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('iceH_ave','units','---', myThid)
 
       CALL MNC_CW_ADD_VNAME('snowH_ave','Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('snowH','units','---', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('snowH_ave','units','---', myThid)
 
       CALL MNC_CW_ADD_VNAME('snowPr_ave','Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('snowPr','units','---', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('snowPr_ave','units','---', myThid)
 
       CALL MNC_CW_ADD_VNAME('albedo_ave','Cen_xy_Hn__-__t',3,4,myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('albedo_ave','units','---', myThid)
