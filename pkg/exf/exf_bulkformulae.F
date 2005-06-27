@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.8 2005/05/07 19:25:02 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.9 2005/06/27 16:34:29 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -393,9 +393,9 @@ c                 Evaluate all stability functions assuming hq = ht.
                    x     = sqrt(xsq)
                   psimh  = -psim_fac*huol*stable +
      &                     (exf_one - stable)*
-     &                     log((exf_one + x*(exf_two + x))*
+     &                     (log((exf_one + x*(exf_two + x))*
      &                     (exf_one + xsq)/8.) - exf_two*atan(x) +
-     &                     pi*exf_half
+     &                     pi*exf_half)
                   xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
                   psixh  = -psim_fac*htol*stable + (exf_one - stable)*
      &                     exf_two*log((exf_one + xsq)/exf_two)
