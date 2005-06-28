@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.1 2005/05/05 16:41:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.2 2005/06/28 22:05:49 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -44,33 +44,126 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-        diagName  = 'EXFhs   '
-        diagTitle = 'Sensible heat flux into ocean'
-        diagUnits = 'W/m^2           '
-        diagCode  = 'SM      U1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+      diagName  = 'EXFhs   '
+      diagTitle = 'Sensible heat flux into ocean, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFhl   '
+      diagTitle = 'Latent heat flux into ocean, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFlwnet'
+      diagTitle = 'Net upward longwave radiation, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      
+      diagName  = 'EXFswnet'
+      diagTitle = 'Net upward shortwave radiation, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      
+      diagName  = 'EXFlwdn '
+      diagTitle = 'Downward longwave radiation, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      
+      diagName  = 'EXFswdn '
+      diagTitle = 'Downward shortwave radiation, >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFqnet '
+      diagTitle = 'Net upward heat flux (turb+rad), >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+      
+C--   surface fluxes:
+      diagName  = 'EXFtaux '
+      diagTitle = 'zonal surface wind stress, >0 increases uVel    '
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SU      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFtauy '
+      diagTitle = 'meridional surface wind stress, >0 increases vVel'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SV      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFuwind'
+      diagTitle = 'zonal 10-m wind speed, >0 increases uVel'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFvwind'
+      diagTitle = 'meridional 10-m wind speed, >0 increases uVel'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'EXFhl   '
-        diagTitle = 'Latent heat flux into ocean'
-        diagUnits = 'W/m^2           '
-        diagCode  = 'SM      U1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+      diagName  = 'EXFatemp'
+      diagTitle = 'surface (2-m) air temperature'
+      diagUnits = 'degK            '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'EXFlw   '
-        diagTitle = 'Net longwave radiation'
-        diagUnits = 'W/m^2           '
-        diagCode  = 'SM      U1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+      diagName  = 'EXFaqh  '
+      diagTitle = 'surface (2-m) specific humidity'
+      diagUnits = 'kg/kg           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'EXFsw   '
-        diagTitle = 'Net shortwave radiation'
-        diagUnits = 'W/m^2           '
-        diagCode  = 'SM      U1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+      diagName  = 'EXFevap '
+      diagTitle = 'evaporation, > 0 increases salinity'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFpreci'
+      diagTitle = 'evaporation, > 0 decreases salinity'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFempmr'
+      diagTitle = 'net upward freshwater flux, > 0 increases salinity'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFpress'
+      diagTitle = 'atmospheric pressure field'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
 
 #endif /* ALLOW_DIAGNOSTICS */
 

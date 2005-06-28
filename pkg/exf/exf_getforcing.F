@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.16 2005/05/05 23:49:59 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.17 2005/06/28 22:05:49 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -176,6 +176,9 @@ c     Update the tile edges.
 
 c     Get values of the surface flux anomalies.
       call exf_getsurfacefluxes( mytime, myiter, mythid )
+
+c     Diagnostics output
+      call exf_diagnostics_fill( mytime, myiter, mythid )
 
 c     Map the forcing fields onto the corresponding model fields.
       call exf_mapfields( mythid )

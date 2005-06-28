@@ -10,3 +10,9 @@ C subroutine exf_interp_read
 C----------------------------------------
 CADJ SUBROUTINE exf_interp_read INPUT  = 1,2, 4,5,6,7,8,9,10,11,12,13,14
 CADJ SUBROUTINE exf_interp_read OUTPUT =    3
+
+C----------------------------------------
+C subroutine exf_diagnostics_fill
+C----------------------------------------
+CADJ SUBROUTINE exf_diagnostics_fill  INPUT  = 1,2,3
+CADJ SUBROUTINE exf_diagnostics_fill  OUTPUT =

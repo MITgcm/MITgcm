@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.9 2005/06/27 16:34:29 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.10 2005/06/28 22:05:49 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -178,8 +178,6 @@ c     == local variables ==
       _RL     cw
       _RL     sw
       _RL     sh
-      _RL     hs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     hl(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     hfl
       _RL     tmpbulk
 
@@ -497,15 +495,6 @@ c             Salt flux from Precipitation and Evaporation.
           enddo
         enddo
       enddo
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(hs    ,'EXFhs   ',0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(hl    ,'EXFhl   ',0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(lwflux,'EXFlw   ',0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(swflux,'EXFsw   ',0,1,0,1,1,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_BULKFORMULAE */
 
