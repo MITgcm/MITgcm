@@ -15,3 +15,25 @@ cubeZ2latlon.m  :: interpolate a CS-field to regular Lat-lon grid ;
         located at the corner point of the C-grid cell.
         (deal with the 2 "missing corners")
 
+the following scripts are reading a file that contains the orientation
+        of the local direction of the CS-grid relative to E-W,N-S direction.  
+  file= proj_cs[]_2uEvN.bin :: cos & sin of rotation angle, 
+                      format:: real*8, big-endian, size=32x6x32 x2(cos+sin)
+        for standard cs32 grid, the corresponding file is:
+           verification/global_ocean.cs32x15/input/proj_cs32_2uEvN.bin 
+
+rotate_csAg_EN.m :: Rotate cell centered (A-grid) U,V vector components
+        of CS-grid to East,North directions. works for 2D or 3D vector.
+
+rotate_csCg_EN.m :: Rotate MITgcm C-grid U,V vector components of CS-grid 
+        to East,North directions. done in 2 steps: 1rst compute the average
+        at the cell-center and then rotate the vector.
+
+uvLatLon2cube.m :: interpolate a 2 components vector field U,V (on A-grid)
+        to the MITgcm CS-grid (C-grid).
+ 
+More in dir bk_line:
+ Scripts that generate "broken-lines" (used to compute Meridional Transport
+  stream-function and vertically integrated horizontal stream-function)
+ + a README file + an example for each one.
+
