@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.506 2005/06/26 16:54:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.507 2005/06/28 02:40:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add matlab scripts for CS-grid vectors (in utils/cs_grid)
 o diagnostics pkg: change pointers so that 1 diagnostic can be used
   several times with different frequencies.
 o mnc-ify the thsice package as requested by Daniel Enderton
