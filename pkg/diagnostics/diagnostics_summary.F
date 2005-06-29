@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.1 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.2 2005/06/29 23:07:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,7 +33,7 @@ C     !LOCAL VARIABLES:
       INTEGER md, ld, ipt, im
       INTEGER j, k, k1, k2, l
       INTEGER  dUnit, stdUnit, iLen
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(72) ccLine, ccFlds, ccList
       LOGICAL  outpSummary
@@ -99,18 +99,20 @@ C     write a summary diagnostics state:
          ENDDO
          WRITE(dUnit,'(A)') ccFlds
          DO md=1,nActive(ld)
-           WRITE(msgBuf,'(I5,3A,I5,A,I5,A,I4,A)')
+           WRITE(msgBuf,'(I5,3A,2(I5,A),I4,A)')
      &       jdiag(md,ld),' |', flds(md,ld),'|',idiag(md,ld),' |',
      &       mdiag(md,ld),' |', kdiag(jdiag(md,ld)),' |'
            ipt = ABS(idiag(md,ld))
            IF (ipt.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
-            WRITE(msgBuf,'(A,I6,A)') msgBuf(1:iLen),ndiag(ipt,1,1),' |'
+            tmpBuf(1:iLen) = msgBuf(1:iLen)
+            WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(ipt,1,1),' |'
            ENDIF
            im = mdiag(md,ld)
            IF (im.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
-            WRITE(msgBuf,'(A,I6,A)') msgBuf(1:iLen),ndiag(im,1,1),' |'
+            tmpBuf(1:iLen) = msgBuf(1:iLen)
+            WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(im,1,1),' |'
            ENDIF
            iLen = ILNBLNK(msgBuf)
            WRITE(dUnit,'(A)') msgBuf(1:iLen)
@@ -146,7 +148,8 @@ c       WRITE(dUnit,'(A)') ccLine
          DO j=0,nRegions
            IF ( diagSt_region(j,ld).GE.1
      &          .AND. iLen+3.LE.MAX_LEN_MBUF) THEN
-             WRITE(msgBuf,'(A,I3)') msgBuf(1:iLen),j
+             tmpBuf(1:iLen) = msgBuf(1:iLen)
+             WRITE(msgBuf,'(A,I3)') tmpBuf(1:iLen),j
              iLen = iLen+3
            ENDIF
          ENDDO
@@ -154,19 +157,21 @@ c       WRITE(dUnit,'(A)') ccLine
 
          WRITE(dUnit,'(A)') ccFlds
          DO md=1,diagSt_nbActv(ld)
-           WRITE(msgBuf,'(I5,3A,I5,A,I5,A,I4,A)')
+           WRITE(msgBuf,'(I5,3A,2(I5,A))')
      &       jSdiag(md,ld),' |', diagSt_Flds(md,ld),'|',iSdiag(md,ld),
      &       ' |', mSdiag(md,ld),' |'
            ipt = ABS(iSdiag(md,ld))
            IF (ipt.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
-            WRITE(msgBuf,'(A,1PE12.5,A)') msgBuf(1:iLen),
+            tmpBuf(1:iLen) = msgBuf(1:iLen)
+            WRITE(msgBuf,'(A,1PE12.5,A)') tmpBuf(1:iLen),
      &                         qSdiag(0,0,ipt,1,1),' |'
            ENDIF
            im = mSdiag(md,ld)
            IF (im.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
-            WRITE(msgBuf,'(A,1PE12.5,A)') msgBuf(1:iLen),
+            tmpBuf(1:iLen) = msgBuf(1:iLen)
+            WRITE(msgBuf,'(A,1PE12.5,A)') tmpBuf(1:iLen),
      &                         qSdiag(0,0,im, 1,1),' |'
            ENDIF
            iLen = ILNBLNK(msgBuf)

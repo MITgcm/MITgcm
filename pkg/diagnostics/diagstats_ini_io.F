@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.1 2005/05/20 07:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.2 2005/06/29 23:07:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,7 +36,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER m, n, j, iL, nUnit
       CHARACTER*(MAX_LEN_FNAM) dataFName
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -73,7 +73,8 @@ C-      write a kind of header:
           iL = 17
           DO j=0,nRegions
             IF (diagSt_region(j,n).GE.1 .AND.iL+3.LE.MAX_LEN_MBUF) THEN
-              WRITE(msgBuf,'(A,I3)') msgBuf(1:iL),j             
+              tmpBuf(1:iL) = msgBuf(1:iL)
+              WRITE(msgBuf,'(A,I3)') tmpBuf(1:iL),j             
               iL = iL+3
             ENDIF
           ENDDO
