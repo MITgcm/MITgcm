@@ -14,17 +14,20 @@
 # a snapshot after ten time steps
  &diagnostics_list
   frequency(1) = -864000.,
-   fields(1,1) = 'EXFhs   ',
-   filename(1) = 'EXFhs',
+   fields(1,1) = 'EXFtaux ',
+   filename(1) = 'EXFtaux ',
+#
   frequency(2) = -864000.,
-   fields(1,2) = 'EXFhl   ',
-   filename(2) = 'EXFhl',
+   fields(1,2) = 'EXFtauy ',
+   filename(2) = 'EXFtauy ',
+#
   frequency(3) = -864000.,
-   fields(1,3) = 'EXFsw   ',
-   filename(3) = 'EXFsw',
+   fields(1,3) = 'EXFqnet ',
+   filename(3) = 'EXFqnet ',
   frequency(4) = -864000.,
-   fields(1,4) = 'EXFlw   ',
-   filename(4) = 'EXFlw',
+   fields(1,4) = 'EXFempmr',
+   filename(4) = 'EXFempmr',
+#
   frequency(5) = -864000.,
    fields(1,5) = 'SSS     ',
    filename(5) = 'SSS',
