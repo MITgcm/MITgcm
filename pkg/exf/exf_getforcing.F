@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.17 2005/06/28 22:05:49 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.18 2005/06/29 07:11:18 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -176,6 +176,19 @@ c     Update the tile edges.
 
 c     Get values of the surface flux anomalies.
       call exf_getsurfacefluxes( mytime, myiter, mythid )
+
+#ifdef SHORTWAVE_HEATING
+c     Treatment of qnet
+c     The location of te summation of Qnet in exf_mapfields is unfortunate.
+c     For backward compatibility issues we want it to happen after
+c     applying control variables, but before exf_diagnostics_fill.
+c     Therefore, we do it exactly here:
+      do j = 1-oLy,sNy+oLy
+         do i = 1-oLx,sNx+oLx
+            hflux(i,j,bi,bj) = hflux(i,j,bi,bj) + swflux(i,j,bi,bj)
+         enddo
+      enddo
+#endif
 
 c     Diagnostics output
       call exf_diagnostics_fill( mytime, myiter, mythid )

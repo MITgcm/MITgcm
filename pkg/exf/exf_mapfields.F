@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.11 2004/07/16 01:20:57 jmc Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.12 2005/06/29 07:11:18 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -192,12 +192,6 @@ c             Short wave radiative flux.
           do j = jmin,jmax
             do i = imin,imax
              qsw(i,j,bi,bj)  = exf_outscal_swflux*swflux(i,j,bi,bj)
-            enddo
-          enddo
-C         net heat flux = heat flux (except SW) + SW flux.
-          do j = jmin,jmax
-            do i = imin,imax
-             qnet(i,j,bi,bj) = qnet(i,j,bi,bj) + qsw(i,j,bi,bj)
             enddo
           enddo
 #endif

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.1 2005/06/28 22:05:49 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.2 2005/06/29 07:11:18 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -37,13 +37,9 @@ c
          CALL DIAGNOSTICS_FILL(ustress,'EXFtaux ',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(vstress,'EXFtauy ',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(sflux,  'EXFempmr',0,1,0,1,1,myThid)
-#if (defined (SHORTWAVE_HEATING) || defined (ALLOW_ATM_TEMP))
+         CALL DIAGNOSTICS_FILL(hflux,  'EXFqnet ',0,1,0,1,1,myThid)
+#ifdef SHORTWAVE_HEATING
          CALL DIAGNOSTICS_FILL(swflux, 'EXFswnet',0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(hflux+swflux, 
-     &                                 'EXFqnet ',0,1,0,1,1,myThid)
-#else
-         CALL DIAGNOSTICS_FILL(hflux,
-     &                                 'EXFqnet ',0,1,0,1,1,myThid)
 #endif
 #ifdef ALLOW_ATM_WIND
          CALL DIAGNOSTICS_FILL(uwind,  'EXFuwind',0,1,0,1,1,myThid)
