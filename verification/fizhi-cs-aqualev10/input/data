@@ -70,7 +70,6 @@
  usingCurvilinearGrid=.TRUE.,
  delR=10*1.0E4,
  Ro_SeaLevel=1.E5,
- groundAtK1=.TRUE.,
  rSphere=6370.E3,
  &
 
