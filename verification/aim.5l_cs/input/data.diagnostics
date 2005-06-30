@@ -31,7 +31,7 @@
 #                'CLDFRC  ', 'CLDPRS  ', 'CTPCNT  ', 'CLDMAS  ',
                  'CLDFRC  ', 'CLDPRS  ', 'CLDMAS  ',
                  'KM      ', 'WINDS   ', 'TS      ', 'QS      ',
-                 'ENPREC  ', 'ALBVISDF', 'SDIAG1  ',
+                 'ENPREC  ', 'ALBVISDF', 'DTSIMPL ',
                  'OSRCLR  ', 'OLRCLR  ', 'SWGCLR  ', 'LWGCLR  ',
    filename(3) = 'aimDiag',
   frequency(4) = 4500.,
