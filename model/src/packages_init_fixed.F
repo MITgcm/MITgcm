@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.40 2005/06/22 21:24:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.41 2005/06/30 23:07:50 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -166,13 +166,6 @@ C--   Latitude circle filter initialisation
       IF (useZONAL_FILT) THEN
        CALL ZONAL_FILT_INIT(myThid)
       _BARRIER
-      ENDIF
-#endif
-
-#ifdef ALLOW_ATM_COMMON
-C--   Initialise parameters shared by atmospheric physics packages
-      IF ( (useAIM.OR.useFIZHI)  .AND. useDiagnostics ) THEN
-        CALL ATM_DIAGNOSTICS_INIT( myThid )
       ENDIF
 #endif
 
