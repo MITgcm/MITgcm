@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.27 2005/03/15 18:03:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.28 2005/06/30 23:09:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -19,6 +19,7 @@ c-----------------------------------------------------------------------
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "SURFACE.h"
 #include "DYNVARS.h"
 #include "fizhi_land_SIZE.h"
@@ -32,6 +33,8 @@ c-----------------------------------------------------------------------
 
        integer myIter, myThid 
        _RL myTime
+       logical  diagnostics_is_on
+       external diagnostics_is_on
 
 c pe on dynamics and physics grid refers to bottom edge
        _RL pephy4fiz(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
@@ -102,6 +105,26 @@ c Do not use a zero field as the top edge pressure for interpolation
         enddo
        enddo
        enddo
+
+#ifdef ALLOW_DIAGNOSTICS
+      if ( useDiagnostics ) then
+       if(diagnostics_is_on('FIZPRES ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do j = 1,sNy
+        do i = 1,sNx
+        do L = 1,Nrphys
+         tempphy(i,j,L,bi,bj) = pephy4fiz(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        enddo
+        enddo
+        call diagnostics_fill(tempphy,'FIZPRES ',0,
+     .                                     Nrphys,0,1,1,myThid)
+       endif
+      endif
+#endif
 
        CALL TIMER_START ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
        do bj = myByLo(myThid), myByHi(myThid)

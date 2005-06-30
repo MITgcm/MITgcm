@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.9 2005/06/23 20:02:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.10 2005/06/30 23:09:08 molod Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -141,6 +141,12 @@ C--   Initialise Land Fraction (in AIM_FFIELDS.h):
         CALL AIM_MNC_INIT( myThid )
       ENDIF
 #endif /*  ALLOW_MNC  */
+
+#ifdef ALLOW_DIAGNOSTICS
+      if ( useDiagnostics ) then
+        call aim_diagnostics_init( myThid )
+      endif
+#endif
 
 #endif /* ALLOW_AIM */
 

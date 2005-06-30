@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.13 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.14 2005/06/30 23:09:08 molod Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -299,7 +299,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_FILL( alb1(1,0,myThid),
      &                        'ALBVISDF', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( dTsurf(1,1,myThid),
-     &                        'SDIAG1  ', 1, 1 , 3,bi,bj, myThid )
+     &                        'DTSIMPL ', 1, 1 , 3,bi,bj, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
         IF ( aim_clrSkyDiag ) THEN 
           CALL DIAGNOSTICS_FILL( TT_SWclr(1,1,myThid),
