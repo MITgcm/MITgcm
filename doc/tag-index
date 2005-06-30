@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.507 2005/06/28 02:40:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.508 2005/06/30 19:55:41 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57j_post
+o exf
+  * bug fix in exf_bulkformulae for psimh (spotted by Eliyahu Biton):
+    Bracket missing in eqn. for psimh (eqn. 7 of Large & Pond, 1982);
+    terms -2*ATAN(x) + pi/2 were added to both stable and unstable case.
+  * extended diagnostics output
+    - now includes all EXF variables
+    - hs, hl moved to common block
+    - separate S/R for diagnostics, called after ctrl vector is added
+    - name changed for EXFsw -> EXFswnet, EXFlw -> EXFlwnet
+    - EXFqnet contains true Qnet (i.e. includes qsw)
+  * updated verif. lab_sea, global_with_exf
+  * Rearranging hflux (exf_mapfields -> exf_getforcing)
+    to ensure that diagnostics sees a true EXFqnet
 o add matlab scripts for CS-grid vectors (in utils/cs_grid)
 o diagnostics pkg: change pointers so that 1 diagnostic can be used
   several times with different frequencies.
