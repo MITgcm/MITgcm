@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.10 2005/06/17 16:51:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.11 2005/07/01 01:12:00 jmc Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
@@ -72,7 +72,7 @@ c ---------------
       _RL us(istrip,Lm), vs(istrip,Lm), ts(istrip,Lm)
       _RL dragus(istrip,Lm), dragvs(istrip,Lm) 
       _RL dragxs(istrip), dragys(istrip)
-      _RL plstr(istrip,Lm),plestr(istrip,Lm),dpresstr(istrip,Lm)
+      _RL plstr(istrip,Lm),plestr(istrip,Lm+1),dpresstr(istrip,Lm)
       integer nthinstr(istrip),nbasestr(istrip)
 
       integer n,i,j,L
@@ -162,7 +162,7 @@ c ------------------------------------------------
       call stripit ( vz,vs,im*jm,im*jm,istrip,Lm,n )
       call stripit ( tv,ts,im*jm,im*jm,istrip,Lm,n )
       call stripit ( pl,plstr,im*jm,im*jm,istrip,Lm,n )
-      call stripit ( ple,plestr,im*jm,im*jm,istrip,Lm,n )
+      call stripit ( ple,plestr,im*jm,im*jm,istrip,Lm+1,n )
       call stripit ( dpres,dpresstr,im*jm,im*jm,istrip,Lm,n )
       call stripitint ( nthin,nthinstr,im*jm,im*jm,istrip,1,n )
       call stripitint ( nbase,nbasestr,im*jm,im*jm,istrip,1,n )
