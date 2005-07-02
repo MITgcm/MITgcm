@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.508 2005/06/30 19:55:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.509 2005/07/02 16:13:50 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57k_post
+o lab_sea now uses diagnostics package and provides a suite of
+  new EXF diagnostics output.
 
 checkpoint57j_post
 o exf
