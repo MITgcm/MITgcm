@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.6 2005/06/16 16:52:49 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.7 2005/07/05 19:49:06 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1130,7 +1130,7 @@ C          Assumes that we always want to be at a month boundary
 C***********************************************************************        
       implicit none
 
-      integer mmdd,nymd,nhms,timeleft
+      integer mmdd,nymd,nhms,timeleft,daysleft
 
       integer nsday
       parameter ( nsday  = 86400 )
@@ -1171,9 +1171,10 @@ C***********************************************************************
       endif
       testnymd = yearnext*10000 + monthnext*100 + daynext
       idaynext = mndy(monthnext,mod(yearnext,4)+1)
-      nsecnext = idaynext *nsday
+      daysleft = idaynext - iday
+      if(daysleft.lt.0) daysleft = daysleft + 1461
 
-      timeleft = nsecnext - nsec
+      timeleft = daysleft * nsday
                                                                                 
       RETURN                                                                    
       END                                                                       
