@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.3 2005/07/06 02:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.4 2005/07/06 13:52:31 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,8 +33,9 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
-C     listId :: Diagnostics list number being written
+C     listId  :: Diagnostics list number being written
 C     myIter  :: current iteration number
+C     myTime  :: Current time of simulation (s)
 C     myThid  :: my Thread Id number
       INTEGER listId, myIter, myTime, myThid
 CEOP
