@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.509 2005/07/02 16:13:50 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.510 2005/07/06 02:13:52 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add mnc output capability to diagnostics/diagstat and update 
+  our cvsignore files for the ACSII output generated
 
 checkpoint57k_post
 o lab_sea now uses diagnostics package and provides a suite of

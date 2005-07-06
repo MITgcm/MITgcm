@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.13 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.14 2005/07/06 02:13:52 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -98,8 +98,8 @@ C       eight spaces:        12345678
           fields (m,l) = blk8c
         ENDDO
       ENDDO
-      dumpatlast = .FALSE.
-      diag_mnc = useMNC
+      dumpatlast            = .FALSE.
+      diag_mnc              = useMNC
       diag_pickup_read      = .FALSE.
       diag_pickup_write     = .FALSE.
       diag_pickup_read_mnc  = .FALSE.

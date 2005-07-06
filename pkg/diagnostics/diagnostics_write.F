@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.23 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.24 2005/07/06 02:13:52 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -139,7 +139,7 @@ C       state-variable time-step:
           IF ( dump2fileNow .OR.
      &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
             write2file = .TRUE.
-            CALL DIAGSTATS_OUTPUT(n,wrIter,myThid)
+            CALL DIAGSTATS_OUTPUT(n,wrIter,myTime,myThid)
           ENDIF
         ENDDO
 
