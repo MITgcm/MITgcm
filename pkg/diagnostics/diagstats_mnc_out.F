@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.2 2005/07/06 14:58:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.3 2005/07/06 19:51:29 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -186,18 +186,18 @@ C         for averaged levels.
         ENDDO
         
 C       Z is special since it varies
-        WRITE(dn(1),'(a,i6.6)') 'Zd', nlevels(listId)
+        WRITE(dn(1),'(a,i6.6)') 'Zd', kdiag(ndId)
         IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &       .AND. (gdiag(ndId)(9:9) .EQ. 'M') ) THEN
-          WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listId)
+          WRITE(dn(1),'(a,i6.6)') 'Zmd', kdiag(ndId)
         ENDIF
         IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &       .AND. (gdiag(ndId)(9:9) .EQ. 'L') ) THEN
-          WRITE(dn(1),'(a,i6.6)') 'Zld', nlevels(listId)
+          WRITE(dn(1),'(a,i6.6)') 'Zld', kdiag(ndId)
         ENDIF
         IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &       .AND. (gdiag(ndId)(9:9) .EQ. 'U') ) THEN
-          WRITE(dn(1),'(a,i6.6)') 'Zud', nlevels(listId)
+          WRITE(dn(1),'(a,i6.6)') 'Zud', kdiag(ndId)
         ENDIF
         dim(1) = Nr+Nrphys+1
         ib(1)  = 1
