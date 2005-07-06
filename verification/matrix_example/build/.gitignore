@@ -6,7 +6,7 @@
 *.meta
 *.nc
 STD*
-output.txt
+*.txt
 mfile*
 mitgcmuv*
 work.pc*
