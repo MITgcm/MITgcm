@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.4 2005/07/06 13:52:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.5 2005/07/06 14:58:11 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -10,7 +10,7 @@ C     !ROUTINE: DIAGSTATS_OUTPUT
 C     !INTERFACE:
       SUBROUTINE  DIAGSTATS_OUTPUT(
      I     listId,
-     I     myIter, myTime, myThid )
+     I     myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Write output for diagnostics fields.
@@ -37,7 +37,8 @@ C     listId  :: Diagnostics list number being written
 C     myIter  :: current iteration number
 C     myTime  :: Current time of simulation (s)
 C     myThid  :: my Thread Id number
-      INTEGER listId, myIter, myTime, myThid
+      _RL     myTime
+      INTEGER listId, myIter, myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -132,7 +133,7 @@ C--      Write to ASCII file:
          IF (diagSt_mnc) THEN
            CALL DIAGSTATS_MNC_OUT( 
      &          statGlob, nLev, ndId,
-     &          m, listId, myIter, myTime, myThid )
+     &          m, listId, myTime, myIter, myThid )
          ENDIF
 
 C--    end of Processing Fld # m

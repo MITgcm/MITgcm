@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.1 2005/07/06 02:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.2 2005/07/06 14:58:11 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -10,7 +10,7 @@ C     !ROUTINE: DIAGSTATS_MNC_OUT
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_MNC_OUT(
      I     statGlob, nLev, ndId,
-     I     mId, listId, myIter, myTime, myThid )
+     I     mId, listId, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Write Global statistics to a netCDF file
@@ -42,9 +42,10 @@ C     myIter   :: current Iteration Number
 C     myTime   :: current time of simulation (s)
 C     myThid   :: my thread Id number
       INTEGER nLev
-      _RL statGlob(0:nStats,0:nLev,0:nRegions)
+      _RL     statGlob(0:nStats,0:nLev,0:nRegions)
+      _RL     myTime
       INTEGER ndId, mId, listId
-      INTEGER myIter, myTime, myThid
+      INTEGER myIter, myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -103,6 +104,7 @@ C         Update the record dimension by writing the iteration number
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
           CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
+          CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
         ENDIF
 
 #ifdef DIAGST_MNC_NEEDSWORK
