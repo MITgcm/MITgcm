@@ -8,4 +8,5 @@
  useThSIce=.TRUE.,
  useSHAP_FILT=.TRUE.,
  useDiagnostics=.TRUE.,
+# useMNC=.TRUE.,
  &

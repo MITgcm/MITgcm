@@ -57,6 +57,7 @@
  monitorFreq=86400.,
  monitorFreq=1.,
 #diagFreq=2250.0,
+ outputTypesInclusive=.TRUE.,
  &
 
 # Gridding parameters

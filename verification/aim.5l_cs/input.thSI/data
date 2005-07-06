@@ -55,6 +55,7 @@
  dumpFreq=2592000.,
  monitorFreq=86400.,
  monitorFreq=1.,
+ outputTypesInclusive=.TRUE.,
  &
 
 # Gridding parameters
