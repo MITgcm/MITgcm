@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.8 2005/06/30 16:23:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.9 2005/07/07 23:18:51 molod Exp $
 C $Name:  $
 
        subroutine gridalt_update(myThid)
@@ -66,20 +66,20 @@ c
 
 #ifdef ALLOW_DIAGNOSTICS
        if(useDiagnostics) then
-        IF ( DIAGNOSTICS_IS_ON('DPPHYS  ',myThid) ) THEN
-         do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
-          do L = 1,Nrphys
-           do j = j1,j2
-           do i = i1,i2
-            temparr(i,j,L,bi,bj) = dpphys(i,j,L,bi,bj) * 1.e-2
-           enddo
-           enddo
+       IF ( DIAGNOSTICS_IS_ON('DPPHYS  ',myThid) ) THEN
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do L = 1,Nrphys
+          do j = j1,j2
+          do i = i1,i2
+           temparr(i,j,L,bi,bj) = dpphys(i,j,L,bi,bj) * 1.e-2
+          enddo
           enddo
          enddo
-         enddo
-         CALL DIAGNOSTICS_FILL(temparr, 'DPPHYS  ',-1,Nrphys,0,1,1,myThid)
-        ENDIF
+        enddo
+        enddo
+        CALL DIAGNOSTICS_FILL(temparr,'DPPHYS  ',-1,Nrphys,0,1,1,myThid)
+       ENDIF
        endif
 #endif
 
