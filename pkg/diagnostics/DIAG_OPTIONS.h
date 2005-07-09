@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.3 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.4 2005/07/09 17:22:58 jmc Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
@@ -18,11 +18,6 @@ C  from pickup file.
 C Note: Use with cautious since it does not work for all restart 
 C  cases (e.g., changing data.diagnostics).
 #undef  DIAGNOSTICS_HAS_PICKUP
-
-C Allow to fill directly qdiag : 
-C   uses equivalence (especially for the pointer idiag)
-C This code is no longer supported and will be removed soon.
-#undef ALLOW_DIRECT_FILLING_WITH_EQUIV
 
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAG_OPTIONS_H */
