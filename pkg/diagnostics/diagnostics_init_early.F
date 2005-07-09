@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.10 2005/06/30 23:09:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.11 2005/07/09 17:19:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -13,9 +13,9 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     Initialize available diagnostics list: set the following attributes:
 C     name (=cdiag), parsing code (=gdiag), units (=udiag), and title (=tdiag)
-C     Note: 1) diagnostics defined here also appear in equivalence statement
-C           in "DIAGNOSTICS.h" ; this allow a more direct access than 
-C           calling S/R FILL_DIAGNOSTICS.
+C     Note: 1) diagnostics defined here are not presently filled. To use
+C           one of them, one just needs to add a call to S/R DIAGNOSTICS_FILL
+C           with the diagnostic name 'SDIAG...' or 'UDIAG...'
 C           2) GDIAG is defined as character*16 and can be to character*1
 C           parse(16) with the following codes currently defined:
 
@@ -73,7 +73,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     For each output variable,
-C     specify Name (cdiag, 8c), Descriptions (tdiag, *c), Units (udiag, 16c) 
+C     specify Name (cdiag, 8c), Descriptions (tdiag, *c), Units (udiag, 16c)
 C         and parsing code (location on C grid, 2D/3D, ...) (gdiag, 16c)
 C----------------------------------------------------------------------
       cdiag( 1)  = 'SDIAG1  '
@@ -179,14 +179,14 @@ C----------------------------------------------------------------------
       cdiag(21) = 'SDIAGC  '
       tdiag(21) = 'User-Defined Counted Surface Diagnostic         '
       udiag(21) = 'user-defined    '
-      gdiag(21) = 'SM  C188L1      '
+      gdiag(21) = 'SM  C022L1      '
 
       cdiag(22) = 'SDIAGCC '
       tdiag(22) = 'User-Defined Counted Surface Diagnostic Counter'
       udiag(22) = 'count           '
       gdiag(22) = 'SM  D   L1      '
 
-c-    set the total number of available diagnostics 
+c-    set the total number of available diagnostics
       ndiagt = 22
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
