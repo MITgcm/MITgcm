@@ -13,7 +13,7 @@
  &diagnostics_list
   frequency(1) = 4500.,
    levels(1,1) = 1.,
-   fields(1,1) = 'ETAN    ','ETANSQ  ',
+   fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
    filename(1) = 'surfDiag',
   frequency(2) = 4500.,
    levels(1,2) = 1.,2.,3.,4.,5.,
@@ -32,14 +32,14 @@
                  'CLDFRC  ', 'CLDPRS  ', 'CLDMAS  ',
                  'KM      ', 'WINDS   ', 'TS      ', 'QS      ',
                  'ENPREC  ', 'ALBVISDF', 'DTSIMPL ',
-                 'OSRCLR  ', 'OLRCLR  ', 'SWGCLR  ', 'LWGCLR  ',
+#                'OSRCLR  ', 'OLRCLR  ', 'SWGCLR  ', 'LWGCLR  ',
    filename(3) = 'aimDiag',
   frequency(4) = 4500.,
    levels(1,4) = 1.,2.,3.,4.,5.,
    fields(1,4) = 'RELHUM  ', 'DIABT   ', 'DIABQ   ',
                  'RADSW   ', 'RADLW   ', 'DTCONV  ', 'DTLS    ',
                  'DQCONV  ', 'DQLS    ',
-                 'SWCLR   ', 'LWCLR   ',
+#                'SWCLR   ', 'LWCLR   ',
    filename(4) = 'aimDDT',
  &
 
@@ -56,9 +56,13 @@
 #-----------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-#   stat_fname(1)= 'dynStDiag',
-#    stat_freq(1)= -864000.,
-#   stat_phase(1)= 0.,
+ stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+    stat_fname(1)= 'dynStDiag',
+     stat_freq(1)= -3600.,
+    stat_phase(1)= 0.,
+ stat_fields(1,4)= 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
+    stat_fname(4)= 'landStDiag',
+     stat_freq(4)= -3600.,
+    stat_phase(4)= 0.,
  &
 
