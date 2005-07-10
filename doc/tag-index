@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.510 2005/07/06 02:13:52 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.511 2005/07/10 01:30:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o add mnc output capability to diagnostics/diagstat and update 
+o pkg/diagnostics: 2 new S/R to fill a diagnostics using a scaling factor
+      and/or using a fraction-weight field.
+o fix aim_diagnostics_init.F mate numbers.
+o add mnc output capability to diagnostics/diagstat and update
   our cvsignore files for the ACSII output generated
 
 checkpoint57k_post
