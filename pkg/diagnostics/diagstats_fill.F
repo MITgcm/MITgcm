@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.1 2005/05/20 07:28:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.2 2005/07/10 00:57:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,13 +6,18 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAGSTATS_FILL
 C     !INTERFACE:
-      SUBROUTINE DIAGSTATS_FILL( inpFld, ndId, kInQSd, region2fill,
-     I              kLev, nLevs, bibjflg, biArg, bjArg, myThid ) 
+      SUBROUTINE DIAGSTATS_FILL(
+     I              inpFld, fractFld, scaleFact, nLevFract,
+     I              ndId, kInQSd, region2fill, kLev, nLevs,
+     I              bibjflg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
-C   compute statistics over 1 tile 
-C   and increment the diagnostics array 
+C   compute statistics over 1 tile
+C   and increment the diagnostics array
+C     using a scaling factor
+C     and with the option to use a fraction-weight (assumed
+C         to be the counter-mate of the current diagnostics)
 C***********************************************************************
 C     !USES:
       IMPLICIT NONE
@@ -28,6 +33,9 @@ C***********************************************************************
 C  Arguments Description
 C  ----------------------
 C     inpFld ..... Field to increment diagnostics array
+C     fractFld ... fraction used for weighted average diagnostics
+C     scaleFact .. scaling factor
+C     nLevFract .. number of levels of the fraction field, =0 : do not use fraction
 C     ndId     ... Diagnostics Id Number (in available diag list) of diag to process
 C     kInQSd ...   Pointer to the slot in qSdiag to fill
 C     region2fill  array, indicates whether to compute statistics over region
@@ -35,7 +43,7 @@ C                   "j" (if region2fill(j)=1) or not (if region2fill(j)=0)
 C     kLev   ..... Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qSdiag.
 C                  0,-1 to increment "nLevs" levels in qSdiag,
-C                  0 : fill-in in the same order as the input array 
+C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
 C     nLevs ...... indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
@@ -57,6 +65,9 @@ C                        is sent here, bibjflg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
       _RL inpFld(*)
+      _RL fractFld(*)
+      _RL scaleFact
+      INTEGER nLevFract
       INTEGER ndId, kInQSd
       INTEGER region2fill(0:nRegions)
       INTEGER kLev, nLevs, bibjflg, biArg, bjArg
@@ -65,7 +76,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
-c     INTEGER m, n 
+C     useFract :: flag to increment (or not) with fraction-weigted inpFld
+      LOGICAL useFract
+      INTEGER sizF
       INTEGER sizI1,sizI2,sizJ1,sizJ2
       INTEGER sizTx,sizTy
       INTEGER iRun, jRun, k, bi, bj
@@ -79,7 +92,7 @@ C If-sequence to see if we are a valid and an active diagnostic
 c     IF ( ndId.NE.0 .AND. kInQSd.NE.0 ) THEN
 
 C-      select range for 1rst & 2nd indices to accumulate
-C         depending on variable location on C-grid, 
+C         depending on variable location on C-grid,
         parms1 = gdiag(ndId)(1:8)
         IF ( parms1(2:2).EQ.'Z' ) THEN
          iRun = sNx+1
@@ -130,9 +143,9 @@ C         and do the loop >> do k=kFirst,kLast <<
         ELSE
           STOP 'ABNORMAL END in DIAGSTATS_FILL: kLev > nLevs > 0'
         ENDIF
-C-      Which part of qSdiag to update: kd = 3rd index, 
+C-      Which part of qSdiag to update: kd = 3rd index,
 C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
-C  1rst try this: for the mask: km = km0 + k*ksgn so that kd= km + kInQSd - 1 
+C  1rst try this: for the mask: km = km0 + k*ksgn so that kd= km + kInQSd - 1
         IF ( kLev.EQ.-1 ) THEN
           ksgn = -1
           kd0 = kInQSd + nLevs
@@ -145,6 +158,13 @@ C  1rst try this: for the mask: km = km0 + k*ksgn so that kd= km + kInQSd - 1
           ksgn = 0
           kd0 = kInQSd + kLev - 1
           km0 = kLev
+        ENDIF
+C-      Set fraction-weight option :
+        useFract = nLevFract.GT.0
+        IF ( useFract ) THEN
+          sizF = nLevFract
+        ELSE
+          sizF = 1
         ENDIF
 
 C-      Check for consistency with Nb of levels reserved in storage array
@@ -168,7 +188,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
         ENDIF
 
         IF ( bibjflg.EQ.0 ) THEN
-         
+
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
@@ -176,7 +196,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,bi,bj),
-     I                  inpFld,
+     I                  inpFld, fractFld, scaleFact, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  km, bi, bj, region2fill,
@@ -192,7 +212,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,biArg,bjArg),
-     I                  inpFld,
+     I                  inpFld, fractFld, scaleFact, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  km, biArg, bjArg, region2fill,
@@ -205,5 +225,5 @@ c     ELSE
 
 c     ENDIF
 
-      RETURN 
+      RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.2 2005/05/23 02:18:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.3 2005/07/10 00:57:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: DIAGSTATS_LOCAL
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_LOCAL(
      U                  statFld,
-     I                  inpFld,
+     I                  inpFld, frcFld, scaleFact, useFract,sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,kIn,biIn,bjIn,
      I                  k,bi,bj, region2fill, ndId, parsFld,
@@ -39,13 +39,17 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     statFld     :: cumulative statistics array (updated)
 C     inpFld      :: input field array to process (compute stats & add to statFld)
+C     frcFld      :: fraction used for weighted-average diagnostics
+C     scaleFact   :: scaling factor
+C     useFract    :: if True, use fraction-weight
+C     sizF        :: size of frcFld array: 3rd  dimension
 C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
 C     sizK        :: size of inpFld array: 3rd  dimension
 C     sizTx,sizTy :: size of inpFld array: tile dimensions
 C     iRun,jRun   :: range of 1rst & 2nd index
-C     kIn         :: level index of inFld array to porcess
-C     biIn,bjIn   :: tile indices of inFld array to process
+C     kIn         :: level index of inpFld array to porcess
+C     biIn,bjIn   :: tile indices of inpFld array to process
 C     k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
 C     region2fill :: indicates whether to compute statistics over this region
 C     ndId        :: Diagnostics Id Number (in available diag. list)
@@ -53,8 +57,11 @@ C     parsFld     :: parser field with characteristics of the diagnostics
 C     myThid      :: my Thread Id number
       _RL     statFld(0:nStats,0:nRegions)
       INTEGER sizI1,sizI2,sizJ1,sizJ2
-      INTEGER sizK,sizTx,sizTy
+      INTEGER sizF,sizK,sizTx,sizTy
       _RL     inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RL     frcFld(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RL     scaleFact
+      LOGICAL useFract
       INTEGER iRun, jRun, kIn, biIn, bjIn
       INTEGER k, bi, bj, ndId
       INTEGER region2fill(0:nRegions)
@@ -64,7 +71,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     i,j    :: loop indices
-      INTEGER i, n, km
+      INTEGER i, n, km, kFr
       INTEGER im, ix, iv
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
       LOGICAL exclSpVal
@@ -84,6 +91,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         exclSpVal = .TRUE.
         specialVal = getcon('UNDEF')
       ENDIF
+      kFr = MIN(kIn,sizF)
 
       DO n=0,nRegions
        IF (region2fill(n).NE.0) THEN
@@ -103,6 +111,8 @@ C-     case of a special region (no specific regional mask)
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskW(1-Olx,1-Oly,k,bi,bj),
      I            hFacW(1-Olx,1-Oly,k,bi,bj), rAw(1-Olx,1-Oly,bi,bj),
@@ -112,6 +122,8 @@ c    I            drLoc, k,bi,bj, parsFld, myThid )
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskS(1-Olx,1-Oly,k,bi,bj),
      I            hFacS(1-Olx,1-Oly,k,bi,bj), rAs(1-Olx,1-Oly,bi,bj),
@@ -120,6 +132,8 @@ c    I            drLoc, k,bi,bj, parsFld, myThid )
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskC(1-Olx,1-Oly,k,bi,bj),
      I            hFacC(1-Olx,1-Oly,k,bi,bj), rA(1-Olx,1-Oly,bi,bj),
@@ -132,6 +146,8 @@ c    I            drLoc, k,bi,bj, parsFld, myThid )
            CALL  DIAGSTATS_LM_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskH(1-Olx,1-Oly,bi,bj),
      I            rA(1-Olx,1-Oly,bi,bj),
@@ -143,6 +159,8 @@ c    I            drLoc, k,bi,bj, parsFld, myThid )
            CALL  DIAGSTATS_G_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj),
      I            rA(1-Olx,1-Oly,bi,bj),
@@ -159,6 +177,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskW(1-Olx,1-Oly,km,bi,bj),
      I            maskW(1-Olx,1-Oly,km,bi,bj),rAw(1-Olx,1-Oly,bi,bj),
@@ -167,6 +187,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskS(1-Olx,1-Oly,km,bi,bj),
      I            maskS(1-Olx,1-Oly,km,bi,bj),rAs(1-Olx,1-Oly,bi,bj),
@@ -175,6 +197,8 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
            CALL  DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
+     I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
+     I            scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            maskH(1-Olx,1-Oly,bi,bj), maskH(1-Olx,1-Oly,bi,bj),
      I            maskH(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
@@ -213,7 +237,7 @@ C     !ROUTINE: DIAGSTATS_LM_CALC
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_LM_CALC(
      O                  statArr,
-     I                  inpArr,
+     I                  inpArr, frcArr, scaleFact, useFract,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrMask, arrArea,
      I                  specialVal, exclSpVal,
@@ -237,6 +261,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     statArr     :: output statistics array
 C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     frcArr      :: fraction used for weighted-average diagnostics
+C     useFract    :: if True, use fraction-weight
+C     scaleFact   :: scaling factor
 C     nStats      :: size of output statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
@@ -253,6 +280,9 @@ C     myThid      :: my Thread Id number
       INTEGER iRun, jRun
       _RL statArr(0:nStats)
       _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL frcArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL scaleFact
+      LOGICAL useFract
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -286,7 +316,7 @@ C    and will change it once the Regions are fully implemented.
 
         CALL  DIAGSTATS_CALC(
      O            statArr,
-     I            inpArr,
+     I            inpArr, frcArr, scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, arrMask,
      I            dpphys(1-Olx,1-Oly,kl,bi,bj), arrArea,
@@ -305,7 +335,7 @@ C     !ROUTINE: DIAGSTATS_G_CALC
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_G_CALC(
      O                  statArr,
-     I                  inpArr,
+     I                  inpArr, frcArr, scaleFact, useFract,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrArea,
      I                  specialVal, exclSpVal,
@@ -333,6 +363,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     statArr     :: output statistics array
 C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     frcArr      :: fraction used for weighted-average diagnostics
+C     useFract    :: if True, use fraction-weight
+C     scaleFact   :: scaling factor
 C     nStats      :: size of output statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
@@ -348,6 +381,9 @@ C     myThid      :: my Thread Id number
       INTEGER iRun, jRun
       _RL statArr(0:nStats)
       _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL frcArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL scaleFact
+      LOGICAL useFract
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -376,7 +412,7 @@ c     IF ( useLand ) THEN
 
         CALL  DIAGSTATS_CALC(
      O            statArr,
-     I            inpArr,
+     I            inpArr, frcArr, scaleFact, useFract,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, aim_landFr(1-Olx,1-Oly,bi,bj),
      I            aim_landFr(1-Olx,1-Oly,bi,bj), arrArea,
@@ -395,12 +431,11 @@ C     !ROUTINE: DIAGSTATS_CALC
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_CALC(
      O                  statArr,
-     I                  inpArr,
+     I                  inpArr, frcArr, scaleFact, useFract,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrMask, arrhFac, arrArea,
      I                  arrDr, specialVal, exclSpVal, useWeight,
      I                  myThid )
-c    I                  arrDr, k,bi,bj, parsFld, myThid )
 
 C     !DESCRIPTION:
 C     Compute statistics for this tile, level, region
@@ -415,6 +450,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     statArr     :: output statistics array
 C     inpArr      :: input field array to process (compute stats & add to statFld)
+C     frcArr      :: fraction used for weighted-average diagnostics
+C     useFract    :: if True, use fraction-weight
+C     scaleFact   :: scaling factor
 C     nStats      :: size of output array: statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
@@ -434,6 +472,9 @@ C     myThid      :: my Thread Id number
       INTEGER iRun, jRun
       _RL statArr(0:nStats)
       _RL inpArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL frcArr (sizI1:sizI2,sizJ1:sizJ2)
+      _RL scaleFact
+      LOGICAL useFract
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -452,6 +493,7 @@ C     i,j    :: loop indices
       INTEGER i, j, n
       INTEGER im, ix
       _RL tmpVol
+      _RL tmpFld
 
       im = nStats - 1
       ix = nStats
@@ -459,17 +501,70 @@ C     i,j    :: loop indices
         statArr(n) = 0.
       ENDDO
 
-      IF ( exclSpVal ) THEN
+      IF ( useFract .AND. exclSpVal ) THEN
 
        DO j = 1,jRun
         DO i = 1,iRun
-          IF (arrMask(i,j).NE.0. .AND. inpArr(i,j).NE.specialVal) THEN
+          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
+     &                     .AND. inpArr(i,j).NE.specialVal ) THEN
+            tmpFld = scaleFact*inpArr(i,j)
             IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = inpArr(i,j)
-              statArr(ix) = inpArr(i,j)
+              statArr(im) = tmpFld
+              statArr(ix) = tmpFld
             ELSE
-              statArr(im) = MIN(inpArr(i,j),statArr(im))
-              statArr(ix) = MAX(inpArr(i,j),statArr(ix))
+              statArr(im) = MIN(tmpFld,statArr(im))
+              statArr(ix) = MAX(tmpFld,statArr(ix))
+            ENDIF
+            IF ( useWeight ) THEN
+              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
+            ELSE
+              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
+            ENDIF
+            statArr(0) = statArr(0) + tmpVol
+            statArr(1) = statArr(1) + tmpVol*tmpFld
+            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
+          ENDIF
+        ENDDO
+       ENDDO
+
+      ELSEIF ( useFract ) THEN
+
+       DO j = 1,jRun
+        DO i = 1,iRun
+          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0. ) THEN
+            tmpFld = scaleFact*inpArr(i,j)
+            IF ( statArr(0).EQ.0. ) THEN
+              statArr(im) = tmpFld
+              statArr(ix) = tmpFld
+            ELSE
+              statArr(im) = MIN(tmpFld,statArr(im))
+              statArr(ix) = MAX(tmpFld,statArr(ix))
+            ENDIF
+            IF ( useWeight ) THEN
+              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
+            ELSE
+              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
+            ENDIF
+            statArr(0) = statArr(0) + tmpVol
+            statArr(1) = statArr(1) + tmpVol*tmpFld
+            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
+          ENDIF
+        ENDDO
+       ENDDO
+
+      ELSEIF ( exclSpVal ) THEN
+
+       DO j = 1,jRun
+        DO i = 1,iRun
+          IF ( arrMask(i,j).NE.0.
+     &                     .AND. inpArr(i,j).NE.specialVal ) THEN
+            tmpFld = scaleFact*inpArr(i,j)
+            IF ( statArr(0).EQ.0. ) THEN
+              statArr(im) = tmpFld
+              statArr(ix) = tmpFld
+            ELSE
+              statArr(im) = MIN(tmpFld,statArr(im))
+              statArr(ix) = MAX(tmpFld,statArr(ix))
             ENDIF
             IF ( useWeight ) THEN
               tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
@@ -477,8 +572,8 @@ C     i,j    :: loop indices
               tmpVol = arrDr*arrArea(i,j)
             ENDIF
             statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*inpArr(i,j)
-            statArr(2) = statArr(2) + tmpVol*inpArr(i,j)*inpArr(i,j)
+            statArr(1) = statArr(1) + tmpVol*tmpFld
+            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
           ENDIF
         ENDDO
        ENDDO
@@ -489,12 +584,13 @@ C     i,j    :: loop indices
         DO i = 1,iRun
 c         IF ( regMask(i,j).NE.0. .AND. arrMask(i,j).NE.0. ) THEN
           IF ( arrMask(i,j).NE.0. ) THEN
+            tmpFld = scaleFact*inpArr(i,j)
             IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = inpArr(i,j)
-              statArr(ix) = inpArr(i,j)
+              statArr(im) = tmpFld
+              statArr(ix) = tmpFld
             ELSE
-              statArr(im) = MIN(inpArr(i,j),statArr(im))
-              statArr(ix) = MAX(inpArr(i,j),statArr(ix))
+              statArr(im) = MIN(tmpFld,statArr(im))
+              statArr(ix) = MAX(tmpFld,statArr(ix))
             ENDIF
             IF ( useWeight ) THEN
               tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
@@ -502,8 +598,8 @@ c         IF ( regMask(i,j).NE.0. .AND. arrMask(i,j).NE.0. ) THEN
               tmpVol = arrDr*arrArea(i,j)
             ENDIF
             statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*inpArr(i,j)
-            statArr(2) = statArr(2) + tmpVol*inpArr(i,j)*inpArr(i,j)
+            statArr(1) = statArr(1) + tmpVol*tmpFld
+            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
           ENDIF
         ENDDO
        ENDDO

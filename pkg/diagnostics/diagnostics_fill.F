@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.9 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.10 2005/07/10 00:57:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,8 +6,9 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_FILL (inpfld, chardiag,
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+      SUBROUTINE DIAGNOSTICS_FILL(
+     I                inpFld, chardiag,
+     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -26,16 +27,16 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     inpfld ..... Field to increment diagnostics array
-C     chardiag ... Character expression for diag to fill
-C     kLev   ..... Integer flag for vertical levels:
+C     inpFld    :: Field to increment diagnostics array
+C     chardiag  :: Character expression for diag to fill
+C     kLev      :: Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qdiag.
 C                  0,-1 to increment "nLevs" levels in qdiag,
 C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
-C     nLevs ...... indicates Number of levels of the input field array
+C     nLevs     :: indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
-C     bibjFlg .... Integer flag to indicate instructions for bi bj loop
+C     bibjFlg   :: Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
@@ -44,15 +45,15 @@ C                  3 indicates that the bi-bj loop is done OUTSIDE
 C                     AND that we have been sent a local array
 C                     AND that the array has no overlap region (interior only)
 C                  NOTE - bibjFlg can be NEGATIVE to indicate not to increment counter
-C     biArg ...... X-direction tile number - used for bibjFlg=1-3
-C     bjArg ...... Y-direction tile number - used for bibjFlg=1-3
-C     myThid     ::  my thread Id number
+C     biArg     :: X-direction tile number - used for bibjFlg=1-3
+C     bjArg     :: Y-direction tile number - used for bibjFlg=1-3
+C     myThid    ::  my thread Id number
 C***********************************************************************
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjFlg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
-      _RL inpfld(*)
+      _RL     inpFld(*)
       CHARACTER*8 chardiag
       INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
@@ -64,7 +65,9 @@ C ===============
       INTEGER m, n, j, k, l, bi, bj
       INTEGER ndId, ipt, iSp
       INTEGER region2fill(0:nRegions)
+      _RL     scaleFact
 
+      scaleFact = 1. _d 0
       IF ( bibjFlg.EQ.0 ) THEN
         bi = 1
         bj = 1
@@ -80,10 +83,12 @@ C we are trying to fill a valid diagnostic
         IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
          ipt = idiag(m,n)
          IF ( ndiag(ipt,bi,bj).GE.0 ) THEN
-C diagnostic is valid & active, do the filling:
            ndId = jdiag(m,n)
-           CALL DIAGNOSTICS_FILL_FIELD( inpfld, ndId, ipt,
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
+C-    diagnostic is valid & active, do the filling:
+           CALL DIAGNOSTICS_FILL_FIELD(
+     I                inpFld, inpFld, scaleFact, 0,
+     I                ndId, ipt, kLev, nLevs,
+     I                bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO
@@ -100,12 +105,13 @@ C we are trying to compute & fill a valid diagnostic
         IF ( chardiag.EQ.diagSt_Flds(m,n) .AND. iSdiag(m,n).GT.0 ) THEN
          iSp = iSdiag(m,n)
          IF ( qSdiag(0,0,iSp,bi,bj).GE.0. ) THEN
-C-         diagnostics is valid and Active. Find list of regions to fill:
+           ndId = jSdiag(m,n)
+C-    Find list of regions to fill:
            DO j=0,nRegions
             region2fill(j) = diagSt_region(j,n)
            ENDDO
-C-         if this diagnostics appears in several lists (with same freq)
-C          then add regions from other lists
+C-    if this diagnostics appears in several lists (with same freq)
+C     then add regions from other lists
            DO l=1,diagSt_nbLists
             DO k=1,diagSt_nbActv(l)
              IF ( iSdiag(k,l).EQ.-iSp ) THEN
@@ -115,10 +121,11 @@ C          then add regions from other lists
              ENDIF
             ENDDO
            ENDDO
-C-         Now do the filling :
-           ndId = jSdiag(m,n)
-           CALL DIAGSTATS_FILL( inpfld, ndId, iSp, region2fill,
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
+C-    diagnostics is valid and Active: Now do the filling
+           CALL DIAGSTATS_FILL(
+     I                inpFld, inpFld, scaleFact, 0,
+     I                ndId, iSp, region2fill, kLev, nLevs,
+     I                bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO
