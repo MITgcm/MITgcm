@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.3 2005/07/10 00:59:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,12 +6,17 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL_FIELD
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_FILL_FIELD( inpFld, ndiagnum, ipointer,
-     I                   kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
+      SUBROUTINE DIAGNOSTICS_FILL_FIELD(
+     I                   inpFld, fractFld, scaleFact, nLevFract,
+     I                   ndiagnum, ipointer, kLev, nLevs,
+     I                   bibjFlg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
-C   routine to increment the diagnostics array with a field
+C   Increment the diagnostics array with a 2D/3D field
+C     using a scaling factor
+C     and with the option to use a fraction-weight (assumed
+C         to be the counter-mate of the current diagnostics)
 C***********************************************************************
 C     !USES:
       IMPLICIT NONE
@@ -27,6 +32,9 @@ C***********************************************************************
 C  Arguments Description
 C  ----------------------
 C     inpFld ..... Field to increment diagnostics array
+C     fractFld ... fraction used for weighted average diagnostics
+C     scaleFact .. scaling factor
+C     nLevFract .. number of levels of the fraction field, =0 : do not use fraction
 C     ndiagnum ... Diagnostics Number (in available diag list) of diag to process
 C     ipointer ... Pointer to the slot in qdiag to fill
 C     kLev   ..... Integer flag for vertical levels:
@@ -54,6 +62,9 @@ C                        is sent here, bibjFlg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
       _RL inpFld(*)
+      _RL fractFld(*)
+      _RL scaleFact
+      INTEGER nLevFract
       INTEGER ndiagnum, ipointer
       INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
@@ -61,6 +72,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
+C     useFract :: flag to increment (or not) with fraction-weigted inpFld
+      LOGICAL useFract
+      INTEGER sizF
       INTEGER sizI1,sizI2,sizJ1,sizJ2
       INTEGER sizTx,sizTy
       INTEGER iRun, jRun, k, bi, bj
@@ -154,6 +168,13 @@ C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
           ksgn = 0
           kd0 = ipointer + kLev - 1
         ENDIF
+C-      Set fraction-weight option :
+        useFract = nLevFract.GT.0
+        IF ( useFract ) THEN
+          sizF = nLevFract
+        ELSE
+          sizF = 1
+        ENDIF
 
 C-      Check for consistency with Nb of levels reserved in storage array
         kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
@@ -183,7 +204,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             kd = kd0 + ksgn*k
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
-     I                  inpFld,
+     I                  inpFld, fractFld, scaleFact, useFract,sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -197,7 +218,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             kd = kd0 + ksgn*k
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
-     I                  inpFld,
+     I                  inpFld, fractFld, scaleFact, useFract,sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -222,7 +243,7 @@ C     !ROUTINE: DIAGNOSTICS_DO_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_DO_FILL(
      U                  cumFld,
-     I                  inpFld,
+     I                  inpFld, frcFld, scaleFact, useFract,sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -242,6 +263,10 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     cumFld      :: cumulative array (updated)
 C     inpFld      :: input field array to add to cumFld
+C     frcFld      :: fraction used for weighted-average diagnostics
+C     scaleFact   :: scaling factor
+C     useFract    :: if True, use fraction-weight
+C     sizF        :: size of frcFld array: 3rd  dimension
 C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
 C     sizK        :: size of inpFld array: 3rd  dimension
@@ -252,25 +277,40 @@ C                    to add to cumFld array
 C     myThid      :: my Thread Id number
       _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER sizI1,sizI2,sizJ1,sizJ2
-      INTEGER sizK,sizTx,sizTy
+      INTEGER sizF,sizK,sizTx,sizTy
       _RL inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RL frcFld(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RL scaleFact
+      LOGICAL useFract
       INTEGER iRun, jRun, k, bi, bj
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
 C     i,j    :: loop indices
-      INTEGER i, j
+      INTEGER i, j, l
 
-      DO j = 1,jRun
-       DO i = 1,iRun
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( useFract ) THEN
+       l = MIN(k,sizF)
+       DO j = 1,jRun
+        DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j) + scaleFact*frcFld(i,j,l,bi,bj)
+     &                                         *inpFld(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ELSE
+       DO j = 1,jRun
+        DO i = 1,iRun
 C- jmc: try with fixed ranges, that are known at compiling stage
 C        (might produce a better cash optimisation ?)
-c     DO j = 1,sNy
-c      DO i = 1,sNx
-        cumFld(i,j) = cumFld(i,j) + inpFld(i,j,k,bi,bj)
+c      DO j = 1,sNy
+c       DO i = 1,sNx
+          cumFld(i,j) = cumFld(i,j) + scaleFact*inpFld(i,j,k,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
       RETURN
       END
