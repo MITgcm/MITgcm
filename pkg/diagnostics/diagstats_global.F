@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.3 2005/07/10 00:52:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -89,7 +89,7 @@ C--     Retrieve tile statistics first
            DO k=1,kMlev
             kd = iSm + k - 1
             IF ( qSdiag(0,jReg,kd,bi,bj).GT.0. ) THEN
-             IF ( qtmp1(0,k).LE.0. ) THEN
+             IF ( qtmp2(0,k).LE.0. ) THEN
               DO i=0,nStats
                 qtmp2(i,k) = qSdiag(i,jReg,kd,bi,bj)
               ENDDO
@@ -178,6 +178,8 @@ C            Standard deviation :
              IF (qtmp1(iv,k).GT.0.) qtmp1(iv,k) = SQRT(qtmp1(iv,k))
            ENDIF
           ENDDO
+C         return global (& vertically integrated) volume in qtmp2(0,0):
+          qtmp2(0,0) = qtmp1(0,0)
         ELSE
 C       With counter diagnostics => average = Sum / Sum(counter) :
           DO k=0,klev
