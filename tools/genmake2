@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.124 2005/06/07 20:52:42 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.125 2005/07/10 00:15:49 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1152,7 +1152,7 @@ fi
 
 #  Find the MITgcm ${THISVER}
 if test -f "${ROOTDIR}/doc/tag-index" ; then
-    THISVER=`grep checkpoint ${ROOTDIR}/doc/tag-index | head -1`
+    THISVER=`grep '^checkpoint' ${ROOTDIR}/doc/tag-index | head -1`
 fi
 
 if test "x$MAKEFILE" = x ; then
