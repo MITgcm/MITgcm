@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.9 2005/01/31 19:37:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.10 2005/07/10 01:24:25 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -89,9 +89,7 @@ C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
       _RL compact, hIce, hSnow, Tsf, Tice(nlyr), qicen(nlyr)
       _RL tmpflx(0:2), tmpdTs
 #ifdef ALLOW_DIAGNOSTICS
-      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON      
+      _RL tmpFac
 #endif
 
       LOGICAL dBug
@@ -168,16 +166,10 @@ C--    Update Sea-Ice state :
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-
-       IF ( DIAGNOSTICS_IS_ON('SIsnwPrc',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*snowPrc(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SIsnwPrc',0,1,2,bi,bj,myThid)
-       ENDIF
-
+        tmpFac = 1. _d 0
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   snowPrc,   iceMask,tmpFac,'SIsnwPrc',
+     I                   0,1,1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

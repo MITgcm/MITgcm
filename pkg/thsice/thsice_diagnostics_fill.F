@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.3 2005/04/19 15:07:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.4 2005/07/10 01:24:25 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -41,6 +41,7 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
 C     == Local variables ==
       _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFac
       INTEGER i,j
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -50,69 +51,40 @@ C     == Local variables ==
         CALL DIAGNOSTICS_FILL(iceMask,'SI_Fract',0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(snowAge,'SIsnwAge',0,1,1,bi,bj,myThid)
 
-       IF ( DIAGNOSTICS_IS_ON('SI_Thick',myThid) ) THEN
+C-     Ice-fraction weighted quantities:
+        tmpFac = 1. _d 0
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   iceheight, iceMask,tmpFac,'SI_Thick',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   snowheight,iceMask,tmpFac,'SI_SnowH',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Tsrf,      iceMask,tmpFac,'SI_Tsrf ',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Tice1,     iceMask,tmpFac,'SI_Tice1',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Tice2,     iceMask,tmpFac,'SI_Tice2',
+     I                   0,1,1,bi,bj,myThid)
+
+C-     Ice-Volume weighted quantities:
+       IF ( DIAGNOSTICS_IS_ON('SI_Qice1',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SI_Qice2',myThid) ) THEN
         DO j=1,sNy
          DO i=1,sNx
           tmpFld(i,j) = iceMask(i,j,bi,bj)*iceheight(i,j,bi,bj)
          ENDDO
         ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Thick',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_SnowH',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*snowheight(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_SnowH',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_Tsrf ',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*Tsrf(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Tsrf ',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_Tice1',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*Tice1(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Tice1',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_Tice2',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*Tice2(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Tice2',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_Qice1',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*iceheight(i,j,bi,bj)
-     &                                    *Qice1(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Qice1',0,1,2,bi,bj,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SI_Qice2',myThid) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          tmpFld(i,j) = iceMask(i,j,bi,bj)*iceheight(i,j,bi,bj)
-     &                                    *Qice2(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL(tmpFld,'SI_Qice2',0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice1(1-Olx,1-Oly,bi,bj),
+     I                   tmpFld,tmpFac,'SI_Qice1',
+     I                   0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice2(1-Olx,1-Oly,bi,bj),
+     I                   tmpFld,tmpFac,'SI_Qice2',
+     I                   0,1,2,bi,bj,myThid)
        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
