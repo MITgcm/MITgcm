@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.30 2005/04/06 20:18:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.31 2005/07/11 19:30:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,9 +52,7 @@ C     === Local variables ===
 C     number of surface interface layer
       INTEGER ks
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
-      _RL tmp1k(1:sNx,1:sNy)
+      _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -127,6 +125,24 @@ C     of surf.thickness (hFac): account for change in surf.thickness
        ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+
+C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
+        tmpFac = HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+        CALL DIAGNOSTICS_SCALE_FILL(
+     &           surfaceForcingT(1-Olx,1-Oly,bi,bj),tmpFac,1,
+     &                             'TRELAX  ',0, 1,2,bi,bj,myThid)
+
+C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
+        tmpFac = recip_horiVertRatio*rhoConst
+        CALL DIAGNOSTICS_SCALE_FILL(
+     &           surfaceForcingS(1-Olx,1-Oly,bi,bj),tmpFac,1,
+     &                             'SRELAX  ',0, 1,2,bi,bj,myThid)
+
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
       ELSE
 C--   No restoring for T & S : set surfaceForcingT,S to zero :
 
@@ -139,30 +155,6 @@ C--   No restoring for T & S : set surfaceForcingT,S to zero :
 
 C--   end restoring / no restoring block.
       ENDIF
-
-#ifdef ALLOW_DIAGNOSTICS
-C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
-      IF ( DIAGNOSTICS_IS_ON('TRELAX  ',myThid) ) THEN
-         DO j = 1,sNy
-            DO i = 1,sNx
-               tmp1k(i,j) = surfaceForcingT(i,j,bi,bj)
-     &              *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
-            ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(tmp1k,'TRELAX  ',0,1,3,bi,bj,myThid)
-      ENDIF
-
-C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
-      IF ( DIAGNOSTICS_IS_ON('SRELAX  ',myThid) ) THEN
-         DO j = 1,sNy
-            DO i = 1,sNx
-               tmp1k(i,j) = surfaceForcingS(i,j,bi,bj)*
-     &              recip_horiVertRatio*rhoConst
-            ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(tmp1k,'SRELAX  ',0,1,3,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

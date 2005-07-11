@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.119 2005/06/27 12:27:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.120 2005/07/11 19:30:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -161,9 +161,7 @@ C                      index into fVerTerm.
       INTEGER k, km1, kp1, kup, kDown
 
 #ifdef ALLOW_DIAGNOSTICS
-      _RL tmpFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
+      _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
 
  
@@ -488,36 +486,14 @@ Cml)
       IF ( usediagnostics ) THEN
 
        CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0, 1,0,1,1,myThid)
 
-       IF ( DIAGNOSTICS_IS_ON('PHIHYDSQ',myThid) ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k = 1,Nr
-          DO j = 1,sNy
-           DO i = 1,sNx
-             tmpFld(i,j) = totPhihyd(i,j,k,bi,bj)*totPhihyd(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-          CALL DIAGNOSTICS_FILL(tmpFld,'PHIHYDSQ',k,1,2,bi,bj,myThid)
-         ENDDO
-        ENDDO
-        ENDDO
-       ENDIF
+       tmpFac = 1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL(totPhihyd,tmpFac,2,
+     &                                 'PHIHYDSQ',0,Nr,0,1,1,myThid)
 
-       CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0,1,0,1,1,myThid)
-
-       IF ( DIAGNOSTICS_IS_ON('PHIBOTSQ',myThid) ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j = 1,sNy
-           DO i = 1,sNx
-             tmpFld(i,j) = phiHydLow(i,j,bi,bj)*phiHydLow(i,j,bi,bj)
-           ENDDO
-          ENDDO
-          CALL DIAGNOSTICS_FILL(tmpFld,'PHIBOTSQ',0,1,2,bi,bj,myThid)
-         ENDDO
-        ENDDO
-       ENDIF
+       CALL DIAGNOSTICS_SCALE_FILL(phiHydLow,tmpFac,2,
+     &                                 'PHIBOTSQ',0, 1,0,1,1,myThid)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
