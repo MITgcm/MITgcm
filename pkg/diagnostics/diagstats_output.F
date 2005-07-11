@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.6 2005/07/10 00:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.7 2005/07/11 16:16:29 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -130,11 +130,13 @@ C--      Write to ASCII file:
      &                               m, listId, myIter, myThid )
          ENDIF
 
+#ifdef ALLOW_MNC
          IF (diagSt_mnc) THEN
            CALL DIAGSTATS_MNC_OUT( 
      &          statGlob, nLev, ndId,
      &          m, listId, myTime, myIter, myThid )
          ENDIF
+#endif
 
 C--    end of Processing Fld # m
        ENDIF
