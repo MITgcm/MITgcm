@@ -1,11 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.511 2005/07/10 01:30:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.512 2005/07/11 20:32:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/diagnostics: 2 new S/R to fill a diagnostics using a scaling factor
-      and/or using a fraction-weight field.
+      and taking the square quantity and/or using a fraction-weight field.
 o fix aim_diagnostics_init.F mate numbers.
 o add mnc output capability to diagnostics/diagstat and update
   our cvsignore files for the ACSII output generated
