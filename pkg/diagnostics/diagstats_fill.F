@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.2 2005/07/10 00:57:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.3 2005/07/11 19:02:17 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -7,15 +7,15 @@ CBOP
 C     !ROUTINE: DIAGSTATS_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_FILL(
-     I              inpFld, fractFld, scaleFact, nLevFract,
-     I              ndId, kInQSd, region2fill, kLev, nLevs,
-     I              bibjflg, biArg, bjArg, myThid )
+     I               inpFld, fractFld, scaleFact, power, nLevFract,
+     I               ndId, kInQSd, region2fill, kLev, nLevs,
+     I               bibjflg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
 C   compute statistics over 1 tile
 C   and increment the diagnostics array
-C     using a scaling factor
+C     using a scaling factor & square option (power=2),
 C     and with the option to use a fraction-weight (assumed
 C         to be the counter-mate of the current diagnostics)
 C***********************************************************************
@@ -32,22 +32,23 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     inpFld ..... Field to increment diagnostics array
-C     fractFld ... fraction used for weighted average diagnostics
-C     scaleFact .. scaling factor
-C     nLevFract .. number of levels of the fraction field, =0 : do not use fraction
-C     ndId     ... Diagnostics Id Number (in available diag list) of diag to process
-C     kInQSd ...   Pointer to the slot in qSdiag to fill
-C     region2fill  array, indicates whether to compute statistics over region
+C     inpFld    :: Field to increment diagnostics array
+C     fractFld  :: fraction used for weighted average diagnostics
+C     scaleFact :: scaling factor
+C     power     :: option to fill-in with the field square (power=2)
+C     nLevFract :: number of levels of the fraction field, =0 : do not use fraction
+C     ndId      :: Diagnostics Id Number (in available diag list) of diag to process
+C     kInQSd    :: Pointer to the slot in qSdiag to fill
+C   region2fill :: array, indicates whether to compute statistics over region
 C                   "j" (if region2fill(j)=1) or not (if region2fill(j)=0)
-C     kLev   ..... Integer flag for vertical levels:
+C     kLev      :: Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qSdiag.
 C                  0,-1 to increment "nLevs" levels in qSdiag,
 C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
-C     nLevs ...... indicates Number of levels of the input field array
+C     nLevs     :: indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
-C     bibjflg .... Integer flag to indicate instructions for bi bj loop
+C     bibjflg   :: Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
@@ -56,9 +57,9 @@ C                  3 indicates that the bi-bj loop is done OUTSIDE
 C                     AND that we have been sent a local array
 C                     AND that the array has no overlap region (interior only)
 C                  NOTE - bibjflg can be NEGATIVE to indicate not to increment counter
-C     biArg ...... X-direction tile number - used for bibjflg=1-3
-C     bjArg ...... Y-direction tile number - used for bibjflg=1-3
-C     myThid     ::  my thread Id number
+C     biArg     :: X-direction tile number - used for bibjflg=1-3
+C     bjArg     :: Y-direction tile number - used for bibjflg=1-3
+C     myThid    :: my thread Id number
 C***********************************************************************
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
@@ -67,6 +68,7 @@ C***********************************************************************
       _RL inpFld(*)
       _RL fractFld(*)
       _RL scaleFact
+      INTEGER power
       INTEGER nLevFract
       INTEGER ndId, kInQSd
       INTEGER region2fill(0:nRegions)
@@ -76,7 +78,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
-C     useFract :: flag to increment (or not) with fraction-weigted inpFld
+C     useFract  :: flag to increment (or not) with fraction-weigted inpFld
       LOGICAL useFract
       INTEGER sizF
       INTEGER sizI1,sizI2,sizJ1,sizJ2
@@ -196,7 +198,8 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,bi,bj),
-     I                  inpFld, fractFld, scaleFact, useFract, sizF,
+     I                  inpFld, fractFld,
+     I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  km, bi, bj, region2fill,
@@ -212,7 +215,8 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,biArg,bjArg),
-     I                  inpFld, fractFld, scaleFact, useFract, sizF,
+     I                  inpFld, fractFld,
+     I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  km, biArg, bjArg, region2fill,
