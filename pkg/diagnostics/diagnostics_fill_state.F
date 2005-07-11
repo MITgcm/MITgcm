@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.21 2005/07/11 18:59:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.22 2005/07/11 21:58:19 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -52,6 +52,20 @@ C     == Local variables ==
 C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(etaN, 'ETAN    ',0, 1,0,1,1,myThid)
+
+        IF ( DIAGNOSTICS_IS_ON('RSURF   ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmp1k,'RSURF   ',0,1,0,1,1,myThid)
+        ENDIF
+
         CALL DIAGNOSTICS_SCALE_FILL(etaN,tmpFac,2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
       
