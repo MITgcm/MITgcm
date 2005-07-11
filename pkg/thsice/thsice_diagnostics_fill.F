@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.4 2005/07/10 01:24:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.5 2005/07/11 19:00:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -54,19 +54,19 @@ C     == Local variables ==
 C-     Ice-fraction weighted quantities:
         tmpFac = 1. _d 0
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   iceheight, iceMask,tmpFac,'SI_Thick',
+     I                   iceheight, iceMask,tmpFac,1,'SI_Thick',
      I                   0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   snowheight,iceMask,tmpFac,'SI_SnowH',
+     I                   snowheight,iceMask,tmpFac,1,'SI_SnowH',
      I                   0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Tsrf,      iceMask,tmpFac,'SI_Tsrf ',
+     I                   Tsrf,      iceMask,tmpFac,1,'SI_Tsrf ',
      I                   0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Tice1,     iceMask,tmpFac,'SI_Tice1',
+     I                   Tice1,     iceMask,tmpFac,1,'SI_Tice1',
      I                   0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Tice2,     iceMask,tmpFac,'SI_Tice2',
+     I                   Tice2,     iceMask,tmpFac,1,'SI_Tice2',
      I                   0,1,1,bi,bj,myThid)
 
 C-     Ice-Volume weighted quantities:
@@ -79,11 +79,11 @@ C-     Ice-Volume weighted quantities:
         ENDDO
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   Qice1(1-Olx,1-Oly,bi,bj),
-     I                   tmpFld,tmpFac,'SI_Qice1',
+     I                   tmpFld,tmpFac,1,'SI_Qice1',
      I                   0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   Qice2(1-Olx,1-Oly,bi,bj),
-     I                   tmpFld,tmpFac,'SI_Qice2',
+     I                   tmpFld,tmpFac,1,'SI_Qice2',
      I                   0,1,2,bi,bj,myThid)
        ENDIF
 

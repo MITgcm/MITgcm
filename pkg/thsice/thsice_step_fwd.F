@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.10 2005/07/10 01:24:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.11 2005/07/11 19:00:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -168,7 +168,7 @@ C--    Update Sea-Ice state :
       IF ( useDiagnostics ) THEN
         tmpFac = 1. _d 0
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   snowPrc,   iceMask,tmpFac,'SIsnwPrc',
+     I                   snowPrc,   iceMask,tmpFac,1,'SIsnwPrc',
      I                   0,1,1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
