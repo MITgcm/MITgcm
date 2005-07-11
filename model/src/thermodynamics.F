@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.92 2005/04/20 19:51:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.93 2005/07/11 22:32:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -644,10 +644,6 @@ C--      Apply open boundary conditions
         ENDIF
 #endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */ 
-
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( usediagnostics ) CALL DIAGNOSTICS_FILL_SURF_FLUX(myThid)
-#endif
 
 #endif /* SINGLE_LAYER_MODE */
 
