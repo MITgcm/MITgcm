@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.1 2005/07/10 01:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.2 2005/07/11 18:59:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -7,14 +7,15 @@ CBOP
 C     !ROUTINE: DIAGNOSTICS_FRACT_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_FRACT_FILL(
-     I                inpFld, fractFld, scaleFact, chardiag,
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+     I               inpFld, fractFld, scaleFact, power, chardiag,
+     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
 
 C     !DESCRIPTION:
 C***********************************************************************
 C   Wrapper routine to increment the diagnostics arrays with a field
-C           using a scaling factor and a fraction-weight (assumed
-C               to be the counter-mate of the current diagnostics)
+C           using a scaling factor & square option (power=2)
+C           and using a fraction-weight (assumed to be the counter-mate
+C           of the current diagnostics)
 C   Note: 1) fraction-weight has to correspond to the diagnostics
 C            counter-mate (filled independently with a call to
 C             DIAGNOSTICS_FILL)
@@ -37,6 +38,7 @@ C  ----------------------
 C     inpFld    :: Field to increment diagnostics array
 C     fractFld  :: fraction used for weighted average diagnostics
 C     scaleFact :: scaling factor
+C     power     :: option to fill-in with the field square (power=2)
 C     chardiag  :: Character expression for diag to fill
 C     kLev      :: Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qdiag.
@@ -65,6 +67,7 @@ C***********************************************************************
       _RL     inpFld(*)
       _RL     fractFld(*)
       _RL     scaleFact
+      INTEGER power
       CHARACTER*8 chardiag
       INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
@@ -114,9 +117,9 @@ C-    set the nb of levels of fraction-weight field (not > kdiag(mate))
            nLevFract = MIN(nLevs,kdiag(mate))
 C-    diagnostic is valid & active, has a counter-mate, do the filling:
            CALL DIAGNOSTICS_FILL_FIELD(
-     I                inpFld, fractFld, scaleFact, nLevFract,
-     I                ndId, ipt, kLev, nLevs,
-     I                bibjFlg, biArg, bjArg, myThid )
+     I              inpFld, fractFld, scaleFact, power, nLevFract,
+     I              ndId, ipt, kLev, nLevs,
+     I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO
@@ -167,9 +170,9 @@ C     then add regions from other lists
            ENDDO
 C-    diagnostics is valid and Active, has a counter mate: Now do the filling
            CALL DIAGSTATS_FILL(
-     I                inpFld, fractFld, scaleFact, nLevFract,
-     I                ndId, iSp, region2fill, kLev, nLevs,
-     I                bibjFlg, biArg, bjArg, myThid )
+     I              inpFld, fractFld, scaleFact, power, nLevFract,
+     I              ndId, iSp, region2fill, kLev, nLevs,
+     I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO

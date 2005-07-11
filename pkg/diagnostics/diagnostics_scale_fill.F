@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.1 2005/07/10 00:58:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.2 2005/07/11 18:59:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -7,13 +7,13 @@ CBOP
 C     !ROUTINE: DIAGNOSTICS_SCALE_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_SCALE_FILL(
-     I                inpFld, scaleFact, chardiag,
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+     I               inpFld, scaleFact, power, chardiag,
+     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
 C   Wrapper routine to increment the diagnostics arrays with a field
-C           using a scaling factor
+C           using a scaling factor & square option (power=2)
 C***********************************************************************
 C     !USES:
       IMPLICIT NONE
@@ -30,6 +30,7 @@ C  Arguments Description
 C  ----------------------
 C     inpFld    :: Field to increment diagnostics array
 C     scaleFact :: scaling factor
+C     power     :: option to fill-in with the field square (power=2)
 C     chardiag  :: Character expression for diag to fill
 C     kLev      :: Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qdiag.
@@ -57,6 +58,7 @@ C                        or there will be out of bounds problems!
 C***********************************************************************
       _RL     inpFld(*)
       _RL     scaleFact
+      INTEGER power
       CHARACTER*8 chardiag
       INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
@@ -87,9 +89,9 @@ C we are trying to fill a valid diagnostic
            ndId = jdiag(m,n)
 C-    diagnostic is valid & active, do the filling:
            CALL DIAGNOSTICS_FILL_FIELD(
-     I                inpFld, inpFld, scaleFact, 0,
-     I                ndId, ipt, kLev, nLevs,
-     I                bibjFlg, biArg, bjArg, myThid )
+     I              inpFld, inpFld, scaleFact, power, 0,
+     I              ndId, ipt, kLev, nLevs,
+     I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO
@@ -124,9 +126,9 @@ C     then add regions from other lists
            ENDDO
 C-    diagnostics is valid and Active: Now do the filling
            CALL DIAGSTATS_FILL(
-     I                inpFld, inpFld, scaleFact, 0,
-     I                ndId, iSp, region2fill, kLev, nLevs,
-     I                bibjFlg, biArg, bjArg, myThid )
+     I              inpFld, inpFld, scaleFact, power, 0,
+     I              ndId, iSp, region2fill, kLev, nLevs,
+     I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
         ENDIF
        ENDDO
