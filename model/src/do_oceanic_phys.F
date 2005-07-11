@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.17 2005/02/15 21:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.18 2005/07/11 22:34:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,14 +35,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-c #include "GAD.h"
-c #ifdef ALLOW_PTRACERS
-c #include "PTRACERS_SIZE.h"
-c #include "PTRACERS.h"
-c #endif
-c #ifdef ALLOW_TIMEAVE
-c #include "TIMEAVE_STATV.h"
-c #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -65,36 +57,29 @@ c #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     rhoK, rhoKM1   - Density at current level, and level above 
-C     useVariableK   = T when vertical diffusion is not constant
-C     iMin, iMax     - Ranges and sub-block indices on which calculations
+C     rhoK, rhoKM1  :: Density at current level, and level above 
+C     iMin, iMax    :: Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
-C     bi, bj
-C     k, kup,        - Index for layer above and below. kup and kDown
-C     kDown, km1       are switched with layer to be the appropriate 
-C                      index into fVerTerm.
+C     bi, bj        :: tile indices
+C     i,j,k         :: loop indices
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL kp1Msk
-      LOGICAL useVariableK
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
-      INTEGER i, j
-      INTEGER k, km1, kup, kDown
-      INTEGER iTracer, ip
+      INTEGER i, j, k
       INTEGER doDiagsRho
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -483,6 +468,12 @@ C--     Compute GGL90 mixing coefficients
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( fluidIsWater .AND. useDiagnostics ) THEN
+        CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
