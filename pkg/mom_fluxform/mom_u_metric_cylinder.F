@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_metric_cylinder.F,v 1.2 2004/07/07 18:34:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_metric_cylinder.F,v 1.3 2005/07/12 00:38:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,18 +44,22 @@ C  uMetricTerms         :: metric term
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j
+      _RL radius
 CEOP
 
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx
-          if (yC(i,j,bi,bj).GT. 0) then 
+          radius = (yG(i,j,bi,bj)+yG(i,j+1,bi,bj))*0.5 _d 0
+C-   to get the same results as before:
+c         radius = yC(i,j,bi,bj)
+          IF ( radius.GT.0. ) THEN
              uMetricTerms(i,j) = 
      &            uFld(i,j)
-     &            *0.25*(vFld(i,j) + vFld(i-1,j)
-     &            +    vFld(i,j+1) + vFld(i-1,j+1))/yC(i,j,bi,bj)
-          else
+     &            *0.25*(vFld(i,j) + vFld(i-1,j) +
+     &                   vFld(i,j+1)+vFld(i-1,j+1))/radius
+          ELSE
              uMetricTerms(i,j) = 0.
-          endif
+          ENDIF
 
        ENDDO
       ENDDO
