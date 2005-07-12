@@ -22,6 +22,8 @@ C   Quantity is interpolated Linear in P**Kappa.
 C   Between  PTOP**Kappa and PKZ(1),  quantity is extrapolated.
 C   Between PKSRF**Kappa and PKZ(LM), quantity is extrapolated.
 C   Undefined Input quantities are not used.
+C   Finally: This routine assumes that pressure levels are counted
+C            top down -- ie, level 1 is the top, level lm is the bottom
 C                                               
 C***********************************************************************
 C    
@@ -40,7 +42,11 @@ C
       kappa = getcon('KAPPA')
      
       pk    =    p**kappa
-      pktop = ptop**kappa
+      if(ptop.ne.0.) then
+       pktop = ptop**kappa
+      else
+       pktop = 0.
+      endif
 
 c Initialize to UNDEFINED
 c -----------------------
