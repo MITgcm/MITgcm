@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.159 2005/07/12 16:31:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.160 2005/07/12 22:44:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,13 +208,13 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid,usingCylindricalGrid,
+     & usingCurvilinearGrid, usingCylindricalGrid,
      & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
-     & delXfile, delYfile
+     & delXfile, delYfile, horizGridFile
 
 C--   Input files
       NAMELIST /PARM05/
-     & bathyFile, topoFile, horizGridFile,
+     & bathyFile, topoFile,
      & hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
