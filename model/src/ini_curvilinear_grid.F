@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.19 2005/02/11 00:30:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.20 2005/07/13 00:41:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,7 +50,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj, myTile, myiter
       INTEGER I,J
-      CHARACTER*(15) fName
+      CHARACTER*(MAX_LEN_FNAM) fName
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
@@ -59,8 +59,8 @@ C     == Local variables ==
 #else
       _RL buf(sNx+1,sNy+1)
 #endif
-      INTEGER iG, iL
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iG, iL, iLen
+      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 CEOP
@@ -89,6 +89,8 @@ C--   Set everything to zero everywhere
           RAS(i,j,bi,bj)=0.
           tanPhiAtU(i,j,bi,bj)=0.
           tanPhiAtV(i,j,bi,bj)=0.
+          angleCosC(i,j,bi,bj)=1.
+          angleSinC(i,j,bi,bj)=0.
           cosFacU(J,bi,bj)=1.
           cosFacV(J,bi,bj)=1.
           sqcosFacU(J,bi,bj)=1.
@@ -148,6 +150,7 @@ C--   Set everything to zero everywhere
         CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
         CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
         CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+        CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
       ELSE
 #endif
@@ -305,6 +308,7 @@ c        DXG(J,sNy+1,bi,bj)=DXG(J,1,bi,bj)
 cs-   end block
       ENDIF
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+      CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
 c     write(10) XC
 c     write(10) YC
@@ -331,69 +335,85 @@ C--   Only do I/O if I am the master thread
       DO bj = 1,nSy
        DO bi = 1,nSx
         iG=bi+(myXGlobalLo-1)/sNx
-        WRITE(fName(1:15),'("tile",I3.3,".mitgrid")') iG
-        WRITE(msgBuf,'(A,I4)') 'tile:',iG
+        WRITE(tmpBuf,'(A,I4)') 'tile:',iG
 #ifdef ALLOW_EXCH2
-      myTile = W2_myTileList(bi)
-      write(fName(1:15),'("tile",I3.3,".mitgrid")')
-     &  exch2_myface(myTile)
-      WRITE(msgBuf,'(A,I4)') 'tile:',myTile
+        myTile = W2_myTileList(bi)
+        WRITE(tmpBuf,'(A,I4)') 'tile:',myTile
+        iG = exch2_myface(myTile)
 #endif
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(3A)') msgBuf(1:iL),
-     &                   ' ; Read from file ',fName(1:15)
+        iLen = ILNBLNK(horizGridFile)
+        IF ( iLen .EQ. 0 ) THEN
+          WRITE(fName,'("tile",I3.3,".mitgrid")') iG
+        ELSE
+          WRITE(fName,'(2A,I3.3,A)') horizGridFile(1:iLen),
+     &                              '.face',iG,'.bin'
+        ENDIF
+        iLen = ILNBLNK(fName)
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(3A)') tmpBuf(1:iL),
+     &                   ' ; Read from file ',fName(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)') '  =>'
 
         CALL READSYMTILE_RS(fName,1,XC,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'XC'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'XC'
         CALL READSYMTILE_RS(fName,2,YC,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'YC'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'YC'
         CALL READSYMTILE_RS(fName,3,DXF,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXF'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXF'
         CALL READSYMTILE_RS(fName,4,DYF,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYF'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYF'
         CALL READSYMTILE_RS(fName,5,RA,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RA'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'RA'
         CALL READSYMTILE_RS(fName,6,XG,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'XG'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'XG'
         CALL READSYMTILE_RS(fName,7,YG,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'YG'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'YG'
         CALL READSYMTILE_RS(fName,8,DXV,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXV'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DXV'
         CALL READSYMTILE_RS(fName,9,DYU,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYU'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DYU'
         CALL READSYMTILE_RS(fName,10,RAZ,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAZ'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'RAZ'
         CALL READSYMTILE_RS(fName,11,DXC,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXC'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXC'
         CALL READSYMTILE_RS(fName,12,DYC,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYC'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYC'
         CALL READSYMTILE_RS(fName,13,RAW,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAW'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'RAW'
         CALL READSYMTILE_RS(fName,14,RAS,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'RAS'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'RAS'
         CALL READSYMTILE_RS(fName,15,DXG,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DXG'
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXG'
         CALL READSYMTILE_RS(fName,16,DYG,bi,bj,buf,myThid)
-        iL = ILNBLNK(msgBuf)
-        WRITE(msgBuf,'(A,1X,A)') msgBuf(1:iL),'DYG'
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYG'
+
+        iLen = ILNBLNK(horizGridFile)
+        IF ( iLen.GT.0 ) THEN
+         CALL READSYMTILE_RS(fName,17,angleCosC,bi,bj,buf,myThid)
+         iL = ILNBLNK(msgBuf)
+         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'AngleCS'
+         CALL READSYMTILE_RS(fName,18,angleSinC,bi,bj,buf,myThid)
+         iL = ILNBLNK(tmpBuf)
+         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'AngleSN'
+        ENDIF
 
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
@@ -420,6 +440,7 @@ c     CALL EXCH_Z_XY_RS(DYU,myThid)
       CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+      CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
 #endif /* OLD_GRID_IO */
 
@@ -484,6 +505,10 @@ C--   Now let's look at all these beasts
      &        myIter, myThid )
          CALL PLOT_FIELD_XYRL( DYG     , 'Current DYG     ' ,
      &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL(angleCosC, 'Current AngleCS ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL(angleSinC, 'Current AngleSN ' ,
+     &        myIter, myThid )
       ENDIF
 
       RETURN
@@ -518,29 +543,32 @@ C     == Routine arguments ==
 #endif /* ALLOW_EXCH2 */
 
 C     == Local variables ==
-      INTEGER I,J,dUnit
+      INTEGER I,J,dUnit, iLen
       INTEGER length_of_rec
       INTEGER MDS_RECLEN
-      INTEGER TN, DNX, DNY, TBX, TBY, TNX, TNY, II, iBase
+      INTEGER TN, dNx, dNy, TBX, TBY, TNX, TNY, II, iBase
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+      iLen = ILNBLNK(fName)
 #ifdef ALLOW_EXCH2
 C     Figure out offset of tile within face
       TN  = W2_myTileList(bi)
-      DNX = exch2_mydnx(TN)
-      DNY = exch2_mydny(TN)
+      dNx = exch2_mydnx(TN)
+      dNy = exch2_mydny(TN)
       TBX = exch2_tbasex(TN)
       TBY = exch2_tbasey(TN)
       TNX = exch2_tnx(TN)
       TNY = exch2_tny(TN)
 
-      CALL MDSFINDUNIT( dUnit, mythid )
+      CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec=MDS_RECLEN( 64, (dNx+1), myThid )
-      OPEN( dUnit, file=fName, status='old',
-     &        access='direct', recl=length_of_rec )
+      OPEN( dUnit, file=fName(1:iLen), status='old',
+     &             access='direct', recl=length_of_rec )
       J=0
       iBase=(irec-1)*(dny+1)
-      DO I=1+TBY,SNY+1+TBY
-       READ(dUnit,rec=I+iBase)(buf(ii),ii=1,dnx+1)
+      DO I=1+TBY,sNy+1+TBY
+       READ(dUnit,rec=I+iBase)(buf(ii),ii=1,dNx+1)
 #ifdef _BYTESWAPIO
 #ifdef REAL4_IS_SLOW
        CALL MDS_BYTESWAPR8((dNx+1), buf)
@@ -557,10 +585,10 @@ C     Figure out offset of tile within face
       
 #else /* ALLOW_EXCH2 */
 
-      CALL MDSFINDUNIT( dUnit, mythid )
+      CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec=MDS_RECLEN( 64, (sNx+1)*(sNy+1), myThid )
-      OPEN( dUnit, file=fName, status='old',
-     &        access='direct', recl=length_of_rec )
+      OPEN( dUnit, file=fName(1:iLen), status='old',
+     &             access='direct', recl=length_of_rec )
       READ(dUnit,rec=irec) buf
       CLOSE( dUnit )
 

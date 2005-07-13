@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.11 2005/02/23 05:17:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.12 2005/07/13 00:41:44 jmc Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,10 @@ C     Write horizontal grid arrays
       CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
       CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
       CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+      IF ( usingCurvilinearGrid ) THEN
+        CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,0,myThid)
+      ENDIF
 C     Write 3D geometry arrays
       CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
       CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
@@ -91,7 +95,6 @@ C     Write 3D geometry arrays
 C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('drC', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('drF', '-_-_--__C__-', 0,0, myThid)
-c       CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
 
         CALL MNC_CW_ADD_VNAME('dxC', 'U_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dyC', 'V_xy_Hn__-__-', 3,4, myThid)
@@ -105,6 +108,10 @@ c       CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('rAw', 'U_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('rAs', 'V_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('rAz', 'Cor_xy_Hn__-__-', 3,4, myThid)
+        IF ( usingCurvilinearGrid ) THEN
+        CALL MNC_CW_ADD_VNAME('AngleCS','Cen_xy_Hn__-__-', 3,4,myThid)
+        CALL MNC_CW_ADD_VNAME('AngleSN','Cen_xy_Hn__-__-', 3,4,myThid)
+        ENDIF
         CALL MNC_CW_ADD_VNAME('fCori', 'Cen_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('fCoriG','Cor_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('R_low', 'Cen_xy_Hn__-__-', 3,4,myThid)
@@ -118,8 +125,6 @@ c       CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
      &       'r cell center separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
      &       'r cell face separation',myThid)
-c       CALL MNC_CW_ADD_VATTR_TEXT('saFac','description',
-c    &       'shallow atmosphere factor',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dxC','description',
      &       'x cell center separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dyC','description',
@@ -144,6 +149,12 @@ c    &       'shallow atmosphere factor',myThid)
      &       'r-face area at V point',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
      &       'r-face area at cell corner',myThid)
+        IF ( usingCurvilinearGrid ) THEN
+        CALL MNC_CW_ADD_VATTR_TEXT('AngleCS','description',
+     &       'Cos of grid orientation angle at cell center',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('AngleSN','description',
+     &       'Sin of grid orientation angle at cell center',myThid)
+        ENDIF
         CALL MNC_CW_ADD_VATTR_TEXT('fCori','description',
      &       'Coriolis f at cell center',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fCoriG','description',
@@ -155,11 +166,11 @@ c    &       'shallow atmosphere factor',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('Depth','description',
      &       'fluid thickness in r coordinates (at rest)',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('HFacC','description',
-     &       'C-facing vertical fraction of open cell',myThid)
+     &       'vertical fraction of open cell at cell center',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('HFacW','description',
-     &       'W-facing vertical fraction of open cell',myThid)
+     &       'vertical fraction of open cell at West face', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('HFacS','description',
-     &       'S-facing vertical fraction of open cell',myThid)
+     &       'vertical fraction of open cell at South face',myThid)
         
 C       Write the GRID.h variables to a file
         CALL MNC_CW_SET_UDIM(bfname, 0, myThid)
@@ -169,7 +180,6 @@ C       Write the GRID.h variables to a file
         CALL MNC_CW_RL_W('D',bfname,0,0,'RL',rF,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drC',drC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drF',drF,myThid)
-c       CALL MNC_CW_RL_W('D',bfname,0,0,'saFac',saFac,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'XC',xC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'YC',yC,myThid)
 c       CALL MNC_CW_RL_W('D',bfname,0,0,'XU',xG,myThid)
@@ -190,6 +200,10 @@ c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'rAw',rAw,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'rAs',rAs,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'rAz',rAz,myThid)
+        IF ( usingCurvilinearGrid ) THEN
+        CALL MNC_CW_RL_W('D',bfname,0,0,'AngleCS',angleCosC,myThid)
+        CALL MNC_CW_RL_W('D',bfname,0,0,'AngleSN',angleSinC,myThid)
+        ENDIF
         CALL MNC_CW_RL_W('D',bfname,0,0,'fCori',fCori,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'fCoriG',fCoriG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'R_low',R_low,myThid)
