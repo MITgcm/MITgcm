@@ -53,7 +53,7 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=119448,
+ nIter0=0,
  nTimeSteps=6,
 #endTime=864000.0,
  deltaT=300.0,
