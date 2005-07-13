@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.512 2005/07/11 20:32:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.513 2005/07/13 00:50:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add cos & sin of grid-direction orientation angle (curvilinear grid only,
+   for output and interpolation of input fields onto model grid)
+o fix radius in mom_v_metric_cylinder.F (wrong by dy/2).
+   Affects results of exp. rotating_tank ; update output.txt.
 o pkg/diagnostics: 2 new S/R to fill a diagnostics using a scaling factor
       and taking the square quantity and/or using a fraction-weight field.
 o fix aim_diagnostics_init.F mate numbers.
