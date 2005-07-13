@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.23 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.24 2005/07/13 00:34:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,7 @@ C     Set up horizontal grid and coordinate system
       ELSEIF ( usingCurvilinearGrid ) THEN
         CALL INI_CURVILINEAR_GRID( myThid )
       ELSEIF ( usingCylindricalGrid ) THEN
-        CALL INI_CYLINDER( myThid )
+        CALL INI_CYLINDER_GRID( myThid )
       ELSE
         _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(2A)') 'S/R INI_GRID: ',
@@ -110,6 +110,8 @@ C     debugging)
       CALL MON_PRINTSTATS_RS(1,RAW,'RAW',myThid)
       CALL MON_PRINTSTATS_RS(1,RAS,'RAS',myThid)
       CALL MON_PRINTSTATS_RS(1,RAZ,'RAZ',myThid)
+      CALL MON_PRINTSTATS_RS(1,angleCosC,'AngleCS',myThid)
+      CALL MON_PRINTSTATS_RS(1,angleSinC,'AngleSN',myThid)
 
       mon_write_stdout = .FALSE.
       mon_write_mnc    = .FALSE.
