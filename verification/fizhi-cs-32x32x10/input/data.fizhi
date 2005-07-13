@@ -2,5 +2,5 @@
  &fizhi_list
  nhmsbegin=060000,
  nymdbegin=19930110,
- runlength=700.0,
+ runlength=0.003,
  &
