@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.17 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.18 2005/07/13 00:36:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -188,15 +188,18 @@ c         dYU(I,J,bi,bj) = 0.5*(dYC(I,J,bi,bj)+dYC(I-1,J,bi,bj))
          ENDDO
         ENDDO
 
-C     Calculate vertical face area 
+C--     Calculate vertical face area 
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
           rAw(I,J,bi,bj) = dxC(I,J,bi,bj)*dyG(I,J,bi,bj)
           rAs(I,J,bi,bj) = dxG(I,J,bi,bj)*dyC(I,J,bi,bj)
           rAz(I,J,bi,bj) = dxV(I,J,bi,bj)*dyU(I,J,bi,bj)
+C--     Set trigonometric terms & grid orientation:
           tanPhiAtU(I,J,bi,bj) = 0.
           tanPhiAtV(I,J,bi,bj) = 0.
+          angleCosC(I,J,bi,bj) = 1.
+          angleSinC(I,J,bi,bj) = 0.
          ENDDO
         ENDDO
 
