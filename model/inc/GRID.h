@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.28 2005/06/22 00:22:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.29 2005/07/13 00:15:03 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -364,6 +364,10 @@ C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar
 C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
+C     angleCosC :: cosine of grid orientation angle relative to Geographic direction
+C                  at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
+C     angleSinC :: sinus  of grid orientation angle relative to Geographic direction
+C                  at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
 C     fCori     :: Coriolis parameter at grid Center point
 C     fCoriG    :: Coriolis parameter at grid Corner point
 C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
@@ -374,7 +378,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
      &  gravitySign, rkSign,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
-     &  R_low,Ro_surf,HFacC,HFacW,HFacS,
+     &  R_low,Ro_surf,hFacC,hFacW,hFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
      &  recip_Rcol, 
@@ -383,7 +387,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
      &  maskH, maskC,maskW,maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
-     &  tanPhiAtU, tanPhiAtV,
+     &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
      &  xC0, yC0,
      &  fCori, fCoriG, fCoriCos
@@ -403,9 +407,9 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS Ro_surf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS HFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS HFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS HFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS hFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS hFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS hFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS recip_dxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -436,6 +440,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS angleCosC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS angleSinC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS drC            (1:Nr)
       _RS drF            (1:Nr)
       _RS recip_drC      (1:Nr)
