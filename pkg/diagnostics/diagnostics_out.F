@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.17 2005/07/12 20:25:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.18 2005/07/13 17:47:21 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -115,19 +115,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(suff,'(I10.10)') myIter
       ilen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
-
-C Initialize the qtmp1 array to all undefs -- need this for unfilled levels
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO k = 1,nlevels(listId)
-            DO j = 1-OLy,sNy+OLy
-              DO i = 1-OLx,sNx+OLx
-                qtmp1(i,j,k,bi,bj) = undef
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. diag_mnc) THEN
