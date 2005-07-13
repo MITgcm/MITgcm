@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.22 2005/07/11 21:58:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.23 2005/07/13 00:46:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -42,7 +42,7 @@ C     == Local variables ==
       _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpMk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tmpFac
+      _RL tmpFac, uBarC, vBarC
       INTEGER i,j,K,bi,bj
       INTEGER km1
       
@@ -119,9 +119,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            DO K=1,Nr
             DO j = 1,sNy
              DO i = 1,sNx
-              tmpMk(i,j,K,bi,bj) = 0.25 _d 0
+              uBarC = 0.5 _d 0
      &           *(uVel(i,j,K,bi,bj)+uVel(i+1,j,K,bi,bj))
+              vBarC = 0.5 _d 0
      &           *(vVel(i,j,K,bi,bj)+vVel(i,j+1,K,bi,bj))
+              tmpMk(i,j,K,bi,bj) =
+     &            ( angleCosC(i,j,bi,bj)*uBarC
+     &             -angleSinC(i,j,bi,bj)*vBarC )
+     &           *( angleSinC(i,j,bi,bj)*uBarC
+     &             +angleCosC(i,j,bi,bj)*vBarC )
              ENDDO
             ENDDO
            ENDDO
