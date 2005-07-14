@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.3 2005/07/06 19:51:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.4 2005/07/14 00:11:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -238,44 +238,12 @@ C       guarantee uniqueness within each MNC-produced file.
           DO i = 1,MAX_LEN_FNAM
             tnam(i:i) = ' '
           ENDDO
-          ilen = ILNBLNK(cdiag(ndId))
-          WRITE(tnam,'(a,a4,a3)') 
-     &         cdiag(ndId)(1:ilen),'_lv_',stat_typ(ist+1)
-          
-          CALL MNC_CW_ADD_VNAME(tnam, d_cw_gname,
-     &         0,0, myThid)
-          CALL MNC_CW_ADD_VATTR_TEXT(tnam,'description',
-     &         tdiag(ndId),myThid)
-          CALL MNC_CW_ADD_VATTR_TEXT(tnam,'units',
-     &         udiag(ndId),myThid)
-          
-C         Copy the data into a temporary with the necessary shape
-          DO j = 0,nRegions
-            DO k = 1,kdiag(ndId)
-              stmp(k,j+1) = statGlob(ist,k,j)
-            ENDDO
-          ENDDO
-          
-          IF ((fflags(listId)(1:1) .EQ. ' ')
-     &         .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
-            
-            CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
-     &           tnam, stmp, myThid)
-            
-          ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
-            
-            CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
-     &           tnam, stmp, myThid)
-            
-          ENDIF
 
-          CALL MNC_CW_DEL_VNAME(tnam, myThid)
-          
-          IF ( kdiag(ndId) .GT. 1 ) THEN
+c         IF ( kdiag(ndId) .GT. 1 ) THEN
             
             ilen = ILNBLNK(cdiag(ndId))
-            WRITE(tnam,'(a,a4,a3)') 
-     &           cdiag(ndId)(1:ilen),'_vi_',stat_typ(ist+1)
+            WRITE(tnam,'(a,a1,a3)') 
+     &           cdiag(ndId)(1:ilen),'_',stat_typ(ist+1)
             
             CALL MNC_CW_ADD_VNAME(tnam, d_cw_gname0,
      &           0,0, myThid)
@@ -304,8 +272,45 @@ C           Copy the data into a temporary with the necessary shape
             
             CALL MNC_CW_DEL_VNAME(tnam, myThid)
             
-          ENDIF
+c         ENDIF
         
+          IF ( kdiag(ndId) .GT. 1 ) THEN
+
+            ilen = ILNBLNK(cdiag(ndId))
+            WRITE(tnam,'(a,a4,a3)') 
+     &           cdiag(ndId)(1:ilen),'_lv_',stat_typ(ist+1)
+          
+            CALL MNC_CW_ADD_VNAME(tnam, d_cw_gname,
+     &           0,0, myThid)
+            CALL MNC_CW_ADD_VATTR_TEXT(tnam,'description',
+     &           tdiag(ndId),myThid)
+            CALL MNC_CW_ADD_VATTR_TEXT(tnam,'units',
+     &         udiag(ndId),myThid)
+          
+C           Copy the data into a temporary with the necessary shape
+            DO j = 0,nRegions
+              DO k = 1,kdiag(ndId)
+                stmp(k,j+1) = statGlob(ist,k,j)
+              ENDDO
+            ENDDO
+          
+            IF ((fflags(listId)(1:1) .EQ. ' ')
+     &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
+            
+              CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
+     &             tnam, stmp, myThid)
+            
+            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
+            
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+     &             tnam, stmp, myThid)
+            
+            ENDIF
+
+            CALL MNC_CW_DEL_VNAME(tnam, myThid)
+          
+          ENDIF
+
         ENDDO
         
         CALL MNC_CW_DEL_GNAME(d_cw_gname, myThid)
