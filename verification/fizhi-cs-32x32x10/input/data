@@ -66,6 +66,7 @@
  monitorFreq=2678400.,
  taveFreq=0.0,
  tave_lastiter=1.,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
