@@ -1,0 +1,64 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=295.2, 295.5, 295.9, 296.3, 296.7, 297.1, 297.6, 298.1, 298.7, 299.3,
+      300.0, 300.7, 301.9, 304.1, 308.0, 315.1, 329.5, 362.3, 419.2, 573.8,
+ sRef=20*0.0,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALGAS',
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ uniformLin_PhiSurf=.FALSE.,
+#hFacMin=0.2,
+ saltStepping=.FALSE.,
+ momViscosity=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-12,
+ cg2dTargetResWunit=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=276480,
+#- run for 1 day (192.iterations x 450.s = 1.day):
+ nTimeSteps=192,
+ deltaT=450.,
+ forcing_In_AB=.FALSE.,
+ abEps=0.1,
+ pChkptFreq=2592000.,
+ chkptFreq=0.,
+ dumpFreq=2592000.,
+ monitorFreq=3600.,
+ taveFreq=0.,
+#tave_lastIter=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
+ delR=20*50.E2,
+ Ro_SeaLevel=1.E5,
+ &
+
+# Input datasets
+ &PARM05
+#topoFile='topo.cs.bin',
+ &

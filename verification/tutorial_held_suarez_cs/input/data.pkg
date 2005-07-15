@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+ useSHAP_FILT=.TRUE.,
+ usediagnostics=.TRUE.,
+#useMNC=.TRUE.,
+ &
