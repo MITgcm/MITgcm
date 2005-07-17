@@ -63,7 +63,7 @@
  chkptFreq=0.0,
 #dumpFreq=7200.0,
  dumpFreq=86400.0,
- taveFreq=86400.0,
+#taveFreq=86400.0,
  monitorFreq=3600.,
  &
 
