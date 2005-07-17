@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/Attic/external_forcing.F,v 1.1 2005/07/15 21:25:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/Attic/external_forcing.F,v 1.2 2005/07/17 18:36:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,7 +51,9 @@ CEOP
 C--   Forcing term(s)
       kF=1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
-      DO j=1,sNy
+c     DO j=1,sNy
+C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
+      DO j=0,sNy+1
        DO i=1,sNx+1
         IF ( hFacW(i,j,kLev,bi,bj) .GT. 0. ) THEN
          recip_P0g=MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i-1,j,bi,bj))
@@ -117,10 +119,12 @@ CEOP
 C--   Forcing term(s)
       kF=1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
-      DO J=1,sNy+1
-       DO I=1,sNx
+      DO j=1,sNy+1
+c      DO i=1,sNx
+C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx+1]
+       DO i=0,sNx+1
         IF ( hFacS(i,j,kLev,bi,bj) .GT. 0. ) THEN
-         recip_P0g=MAX(recip_Rcol(I,J,bi,bj),recip_Rcol(I,J-1,bi,bj))
+         recip_P0g=MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i,j-1,bi,bj))
          termP=0.5 _d 0*( MIN(rF(kLev)*recip_P0g,1. _d 0)
      &                   +rF(kLev+1)*recip_P0g )
 c        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )*recip_P0g
@@ -184,22 +188,22 @@ C--   Forcing term(s)
       ka=1. _d 0/(40. _d 0*86400. _d 0)
       ks=1. _d 0/(4. _d 0 *86400. _d 0)
       sigma_b = 0.7 _d 0
-      DO J=jMin,jMax
-       DO I=iMin,iMax
-         term1=60. _d 0*(sin(yC(I,J,bi,bj)*deg2rad)**2)
+      DO j=1,sNy
+       DO i=1,sNx
+         term1=60. _d 0*(SIN(yC(i,j,bi,bj)*deg2rad)**2)
          termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )
-         term2=10. _d 0*log(termP/atm_po)
-     &            *(cos(yC(I,J,bi,bj)*deg2rad)**2)
+         term2=10. _d 0*LOG(termP/atm_po)
+     &            *(COS(yC(i,j,bi,bj)*deg2rad)**2)
          thetaLim = 200. _d 0/ ((termP/atm_po)**atm_kappa)
          thetaEq=315. _d 0-term1-term2
          thetaEq=MAX(thetaLim,thetaEq)
-         termP=0.5 _d 0*( MIN(rF(kLev),Ro_surf(I,J,bi,bj))+rF(kLev+1) )
+         termP=0.5 _d 0*( MIN(rF(kLev),Ro_surf(i,j,bi,bj))+rF(kLev+1) )
          kT=ka+(ks-ka)
      &     *MAX(0. _d 0,
-     &       (termP*recip_Rcol(I,J,bi,bj)-sigma_b)/(1. _d 0-sigma_b) )
-     &     *COS((yC(I,J,bi,bj)*deg2rad))**4
+     &       (termP*recip_Rcol(i,j,bi,bj)-sigma_b)/(1. _d 0-sigma_b) )
+     &     *COS((yC(i,j,bi,bj)*deg2rad))**4
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &        - kT*( theta(I,J,kLev,bi,bj)-thetaEq )
+     &        - kT*( theta(i,j,kLev,bi,bj)-thetaEq )
      &            *maskC(i,j,kLev,bi,bj)
        ENDDO
       ENDDO
@@ -250,7 +254,7 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
-      INTEGER i, j
+c     INTEGER i, j
 CEOP
 
 C--   Forcing term(s)
