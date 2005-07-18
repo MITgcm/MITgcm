@@ -6,7 +6,7 @@
 # tracer 1 - dic
  PTRACERS_names(1)='dic',
  PTRACERS_long_names(1)='Dissolved Inorganic Carbon',
- PTRACERS_units(1)='g/cm^3',
+ PTRACERS_units(1)='mol C/m^3',
  PTRACERS_advScheme(1)=77,
  PTRACERS_diffKh(1)=0.E3,
  PTRACERS_diffKr(1)=5.E-5,
@@ -15,7 +15,8 @@
  PTRACERS_initialFile(1)=' ',
 # tracer 2 - alk
  PTRACERS_names(2)='alk',
- PTRACERS_units(2)='g/cm^3',
+ PTRACERS_long_names(2)='Alkalinity',
+ PTRACERS_units(2)='mol eq/m^3',
  PTRACERS_advScheme(2)=77,
  PTRACERS_diffKh(2)=0.E3,
  PTRACERS_diffKr(2)=5.E-5,
@@ -24,6 +25,8 @@
  PTRACERS_initialFile(2)=' ',
 # tracer 3 - po4
  PTRACERS_names(3)='po4',
+ PTRACERS_long_names(3)='Phosphate',
+ PTRACERS_units(3)='mol P/m^3',
  PTRACERS_advScheme(3)=77,
  PTRACERS_diffKh(3)=0.E3,
  PTRACERS_diffKr(3)=5.E-5,
@@ -32,6 +35,8 @@
  PTRACERS_initialFile(3)=' ',
 # tracer 4 - dop
  PTRACERS_names(4)='dop',
+ PTRACERS_long_names(4)='Dissolved Organic Phosphorus',
+ PTRACERS_units(4)='mol P/m^3',
  PTRACERS_advScheme(4)=77,
  PTRACERS_diffKh(4)=0.E3,
  PTRACERS_diffKr(4)=5.E-5,
@@ -41,7 +46,7 @@
 # tracer 5 - o2
  PTRACERS_names(5)='o2',
  PTRACERS_long_names(5)='Dissolved Oxygen',
- PTRACERS_units(5)='g/cm^3',
+ PTRACERS_units(5)='mol O/m^3',
  PTRACERS_advScheme(5)=77,
  PTRACERS_diffKh(5)=0.E3,
  PTRACERS_diffKr(5)=5.E-5,
