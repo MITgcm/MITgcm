@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.18 2005/07/13 17:47:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.19 2005/07/18 18:35:19 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -337,7 +337,7 @@ C if fizhi is being  used, may need to get physics grid pressures
 
            DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-             call getdiag(1,undef,qtmpsrf(1-OLx,1-OLy,bi,bj),
+             call getdiag(1.,undef,qtmpsrf(1-OLx,1-OLy,bi,bj),
      .                       jpoint1,0,ipoint1,0,bi,bj,myThid)
             ENDDO
            ENDDO
