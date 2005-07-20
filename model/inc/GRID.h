@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.29 2005/07/13 00:15:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.30 2005/07/20 22:24:52 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -325,6 +325,7 @@ C                  (= -1 for R=Z (Z increases upward, -gravity direction  )
 C                  (= +1 for R=P (P increases downward, +gravity direction)
 C     rkSign - Vertical coordinate to vertical index orientation.
 C                 ( +1 same orientation, -1 opposite orientation )
+C     globalArea :: Domain Integrated horizontal Area [m2]
 C     maskH  - cell Center full-column mask (= 2D mask)
 C     maskC  - cell Center land mask
 C     maskW  - West face land mask
@@ -376,7 +377,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
 
       COMMON /GRID_R/
      &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
-     &  gravitySign, rkSign,
+     &  gravitySign, rkSign, globalArea,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,hFacC,hFacW,hFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
@@ -397,6 +398,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RL sqcosfacV(1-Oly:sNy+Oly,nSx,nSy)
       _RL gravitySign
       _RL rkSign
+      _RL globalArea
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
