@@ -24,7 +24,7 @@ if test "x$IEEE" = x ; then
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
 else
     FOPTIM='-O0 -noalign'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
 
