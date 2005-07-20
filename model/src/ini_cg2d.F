@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.42 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.43 2005/07/20 22:33:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "DYNVARS.h"
 #include "SURFACE.h"
 #include "CG2D.h"
 #ifdef ALLOW_OBCS
@@ -53,7 +52,6 @@ C     sumArea - Work variable used to compute the total Domain Area
       INTEGER I,  J, K
       _RL     faceArea
       _RS     myNorm
-      _RL     sumArea
       _RL     aC, aCw, aCs
 CEOP
 
@@ -139,15 +137,6 @@ C     aS2d: integral in Z Ay/dY
        myNorm = 1. _d 0
       ENDIF
        cg2dNorm = myNorm
-      _BEGIN_MASTER( myThid )
-CcnhDebugStarts
-       WRITE(msgBuf,'(A,E40.25)') '// CG2D normalisation factor = ', 
-     &               cg2dNorm
-       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,*) '                               '
-       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-CcnhDebugEnds
-      _END_MASTER( myThid )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
@@ -173,34 +162,30 @@ C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C-- Define the solver tolerance in the appropriate Unit :
-      cg2dNormaliseRHS = cg2dTargetResWunit.LE.0
+      cg2dNormaliseRHS = cg2dTargetResWunit.LE.0.
       IF (cg2dNormaliseRHS) THEN
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg2dTolerance = cg2dTargetResidual
       ELSE
-C-  compute the total Area of the domain :
-        sumArea = 0.
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-             IF (Ro_surf(i,j,bi,bj).GT.R_low(i,j,bi,bj)) THEN
-               sumArea = sumArea + rA(i,j,bi,bj)
-             ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-c       WRITE(*,*) ' mythid, sumArea = ', mythid, sumArea
-        _GLOBAL_SUM_R8( sumArea, myThid )
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * sumArea / deltaTmom
-        _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(2A,1P2E22.14)') ' ini_cg2d: ',
-     &          'sumArea,cg2dTolerance =', sumArea,cg2dTolerance
-        _END_MASTER( myThid )
+     &                           * globalArea / deltaTmom
       ENDIF
+
+CcnhDebugStarts
+      _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(2A,1PE23.16)') 'INI_CG2D: ',
+     &      'CG2D normalisation factor = ', cg2dNorm
+       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       IF (.NOT.cg2dNormaliseRHS) THEN
+        WRITE(msgBuf,'(2A,1PE22.15,A,1PE16.10,A)') 'INI_CG2D: ',
+     &      'cg2dTolerance =', cg2dTolerance, ' (Area=',globalArea,')'
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       ENDIF
+       WRITE(msgBuf,*) ' '
+       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER( myThid )
+CcnhDebugEnds
      
 C--   Initialise preconditioner
 C     Note. 20th May 1998
