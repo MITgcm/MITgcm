@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.29 2004/05/13 15:40:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.30 2005/07/20 22:31:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,6 +52,7 @@ C     I,J,K
 #endif
       _RL hFacCtmp
       _RL hFacMnSz
+      _RL tileArea
 CEOP
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
@@ -160,6 +161,7 @@ C    &         'Model Depths K Index' , 1, myThid )
      &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
+      globalArea = 0. _d 0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
@@ -175,9 +177,18 @@ C         Inverse of fluid column thickness (1/r_unit)
           ENDIF
          ENDDO
         ENDDO
+C-      Compute the domain Area:
+        tileArea = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          tileArea = tileArea + rA(i,j,bi,bj)*maskH(i,j,bi,bj)
+         ENDDO
+        ENDDO
+        globalArea = globalArea + tileArea
        ENDDO
       ENDDO
 C     _EXCH_XY_R4(   recip_Rcol, myThid )
+      _GLOBAL_SUM_R8( globalArea, myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
