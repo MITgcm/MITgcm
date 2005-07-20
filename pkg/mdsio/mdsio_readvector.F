@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.5 2004/11/30 16:11:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.6 2005/07/20 20:01:46 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -37,6 +37,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EESUPPORT.h"
 
 C Routine arguments
       character*(*) fName
@@ -60,8 +61,23 @@ C Local variables
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
+
+cph(
+cph Deal with useSingleCpuIO
+cph Not extended here for EXCH2
+      integer k,l
+      integer nNz
+      integer vec_size
+      Real*4 xy_buffer_r4(narr*nPx*nPy)
+      Real*8 xy_buffer_r8(narr*nPx*nPy)
+      Real*8 global   (narr*nPx*nPy)
+      _RL    local(narr)
+cph)
 C     ------------------------------------------------------------------
 
+      vec_size = narr*nPx*nPy
+      nNz = 1
+      
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
 
@@ -94,6 +110,8 @@ C Assign special directory
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
+
+      if ( .not. useSingleCPUIO ) then
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
@@ -204,6 +222,158 @@ C If global file was opened then close it
 
       _END_MASTER( myThid )
 
+      endif
+c     endif ( .not. useSingleCPUIO )
+
+
 C     ------------------------------------------------------------------
+
+
+      if ( useSingleCPUIO ) then
+
+C master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+        IF( mpiMyId .EQ. 0 ) THEN
+#else
+        IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+
+C Check first for global file with simple name (ie. fName)
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
+
+C If negative check for global file with MDS name (ie. fName.data)
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, vec_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELD: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
+         endif
+
+        ENDIF
+       _END_MASTER( myThid )
+
+       DO k=1,1
+
+        _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+         IF( mpiMyId .EQ. 0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+          irec = irecord
+          if (filePrec .eq. precFloat32) then
+           read(dUnit,rec=irec) xy_buffer_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( vec_size, xy_buffer_r4 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO L=1,narr*nPx*nPy
+            global(L) = xy_buffer_r4(L)
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          elseif (filePrec .eq. precFloat64) then
+           read(dUnit,rec=irec) xy_buffer_r8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( vec_size, xy_buffer_r8 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO L=1,narr*nPx*nPy
+            global(L) = xy_buffer_r8(L)
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          else
+           write(msgbuf,'(a)')
+     &            ' MDSREADFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELD'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+        CALL SCATTER_VECTOR( narr,global,local,mythid )
+        if (arrType .eq. 'RS') then
+           call PASStoRSvector( local,arr,narr,k,nNz,mythid )
+        elseif (arrType .eq. 'RL') then
+           call PASStoRLvector( local,arr,narr,k,nNz,mythid )
+        else
+           write(msgbuf,'(a)')
+     &          ' MDSREADFIELD: illegal value for arrType'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELD'
+        endif
+
+       ENDDO
+c      ENDDO k=1,nNz
+
+       _BEGIN_MASTER( myThid )
+        close( dUnit )
+       _END_MASTER( myThid )
+
+      endif
+c     endif ( useSingleCPUIO )
+
+      return
+      end
+
+
+C     ==================================================================
+
+      subroutine passToRSvector(local,arr,narr,k,nNz,mythid)
+      implicit none
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+      integer narr
+      _RL local(narr)
+      integer i,j,k,l,bi,bj,nNz
+      _RS arr(narr) 
+      integer mythid
+
+      DO L=1,narr
+         arr(L) = local(L)
+      ENDDO
+
+      return
+      end
+
+      subroutine passToRLvector(local,arr,narr,k,nNz,mythid)
+      implicit none
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+      integer narr
+      _RL local(narr)
+      integer i,j,k,l,bi,bj,nNz
+      _RL arr(narr)
+      integer mythid
+
+      DO L=1,narr
+         arr(L) = local(L)
+      ENDDO
+
       return
       end
