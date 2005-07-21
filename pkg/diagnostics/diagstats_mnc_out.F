@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.4 2005/07/14 00:11:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.5 2005/07/21 06:17:09 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -102,9 +102,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF (mId .EQ. 1) THEN
 C         Update the record dimension by writing the iteration number
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
-          CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',myTime,myThid)
+          CALL MNC_CW_RL_W_S('D',diag_mnc_bn,1,1,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
-          CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
+          CALL MNC_CW_I_W_S('I',diag_mnc_bn,1,1,'iter',myIter,myThid)
         ENDIF
 
 #ifdef DIAGST_MNC_NEEDSWORK
@@ -130,7 +130,7 @@ C       no specified vertical location.
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
 
-        CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+        CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &       'diag_levels', levs(1,listId), myThid)
 
         CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
@@ -174,7 +174,7 @@ C         for averaged levels.
      &           'Dimensional coordinate value at the lower point',
      &           myThid)
           ENDIF
-          CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
+          CALL MNC_CW_RS_W('D',diag_mnc_bn,1,1, dn(1), ztmp, myThid)
           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
           CALL MNC_CW_DEL_GNAME(dn(1), myThid)
         ENDDO
@@ -260,12 +260,12 @@ C           Copy the data into a temporary with the necessary shape
             IF ((fflags(listId)(1:1) .EQ. ' ')
      &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
               
-              CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
               
             ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
               
-              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
             
             ENDIF
@@ -297,12 +297,12 @@ C           Copy the data into a temporary with the necessary shape
             IF ((fflags(listId)(1:1) .EQ. ' ')
      &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
             
-              CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
             
             ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
             
-              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
             
             ENDIF
