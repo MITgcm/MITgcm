@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.46 2005/05/15 03:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.47 2005/07/21 19:47:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,8 @@ C     == Local variables ==
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL firstResidual,lastResidual
       _RL tmpFac
+      _RL sumEmP, tileEmP
+      LOGICAL putPmEinXvector
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -71,7 +73,14 @@ C     == Timing variables ==
       COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
 #endif
 
+C--   Initialise the Vector solution with etaN + deltaT*Global_mean_PmE
+C     instead of simply etaN ; This can speed-up the solver convergence in
+C     the case where |Global_mean_PmE| is large.
+      putPmEinXvector = .FALSE.
+c     putPmEinXvector = useRealFreshWaterFlux
+
 C--   Save previous solution & Initialise Vector solution and source term :
+      sumEmP = 0.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -94,11 +103,35 @@ C--   Save previous solution & Initialise Vector solution and source term :
           ENDDO
          ENDDO
         ENDIF
+        IF ( putPmEinXvector ) THEN
+         tileEmP = 0.
+         DO j=1,sNy
+          DO i=1,sNx
+            tileEmP = tileEmP + rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+     &                                       *maskH(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         sumEmP = sumEmP + tileEmP
+        ENDIF
        ENDDO
       ENDDO
+      IF ( putPmEinXvector ) THEN
+        _GLOBAL_SUM_R8( sumEmP, myThid )
+      ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( putPmEinXvector ) THEN
+          tmpFac = 0.
+          IF (globalArea.GT.0.) tmpFac = freeSurfFac*deltaTfreesurf
+     &                          *convertEmP2rUnit*sumEmP/globalArea
+          DO j=1,sNy
+           DO i=1,sNx
+            cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+     &                        - tmpFac*Bo_surf(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
         DO K=Nr,1,-1
          DO j=1,sNy+1
           DO i=1,sNx+1
