@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.18 2005/01/24 04:40:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.19 2005/07/21 02:32:23 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -448,7 +448,7 @@ C     !INTERFACE:
      I     myThid ) 
 
 C     !DESCRIPTION:
-C     Close all NetCDF files matching a string.
+C     Close all NetCDF files.
       
 C     !USES:
       implicit none
