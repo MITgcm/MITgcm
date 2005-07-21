@@ -1,9 +1,14 @@
 #! /usr/bin/env bash
 
+. /etc/profile.d/modules.sh
+module list > .module_list 2>&1
+
 cd /home/edhill/local/bin
 
-QSUB="/usr/local/bin/qsub"
-QSTAT="/usr/local/bin/qstat"
+# QSUB="/usr/local/bin/qsub"
+# QSTAT="/usr/local/bin/qstat"
+QSUB=qsub
+QSTAT=qstat
 MPACK="./mpack"
 
 $QSUB ./itrda_gnu_test_mpi
@@ -42,7 +47,8 @@ while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
     done
     
     hrs=$(( $minutes / 60 ));
-    if test $minutes -gt 600 ; then
+    #  "long" queue is 24hrs = 24*60min = 1440min
+    if test $minutes -gt 1440 ; then
         echo "Time expired with $minutes minutes ($hrs hours)."
         exit 1
     fi
