@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.3 2005/07/22 18:21:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -62,9 +62,11 @@ C     I,J,K,bl,bt,bn,bs :: Loop and index counters
 C     be,bw
       INTEGER theSimulationMode
       INTEGER theCornerMode
-      INTEGER I,J,K
-      INTEGER bl,bt,bn,bs,be,bw
+c     INTEGER I,J,K
+c     INTEGER bl,bt,bn,bs,be,bw
+      INTEGER I
 C     Variables for working through W2 topology
+      INTEGER e2_msgHandles(2,MAX_NEIGHBOURS, nSx)
       INTEGER thisTile, farTile, N, nN, oN
       INTEGER tIlo, tIhi, tJlo, tJhi, tKlo, tKhi
       INTEGER tIStride, tJStride, tKStride
@@ -73,14 +75,14 @@ C     Variables for working through W2 topology
 C     == Statement function ==
 C     tilemod - Permutes indices to return neighboring tile index on
 C               six face cube.
-      INTEGER tilemod
+c     INTEGER tilemod
 
 C     MPI stuff (should be in a routine call)
 #ifdef ALLOW_USE_MPI
       INTEGER mpiStatus(MPI_STATUS_SIZE)
-#endif
       INTEGER mpiRc
       INTEGER wHandle
+#endif
 CEOP
 
       theSimulationMode = simulationMode

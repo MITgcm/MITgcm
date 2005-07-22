@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.3 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.4 2005/07/22 18:21:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,7 +29,6 @@ C
 #define  W2_USE_E2_SAFEMODE
 
 #include "EEPARAMS.h"
-      CHARACTER*(MAX_LEN_MBUF) messageBuffer
 C
 C     === Routine arguments ===
       INTEGER tILo, tIHi, tiStride
@@ -56,9 +55,10 @@ C                    :: itc etc... target canonical
 C                    :: isl etc... source local
 C                    :: isc etc... source canonical
       INTEGER itl, jtl, ktl
-      INTEGER itc, jtc, ktc
-      INTEGER isc, jsc, ksc
-      INTEGER isl, jsl, ksl
+      INTEGER itc, jtc
+      INTEGER isc, jsc
+      INTEGER isl, jsl
+c     INTEGER ktc, ksc, ksl
 C     tt         :: Target tile
 C     itb, jtb   :: Target local to canonical offsets
 C
@@ -74,8 +74,11 @@ C
 C     MPI setup
 #include "SIZE.h"
 #include "EESUPPORT.h"
+#ifdef ALLOW_USE_MPI
       INTEGER theTag1, theTag2, theType, theHandle1, theHandle2
       INTEGER sProc, tProc, mpiRc
+#endif
+      CHARACTER*(MAX_LEN_MBUF) messageBuffer
 
       IF     ( commSetting .EQ. 'P' ) THEN
 C      Need to check that buffer synchronisation token is decremented 

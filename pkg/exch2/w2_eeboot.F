@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.4 2004/09/07 17:29:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.5 2005/07/22 18:21:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -33,8 +33,8 @@ C     == Local variables ==
       INTEGER myThid, I, J, II
       INTEGER iErr, tNx, tNy
       INTEGER pRank
-      INTEGER npe,itemp(nSx),mpiBufSize,mpiRequest
 #ifdef ALLOW_USE_MPI
+      INTEGER npe,itemp(nSx),mpiBufSize,mpiRequest
       INTEGER istatus(MPI_STATUS_SIZE)
 #endif
 
