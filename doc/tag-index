@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.514 2005/07/14 15:34:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.515 2005/07/24 01:48:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exch2: filling of face-corner halo regions is optional 
+  (ifdef W2_FILL_NULL_REGIONS) and is turned off by default.
 
 checkpoint57l_post
  tag before updating tutorials (pre-release-2) 
