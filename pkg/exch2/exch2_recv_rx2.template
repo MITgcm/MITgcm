@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx2.template,v 1.3 2005/07/22 18:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx2.template,v 1.4 2005/07/24 01:21:36 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
 
       SUBROUTINE EXCH2_RECV_RX2(
      I       tIlo, tIhi, tiStride,
@@ -20,12 +21,11 @@ C $Name:  $
 
       IMPLICIT NONE
 
-C
-#include "W2_OPTIONS.h"
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 
-#include "EEPARAMS.h"
-C
 C     === Routine arguments ===
 C     tIlo, tIhi, tIstride :: index range in I that will be filled in target "array"
 C     tJlo, tJhi, tJstride :: index range in J that will be filled in target "array"
@@ -101,8 +101,6 @@ C     Loop counters
       INTEGER itl2reduce, jtl2reduce
 
 C     MPI setup
-#include "SIZE.h"
-#include "EESUPPORT.h"
 #ifdef ALLOW_USE_MPI
       INTEGER    nri1, nrj1, nrk1
       INTEGER    nri2, nrj2, nrk2

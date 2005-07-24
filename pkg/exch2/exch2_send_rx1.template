@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.4 2005/07/22 18:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.5 2005/07/24 01:21:36 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
 
       SUBROUTINE EXCH2_SEND_RX1 (
      I       tIlo, tIhi, tiStride,
@@ -16,12 +17,11 @@ C $Name:  $
 
       IMPLICIT NONE
 
-C
-#include "W2_OPTIONS.h"
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 
-#include "EEPARAMS.h"
-C
 C     === Routine arguments ===
       INTEGER tILo, tIHi, tiStride
       INTEGER tJLo, tJHi, tjStride
@@ -56,8 +56,6 @@ C
       INTEGER iBufr
 
 C     MPI setup
-#include "SIZE.h"
-#include "EESUPPORT.h"
 #ifdef ALLOW_USE_MPI
       INTEGER theTag, theType, theHandle
       INTEGER sProc, tProc, mpiRc
