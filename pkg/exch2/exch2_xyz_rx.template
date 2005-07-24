@@ -1,21 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_xyz_rx.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_xyz_rx.template,v 1.3 2005/07/24 01:35:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
+
 CBOP
 
 C     !ROUTINE: EXCH_XYZ_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_XYZ_RX( 
-     U                       phi, 
+      SUBROUTINE EXCH2_XYZ_RX(
+     U                       phi,
      I                       myThid )
       IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_XYZ_RX                                    
-C     | o Handle exchanges for _RX, three-dim scalar arrays.  
+C     | SUBROUTINE EXCH_XYZ_RX
+C     | o Handle exchanges for _RX, three-dim scalar arrays.
 C     *==========================================================*
 C     | Invoke appropriate exchange routine depending on type
 C     | of grid (cube or globally indexed) to be operated on.
@@ -58,12 +60,15 @@ C                However, the slow, simple exchange interface
 C                that is calling it here is meant to ensure 
 C                that threads are synchronised before exchanges
 C                begine.
+
       IF (useCubedSphereExchange) THEN
+
        CALL EXCH2_RX1_CUBE( phi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
+#ifdef W2_FILL_NULL_REGIONS
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          myTile = W2_myTileList(bi)
@@ -72,8 +77,8 @@ C        South-east corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -83,8 +88,8 @@ C        North-east corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -94,8 +99,8 @@ C        South-west corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=1-OLx,0
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -105,19 +110,22 @@ C        North-west corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=1-OLx,0
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
          ENDIF
         ENDDO
        ENDDO
+#endif /* W2_FILL_NULL_REGIONS */
+
        CALL EXCH2_RX1_CUBE( phi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
+#ifdef W2_FILL_NULL_REGIONS
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          myTile = W2_myTileList(bi)
@@ -126,8 +134,8 @@ C        South-east corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -137,8 +145,8 @@ C        North-east corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -148,8 +156,8 @@ C        South-west corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=1-OLx,0
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
@@ -159,19 +167,23 @@ C        North-west corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=1-OLx,0
-            DO k=1,Nr 
-             phi(i,j,k,bi,bj)=0.
+            DO k=1,Nr
+             phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
           ENDDO
          ENDIF
         ENDDO
        ENDDO
+#endif /* W2_FILL_NULL_REGIONS */
+
       ELSE
+
        CALL EXCH_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+
       ENDIF
 
       RETURN

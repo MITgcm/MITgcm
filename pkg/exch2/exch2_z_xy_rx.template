@@ -1,20 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_z_xy_rx.template,v 1.1 2004/09/22 15:23:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_z_xy_rx.template,v 1.2 2005/07/24 01:35:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
 
 CBOP
 
 C     !ROUTINE: EXCH_Z_XY_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_Z_XY_RX( 
-     U                       phi, 
+      SUBROUTINE EXCH2_Z_XY_RX(
+     U                       phi,
      I                       myThid )
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_Z_XY_RX                                     
+C     | SUBROUTINE EXCH_Z_XY_RX
 C     | o Handle exchanges for _RX two-dim zeta-point array.
 C     *==========================================================*
 C     | Invoke appropriate exchange for a zeta-point array
@@ -48,7 +49,7 @@ C     phiNW,phiSE    :: temporary array to hold corner value (CS grid)
       _RX phiNW(nSx,nSy)
       _RX phiSE(nSx,nSy)
 CEOP
-  
+
 
       OLw        = OLx
       OLe        = OLx
@@ -63,7 +64,9 @@ C                However, the slow, simple exchange interface
 C                that is calling it here is meant to ensure 
 C                that threads are synchronised before exchanges
 C                begine.
+
       IF (useCubedSphereExchange) THEN
+
 C-     save 2 corners value (in case we find 1 "missing corner")
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -71,6 +74,7 @@ C-     save 2 corners value (in case we find 1 "missing corner")
           phiSE(bi,bj) = phi(sNx+1,1,bi,bj)
         ENDDO
        ENDDO
+
        CALL EXCH2_RX1_CUBE( phi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -79,6 +83,7 @@ C-     save 2 corners value (in case we find 1 "missing corner")
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          myTile = W2_myTileList(bi)
@@ -100,11 +105,13 @@ C-       North-East corner
               i=sNx-sNy+j
               phi(sNx+1,j,bi,bj)=phi(i,sNy+1,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=sNy+2,sNy+OLy
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
+#endif
            ENDIF
           ENDIF
 C--      South edge : shift i <- i-1
@@ -115,25 +122,29 @@ C--      South edge : shift i <- i-1
             ENDDO
            ENDDO
 C-       South-East corner
-           IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN 
+           IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
             phi(sNx+1,1,bi,bj)=phiSE(bi,bj)
             DO i=sNx+2,sNx+OLx
               j=sNx+2-i
               phi(i,1,bi,bj)=phi(sNx+1,j,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=1-OLy,0
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
+#endif
            ENDIF
 C-       South-West corner
            IF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
             DO j=1-OLy,0
               phi(1,j,bi,bj)=phi(j,1,bi,bj)
+#ifdef W2_FILL_NULL_REGIONS
              DO i=1-OLx,0
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
+#endif
             ENDDO
            ENDIF
           ENDIF
@@ -144,12 +155,14 @@ C--      North-west corner
               j=sNy+2-i
               phi(i,sNy+1,bi,bj)=phi(1,j,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=sNy+2,sNy+OLy
              DO i=1-OLx,0
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
-            phi(1-Olx,sNy+1,bi,bj)=0.
+            phi(1-Olx,sNy+1,bi,bj)=e2FillValue_RX
+#endif
           ENDIF
 
          ELSE
@@ -168,11 +181,13 @@ C-       North-East corner
               j=sNy-sNx+i
               phi(i,sNy+1,bi,bj)=phi(sNx+1,j,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=sNy+2,sNy+OLy
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
+#endif
            ENDIF
           ENDIF
 C--      West edge : shift j <- j-1
@@ -189,22 +204,26 @@ C-       North-west corner
               i=sNy+2-j
               phi(1,j,bi,bj)=phi(i,sNy+1,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=sNy+2,sNy+OLy
              DO i=1-OLx,0
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
+#endif
            ENDIF
 C-       South-West corner
            IF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
             DO i=1-OLx,0
               phi(i,1,bi,bj)=phi(1,i,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=1-OLy,0
              DO i=1-OLx,0
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
+#endif
            ENDIF
           ENDIF
 C-       South-East corner
@@ -214,12 +233,14 @@ C-       South-East corner
               i=sNx+2-j
               phi(sNx+1,j,bi,bj)=phi(i,1,bi,bj)
             ENDDO
+#ifdef W2_FILL_NULL_REGIONS
             DO j=1-OLy,0
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=0.
+              phi(i,j,bi,bj)=e2FillValue_RX
              ENDDO
             ENDDO
-            phi(sNx+1,1-Oly,bi,bj)=0.
+            phi(sNx+1,1-Oly,bi,bj)=e2FillValue_RX
+#endif
           ENDIF
 
 C---     end odd / even face number
@@ -229,10 +250,12 @@ C---     end odd / even face number
        ENDDO
 
       ELSE
+
        CALL EXCH_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+
       ENDIF
 
       RETURN
