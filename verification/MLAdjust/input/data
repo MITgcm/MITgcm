@@ -64,13 +64,16 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- endTime=86400.,
+#endTime=86400.,
+#- for testing, only run for 12 iterations:
+ nTimeSteps=12,
  deltaT=1200.,
  abEps=0.01,
- pchkptFreq=43200.,
- taveFreq=7200.,
- dumpFreq=7200.,
- diagFreq=7200.,
+#- for testing, reduce amount of output by commenting out output frequencies:
+#pchkptFreq=43200.,
+#taveFreq=7200.,
+#dumpFreq=7200.,
+#diagFreq=7200.,
  monitorFreq=1200.,
  cadjfreq=0.,
  /
