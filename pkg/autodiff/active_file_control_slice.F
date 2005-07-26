@@ -85,7 +85,7 @@ c     == local variables ==
 
       logical writeglobalfile
 
-      _RL  active_data_t(1-olx:snx+olx,nsx,nsy)
+      _RL  active_data_t(1-olx:snx+olx,mynr,nsx,nsy)
 
 c     == functions ==
 
@@ -131,24 +131,24 @@ c         adjoint variable's file. These files are tiled.
           writeglobalfile = .false.
           do bj = 1,nsy
              do bi = 1,nsx
-                do i = 1,snx
-                   active_data_t(i,bi,bj)= 0. _d 0
+                do k = 1,mynr
+                   do i = 1,snx
+                      active_data_t(i,k,bi,bj)= 0. _d 0
+                   enddo
                 enddo
              enddo
           enddo
 
-          do k = 1,mynr
-             call mdswritefieldxz( 
+          call mdswritefieldxz( 
      &                           adfname, 
      &                           prec, 
      &                           globalfile,
      &                           'RL', 
-     &                           1, 
+     &                           mynr, 
      &                           active_data_t,
-     &                           (irec-1)*mynr+k,
+     &                           irec,
      &                           myOptimIter,
      &                           mythid )
-          enddo
         endif
 
         _END_MASTER( mythid )
@@ -164,45 +164,44 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-        do k=1,mynr
-c             Read data from file layer by layer.
-           call mdsreadfieldxz( 
+        call mdsreadfieldxz( 
      &                        active_var_file, 
      &                        prec, 
      &                        'RL',
-     &                        1, 
+     &                        mynr, 
      &                        active_data_t, 
-     &                        (irec-1)*mynr+k, 
+     &                        irec, 
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1,mynr
                  do i = 1,snx
-                    active_data_t(i,bi,bj) = active_data_t(i,bi,bj) +
+                    active_data_t(i,k,bi,bj) = 
+     &                   active_data_t(i,k,bi,bj) +
      &                   active_var(i,k,bi,bj)
                  enddo
               enddo
            enddo
-
+        enddo
+        
 c             Store the result on disk.
-           call mdswritefieldxz( 
+        call mdswritefieldxz( 
      &                         active_var_file, 
      &                         prec,
      &                         writeglobalfile, 
      &                         'RL',
-     &                         1, 
+     &                         mynr, 
      &                         active_data_t, 
-     &                         (irec-1)*mynr+k, 
+     &                         irec, 
      &                         myOptimIter,
      &                         mythid )
-        enddo
-
 
 c       Set active_var to zero.
-        do k=1,mynr
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k=1,mynr
                  do i = 1,snx
                     active_var(i,k,bi,bj) = 0. _d 0
                  enddo
@@ -294,7 +293,7 @@ c     == local variables ==
 
       integer  i,j,k
       integer  bi,bj
-      _RL  active_data_t(1-olx:snx+olx,nsx,nsy)
+      _RL  active_data_t(1-olx:snx+olx,mynr,nsx,nsy)
       integer  oldprec
       integer  prec
 
@@ -336,39 +335,38 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-            do k=1,mynr
-c             Read data from file layer by layer.
-              call mdsreadfieldxz( 
+        call mdsreadfieldxz( 
      &                           active_var_file, 
      &                           prec, 
      &                           'RL',
-     &                            1,
+     &                            mynr,
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec,
      &                            mythid )
 
 c             Add active_var from appropriate location to data.
-              do bj = 1,nsy
-                 do bi = 1,nsx
-                    do i = 1,snx
-                       active_var(i,k,bi,bj) = 
-     &                      active_var(i,k,bi,bj) +
-     &                      active_data_t(i,bi,bj)
-                       active_data_t(i,bi,bj) = 0. _d 0
-                    enddo
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1,nr
+                 do i = 1,snx
+                    active_var(i,k,bi,bj) = 
+     &                   active_var(i,k,bi,bj) +
+     &                   active_data_t(i,k,bi,bj)
+                    active_data_t(i,k,bi,bj) = 0. _d 0
                  enddo
               enddo
-              call mdswritefieldxz( 
+           enddo
+        enddo
+        call mdswritefieldxz( 
      &                            active_var_file, 
      &                            prec, 
      &                            globalfile,
      &                            'RL', 
-     &                            1, 
+     &                            mynr, 
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec, 
      &                            myOptimIter,
      &                            mythid )
-        enddo
 
         _END_MASTER( mythid )
 
@@ -471,7 +469,7 @@ c     == local variables ==
 
       logical writeglobalfile
 
-      _RL  active_data_t(1-oly:sny+oly,nsx,nsy)
+      _RL  active_data_t(1-oly:sny+oly,mynr,nsx,nsy)
 
 c     == functions ==
 
@@ -517,24 +515,24 @@ c         adjoint variable's file. These files are tiled.
           writeglobalfile = .false.
           do bj = 1,nsy
              do bi = 1,nsx
-                do j = 1,sny
-                   active_data_t(j,bi,bj)= 0. _d 0
+                do k = 1, mynr
+                   do j = 1,sny
+                      active_data_t(j,k,bi,bj)= 0. _d 0
+                   enddo
                 enddo
              enddo
           enddo
 
-          do k = 1,mynr
-             call mdswritefieldyz( 
+          call mdswritefieldyz( 
      &                           adfname, 
      &                           prec, 
      &                           globalfile,
      &                           'RL', 
-     &                           1, 
+     &                           mynr, 
      &                           active_data_t,
-     &                           (irec-1)*mynr+k,
+     &                           irec,
      &                           myOptimIter,
      &                           mythid )
-          enddo
         endif
 
         _END_MASTER( mythid )
@@ -550,45 +548,44 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-        do k=1,mynr
-c             Read data from file layer by layer.
-           call mdsreadfieldyz( 
+        call mdsreadfieldyz( 
      &                        active_var_file, 
      &                        prec, 
      &                        'RL',
-     &                        1, 
+     &                        mynr, 
      &                        active_data_t, 
-     &                        (irec-1)*mynr+k, 
+     &                        irec, 
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1,mynr
                  do j = 1,sny
-                    active_data_t(j,bi,bj) = active_data_t(j,bi,bj) +
+                    active_data_t(j,k,bi,bj) = 
+     &                   active_data_t(j,k,bi,bj) +
      &                   active_var(j,k,bi,bj)
                  enddo
               enddo
            enddo
-
+        enddo
+        
 c             Store the result on disk.
-           call mdswritefieldyz( 
+        call mdswritefieldyz( 
      &                         active_var_file, 
      &                         prec,
      &                         writeglobalfile, 
      &                         'RL',
-     &                         1, 
+     &                         mynr, 
      &                         active_data_t, 
-     &                         (irec-1)*mynr+k, 
+     &                         irec, 
      &                         myOptimIter,
      &                         mythid )
-        enddo
-
 
 c       Set active_var to zero.
-        do k=1,mynr
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k=1,mynr
                  do j = 1,sny
                     active_var(j,k,bi,bj) = 0. _d 0
                  enddo
@@ -680,7 +677,7 @@ c     == local variables ==
 
       integer  i,j,k
       integer  bi,bj
-      _RL  active_data_t(1-oly:sny+oly,nsx,nsy)
+      _RL  active_data_t(1-oly:sny+oly,mynr,nsx,nsy)
       integer  oldprec
       integer  prec
 
@@ -722,39 +719,38 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-            do k=1,mynr
-c             Read data from file layer by layer.
-              call mdsreadfieldyz( 
+        call mdsreadfieldyz( 
      &                           active_var_file, 
      &                           prec, 
      &                           'RL',
-     &                            1,
+     &                            mynr,
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec, 
      &                            mythid )
 
 c             Add active_var from appropriate location to data.
-              do bj = 1,nsy
-                 do bi = 1,nsx
-                    do j = 1,sny
-                       active_var(j,k,bi,bj) = 
-     &                      active_var(j,k,bi,bj) +
-     &                      active_data_t(j,bi,bj)
-                       active_data_t(j,bi,bj) = 0. _d 0
-                    enddo
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1, mynr
+                 do j = 1,sny
+                    active_var(j,k,bi,bj) = 
+     &                   active_var(j,k,bi,bj) +
+     &                   active_data_t(j,k,bi,bj)
+                    active_data_t(j,k,bi,bj) = 0. _d 0
                  enddo
               enddo
-              call mdswritefieldyz( 
+           enddo
+        enddo
+        call mdswritefieldyz( 
      &                            active_var_file, 
      &                            prec, 
      &                            globalfile,
      &                            'RL', 
-     &                            1, 
+     &                            mynr, 
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec, 
      &                            myOptimIter,
      &                            mythid )
-        enddo
 
         _END_MASTER( mythid )
 

@@ -85,7 +85,7 @@ c     == local variables ==
       integer il
       integer ilnblnk
       logical writeglobalfile
-      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
 
 c     == functions ==
       external ilnblnk
@@ -131,26 +131,26 @@ c         adjoint variable's file. These files are tiled.
           writeglobalfile = .false.
           do bj = 1,nsy
              do bi = 1,nsx
-                do j=1,sny
-                   do i=1,snx
-                      active_data_t(i,j,bi,bj)= 0. _d 0
+                do k = 1, mynr
+                   do j=1,sny
+                      do i=1,snx
+                         active_data_t(i,j,k,bi,bj)= 0. _d 0
+                      enddo
                    enddo
                 enddo
              enddo
           enddo
 
-          do k = 1,mynr
-             call mdswritefield_loc( 
+          call mdswritefield_loc( 
      &                           adfname, 
      &                           prec, 
      &                           globalfile,
      &                           'RL', 
-     &                           1, 
+     &                           mynr,
      &                           active_data_t,
-     &                           (irec-1)*mynr+k,
+     &                           irec,
      &                           myOptimIter,
      &                           mythid )
-          enddo
         endif
 
         _END_MASTER( mythid )
@@ -166,47 +166,46 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-        do k=1,mynr
-c             Read data from file layer by layer.
-           call mdsreadfield_loc( 
+        call mdsreadfield_loc( 
      &                        active_var_file, 
      &                        prec, 
      &                        'RL',
-     &                        1, 
+     &                        mynr, 
      &                        active_data_t, 
-     &                        (irec-1)*mynr+k, 
+     &                        irec,
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1, mynr
                  do j=1,sny
                     do i=1,snx
-                   active_data_t(i,j,bi,bj) = active_data_t(i,j,bi,bj) +
+                       active_data_t(i,j,k,bi,bj) = 
+     &                      active_data_t(i,j,k,bi,bj) +
      &                      active_var(i,j,k,bi,bj)
                     enddo
                  enddo
               enddo
            enddo
+        enddo
 
 c             Store the result on disk.
-           call mdswritefield_loc( 
+        call mdswritefield_loc( 
      &                         active_var_file, 
      &                         prec,
      &                         writeglobalfile, 
      &                         'RL',
-     &                         1, 
+     &                         mynr, 
      &                         active_data_t, 
-     &                         (irec-1)*mynr+k, 
+     &                         irec, 
      &                         myOptimIter,
      &                         mythid )
-        enddo
-
 
 c       Set active_var to zero.
-        do k=1,mynr
-           do bj = 1,nsy
-              do bi = 1,nsx
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k=1,mynr
                  do j=1,sny
                     do i=1,snx
                        active_var(i,j,k,bi,bj) = 0. _d 0
@@ -306,7 +305,7 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
       integer  i,j,k
       integer  bi,bj
-      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
       integer  oldprec
       integer  prec
 
@@ -349,41 +348,40 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-            do k=1,mynr
-c             Read data from file layer by layer.
-              call mdsreadfield_loc( 
+        call mdsreadfield_loc( 
      &                           active_var_file, 
      &                           prec, 
      &                           'RL',
-     &                            1,
+     &                            mynr,
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec, 
      &                            mythid )
 
 c             Add active_var from appropriate location to data.
-              do bj = 1,nsy
-                 do bi = 1,nsx
-                    do j=1,sny
-                       do i=1,snx
-                          active_var(i,j,k,bi,bj) = 
-     &                         active_var(i,j,k,bi,bj) +
-     &                         active_data_t(i,j,bi,bj)
-                          active_data_t(i,j,bi,bj) = 0. _d 0
-                       enddo
+        do bj = 1,nsy
+           do bi = 1,nsx
+              do k = 1,mynr
+                 do j=1,sny
+                    do i=1,snx
+                       active_var(i,j,k,bi,bj) = 
+     &                      active_var(i,j,k,bi,bj) +
+     &                      active_data_t(i,j,k,bi,bj)
+                       active_data_t(i,j,k,bi,bj) = 0. _d 0
                     enddo
                  enddo
               enddo
-              call mdswritefield_loc( 
+           enddo
+        enddo
+        call mdswritefield_loc( 
      &                            active_var_file, 
      &                            prec, 
      &                            globalfile,
      &                            'RL', 
-     &                            1, 
+     &                            mynr, 
      &                            active_data_t, 
-     &                            (irec-1)*mynr+k, 
+     &                            irec, 
      &                            myOptimIter,
      &                            mythid )
-        enddo
 
         _END_MASTER( mythid )
 
