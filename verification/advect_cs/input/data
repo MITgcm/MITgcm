@@ -12,13 +12,9 @@
  diffKrS=0.,
  diffKhS=0.,
  diffK4S=0.,
- rigidLid=.FALSE.,
- implicitFreeSurface=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  momStepping=.FALSE.,
- tempStepping=.TRUE.,
- saltStepping=.TRUE.,
  tempAdvScheme=33,
  saltAdvScheme=33,
  &
@@ -35,7 +31,6 @@
  endTime=1036800.,
  abEps=0.1,
  deltaT=3600.0,
- cAdjFreq=0.,
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=86400.0,
@@ -44,19 +39,14 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
  delR=1.E5,
  Ro_SeaLevel=1.E5,
- groundAtK1=.TRUE.,
  &
 
 # Input datasets
  &PARM05
-#uVelInitFile='U.init',
-#vVelInitFile='V.init',
-#pSurfInitFile='Eta.init',
  hydrogThetaFile='T.init',
  hydrogSaltFile='S.init',
  &
