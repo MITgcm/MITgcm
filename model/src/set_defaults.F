@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.95 2005/07/12 16:31:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.96 2005/07/27 03:46:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -179,7 +179,7 @@ Cml      sBeta               = 7.4D-4
       inAdExact           = .TRUE.
 
 C--   Set (free)surface-related parameters
-      implicitFreeSurface = .TRUE.
+      implicitFreeSurface = .FALSE.
       rigidLid            = .FALSE.
       implicSurfPress     = 1.D0
       implicDiv2DFlow     = 1.D0
