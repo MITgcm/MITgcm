@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.515 2005/07/24 01:48:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.516 2005/07/27 21:16:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o re-arrange exp. adjustment.cs-32x32x1 (adjust_nlfs.cs-32x32x1 merge into)
+  and advect_cs (use EXCH-2 and standard cs-32 grid files).
 o pkg/exch2: filling of face-corner halo regions is optional 
   (ifdef W2_FILL_NULL_REGIONS) and is turned off by default.
 
