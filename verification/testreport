@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.69 2005/07/28 16:32:34 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.70 2005/07/28 21:12:15 jmc Exp $
 #  $Name:  $
 #
 
@@ -27,6 +27,8 @@ usage()
     echo "                             (DEF=\"make output.txt\")"
     echo "  (-m|-make) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
+    echo "  (-odir) STRING           used to build output directory name"
+    echo "                             (DEF=\"hostname\")"
     echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
     echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
@@ -668,6 +670,7 @@ if test "x$CC" = x ; then
 fi
 JOBS=
 MPI=f
+OUTDIR=
 DELDIR=
 
 ADM=
@@ -723,6 +726,11 @@ for ac_option ; do
 	    ac_prev=MAKE ;;
 	-make=* | --make=*)
 	    MAKE=$ac_optarg ;;
+
+        -odir | --odir)
+            ac_prev=OUTDIR ;;
+        -odir=* | --odir=*)
+            OUTDIR=$ac_optarg ;;
 
 	-ptracers | --ptracers | -ptr | --ptr)
 	    ac_prev=PTRACERS_NUM ;;
@@ -813,6 +821,9 @@ MACH=`hostname`
 UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
 BASE="tr_"$MACH"_"$DATE"_"
+if test "x$OUTDIR" != x ; then
+    BASE="tr_"$OUTDIR"_"$DATE"_"
+fi
 DNUM=0
 DRESULTS="$BASE$DNUM"
 while test -e $DRESULTS ; do
