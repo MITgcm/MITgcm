@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.1 2005/06/30 23:13:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.2 2005/07/28 00:09:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -47,14 +47,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'UFLUX   '
       diagTitle  = 'Zonal Wind Surface Stress  (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'UM   002L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VFLUX   '
       diagTitle  = 'Meridional Wind Surface Stress  (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'VM   001L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -89,7 +89,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'RADSWG  '
       diagTitle  = 'Net Downward Shortwave Flux at the Ground  (W/m^2)'
       diagUnits  = 'watt/m2         '
-      diagCode  = 'SM P    L1      '
+      diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -131,14 +131,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'TURBU   '
       diagTitle  = 'Zonal Wind Tendency from Turbulence  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'UM   014ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TURBV   '
       diagTitle  = 'Meridional Wind Tendency from Turbulence  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'VM   013ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -186,35 +186,35 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Temperature Tendency due to Shortwave Radiation  (K/day)'
       diagUnits  = 'K/day           '
-      diagCode  = 'SM P    ML      '
+      diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PREACC  '
       diagTitle  = 'Total Precipitation  (mm/day)'
       diagUnits  = 'mm/day          '
-      diagCode  = 'SM P    L1      '
+      diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PRECON  '
       diagTitle  = 'Convective Precipitation  (mm/day)'
       diagUnits  = 'mm/day          '
-      diagCode  = 'SM P    L1      '
+      diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TUFLUX  '
       diagTitle  = 'Turbulent Flux of Zonal Momentum  (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'UM   024LL      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LL      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TVFLUX  '
       diagTitle  = 'Turbulent Flux of Meridional Momentum  (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'VM   023LL      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'LL      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -384,7 +384,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'RADSWT  '
       diagTitle  = 'Incident Shortwave Radiation at TOA (W/m^2)'
       diagUnits  = 'watt/m2         '
-      diagCode  = 'SM P    U1      '
+      diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -392,7 +392,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Counted Cloud Optical Depth (non-dimensional) per 100 mb'
       diagUnits  = 'non-dimensional '
-      diagCode  = 'SM  C050ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM  C',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -427,14 +427,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'UAVE    '
       diagTitle  = 'Average Zonal Wind (m/s)'
       diagUnits  = 'm/s             '
-      diagCode  = 'UU   055MR      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VAVE    '
       diagTitle  = 'Average Meridional Wind (m/s)'
       diagUnits  = 'm/s             '
-      diagCode  = 'VV   054MR      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -463,14 +463,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'DUDT    '
       diagTitle  = 'Total Zonal Wind Tendency  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'UU   060ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DVDT    '
       diagTitle  = 'Total Meridional Wind Tendency  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'VV   059ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -549,21 +549,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'SWCLR   '
       diagTitle  = 'Clear Sky Shortwave Heating Rates  (K/day)'
       diagUnits  = 'K/day           '
-      diagCode  = 'SM P    ML      '
+      diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'OSR     '
       diagTitle  = 'Outgoing Shortwave Radiation  (W/m^2)'
       diagUnits  = 'watt/m2         '
-      diagCode  = 'SM P    U1      '
+      diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'OSRCLR  '
       diagTitle  = 'Clear Sky Outgoing Shortwave Radiation  (W/m^2)'
       diagUnits  = 'watt/m2         '
-      diagCode  = 'SM P    U1      '
+      diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -577,14 +577,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'UWND    '
       diagTitle  = 'Time-Averaged Zonal Wind  (m/s)'
       diagUnits  = 'm/sec           '
-      diagCode  = 'UU   076ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VWND    '
       diagTitle  = 'Time-Averaged Meridional Wind  (m/s)'
       diagUnits  = 'm/sec           '
-      diagCode  = 'VV   075ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -628,7 +628,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Clear Sky Net Downward SW Radiation at the Ground  (W/m^2)'
       diagUnits  = 'watt/m2         '
-      diagCode  = 'SM P    L1      '
+      diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -643,7 +643,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Zonal Wind Tendency due to Diabatic Forcing  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'UU   089ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -651,7 +651,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Meridional Wind Tendency due to Diabatic Forcing  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'VV   088ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -675,7 +675,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Zonal Wind Tendency due to Rayleigh Friction  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'UU   093ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -683,7 +683,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Meridional Wind Tendency due to Rayleigh Friction  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'VV   092ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -691,7 +691,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Zonal Wind Tendency due to Gravity Wave Drag  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'UM   095ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -699,28 +699,28 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Meridional Wind Tendency due to Gravity Wave Drag  (m/s/day)'
       diagUnits  = 'm/s/day         '
-      diagCode  = 'VM   094ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'GWDUS   '
       diagTitle  = 'Zonal Wind Gravity Wave Surface Stress (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'UM   097L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'GWDVS   '
       diagTitle  = 'Meridional Wind Gravity Wave Surface Stress (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'VM   096L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'GWDUT   '
       diagTitle  = 'Zonal Wind Gravity Wave Stress at Model Top (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'UM   099U1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -728,7 +728,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  =
      .  'Meridional Wind Gravity Wave Stress at Model Top (N/m^2)'
       diagUnits  = 'N/m2            '
-      diagCode  = 'VM   098U1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -750,28 +750,28 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'VAVEUQ  '
       diagTitle = 'Vertically Averaged UWND*SPHU  (m/s g/kg)'
       diagUnits = 'm/s gram/kg     '
-      diagCode = 'UM   103M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'VAVEVQ  '
       diagTitle = 'Vertically Averaged VWND*SPHU  (m/s g/kg)'
       diagUnits = 'm/s gram/kg     '
-      diagCode = 'VM   102M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'VAVEUT  '
       diagTitle = 'Vertically Averaged UWND*TMPU  (m/s deg K)'
       diagUnits = 'm/s K           '
-      diagCode = 'UM   105M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'VAVEVT  '
       diagTitle = 'Vertically Averaged VWND*TMPU  (m/s deg K)'
       diagUnits = 'm/s K           '
-      diagCode = 'VM   104M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -792,14 +792,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'U2M     '
       diagTitle = 'Zonal Wind Interpolated to 2 Meters (m/s)'
       diagUnits = 'm/sec           '
-      diagCode = 'UM   109M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'V2M     '
       diagTitle = 'Meridional Wind Interpolated to 2 Meters (m/s)'
       diagUnits = 'm/sec           '
-      diagCode = 'VM   108M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -820,14 +820,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'U10M    '
       diagTitle = 'Zonal Wind Interpolated to 10 Meters (m/s)'
       diagUnits = 'm/sec           '
-      diagCode = 'UM   113M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'V10M    '
       diagTitle = 'Meridional Wind Interpolated to 10 Meters (m/s)'
       diagUnits = 'm/sec           '
-      diagCode = 'VM   112M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -890,21 +890,42 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'TAULOW  '
       diagTitle = 'Low-Level (1000-700 hPa) Optical Depth'
       diagUnits = 'non-dimensional '
-      diagCode = 'SM PC150M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'TAULOWC '
+      diagTitle = 'Low-Level Optical Depth Counter'
+      diagUnits = 'count           '
+      diagCode = 'SM  D   M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'TAUMID  '
       diagTitle = 'Mid-Level (700-400 hPa) Optical Depth'
       diagUnits = 'non-dimensional '
-      diagCode = 'SM PC151M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'TAUMIDC '
+      diagTitle = 'Mid-Level Optical Depth Counter'
+      diagUnits = 'count           '
+      diagCode = 'SM  D   M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'TAUHI   '
       diagTitle = 'High-Level (above 400 hPa) Optical Depth'
       diagUnits = 'non-dimensional '
-      diagCode = 'SM PC152M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'TAUHIC  '
+      diagTitle = 'High-Level Optical Depth Counter'
+      diagUnits = 'count           '
+      diagCode = 'SM  D   M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -918,7 +939,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'CLDPRS  '
       diagTitle = 'Cloud Top Pressure (when cloudy)  (hPa)'
       diagUnits = 'hPa             '
-      diagCode = 'SM PC147M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -932,33 +953,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'CLDTMP  '
       diagTitle = 'Cloud Top Temperature (when cloudy)  (deg K)'
       diagUnits = 'K               '
-      diagCode = 'SM PC149M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'CTTCNT  '
       diagTitle = 'Cloud Top Temperature Counter'
-      diagUnits = 'count           '
-      diagCode = 'SM  D   M1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName = 'TAULOWC '
-      diagTitle = 'Low-Level Optical Depth Counter'
-      diagUnits = 'count           '
-      diagCode = 'SM  D   M1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName = 'TAUMIDC '
-      diagTitle = 'Mid-Level Optical Depth Counter'
-      diagUnits = 'count           '
-      diagCode = 'SM  D   M1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName = 'TAUHIC  '
-      diagTitle = 'High-Level Optical Depth Counter'
       diagUnits = 'count           '
       diagCode = 'SM  D   M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -1040,7 +1040,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'SNOWFALL'
       diagTitle = 'Total Snowfall (solid precipitate)  (mm/day)'
       diagUnits = 'mm/day          '
-      diagCode = 'SM P    L1      '
+      diagCode = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1182,7 +1182,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'VDTSWRAD'
       diagTitle = 'Vertically Averaged RADSW  (K/day)'
       diagUnits = 'K/day           '
-      diagCode = 'SM P    M1      '
+      diagCode = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1196,7 +1196,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'PSUBCLD '
       diagTitle = 'Pressure Thickness of the RAS Subcloud Layer (mb)'
       diagUnits = 'hPa             '
-      diagCode = 'SM PC185M1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM PC',diagNum+2,'M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1226,7 +1226,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'Net precip due to supersaturation above critical RH  (mm/day)'
       diagUnits = 'mm/day          '
-      diagCode = 'SM P    L1      '
+      diagCode = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1325,7 +1325,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'ALBEDO  '
       diagTitle = 'Mean Surface Albedo (SW_Up/SW_Down)  0-1 '
       diagUnits = '0-1             '
-      diagCode = 'SM  C210L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'SM  C',diagNum+2,'L1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName = 'ALBEDOC '
+      diagTitle = 'Surface Albedo Counter'
+      diagUnits = 'count           '
+      diagCode = 'SM  D   L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1362,13 +1369,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      .  'Averaged Cloud Optical Depth (non-dimensional) per 100 mb'
       diagUnits = 'non-dimensional '
       diagCode = 'SM      ML      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName = 'ALBEDOC '
-      diagTitle = 'Surface Albedo Counter'
-      diagUnits = 'count           '
-      diagCode = 'SM  D   L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1437,14 +1437,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName = 'HSUBCL  '
       diagTitle = 'Moist Static Energy in RAS subcloud layer'
       diagUnits = 'm2/sec2         '
-      diagCode = 'SM P    L1      '
+      diagCode = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName = 'HSTAR   '
       diagTitle = 'Saturation Moist Static Energy'
       diagUnits = 'm2/sec2         '
-      diagCode = 'SM P    ML      '
+      diagCode = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1516,7 +1516,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      .  'Mid-Lev Mean U-Wind for Gravity Wave Drag w/Clouds (m/sec)'
       diagUnits = 'm/sec           '
-      diagCode = 'UM   230L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1524,7 +1524,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      .  'Mid-Lev Mean V-Wind for Gravity Wave Drag w/Clouds (m/sec)'
       diagUnits = 'm/sec           '
-      diagCode = 'VM   229L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1540,7 +1540,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'Mid-Lev Perturb U-Wind for Gravity Wave Drag w/Clouds (m/sec)'
       diagUnits = 'm/sec           '
-      diagCode = 'UM   233L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1548,7 +1548,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'Mid-Lev Perturb V-Wind for Gravity Wave Drag w/Clouds (m/sec)'
       diagUnits = 'm/sec           '
-      diagCode = 'VM   232L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1556,7 +1556,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'Mid-Lev U-Wind Stress for Gravity Wave Drag w/Clouds (N/m^2)'
       diagUnits = 'N/m2            '
-      diagCode = 'UM   235L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1564,7 +1564,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'Mid-Lev V-Wind Stress for Gravity Wave Drag w/Clouds (N/m^2)'
       diagUnits = 'N/m2            '
-      diagCode = 'VM   234L1      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1572,7 +1572,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'U-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
       diagUnits = 'm/sec/day       '
-      diagCode = 'UM   237ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1580,7 +1580,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle =
      . 'V-Wind Tendency due to Gravity Wave Drag w/Clouds (m/s/day)'
       diagUnits = 'm/sec/day       '
-      diagCode = 'VM   236ML      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
