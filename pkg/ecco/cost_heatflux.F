@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.5 2005/07/28 21:32:39 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -34,6 +34,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 #include "ecco_cost.h"
@@ -68,7 +69,7 @@ c     == local variables ==
       _RL tmpx
       _RL sumcos
 
-      _RL xx_hflux_mean (1-olx:snx+olx,1-oly:sny+oly,    nsx,nsy)
+      _RL xx_hflux_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       logical doglobalread
       logical ladinit
@@ -153,11 +154,9 @@ c--     Determine the weights to be used.
      &            = xx_hflux_mean(i,j,bi,bj)/float(nrec)
             tmpx = xx_hflux_mean(i,j,bi,bj)/30.0
             if (maskC(i,j,kk,bi,bj) .ne. 0.) then
-              if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
-              fctilem = fctilem
-     &                 +cosphi(i,j,bi,bj)
-     &                 *tmpx*tmpx
+              if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+              fctilem = fctilem + cosphi(i,j,bi,bj)*tmpx*tmpx
               if ( cosphi(i,j,bi,bj) .ne. 0. )
      &             num_hfluxm(bi,bj) = num_hfluxm(bi,bj) + 1. _d 0
             endif
@@ -206,8 +205,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_hflux_mean(i,j,bi,bj)
-                  if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile
      &                 + whflux(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
@@ -259,31 +258,7 @@ c--     Print cost function for all tiles.
 #endif
 c--   End of loop over records.
       enddo
-#else
-c--   Do not enter the calculation of the heat flux contribution
-c--   to the final cost function.
 
-      fctile   = 0. _d 0
-      fcthread = 0. _d 0
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' ecco_cost.heatflux: no contribution of heat flux ',
-     &                    ' to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' ecco_cost.heatflux: number of records that would have',
-     &                      ' been processed: ',nrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return

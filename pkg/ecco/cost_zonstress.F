@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_zonstress.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_zonstress.F,v 1.5 2005/07/28 21:32:39 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -34,6 +34,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 #include "ecco_cost.h"
@@ -68,7 +69,7 @@ c     == local variables ==
       _RL tmpx
       _RL sumcos
 
-      _RL xx_tauu_mean (1-olx:snx+olx,1-oly:sny+oly,    nsx,nsy)
+      _RL xx_tauu_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       logical doglobalread
       logical ladinit
@@ -153,11 +154,9 @@ c--       Determine the weights to be used.
      &              = xx_tauu_mean(i,j,bi,bj)/float(nrec)
               tmpx = xx_tauu_mean(i,j,bi,bj)/0.1
               if (maskw(i,j,kk,bi,bj) .ne. 0.) then
-                 if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
-                 fctilem = fctilem
-     &                    + cosphi(i,j,bi,bj)
-     &                    *tmpx*tmpx
+                 if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+                 fctilem = fctilem + cosphi(i,j,bi,bj)*tmpx*tmpx
                  if ( cosphi(i,j,bi,bj) .ne. 0. )
      &                num_tauum(bi,bj) = num_tauum(bi,bj) + 1. _d 0
               endif
@@ -206,8 +205,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (maskw(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_tauu_mean(i,j,bi,bj)
-                if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
+                if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile
      &                 + wtauu(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
