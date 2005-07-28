@@ -7,6 +7,6 @@
  nbeg             = 1,
  nstep            = 1,
  nend             = 4,
-# to test xx_tr1 set 32
- grdchkvarindex   = 32,
+# to test xx_tr1 set 17
+ grdchkvarindex   = 17,
  &
