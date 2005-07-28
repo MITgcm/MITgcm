@@ -50,6 +50,6 @@ cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm
 cd MITgcm/verification
 #OPTFILE="../tools/build_options/linux_ia32_"$VENDOR"+mpi_cg01"
 OPTFILE="../tools/build_options/linux_ia32_ifc+mpi_cg01"
-./testreport -mpi -of $OPTFILE -command $COMMAND -a 'edhill@mitgcm.org'
+./testreport -mpi -of $OPTFILE -command $COMMAND -odir "cg01_"$VENDOR -a 'edhill@mitgcm.org'
 
 
