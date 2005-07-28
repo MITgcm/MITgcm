@@ -39,10 +39,10 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> switch btw. 2-/3-level checkpointing
-#define AUTODIFF_2_LEVEL_CHECKPOINT
+#undef AUTODIFF_2_LEVEL_CHECKPOINT
 C
 C       >>> Extract adjoint state
-#undef ALLOW_AUTODIFF_MONITOR
+#define ALLOW_AUTODIFF_MONITOR
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
@@ -74,6 +74,8 @@ C       >>> Cost function contributions
 # define ALLOW_SFLUX_COST_CONTRIBUTION
 # define ALLOW_USTRESS_COST_CONTRIBUTION
 # define ALLOW_VSTRESS_COST_CONTRIBUTION
+# define ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
+# define ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 
 # undef ALLOW_ATEMP_COST_CONTRIBUTION
 # undef ALLOW_AQH_COST_CONTRIBUTION
@@ -166,6 +168,9 @@ C   on or off. The implementation automatically takes care of this.
 
 C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE
+
+C   Use interpolation...
+#undef USE_EXF_INTERPOLATION
 
 C   Bulk formulae related flags.
 #undef  ALLOW_ATM_TEMP

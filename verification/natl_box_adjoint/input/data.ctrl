@@ -37,6 +37,16 @@
  xx_aqhperiod     = 864000.0,
  xx_aqh_file      = 'xx_aqh',
 #
+ xx_precipstartdate1 = 19920102,
+ xx_precipstartdate2 = 220000,
+ xx_precipperiod     = 864000.0,
+ xx_precip_file      = 'xx_precip',
+#
+ xx_swfluxstartdate1 = 19920102,
+ xx_swfluxstartdate2 = 220000,
+ xx_swfluxperiod     = 864000.0,
+ xx_swflux_file      = 'xx_swflux',
+#
  xx_uwindstartdate1 = 19920102,
  xx_uwindstartdate2 = 220000,
  xx_uwindperiod     = 864000.0,
@@ -54,7 +64,4 @@
  &CTRL_PACKNAMES
  ctrlname = 'ecco_ctrl',
  costname = 'ecco_cost',
- scalname = 'ecco_scal',
- maskname = 'ecco_mask',
- metaname = 'ecco_meta',
  &

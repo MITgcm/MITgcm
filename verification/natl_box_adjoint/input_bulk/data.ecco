@@ -30,9 +30,12 @@
  geoid_covariancefile = 'egm96.pinv',
 #
  hflux_errfile        = 'PH_totflux.err__020_016_23',
+ whflux0              = 20.,
  sflux_errfile        = 'PH_pme.err__020_016_23',
+ wsflux0              = 3.0E-8,
  tauu_errfile         = 'PH_ustress.err__020_016_23',
  tauv_errfile         = 'PH_vstress.err__020_016_23',
+ wtau0                =  2.0E-2,
 #
  atemp_errfile        = 'PH_totflux.err__020_016_23',
  watemp0              = 0.5,
@@ -40,6 +43,8 @@
  waqh0                = 5.E-4,
  precip_errfile       = ' ',
  wprecip0             = 1.E-8,
+ swflux_errfile       = ' ',
+ wswflux0             = 20.,
  uwind_errfile        = 'PH_ustress.err__020_016_23',
  vwind_errfile        = 'PH_vstress.err__020_016_23',
  wwind0               = 1.0,
@@ -56,6 +61,7 @@
  mult_atemp = 1.,
  mult_aqh   = 1.,
  mult_precip= 1.,
+ mult_swflux= 1.,
  mult_uwind = 1.,
  mult_vwind = 1.,
 #

@@ -29,7 +29,7 @@
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='POLY3',
+ eosType='JMD95Z',
  readBinaryPrec=64,
  writeBinaryPrec=64,
  saltStepping=.TRUE.,
