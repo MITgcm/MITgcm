@@ -1,14 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.520 2005/07/28 15:13:59 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.521 2005/07/28 21:21:19 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o adding precip control xx_precip
-o moved ptracer ctrl index 17 -> 32
+o adding precip control xx_precip 32
+o adding swflux control xx_swflux 33
 o in natl_box_adjoint:
-  * updated: results_bulk/
-  * not yet updated: results/, results_seaice/
+  * updated exp 1 to 10
 o enable useSingleCpuIO for mdsio vector routines
   (applies in particular to tapelev I/O)
 o removed inefficient K-loop in all active_file*control*.F
