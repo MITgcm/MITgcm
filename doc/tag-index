@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.519 2005/07/28 14:35:47 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.520 2005/07/28 15:13:59 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,6 +9,9 @@ o moved ptracer ctrl index 17 -> 32
 o in natl_box_adjoint:
   * updated: results_bulk/
   * not yet updated: results/, results_seaice/
+o enable useSingleCpuIO for mdsio vector routines
+  (applies in particular to tapelev I/O)
+o removed inefficient K-loop in all active_file*control*.F
 
 checkpoint57m_post
 o re-arrange exp. adjustment.cs-32x32x1 (adjust_nlfs.cs-32x32x1 merge into)
