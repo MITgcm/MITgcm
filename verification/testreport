@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.68 2005/06/07 22:21:47 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.69 2005/07/28 16:32:34 jmc Exp $
 #  $Name:  $
 #
 
@@ -733,7 +733,7 @@ for ac_option ; do
 	-j=*) JOBS=$ac_optarg ;;
 
 	-clean | --clean)
-	    CLEANUP=t ;;
+	    CLEANUP=t ; DELDIR=t ;;
 
 	-quick | --quick | -q | --q)
 	    QUICK=t ;;
