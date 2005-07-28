@@ -33,6 +33,7 @@ cost_ssh.f
 cost_ssh_mean.f                 
 cost_sss.f                      
 cost_sst.f                      
+cost_swflux.f
 cost_tau_eddy.f
 cost_theta.f                    
 cost_theta0.f                   

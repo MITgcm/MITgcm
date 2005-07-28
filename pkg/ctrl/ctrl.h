@@ -301,10 +301,16 @@ c     xx_tauv1 - meridional wind stress record after  current date.
 #endif
 #endif
 
-#if     (defined  (ALLOW_PRECIP_CONTROL))
+#if (defined  (ALLOW_PRECIP_CONTROL))
       common /controlaux_4_r/
      &                      xx_precip0,
      &                      xx_precip1
+#endif
+
+#if (defined  (ALLOW_SWFLUX_CONTROL))
+      common /controlaux_4_r/
+     &                      xx_swflux0,
+     &                      xx_swflux1
 #endif
 
 #if     (defined  (ALLOW_HFLUX_CONTROL))
@@ -353,9 +359,14 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_obcse1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
 #endif
 
-#if     (defined  (ALLOW_PRECIP_CONTROL))
+#if (defined  (ALLOW_PRECIP_CONTROL))
       _RL xx_precip0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_precip1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#if (defined  (ALLOW_SWFLUX_CONTROL))
+      _RL xx_swflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_swflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 
@@ -383,6 +394,7 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_atemp_file
      &                    , xx_aqh_file
      &                    , xx_precip_file
+     &                    , xx_swflux_file
      &                    , xx_uwind_file
      &                    , xx_vwind_file
      &                    , xx_obcsn_file
@@ -417,6 +429,7 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_atemp_file
       character*(MAX_LEN_FNAM) xx_aqh_file
       character*(MAX_LEN_FNAM) xx_precip_file
+      character*(MAX_LEN_FNAM) xx_swflux_file
       character*(MAX_LEN_FNAM) xx_uwind_file
       character*(MAX_LEN_FNAM) xx_vwind_file
       character*(MAX_LEN_FNAM) xx_obcsn_file
@@ -484,6 +497,7 @@ c     xx_obcssperiod - sampling interval
      &                      , xx_atempperiod
      &                      , xx_aqhperiod
      &                      , xx_precipperiod
+     &                      , xx_swfluxperiod
      &                      , xx_uwindperiod
      &                      , xx_vwindperiod
      &                      , xx_obcsnperiod
@@ -497,6 +511,7 @@ c     xx_obcssperiod - sampling interval
       _RL     xx_atempperiod
       _RL     xx_aqhperiod
       _RL     xx_precipperiod
+      _RL     xx_swfluxperiod
       _RL     xx_uwindperiod
       _RL     xx_vwindperiod
       _RL     xx_obcsnperiod
@@ -526,6 +541,8 @@ c                         control part.
      &                      , xx_aqhstartdate2
      &                      , xx_precipstartdate1
      &                      , xx_precipstartdate2
+     &                      , xx_swfluxstartdate1
+     &                      , xx_swfluxstartdate2
      &                      , xx_uwindstartdate1
      &                      , xx_uwindstartdate2
      &                      , xx_vwindstartdate1
@@ -537,6 +554,7 @@ c                         control part.
      &                      , xx_atempstartdate
      &                      , xx_aqhstartdate
      &                      , xx_precipstartdate
+     &                      , xx_swfluxstartdate
      &                      , xx_uwindstartdate
      &                      , xx_vwindstartdate
      &                      , xx_obcsnstartdate1
@@ -565,6 +583,8 @@ c                         control part.
       integer xx_aqhstartdate2
       integer xx_precipstartdate1
       integer xx_precipstartdate2
+      integer xx_swfluxstartdate1
+      integer xx_swfluxstartdate2
       integer xx_uwindstartdate1
       integer xx_uwindstartdate2
       integer xx_vwindstartdate1
@@ -585,6 +605,7 @@ c                         control part.
       integer xx_atempstartdate(4)
       integer xx_aqhstartdate(4)
       integer xx_precipstartdate(4)
+      integer xx_swfluxstartdate(4)
       integer xx_uwindstartdate(4)
       integer xx_vwindstartdate(4)
       integer xx_obcsnstartdate(4)
@@ -601,6 +622,7 @@ c                         control part.
       character*( 80)   fname_atemp(2)
       character*( 80)   fname_aqh(2)
       character*( 80)   fname_precip(2)
+      character*( 80)   fname_swflux(2)
       character*( 80)   fname_uwind(2)
       character*( 80)   fname_vwind(2)
       character*( 80)   fname_obcsn(2)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.21 2005/07/28 13:47:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.22 2005/07/28 19:51:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,6 +113,7 @@ c--   Assign file names.
       call ctrl_set_fname(xx_atemp_file, fname_atemp, mythid)
       call ctrl_set_fname(xx_aqh_file, fname_aqh, mythid)
       call ctrl_set_fname(xx_precip_file, fname_precip, mythid)
+      call ctrl_set_fname(xx_swflux_file, fname_swflux, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
@@ -352,13 +353,13 @@ C     place holder of obsolete variable jG
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_PRECIP_CONTROL
+#ifdef ALLOW_TR10_CONTROL
           ivartype = 17
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wprecip"
-          call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_precip(ictrlgrad), "maskCtrlC",
-     &         weighttype, lxxadxx, mythid)
+          write(weighttype(1:80),'(a)') "wtr1"
+          call ctrl_set_pack_xyz(
+     &         cunit, ivartype, fname_tr1(ictrlgrad), "maskCtrlC",
+     &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_SST0_CONTROL
@@ -484,13 +485,22 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PRECIP_CONTROL
           ivartype = 32
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtr1"
-          call ctrl_set_pack_xyz(
-     &         cunit, ivartype, fname_tr1(ictrlgrad), "maskCtrlC",
-     &         weighttype, wunit, lxxadxx, mythid)
+          write(weighttype(1:80),'(a)') "wprecip"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_precip(ictrlgrad), "maskCtrlC",
+     &         weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SWFLUX_CONTROL
+          ivartype = 33
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wswflux"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_swflux(ictrlgrad), "maskCtrlC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
           close ( cunit )

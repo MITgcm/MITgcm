@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.2 2005/07/28 13:55:17 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.3 2005/07/28 19:54:06 heimbach Exp $
 #  $Name:  $
 #
 
@@ -33,6 +33,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_atemp_dummy       \
                     xx_aqh_dummy         \
                     xx_precip_dummy      \
+                    xx_swflux_dummy      \
                     xx_uwind_dummy       \
                     xx_vwind_dummy       \
                     xx_obcsn_dummy       \

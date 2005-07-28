@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.9 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.10 2005/07/28 19:52:33 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -81,18 +81,6 @@ c     == end of interface ==
       call ctrl_get_gen ( 
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
-     &     mytime, myiter, mythid )
-#endif
-
-#ifdef ALLOW_SWFLUX_CONTROL
-      call ctrl_get_gen ( 
-NOT YET IMPLEMENTED
-     &     mytime, myiter, mythid )
-#endif
-
-#ifdef ALLOW_LWFLUX_CONTROL
-      call ctrl_get_gen ( 
-NOT YET IMPLEMENTED
      &     mytime, myiter, mythid )
 #endif
 

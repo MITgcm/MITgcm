@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.10 2005/07/28 13:51:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.11 2005/07/28 19:51:58 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -70,11 +70,13 @@ c--   Read the namelist input.
      &                   salterrfile, temperrfile, velerrfile,
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
-     &                   atemp_errfile, aqh_errfile, precip_errfile,
+     &                   atemp_errfile, aqh_errfile, 
+     &                   precip_errfile, swflux_errfile, 
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
-     &                   mult_atemp, mult_aqh, mult_precip,
+     &                   mult_atemp, mult_aqh, 
+     &                   mult_precip, mult_swflux,
      &                   mult_uwind, mult_vwind,
      &                   mult_hmean, mult_h, mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss,
@@ -91,7 +93,7 @@ c--   Read the namelist input.
      &                   mult_ice,
      &                   mult_kapgm, mult_diffkr,
      &                   whflux0, wsflux0, wtau0,
-     &                   watemp0, waqh0, wprecip0, wwind0,
+     &                   watemp0, waqh0, wprecip0, wswflux0, wwind0,
      &                   costIceStart1, costIceStart2,
      &                   costIceEnd1, costIceEnd2,
      &                   cost_ice_flag,
@@ -168,6 +170,7 @@ c--     Set default values.
         atemp_errfile         =    ' '
         aqh_errfile           =    ' '
         precip_errfile        =    ' '
+        swflux_errfile        =    ' '
         uwind_errfile         =    ' '
         vwind_errfile         =    ' '
         geoid_errfile         =    ' '
@@ -179,6 +182,7 @@ c--     Set default values.
         mult_atemp            =      0. _d 0
         mult_aqh              =      0. _d 0
         mult_precip           =      0. _d 0
+        mult_swflux           =      0. _d 0
         mult_uwind            =      0. _d 0
         mult_vwind            =      0. _d 0
         mult_hmean            =      0. _d 0
@@ -216,6 +220,7 @@ c--     Set default values.
         watemp0               =      0. _d 0
         waqh0                 =      0. _d 0
         wprecip0              =      0. _d 0
+        wswflux0              =      0. _d 0
         wwind0                =      0. _d 0
         whflux0               =      0. _d 0
         wsflux0               =      0. _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.11 2005/07/28 13:54:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.12 2005/07/28 19:53:33 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -402,28 +402,28 @@ c--   == end of interface ==
 
 #endif /* ALLOW_OBCSE_CONTROL */
 
-#ifdef ALLOW_PRECIP_CONTROL
+#ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then
-         il=ilnblnk( xx_precip_file )
+         il=ilnblnk( xx_tr1_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_precip_file(1:il),'.',optimcycle
+     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
-     &           xx_precip_file(1:il),'.',optimcycle
+     &           xx_tr1_file(1:il),'.',optimcycle
          end if
 
-         call active_read_xy_loc( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
+         call active_read_xyz_loc( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
 
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
 
-        call active_write_xy_loc( fname, tmpfld2d, icvrec,
-     &                        optimcycle,
-     &                        mythid, dummy)
+         call active_write_xyz_loc( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
 
-#endif /* ALLOW_PRECIP_CONTROL */
+#endif /* ALLOW_TR10_CONTROL */
 
 #ifdef ALLOW_SST0_CONTROL
       else if ( grdchkvarindex .eq. 18 ) then
@@ -557,28 +557,51 @@ c--   == end of interface ==
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 32 ) then
-         il=ilnblnk( xx_tr1_file )
+         il=ilnblnk( xx_precip_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
+     &           yadmark, xx_precip_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
-     &           xx_tr1_file(1:il),'.',optimcycle
+     &           xx_precip_file(1:il),'.',optimcycle
          end if
 
-         call active_read_xyz_loc( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
+         call active_read_xy_loc( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
 
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
 
-         call active_write_xyz_loc( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
+        call active_write_xy_loc( fname, tmpfld2d, icvrec,
+     &                        optimcycle,
+     &                        mythid, dummy)
 
-#endif /* ALLOW_TR10_CONTROL */
+#endif /* ALLOW_PRECIP_CONTROL */
+
+#ifdef ALLOW_SWFLUX_CONTROL
+      else if ( grdchkvarindex .eq. 33 ) then
+         il=ilnblnk( xx_swflux_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_swflux_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_swflux_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy_loc( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
+
+        call active_write_xy_loc( fname, tmpfld2d, icvrec,
+     &                        optimcycle,
+     &                        mythid, dummy)
+
+#endif /* ALLOW_SWFLUX_CONTROL */
 
       else
 ce      --> this index does not exist yet.

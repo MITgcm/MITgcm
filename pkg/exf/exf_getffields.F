@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.27 2005/07/28 13:53:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.28 2005/07/28 19:52:33 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -115,20 +115,6 @@ c     Zonal and meridional wind.
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
 
-#ifdef ALLOW_UWIND_CONTROL
-      call ctrl_get_gen (
-     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif /* ALLOW_UWIND_CONTROL */
-
-#ifdef ALLOW_VWIND_CONTROL
-      call ctrl_get_gen (
-     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif /* ALLOW_VWIND_CONTROL */
-
 #endif /* ALLOW_ATM_WIND */
 
 c     Atmospheric heat flux.
@@ -214,27 +200,6 @@ c     Precipitation.
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
-#ifdef ALLOW_ATEMP_CONTROL
-      call ctrl_get_gen ( 
-     &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
-     &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif
-
-#ifdef ALLOW_AQH_CONTROL
-      call ctrl_get_gen ( 
-     &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
-     &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif
-
-#ifdef ALLOW_PRECIP_CONTROL
-      call ctrl_get_gen ( 
-     &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
-     &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif
-
 #endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
@@ -307,5 +272,56 @@ c     Atmos. pressure forcing
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
+
+c-- Control variables for atmos. state
+
+#ifdef ALLOW_ATEMP_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
+     &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_AQH_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
+     &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_PRECIP_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
+     &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_SWFLUX_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
+     &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_UWIND_CONTROL
+      call ctrl_get_gen (
+     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
+     &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_UWIND_CONTROL */
+
+#ifdef ALLOW_VWIND_CONTROL
+      call ctrl_get_gen (
+     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
+     &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_VWIND_CONTROL */
+
+#ifdef ALLOW_LWFLUX_CONTROL
+      call ctrl_get_gen ( 
+NOT YET IMPLEMENTED
+     &     mytime, myiter, mythid )
+#endif
+
 
       end

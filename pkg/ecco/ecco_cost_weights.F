@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.11 2005/07/28 13:51:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.12 2005/07/28 19:51:58 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -112,6 +112,7 @@ c--   Initialize variance (weight) fields.
               watemp  (i,j,bi,bj) = 0. _d 0
               waqh    (i,j,bi,bj) = 0. _d 0
               wprecip (i,j,bi,bj) = 0. _d 0
+              wswflux (i,j,bi,bj) = 0. _d 0
               wuwind  (i,j,bi,bj) = 0. _d 0
               wvwind  (i,j,bi,bj) = 0. _d 0
               wsst    (i,j,bi,bj) = 0. _d 0
@@ -789,7 +790,7 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
-#if (defined (ALLOW_AQH_COST_CONTRIBUTION))
+#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
 c--   Atmos. precipitation variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -814,6 +815,38 @@ c--           Test for missing values.
 c--           Data are in units of m/s.
               wprecip(i,j,bi,bj) = wprecip(i,j,bi,bj)
               wprecip(i,j,bi,bj) = max(wprecip(i,j,bi,bj),wprecip0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
+c--   Atmos. swfluxitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( swflux_errfile .NE. ' ' ) then
+        call mdsreadfield( swflux_errfile, cost_iprec, cost_yftype, nnz,
+     &                     wswflux, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wswflux(i,j,bi,bj) .lt. -9900.) then
+                wswflux(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wswflux(i,j,bi,bj) = wswflux(i,j,bi,bj)
+              wswflux(i,j,bi,bj) = max(wswflux(i,j,bi,bj),wswflux0)
      &                            *frame(i,j)
             enddo
           enddo
@@ -928,6 +961,12 @@ c--   Units have to be checked!
      &                1./wprecip(i,j,bi,bj)/wprecip(i,j,bi,bj)
               else
                 wprecip(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wswflux(i,j,bi,bj) .ne. 0.) then
+                wswflux(i,j,bi,bj) =
+     &                1./wswflux(i,j,bi,bj)/wswflux(i,j,bi,bj)
+              else
+                wswflux(i,j,bi,bj) = 0.0 _d 0
               endif
 
               if (wsfluxmm(bi,bj).ne.0.) 
@@ -1045,6 +1084,9 @@ c
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wprecip', wprecip, 1, 0, mythid, dummy)
+#endif
+#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
+      call active_write_xy_loc( 'wswflux', wswflux, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))

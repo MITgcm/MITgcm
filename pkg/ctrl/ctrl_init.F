@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.17 2005/07/28 13:47:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.18 2005/07/28 19:51:22 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -125,7 +125,7 @@ cph(
 cph    index  7-10 reserved for atmos. state,
 cph    index 11-14 reserved for open boundaries,
 cph    index 15-16 reserved for mixing coeff.
-cph    index 17    reserved for precip. (atmos. state)
+cph    index 17    reserved for passive tracer TR1
 cph    index 18,19 reserved for sst, sss
 cph    index 20             for hFacC
 cph    index 21-22          for efluxy, efluxp
@@ -134,8 +134,8 @@ cph    index 24
 cph    index 25-26          for edtaux, edtauy
 cph    index 27-29          for uvel0, vvel0, etan0
 cph    index 30-31          for relax. SST, SSS
-cph    index 32    reserved for passive tracer TR1
-
+cph    index 32    reserved for precip (atmos. state)
+cph    index 33    reserved for swflux (atmos. state)
 cph)
 
 c----------------------------------------------------------------------
@@ -503,29 +503,11 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_PRECIP_CONTROL
-c--   Atmos. precipitation
-
-# ifdef ALLOW_CAL
-        call cal_FullDate( xx_precipstartdate1, xx_precipstartdate2,
-     &                     xx_precipstartdate , mythid )
-        call cal_TimePassed( xx_precipstartdate, modelstartdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds ( difftime, diffsecs, mythid )
-        startrec = int((modelstart + startTime - diffsecs)/
-     &                 xx_precipperiod) + 1
-        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                 xx_precipperiod) + 2
-# else
-        startrec = 1
-        endrec   = 1
-# endif
-        diffrec  = endrec - startrec + 1
+#ifdef ALLOW_TR10_CONTROL
         call ctrl_init_ctrlvar ( 
-     &       xx_precip_file, 17, 117, diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', mythid )
-
-#endif /* ALLOW_PRECIP_CONTROL */
+     &       xx_tr1_file, 17, 117, 1, 1, 1,
+     &       snx, sny, nr, 'c', '3d', mythid )
+#endif /* ALLOW_TR10_CONTROL */
 
 c----------------------------------------------------------------------
 c--
@@ -639,11 +621,55 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PRECIP_CONTROL
+c--   Atmos. precipitation
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_precipstartdate1, xx_precipstartdate2,
+     &                     xx_precipstartdate , mythid )
+        call cal_TimePassed( xx_precipstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_precipperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_precipperiod) + 2
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
-     &       xx_tr1_file, 32, 132, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
-#endif /* ALLOW_TR10_CONTROL */
+     &       xx_precip_file, 32, 132, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_PRECIP_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_SWFLUX_CONTROL
+c--   Atmos. swflux
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_swfluxstartdate1, xx_swfluxstartdate2,
+     &                     xx_swfluxstartdate , mythid )
+        call cal_TimePassed( xx_swfluxstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_swfluxperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_swfluxperiod) + 2
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_swflux_file, 33, 133, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_SWFLUX_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------

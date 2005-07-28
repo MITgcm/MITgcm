@@ -18,6 +18,7 @@ c     ==================================================================
      &                  , xx_atemp_dummy
      &                  , xx_aqh_dummy
      &                  , xx_precip_dummy
+     &                  , xx_swflux_dummy
      &                  , xx_uwind_dummy
      &                  , xx_vwind_dummy
      &                  , xx_obcsn_dummy
@@ -50,6 +51,12 @@ c     ==================================================================
      &                  , xx_tauy_mean_dummy
      &                  , xx_hflux_mean_dummy
      &                  , xx_sflux_mean_dummy
+     &                  , xx_atemp_mean_dummy
+     &                  , xx_aqh_mean_dummy
+     &                  , xx_precip_mean_dummy
+     &                  , xx_swflux_mean_dummy
+     &                  , xx_uwind_mean_dummy
+     &                  , xx_vwind_mean_dummy
      &                  , xx_theta_ini_fin_dummy
      &                  , xx_salt_ini_fin_dummy
 
@@ -62,6 +69,7 @@ c     ==================================================================
       _RL xx_atemp_dummy
       _RL xx_aqh_dummy
       _RL xx_precip_dummy
+      _RL xx_swflux_dummy
       _RL xx_uwind_dummy
       _RL xx_vwind_dummy
       _RL xx_obcsn_dummy
@@ -95,6 +103,12 @@ c
       _RL xx_sflux_mean_dummy
       _RL xx_taux_mean_dummy
       _RL xx_tauy_mean_dummy
+      _RL xx_atemp_mean_dummy
+      _RL xx_aqh_mean_dummy
+      _RL xx_precip_mean_dummy
+      _RL xx_swflux_mean_dummy
+      _RL xx_uwind_mean_dummy
+      _RL xx_vwind_mean_dummy
       _RL xx_theta_ini_fin_dummy
       _RL xx_salt_ini_fin_dummy
 
