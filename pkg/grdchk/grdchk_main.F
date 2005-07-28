@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.15 2004/10/26 20:10:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.16 2005/07/28 13:54:36 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -142,6 +142,8 @@ c--   Set the loop ranges.
       jmax = sny
       imin = 1
       imax = snx
+
+      print *, 'ph-check entering grdchk_main '
 
 c--   initialise variables
       call grdchk_init( mythid )

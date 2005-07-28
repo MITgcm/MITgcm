@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_merid.F,v 1.1 2005/05/27 22:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_merid.F,v 1.2 2005/07/28 13:51:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -34,7 +34,7 @@ c     == routine arguments ==
 
       integer mythid
 
-cph#ifdef ALLOW_COST_TRANSPORT
+#ifdef ALLOW_COST_TRANSPORT
 
 c     == local variables ==
 
@@ -264,6 +264,6 @@ c-- end loop over irec
 c-- end loop over isect
       enddo
 
-cph#endif
+#endif
 
       end

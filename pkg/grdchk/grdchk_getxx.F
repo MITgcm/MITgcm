@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.10 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.11 2005/07/28 13:54:36 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -433,30 +433,30 @@ c--   == end of interface ==
 
 #endif /* ALLOW_OBCSE_CONTROL */
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then
-         il=ilnblnk( xx_tr1_file )
+         il=ilnblnk( xx_precip_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
+     &           yadmark, xx_precip_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
-     &           xx_tr1_file(1:il),'.',optimcycle
+     &           xx_precip_file(1:il),'.',optimcycle
          end if
 
-         call active_read_xyz_loc( fname, tmpfld3d, icvrec,
+         call active_read_xy_loc( fname, tmpfld2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
          xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
 
-         call active_write_xyz_loc( fname, tmpfld3d, icvrec,
+         call active_write_xy_loc( fname, tmpfld2d, icvrec,
      &                         optimcycle,
      &                         mythid, dummy)
 
-#endif /* ALLOW_TR10_CONTROL */
+#endif /* ALLOW_PRECIP_CONTROL */
 
 #ifdef ALLOW_SST0_CONTROL
       else if ( grdchkvarindex .eq. 18 ) then
@@ -601,6 +601,31 @@ c--   == end of interface ==
      &                          mythid, dummy)
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
+
+#ifdef ALLOW_TR10_CONTROL
+      else if ( grdchkvarindex .eq. 32 ) then
+         il=ilnblnk( xx_tr1_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_tr1_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz_loc( fname, tmpfld3d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+
+         call active_write_xyz_loc( fname, tmpfld3d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_TR10_CONTROL */
 
       else
 ce      --> this index does not exist yet.

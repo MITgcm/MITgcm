@@ -115,5 +115,9 @@ CADJ STORE xx_atemp1     = comlev1, key = ikey_dynamics
 CADJ STORE xx_aqh0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_aqh1       = comlev1, key = ikey_dynamics
 # endif
+# ifdef ALLOW_PRECIP_CONTROL
+CADJ STORE xx_precip0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_precip1       = comlev1, key = ikey_dynamics
+# endif
 
 #endif /* ALLOW_EXF */

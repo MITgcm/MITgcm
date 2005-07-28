@@ -109,5 +109,9 @@ CADJ STORE xx_atemp1     = tapelev2, key = ilev_2
 CADJ STORE xx_aqh0       = tapelev2, key = ilev_2
 CADJ STORE xx_aqh1       = tapelev2, key = ilev_2
 # endif
+# ifdef ALLOW_PRECIP_CONTROL
+CADJ STORE xx_precip0    = tapelev2, key = ilev_2
+CADJ STORE xx_precip1    = tapelev2, key = ilev_2
+# endif
 
 #endif /* ALLOW_EXF */

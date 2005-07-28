@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.19 2005/06/30 19:55:09 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.20 2005/07/28 13:53:32 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -123,23 +123,11 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-#ifdef ALLOW_ECCO_OPTIMIZATION
-      write(standardmessageunit,'(A,I10)')
-     &   'exf: myiter = ', myiter
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
 c     Get values of climatological fields.
       call exf_getclim( mytime, myiter, mythid )
 
 c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
-
-      if ( useExfCheckRange .AND.
-     &     ( myiter.EQ.niter0 .OR. debugLevel.GE.debLevB ) ) then
-         call exf_check_range( mytime, myiter, mythid )
-      endif
 
 c     Compute bulk formulae
 #ifdef ALLOW_BULKFORMULAE
@@ -176,6 +164,11 @@ c     Update the tile edges.
 
 c     Get values of the surface flux anomalies.
       call exf_getsurfacefluxes( mytime, myiter, mythid )
+
+      if ( useExfCheckRange .AND.
+     &     ( myiter.EQ.niter0 .OR. debugLevel.GE.debLevB ) ) then
+         call exf_check_range( mytime, myiter, mythid )
+      endif
 
 #ifdef SHORTWAVE_HEATING
 c     Treatment of qnet

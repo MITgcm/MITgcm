@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.3 2005/07/28 13:51:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -115,6 +115,15 @@ c--   Meridional wind speed contribution to the cost function.
       endrec   = ncvarrecsend(10)
       call cost_vwind( myiter, mytime,
      &                     startrec, endrec, mythid )
+#endif
+
+#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) && \
+       defined (ALLOW_PRECIP_CONTROL))
+c--   Atmos. temp. contribution to the cost function.
+      startrec = ncvarrecstart(17)
+      endrec   = ncvarrecsend(17)
+      call cost_precip ( myiter, mytime,
+     &                  startrec, endrec, mythid )
 #endif
 
       end

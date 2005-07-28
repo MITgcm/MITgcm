@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.10 2005/06/16 15:28:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.11 2005/07/28 13:51:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -61,15 +61,9 @@ c     == local variables ==
       _RL wsi(nr)
       _RL wui(nr)
       _RL wvi(nr)
-      _RL whflux0
       _RL whflux0m
-      _RL wsflux0
       _RL wsflux0m
-      _RL wtau0
       _RL wtau0m
-      _RL watemp0
-      _RL waqh0
-      _RL wwind0
       _RL ratio
       _RL dummy
 
@@ -92,14 +86,9 @@ c     == end of interface ==
       imax = snx+olx
 
 c--   Initialize background weights
-      wtau0    = 0.
-      whflux0  = 0.
-      wsflux0  = 0.
-      whflux0m = 0
-      wsflux0m = 0.
-      watemp0  = 0.
-      waqh0    = 0.
-      wwind0   = 0.
+      whflux0m = whflux0
+      wsflux0m = wsflux0
+      wtau0m   = wtau0
 
 c--   Initialize variance (weight) fields.
       do k = 1,nr
@@ -122,6 +111,7 @@ c--   Initialize variance (weight) fields.
               wtauvm  (i,j,bi,bj) = 0. _d 0
               watemp  (i,j,bi,bj) = 0. _d 0
               waqh    (i,j,bi,bj) = 0. _d 0
+              wprecip (i,j,bi,bj) = 0. _d 0
               wuwind  (i,j,bi,bj) = 0. _d 0
               wvwind  (i,j,bi,bj) = 0. _d 0
               wsst    (i,j,bi,bj) = 0. _d 0
@@ -221,29 +211,15 @@ cds     &                            frame(i,j)
 
 c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
-        call mdsfindunit( gwunit, mythid )
         ilo = ifnblnk(data_errfile)
         ihi = ilnblnk(data_errfile)
-        open(gwunit, file=data_errfile(ilo:ihi),
-     &               status='old', form='formatted')
+        CALL OPEN_COPY_DATA_FILE(
+     I                          data_errfile(ilo:ihi), 
+     I                          'ECCO_COST_WEIGHTS',
+     O                          gwunit,
+     I                          myThid )
 
-        read(gwunit,*) 
-#if (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
-     &         whflux0
-#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) || defined (ALLOW_ATEMP_CONTROL))
-     &         watemp0
-#endif
-#if (defined (ALLOW_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SFLUX_CONTROL))
-     &       , wsflux0
-#elif (defined (ALLOW_AQH_COST_CONTRIBUTION) || defined (ALLOW_AQH_CONTROL))
-     &       , waqh0
-#endif
-#if (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
-     &       , wtau0
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
-     &       , wwind0
-#endif
-     &       , ratio
+        read(gwunit,*) ratio
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
      &       , wbaro
 #endif
@@ -255,9 +231,6 @@ c--   Read error information and set up weight matrices.
         end do
         close(gwunit)
 
-        whflux0m = whflux0
-        wsflux0m = wsflux0
-        wtau0m   = wtau0
       _END_MASTER(myThid)
 
       _BARRIER
@@ -816,6 +789,38 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
+#if (defined (ALLOW_AQH_COST_CONTRIBUTION))
+c--   Atmos. precipitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( precip_errfile .NE. ' ' ) then
+        call mdsreadfield( precip_errfile, cost_iprec, cost_yftype, nnz,
+     &                     wprecip, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wprecip(i,j,bi,bj) .lt. -9900.) then
+                wprecip(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wprecip(i,j,bi,bj) = wprecip(i,j,bi,bj)
+              wprecip(i,j,bi,bj) = max(wprecip(i,j,bi,bj),wprecip0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 c--   Units have to be checked!
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -917,6 +922,12 @@ c--   Units have to be checked!
      &                1./waqh(i,j,bi,bj)/waqh(i,j,bi,bj)
               else
                 waqh(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wprecip(i,j,bi,bj) .ne. 0.) then
+                wprecip(i,j,bi,bj) =
+     &                1./wprecip(i,j,bi,bj)/wprecip(i,j,bi,bj)
+              else
+                wprecip(i,j,bi,bj) = 0.0 _d 0
               endif
 
               if (wsfluxmm(bi,bj).ne.0.) 
@@ -1030,6 +1041,10 @@ c
       call active_write_xy_loc( 'wsflux2', wsflux2, 1, 0, mythid, dummy)
 #elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
       call active_write_xy_loc( 'waqh', waqh, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
+      call active_write_xy_loc( 'wprecip', wprecip, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))

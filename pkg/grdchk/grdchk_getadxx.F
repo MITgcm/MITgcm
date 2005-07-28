@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.10 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.11 2005/07/28 13:54:35 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -288,20 +288,20 @@ c--   == end of interface ==
 
 #endif /* ALLOW_OBCSE_CONTROL */
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then
-         il=ilnblnk( xx_tr1_file )
+         il=ilnblnk( xx_precip_file )
          write(fname(1:80),'(80a)') ' '
          write(fname(1:80),'(3a,i10.10)')
-     &        yadmark, xx_tr1_file(1:il),'.',optimcycle
-         
-         call active_read_xyz_loc( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
+     &        yadmark, xx_precip_file(1:il),'.',optimcycle
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         call active_read_xy_loc( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
 
-#endif /* ALLOW_TR10_CONTROL */
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+
+#endif /* ALLOW_PRECIP_CONTROL */
 
 #ifdef ALLOW_SST0_CONTROL
       else if ( grdchkvarindex .eq. 18 ) then
@@ -388,6 +388,21 @@ c--   == end of interface ==
          xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
+
+#ifdef ALLOW_TR10_CONTROL
+      else if ( grdchkvarindex .eq. 32 ) then
+         il=ilnblnk( xx_tr1_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_tr1_file(1:il),'.',optimcycle
+         
+         call active_read_xyz_loc( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+
+#endif /* ALLOW_TR10_CONTROL */
 
       else
 ce      --> this index does not exist yet.

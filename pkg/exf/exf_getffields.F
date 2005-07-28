@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.26 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.27 2005/07/28 13:53:31 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -225,6 +225,13 @@ c     Precipitation.
       call ctrl_get_gen ( 
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
      &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_PRECIP_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
+     &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 

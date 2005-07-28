@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.3 2005/07/28 13:51:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -669,7 +669,9 @@ c--   Next, do the averages for velocitty.
               do j = jmin,jmax
                 do i =  imin,imax
                   hfluxbar(i,j,bi,bj)=hflux(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
      $                  +swflux(i,j,bi,bj)
+#endif
                 enddo
               enddo
           enddo
@@ -680,8 +682,11 @@ c--   Next, do the averages for velocitty.
               do j = jmin,jmax
                 do i = imin,imax
                   hfluxbar(i,j,bi,bj)  = (hfluxbar (i,j,bi,bj) +
-     &                              hflux(i,j,bi,bj)+swflux(i,j,bi,bj))/
-     &                              float(nTimeSteps)
+     &                              hflux(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
+     &                              +swflux(i,j,bi,bj)
+#endif
+     &                              )/float(nTimeSteps)
                 enddo
               enddo
           enddo
@@ -704,8 +709,11 @@ c--     Accumulate ubar and vbar.
           do bi = itlo,ithi
               do j = jmin,jmax
                 do i =  imin,imax
-                  hfluxbar(i,j,bi,bj) = hfluxbar (i,j,bi,bj) +
-     &                  swflux(i,j,bi,bj)+hflux(i,j,bi,bj)
+                  hfluxbar(i,j,bi,bj) = hfluxbar (i,j,bi,bj)
+     &                  + hflux(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
+     &                  + swflux(i,j,bi,bj)
+#endif
                 enddo
             enddo
           enddo 

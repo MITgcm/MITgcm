@@ -320,6 +320,7 @@ c                  function contributions.
      &                objf_scatym,
      &                objf_atemp,
      &                objf_aqh,
+     &                objf_precip,
      &                objf_uwind,
      &                objf_vwind,
      &                objf_obcsn,
@@ -371,6 +372,7 @@ c                  function contributions.
       _RL  objf_scatym(nsx,nsy)
       _RL  objf_atemp(nsx,nsy)
       _RL  objf_aqh  (nsx,nsy)
+      _RL  objf_precip(nsx,nsy)
       _RL  objf_uwind(nsx,nsy)
       _RL  objf_vwind(nsx,nsy)
       _RL  objf_obcsn(nsx,nsy)
@@ -424,6 +426,7 @@ c                  function contributions.
      &                num_scatym,
      &                num_atemp,
      &                num_aqh,
+     &                num_precip,
      &                num_uwind,
      &                num_vwind,
      &                num_obcsn,
@@ -475,6 +478,7 @@ c                  function contributions.
       _RL  num_scatym(nsx,nsy)
       _RL  num_atemp(nsx,nsy)
       _RL  num_aqh  (nsx,nsy)
+      _RL  num_precip(nsx,nsy)
       _RL  num_uwind(nsx,nsy)
       _RL  num_vwind(nsx,nsy)
       _RL  num_obcsn(nsx,nsy)
@@ -520,6 +524,7 @@ c                  function contributions.
      &                    mult_scaty,
      &                    mult_atemp,
      &                    mult_aqh,
+     &                    mult_precip,
      &                    mult_uwind,
      &                    mult_vwind,
      &                    mult_obcsn,
@@ -563,6 +568,7 @@ c                  function contributions.
       _RL  mult_scaty
       _RL  mult_atemp
       _RL  mult_aqh
+      _RL  mult_precip
       _RL  mult_uwind
       _RL  mult_vwind
       _RL  mult_obcsn
@@ -640,6 +646,7 @@ c     velerrfile            - representation error
      &                velerrfile,
      &                atemp_errfile,
      &                aqh_errfile,
+     &                precip_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -666,6 +673,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) velerrfile
       character*(MAX_LEN_FNAM) atemp_errfile
       character*(MAX_LEN_FNAM) aqh_errfile
+      character*(MAX_LEN_FNAM) precip_errfile
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -698,7 +706,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      frame,
      &                      cosphi,
      &                      whflux,wsflux,wtauu,wtauv,
-     &                      watemp,waqh,wuwind,wvwind,
+     &                      watemp,waqh,wprecip,wuwind,wvwind,
      &                      wscatx,wscaty,
      &                      wtheta,wtheta2,wthetaLev,
      &                      wsalt,wsalt2,wsaltLev,
@@ -727,6 +735,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wscaty  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL watemp  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL waqh    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wprecip (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtheta  (                            nr,nsx,nsy)
@@ -749,6 +758,17 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wcurrentLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wbaro
 
+      common /ecco_cost_weights_0_r/
+     &                      whflux0, wsflux0, wtau0,
+     &                      watemp0, waqh0, wprecip0, wwind0
+      _RL whflux0
+      _RL wsflux0
+      _RL wtau0
+      _RL watemp0
+      _RL waqh0
+      _RL wprecip0
+      _RL wwind0
+						 
       common /ecco_cost_weights_2_r/
      &                      whflux2,wsflux2,wtauu2,wtauv2
       _RL whflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
