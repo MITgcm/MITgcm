@@ -73,6 +73,8 @@ C       >>> Cost function contributions
 
 # define ALLOW_ATEMP_COST_CONTRIBUTION
 # define ALLOW_AQH_COST_CONTRIBUTION
+# define ALLOW_PRECIP_COST_CONTRIBUTION
+# define ALLOW_SWFLUX_COST_CONTRIBUTION
 # define ALLOW_UWIND_COST_CONTRIBUTION
 # define ALLOW_VWIND_COST_CONTRIBUTION
 
@@ -133,6 +135,8 @@ C       >>> Surface fluxes.
 C       >>> Atmospheric state.
 #define  ALLOW_ATEMP_CONTROL
 #define  ALLOW_AQH_CONTROL
+#define  ALLOW_PRECIP_CONTROL
+#define  ALLOW_SWFLUX_CONTROL
 #define  ALLOW_UWIND_CONTROL
 #define  ALLOW_VWIND_CONTROL
 

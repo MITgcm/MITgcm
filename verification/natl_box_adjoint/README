@@ -58,6 +58,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To run:
  cd ../exe
  cp ../input_bulk/* .
+ cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input/PH_*.data .
  ./mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
@@ -83,6 +84,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To run:
  cd ../exe
  cp ../input_bulk/* .
+ cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
@@ -111,6 +113,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To run:
  cd ../exe
  cp ../input_bulk/* .
+ cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
