@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint54e_post
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint57k_post
 (PID.TID 0000.0001) // Build user:        heimbach
 (PID.TID 0000.0001) // Build host:        sea
-(PID.TID 0000.0001) // Build date:        Thu Sep 16 17:54:30 EDT 2004
+(PID.TID 0000.0001) // Build date:        Wed Jul 27 18:42:51 EDT 2005
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -104,7 +104,6 @@
 (PID.TID 0000.0001) > eosType='LINEAR',
 (PID.TID 0000.0001) > implicitDiffusion=.true.,
 (PID.TID 0000.0001) > readBinaryPrec=32,
-(PID.TID 0000.0001) > tr1Stepping=.TRUE.,
 (PID.TID 0000.0001) > exactConserv=.TRUE.,
 (PID.TID 0000.0001) > useCDscheme=.TRUE.,
 (PID.TID 0000.0001) ># readPickupWithTracer  = .FALSE.,
@@ -163,11 +162,241 @@
 (PID.TID 0000.0001) > saltClimFile='SSS.bin'
 (PID.TID 0000.0001) > &
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM01 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM02
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM02 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM03
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM03 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM04
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM04 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM05
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM05 : OK
+(PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.pkg"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># ********
+(PID.TID 0000.0001) ># Packages
+(PID.TID 0000.0001) ># ********
+(PID.TID 0000.0001) > &PACKAGES
+(PID.TID 0000.0001) > usePtracers  = .TRUE.,
+(PID.TID 0000.0001) > useGMRedi    = .TRUE.,
+(PID.TID 0000.0001) > useKPP       = .FALSE.,
+(PID.TID 0000.0001) > useGrdchk    = .TRUE.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
+(PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.gmredi"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># GM+Redi package parameters:
+(PID.TID 0000.0001) >#     GM_Small_Number  :: epsilon used in computing the slope
+(PID.TID 0000.0001) >#     GM_slopeSqCutoff :: slope^2 cut-off value
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) >#-from MOM :
+(PID.TID 0000.0001) ># GM_background_K: 	G & Mc.W  diffusion coefficient
+(PID.TID 0000.0001) ># GM_maxSlope    :	max slope of isopycnals
+(PID.TID 0000.0001) ># GM_Scrit       :	transition for scaling diffusion coefficient
+(PID.TID 0000.0001) ># GM_Sd          :	half width scaling for diffusion coefficient
+(PID.TID 0000.0001) ># GM_taper_scheme:	slope clipping or one of the tapering schemes
+(PID.TID 0000.0001) ># GM_Kmin_horiz  :	horizontal diffusion minimum value
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) >#-Option parameters (needs to "define" options in GMREDI_OPTIONS.h")
+(PID.TID 0000.0001) ># GM_isopycK     :	isopycnal diffusion coefficient (default=GM_background_K)
+(PID.TID 0000.0001) ># GM_AdvForm     :	turn on GM Advective form       (default=Skew flux form)
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) > &GM_PARM01
+(PID.TID 0000.0001) >  GM_Small_Number  = 1.D-20,
+(PID.TID 0000.0001) >  GM_slopeSqCutoff = 1.D+08,
+(PID.TID 0000.0001) >  GM_AdvForm         = .TRUE.,
+(PID.TID 0000.0001) >  GM_isopycK         = 1.1D+3,
+(PID.TID 0000.0001) >  GM_background_K    = 0.9D+3,
+(PID.TID 0000.0001) >#  GM_background_K    = 1.D+3,
+(PID.TID 0000.0001) >  GM_taper_scheme    = 'dm95',
+(PID.TID 0000.0001) >  GM_maxSlope        = 1.D-2,
+(PID.TID 0000.0001) >  GM_Kmin_horiz      = 50.,
+(PID.TID 0000.0001) >  GM_Scrit           = 4.D-3,
+(PID.TID 0000.0001) >  GM_Sd              = 1.D-3,
+(PID.TID 0000.0001) >#  GM_Visbeck_alpha   = 1.5D-2,
+(PID.TID 0000.0001) >  GM_Visbeck_alpha   = 0.,
+(PID.TID 0000.0001) >  GM_Visbeck_length  = 2.D+5,
+(PID.TID 0000.0001) >  GM_Visbeck_depth   = 1.D+3,
+(PID.TID 0000.0001) >  GM_Visbeck_maxval_K= 2.5D+3,
+(PID.TID 0000.0001) > &end
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
+(PID.TID 0000.0001)  PTRACERS_READPARMS: opening data.ptracers
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.ptracers
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.ptracers"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># This set-up makes is supposed to immitate salt. That is, PTRACER(:,:,:,1)
+(PID.TID 0000.0001) ># should look exactly like S(:,:,:).
+(PID.TID 0000.0001) > &PTRACERS_PARM01
+(PID.TID 0000.0001) > PTRACERS_numInUse=1,
+(PID.TID 0000.0001) > PTRACERS_advScheme=2,
+(PID.TID 0000.0001) > PTRACERS_diffKh=1.E3,
+(PID.TID 0000.0001) > PTRACERS_diffKr=3.E-5,
+(PID.TID 0000.0001) > PTRACERS_initialFile=' ',
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  PTRACERS_READPARMS: finished reading data.ptracers
+(PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) // PTRACERS parameters
+(PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) PTRACERS_numInUse = /* number of tracers */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_Iter0 = /* timestep number when tracers are initialized */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_dumpFreq = /* Frequency^-1 for snapshot output (s) */
+(PID.TID 0000.0001)                 8.640000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_taveFreq = /* Frequency^-1 for time-Aver. output (s) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_useRecords = /* all tracers in 1 file */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_write_mdsio = /* write mdsio files */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_write_mnc = /* write mnc files */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  -----------------------------------
+(PID.TID 0000.0001)  tracer number :    1
+(PID.TID 0000.0001) PTRACERS_advScheme = /* Advection Scheme */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_ImplVertAdv = /* implicit vert. advection flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_diffKh = /* Laplacian Diffusivity */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_diffK4 = /* Biharmonic Diffusivity */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_diffKrNr = /* Vertical Diffusivity */
+(PID.TID 0000.0001)    20 @  3.000000000000000E-05              /* K =  1: 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_useGMRedi = /* apply GM-Redi */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) PTRACERS_useKPP = /* apply KPP scheme */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  -----------------------------------
+(PID.TID 0000.0001) OPTIM_READPARMS: opening data.optim
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.optim
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.optim"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># ********************************
+(PID.TID 0000.0001) ># Off-line optimization parameters
+(PID.TID 0000.0001) ># ********************************
+(PID.TID 0000.0001) > &OPTIM
+(PID.TID 0000.0001) > optimcycle=0,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) OPTIM_READPARMS: finished reading data.optim
+(PID.TID 0000.0001) CTRL_READPARMS: opening data.ctrl
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.ctrl
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.ctrl"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) ># ECCO controlvariables
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &CTRL_NML
+(PID.TID 0000.0001) > xx_theta_file      = 'xx_theta',
+(PID.TID 0000.0001) > xx_salt_file       = 'xx_salt',
+(PID.TID 0000.0001) > xx_tr1_file        = 'xx_tr1',
+(PID.TID 0000.0001) > xx_hflux_file      = 'xx_hflux',
+(PID.TID 0000.0001) > xx_sflux_file      = 'xx_sflux',
+(PID.TID 0000.0001) > xx_tauu_file       = 'xx_tauu',
+(PID.TID 0000.0001) > xx_tauv_file       = 'xx_tauv',
+(PID.TID 0000.0001) > xx_diffkr_file     = 'xx_diffkr',
+(PID.TID 0000.0001) > xx_kapgm_file      = 'xx_kapgm',
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) ># names for ctrl_pack/unpack
+(PID.TID 0000.0001) ># *********************
+(PID.TID 0000.0001) > &CTRL_PACKNAMES
+(PID.TID 0000.0001) > ctrlname = 'ecco_ctrl',
+(PID.TID 0000.0001) > costname = 'ecco_cost',
+(PID.TID 0000.0001) > scalname = 'ecco_scal',
+(PID.TID 0000.0001) > maskname = 'ecco_mask',
+(PID.TID 0000.0001) > metaname = 'ecco_meta',
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) CTRL_READPARMS: finished reading data.ctrl
+(PID.TID 0000.0001) COST_READPARMS: opening data.cost
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.cost
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.cost"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># ******************
+(PID.TID 0000.0001) ># ECCO cost function
+(PID.TID 0000.0001) ># ******************
+(PID.TID 0000.0001) > &COST_NML
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) > mult_tracer  = 1.,
+(PID.TID 0000.0001) > mult_test    = 1.,
+(PID.TID 0000.0001) > mult_atl     = 1.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) COST_READPARMS: finished reading data.cost
+(PID.TID 0000.0001) GRDCHK_READPARMS: opening data.grdchk
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.grdchk
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.grdchk"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># *******************
+(PID.TID 0000.0001) ># ECCO gradient check
+(PID.TID 0000.0001) ># *******************
+(PID.TID 0000.0001) > &GRDCHK_NML
+(PID.TID 0000.0001) > grdchk_eps       = 1.d-4,
+(PID.TID 0000.0001) > nbeg             = 1,
+(PID.TID 0000.0001) > nstep            = 1,
+(PID.TID 0000.0001) > nend             = 4,
+(PID.TID 0000.0001) > grdchkvarindex   = 32,
+(PID.TID 0000.0001) ># to test xx_tr1 set 17
+(PID.TID 0000.0001) ># grdchkvarindex   = 17,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) GRDCHK_READPARMS: finished reading data.grdchk
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Gradient check configuration  >>> START <<<
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)   eps:                              0.100E-03
+(PID.TID 0000.0001)   First location:                           1
+(PID.TID 0000.0001)   Last location:                            4
+(PID.TID 0000.0001)   Increment:                                1
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Gradient check configuration  >>> END <<<
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: topog.bin
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -293,97 +522,6 @@
 (PID.TID 0000.0001) // END OF FIELD                                          =
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.pkg"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) ># ********
-(PID.TID 0000.0001) ># Packages
-(PID.TID 0000.0001) ># ********
-(PID.TID 0000.0001) > &PACKAGES
-(PID.TID 0000.0001) > usePtracers  = .TRUE.,
-(PID.TID 0000.0001) > useGMRedi    = .TRUE.,
-(PID.TID 0000.0001) > useKPP       = .FALSE.,
-(PID.TID 0000.0001) > useGrdchk    = .TRUE.,
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
-(PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.gmredi"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># GM+Redi package parameters:
-(PID.TID 0000.0001) >#     GM_Small_Number  :: epsilon used in computing the slope
-(PID.TID 0000.0001) >#     GM_slopeSqCutoff :: slope^2 cut-off value
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) >#-from MOM :
-(PID.TID 0000.0001) ># GM_background_K: 	G & Mc.W  diffusion coefficient
-(PID.TID 0000.0001) ># GM_maxSlope    :	max slope of isopycnals
-(PID.TID 0000.0001) ># GM_Scrit       :	transition for scaling diffusion coefficient
-(PID.TID 0000.0001) ># GM_Sd          :	half width scaling for diffusion coefficient
-(PID.TID 0000.0001) ># GM_taper_scheme:	slope clipping or one of the tapering schemes
-(PID.TID 0000.0001) ># GM_Kmin_horiz  :	horizontal diffusion minimum value
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) >#-Option parameters (needs to "define" options in GMREDI_OPTIONS.h")
-(PID.TID 0000.0001) ># GM_isopycK     :	isopycnal diffusion coefficient (default=GM_background_K)
-(PID.TID 0000.0001) ># GM_AdvForm     :	turn on GM Advective form       (default=Skew flux form)
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) > &GM_PARM01
-(PID.TID 0000.0001) >  GM_Small_Number  = 1.D-20,
-(PID.TID 0000.0001) >  GM_slopeSqCutoff = 1.D+08,
-(PID.TID 0000.0001) >  GM_AdvForm         = .TRUE.,
-(PID.TID 0000.0001) >  GM_isopycK         = 1.1D+3,
-(PID.TID 0000.0001) >  GM_background_K    = 0.9D+3,
-(PID.TID 0000.0001) >#  GM_background_K    = 1.D+3,
-(PID.TID 0000.0001) >  GM_taper_scheme    = 'dm95',
-(PID.TID 0000.0001) >  GM_maxSlope        = 1.D-2,
-(PID.TID 0000.0001) >  GM_Kmin_horiz      = 50.,
-(PID.TID 0000.0001) >  GM_Scrit           = 4.D-3,
-(PID.TID 0000.0001) >  GM_Sd              = 1.D-3,
-(PID.TID 0000.0001) >#  GM_Visbeck_alpha   = 1.5D-2,
-(PID.TID 0000.0001) >  GM_Visbeck_alpha   = 0.,
-(PID.TID 0000.0001) >  GM_Visbeck_length  = 2.D+5,
-(PID.TID 0000.0001) >  GM_Visbeck_depth   = 1.D+3,
-(PID.TID 0000.0001) >  GM_Visbeck_maxval_K= 2.5D+3,
-(PID.TID 0000.0001) > &end
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
-(PID.TID 0000.0001)  PTRACERS_READPARMS: opening data.ptracers
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.ptracers
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.ptracers"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># This set-up makes is supposed to immitate salt. That is, PTRACER(:,:,:,1)
-(PID.TID 0000.0001) ># should look exactly like S(:,:,:).
-(PID.TID 0000.0001) > &PTRACERS_PARM01
-(PID.TID 0000.0001) > PTRACERS_numInUse=1,
-(PID.TID 0000.0001) > PTRACERS_advScheme=2,
-(PID.TID 0000.0001) > PTRACERS_diffKh=1.E3,
-(PID.TID 0000.0001) > PTRACERS_diffKr=3.E-5,
-(PID.TID 0000.0001) > PTRACERS_initialFile=' ',
-(PID.TID 0000.0001) > &
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  PTRACERS_READPARMS: finished reading data.ptracers
-(PID.TID 0000.0001) Processing namelist file data.cost ...
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Gradient check configuration  >>> START <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)   eps:                              0.100E-03
-(PID.TID 0000.0001)   First location:                           1
-(PID.TID 0000.0001)   Last location:                            4
-(PID.TID 0000.0001)   Increment:                                1
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Gradient check configuration  >>> END <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) // GAD parameters :
@@ -413,127 +551,57 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) // ===================================
- ph-wet 1: nvarlength =  160348
- ph-wet 2: surface wet C =  2158
- ph-wet 3: surface wet W =  2052
- ph-wet 4: surface wet S =  2004
- ph-wet 4a:surface wet V =  0
- ph-wet 5: 3D wet points =  37994
- ph-wet 6: no recs for i =  1 1
- ph-wet 6: no recs for i =  2 1
- ph-wet 6: no recs for i =  3 1
- ph-wet 6: no recs for i =  4 1
- ph-wet 6: no recs for i =  5 1
- ph-wet 6: no recs for i =  6 1
- ph-wet 6: no recs for i =  7 0
- ph-wet 6: no recs for i =  8 0
- ph-wet 6: no recs for i =  9 0
- ph-wet 6: no recs for i =  10 0
- ph-wet 6: no recs for i =  11 0
- ph-wet 6: no recs for i =  12 0
- ph-wet 6: no recs for i =  13 0
- ph-wet 6: no recs for i =  14 0
- ph-wet 6: no recs for i =  15 1
- ph-wet 6: no recs for i =  16 0
- ph-wet 6: no recs for i =  17 1
- ph-wet 6: no recs for i =  18 0
- ph-wet 6: no recs for i =  19 0
- ph-wet 6: no recs for i =  20 0
- ph-wet 6: no recs for i =  21 0
- ph-wet 6: no recs for i =  22 0
- ph-wet 6: no recs for i =  23 0
- ph-wet 6: no recs for i =  24 0
- ph-wet 6: no recs for i =  25 0
- ph-wet 6: no recs for i =  26 0
- ph-wet 6: no recs for i =  27 0
- ph-wet 6: no recs for i =  28 0
- ph-wet 6: no recs for i =  29 0
- ph-wet 6: no recs for i =  30 0
- ph-wet 7:  84360
- ph-wet 8:  75988
- ph-wet 13: global nvarlength vor k= 21 160348
- ph-wet 14a: global nWet... k= 1 2158
- ph-wet 14b: global nWet... k= 1 2004
- ph-wet 14c: global nWet... k= 1 2052
- ph-wet 14d: global nWet... k= 1 0
- ph-wet 14a: global nWet... k= 2 2155
- ph-wet 14b: global nWet... k= 2 2003
- ph-wet 14c: global nWet... k= 2 2049
- ph-wet 14d: global nWet... k= 2 0
- ph-wet 14a: global nWet... k= 3 2154
- ph-wet 14b: global nWet... k= 3 2002
- ph-wet 14c: global nWet... k= 3 2048
- ph-wet 14d: global nWet... k= 3 0
- ph-wet 14a: global nWet... k= 4 2151
- ph-wet 14b: global nWet... k= 4 2000
- ph-wet 14c: global nWet... k= 4 2047
- ph-wet 14d: global nWet... k= 4 0
- ph-wet 14a: global nWet... k= 5 2148
- ph-wet 14b: global nWet... k= 5 1997
- ph-wet 14c: global nWet... k= 5 2044
- ph-wet 14d: global nWet... k= 5 0
- ph-wet 14a: global nWet... k= 6 2143
- ph-wet 14b: global nWet... k= 6 1993
- ph-wet 14c: global nWet... k= 6 2040
- ph-wet 14d: global nWet... k= 6 0
- ph-wet 14a: global nWet... k= 7 2143
- ph-wet 14b: global nWet... k= 7 1993
- ph-wet 14c: global nWet... k= 7 2040
- ph-wet 14d: global nWet... k= 7 0
- ph-wet 14a: global nWet... k= 8 2141
- ph-wet 14b: global nWet... k= 8 1993
- ph-wet 14c: global nWet... k= 8 2038
- ph-wet 14d: global nWet... k= 8 0
- ph-wet 14a: global nWet... k= 9 2139
- ph-wet 14b: global nWet... k= 9 1991
- ph-wet 14c: global nWet... k= 9 2036
- ph-wet 14d: global nWet... k= 9 0
- ph-wet 14a: global nWet... k= 10 2134
- ph-wet 14b: global nWet... k= 10 1986
- ph-wet 14c: global nWet... k= 10 2030
- ph-wet 14d: global nWet... k= 10 0
- ph-wet 14a: global nWet... k= 11 2126
- ph-wet 14b: global nWet... k= 11 1977
- ph-wet 14c: global nWet... k= 11 2022
- ph-wet 14d: global nWet... k= 11 0
- ph-wet 14a: global nWet... k= 12 2108
- ph-wet 14b: global nWet... k= 12 1961
- ph-wet 14c: global nWet... k= 12 2003
- ph-wet 14d: global nWet... k= 12 0
- ph-wet 14a: global nWet... k= 13 2101
- ph-wet 14b: global nWet... k= 13 1954
- ph-wet 14c: global nWet... k= 13 1995
- ph-wet 14d: global nWet... k= 13 0
- ph-wet 14a: global nWet... k= 14 2086
- ph-wet 14b: global nWet... k= 14 1938
- ph-wet 14c: global nWet... k= 14 1981
- ph-wet 14d: global nWet... k= 14 0
- ph-wet 14a: global nWet... k= 15 2054
- ph-wet 14b: global nWet... k= 15 1903
- ph-wet 14c: global nWet... k= 15 1946
- ph-wet 14d: global nWet... k= 15 0
- ph-wet 14a: global nWet... k= 16 1998
- ph-wet 14b: global nWet... k= 16 1841
- ph-wet 14c: global nWet... k= 16 1879
- ph-wet 14d: global nWet... k= 16 0
- ph-wet 14a: global nWet... k= 17 1844
- ph-wet 14b: global nWet... k= 17 1650
- ph-wet 14c: global nWet... k= 17 1702
- ph-wet 14d: global nWet... k= 17 0
- ph-wet 14a: global nWet... k= 18 1180
- ph-wet 14b: global nWet... k= 18 951
- ph-wet 14c: global nWet... k= 18 996
- ph-wet 14d: global nWet... k= 18 0
- ph-wet 14a: global nWet... k= 19 754
- ph-wet 14b: global nWet... k= 19 556
- ph-wet 14c: global nWet... k= 19 602
- ph-wet 14d: global nWet... k= 19 0
- ph-wet 14a: global nWet... k= 20 277
- ph-wet 14b: global nWet... k= 20 168
- ph-wet 14c: global nWet... k= 20 186
- ph-wet 14d: global nWet... k= 20 0
- ctrl_init: no. of control variables:  8
- ctrl_init: control vector length:     160348
+(PID.TID 0000.0001) ctrl-wet 1:    nvarlength =       160348
+(PID.TID 0000.0001) ctrl-wet 2: surface wet C =         2158
+(PID.TID 0000.0001) ctrl-wet 3: surface wet W =         2052
+(PID.TID 0000.0001) ctrl-wet 4: surface wet S =         2004
+(PID.TID 0000.0001) ctrl-wet 4a:surface wet V =            0
+(PID.TID 0000.0001) ctrl-wet 5: 3D wet points =        37994
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     1           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     2           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     3           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     4           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     5           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     6           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     7           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     8           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =     9           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    10           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    11           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    12           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    13           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    14           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    15           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    16           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    17           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    18           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    19           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    20           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    21           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    22           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    23           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    24           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    25           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    26           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    27           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    28           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    29           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    30           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    31           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    32           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    33           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    34           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    35           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    36           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    37           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    38           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    39           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    40           0
+(PID.TID 0000.0001) ctrl-wet 7: flux         84360
+(PID.TID 0000.0001) ctrl-wet 8: atmos        75988
+(PID.TID 0000.0001) ctrl-wet 13: global nvarlength vor k=   21      160348
+(PID.TID 0000.0001) ctrl_init: no. of control variables:            8
+(PID.TID 0000.0001) ctrl_init: control vector length:          160348
 (PID.TID 0000.0001) GMREDI_CHECK: #define GMREDI
 (PID.TID 0000.0001) GM_AdvForm =  /* if FALSE => use SkewFlux Form */
 (PID.TID 0000.0001)                   T
@@ -575,6 +643,18 @@
 (PID.TID 0000.0001) // "Physical" paramters ( PARM01 in namelist )
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) buoyancyRelation = OCEANIC
+(PID.TID 0000.0001) fluidIsAir  =  /* fluid major constituent is Air */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) fluidIsWater=  /* fuild major constituent is Water */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingPCoords =  /* use p (or p*) vertical coordinate */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingZCoords =  /* use z (or z*) vertical coordinate */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tRef =   /* Reference temperature profile ( oC or oK ) */
 (PID.TID 0000.0001)                 1.600000000000000E+01,      /* K =  1 */
 (PID.TID 0000.0001)                 1.520000000000000E+01,      /* K =  2 */
@@ -625,7 +705,16 @@
 (PID.TID 0000.0001) viscAhGrid =   /* Grid dependent lateral eddy viscosity ( non-dim. ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leith =   /* Leith harmonic viscosity factor ( non-dom. ) */
+(PID.TID 0000.0001) useFullLeith =   /* Use Full Form of Leith Viscosity on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2leith = /* Leith harmonic viscosity factor (on grad(vort),non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2smag =   /* Smagorinsky harmonic viscosity factor (non-dim.) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) viscA4 =   /* Lateral biharmonic viscosity ( m^4/s ) */
@@ -637,7 +726,10 @@
 (PID.TID 0000.0001) viscA4Grid =   /* Grid dependent biharmonic viscosity ( non-dim. ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leith =   /* Leith biharmonic viscosity factor ( non-dom. ) */
+(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC4leithD = /* Leith biharm viscosity factor (on grad(div), non-dim.) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) no_slip_sides =  /* Viscous BCs: No-slip sides */
@@ -655,17 +747,17 @@
 (PID.TID 0000.0001) diffK4T =   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) diffKrT =   /* Laplacian diffusion of heat vertically ( m^2/s ) */
-(PID.TID 0000.0001)                 3.000000000000000E-05
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhS =   /* Laplacian diffusion of salt laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 1.000000000000000E+03
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffK4S =   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) diffKrS =   /* Laplacian diffusion of salt vertically ( m^2/s ) */
-(PID.TID 0000.0001)                 3.000000000000000E-05
+(PID.TID 0000.0001) diffKrNrT = /* vertical profile of vertical diffusion of Temp ( m^2/s )*/
+(PID.TID 0000.0001)    20 @  3.000000000000000E-05              /* K =  1: 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrNrS = /* vertical profile of vertical diffusion of Salt ( m^2/s )*/
+(PID.TID 0000.0001)    20 @  3.000000000000000E-05              /* K =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKrBL79surf =   /* Surface diffusion for Bryan and Lewis 1979 ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -795,6 +887,9 @@
 (PID.TID 0000.0001) highOrderVorticity= /* High order interp. of vort. flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) upwindShear= /* Upwind vertical Shear advection flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
@@ -837,6 +932,18 @@
 (PID.TID 0000.0001) saltForcing  =  /* Salinity forcing on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Elliptic solver(s) paramters ( PARM02 in namelist )
 (PID.TID 0000.0001) //
@@ -858,7 +965,7 @@
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
 (PID.TID 0000.0001) //
-(PID.TID 0000.0001) nIter0 =   /* Base timestep number  */
+(PID.TID 0000.0001) nIter0 =   /* Run starting timestep number  */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
@@ -870,8 +977,8 @@
 (PID.TID 0000.0001) deltaTfreesurf =   /* FreeSurface equation timestep ( s ) */
 (PID.TID 0000.0001)                 2.400000000000000E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) deltatTtracer =   /* Tracer equation timestep ( s ) */
-(PID.TID 0000.0001)                 8.640000000000000E+04
+(PID.TID 0000.0001) dTtracerLev =   /* Tracer equation timestep ( s ) */
+(PID.TID 0000.0001)    20 @  8.640000000000000E+04              /* K =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) deltatTClock  =   /* Model clock timestep ( s ) */
 (PID.TID 0000.0001)                 8.640000000000000E+04
@@ -882,7 +989,7 @@
 (PID.TID 0000.0001) forcing_In_AB =   /* put T,S Forcing in Adams-Bash. stepping */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) abeps =   /* Adams-Bashforth stabilizing weight */
+(PID.TID 0000.0001) abEps =   /* Adams-Bashforth-2 stabilizing weight */
 (PID.TID 0000.0001)                 1.000000000000000E-01
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tauCD =   /* CD coupling time-scale ( s ) */
@@ -890,6 +997,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rCD =   /* Normalised CD coupling parameter */
 (PID.TID 0000.0001)                 9.925333200592357E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) baseTime =   /* Model base time ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) startTime =   /* Run start time ( s ). */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -921,7 +1031,7 @@
 (PID.TID 0000.0001) monitorFreq =   /* Monitor output interval ( s ). */
 (PID.TID 0000.0001)                 8.640000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) monitor_mdsio =   /* Model IO flag. */
+(PID.TID 0000.0001) monitor_stdio =   /* Model IO flag. */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) externForcingPeriod =   /* forcing period (s) */
@@ -951,14 +1061,11 @@
 (PID.TID 0000.0001) usingCylindricalGrid =   /* Spherical coordinates flag ( True / False ) */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) groundAtK1 =   /* Lower Boundary (ground) at the surface(k=1) ( T / F ) */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) Ro_SeaLevel =   /* r(1) ( units of r ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rkFac =   /* minus Vertical index orientation  */
-(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001) rkSign =   /* index orientation relative to vertical coordinate */
+(PID.TID 0000.0001)                -1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) horiVertRatio =   /* Ratio on units : Horiz - Vertical */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -1403,21 +1510,21 @@
 (PID.TID 0000.0001)    40 @  4.447098934081552E+05              /* J =  1: 40 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rA =  /* rA(:,1,:,1) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)    90 @  4.110969866729054E+10              /* I =  1: 90 */
+(PID.TID 0000.0001)    90 @  4.110969866729052E+10              /* I =  1: 90 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rA =  /* rA(1,:,1,:) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)                 4.110969866729054E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 5.450087291636668E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 6.762652439100243E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 8.042270623659999E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 9.282707674147508E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 1.047792030594103E+11,      /* J =  6 */
-(PID.TID 0000.0001)                 1.162208556324092E+11,      /* J =  7 */
-(PID.TID 0000.0001)                 1.270962918792467E+11,      /* J =  8 */
+(PID.TID 0000.0001)                 4.110969866729052E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 5.450087291636662E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 6.762652439100241E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 8.042270623660014E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 9.282707674147511E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 1.047792030594104E+11,      /* J =  6 */
+(PID.TID 0000.0001)                 1.162208556324094E+11,      /* J =  7 */
+(PID.TID 0000.0001)                 1.270962918792466E+11,      /* J =  8 */
 (PID.TID 0000.0001)                 1.373525277677230E+11,      /* J =  9 */
-(PID.TID 0000.0001)                 1.469395959475425E+11,      /* J = 10 */
-(PID.TID 0000.0001)                 1.558107891862221E+11,      /* J = 11 */
-(PID.TID 0000.0001)                 1.639228879220325E+11,      /* J = 12 */
+(PID.TID 0000.0001)                 1.469395959475424E+11,      /* J = 10 */
+(PID.TID 0000.0001)                 1.558107891862222E+11,      /* J = 11 */
+(PID.TID 0000.0001)                 1.639228879220324E+11,      /* J = 12 */
 (PID.TID 0000.0001)                 1.712363708253575E+11,      /* J = 13 */
 (PID.TID 0000.0001)                 1.777156073426414E+11,      /* J = 14 */
 (PID.TID 0000.0001)                 1.833290312848624E+11,      /* J = 15 */
@@ -1425,44 +1532,43 @@
 (PID.TID 0000.0001)                 1.918534006840893E+11,      /* J = 17 */
 (PID.TID 0000.0001)                 1.947228162702492E+11,      /* J = 18 */
 (PID.TID 0000.0001)                 1.966435618690094E+11,      /* J = 19 */
-(PID.TID 0000.0001)                 1.976062798008855E+11,      /* J = 20 */
-(PID.TID 0000.0001)                 1.976062798008856E+11,      /* J = 21 */
+(PID.TID 0000.0001)     2 @  1.976062798008856E+11,             /* J = 20: 21 */
 (PID.TID 0000.0001)                 1.966435618690094E+11,      /* J = 22 */
 (PID.TID 0000.0001)                 1.947228162702492E+11,      /* J = 23 */
 (PID.TID 0000.0001)                 1.918534006840893E+11,      /* J = 24 */
 (PID.TID 0000.0001)                 1.880492946148330E+11,      /* J = 25 */
-(PID.TID 0000.0001)                 1.833290312848623E+11,      /* J = 26 */
+(PID.TID 0000.0001)                 1.833290312848624E+11,      /* J = 26 */
 (PID.TID 0000.0001)                 1.777156073426414E+11,      /* J = 27 */
-(PID.TID 0000.0001)                 1.712363708253574E+11,      /* J = 28 */
-(PID.TID 0000.0001)                 1.639228879220325E+11,      /* J = 29 */
-(PID.TID 0000.0001)                 1.558107891862220E+11,      /* J = 30 */
+(PID.TID 0000.0001)                 1.712363708253575E+11,      /* J = 28 */
+(PID.TID 0000.0001)                 1.639228879220324E+11,      /* J = 29 */
+(PID.TID 0000.0001)                 1.558107891862222E+11,      /* J = 30 */
 (PID.TID 0000.0001)                 1.469395959475424E+11,      /* J = 31 */
 (PID.TID 0000.0001)                 1.373525277677230E+11,      /* J = 32 */
-(PID.TID 0000.0001)                 1.270962918792467E+11,      /* J = 33 */
-(PID.TID 0000.0001)                 1.162208556324095E+11,      /* J = 34 */
+(PID.TID 0000.0001)                 1.270962918792466E+11,      /* J = 33 */
+(PID.TID 0000.0001)                 1.162208556324094E+11,      /* J = 34 */
 (PID.TID 0000.0001)                 1.047792030594104E+11,      /* J = 35 */
-(PID.TID 0000.0001)                 9.282707674147527E+10,      /* J = 36 */
-(PID.TID 0000.0001)                 8.042270623660011E+10,      /* J = 37 */
-(PID.TID 0000.0001)                 6.762652439100233E+10,      /* J = 38 */
-(PID.TID 0000.0001)                 5.450087291636658E+10,      /* J = 39 */
-(PID.TID 0000.0001)                 4.110969866729044E+10       /* J = 40 */
+(PID.TID 0000.0001)                 9.282707674147511E+10,      /* J = 36 */
+(PID.TID 0000.0001)                 8.042270623660014E+10,      /* J = 37 */
+(PID.TID 0000.0001)                 6.762652439100241E+10,      /* J = 38 */
+(PID.TID 0000.0001)                 5.450087291636662E+10,      /* J = 39 */
+(PID.TID 0000.0001)                 4.110969866729052E+10       /* J = 40 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAw =  /* rAw(:,1,:,1) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)    90 @  4.110969866729054E+10              /* I =  1: 90 */
+(PID.TID 0000.0001)    90 @  4.110969866729052E+10              /* I =  1: 90 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAw =  /* rAw(1,:,1,:) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)                 4.110969866729054E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 5.450087291636668E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 6.762652439100243E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 8.042270623659999E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 9.282707674147508E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 1.047792030594103E+11,      /* J =  6 */
-(PID.TID 0000.0001)                 1.162208556324092E+11,      /* J =  7 */
-(PID.TID 0000.0001)                 1.270962918792467E+11,      /* J =  8 */
+(PID.TID 0000.0001)                 4.110969866729052E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 5.450087291636662E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 6.762652439100241E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 8.042270623660014E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 9.282707674147511E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 1.047792030594104E+11,      /* J =  6 */
+(PID.TID 0000.0001)                 1.162208556324094E+11,      /* J =  7 */
+(PID.TID 0000.0001)                 1.270962918792466E+11,      /* J =  8 */
 (PID.TID 0000.0001)                 1.373525277677230E+11,      /* J =  9 */
-(PID.TID 0000.0001)                 1.469395959475425E+11,      /* J = 10 */
-(PID.TID 0000.0001)                 1.558107891862221E+11,      /* J = 11 */
-(PID.TID 0000.0001)                 1.639228879220325E+11,      /* J = 12 */
+(PID.TID 0000.0001)                 1.469395959475424E+11,      /* J = 10 */
+(PID.TID 0000.0001)                 1.558107891862222E+11,      /* J = 11 */
+(PID.TID 0000.0001)                 1.639228879220324E+11,      /* J = 12 */
 (PID.TID 0000.0001)                 1.712363708253575E+11,      /* J = 13 */
 (PID.TID 0000.0001)                 1.777156073426414E+11,      /* J = 14 */
 (PID.TID 0000.0001)                 1.833290312848624E+11,      /* J = 15 */
@@ -1470,45 +1576,44 @@
 (PID.TID 0000.0001)                 1.918534006840893E+11,      /* J = 17 */
 (PID.TID 0000.0001)                 1.947228162702492E+11,      /* J = 18 */
 (PID.TID 0000.0001)                 1.966435618690094E+11,      /* J = 19 */
-(PID.TID 0000.0001)                 1.976062798008855E+11,      /* J = 20 */
-(PID.TID 0000.0001)                 1.976062798008856E+11,      /* J = 21 */
+(PID.TID 0000.0001)     2 @  1.976062798008856E+11,             /* J = 20: 21 */
 (PID.TID 0000.0001)                 1.966435618690094E+11,      /* J = 22 */
 (PID.TID 0000.0001)                 1.947228162702492E+11,      /* J = 23 */
 (PID.TID 0000.0001)                 1.918534006840893E+11,      /* J = 24 */
 (PID.TID 0000.0001)                 1.880492946148330E+11,      /* J = 25 */
-(PID.TID 0000.0001)                 1.833290312848623E+11,      /* J = 26 */
+(PID.TID 0000.0001)                 1.833290312848624E+11,      /* J = 26 */
 (PID.TID 0000.0001)                 1.777156073426414E+11,      /* J = 27 */
-(PID.TID 0000.0001)                 1.712363708253574E+11,      /* J = 28 */
-(PID.TID 0000.0001)                 1.639228879220325E+11,      /* J = 29 */
-(PID.TID 0000.0001)                 1.558107891862220E+11,      /* J = 30 */
+(PID.TID 0000.0001)                 1.712363708253575E+11,      /* J = 28 */
+(PID.TID 0000.0001)                 1.639228879220324E+11,      /* J = 29 */
+(PID.TID 0000.0001)                 1.558107891862222E+11,      /* J = 30 */
 (PID.TID 0000.0001)                 1.469395959475424E+11,      /* J = 31 */
 (PID.TID 0000.0001)                 1.373525277677230E+11,      /* J = 32 */
-(PID.TID 0000.0001)                 1.270962918792467E+11,      /* J = 33 */
-(PID.TID 0000.0001)                 1.162208556324095E+11,      /* J = 34 */
+(PID.TID 0000.0001)                 1.270962918792466E+11,      /* J = 33 */
+(PID.TID 0000.0001)                 1.162208556324094E+11,      /* J = 34 */
 (PID.TID 0000.0001)                 1.047792030594104E+11,      /* J = 35 */
-(PID.TID 0000.0001)                 9.282707674147527E+10,      /* J = 36 */
-(PID.TID 0000.0001)                 8.042270623660011E+10,      /* J = 37 */
-(PID.TID 0000.0001)                 6.762652439100233E+10,      /* J = 38 */
-(PID.TID 0000.0001)                 5.450087291636658E+10,      /* J = 39 */
-(PID.TID 0000.0001)                 4.110969866729044E+10       /* J = 40 */
+(PID.TID 0000.0001)                 9.282707674147511E+10,      /* J = 36 */
+(PID.TID 0000.0001)                 8.042270623660014E+10,      /* J = 37 */
+(PID.TID 0000.0001)                 6.762652439100241E+10,      /* J = 38 */
+(PID.TID 0000.0001)                 5.450087291636662E+10,      /* J = 39 */
+(PID.TID 0000.0001)                 4.110969866729052E+10       /* J = 40 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAs =  /* rAs(:,1,:,1) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)    90 @  3.433488626798236E+10              /* I =  1: 90 */
+(PID.TID 0000.0001)    90 @  3.433488626798226E+10              /* I =  1: 90 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAs =  /* rAs(1,:,1,:) ( m - cartesian, degrees - spherical ) */
-(PID.TID 0000.0001)                 3.433488626798236E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 4.783442523123635E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 6.110091968306405E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 7.406973659603827E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 8.667769319778091E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 9.886336479107472E+10,      /* J =  6 */
-(PID.TID 0000.0001)                 1.105673840088174E+11,      /* J =  7 */
+(PID.TID 0000.0001)                 3.433488626798226E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 4.783442523123644E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 6.110091968306396E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 7.406973659603816E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 8.667769319778082E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 9.886336479107460E+10,      /* J =  6 */
+(PID.TID 0000.0001)                 1.105673840088176E+11,      /* J =  7 */
 (PID.TID 0000.0001)                 1.217327300458637E+11,      /* J =  8 */
-(PID.TID 0000.0001)                 1.323050064586579E+11,      /* J =  9 */
+(PID.TID 0000.0001)                 1.323050064586577E+11,      /* J =  9 */
 (PID.TID 0000.0001)                 1.422327061792379E+11,      /* J = 10 */
 (PID.TID 0000.0001)                 1.514674624524945E+11,      /* J = 11 */
-(PID.TID 0000.0001)                 1.599642844741385E+11,      /* J = 12 */
-(PID.TID 0000.0001)                 1.676817765813787E+11,      /* J = 13 */
+(PID.TID 0000.0001)                 1.599642844741386E+11,      /* J = 12 */
+(PID.TID 0000.0001)                 1.676817765813786E+11,      /* J = 13 */
 (PID.TID 0000.0001)                 1.745823399284268E+11,      /* J = 14 */
 (PID.TID 0000.0001)                 1.806323556642997E+11,      /* J = 15 */
 (PID.TID 0000.0001)                 1.858023487204767E+11,      /* J = 16 */
@@ -1516,26 +1621,26 @@
 (PID.TID 0000.0001)                 1.934059261417216E+11,      /* J = 18 */
 (PID.TID 0000.0001)                 1.958024666419019E+11,      /* J = 19 */
 (PID.TID 0000.0001)                 1.972450772065981E+11,      /* J = 20 */
-(PID.TID 0000.0001)                 1.977267295821495E+11,      /* J = 21 */
+(PID.TID 0000.0001)                 1.977267295821496E+11,      /* J = 21 */
 (PID.TID 0000.0001)                 1.972450772065981E+11,      /* J = 22 */
 (PID.TID 0000.0001)                 1.958024666419019E+11,      /* J = 23 */
 (PID.TID 0000.0001)                 1.934059261417216E+11,      /* J = 24 */
 (PID.TID 0000.0001)                 1.900671314104744E+11,      /* J = 25 */
 (PID.TID 0000.0001)                 1.858023487204767E+11,      /* J = 26 */
 (PID.TID 0000.0001)                 1.806323556642997E+11,      /* J = 27 */
-(PID.TID 0000.0001)                 1.745823399284267E+11,      /* J = 28 */
-(PID.TID 0000.0001)                 1.676817765813788E+11,      /* J = 29 */
+(PID.TID 0000.0001)                 1.745823399284268E+11,      /* J = 28 */
+(PID.TID 0000.0001)                 1.676817765813786E+11,      /* J = 29 */
 (PID.TID 0000.0001)                 1.599642844741386E+11,      /* J = 30 */
 (PID.TID 0000.0001)                 1.514674624524945E+11,      /* J = 31 */
-(PID.TID 0000.0001)                 1.422327061792377E+11,      /* J = 32 */
+(PID.TID 0000.0001)                 1.422327061792379E+11,      /* J = 32 */
 (PID.TID 0000.0001)                 1.323050064586577E+11,      /* J = 33 */
-(PID.TID 0000.0001)                 1.217327300458638E+11,      /* J = 34 */
-(PID.TID 0000.0001)                 1.105673840088174E+11,      /* J = 35 */
-(PID.TID 0000.0001)                 9.886336479107451E+10,      /* J = 36 */
-(PID.TID 0000.0001)                 8.667769319778070E+10,      /* J = 37 */
-(PID.TID 0000.0001)                 7.406973659603806E+10,      /* J = 38 */
-(PID.TID 0000.0001)                 6.110091968306404E+10,      /* J = 39 */
-(PID.TID 0000.0001)                 4.783442523123634E+10       /* J = 40 */
+(PID.TID 0000.0001)                 1.217327300458637E+11,      /* J = 34 */
+(PID.TID 0000.0001)                 1.105673840088176E+11,      /* J = 35 */
+(PID.TID 0000.0001)                 9.886336479107460E+10,      /* J = 36 */
+(PID.TID 0000.0001)                 8.667769319778082E+10,      /* J = 37 */
+(PID.TID 0000.0001)                 7.406973659603816E+10,      /* J = 38 */
+(PID.TID 0000.0001)                 6.110091968306396E+10,      /* J = 39 */
+(PID.TID 0000.0001)                 4.783442523123644E+10       /* J = 40 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -1661,7 +1766,6 @@
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_salt.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
@@ -1670,443 +1774,63 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: windy.bin
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: SST.bin
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: SSS.bin
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
 (PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325846E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609803886E-18
+(PID.TID 0000.0001)                         cg2d_res =    9.97121609801986E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   9.17321774096536E-15  1.40313574953713E+01
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.26274146418987E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233497197E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504233496927E-18
  COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -9.63812363252714E-15  1.25851186565123E+01
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.26182087319463E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209027096112E-18
+(PID.TID 0000.0001)                         cg2d_res =    6.35209027279266E-18
  COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =   4.11337630623620E-14  1.07326527654858E+01
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.19976981668311E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950328234912E-18
+(PID.TID 0000.0001)                         cg2d_res =    6.25950328071419E-18
  COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_2_the_main_loop_gs.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_3_the_main_loop_gt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_6_the_main_loop_gsnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_7_the_main_loop_gtnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_8_the_main_loop_gunm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_9_the_main_loop_gvnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_10_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_11_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_12_the_main_loop_uvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_13_the_main_loop_vvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_14_the_main_loop_wvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_15_the_main_loop_etan.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_16_the_main_loop_totphihyd.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_18_the_main_loop_surfaceforcingtice.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_20_the_main_loop_etah.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_21_the_main_loop_detahdt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_22_the_main_loop_pmepr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_23_the_main_loop_uveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_24_the_main_loop_vveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_25_the_main_loop_etanm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_26_the_main_loop_unm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_27_the_main_loop_vnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_28_the_main_loop_taux0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_29_the_main_loop_taux1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_30_the_main_loop_tauy0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_31_the_main_loop_tauy1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_32_the_main_loop_qnet0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_33_the_main_loop_qnet1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_34_the_main_loop_empmr0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_35_the_main_loop_empmr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_36_the_main_loop_sst0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_37_the_main_loop_sst1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_38_the_main_loop_sss0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_39_the_main_loop_sss1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_40_the_main_loop_qsw0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_41_the_main_loop_qsw1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_42_the_main_loop_pload0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_43_the_main_loop_pload1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_44_the_main_loop_ptracer.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_45_the_main_loop_gptrnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_46_the_main_loop_gptr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00088320
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055028662018E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055028662018E+15
+ global fc =  0.184055028662018E+15
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325846E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609803886E-18
- cg2d: Sum(rhs),rhsMax =   9.17321774096536E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146418987E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233497197E-18
- cg2d: Sum(rhs),rhsMax =  -9.63812363252714E-15  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087319463E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209027096112E-18
- cg2d: Sum(rhs),rhsMax =   4.11337630623620E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981668311E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950328234912E-18
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_1_the_main_loop_gs.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_2_the_main_loop_gt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_3_the_main_loop_gsnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_4_the_main_loop_gtnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_5_the_main_loop_gunm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_6_the_main_loop_gvnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_7_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_8_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_9_the_main_loop_uvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_10_the_main_loop_vvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_11_the_main_loop_wvel.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_12_the_main_loop_etan.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_13_the_main_loop_totphihyd.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_15_the_main_loop_surfaceforcingtice.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_17_the_main_loop_etah.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_18_the_main_loop_detahdt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_19_the_main_loop_pmepr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_20_the_main_loop_uveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_21_the_main_loop_vveld.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_22_the_main_loop_etanm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_23_the_main_loop_unm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_24_the_main_loop_vnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_25_the_main_loop_taux0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_26_the_main_loop_taux1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_27_the_main_loop_tauy0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_28_the_main_loop_tauy1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_29_the_main_loop_qnet0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_30_the_main_loop_qnet1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_31_the_main_loop_empmr0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_32_the_main_loop_empmr1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_33_the_main_loop_sst0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_34_the_main_loop_sst1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_35_the_main_loop_sss0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_36_the_main_loop_sss1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_37_the_main_loop_qsw0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_38_the_main_loop_qsw1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_39_the_main_loop_pload0.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_40_the_main_loop_pload1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_41_the_main_loop_ptracer.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_42_the_main_loop_gptrnm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_43_the_main_loop_gptr.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330325846E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121609803886E-18
- cg2d: Sum(rhs),rhsMax =   9.17321774096536E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146418987E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233497197E-18
- cg2d: Sum(rhs),rhsMax =  -9.63812363252714E-15  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087319463E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209027096112E-18
- cg2d: Sum(rhs),rhsMax =   4.11337630623620E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981668311E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950328234912E-18
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- cg2d: Sum(rhs),rhsMax =  -6.62664367823140E-16  2.14094474770312E+05
- cg2d: Sum(rhs),rhsMax =   1.81191867065778E-15  2.94452409728086E+05
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauu.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =   2.71484223990370E-16  2.34921657850462E+06
+ cg2d: Sum(rhs),rhsMax =  -1.04777297948999E-15  2.14094474770318E+05
+ cg2d: Sum(rhs),rhsMax =   1.44936146417862E-15  2.94452409727485E+05
+ cg2d: Sum(rhs),rhsMax =  -4.21104123793370E-16  2.34921657850335E+06
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_hflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tauv.0000000000.001.001.data
@@ -2232,303 +1956,18 @@
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000020   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000019   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000018   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000017   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000016   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000015   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000014   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000013   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000012   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000011   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000010   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000009   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000008   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000007   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000006   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000005   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000004   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000003   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_3_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_4_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_5_the_main_loop_rhokm1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_6_the_main_loop_rhok.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00004416
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev_ini_bibj_k_2_the_main_loop_salt.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000002   00088320
-(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_1_the_main_loop_theta.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00088320
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_salt.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
+ ph-check entering grdchk_main 
  ph-check fcref =   1.84055029E+14
  grad-res -------------------------------
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
  grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -2668,35 +2107,23 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330333384E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121608888453E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   6.41153796721028E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146449550E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233626360E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =   2.15452655716319E-14  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087360859E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209029619201E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =   2.57016630200724E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981664331E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950331102933E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
- ph-check fcpertplus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.6201944E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832285E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238432E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055032E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055031857743E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055031857743E+15
+ global fc =  0.184055031857743E+15
+ ph-check fcpertplus =   1.84055032E+14
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  ph-check fcpertminus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -2836,40 +2263,28 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330318310E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121610737360E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -1.33365540833097E-14  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146388425E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233385473E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -6.29496454962464E-14  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087278067E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209024580205E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =  -5.33878496966622E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981672291E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950325321714E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019425E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832254E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238427E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055025E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055025466293E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055025466293E+15
+ global fc =  0.184055025466293E+15
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    1   44    2    1   0.184055029E+15 0.184055029E+15 0.184055029E+15
- grad-res     0    1    1    1    0   0.174420749E+09 0.174420781E+09 -.184744285E-06
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     1.74420749026763E+08
+ grad-res     0    1   44    2    1   0.184055029E+15 0.184055032E+15 0.184055025E+15
+ grad-res     0    1    1    1    0   0.319572500E+11 0.319572498E+11 0.358422544E-08
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     3.19572499582920E+10
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3009,35 +2424,23 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330348247E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121601931418E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   9.19403442267708E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146438384E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233315830E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -2.16146545106710E-14  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087351632E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209029730958E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =  -4.12170297892089E-15  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981659995E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950330334681E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
- ph-check fcpertplus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.6201944E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832285E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238432E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055032E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055031882099E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055031882099E+15
+ global fc =  0.184055031882099E+15
+ ph-check fcpertplus =   1.84055032E+14
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  ph-check fcpertminus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3177,40 +2580,28 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330303450E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121617671388E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -2.15452655716319E-14  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146399591E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504233674944E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -1.46618828189560E-14  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087287294E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209024966962E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =   5.28743715477731E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981676627E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950325936829E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019425E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832254E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238427E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055025E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055025441937E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055025441937E+15
+ global fc =  0.184055025441937E+15
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    2   45    2    1   0.184055029E+15 0.184055029E+15 0.184055029E+15
- grad-res     0    2    2    2    0   0.132002357E+09 0.132002500E+09 -.108143251E-05
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     1.32002357248360E+08
+ grad-res     0    2   45    2    1   0.184055029E+15 0.184055032E+15 0.184055025E+15
+ grad-res     0    2    2    2    0   0.322008108E+11 0.322008108E+11 0.429126999E-09
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     3.22008107950682E+10
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3350,35 +2741,23 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330297668E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121612472940E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   2.51881848711832E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146445450E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504236023534E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -9.40914013369820E-15  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087347121E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209031268610E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =   7.46902539816574E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981650076E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950329673486E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
- ph-check fcpertplus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.6201944E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832285E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238432E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055032E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055031899534E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055031899534E+15
+ global fc =  0.184055031899534E+15
+ ph-check fcpertplus =   1.84055032E+14
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  ph-check fcpertminus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3518,40 +2897,28 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330354034E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121607115952E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -3.87190279838023E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146392525E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504230955851E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -8.69443406159576E-15  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087291805E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209023171211E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =  -3.24185123190546E-14  1.07326527654859E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981686545E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950326825861E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019425E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832254E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238427E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055025E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055025424502E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055025424502E+15
+ global fc =  0.184055025424502E+15
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    3   46    2    1   0.184055029E+15 0.184055029E+15 0.184055029E+15
- grad-res     0    3    3    3    0   0.199090733E+08 0.199092188E+08 -.730379115E-05
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     1.99090733382864E+07
+ grad-res     0    3   46    2    1   0.184055029E+15 0.184055032E+15 0.184055025E+15
+ grad-res     0    3    3    3    0   0.323751590E+11 0.323751589E+11 0.157936187E-08
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     3.23751589573821E+10
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_theta.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_tr1.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3691,35 +3058,23 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330441816E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121611021461E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -4.12170297892089E-15  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146447262E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504238912141E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =   8.61116733474887E-15  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087340741E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209031751279E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =  -2.97262214843386E-14  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981642774E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950328919363E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
- ph-check fcpertplus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.6201944E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832285E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238432E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055032E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055031920125E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055031920125E+15
+ global fc =  0.184055031920125E+15
+ ph-check fcpertplus =   1.84055032E+14
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  ph-check fcpertminus =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: theta.bin
@@ -3859,36 +3214,24 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tauv.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_sflux.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_hflux.0000000000.001.001.data
- cg2d: Sum(rhs),rhsMax =  -4.64905891561784E-16  8.55254915209884E+00
-(PID.TID 0000.0001)                    cg2d_init_res =    3.25964330209895E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    9.97121608574876E-18
- COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -1.52655665885959E-16  1.40313574953713E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146390713E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84504228082123E-18
- COST TRACER nach  9.22832269E+13  0.977967834 -0.0171503768
- cg2d: Sum(rhs),rhsMax =  -1.33573707650214E-14  1.25851186565123E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087298185E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.35209022593099E-18
- COST TRACER nach  1.3823843E+14  0.985952265 -0.00664086713
- cg2d: Sum(rhs),rhsMax =  -8.75688410673092E-15  1.07326527654858E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981693848E+00
-(PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.25950327477391E-18
- COST TRACER nach  1.84055029E+14  1.01015999  0.0196946016
-  --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84055029E+14
-  --> objf_atl(bi,bj)    =  0.
-  local fc =   1.84055029E+14
-  global fc =   1.84055029E+14
-(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
+ cg2d: Sum(rhs),rhsMax =   5.67601521339611E-15  8.55254915209884E+00
+ COST TRACER nach  4.62019425E+13  0.998831249  0.00126445331
+ cg2d: Sum(rhs),rhsMax =   1.23581700428588E-14  1.40313574953714E+01
+ COST TRACER nach  9.22832254E+13  0.977967834 -0.0171503768
+ cg2d: Sum(rhs),rhsMax =   2.26138552328337E-14  1.25851186565123E+01
+ COST TRACER nach  1.38238427E+14  0.985952265 -0.00664086713
+ cg2d: Sum(rhs),rhsMax =   2.27040608535845E-14  1.07326527654858E+01
+ COST TRACER nach  1.84055025E+14  1.01015999  0.0196946016
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.184055025403911E+15
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.184055025403911E+15
+ global fc =  0.184055025403911E+15
+(PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_tr1.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    4   47    2    1   0.184055029E+15 0.184055029E+15 0.184055029E+15
- grad-res     0    4    4    4    0   -.964476857E+07 -.964484375E+07 -.779486815E-05
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14    -9.64476857030062E+06
+ grad-res     0    4   47    2    1   0.184055029E+15 0.184055032E+15 0.184055025E+15
+ grad-res     0    4    4    4    0   0.325810708E+11 0.325810708E+11 0.181671059E-08
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.84055028662018E+14     3.25810708404404E+10
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
@@ -3901,16 +3244,16 @@
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
 (PID.TID 0000.0001) grdchk output:                 0               1              44               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055029E+15 0.184055029E+15 0.174420781E+09 0.174420749E+09 -.184744285E-06
+(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055032E+15 0.184055025E+15 0.319572498E+11 0.319572500E+11 0.358422544E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2              45               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055029E+15 0.184055029E+15 0.132002500E+09 0.132002357E+09 -.108143251E-05
+(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055032E+15 0.184055025E+15 0.322008108E+11 0.322008108E+11 0.429126999E-09
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3              46               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055029E+15 0.184055029E+15 0.199092188E+08 0.199090733E+08 -.730379115E-05
+(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055032E+15 0.184055025E+15 0.323751589E+11 0.323751590E+11 0.157936187E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4              47               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055029E+15 0.184055029E+15 -.964484375E+07 -.964476857E+07 -.779486815E-05
+(PID.TID 0000.0001) grdchk output:                   0.184055029E+15 0.184055032E+15 0.184055025E+15 0.325810708E+11 0.325810708E+11 0.181671059E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -3919,154 +3262,153 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) %CHECKPOINT         4 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  76.9000015
-(PID.TID 0000.0001)         System time:  3.29999995
-(PID.TID 0000.0001)     Wall clock time:  100.546065
+(PID.TID 0000.0001)           User time:  27.7399998
+(PID.TID 0000.0001)         System time:  1.96000004
+(PID.TID 0000.0001)     Wall clock time:  44.401226
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.330000013
-(PID.TID 0000.0001)         System time:  0.189999998
-(PID.TID 0000.0001)     Wall clock time:  7.05158091
+(PID.TID 0000.0001)           User time:  0.189999998
+(PID.TID 0000.0001)         System time:  0.0799999982
+(PID.TID 0000.0001)     Wall clock time:  0.949194908
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  30.9600009
-(PID.TID 0000.0001)         System time:  2.03000003
-(PID.TID 0000.0001)     Wall clock time:  46.0128748
+(PID.TID 0000.0001)           User time:  10.4500003
+(PID.TID 0000.0001)         System time:  1.28000002
+(PID.TID 0000.0001)     Wall clock time:  21.5325451
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0168323517
+(PID.TID 0000.0001)     Wall clock time:  0.000861883163
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0182449818
+(PID.TID 0000.0001)     Wall clock time:  0.000855445862
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  11.9699922
-(PID.TID 0000.0001)         System time:  0.120000005
-(PID.TID 0000.0001)     Wall clock time:  12.1311743
+(PID.TID 0000.0001)           User time:  5.99999836
+(PID.TID 0000.0001)         System time:  0.0200000107
+(PID.TID 0000.0001)     Wall clock time:  6.02473903
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  21.3299946
-(PID.TID 0000.0001)         System time:  0.210000038
-(PID.TID 0000.0001)     Wall clock time:  21.7042787
+(PID.TID 0000.0001)           User time:  6.33000129
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  6.349576
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  12.3600049
-(PID.TID 0000.0001)         System time:  0.170000076
-(PID.TID 0000.0001)     Wall clock time:  12.6348565
+(PID.TID 0000.0001)           User time:  4.52000386
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  4.49156475
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.69998968
-(PID.TID 0000.0001)         System time:  0.0299999714
-(PID.TID 0000.0001)     Wall clock time:  3.78721595
+(PID.TID 0000.0001)           User time:  0.669998467
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.674309492
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.04000783
-(PID.TID 0000.0001)         System time:  0.0199999809
-(PID.TID 0000.0001)     Wall clock time:  1.0769434
+(PID.TID 0000.0001)           User time:  0.389996409
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.388851404
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0200021267
+(PID.TID 0000.0001)           User time:  0.0100002289
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.026058197
+(PID.TID 0000.0001)     Wall clock time:  0.00326895714
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.67998886
+(PID.TID 0000.0001)           User time:  0.409997463
 (PID.TID 0000.0001)         System time:  0.00999999046
-(PID.TID 0000.0001)     Wall clock time:  1.72885919
+(PID.TID 0000.0001)     Wall clock time:  0.444713116
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.340009689
-(PID.TID 0000.0001)         System time:  0.0199999809
-(PID.TID 0000.0001)     Wall clock time:  0.331011534
+(PID.TID 0000.0001)           User time:  0.129999638
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.127993345
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
-(PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0900092125
-(PID.TID 0000.0001)         System time:  0.0199999809
-(PID.TID 0000.0001)     Wall clock time:  0.120988846
+(PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000850439072
+(PID.TID 0000.0001)          No. starts: 40
+(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0053050518
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.589993954
-(PID.TID 0000.0001)         System time:  0.410000086
-(PID.TID 0000.0001)     Wall clock time:  1.2037971
+(PID.TID 0000.0001)           User time:  0.710003555
+(PID.TID 0000.0001)         System time:  0.419999897
+(PID.TID 0000.0001)     Wall clock time:  3.49947453
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.0100002289
-(PID.TID 0000.0001)     Wall clock time:  0.0176370144
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000883102417
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.000STOP NORMAL END statement executed
-1)           User time:  45.4499969
-(PID.TID 0000.0001)         System time:  1.00999999
-(PID.TID 0000.0001)     Wall clock time:  47.211308
+(PID.TID 0000.0001)           User time:  16.999999
+(PID.TID 0000.0001)         System time:  0.5
+(PID.TID 0000.0001)     Wall clock time:  21.1566401
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADJOINT SPIN-UP":
-(PID.TID 0000.0001)           User time:  2.56999588
-(PID.TID 0000.0001)         System time:  0.299999714
-(PID.TID 0000.0001)     Wall clock time:  3.00475383
+(PID.TID 0000.0001)           User time:  1.32999992
+(PID.TID 0000.0001)         System time:  0.160000205
+(PID.TID 0000.0001)     Wall clock time:  2.62176681
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.3200016
-(PID.TID 0000.0001)         System time:  0.0499999523
-(PID.TID 0000.0001)     Wall clock time:  2.4245162
+(PID.TID 0000.0001)           User time:  1.04999638
+(PID.TID 0000.0001)         System time:  0.0299999714
+(PID.TID 0000.0001)     Wall clock time:  1.22898459
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.249994278
-(PID.TID 0000.0001)         System time:  0.239999771
-(PID.TID 0000.0001)     Wall clock time:  0.569425106
+(PID.TID 0000.0001)           User time:  0.280003548
+(PID.TID 0000.0001)         System time:  0.130000234
+(PID.TID 0000.0001)     Wall clock time:  1.39222026
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  42.5199986
-(PID.TID 0000.0001)         System time:  0.56000042
-(PID.TID 0000.0001)     Wall clock time:  43.6511757
+(PID.TID 0000.0001)           User time:  15.3400002
+(PID.TID 0000.0001)         System time:  0.2299999
+(PID.TID 0000.0001)     Wall clock time:  17.243253
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  42.5100002
-(PID.TID 0000.0001)         System time:  0.550000191
-(PID.TID 0000.0001)     Wall clock time:  43.5926239
-(PID.TID 0000.0001)          No. starts: 32
-(PID.TID 0000.0001)           No. stops: 32
-(PID.TID 0000.0001)   Seconds in section "COST_TILE           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.00999832153
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0203707218
+(PID.TID 0000.0001)           User time:  15.3400002
+(PID.TID 0000.0001)         System time:  0.2299999
+(PID.TID 0000.0001)     Wall clock time:  17.2415071
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00342774391
+(PID.TID 0000.0001)     Wall clock time:  0.000684976578
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.160003662
-(PID.TID 0000.0001)         System time:  0.0699999332
-(PID.TID 0000.0001)     Wall clock time:  0.268959045
+(PID.TID 0000.0001)           User time:  0.100000381
+(PID.TID 0000.0001)         System time:  0.100000024
+(PID.TID 0000.0001)     Wall clock time:  0.762701035
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
