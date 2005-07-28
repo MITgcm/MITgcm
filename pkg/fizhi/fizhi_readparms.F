@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.14 2005/06/03 22:45:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.15 2005/07/28 15:37:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -70,7 +70,7 @@ C  if runlength has been set in the fizhi namelist
       if(runlength.gt.0.) then
        mmdd = int(runlength)
        hhmmss = int((runlength - int(runlength))*1.e6)
-       if(mmdd.le.100) then
+       if(mmdd.lt.100) then
         nincr = nsecf2(hhmmss,mmdd,nymdcurrent)
        else
         call time2freq2(mmdd,nymdcurrent,nhmscurrent,nincr)
