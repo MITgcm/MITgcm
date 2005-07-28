@@ -17,6 +17,7 @@ c     ==================================================================
      &                  , xx_tauv_dummy
      &                  , xx_atemp_dummy
      &                  , xx_aqh_dummy
+     &                  , xx_precip_dummy
      &                  , xx_uwind_dummy
      &                  , xx_vwind_dummy
      &                  , xx_obcsn_dummy
@@ -60,6 +61,7 @@ c     ==================================================================
       _RL xx_tauv_dummy
       _RL xx_atemp_dummy
       _RL xx_aqh_dummy
+      _RL xx_precip_dummy
       _RL xx_uwind_dummy
       _RL xx_vwind_dummy
       _RL xx_obcsn_dummy

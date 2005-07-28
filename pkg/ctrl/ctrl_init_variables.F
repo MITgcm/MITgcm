@@ -156,6 +156,19 @@ c     == end of interface ==
       enddo
 #endif
 
+#ifdef ALLOW_PRECIP_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_precip0(i,j,bi,bj) = 0. _d 0
+              xx_precip1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 #ifdef ALLOW_OBCS_CONTROL
       IF (useOBCS) CALL CTRL_INIT_OBCS_VARIABLES( mythid )
 #endif
