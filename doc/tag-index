@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.516 2005/07/27 21:16:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.517 2005/07/28 13:43:14 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57m_post
 o re-arrange exp. adjustment.cs-32x32x1 (adjust_nlfs.cs-32x32x1 merge into)
   and advect_cs (use EXCH-2 and standard cs-32 grid files).
 o pkg/exch2: filling of face-corner halo regions is optional 
