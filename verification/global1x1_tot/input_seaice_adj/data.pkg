@@ -4,9 +4,10 @@
 # Packages
 # ***************
  &PACKAGES
- useKPP	      = .TRUE.,
- useGMRedi    = .TRUE.,
- useSeaice    = .TRUE.,
- useGrdchk    = .FALSE.,
- useECCO      = .TRUE.,
+ useKPP	        = .TRUE.,
+ useGMRedi      = .TRUE.,
+ useSeaice      = .TRUE.,
+ useGrdchk      = .FALSE.,
+ useECCO        = .TRUE.,
+ useDiagnostics = .TRUE.,
  /

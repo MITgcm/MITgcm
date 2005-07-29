@@ -82,6 +82,8 @@ C       >>> Cost function contributions
 # define ALLOW_AQH_COST_CONTRIBUTION
 # define ALLOW_UWIND_COST_CONTRIBUTION
 # define ALLOW_VWIND_COST_CONTRIBUTION
+# define ALLOW_PRECIP_COST_CONTRIBUTION
+# define ALLOW_SWFLUX_COST_CONTRIBUTION
 
 # define GENERIC_BAR_MONTH
 # define ALLOW_THETA_COST_CONTRIBUTION
@@ -146,19 +148,14 @@ C       >>> Surface fluxes.
 #undef ALLOW_SFLUX_CONTROL
 #undef ALLOW_USTRESS_CONTROL
 #undef ALLOW_VSTRESS_CONTROL
-#undef  ALLOW_SWFLUX_CONTROL
-#undef  ALLOW_LWFLUX_CONTROL
 
-C       >>> Atmospheric state.
+C       >>> Atmospheric state and radiation.
 #define  ALLOW_ATEMP_CONTROL
 #define  ALLOW_AQH_CONTROL
 #define  ALLOW_UWIND_CONTROL
 #define  ALLOW_VWIND_CONTROL
-#undef  ALLOW_PRECIP_CONTROL
-
-C       >>> Radiation
-#undef  ALLOW_SWFLUX_CONTROL
-#undef  ALLOW_LWFLUX_CONTROL
+#define  ALLOW_PRECIP_CONTROL
+#define  ALLOW_SWFLUX_CONTROL
 
 C       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined
