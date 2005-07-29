@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_TAVE.h,v 1.1 2005/01/04 00:11:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_TAVE.h,v 1.2 2005/07/29 18:24:35 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -39,3 +39,7 @@ C     Storage arrays for time-averages
 #endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_GMREDI */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

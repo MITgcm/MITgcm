@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.523 2005/07/29 17:57:47 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.524 2005/07/29 18:24:35 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o MNC-ify the gmredi package -- tested and works w/ and w/o mnc 
+  for ideal_2D_oce and lab_sea on linux_ia32_g77
 
 checkpoint57n_post
 o adding precip control xx_precip 32

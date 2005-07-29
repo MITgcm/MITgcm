@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.11 2003/07/18 20:06:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.12 2005/07/29 18:24:35 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -8,9 +8,11 @@ C     Package flag
       logical GM_AdvForm
       logical GM_AdvSeparate 
       logical GM_ExtraDiag 
+      logical GM_MNC
+      logical GM_MDSIO
       COMMON /GM_PACKAGE/ GMREDIisON, 
      &                    GM_AdvForm, GM_AdvSeparate, 
-     &                    GM_ExtraDiag
+     &                    GM_ExtraDiag, GM_MNC, GM_MDSIO
 
 C     GM/Redi parameters
 C     GM_Small_Number :: epsilon used in computing the slope
@@ -104,3 +106,7 @@ C     for Visbeck et al. parameterization)
 #endif
 
 #endif /* ALLOW_GMREDI */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.8 2004/11/21 21:48:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.9 2005/07/29 18:24:35 edhill Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -36,3 +36,7 @@ C  instead of the Skew-Flux form (=default)
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

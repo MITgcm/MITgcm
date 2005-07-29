@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.10 2005/01/03 14:35:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.11 2005/07/29 18:24:35 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -40,7 +40,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Visbeck_depth,
      &          GM_Visbeck_maxval_K,
      &          GM_Scrit,
-     &          GM_Sd
+     &          GM_Sd,
+     &          GM_MNC
 c     &          GM_dumpFreq,
 c     &          GM_taveFreq
 
@@ -52,20 +53,9 @@ C     iUnit       - Work variable for IO unit number
 
 C--   GMREDI_READPARMS has been called so we know that
 C     the package is active.
-      GMRediIsOn=.TRUE.
-
+      GMRediIsOn = .TRUE.
 
       _BEGIN_MASTER(myThid)
-
-      WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-    
-
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.gmredi', 'GM_READPARMS',
-     O                          iUnit,
-     I                          myThid )
 
 C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
@@ -75,14 +65,15 @@ C--   Default values GM/Redi
       GM_maxslope         = 1.0D-2
       GM_Kmin_horiz       = 0.
       GM_Small_Number     = 1. _d -12
-      GM_slopeSqCutoff   = 1. _d +48
+      GM_slopeSqCutoff    = 1. _d +48
       GM_taper_scheme     = ' '
       GM_Scrit            = 0.004
       GM_Sd               = 0.001
-
+      GM_MNC              = useMNC
+      
 C--   Default values GM/Redi I/O control
-c      GM_dumpFreq         = -1.
-c      GM_taveFreq         = -1.
+c     GM_dumpFreq         = -1.
+c     GM_taveFreq         = -1.
 
 C--   Default values Visbeck
       GM_Visbeck_alpha    = 0.
@@ -90,14 +81,20 @@ C--   Default values Visbeck
       GM_Visbeck_depth    = 1000.D0
       GM_Visbeck_maxval_K = 2500.D0
 
-C--   Read parameters from open data file
-      READ(UNIT=iUnit,NML=GM_PARM01)
+      WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      CALL OPEN_COPY_DATA_FILE(
+     I                          'data.gmredi', 'GM_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
+C     Read parameters from open data file
+      READ(UNIT=iUnit,NML=GM_PARM01)
       WRITE(msgBuf,'(A)') ' GM_READPARMS: finished reading data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
-C--   Close the open data file
+C     Close the open data file
       CLOSE(iUnit)
 
 C     Default value for GM_isopycK is equal to GM_background_K :
@@ -117,10 +114,85 @@ C     Some constants
         GM_ExtraDiag = GM_isopycK.NE.GM_background_K
       ENDIF
 
+C     Make sure that we locally honor the global MNC on/off flag
+      GM_MNC = GM_MNC .AND. useMNC
+#ifndef ALLOW_MNC
+C     Fix to avoid running without getting any output:
+      GM_MNC = .FALSE.
+#endif
+      GM_MDSIO = (.NOT. GM_MNC) .OR. outputTypesInclusive
+
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
+
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+        CALL MNC_CW_ADD_VNAME('Kux','U_xy_Hn__C__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kux','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kux','description',
+     &       'GM Tensor Kux is K_11 element, X direction at U point',
+     &       myThid)
+C        CALL MNC_CW_ADD_VATTR_TEXT('Kux',
+C    &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kvy','V_xy_Hn__C__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kvy','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kvy','description',
+     &       'GM Tensor Kvy is K_22 element, Y direction at V point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kuz','U_xy_Hn__C__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kuz','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kuz','description',
+     &       'GM Tensor Kuz is K_13 element, Z direction at U point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kvz','V_xy_Hn__C__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kvz','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kvz','description',
+     &       'GM Tensor Kvz is K_23 element, Z direction at V point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kwx','Cen_xy_Hn__L__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwx','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwx','description',
+     &       'GM Tensor Kwx is K_31 element, X direction at W point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kwy','Cen_xy_Hn__L__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwy','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwy','description',
+     &       'GM Tensor Kwy is K_32 element, Y direction at W point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('Kwz','Cen_xy_Hn__L__t', 4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwz','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('Kwz','description',
+     &       'GM Tensor Kwz is K_33 element, Z direction at W point',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('VisbK','Cen_xy_Hn__C__t',4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('VisbK','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('VisbK','description',
+     &       'GM mixing/stirring coef after Visbeck et al.',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('PsiX','Cen_xy_Hn__C__t',4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('PsiX','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('PsiX','description',
+     &       'GM bolus velocity streamfunction in X',
+     &       myThid)
+
+        CALL MNC_CW_ADD_VNAME('PsiY','Cen_xy_Hn__C__t',4,5,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('PsiY','units','m^2/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('PsiY','description',
+     &       'GM bolus velocity streamfunction in Y', 
+     &       myThid)
+
+      ENDIF
+#endif /* ALLOW_MNC */
 
 #endif /* ALLOW_GMREDI */
 

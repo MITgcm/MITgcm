@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.3 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.4 2005/07/29 18:24:35 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -51,17 +51,40 @@ C     == Local variables ==
 
       IF ( DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
      &   ) THEN 
-        WRITE(suff,'(I10.10)') myIter
+
+        IF ( GM_MDSIO ) THEN
+          WRITE(suff,'(I10.10)') myIter
 #ifdef GM_NON_UNITY_DIAGONAL
-        CALL WRITE_FLD_XYZ_RL( 'GM_Kux.',suff,Kux,myIter,myThid) 
-        CALL WRITE_FLD_XYZ_RL( 'GM_Kvy.',suff,Kvy,myIter,myThid) 
+          CALL WRITE_FLD_XYZ_RL( 'GM_Kux.',suff,Kux,myIter,myThid)
+          CALL WRITE_FLD_XYZ_RL( 'GM_Kvy.',suff,Kvy,myIter,myThid)
 #endif
 #ifdef GM_EXTRA_DIAGONAL
-       IF (GM_ExtraDiag) THEN
-        CALL WRITE_FLD_XYZ_RL( 'GM_Kuz.',suff,Kuz,myIter,myThid) 
-        CALL WRITE_FLD_XYZ_RL( 'GM_Kvz.',suff,Kvz,myIter,myThid) 
-       ENDIF 
+          IF (GM_ExtraDiag) THEN
+            CALL WRITE_FLD_XYZ_RL( 'GM_Kuz.',suff,Kuz,myIter,myThid)
+            CALL WRITE_FLD_XYZ_RL( 'GM_Kvz.',suff,Kvz,myIter,myThid)
+          ENDIF
 #endif
+        ENDIF
+
+#ifdef ALLOW_MNC
+        IF ( GM_MNC ) THEN
+          CALL MNC_CW_SET_UDIM('gm_inst', -1, myThid)
+          CALL MNC_CW_RL_W_S('D','gm_inst',0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM('gm_inst', 0, myThid)
+          CALL MNC_CW_I_W_S('I','gm_inst',0,0,'iter',myIter,myThid)
+#ifdef GM_NON_UNITY_DIAGONAL
+          CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kux',Kux,myThid)
+          CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kvy',Kvy,myThid)
+#endif
+#ifdef GM_EXTRA_DIAGONAL
+          IF (GM_ExtraDiag) THEN
+            CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kuz',Kuz,myThid)
+            CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kvz',Kvz,myThid)
+          ENDIF 
+#endif
+        ENDIF
+#endif
+
       ENDIF 
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
@@ -98,22 +121,49 @@ C      Normalize by integrated time
         ENDDO
        ENDDO
          
-       WRITE(suff,'(I10.10)') myIter
-
-       CALL WRITE_FLD_XYZ_RL('GM_Kwx-T.',suff,GM_Kwx_T,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GM_Kwy-T.',suff,GM_Kwy_T,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GM_Kwz-T.',suff,GM_Kwz_T,myIter,myThid)
+       IF ( GM_MDSIO ) THEN
+         WRITE(suff,'(I10.10)') myIter
+         CALL WRITE_FLD_XYZ_RL('GM_Kwx-T.',suff,GM_Kwx_T,myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('GM_Kwy-T.',suff,GM_Kwy_T,myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('GM_Kwz-T.',suff,GM_Kwz_T,myIter,myThid)
 #ifdef GM_VISBECK_VARIABLE_K
-       IF (GM_Visbeck_alpha.NE.0.)
-     &  CALL WRITE_FLD_XY_RL('Visbeck_K-T.',suff,Visbeck_K_T,
-     &                        myIter,myThid)
+         IF (GM_Visbeck_alpha.NE.0.)
+     &        CALL WRITE_FLD_XY_RL('Visbeck_K-T.',suff,Visbeck_K_T,
+     &                             myIter,myThid)
 #endif
 #ifdef GM_BOLUS_ADVEC
-       IF (GM_AdvForm) THEN
-        CALL WRITE_FLD_XYZ_RL('GM_PsiXtave.',suff,GM_PsiXtave,
-     &                        myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL('GM_PsiYtave.',suff,GM_PsiYtave,
-     &                        myIter,myThid)
+         IF (GM_AdvForm) THEN
+           CALL WRITE_FLD_XYZ_RL('GM_PsiXtave.',suff,GM_PsiXtave,
+     &                           myIter,myThid)
+           CALL WRITE_FLD_XYZ_RL('GM_PsiYtave.',suff,GM_PsiYtave,
+     &                           myIter,myThid)
+         ENDIF
+#endif
+       ENDIF
+       
+#ifdef ALLOW_MNC
+       IF ( GM_MNC ) THEN
+         CALL MNC_CW_SET_UDIM('gm_tave', -1, myThid)
+         CALL MNC_CW_RL_W_S('D','gm_tave',0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM('gm_tave', 0, myThid)
+         CALL MNC_CW_I_W_S('I','gm_tave',0,0,'iter',myIter,myThid)
+         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwx',GM_Kwx_T,myThid)
+         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwy',GM_Kwy_T,myThid)
+         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwz',GM_Kwz_T,myThid)
+#ifdef GM_VISBECK_VARIABLE_K
+         IF (GM_Visbeck_alpha.NE.0.) THEN
+           CALL MNC_CW_RL_W('D','gm_tave',0,0,'VisbK', 
+     &          Visbeck_K_T, myThid)
+         ENDIF
+#endif
+#ifdef GM_BOLUS_ADVEC
+         IF (GM_AdvForm) THEN
+           CALL MNC_CW_RL_W(
+     &          'D','gm_tave',0,0,'PsiX', GM_PsiXtave, myThid)
+           CALL MNC_CW_RL_W(
+     &          'D','gm_tave',0,0,'PsiY', GM_PsiYtave, myThid)
+         ENDIF
+#endif
        ENDIF
 #endif
          
