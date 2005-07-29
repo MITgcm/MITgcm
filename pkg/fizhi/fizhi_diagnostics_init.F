@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.2 2005/07/28 00:09:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.3 2005/07/29 16:07:15 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -44,20 +44,6 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      diagName  = 'UFLUX   '
-      diagTitle  = 'Zonal Wind Surface Stress  (N/m^2)'
-      diagUnits  = 'N/m2            '
-      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName  = 'VFLUX   '
-      diagTitle  = 'Meridional Wind Surface Stress  (N/m^2)'
-      diagUnits  = 'N/m2            '
-      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
       diagName  = 'HFLUX   '
       diagTitle  = 'Sensible Heat Flux (pos.upwrd)  (W/m^2)'
       diagUnits  = 'watt/m2         '
@@ -69,6 +55,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  = 'Latent   Heat Flux (pos.upwrd)  (W/m^2)'
       diagUnits  = 'watt/m2         '
       diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'UFLUX   '
+      diagTitle  = 'Zonal Wind Surface Stress  (N/m^2)'
+      diagUnits  = 'N/m2            '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'L1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VFLUX   '
+      diagTitle  = 'Meridional Wind Surface Stress  (N/m^2)'
+      diagUnits  = 'N/m2            '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
