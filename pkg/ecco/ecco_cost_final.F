@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.10 2005/07/28 19:51:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.11 2005/07/29 05:19:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -46,6 +46,7 @@ c     == local variables ==
 
       _RL f_temp0, f_salt0,  f_temp, f_salt 
       _RL f_uwind, f_vwind, f_atemp, f_aqh, f_precip, f_swflux
+      _RL f_uwindm, f_vwindm, f_atempm, f_aqhm, f_precipm, f_swfluxm
       _RL f_tauu, f_tauv, f_hflux, f_sflux 
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
       _RL f_hfluxmm, f_sfluxmm 
@@ -62,6 +63,8 @@ c     == local variables ==
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
       _RL no_uwind, no_vwind, no_atemp, no_aqh, no_precip, no_swflux
+      _RL no_uwindm, no_vwindm, no_atempm, no_aqhm, 
+     &    no_precipm, no_swfluxm
       _RL no_tauu, no_tauv, no_hflux, no_sflux 
       _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm 
       _RL no_hfluxmm, no_sfluxmm 
@@ -111,6 +114,12 @@ c     == end of interface ==
       f_aqh  = 0. _d 0
       f_precip = 0. _d 0
       f_swflux = 0. _d 0
+      f_uwindm  = 0. _d 0
+      f_vwindm  = 0. _d 0
+      f_atempm  = 0. _d 0
+      f_aqhm  = 0. _d 0
+      f_precipm = 0. _d 0
+      f_swfluxm = 0. _d 0
       f_ssh = 0. _d 0
       f_sst = 0. _d 0
       f_tmi = 0. _d 0
@@ -163,6 +172,12 @@ c     == end of interface ==
       no_aqh  = 0. _d 0
       no_precip = 0. _d 0
       no_swflux = 0. _d 0
+      no_uwindm  = 0. _d 0
+      no_vwindm  = 0. _d 0
+      no_atempm  = 0. _d 0
+      no_aqhm  = 0. _d 0
+      no_precipm = 0. _d 0
+      no_swfluxm = 0. _d 0
       no_ssh = 0. _d 0
       no_sst = 0. _d 0
       no_tmi = 0. _d 0
@@ -238,6 +253,12 @@ c--   Sum up all contributions.
      &            + mult_aqh     * objf_aqh(bi,bj)  
      &            + mult_precip  * objf_precip(bi,bj)  
      &            + mult_swflux  * objf_swflux(bi,bj)  
+     &            + mult_uwind   * objf_uwindm(bi,bj)
+     &            + mult_vwind   * objf_vwindm(bi,bj)
+     &            + mult_atemp   * objf_atempm(bi,bj)  
+     &            + mult_aqh     * objf_aqhm(bi,bj)  
+     &            + mult_precip  * objf_precipm(bi,bj)  
+     &            + mult_swflux  * objf_swfluxm(bi,bj)  
      &            + mult_obcsn   * objf_obcsn(bi,bj)  
      &            + mult_obcss   * objf_obcss(bi,bj)  
      &            + mult_obcsw   * objf_obcsw(bi,bj)  
@@ -269,8 +290,14 @@ c--   Sum up all contributions.
           f_vwind = f_vwind + objf_vwind(bi,bj)
           f_atemp = f_atemp + objf_atemp(bi,bj)
           f_aqh = f_aqh + objf_aqh(bi,bj)
-          f_precip = f_precip + objf_precip(bi,bj)
-          f_swflux = f_swflux + objf_swflux(bi,bj)
+          f_precip = f_precip + objf_precipm(bi,bj)
+          f_swflux = f_swflux + objf_swfluxm(bi,bj)
+          f_uwindm = f_uwindm + objf_uwindm(bi,bj)
+          f_vwindm = f_vwindm + objf_vwindm(bi,bj)
+          f_atempm = f_atempm + objf_atempm(bi,bj)
+          f_aqhm   = f_aqhm   + objf_aqhm(bi,bj)
+          f_precipm = f_precipm + objf_precipm(bi,bj)
+          f_swfluxm = f_swfluxm + objf_swfluxm(bi,bj)
           f_ssh  = f_ssh + objf_h(bi,bj) 
           f_sst  = f_sst + objf_sst(bi,bj) 
           f_tmi  = f_tmi + objf_tmi(bi,bj) 
@@ -320,6 +347,12 @@ c--   Sum up all contributions.
           no_swflux = no_swflux + num_swflux(bi,bj)
           no_uwind  = no_uwind + num_uwind(bi,bj)
           no_vwind  = no_vwind + num_vwind(bi,bj)
+          no_atempm  = no_atempm + num_atempm(bi,bj)
+          no_aqhm    = no_aqhm + num_aqhm(bi,bj)
+          no_precipm = no_precipm + num_precipm(bi,bj)
+          no_swfluxm = no_swfluxm + num_swfluxm(bi,bj)
+          no_uwindm  = no_uwindm + num_uwindm(bi,bj)
+          no_vwindm  = no_vwindm + num_vwindm(bi,bj)
           no_ssh  = no_ssh + num_h(bi,bj) 
           no_sst  = no_sst + num_sst(bi,bj) 
           no_tmi  = no_tmi + num_tmi(bi,bj) 
@@ -379,6 +412,12 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_aqh , myThid )
       _GLOBAL_SUM_R8( f_precip , myThid )
       _GLOBAL_SUM_R8( f_swflux , myThid )
+      _GLOBAL_SUM_R8( f_uwindm , myThid )
+      _GLOBAL_SUM_R8( f_vwindm , myThid )
+      _GLOBAL_SUM_R8( f_atempm , myThid )
+      _GLOBAL_SUM_R8( f_aqhm   , myThid )
+      _GLOBAL_SUM_R8( f_precipm , myThid )
+      _GLOBAL_SUM_R8( f_swfluxm , myThid )
       _GLOBAL_SUM_R8( f_ssh , myThid )
       _GLOBAL_SUM_R8( f_sst , myThid )
       _GLOBAL_SUM_R8( f_tmi , myThid )
@@ -431,6 +470,12 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_aqh , myThid )
       _GLOBAL_SUM_R8( no_precip , myThid )
       _GLOBAL_SUM_R8( no_swflux , myThid )
+      _GLOBAL_SUM_R8( no_uwindm , myThid )
+      _GLOBAL_SUM_R8( no_vwindm , myThid )
+      _GLOBAL_SUM_R8( no_atempm , myThid )
+      _GLOBAL_SUM_R8( no_aqhm   , myThid )
+      _GLOBAL_SUM_R8( no_precipm , myThid )
+      _GLOBAL_SUM_R8( no_swfluxm , myThid )
       _GLOBAL_SUM_R8( no_ssh , myThid )
       _GLOBAL_SUM_R8( no_sst , myThid )
       _GLOBAL_SUM_R8( no_tmi , myThid )
@@ -511,6 +556,18 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_precip  =',f_precip
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swflux  =',f_swflux
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_uwindm     =',f_uwindm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_vwindm     =',f_vwindm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_atempm     =',f_atempm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_aqhm     =',f_aqhm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_precipm  =',f_precipm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_swfluxm  =',f_swfluxm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_atl     =',f_atl
       write(standardmessageunit,'(A,D22.15)')
@@ -601,6 +658,12 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_aqh =', f_aqh, no_aqh
         write(ifc,*) 'f_precip =', f_precip, no_precip
         write(ifc,*) 'f_swflux =', f_swflux, no_swflux
+        write(ifc,*) 'f_uwindm =', f_uwindm, no_uwindm
+        write(ifc,*) 'f_vwindm =', f_vwindm, no_vwindm
+        write(ifc,*) 'f_atempm =', f_atempm, no_atempm
+        write(ifc,*) 'f_aqhm =', f_aqhm, no_aqhm
+        write(ifc,*) 'f_precipm =', f_precipm, no_precipm
+        write(ifc,*) 'f_swfluxm =', f_swfluxm, no_swfluxm
         write(ifc,*) 'f_ssh =', f_ssh, no_ssh
         write(ifc,*) 'f_sst =', f_sst, no_sst
         write(ifc,*) 'f_tmi =', f_tmi, no_tmi

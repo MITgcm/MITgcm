@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.11 2005/07/28 19:51:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.12 2005/07/29 05:19:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -93,7 +93,11 @@ c--   Read the namelist input.
      &                   mult_ice,
      &                   mult_kapgm, mult_diffkr,
      &                   whflux0, wsflux0, wtau0,
-     &                   watemp0, waqh0, wprecip0, wswflux0, wwind0,
+     &                   watemp0, waqh0, 
+     &                   wprecip0, wswflux0, wwind0,
+     &                   wmean_hflux, wmean_sflux, wmean_tau,
+     &                   wmean_atemp, wmean_aqh, 
+     &                   wmean_precip, wmean_swflux, wmean_wind,
      &                   costIceStart1, costIceStart2,
      &                   costIceEnd1, costIceEnd2,
      &                   cost_ice_flag,
@@ -225,6 +229,14 @@ c--     Set default values.
         whflux0               =      0. _d 0
         wsflux0               =      0. _d 0
         wtau0                 =      0. _d 0
+        wmean_atemp           =      0. _d 0
+        wmean_aqh             =      0. _d 0
+        wmean_precip          =      0. _d 0
+        wmean_swflux          =      0. _d 0
+        wmean_wind            =      0. _d 0
+        wmean_hflux           =      0. _d 0
+        wmean_sflux           =      0. _d 0
+        wmean_tau             =      0. _d 0
         costIceStart1         =      0
         costIceStart2         =      0
         costIceEnd1           =      0

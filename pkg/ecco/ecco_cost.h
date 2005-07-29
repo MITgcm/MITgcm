@@ -324,6 +324,12 @@ c                  function contributions.
      &                objf_swflux,
      &                objf_uwind,
      &                objf_vwind,
+     &                objf_atempm,
+     &                objf_aqhm,
+     &                objf_precipm,
+     &                objf_swfluxm,
+     &                objf_uwindm,
+     &                objf_vwindm,
      &                objf_obcsn,
      &                objf_obcss,
      &                objf_obcsw,
@@ -377,6 +383,12 @@ c                  function contributions.
       _RL  objf_swflux(nsx,nsy)
       _RL  objf_uwind(nsx,nsy)
       _RL  objf_vwind(nsx,nsy)
+      _RL  objf_atempm(nsx,nsy)
+      _RL  objf_aqhm  (nsx,nsy)
+      _RL  objf_precipm(nsx,nsy)
+      _RL  objf_swfluxm(nsx,nsy)
+      _RL  objf_uwindm(nsx,nsy)
+      _RL  objf_vwindm(nsx,nsy)
       _RL  objf_obcsn(nsx,nsy)
       _RL  objf_obcss(nsx,nsy)
       _RL  objf_obcsw(nsx,nsy)
@@ -432,6 +444,12 @@ c                  function contributions.
      &                num_swflux,
      &                num_uwind,
      &                num_vwind,
+     &                num_atempm,
+     &                num_aqhm,
+     &                num_precipm,
+     &                num_swfluxm,
+     &                num_uwindm,
+     &                num_vwindm,
      &                num_obcsn,
      &                num_obcss,
      &                num_obcsw,
@@ -485,6 +503,12 @@ c                  function contributions.
       _RL  num_swflux(nsx,nsy)
       _RL  num_uwind(nsx,nsy)
       _RL  num_vwind(nsx,nsy)
+      _RL  num_atempm(nsx,nsy)
+      _RL  num_aqhm  (nsx,nsy)
+      _RL  num_precipm(nsx,nsy)
+      _RL  num_swfluxm(nsx,nsy)
+      _RL  num_uwindm(nsx,nsy)
+      _RL  num_vwindm(nsx,nsy)
       _RL  num_obcsn(nsx,nsy)
       _RL  num_obcss(nsx,nsy)
       _RL  num_obcsw(nsx,nsy)
@@ -778,6 +802,19 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wprecip0
       _RL wswflux0
       _RL wwind0
+
+      common /ecco_cost_weights_mean_r/
+     &        wmean_hflux, wmean_sflux, wmean_tau,
+     &        wmean_atemp, wmean_aqh, 
+     &        wmean_precip, wmean_swflux, wmean_wind
+      _RL wmean_hflux
+      _RL wmean_sflux
+      _RL wmean_tau
+      _RL wmean_atemp
+      _RL wmean_aqh
+      _RL wmean_precip
+      _RL wmean_swflux
+      _RL wmean_wind
 						 
       common /ecco_cost_weights_2_r/
      &                      whflux2,wsflux2,wtauu2,wtauv2
