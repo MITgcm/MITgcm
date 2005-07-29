@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.17 2005/07/11 18:34:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.18 2005/07/29 15:50:53 heimbach Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -496,6 +496,15 @@ C--   surface fluxes:
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+#ifdef SHORTWAVE_HEATING
+      diagName  = 'SWFLUX  '
+      diagTitle = 'net upward SW radiation, >0 increases theta     '
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'PRESSURE'
