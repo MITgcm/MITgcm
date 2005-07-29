@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.3 2005/07/28 21:52:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.4 2005/07/29 20:01:05 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -111,6 +111,7 @@ then
 
   cd rank_2
   ./SHARE_OCN_GRID '../rank_1'
+  ./IMPORT_INPUT_FILES
   cd $dir
 
   rm -rf cpl ocn atm
