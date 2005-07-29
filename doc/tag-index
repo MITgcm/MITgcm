@@ -1,11 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.522 2005/07/29 05:25:55 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.523 2005/07/29 17:57:47 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-I'LL TAG TOMORROW
-
+checkpoint57n_post
 o adding precip control xx_precip 32
 o adding swflux control xx_swflux 33
 o Replacing 10 forcing penalty cost routines by 1 generic.
@@ -15,6 +14,8 @@ o Time-mean constant error is now read in data.ecco (instead of hard-coded)
 o in natl_box_adjoint:
   * updated exp 1 to 10 
     (but does not have time-mean vs. variable split results yet)
+o updated global1x1/*_seaice_adj/
+  to incorporate latest changes
 o enable useSingleCpuIO for mdsio vector routines
   (applies in particular to tapelev I/O)
 o removed inefficient K-loop in all active_file*control*.F
