@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.20 2005/07/30 00:58:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.21 2005/07/30 23:53:48 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -199,10 +199,6 @@ C     Check that enough parameters were specified
       PTRACERS_pickup_read_mdsio  = (.NOT. PTRACERS_pickup_read_mnc)
      &     .OR. outputTypesInclusive
       
-      IF (useMNC) THEN
-C       Initialize the MNC variable types for PTRACERS 
-        CALL PTRACERS_MNC_INIT( myThid )
-      ENDIF
 #else
       PTRACERS_timeave_mnc        = .FALSE.
       PTRACERS_snapshot_mnc       = .FALSE.

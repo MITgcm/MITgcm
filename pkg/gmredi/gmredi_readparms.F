@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.12 2005/07/29 18:50:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.13 2005/07/30 23:53:48 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -126,12 +126,6 @@ C     Fix to avoid running without getting any output:
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        CALL GMREDI_MNC_INIT( myThid )
-      ENDIF
-#endif /* ALLOW_MNC */
 
 #endif /* ALLOW_GMREDI */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_fixed.F,v 1.1 2005/01/04 00:19:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_fixed.F,v 1.2 2005/07/30 23:53:48 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -32,6 +32,12 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+        CALL GMREDI_MNC_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_MNC */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
