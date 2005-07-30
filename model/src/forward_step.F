@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.117 2005/05/23 19:31:39 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.118 2005/07/30 23:39:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -418,19 +418,6 @@ C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
-#endif
-
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Step forward W field in N-H algorithm
-      IF ( momStepping .AND. nonHydrostatic ) THEN
-#ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
-     &     CALL DEBUG_CALL('CALC_GW',myThid)
-#endif
-         CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
-         CALL CALC_GW(myThid)
-         CALL TIMER_STOP ('CALC_GW          [FORWARD_STEP]',myThid)
-      ENDIF
 #endif
 
 C--   Update time-counter

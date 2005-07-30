@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.121 2005/07/30 22:09:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.122 2005/07/30 23:39:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,7 @@ C     | pressure such that the resulting flow is either consistent
 C     | with the free-surface evolution or the rigid-lid:
 C     |   U[n] = U* + dt x d/dx P
 C     |   V[n] = V* + dt x d/dy P
+C     |   W[n] = W* + dt x d/dz P  (NH mode)
 C     |
 C     | "Calculation of Gs"
 C     | ===================
@@ -90,6 +91,8 @@ C     == Global variables ===
 C     !CALLING SEQUENCE:
 C     DYNAMICS()
 C      |
+C      |-- CALC_EP_FORCING
+C      |
 C      |-- CALC_GRAD_PHI_SURF
 C      |
 C      |-- CALC_VISCOSITY
@@ -104,11 +107,17 @@ C      |-- TIMESTEP
 C      |
 C      |-- OBCS_APPLY_UV 
 C      |
+C      |-- MOM_U_IMPLICIT_R      
+C      |-- MOM_V_IMPLICIT_R      
+C      |
 C      |-- IMPLDIFF      
 C      |
 C      |-- OBCS_APPLY_UV
 C      |
-C      |-- CALL DEBUG_STATS_RL
+C      |-- CALC_GW
+C      |
+C      |-- DIAGNOSTICS_FILL
+C      |-- DEBUG_STATS_RL
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -262,8 +271,8 @@ C     uninitialised but inert locations.
 cph(
 c--   need some re-initialisation here to break dependencies
 cph)
-           gu(i,j,k,bi,bj) = 0. _d 0
-           gv(i,j,k,bi,bj) = 0. _d 0
+           gU(i,j,k,bi,bj) = 0. _d 0
+           gV(i,j,k,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -470,6 +479,21 @@ C--     End implicit Vertical advection & viscosity
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
        CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
+      ENDIF
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Step forward W field in N-H algorithm
+      IF ( momStepping .AND. nonHydrostatic ) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('CALC_GW',myThid)
+#endif
+         CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
+         CALL CALC_GW( myTime, myIter, myThid )
+         CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
       ENDIF
 #endif
 
