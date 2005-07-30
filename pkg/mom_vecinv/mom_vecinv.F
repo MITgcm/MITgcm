@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.42 2005/06/22 00:33:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.43 2005/07/30 22:05:36 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VECINV( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
-     I        dPhiHydX,dPhiHydY,KappaRU,KappaRV,
+     I        KappaRU, KappaRV,
      U        fVerU, fVerV,
      O        guDiss, gvDiss,
      I        myTime, myIter, myThid)
@@ -42,15 +42,12 @@ C     == Global variables ==
 C     == Routine arguments ==
 C     fVerU  :: Flux of momentum in the vertical direction, out of the upper
 C     fVerV  :: face of a cell K ( flux into the cell above ).
-C     dPhiHydX,Y :: Gradient (X & Y dir.) of Hydrostatic Potential
 C     guDiss :: dissipation tendency (all explicit terms), u component
 C     gvDiss :: dissipation tendency (all explicit terms), v component
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown                     - Index for upper and lower layers.
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
-      _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -89,10 +86,8 @@ C     I,J,K - Loop counters
       INTEGER i,j,k
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
-      _RL  phxFac
 c     _RL  mtFacU
       _RL  ArDvdrFac
-      _RL  phyFac
 c     _RL  mtFacV
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
@@ -160,11 +155,9 @@ C--   Term by term tracer parmeters
 C     o U momentum equation
       ArDudrFac    = vfFacMom*1.
 c     mTFacU       = mtFacMom*1.
-      phxFac       = pfFacMom*1.
 C     o V momentum equation
       ArDvdrFac    = vfFacMom*1.
 c     mTFacV       = mtFacMom*1.
-      phyFac       = pfFacMom*1.
 
       IF (     no_slip_bottom
      &    .OR. bottomDragQuadratic.NE.0.
@@ -172,12 +165,6 @@ c     mTFacV       = mtFacMom*1.
        bottomDragTerms=.TRUE.
       ELSE
        bottomDragTerms=.FALSE.
-      ENDIF
-
-C-- with stagger time stepping, grad Phi_Hyp is directly incoporated in TIMESTEP
-      IF (staggerTimeStep) THEN
-        phxFac = 0.
-        phyFac = 0.
       ENDIF
 
 C--   Calculate open water fraction at vorticity points
@@ -256,7 +243,9 @@ C--   Vertical flux (fVer is at upper face of "u" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
       IF (momViscosity.AND..NOT.implicitViscosity) THEN
-       CALL MOM_U_RVISCFLUX(bi,bj,k,uVel,KappaRU,vrF,myThid)
+       IF ( k.LT.Nr ) THEN
+         CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,KappaRU,vrF,myThid)
+       ENDIF
 
 C     Combine fluxes
        DO j=jMin,jMax
@@ -316,7 +305,9 @@ C--   Vertical flux (fVer is at upper face of "v" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
       IF (momViscosity.AND..NOT.implicitViscosity) THEN
-       CALL MOM_V_RVISCFLUX(bi,bj,k,vVel,KappaRV,vrf,myThid)
+       IF ( k.LT.Nr ) THEN
+         CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,KappaRV,vrF,myThid)
+       ENDIF
 
 C     Combine fluxes -> fVerV
        DO j=jMin,jMax
@@ -387,8 +378,8 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
        ENDIF
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = uCf(i,j) - phxFac*dPhiHydX(i,j)
-         gV(i,j,k,bi,bj) = vCf(i,j) - phyFac*dPhiHydY(i,j)
+         gU(i,j,k,bi,bj) = uCf(i,j)
+         gV(i,j,k,bi,bj) = vCf(i,j)
         ENDDO
        ENDDO
        IF ( writeDiag ) THEN
@@ -408,8 +399,8 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = -phxFac*dPhiHydX(i,j)
-         gV(i,j,k,bi,bj) = -phyFac*dPhiHydY(i,j)
+         gU(i,j,k,bi,bj) = 0. _d 0
+         gV(i,j,k,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
       ENDIF
