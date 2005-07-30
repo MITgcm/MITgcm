@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.120 2005/07/11 19:30:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.121 2005/07/30 22:09:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -370,14 +370,15 @@ C        and step forward storing the result in gU, gV, etc...
 #ifdef ALLOW_MOM_FLUXFORM
            IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
+     I         KappaRU, KappaRV,
      U         fVerU, fVerV,
+     O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 #endif
 #ifdef ALLOW_MOM_VECINV
            IF (vectorInvariantMomentum) CALL MOM_VECINV(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
+     I         KappaRU, KappaRV,
      U         fVerU, fVerV,
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)

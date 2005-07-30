@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.37 2005/04/15 14:17:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.38 2005/07/30 22:09:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,6 +74,10 @@ C     Adams-Bashforth timestepping weights
 C-- explicit part of the surface potential gradient is added in this S/R
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
 
+C--  factors for gradient (X & Y directions) of Hydrostatic Potential
+      phxFac = pfFacMom
+      phyFac = pfFacMom
+
 C-- including or excluding momentum forcing from Adams-Bashforth:
       momForcing_In_AB = forcing_In_AB
       momForcing_In_AB = .TRUE.
@@ -93,29 +97,22 @@ C-    Initialize local arrays (not really necessary but safer)
        ENDDO
       ENDDO
 
-C--   Stagger time step: grad Phi_Hyp will be added later
-      IF (staggerTimeStep) THEN
-        phxFac = pfFacMom
-        phyFac = pfFacMom
-      ELSE
+      IF ( .NOT.staggerTimeStep ) THEN
 C--   Synchronous time step: add grad Phi_Hyp to gU,gV before doing Adams-Bashforth
-C     note: already done in S/R mom_vecinv and mom_fluxform but would be better 
-C     to add it to gU,gV here.
-c       DO j=jMin,jMax
-c        DO i=iMin,iMax
-c         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - pfFacMom*dPhiHydX(i,j)
-c         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) - pfFacMom*dPhiHydY(i,j)
-c        ENDDO
-c       ENDDO
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - phxFac*dPhiHydX(i,j)
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) - phyFac*dPhiHydY(i,j)
+         ENDDO
+        ENDDO
         phxFac = 0.
         phyFac = 0.
+c     ELSE
+C--   Stagger time step: grad Phi_Hyp will be added later
       ENDIF 
 
-#ifdef ALLOW_MOM_VECINV
 C--   Dissipation term inside the Adams-Bashforth:
-C     note: already in gU,gV if using fluxform
-      IF ( momViscosity .AND. momDissip_In_AB
-     &          .AND. vectorInvariantMomentum ) THEN
+      IF ( momViscosity .AND. momDissip_In_AB) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + guDissip(i,j)
@@ -123,7 +120,6 @@ C     note: already in gU,gV if using fluxform
          ENDDO
         ENDDO
       ENDIF
-#endif
 
 C--   Forcing term inside the Adams-Bashforth:
       IF (momForcing .AND. momForcing_In_AB) THEN
@@ -253,11 +249,8 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_MOM_VECINV
 C--   Dissipation term outside the Adams-Bashforth:
-C     note: only implemented with vecinv formulation
-      IF ( momViscosity .AND. .NOT.momDissip_In_AB
-     &               .AND. vectorInvariantMomentum ) THEN
+      IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           gUtmp(i,j) = gUtmp(i,j) + guDissip(i,j)
@@ -265,7 +258,6 @@ C     note: only implemented with vecinv formulation
          ENDDO
         ENDDO
       ENDIF
-#endif
 
 C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax
