@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.43 2005/07/30 22:05:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.44 2005/07/30 23:52:10 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -243,9 +243,7 @@ C--   Vertical flux (fVer is at upper face of "u" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
       IF (momViscosity.AND..NOT.implicitViscosity) THEN
-       IF ( k.LT.Nr ) THEN
-         CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,KappaRU,vrF,myThid)
-       ENDIF
+       CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,KappaRU,vrF,myThid)
 
 C     Combine fluxes
        DO j=jMin,jMax
@@ -305,9 +303,7 @@ C--   Vertical flux (fVer is at upper face of "v" cell)
 
 C     Eddy component of vertical flux (interior component only) -> vrF
       IF (momViscosity.AND..NOT.implicitViscosity) THEN
-       IF ( k.LT.Nr ) THEN
-         CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,KappaRV,vrF,myThid)
-       ENDIF
+       CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,KappaRV,vrF,myThid)
 
 C     Combine fluxes -> fVerV
        DO j=jMin,jMax
