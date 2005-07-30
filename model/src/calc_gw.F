@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.19 2005/05/31 14:49:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.20 2005/07/30 23:38:54 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -9,7 +9,7 @@ CBOP
 C     !ROUTINE: CALC_GW
 C     !INTERFACE:
       SUBROUTINE CALC_GW(     
-     I        myThid)
+     I           myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R CALC_GW                                               
@@ -35,7 +35,11 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Instance number for this innvocation of CALC_GW
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
