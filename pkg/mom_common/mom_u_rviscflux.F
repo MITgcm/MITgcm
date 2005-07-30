@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_rviscflux.F,v 1.2 2005/06/22 00:29:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_rviscflux.F,v 1.3 2005/07/30 22:02:14 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -14,7 +14,8 @@ C !INTERFACE: ==========================================================
      I        myThid)
 
 C !DESCRIPTION:
-C Calculates the area integrated vertical viscous fluxes of U:
+C Calculates the area integrated vertical viscous fluxes of U
+C  at vertical interface k (between level k & k-1):
 C \begin{equation*}
 C F^r = - \frac{ {\cal A}_w }{\Delta r_c} A_r \delta_k u 
 C \end{equation*}
@@ -43,24 +44,29 @@ C  rViscFluxU           :: viscous fluxes
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-C  Kp1                  :: =k+1 for k<Nr, k=Nr for k>=Nr
-      INTEGER I,J,Kp1
+      INTEGER i,j
 CEOP
 
-      Kp1=min(K+1,Nr)
-
-C     - Laplacian  and bi-harmonic terms
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
-        rViscFluxU(i,j) =
-     &   -KappaRU(i,j,kp1)
-     &   *rAw(i,j,bi,bj)
-     &   *( uFld(i,j,kp1,bi,bj)-uFld(i,j,k,bi,bj)
-     &    )*rkSign*recip_drC(kp1)
-     &    *_maskW(i,j,k,bi,bj)
-     &    *_maskW(i,j,kp1,bi,bj)
+C     - Vertical viscous flux
+      IF ( k.LE.1 .OR. k.GT.Nr ) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          rViscFluxU(i,j) = 0. _d 0
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+          rViscFluxU(i,j) =
+     &      -KappaRU(i,j,k)
+     &      *rAw(i,j,bi,bj)
+     &      *( uFld(i,j,k,bi,bj)-uFld(i,j,k-1,bi,bj)
+     &       )*rkSign*recip_drC(k)
+     &      *_maskW(i,j,k,bi,bj)
+     &      *_maskW(i,j,k-1,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 
       RETURN
       END
