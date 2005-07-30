@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.5 2005/05/25 04:03:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.6 2005/07/30 00:58:41 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -59,8 +59,6 @@ C     Functions
 C     Final Time Averages and Dump Files if needed
       IF ( DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
      &   ) THEN
-
-CML        WRITE(*,*) 'EH3:  myIter = ', myIter
         
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -81,7 +79,7 @@ C       Write to files
         _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. PTRACERS_write_mnc) THEN
+        IF ( PTRACERS_timeave_mnc ) THEN
           CALL MNC_CW_SET_UDIM('ptr_tave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','ptr_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('ptr_tave', 0, myThid)
@@ -108,7 +106,7 @@ C       Write to files
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-        IF (PTRACERS_write_mdsio) THEN
+        IF ( PTRACERS_timeave_mdsio ) THEN
         
 C         Set IO "context" for writing state
 #ifdef USE_DFILE

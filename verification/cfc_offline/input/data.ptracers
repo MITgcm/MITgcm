@@ -1,7 +1,9 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=2,
  PTRACERS_Iter0= 4248000,
- PTRACERS_write_mnc=.TRUE.,
+#
+# The following option is now obsolete:
+#  PTRACERS_write_mnc=.TRUE.,
 #
 # tracer 1 - dic
  PTRACERS_names(1)='cfc11',

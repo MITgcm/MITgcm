@@ -7,6 +7,8 @@
  PTRACERS_diffKr=3.E-5,
  PTRACERS_initialFile='lev_s.bin',
 #EH3 added for MNC
- PTRACERS_write_mnc=.TRUE.,
+#
+# The following option is now obsolete:
+#  PTRACERS_write_mnc=.TRUE.,
  PTRACERS_names(1)='salt_mimic',
  &

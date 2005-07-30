@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.19 2005/05/14 22:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.20 2005/07/30 00:58:41 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,6 +20,9 @@ C     !USES:
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -58,7 +61,8 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_write_mnc
+     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
+     &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
 
 C     This routine has been called by the main model so we set our
 C     internal flag to indicate we are in business
@@ -88,9 +92,18 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_units(iTracer)(ic:ic) = ' '
         ENDDO
       ENDDO
-      PTRACERS_useRecords  = .FALSE.
-      PTRACERS_write_mdsio = .TRUE.
-      PTRACERS_write_mnc   = .FALSE.
+      PTRACERS_useRecords       = .FALSE.
+#ifdef ALLOW_MNC
+      PTRACERS_timeave_mnc      = timeave_mnc .AND. useMNC
+      PTRACERS_snapshot_mnc     = snapshot_mnc .AND. useMNC
+      PTRACERS_pickup_write_mnc = pickup_write_mnc .AND. useMNC
+      PTRACERS_pickup_read_mnc  = pickup_read_mnc .AND. useMNC
+#else
+      PTRACERS_timeave_mnc      = .FALSE.
+      PTRACERS_snapshot_mnc     = .FALSE.
+      PTRACERS_pickup_write_mnc = .FALSE.
+      PTRACERS_pickup_read_mnc  = .FALSE.
+#endif
 
 C     Open and read the data.ptracers file
       _BEGIN_MASTER(myThid)
@@ -168,15 +181,38 @@ C     Check that enough parameters were specified
       ENDDO
 
 #ifdef ALLOW_MNC
+      PTRACERS_timeave_mnc      = 
+     &     PTRACERS_timeave_mnc .AND. useMNC
+      PTRACERS_snapshot_mnc     = 
+     &     PTRACERS_snapshot_mnc .AND. useMNC
+      PTRACERS_pickup_write_mnc = 
+     &     PTRACERS_pickup_write_mnc .AND. useMNC
+      PTRACERS_pickup_read_mnc  = 
+     &     PTRACERS_pickup_read_mnc .AND. useMNC
+
+      PTRACERS_timeave_mdsio      = (.NOT. PTRACERS_timeave_mnc)
+     &     .OR. outputTypesInclusive
+      PTRACERS_snapshot_mdsio     = (.NOT. PTRACERS_snapshot_mnc)
+     &     .OR. outputTypesInclusive
+      PTRACERS_pickup_write_mdsio = (.NOT. PTRACERS_pickup_write_mnc)
+     &     .OR. outputTypesInclusive
+      PTRACERS_pickup_read_mdsio  = (.NOT. PTRACERS_pickup_read_mnc)
+     &     .OR. outputTypesInclusive
+      
       IF (useMNC) THEN
-C       Set the default I/O Types
-        IF ( (.NOT. outputTypesInclusive) 
-     &       .AND. PTRACERS_write_mnc ) PTRACERS_write_mdsio = .FALSE.
-        
 C       Initialize the MNC variable types for PTRACERS 
         CALL PTRACERS_MNC_INIT( myThid )
       ENDIF
-#endif /*  ALLOW_MNC  */
+#else
+      PTRACERS_timeave_mnc        = .FALSE.
+      PTRACERS_snapshot_mnc       = .FALSE.
+      PTRACERS_pickup_write_mnc   = .FALSE.
+      PTRACERS_pickup_read_mnc    = .FALSE.
+      PTRACERS_timeave_mdsio      = .TRUE.
+      PTRACERS_snapshot_mdsio     = .TRUE.
+      PTRACERS_pickup_write_mdsio = .TRUE.
+      PTRACERS_pickup_read_mdsio  = .TRUE.
+#endif
       
 C--   Print a summary of pTracer parameter values:
       iUnit = standardMessageUnit
@@ -200,10 +236,19 @@ C--   Print a summary of pTracer parameter values:
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
       CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
      &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
-      CALL WRITE_0D_L( PTRACERS_write_mdsio, INDEX_NONE,
-     &   'PTRACERS_write_mdsio =', ' /* write mdsio files */')
-      CALL WRITE_0D_L( PTRACERS_write_mnc, INDEX_NONE,
-     &   'PTRACERS_write_mnc =', ' /* write mnc files */')
+      
+      CALL WRITE_0D_L( PTRACERS_timeave_mnc, INDEX_NONE,
+     &     'PTRACERS_timeave_mnc =',
+     &     ' /* use MNC for Tave output */')
+      CALL WRITE_0D_L( PTRACERS_snapshot_mnc, INDEX_NONE,
+     &     'PTRACERS_snapshot_mnc =',
+     &     ' /* use MNC for snapshot output */')
+      CALL WRITE_0D_L( PTRACERS_pickup_write_mnc, INDEX_NONE,
+     &     'PTRACERS_pickup_write_mnc =', 
+     &     ' /* use MNC for writing pickups */')
+      CALL WRITE_0D_L( PTRACERS_pickup_read_mnc, INDEX_NONE,
+     &     'PTRACERS_pickup_read_mnc =', 
+     &     ' /* use MNC for reading pickups */')
 
       DO iTracer=1,PTRACERS_numInUse
         WRITE(msgBuf,'(A)') ' -----------------------------------'

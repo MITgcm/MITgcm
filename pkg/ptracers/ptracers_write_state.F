@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.12 2005/05/25 04:03:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.13 2005/07/30 00:58:41 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -56,7 +56,7 @@ C     Write to files
        _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_MNC
-       IF (useMNC .AND. PTRACERS_write_mnc) THEN
+       IF ( PTRACERS_snapshot_mnc ) THEN
         CALL MNC_CW_SET_UDIM('ptracers', -1, myThid)
         CALL MNC_CW_RL_W_S('D','ptracers',0,0,'T',myTime,myThid)
         CALL MNC_CW_SET_UDIM('ptracers', 0, myThid)
@@ -68,7 +68,7 @@ C     Write to files
        ENDIF
 #endif /*  ALLOW_MNC  */
 
-       IF (PTRACERS_write_mdsio) THEN
+       IF ( PTRACERS_snapshot_mdsio ) THEN
 
 C       Loop over tracers
         DO iTracer=1,PTRACERS_numInUse

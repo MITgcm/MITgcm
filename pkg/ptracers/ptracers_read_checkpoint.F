@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.8 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.9 2005/07/30 00:58:41 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -39,22 +39,31 @@ C     fn                :: suffix for pickup file (eg. 0000000010)
       CHARACTER*(MAX_LEN_MBUF) fn
 CEOP
 
+#ifdef ALLOW_MNC
+      IF ( PTRACERS_pickup_read_mnc ) THEN
+C       Read variables from the pickup file
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(
+     &       'pickup_ptracers', myThid)
+        CALL MNC_CW_SET_UDIM('pickup_ptracers', 1, myThid)
+        DO iTracer = 1,PTRACERS_numInUse
+          CALL MNC_CW_RL_R('D','pickup_ptracers',0,0,
+     &         PTRACERS_names(iTracer),
+     &         gPtrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
+        ENDDO
+        CALL MNC_CW_SET_UDIM('pickup_ptracers', 2, myThid)
+        DO iTracer = 1,PTRACERS_numInUse
+          CALL MNC_CW_RL_R('D','pickup_ptracers',0,0,
+     &         PTRACERS_names(iTracer),
+     &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
+        ENDDO
+      ENDIF
+#endif /*  ALLOW_MNC  */
+         
+      IF ( PTRACERS_pickup_read_mdsio ) THEN
+
       WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
       prec = precFloat64
       
-#ifdef ALLOW_MNC
-C       IF (useMNC .AND. PTRACERS_mnc_read) THEN
-C C       Read variables from the pickup file
-C         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
-C         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
-C         CALL MNC_CW_RL_R('D',fn,0,0,'uVelD',uVelD, myThid)
-C         CALL MNC_CW_RL_R('D',fn,0,0,'vVelD',vVelD, myThid)
-C         CALL MNC_CW_RL_R('D',fn,0,0,'Unm1',Unm1, myThid)
-C         CALL MNC_CW_RL_R('D',fn,0,0,'Vnm1',Vnm1, myThid)
-C         CALL MNC_CW_RL_R('D',fn,0,0,'etaNm1', etaNm1, myThid)
-C       ELSE
-#endif /*  ALLOW_MNC  */
-
       IF ( usePickupBeforeC54 ) THEN
 C       Read fields as consecutive records
         DO iTracer=1,PTRACERS_num
@@ -96,9 +105,7 @@ C       tracers, with write_pickup dumping all of them (PTRACERS_num).
         
       ENDIF
 
-#ifdef ALLOW_MNC
-C     ENDIF
-#endif /*  ALLOW_MNC  */
+      ENDIF
 
 #endif /* ALLOW_PTRACERS */
 

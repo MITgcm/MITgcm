@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.15 2005/05/14 22:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.16 2005/07/30 00:58:41 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -37,10 +37,11 @@ C     PTRACERS parameters
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_long_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_units(PTRACERS_num)
-      LOGICAL PTRACERS_read_mdsio
-      LOGICAL PTRACERS_read_mnc
-      LOGICAL PTRACERS_write_mdsio
-      LOGICAL PTRACERS_write_mnc
+      LOGICAL 
+     &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
+     &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
+     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
+     &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
       COMMON /PTRACERS_PARAMS/
      &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
@@ -59,10 +60,10 @@ C     PTRACERS parameters
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_read_mdsio,
-     &     PTRACERS_read_mnc, 
-     &     PTRACERS_write_mdsio,
-     &     PTRACERS_write_mnc
+     &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
+     &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
+     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
+     &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
 
 C     pTracer  :: passive tracer concentration (tr per unit volume).
 C     gPtr     :: work-space for time-stepping

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.524 2005/07/29 18:24:35 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.525 2005/07/30 00:58:40 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix MNC/MDSIO flags in PTRACERS so that (1) it works, and 
+  (2) its ready to be documented during the 20050801 DocFest
 o MNC-ify the gmredi package -- tested and works w/ and w/o mnc 
   for ideal_2D_oce and lab_sea on linux_ia32_g77
 
