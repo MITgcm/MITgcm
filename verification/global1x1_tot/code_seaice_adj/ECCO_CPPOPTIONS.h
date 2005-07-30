@@ -135,7 +135,7 @@ C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 C 
-#define  CTRL_SET_OLD_MAXCVARS_30
+#undef  CTRL_SET_OLD_MAXCVARS_30
 #define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
