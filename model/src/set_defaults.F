@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.96 2005/07/27 03:46:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.97 2005/07/31 22:07:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,6 +51,9 @@ C     Vertical gridding
       ENDDO
 
 C     Horizontal gridding
+      delXFile        = ' '
+      delYFile        = ' '
+      horizGridFile   = ' '
 C     In cartesian coords distances are in metres
       usingCartesianGrid = .FALSE.
       DO i=1,Nx
@@ -276,7 +279,6 @@ C--   Time stepping parameters
 C--   Input files
       bathyFile       = ' '
       topoFile        = ' '
-      horizGridFile   = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
       zonalWindFile   = ' '

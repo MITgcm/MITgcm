@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.161 2005/07/27 03:46:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.162 2005/07/31 22:07:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,8 +31,6 @@ C                            Units are that of coordinate system
 C                            i.e. cartesian => metres
 C                                  s. polar => degrees
 C     deltaTtracer :: Timestep for tracer equations ( s )
-C     tmp4delX,tmp8delX - temporary arrays to read in delX
-C     tmp4delY,tmp8delY - temporary arrays to read in delY
 C     goptCount - Used to count the nuber of grid options
 C                 (only one is allowed! )
 C     msgBuf    - Informational/error meesage buffer
@@ -44,10 +42,6 @@ C     xxxDefault - Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
       _RL deltaTtracer
-      REAL*4 tmp4delX(Nx), tmp4delY(Ny)
-      REAL*8 tmp8delX(Nx), tmp8delY(Ny)
-      CHARACTER*(MAX_LEN_FNAM) delXfile
-      CHARACTER*(MAX_LEN_FNAM) delYfile
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       INTEGER goptCount
@@ -210,7 +204,7 @@ C--   Gridding parameters
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
-     & delXfile, delYfile, horizGridFile
+     & delXFile, delYFile, horizGridFile
 
 C--   Input files
       NAMELIST /PARM05/
@@ -400,7 +394,7 @@ C     according to buoyancyRelation
      &     .NOT.implicitFreeSurface ) THEN
 C-     No barotropic solver selected => use implicitFreeSurface as default
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: No barotropic solver requested'
+     &  'S/R INI_PARMS: No request for barotropic solver'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
        WRITE(msgBuf,'(A)')
@@ -903,8 +897,6 @@ C     In spherical polar distances are in degrees
       recip_rSphere  = 1.D0/rSphere
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
-      delXfile = ' '
-      delYfile = ' '
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
@@ -946,84 +938,36 @@ c      nRetired = nRetired+1
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
 
-C     X coordinate
-      IF ( delXfile .NE. ' ' ) THEN
-       IF ( delX(1) .NE. UNSET_RL .OR. dxSpacing .NE. UNSET_RL ) THEN
+C     X coordinate : Check for multiple definitions
+      goptCount = 0
+      IF ( delX(1)   .NE. UNSET_RL ) goptCount = goptCount + 1
+      IF ( dxSpacing .NE. UNSET_RL ) goptCount = goptCount + 1
+      IF ( delXFile  .NE. ' ' )      goptCount = goptCount + 1
+      IF ( goptCount.GT.1 ) THEN
          WRITE(msgBuf,'(A,A)') 'Too many specifications for delX:',
      &   'Specify only one of delX, dxSpacing or delXfile'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
-       ELSE
-        _BEGIN_MASTER( myThid )
-        IF (readBinaryPrec.EQ.precFloat32) THEN
-         OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
-     &        ACCESS='DIRECT',RECL=WORDLENGTH*Nx)
-         READ(37,rec=1) tmp4delX
-#ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4( Nx, tmp4delX )
-#endif
-         CLOSE(37)
-         DO i=1,Nx
-           delX(i) = tmp4delX(i)
-         ENDDO
-        ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
-         OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
-     &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Nx)
-         READ(37,rec=1) tmp8delX
-#ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( Nx, tmp8delX )
-#endif
-         CLOSE(37)
-         DO i=1,Nx
-           delX(i) = tmp8delX(i)
-         ENDDO
-        ENDIF
-        _END_MASTER(myThid)
-       ENDIF
       ENDIF
       IF ( dxSpacing .NE. UNSET_RL ) THEN
        DO i=1,Nx
         delX(i) = dxSpacing
        ENDDO
       ENDIF
-C     Y coordinate
-      IF ( delYfile .NE. ' ' ) THEN
-       IF ( delY(1) .NE. UNSET_RL .OR. dySpacing .NE. UNSET_RL ) THEN
+C     Y coordinate : Check for multiple definitions
+      goptCount = 0
+      IF ( delY(1)   .NE. UNSET_RL ) goptCount = goptCount + 1
+      IF ( dySpacing .NE. UNSET_RL ) goptCount = goptCount + 1
+      IF ( delYFile  .NE. ' ' )      goptCount = goptCount + 1
+      IF ( goptCount.GT.1 ) THEN
          WRITE(msgBuf,'(A,A)') 'Too many specifications for delY:',
      &   'Specify only one of delY, dySpacing or delYfile'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
-       ELSE
-        _BEGIN_MASTER( myThid )
-        IF (readBinaryPrec.EQ.precFloat32) THEN
-         OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
-     &        ACCESS='DIRECT',RECL=WORDLENGTH*Ny)
-         READ(37,rec=1) tmp4delY
-#ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4( Ny, tmp4delY )
-#endif
-         CLOSE(37)
-         DO j=1,Ny
-           delY(j) = tmp4delY(j)
-         ENDDO
-        ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
-         OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
-     &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Ny)
-         READ(37,rec=1) tmp8delY
-#ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( Ny, tmp8delY )
-#endif
-         CLOSE(37)
-         DO j=1,Ny
-           delY(j) = tmp8delY(j)
-         ENDDO
-        ENDIF
-        _END_MASTER(myThid)
-       ENDIF
       ENDIF
       IF ( dySpacing .NE. UNSET_RL ) THEN
-       DO i=1,Ny
-        delY(i) = dySpacing
+       DO j=1,Ny
+        delY(j) = dySpacing
        ENDDO
       ENDIF
 C
@@ -1087,8 +1031,8 @@ C--   Make metric term settings consistent with underlying grid.
        useNHMTerms = .FALSE.
       ENDIF
 C--   Set default for latitude-band where relaxation to climatology applies
+C     note: done later (once domain size is known) if using CartesianGrid
       IF ( latBandClimRelax .EQ. UNSET_RL) THEN
-        IF ( usingCartesianGrid ) latBandClimRelax = delY(1)*Ny*Ny
         IF ( usingSphericalPolarGrid ) latBandClimRelax= 180. _d 0
         IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
       ENDIF

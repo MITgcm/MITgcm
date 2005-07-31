@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.1 2005/07/13 00:34:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.2 2005/07/31 22:07:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -239,6 +239,17 @@ C--     Cosine(lat) scaling
 
        ENDDO ! bi
       ENDDO ! bj
+
+C--   Set default (=whole domain) for where relaxation to climatology applies
+      IF ( latBandClimRelax.EQ.UNSET_RL ) THEN
+        _BEGIN_MASTER(myThid)
+        latBandClimRelax = 0.
+        DO j=1,Ny
+          latBandClimRelax = latBandClimRelax + delY(j)
+        ENDDO
+        latBandClimRelax = latBandClimRelax*3. _d 0
+        _END_MASTER(myThid)
+      ENDIF
 
       RETURN
       END
