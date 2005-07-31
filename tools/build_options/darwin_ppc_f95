@@ -1,0 +1,19 @@
+# tested on dual G4-mirror door, 1.25GHz
+# uname -mrsvp:
+#Darwin 7.9.0 Darwin Kernel Version 7.9.0: Wed Mar 30 20:11:17 PST 2005;
+#root:xnu/xnu-517.12.7.obj~1/RELEASE_PPC  Power Macintosh powerpc
+# cc-compiler is available only with the Apple Developer Tools,
+# so make sure that those are installed
+#
+CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
+FC='/Applications/Absoft/bin/f95'
+LINK='/Applications/Absoft/bin/f95'
+FFLAGS='-YEXT_NAMES=LCS'
+FOPTIM=
+NOOPTFLAGS=
+LIBS='-L/Applications/Absoft/lib -lU77'
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+MAKEDEPEND='makedepend'
+DEFINES='-DWORDLENGTH=4'
+
