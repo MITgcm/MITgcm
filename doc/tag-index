@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.527 2005/07/30 23:33:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.528 2005/07/31 00:03:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,6 +12,9 @@ o Dissipation & phiHyd gradient are always added to gU,gV in timestep.F
   (cg2d matching number) and leave the others for later: front_relax(10),
   global_ocean_pressure(10),ideal_2D_oce(10),internal_wave(9),lab_sea(12),
   matrix_example(7!),natl_box(12),plume_on_slope(11),vermix(12x3,11x2).
+o move ${PKG}_MNC_INIT from ${PKG}_READ_PARAMS to ${PKG}_INIT_FIXED
+  (already the case for some pkgs, including recent MNC_init, e.g. thsice)
+o call CALC_GW from DYNAMICS (instead of from FORWARD_STEP)
 
 checkpoint57o_post
 o fix MNC/MDSIO flags in PTRACERS so that (1) it works, and 
