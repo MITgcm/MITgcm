@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.161 2005/07/12 16:30:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.162 2005/07/31 22:01:15 jmc Exp $
 C $Name:  $
 C
 
@@ -49,12 +49,14 @@ C     Checkpoint data
 
 C--   COMMON /PARM_C/ Character valued parameters used by the model.
 C     checkPtSuff :: List of checkpoint file suffices
+C     delXFile      :: File containing X-spacing grid definition (1.D array)
+C     delYFile      :: File containing Y-spacing grid definition (1.D array)
+C     horizGridFile :: File containing horizontal-grid definition 
+C                        (only when using curvilinear_grid)
 C     bathyFile   :: File containing bathymetry. If not defined bathymetry
 C                   is taken from inline function.
 C     topoFile    :: File containing the topography of the surface (unit=m)
 C                   (mainly used for the atmosphere = ground height).
-C     horizGridFile   :: File containing horizontal-grid definition 
-C                        (only when using curvilinear_grid)
 C     hydrogThetaFile :: File containing initial hydrographic data for potential
 C                       temperature.
 C     hydrogSaltFile  :: File containing initial hydrographic data for salinity.
@@ -80,7 +82,8 @@ C     eosType         :: choose the equation of state:
 C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/ checkPtSuff,
-     &                bathyFile, topoFile, horizGridFile,
+     &                delXFile, delYFile, horizGridFile,
+     &                bathyFile, topoFile,
      &                hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
@@ -94,8 +97,10 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                mdsioLocalDir, 
      &                the_run_name
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
-      CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
+      CHARACTER*(MAX_LEN_FNAM) delXFile
+      CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
+      CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
       CHARACTER*(MAX_LEN_FNAM) hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
