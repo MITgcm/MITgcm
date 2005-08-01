@@ -1,7 +1,0 @@
-Intermediate complexity atmospheric physics package developed by Franco Molteni.
-
-Code requires implicit REAL*8. Code has problems with g77 because there
-is not implicit REAL*8.
-
-09-27-2002 (jmc): use IMPLICIT NONE + declare all variables with _RL :
- => runs OK with g77 
