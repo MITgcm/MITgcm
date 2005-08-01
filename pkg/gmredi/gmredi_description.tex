@@ -1,9 +1,13 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_description.tex,v 1.1 2004/04/01 04:23:33 edhill Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_description.tex,v 1.2 2005/08/01 19:10:43 cnh Exp $
 %%  $Name:  $
 %%
 
-
-\chapter{GM/Redi}
-  
-Package ``GMREDI'' provides a parameterization of...
+Package ``GMREDI'' implements an along isopycnal tensor for mixing tracers
+(see Oceanic isopycnal mixing by coordinate rotation, Redi,
+Journal of Physical Oceanography, 1982) and provides a parameterization of 
+geostrophic eddies 
+using the Gent-McWilliams (see Isopycnal mixing in ocean circulation
+models, Gent and McWilliams, Journal of Physical Oceanography, 1995) scheme. 
+Either the bolus transport or skew flux forms of the Gent-McWilliams scheme 
+can be selected as well as a variety of different tapering algorithms.
