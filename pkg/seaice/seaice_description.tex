@@ -1,64 +1,15 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_description.tex,v 1.2 2004/05/05 22:50:54 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_description.tex,v 1.3 2005/08/01 18:36:19 cnh Exp $
 %%  $Name:  $
 %%
 
-\chapter{Dynamic Thermodynamic Seaice Package}
-  
 Package ``seaice'' provides a dynamic and thermodynamic interactive sea-ice
-model.  Sea-ice model thermodynamics are based on Hibler \cite{hib80}, that
-is, a 2-category model that simulates ice thickness and concentration.  Snow
-is simulated as per Zhang et al. \cite{zha98a}.  Although recent years have
-seen an increased use of multi-category thickness distribution sea-ice models
-for climate studies, the Hibler 2-category ice model is still the most widely
-used model and has resulted in realistic simulation of sea-ice variability on
-regional and global scales.  Being less complicated, compared to
-multi-category models, the 2-category model permits easier application of
-adjoint model optimization methods.
-
-Note, however, that the Hibler 2-category model and its variants use a
-so-called zero-layer thermodynamic model to estimate ice growth and decay.
-The zero-layer thermodynamic model assumes that ice does not store heat and,
-therefore, tends to exaggerate the seasonal variability in ice thickness.
-This exaggeration can be significantly reduced by using Semtner's \cite{sem76}
-three-layer thermodynamic model that permits heat storage in ice.  Recently,
-the three-layer thermodynamic model has been reformulated by Winton
-\cite{win00}.  The reformulation improves model physics by representing the
-brine content of the upper ice with a variable heat capacity.  It also
-improves model numerics and consumes less computer time and memory.  The
-Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently
-reside under pkg/thsice.  At present pkg/thsice is not fully compatible with
-pkg/seaice and with pkg/exf.  But the eventual objective is to have fully
-compatible and interchangeable thermodynamic packages for sea-ice, so that it
-becomes possible to use Hibler dynamics with Winton thermodyanmics.
-
-The ice dynamics models that are most widely used for large-scale
-climate studies are the viscous-plastic (VP) model \cite{hib79}, the
-cavitating fluid (CF) model \cite{fla92}, and the
-elastic-viscous-plastic (EVP) model \cite{hun97}.  Compared to the VP
-model, the CF model does not allow ice shear in calculating ice
-motion, stress, and deformation.  EVP models approximate VP by adding
-an elastic term to the equations for easier adaptation to parallel
-computers.  Because of its higher accuracy in plastic solution and
-relatively simpler formulation, compared to the EVP model, we decided
-to use the VP model as the dynamic component of our ice model.  To do
-this we extended the alternating-direction-implicit (ADI) method of
-Zhang and Rothrock \cite{zha00} for use in a parallel configuration.
-
-The sea ice model requires the following input fields: 10-m winds, 2-m air
-temperature and specific humidity, downward longwave and shortwave radiations,
-precipitation, evaporation, and river and glacier runoff.  The sea ice model
-also requires surface temperature from the ocean model and third level
-horizontal velocity which is used as a proxy for surface geostrophic
-velocity.  Output fields are surface wind stress, evaporation minus
-precipitation minus runoff, net surface heat flux, and net shortwave flux.
-The sea-ice model is global: in ice-free regions bulk formulae are used to
-estimate oceanic forcing from the atmospheric fields.
-
-% This is a (commented out) example of using epsfig to
-% include a figure, Fig.~\ref{overturn}.
-% \begin{figure}[t]
-% {\epsfig{file=../../pkg/seaice/seaice_fig1.eps,width=3.2in}}
-% \caption{Impact of Sea Ice on Ocean Circulation.}
-% \label{overturn}
-% \end{figure}
+model.  Sea-ice model thermodynamics are based on Hibler (see Modeling a Variable Thickness Sea-Ice Cover, Hibler, Monthly Weather Review, 1980), 
+that is, a 2-category model that simulates ice thickness and concentration.  
+Snow is simulated as per Zhang et al. (see Arctic ice-ocean modeling with
+and without climate restoring, Zhang et. al, Journal of Physical Oceanography,
+1998).  
+Sea-ice dynamics is based
+on a viscous-plastic model solved using the alternating-direction-implicit (ADI) method of
+Zhang and Rothrock (see Modeling Arctic Sea Ice with an Efficient Plastic 
+Solution, Zhang and Rothrock, Journal of Geophysical Research, 2000).
