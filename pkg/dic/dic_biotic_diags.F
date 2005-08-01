@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.6 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.7 2005/08/01 21:07:34 edhill Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -18,6 +18,8 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIC_BIOTIC.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
@@ -62,25 +64,48 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
-         
-       WRITE(suff,'(I10.10)') myIter
+       
+       IF ( PTRACERS_timeave_mdsio )  THEN
+         WRITE(suff,'(I10.10)') myIter
+         CALL WRITE_FLD_XYZ_RL('DIC_Biotave.',suff,BIOave,         
+     &        myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('DIC_Cartave.',suff,CARave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_Surtave.',suff,SURave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_SurOtave.',suff,SUROave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_pHtave.',suff,pHave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
+     &        myIter,myThid)
+       ENDIF
 
-       CALL WRITE_FLD_XYZ_RL('DIC_Biotave.',suff,BIOave,         
-     &     myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('DIC_Cartave.',suff,CARave,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_Surtave.',suff,SURave,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_SurOtave.',suff,SUROave,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_pHtave.',suff,pHave,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
-     &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
-     &     myIter,myThid)
+#ifdef ALLOW_MNC
+       IF ( PTRACERS_timeave_mnc ) THEN
+         CALL MNC_CW_SET_UDIM('dic_tave', -1, myThid)
+         CALL MNC_CW_RL_W_S('D','dic_tave',0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM('dic_tave', 0, myThid)
+         CALL MNC_CW_I_W_S('I','dic_tave',0,0,'iter',myIter,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_BIO_ave',BIOave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_CAR_ave',CARave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_SUR_ave',SURave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_SURO_ave',SUROave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_pH_ave',pHave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_pCO2_ave',pCO2ave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
+       ENDIF
+#endif
 
-         
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

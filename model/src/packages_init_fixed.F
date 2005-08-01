@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.41 2005/06/30 23:07:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.42 2005/08/01 21:07:34 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,8 @@ C       |
 C       |-- PTRACERS_INITIALISE
 C       |
 C       |-- GCHEM_INIT_FIXED
+C       |
+C       |-- DIC_INIT_FIXED
 C       |
 C       |-- THSICE_INIT_FIXED
 C       |
@@ -215,6 +217,11 @@ C--   Initialise the control variables
 
 #ifdef ALLOW_GCHEM
       IF (useGCHEM) CALL GCHEM_INIT_FIXED(mythid)
+#endif
+
+#ifdef ALLOW_DIC
+C     IF (useDIC)
+      CALL DIC_INIT_FIXED(mythid)
 #endif
 
 #ifdef ALLOW_THSICE
