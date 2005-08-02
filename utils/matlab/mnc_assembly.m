@@ -28,6 +28,20 @@ function [nt,nf] = mnc_assembly(fpat,vars, fout,fsize)
 %
 % where "X,Y.Z,T" are global space/time indicies, "Xf,Yf" are local
 % per-face spatial indicies, and "F" is a face index.
+%
+% An example of how to use this script is:
+% 
+%   vars = struct([]);
+%   vars(1).name = 'iter';
+%   vars(2).name = 'U';
+%   vars(3).name = 'Unk';
+%   vars(4).name = 'V';
+%   vars(5).name = 'Temp';
+%   vars(6).name = 'S';
+%   fpat = 'exp0_20041126_0001/state.0000.%06d.nc';
+%   [nt,nf] = mnc_assembly(fpat,vars);
+%
+% and the resutlt is written as "all.00000.nc"
 
 
 %=====  Argument checking and defaults  =====
