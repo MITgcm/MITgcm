@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/obcs_calc.F,v 1.4 2002/04/06 01:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/obcs_calc.F,v 1.5 2005/08/05 23:48:57 ce107 Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -56,7 +56,7 @@ C     Eastern OB
           DO J=1-Oly,sNy+Oly
             OBEu(J,K,bi,bj)=Uinflow
      &       *cos(2.*PI*futureTime*recip_TimeScale)
-     &       *max(futureTime*recip_TimeScale,1.)
+     &       *max(futureTime*recip_TimeScale,1.0 _d 0)
             OBEv(J,K,bi,bj)=0.
             OBEt(J,K,bi,bj)=tRef(K)
             OBEs(J,K,bi,bj)=sRef(K)
@@ -83,7 +83,7 @@ C     Western OB
           DO J=1-Oly,sNy+Oly
             OBWu(J,K,bi,bj)=Uinflow
      &       *cos(2.*PI*futureTime*recip_TimeScale)
-     &       *max(futureTime*recip_TimeScale,1.)
+     &       *max(futureTime*recip_TimeScale,1.0 _d 0)
             OBWv(J,K,bi,bj)=0.
             OBWt(J,K,bi,bj)=tRef(K)
             OBWs(J,K,bi,bj)=sRef(K)
@@ -110,7 +110,7 @@ C         Northern OB, template for forcing
           DO I=1-Olx,sNx+Olx
             OBNu(I,K,bi,bj)=Uinflow
      &       *cos(2.*PI*futureTime*recip_TimeScale)
-     &       *max(futureTime*recip_TimeScale,1.)
+     &       *max(futureTime*recip_TimeScale,1.0 _d 0)
             OBNv(I,K,bi,bj)=0.
             OBNt(I,K,bi,bj)=tRef(K)
             OBNs(I,K,bi,bj)=sRef(K)
@@ -137,7 +137,7 @@ C         Southern OB, template for forcing
           DO I=1-Olx,sNx+Olx
             OBSu(I,K,bi,bj)=Uinflow
      &       *cos(2.*PI*futureTime*recip_TimeScale)
-     &       *max(futureTime*recip_TimeScale,1.)
+     &       *max(futureTime*recip_TimeScale,1.0 _d 0)
             OBSv(I,K,bi,bj)=0.
             OBSt(I,K,bi,bj)=tRef(K)
             OBSs(I,K,bi,bj)=sRef(K)

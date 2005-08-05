@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_init.F,v 1.2 2004/09/27 08:02:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_init.F,v 1.3 2005/08/05 23:46:09 ce107 Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -45,7 +45,7 @@ C
 C     hfacs for w (=tke) control volume
 C     
          recip_hFacI(I,J,K,bi,bj) = .5*hFacC(I,J,Km1,bi,bj)
-     &        + MIN(.5,hFacC(I,J,K,bi,bj))
+     &        + MIN(.5 _d 0,hFacC(I,J,K,bi,bj))
          IF ( recip_hFacI(I,J,K,bi,bj) .NE. 0. _d 0 )
      &        recip_hFacI(I,J,K,bi,bj) = 1./recip_hFacI(I,J,K,bi,bj)
           ENDDO
