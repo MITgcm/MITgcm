@@ -18,7 +18,7 @@ function [z] = cubeZ2latlon(x,y,c,xi,yi)
 % >> x(end+1)=mean(xg([1:2*nc:6*nc],nc)); y(end+1)=mean(yg([1:2*nc:6*nc],nc));
 % >> x(end+1)=mean(xg([2*nc:2*nc:6*nc],1)); y(end+1)=mean(yg([2*nc:2*nc:6*nc],1));
 %
-% $Header: /u/gcmpack/MITgcm/utils/cs_grid/Attic/cubeZ2latlon.m,v 1.1 2005/05/03 02:02:22 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/cs_grid/Attic/cubeZ2latlon.m,v 1.2 2005/08/05 23:08:09 jmc Exp $
 
 NN=size(c);
 [nPt2 nz]=size(c);
@@ -39,7 +39,7 @@ Y(end+1,j)=Y(i,j);
 C(end+1,j)=C(i,j);
 %--
 j=1+floor(nc/2);i=2*nc+j; if Y(i,j)==90, X(i,j)=180; end
-i=2*nc+(nc/2+1:nc);j=1+floor(nc/2);
+i=2*nc+(floor(nc/2)+1:nc);j=1+floor(nc/2);
 X(end,i-2*nc)=X(i,j)'-360;
 Y(end,i-2*nc)=Y(i,j)';
 C(end,i-2*nc)=C(i,j)';
