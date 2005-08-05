@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.2 2005/08/05 23:44:28 ce107 Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -84,8 +84,13 @@ c      read(  scrunit1, nml = flt_nml )
 c      close( scrunit1 )
 
 C--   Open the parameter file
+#ifdef TARGET_BGL
+      OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
+      OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
+#else
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+#endif
       OPEN(UNIT=modelDataUnit,FILE='data.flt',STATUS='OLD',
      &     IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN

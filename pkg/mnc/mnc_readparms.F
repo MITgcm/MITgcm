@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.23 2005/06/27 20:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.24 2005/08/05 23:44:28 ce107 Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -104,8 +104,13 @@ C     Open files
       isu1 = 60
       isu2 = 61
       mdu = 62
-      OPEN(UNIT=isu1, STATUS='SCRATCH')
-      OPEN(UNIT=isu2, STATUS='SCRATCH')
+#ifdef TARGET_BGL
+      OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
+      OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
+#else
+      OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
+      OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+#endif
       OPEN(UNIT=mdu, FILE=data_file, STATUS='OLD', IOSTAT=errio)
       IF ( errio .LT. 0 ) THEN
         WRITE(msgBuf,'(3a)')
