@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.2 2003/03/05 23:39:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.3 2005/08/05 18:40:24 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -57,6 +57,8 @@ c
               open(unit=76,file='costfinal')
               read(76,*) fc        
               close(76)
+           else
+              lastdiva = .FALSE.
            endif
 c
          _END_MASTER( mythid )
