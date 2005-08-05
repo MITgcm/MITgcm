@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.125 2005/07/10 00:15:49 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.126 2005/08/05 23:31:56 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -527,6 +527,9 @@ Usage: "$0" [OPTIONS]
           *only* works if it is supported by the OPTFILE that 
           is being used.
 
+    -ts | --ts
+          Produce timing information per timestep
+
     -mpi | --mpi
           Include MPI header files and link to MPI libraries
     -mpi=PATH | --mpi=PATH
@@ -834,6 +837,7 @@ NOOPTFILES=
 NOOPTFLAGS=
 MPI=
 MPIPATH=
+TS=
 
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
@@ -889,7 +893,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE TS MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
@@ -1068,6 +1072,9 @@ for ac_option in "$@" ; do
 	    IEEE=true ;;
 	-noieee | --noieee)
 	    IEEE= ;;
+
+	-ts | --ts)
+	    TS=true ;;
 
 	-mpi | --mpi)
 	    MPI=true ;;
@@ -1302,6 +1309,11 @@ check_for_broken_Ff
 if test ! "x$MPI" = x ; then
       echo "  Turning on MPI cpp macros"
       DEFINES="$DEFINES -DALLOW_USE_MPI -DALWAYS_USE_MPI"
+fi
+
+if test ! "x$TS" = x ; then
+      echo "  Turning on timing per timestep"
+      DEFINES="$DEFINES -DTIME_PER_TIMESTEP"
 fi
 
 printf "\n===  Checking system libraries  ===\n"
