@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/bgl_gnu_ncar,v 1.1 2005/08/05 23:34:01 ce107 Exp $
+#
+
+#  tested on frost, ce107 Aug 5 2005, will work when IBM/NCAR provides an MPI library for g77
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/bgl_gnu_ncar
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DTARGET_BGL'
+
+INCLUDES='-I/bgl/BlueLight/ppcfloor/bglsys/include'
+CPP='/lib/cpp -traditional -P'
+FC='/bgl/BlueLight/DRV100_2005-050311PM/ppc/toolchain/gnu/build-powerpc-bgl-blrts-gnu/gcc-3.2-build/gcc/g77'
+CC='/bgl/BlueLight/DRV202_2005-050606-SLES8/ppc/blrts-gnu/powerpc-bgl-blrts-gnu/bin/gcc'
+LINK='/bgl/BlueLight/DRV100_2005-050311PM/ppc/toolchain/gnu/build-powerpc-bgl-blrts-gnu/gcc-3.2-build/gcc/g77'
+LIBS='-L/bgl/BlueLight/ppcfloor/bglsys/lib -lmpich.rts -lmsglayer.rts -lrts.rts -ldevices.rts'
+FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+FOPTIM='-O3 -funroll-loops -ffast-math'
+CFLAGS='-O3 -funroll-loops -ffast-math'
+else
+FOPTIM='-g -O0'
+CFLAGS='-g -O0'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X # __"

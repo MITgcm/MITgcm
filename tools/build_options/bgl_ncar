@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/bgl_ncar,v 1.1 2005/08/05 23:34:01 ce107 Exp $
+#
+
+#  tested on frost, ce107 Aug 5 2005
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/bgl_ncar
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DTARGET_BGL'
+
+INCLUDES='-I/bgl/BlueLight/ppcfloor/bglsys/include -I/contrib/bgl/netcdf-3.6.0-p1/include'
+CPP='/lib/cpp -traditional -P'
+FC='blrts_xlf'
+CC='blrts_xlc'
+LINK='blrts_xlf'
+LIBS='-L/contrib/bgl/lib -lmass -lmassvbgl -Wl,--allow-multiple-definition -L/contrib/bgl/netcdf-3.6.0-p1/lib -lnetcdf -L/bgl/BlueLight/ppcfloor/bglsys/lib -lmpich.rts -lmsglayer.rts -lrts.rts -ldevices.rts'
+FFLAGS='-qfixed=132'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+FOPTIM='-O5 -qarch=440d -qtune=440 -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+CFLAGS='-O5 -qarch=440d -qtune=440 -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+else
+FOPTIM='-g -O -qarch=440 -qtune=440 -qmaxmem=64000'
+CFLAGS='-g -O -qarch=440 -qtune=440 -qmaxmem=64000'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
