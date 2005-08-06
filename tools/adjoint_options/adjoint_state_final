@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.5 2005/07/28 19:54:06 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.6 2005/08/06 11:02:38 heimbach Exp $
 #  $Name:  $
 #
 
@@ -37,6 +37,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_aqh_dummy         \
                     xx_precip_dummy      \
                     xx_swflux_dummy      \
+                    xx_swdown_dummy      \
                     xx_uwind_dummy       \
                     xx_vwind_dummy       \
                     xx_obcsn_dummy       \
