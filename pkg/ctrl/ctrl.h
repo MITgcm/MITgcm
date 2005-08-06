@@ -238,79 +238,85 @@ c     xx_tauv0 - meridional wind stress record before current date.
 c     xx_tauv1 - meridional wind stress record after  current date.
 
 #if     (defined  (ALLOW_HFLUX_CONTROL))
-      common /controlaux_1_r/
+      common /controlaux_hflux_r/
      &                      xx_hflux0,
      &                      xx_hflux1
 #elif   (defined  (ALLOW_ATEMP_CONTROL))
-      common /controlaux_1_r/
+      common /controlaux_atemp_r/
      &                      xx_atemp0,
      &                      xx_atemp1
 #endif
 
 #if     (defined  (ALLOW_SFLUX_CONTROL))
-      common /controlaux_2_r/
+      common /controlaux_swflux_r/
      &                      xx_sflux0,
      &                      xx_sflux1
 #elif   (defined  (ALLOW_AQH_CONTROL))
-      common /controlaux_2_r/
+      common /controlaux_aqh_r/
      &                      xx_aqh0,
      &                      xx_aqh1
 #endif
 
 #if     (defined  (ALLOW_USTRESS_CONTROL))
-      common /controlaux_3_r/
+      common /controlaux_ustress_r/
      &                      xx_tauu0,
      &                      xx_tauu1
 #elif   (defined  (ALLOW_UWIND_CONTROL))
-      common /controlaux_3_r/
+      common /controlaux_uwind_r/
      &                      xx_uwind0,
      &                      xx_uwind1
 #endif
 
 #if     (defined  (ALLOW_VSTRESS_CONTROL))
-      common /controlaux_4_r/
+      common /controlaux_vstress_r/
      &                      xx_tauv0,
      &                      xx_tauv1
 #elif   (defined  (ALLOW_VWIND_CONTROL))
-      common /controlaux_4_r/
+      common /controlaux_vwind_r/
      &                      xx_vwind0,
      &                      xx_vwind1
 #endif
 
 #ifdef ALLOW_OBCS_CONTROL
 #if     (defined (ALLOW_OBCSN_CONTROL))
-      common /controlaux_5obcsn_r/
+      common /controlaux_obcsn_r/
      &                      xx_obcsn0,
      &                      xx_obcsn1
 #endif
 
 #if     (defined (ALLOW_OBCSS_CONTROL))
-      common /controlaux_5obcss_r/
+      common /controlaux_obcss_r/
      &                      xx_obcss0,
      &                      xx_obcss1
 #endif
 #if     (defined (ALLOW_OBCSW_CONTROL))
-      common /controlaux_5obcsw_r/
+      common /controlaux_obcsw_r/
      &                      xx_obcsw0,
      &                      xx_obcsw1
 #endif
 #if     (defined (ALLOW_OBCSE_CONTROL))
-      common /controlaux_5obcse_r/
+      common /controlaux_obcse_r/
      &                      xx_obcse0,
      &                      xx_obcse1
 #endif
 #endif
 
 #if (defined  (ALLOW_PRECIP_CONTROL))
-      common /controlaux_4_r/
+      common /controlaux_precip_r/
      &                      xx_precip0,
      &                      xx_precip1
 #endif
 
 #if (defined  (ALLOW_SWFLUX_CONTROL))
-      common /controlaux_4_r/
+      common /controlaux_swflux_r/
      &                      xx_swflux0,
      &                      xx_swflux1
+#endif
+
+#if (defined  (ALLOW_SWDOWN_CONTROL))
+      common /controlaux_swdown_r/
+     &                      xx_swdown0,
+     &                      xx_swdown1
 #endif
 
 #if     (defined  (ALLOW_HFLUX_CONTROL))
@@ -341,6 +347,18 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_vwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_vwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
+#if (defined  (ALLOW_PRECIP_CONTROL))
+      _RL xx_precip0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_precip1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_SWFLUX_CONTROL))
+      _RL xx_swflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_swflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_SWDOWN_CONTROL))
+      _RL xx_swdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_swdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
 
 #ifdef ALLOW_OBCSN_CONTROL
       _RL xx_obcsn0 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
@@ -358,17 +376,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_obcse0 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
       _RL xx_obcse1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
 #endif
-
-#if (defined  (ALLOW_PRECIP_CONTROL))
-      _RL xx_precip0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL xx_precip1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-
-#if (defined  (ALLOW_SWFLUX_CONTROL))
-      _RL xx_swflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL xx_swflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-
 
 
 c     Files where the control variables are stored:
@@ -395,6 +402,7 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_aqh_file
      &                    , xx_precip_file
      &                    , xx_swflux_file
+     &                    , xx_swdown_file
      &                    , xx_uwind_file
      &                    , xx_vwind_file
      &                    , xx_obcsn_file
@@ -430,6 +438,7 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_aqh_file
       character*(MAX_LEN_FNAM) xx_precip_file
       character*(MAX_LEN_FNAM) xx_swflux_file
+      character*(MAX_LEN_FNAM) xx_swdown_file
       character*(MAX_LEN_FNAM) xx_uwind_file
       character*(MAX_LEN_FNAM) xx_vwind_file
       character*(MAX_LEN_FNAM) xx_obcsn_file
@@ -498,6 +507,7 @@ c     xx_obcssperiod - sampling interval
      &                      , xx_aqhperiod
      &                      , xx_precipperiod
      &                      , xx_swfluxperiod
+     &                      , xx_swdownperiod
      &                      , xx_uwindperiod
      &                      , xx_vwindperiod
      &                      , xx_obcsnperiod
@@ -512,6 +522,7 @@ c     xx_obcssperiod - sampling interval
       _RL     xx_aqhperiod
       _RL     xx_precipperiod
       _RL     xx_swfluxperiod
+      _RL     xx_swdownperiod
       _RL     xx_uwindperiod
       _RL     xx_vwindperiod
       _RL     xx_obcsnperiod
@@ -543,6 +554,8 @@ c                         control part.
      &                      , xx_precipstartdate2
      &                      , xx_swfluxstartdate1
      &                      , xx_swfluxstartdate2
+     &                      , xx_swdownstartdate1
+     &                      , xx_swdownstartdate2
      &                      , xx_uwindstartdate1
      &                      , xx_uwindstartdate2
      &                      , xx_vwindstartdate1
@@ -555,6 +568,7 @@ c                         control part.
      &                      , xx_aqhstartdate
      &                      , xx_precipstartdate
      &                      , xx_swfluxstartdate
+     &                      , xx_swdownstartdate
      &                      , xx_uwindstartdate
      &                      , xx_vwindstartdate
      &                      , xx_obcsnstartdate1
@@ -585,6 +599,8 @@ c                         control part.
       integer xx_precipstartdate2
       integer xx_swfluxstartdate1
       integer xx_swfluxstartdate2
+      integer xx_swdownstartdate1
+      integer xx_swdownstartdate2
       integer xx_uwindstartdate1
       integer xx_uwindstartdate2
       integer xx_vwindstartdate1
@@ -606,6 +622,7 @@ c                         control part.
       integer xx_aqhstartdate(4)
       integer xx_precipstartdate(4)
       integer xx_swfluxstartdate(4)
+      integer xx_swdownstartdate(4)
       integer xx_uwindstartdate(4)
       integer xx_vwindstartdate(4)
       integer xx_obcsnstartdate(4)
@@ -623,6 +640,7 @@ c                         control part.
       character*( 80)   fname_aqh(2)
       character*( 80)   fname_precip(2)
       character*( 80)   fname_swflux(2)
+      character*( 80)   fname_swdown(2)
       character*( 80)   fname_uwind(2)
       character*( 80)   fname_vwind(2)
       character*( 80)   fname_obcsn(2)

@@ -117,5 +117,9 @@ CADJ STORE xx_precip1    = tapelev2, key = ilev_2
 CADJ STORE xx_swflux0    = tapelev2, key = ilev_2
 CADJ STORE xx_swflux1    = tapelev2, key = ilev_2
 # endif
+# ifdef ALLOW_SWDOWN_CONTROL
+CADJ STORE xx_swdown0    = tapelev2, key = ilev_2
+CADJ STORE xx_swdown1    = tapelev2, key = ilev_2
+# endif
 
 #endif /* ALLOW_EXF */

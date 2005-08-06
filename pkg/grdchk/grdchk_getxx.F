@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.12 2005/07/28 19:53:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.13 2005/08/06 11:02:01 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -651,6 +651,31 @@ c--   == end of interface ==
      &                         mythid, dummy)
 
 #endif /* ALLOW_SWFLUX_CONTROL */
+
+#ifdef ALLOW_SWDOWN_CONTROL
+      else if ( grdchkvarindex .eq. 34 ) then
+         il=ilnblnk( xx_swdown_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_swdown_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_swdown_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xy_loc( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy_loc( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_SWDOWN_CONTROL */
 
       else
 ce      --> this index does not exist yet.

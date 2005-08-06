@@ -322,12 +322,14 @@ c                  function contributions.
      &                objf_aqh,
      &                objf_precip,
      &                objf_swflux,
+     &                objf_swdown,
      &                objf_uwind,
      &                objf_vwind,
      &                objf_atempm,
      &                objf_aqhm,
      &                objf_precipm,
      &                objf_swfluxm,
+     &                objf_swdownm,
      &                objf_uwindm,
      &                objf_vwindm,
      &                objf_obcsn,
@@ -338,6 +340,7 @@ c                  function contributions.
      &                objf_curmtr,
      &                objf_ageos,
      &                objf_ice,
+     &                objf_kapgm,
      &                objf_diffkr,
      &                objf_theta_ini_fin,
      &                objf_salt_ini_fin,
@@ -381,12 +384,14 @@ c                  function contributions.
       _RL  objf_aqh  (nsx,nsy)
       _RL  objf_precip(nsx,nsy)
       _RL  objf_swflux(nsx,nsy)
+      _RL  objf_swdown(nsx,nsy)
       _RL  objf_uwind(nsx,nsy)
       _RL  objf_vwind(nsx,nsy)
       _RL  objf_atempm(nsx,nsy)
       _RL  objf_aqhm  (nsx,nsy)
       _RL  objf_precipm(nsx,nsy)
       _RL  objf_swfluxm(nsx,nsy)
+      _RL  objf_swdownm(nsx,nsy)
       _RL  objf_uwindm(nsx,nsy)
       _RL  objf_vwindm(nsx,nsy)
       _RL  objf_obcsn(nsx,nsy)
@@ -442,12 +447,14 @@ c                  function contributions.
      &                num_aqh,
      &                num_precip,
      &                num_swflux,
+     &                num_swdown,
      &                num_uwind,
      &                num_vwind,
      &                num_atempm,
      &                num_aqhm,
      &                num_precipm,
      &                num_swfluxm,
+     &                num_swdownm,
      &                num_uwindm,
      &                num_vwindm,
      &                num_obcsn,
@@ -458,6 +465,7 @@ c                  function contributions.
      &                num_curmtr,
      &                num_ageos,
      &                num_ice,
+     &                num_kapgm,
      &                num_diffkr,
      &                num_theta_ini_fin,
      &                num_salt_ini_fin,
@@ -501,12 +509,14 @@ c                  function contributions.
       _RL  num_aqh  (nsx,nsy)
       _RL  num_precip(nsx,nsy)
       _RL  num_swflux(nsx,nsy)
+      _RL  num_swdown(nsx,nsy)
       _RL  num_uwind(nsx,nsy)
       _RL  num_vwind(nsx,nsy)
       _RL  num_atempm(nsx,nsy)
       _RL  num_aqhm  (nsx,nsy)
       _RL  num_precipm(nsx,nsy)
       _RL  num_swfluxm(nsx,nsy)
+      _RL  num_swdownm(nsx,nsy)
       _RL  num_uwindm(nsx,nsy)
       _RL  num_vwindm(nsx,nsy)
       _RL  num_obcsn(nsx,nsy)
@@ -554,6 +564,7 @@ c                  function contributions.
      &                    mult_aqh,
      &                    mult_precip,
      &                    mult_swflux,
+     &                    mult_swdown,
      &                    mult_uwind,
      &                    mult_vwind,
      &                    mult_obcsn,
@@ -599,6 +610,7 @@ c                  function contributions.
       _RL  mult_aqh
       _RL  mult_precip
       _RL  mult_swflux
+      _RL  mult_swdown
       _RL  mult_uwind
       _RL  mult_vwind
       _RL  mult_obcsn
@@ -678,6 +690,7 @@ c     velerrfile            - representation error
      &                aqh_errfile,
      &                precip_errfile,
      &                swflux_errfile,
+     &                swdown_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -706,6 +719,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) aqh_errfile
       character*(MAX_LEN_FNAM) precip_errfile
       character*(MAX_LEN_FNAM) swflux_errfile
+      character*(MAX_LEN_FNAM) swdown_errfile
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -738,7 +752,8 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      frame,
      &                      cosphi,
      &                      whflux,wsflux,wtauu,wtauv,
-     &                      watemp,waqh,wprecip,wswflux,wuwind,wvwind,
+     &                      watemp,waqh,wprecip,wswflux,wswdown,
+     &                      wuwind,wvwind,
      &                      wscatx,wscaty,
      &                      wtheta,wtheta2,wthetaLev,
      &                      wsalt,wsalt2,wsaltLev,
@@ -769,6 +784,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL waqh    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wprecip (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wswflux (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtheta  (                            nr,nsx,nsy)
@@ -793,7 +809,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
 
       common /ecco_cost_weights_0_r/
      &        whflux0, wsflux0, wtau0,
-     &        watemp0, waqh0, wprecip0, wswflux0, wwind0
+     &        watemp0, waqh0, wprecip0, wswflux0, wswdown0, wwind0
       _RL whflux0
       _RL wsflux0
       _RL wtau0
@@ -801,12 +817,13 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL waqh0
       _RL wprecip0
       _RL wswflux0
+      _RL wswdown0
       _RL wwind0
 
       common /ecco_cost_weights_mean_r/
      &        wmean_hflux, wmean_sflux, wmean_tau,
      &        wmean_atemp, wmean_aqh, 
-     &        wmean_precip, wmean_swflux, wmean_wind
+     &        wmean_precip, wmean_swflux, wmean_swdown, wmean_wind
       _RL wmean_hflux
       _RL wmean_sflux
       _RL wmean_tau
@@ -814,6 +831,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wmean_aqh
       _RL wmean_precip
       _RL wmean_swflux
+      _RL wmean_swdown
       _RL wmean_wind
 						 
       common /ecco_cost_weights_2_r/

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.17 2005/07/28 19:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.18 2005/08/06 11:02:01 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -88,6 +88,8 @@ c--   Read the namelist input.
      &  xx_precipstartdate1, xx_precipstartdate2, xx_precipperiod,
      &  xx_swflux_file,
      &  xx_swfluxstartdate1, xx_swfluxstartdate2, xx_swfluxperiod,
+     &  xx_swdown_file,
+     &  xx_swdownstartdate1, xx_swdownstartdate2, xx_swdownperiod,
      &  xx_uwind_file,
      &  xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod,
      &  xx_vwind_file,
@@ -171,6 +173,10 @@ c--     Set default values.
         xx_swfluxstartdate2 =   0
         xx_swfluxperiod     =   0. _d 0
         xx_swflux_file      = 'xx_swflux'
+        xx_swdownstartdate1 =   0
+        xx_swdownstartdate2 =   0
+        xx_swdownperiod     =   0. _d 0
+        xx_swdown_file      = 'xx_swdown'
         xx_uwindstartdate1  =   0
         xx_uwindstartdate2  =   0
         xx_uwindperiod      =   0. _d 0

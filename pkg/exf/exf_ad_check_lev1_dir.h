@@ -123,5 +123,9 @@ CADJ STORE xx_precip1       = comlev1, key = ikey_dynamics
 CADJ STORE xx_swflux0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_swflux1       = comlev1, key = ikey_dynamics
 # endif
+# ifdef ALLOW_SWDOWN_CONTROL
+CADJ STORE xx_swdown0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_swdown1       = comlev1, key = ikey_dynamics
+# endif
 
 #endif /* ALLOW_EXF */

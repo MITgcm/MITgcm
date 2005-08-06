@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.22 2005/07/28 19:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.23 2005/08/06 11:02:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,6 +123,7 @@ c--   Assign file names.
       call ctrl_set_fname(xx_aqh_file, fname_aqh, mythid)
       call ctrl_set_fname(xx_precip_file, fname_precip, mythid)
       call ctrl_set_fname(xx_swflux_file, fname_swflux, mythid)
+      call ctrl_set_fname(xx_swdown_file, fname_swdown, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
@@ -592,6 +593,15 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(a)') "wswflux"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_swflux(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_SWDOWN_CONTROL
+          ivartype    = 34
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wswdown"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_swdown(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 

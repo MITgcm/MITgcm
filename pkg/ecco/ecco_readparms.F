@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.12 2005/07/29 05:19:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.13 2005/08/06 11:02:01 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -71,12 +71,12 @@ c--   Read the namelist input.
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
      &                   atemp_errfile, aqh_errfile, 
-     &                   precip_errfile, swflux_errfile, 
+     &                   precip_errfile, swflux_errfile, swdown_errfile,
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_atemp, mult_aqh, 
-     &                   mult_precip, mult_swflux,
+     &                   mult_precip, mult_swflux, mult_swdown,
      &                   mult_uwind, mult_vwind,
      &                   mult_hmean, mult_h, mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss,
@@ -94,10 +94,10 @@ c--   Read the namelist input.
      &                   mult_kapgm, mult_diffkr,
      &                   whflux0, wsflux0, wtau0,
      &                   watemp0, waqh0, 
-     &                   wprecip0, wswflux0, wwind0,
+     &                   wprecip0, wswflux0, wswdown0, wwind0,
      &                   wmean_hflux, wmean_sflux, wmean_tau,
-     &                   wmean_atemp, wmean_aqh, 
-     &                   wmean_precip, wmean_swflux, wmean_wind,
+     &                   wmean_atemp, wmean_aqh, wmean_precip, 
+     &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   costIceStart1, costIceStart2,
      &                   costIceEnd1, costIceEnd2,
      &                   cost_ice_flag,
@@ -175,6 +175,7 @@ c--     Set default values.
         aqh_errfile           =    ' '
         precip_errfile        =    ' '
         swflux_errfile        =    ' '
+        swdown_errfile        =    ' '
         uwind_errfile         =    ' '
         vwind_errfile         =    ' '
         geoid_errfile         =    ' '
@@ -187,6 +188,7 @@ c--     Set default values.
         mult_aqh              =      0. _d 0
         mult_precip           =      0. _d 0
         mult_swflux           =      0. _d 0
+        mult_swdown           =      0. _d 0
         mult_uwind            =      0. _d 0
         mult_vwind            =      0. _d 0
         mult_hmean            =      0. _d 0
@@ -225,6 +227,7 @@ c--     Set default values.
         waqh0                 =      0. _d 0
         wprecip0              =      0. _d 0
         wswflux0              =      0. _d 0
+        wswdown0              =      0. _d 0
         wwind0                =      0. _d 0
         whflux0               =      0. _d 0
         wsflux0               =      0. _d 0
@@ -233,6 +236,7 @@ c--     Set default values.
         wmean_aqh             =      0. _d 0
         wmean_precip          =      0. _d 0
         wmean_swflux          =      0. _d 0
+        wmean_swdown          =      0. _d 0
         wmean_wind            =      0. _d 0
         wmean_hflux           =      0. _d 0
         wmean_sflux           =      0. _d 0

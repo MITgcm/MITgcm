@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.4 2005/01/14 08:11:14 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.5 2005/08/06 11:02:01 heimbach Exp $
 C$Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -37,7 +37,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_HFLUX_CONTROL & ALLOW_HFLUX_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #elif ((defined (ALLOW_ATEMP_CONTROL) && \
       !defined (ALLOW_ATEMP_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_ATEMP_CONTROL) && \
@@ -46,7 +46,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_ATEMP_CONTROL & ALLOW_ATEMP_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #endif
 
 #if ((defined (ALLOW_SFLUX_CONTROL) && \
@@ -57,7 +57,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_SFLUX_CONTROL & ALLOW_SFLUX_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #elif ((defined (ALLOW_AQH_CONTROL) && \
       !defined (ALLOW_AQH_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_AQH_CONTROL) && \
@@ -66,7 +66,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_AQH_CONTROL & ALLOW_AQH_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #endif
 
 #if ((defined (ALLOW_USTRESS_CONTROL) && \
@@ -77,7 +77,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_USTRESS_CONTROL & ALLOW_USTRESS_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #elif ((defined (ALLOW_UWIND_CONTROL) && \
       !defined (ALLOW_UWIND_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_UWIND_CONTROL) && \
@@ -86,7 +86,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_UWIND_CONTROL & ALLOW_UWIND_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #endif
 
 #if ((defined (ALLOW_VSTRESS_CONTROL) && \
@@ -97,7 +97,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_VSTRESS_CONTROL & ALLOW_VSTRESS_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #elif ((defined (ALLOW_VWIND_CONTROL) && \
       !defined (ALLOW_VWIND_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_VWIND_CONTROL) && \
@@ -106,7 +106,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     'Must have both ',
      &     'ALLOW_VWIND_CONTROL & ALLOW_VWIND_COST_CONTRIBUTION'
       CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R COST_CHECK'
+cph      STOP 'ABNORMAL END: S/R COST_CHECK'
 #endif
 
 #endif /* ALLOW_ECCO */

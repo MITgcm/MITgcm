@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.2 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.3 2005/08/06 11:02:01 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -582,15 +582,15 @@ c--   Short wave radiative flux used as part of the control vector.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_LWFLUX_CONTROL
-c--   Long wave radiative flux used as part of the control vector.
+#ifdef ALLOW_SWDOWN_CONTROL
+c--   Short wave radiative flux used as part of the control vector.
       write(msgbuf,'(a)')
-     &'// ALLOW_LWFLUX_CONTROL:                 defined'
+     &'// ALLOW_SWDOWN_CONTROL:                 defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_LWFLUX_CONTROL:             NOT defined'
+     &'// ALLOW_SWDOWN_CONTROL:             NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif

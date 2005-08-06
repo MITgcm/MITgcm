@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.28 2005/07/28 19:52:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.29 2005/08/06 11:02:01 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -300,6 +300,13 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
      &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_SWDOWN_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
+     &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 

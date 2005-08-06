@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.5 2005/07/29 05:19:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.6 2005/08/06 11:02:00 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -147,7 +147,7 @@ c--   Meridional wind speed contribution to the cost function.
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) && \
        defined (ALLOW_PRECIP_CONTROL))
-c--   Atmos. temp. contribution to the cost function.
+c--   Atmos. precip. contribution to the cost function.
       startrec = ncvarrecstart(32)
       endrec   = ncvarrecsend(32)
       call cost_forcing_gen ( 
@@ -159,13 +159,25 @@ c--   Atmos. temp. contribution to the cost function.
 
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) && \
        defined (ALLOW_SWFLUX_CONTROL))
-c--   Atmos. temp. contribution to the cost function.
+c--   Atmos. swflux. contribution to the cost function.
       startrec = ncvarrecstart(33)
       endrec   = ncvarrecsend(33)
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_swflux_file, xx_swflux_dummy, wmean_swflux, wswflux,
      &     num_swflux, num_swfluxm, objf_swflux, objf_swfluxm, maskC,
+     &     mythid )
+#endif
+
+#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) && \
+       defined (ALLOW_SWDOWN_CONTROL))
+c--   Atmos. swdown. contribution to the cost function.
+      startrec = ncvarrecstart(33)
+      endrec   = ncvarrecsend(33)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_swdown_file, xx_swdown_dummy, wmean_swdown, wswdown,
+     &     num_swdown, num_swdownm, objf_swdown, objf_swdownm, maskC,
      &     mythid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.12 2005/07/28 19:51:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.13 2005/08/06 11:02:01 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -113,6 +113,7 @@ c--   Initialize variance (weight) fields.
               waqh    (i,j,bi,bj) = 0. _d 0
               wprecip (i,j,bi,bj) = 0. _d 0
               wswflux (i,j,bi,bj) = 0. _d 0
+              wswdown (i,j,bi,bj) = 0. _d 0
               wuwind  (i,j,bi,bj) = 0. _d 0
               wvwind  (i,j,bi,bj) = 0. _d 0
               wsst    (i,j,bi,bj) = 0. _d 0
@@ -854,6 +855,38 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
+#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION))
+c--   Atmos. swdownitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( swdown_errfile .NE. ' ' ) then
+        call mdsreadfield( swdown_errfile, cost_iprec, cost_yftype, nnz,
+     &                     wswdown, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wswdown(i,j,bi,bj) .lt. -9900.) then
+                wswdown(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wswdown(i,j,bi,bj) = wswdown(i,j,bi,bj)
+              wswdown(i,j,bi,bj) = max(wswdown(i,j,bi,bj),wswdown0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 c--   Units have to be checked!
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -967,6 +1000,12 @@ c--   Units have to be checked!
      &                1./wswflux(i,j,bi,bj)/wswflux(i,j,bi,bj)
               else
                 wswflux(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wswdown(i,j,bi,bj) .ne. 0.) then
+                wswdown(i,j,bi,bj) =
+     &                1./wswdown(i,j,bi,bj)/wswdown(i,j,bi,bj)
+              else
+                wswdown(i,j,bi,bj) = 0.0 _d 0
               endif
 
               if (wsfluxmm(bi,bj).ne.0.) 
@@ -1087,6 +1126,9 @@ c
 #endif
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wswflux', wswflux, 1, 0, mythid, dummy)
+#endif
+#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION))
+      call active_write_xy_loc( 'wswdown', wswdown, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
