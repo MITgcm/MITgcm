@@ -19,11 +19,13 @@ echo -n "Getting MITgcm from cvs perver...  "
 cd /nobackup2/edhill
 test -e MITgcm  &&  rm -rf MITgcm
 export CVSROOT=':pserver:cvsanon@mitgcm.org:/u/gcmpack'
-cvs co MITgcm_verif_basic > /dev/null 2>&1
+cvs co MITgcm > /dev/null 2>&1
 echo "done"
 
+ulimit -s unlimited
+
 cd MITgcm/verification/
-./testreport -of=/u/edhill/bin/linux_ia64_ifort+columbia \
+./testreport -of=/u/edhill/bin/linux_ia64_ifort+eh3_columbia -pc \
    -command '(mpirun -np 2 ./mitgcmuv >& output.txt ; echo -n hi)' \
    -j 16 -a edhill@mitgcm.org
 
