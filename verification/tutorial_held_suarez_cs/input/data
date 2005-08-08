@@ -13,8 +13,8 @@
  eosType='IDEALGAS',
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
- select_rStar=2,
  nonlinFreeSurf=4,
+ select_rStar=2,
  hFacInf=0.2,
  hFacSup=2.0,
  uniformLin_PhiSurf=.FALSE.,
@@ -36,18 +36,21 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=276480,
-#- run for 1 day (192.iterations x 450.s = 1.day):
- nTimeSteps=192,
  deltaT=450.,
+#nIter0=276480,
+ startTime=124416000.,
+#- run for 1 year (192.iterations x 450.s = 1.day, 360*192=69120):
+#nTimeSteps=69120,
  forcing_In_AB=.FALSE.,
  abEps=0.1,
- pChkptFreq=2592000.,
- chkptFreq=0.,
+ pChkptFreq=31104000.,
+ chkptFreq=2592000.,
  dumpFreq=2592000.,
- monitorFreq=3600.,
+#monitorFreq=43200.,
  taveFreq=0.,
-#tave_lastIter=1.,
+#- to run a short test (2.h):
+ nTimeSteps=16,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
