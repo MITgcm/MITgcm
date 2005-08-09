@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.3 2005/01/31 19:41:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.4 2005/08/09 22:37:08 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,6 +45,10 @@ C-- Sea-Ice package
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
+#endif
+
+#ifdef COMPONENT_MODULE
+# include "CPL_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -128,7 +132,8 @@ C          temp. is fct of salinity) ; but would be better somewhere else.
       IF ( tauRelax_MxL .EQ. -1. _d 0 
      &     .OR. ( stepFwd_oceMxL  .AND. StartIceModel.NE.0
      &                            .AND. myIter.EQ.nIter0   )
-     &     .OR. ( myIter.EQ.0  .AND. myTime .EQ. 0. )
+     &     .OR. ( myIter.EQ.0 .AND. myTime.EQ.baseTime .AND.
+     &           .NOT.(useCoupler.AND.cpl_earlyExpImpCall) )
      &   ) THEN
         DO j=1,sNy
          DO i=1,sNx
