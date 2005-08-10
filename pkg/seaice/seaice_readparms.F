@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.23 2005/05/22 02:06:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.24 2005/08/10 19:18:52 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -242,9 +242,6 @@ C-------
 C-    seaice Monitor is (unfortunately) not independent from the main monitor
 C       => turn off MNC flags for now
         SEAICE_mon_mnc  = .FALSE.
-C-    seaice snap-shot with MNC is not yet implemented
-C       => turn off MNC flags for now
-        SEAICE_dump_mnc = .FALSE.
 C-------
         IF ( .NOT.outputTypesInclusive
      &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
