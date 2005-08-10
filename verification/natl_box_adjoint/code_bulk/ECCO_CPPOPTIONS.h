@@ -38,6 +38,9 @@ C
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
+C extend to 4-level checkpointing
+#define AUTODIFF_4_LEVEL_CHECKPOINT
+C
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
 C

@@ -17,6 +17,9 @@ C
 C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
 C
+C       >>> DO 2-level checkpointing instead of 3-level
+#define AUTODIFF_2_LEVEL_CHECKPOINT
+C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 #undef ALLOW_DIVIDED_ADJOINT_MPI
