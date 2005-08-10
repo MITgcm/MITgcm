@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.4 2005/08/09 22:37:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.5 2005/08/10 20:38:34 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -49,6 +49,8 @@ C-- Sea-Ice package
 
 #ifdef COMPONENT_MODULE
 # include "CPL_PARAMS.h"
+#else
+      LOGICAL cpl_earlyExpImpCall
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
