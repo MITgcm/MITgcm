@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.2 2005/04/27 14:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.3 2005/08/10 03:34:48 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -29,11 +29,20 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 
-#ifdef AUTODIFF_2_LEVEL_CHECKPOINT
+#if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
       if (nchklev_1*nchklev_2 .lt. nTimeSteps) then
         print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '            nchklev_1*nchklev_2 = ',
+        print*, '     nchklev_1*nchklev_2 = ',
      &       nchklev_1*nchklev_2
+        print*, '            are not consistent with nTimeSteps = ',
+     &       nTimeSteps
+        stop    ' ... stopped in autodiff_check'
+      endif
+#elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
+      if (nchklev_1*nchklev_2*nchklev_3*nchklev_4 .lt. nTimeSteps) then
+        print*, ' the_main_loop: TAMC checkpointing parameters'
+        print*, '     nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
+     &       nchklev_1*nchklev_2*nchklev_3*nchklev_4
         print*, '            are not consistent with nTimeSteps = ',
      &       nTimeSteps
         stop    ' ... stopped in autodiff_check'
@@ -43,7 +52,7 @@ c--   Check the choice of the checkpointing parameters in relation
 c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
       if (nchklev_1*nchklev_2*nchklev_3 .lt. nTimeSteps) then
         print*, ' the_main_loop: TAMC checkpointing parameters'
-        print*, '            nchklev_1*nchklev_2*nchklev_3 = ',
+        print*, '     nchklev_1*nchklev_2*nchklev_3 = ',
      &       nchklev_1*nchklev_2*nchklev_3
         print*, '            are not consistent with nTimeSteps = ',
      &       nTimeSteps

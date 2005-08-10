@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.62 2005/05/31 18:24:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.63 2005/08/10 03:34:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,8 +121,10 @@ C     == Local variables ==
       integer ilev_1
       integer ilev_2
       integer ilev_3
+      integer ilev_4
       integer max_lev2
       integer max_lev3
+      integer max_lev4
 #endif
 CEOP
 
@@ -136,8 +138,11 @@ CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev_ini_bibj_k   = USER
 CADJ  INIT tapelev_init   = USER
-#ifdef AUTODIFF_2_LEVEL_CHECKPOINT
+c
+#if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
+#elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
+CADJ  INIT tapelev4 = USER
 #else
 CADJ  INIT tapelev3 = USER
 #endif
@@ -197,6 +202,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
+      max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
       max_lev2=nTimeSteps/nchklev_1+1
 
@@ -206,17 +212,24 @@ CADJ loop = divided
 #endif
 c**************************************
 
-#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+      do ilev_4 = 1,nchklev_4
+         if(ilev_4.le.max_lev4) then
+c**************************************
+#include "checkpoint_lev4_directives.h"
+c**************************************
+c--     Initialise storage for the middle loop.
+CADJ    INIT tapelev3 = USER
+#endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
 
+#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
 c**************************************
 #include "checkpoint_lev3_directives.h"
 c**************************************
-
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
-
 #endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2
@@ -277,9 +290,12 @@ c**************************************
 c--         The if-statement below introduces a some flexibility in the
 c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 
-            iloop = (ilev_2 - 1)*nchklev_1           + ilev_1
+            iloop = (ilev_2 - 1)*nchklev_1                     + ilev_1
 #ifndef AUTODIFF_2_LEVEL_CHECKPOINT
      &            + (ilev_3 - 1)*nchklev_2*nchklev_1
+#endif
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+     &            + (ilev_4 - 1)*nchklev_3*nchklev_2*nchklev_1
 #endif
 
             if ( iloop .le. nTimeSteps ) then
@@ -358,13 +374,17 @@ c--     >>> Loop body end <<<
         endif
       enddo
 #endif
-#else
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+       endif
       enddo
 #endif
+#else /* ndef ALLOW_TAMC_CHECKPOINTING */
+      enddo
+#endif /* ALLOW_TAMC_CHECKPOINTING */
 
-#else
+#else /* ndef ALLOW_AUTODIFF_TAMC */
       enddo
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.

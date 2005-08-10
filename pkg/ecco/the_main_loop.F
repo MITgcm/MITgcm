@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.20 2005/07/28 13:51:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.21 2005/08/10 03:34:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -156,8 +156,10 @@ c     == local variables ==
       integer ilev_1
       integer ilev_2
       integer ilev_3
+      integer ilev_4
       integer max_lev2
       integer max_lev3
+      integer max_lev4
 #endif
 
 c--   == end of interface ==
@@ -171,11 +173,15 @@ c--   == end of interface ==
 c--   Initialize storage for the initialisations.
 CADJ INIT tapelev_ini_bibj_k   = USER
 CADJ INIT tapelev_init = USER
-#ifdef AUTODIFF_2_LEVEL_CHECKPOINT
+c
+#if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
+#elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
+CADJ  INIT tapelev4 = USER
 #else
 CADJ  INIT tapelev3 = USER
 #endif
+c
 # ifdef ALLOW_DIVIDED_ADJOINT
 CADJ INIT onetape = user
 cphCADJ INIT onetape = common, 1
@@ -242,6 +248,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
+      max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
       max_lev2=nTimeSteps/nchklev_1+1
 
@@ -251,17 +258,24 @@ CADJ loop = divided
 #endif
 c**************************************
 
-#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+      do ilev_4 = 1,nchklev_4
+         if(ilev_4.le.max_lev4) then
+c**************************************
+#include "checkpoint_lev4_directives.h"
+c**************************************
+c--     Initialise storage for the middle loop.
+CADJ    INIT tapelev3 = USER
+#endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
 
+#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
 c**************************************
 #include "checkpoint_lev3_directives.h"
 c**************************************
-
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
-
 #endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2
@@ -328,9 +342,12 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 c--
 c--         Requirement: nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps .
 
-            iloop = (ilev_2 - 1)*nchklev_1           + ilev_1
+            iloop = (ilev_2 - 1)*nchklev_1                     + ilev_1
 #ifndef AUTODIFF_2_LEVEL_CHECKPOINT
      &            + (ilev_3 - 1)*nchklev_2*nchklev_1
+#endif
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+     &            + (ilev_4 - 1)*nchklev_3*nchklev_2*nchklev_1
 #endif
 
             if ( iloop .le. nTimeSteps ) then
@@ -734,19 +751,24 @@ C--   Save state for restarts
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
-            endif
+             endif
+            enddo
+           endif
           enddo
-          endif
-        enddo
 #ifndef AUTODIFF_2_LEVEL_CHECKPOINT
-        endif
+         endif
+        enddo
+#endif
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+       endif
       enddo
 #endif
-#else
+c
+#else /* ndef ALLOW_TAMC_CHECKPOINTING */
       enddo
-#endif
+#endif /* ALLOW_TAMC_CHECKPOINTING */
 
-#else
+#else /* ndef ALLOW_AUTODIFF_TAMC */
       enddo
 #endif /* ALLOW_AUTODIFF_TAMC */
 
