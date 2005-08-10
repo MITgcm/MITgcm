@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.529 2005/08/01 13:31:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.530 2005/08/10 03:41:44 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o Implement 4-level checkpointing: AUTODIFF_4_LEVEL_CHECKPOINT
+  Needed for high-res. runs with large global files 
+  to be able to limit tapelev size
+o Changed some tests for adjoint:
+  * carbon/ now tests AUTODIFF_2_LEVEL_CHECKPOINT
+  * natl_box_adjoint/code_bulk/ tests AUTODIFF_4_LEVEL_CHECKPOINT
+  * global_ocean.90x40x15/ back to default 3-level checkpointing
 
 checkpoint57p_post
 o reading of delXfile & delYfile moved from ini_parms.F to ini_grid.F
