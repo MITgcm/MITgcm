@@ -6,7 +6,7 @@
 *.meta
 *.nc
 STD*
-output.txt
+*.txt
 mfile*
 mitgcmuv*
 work.pc*
@@ -18,5 +18,7 @@ genmake_state
 genmake_ad_optfile
 genmake_optfile
 genmake_warnings
-tr_run.*
+mnc_test_*
+fort.*
+datetime
 
