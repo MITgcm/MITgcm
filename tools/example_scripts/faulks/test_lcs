@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs,v 1.1 2005/07/28 15:09:31 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs,v 1.2 2005/08/11 14:12:44 edhill Exp $
 
 #  Ed Hill
 
@@ -74,6 +74,9 @@ for ac_option ; do
      esac
      
 done
+
+#  Turn off stack limit for FIZHI
+ulimit -s unlimited
 
 echo -n "Creating a temp directory ..."
 mach=`hostname`
