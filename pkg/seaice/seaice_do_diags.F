@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.15 2005/08/10 19:18:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.16 2005/08/11 02:50:12 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,41 +39,41 @@ C     == Local variables ==
          
       IF (SEAICEwriteState) THEN
 
-         IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
-     &      ) THEN
+        IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
+     &       ) THEN
             
 #ifdef ALLOW_MNC
-           IF (useMNC .AND. SEAICE_dump_mnc) THEN
-             CALL MNC_CW_SET_UDIM('sice', -1, myThid)
-             CALL MNC_CW_RL_W_S('D','sice',0,0,'T', myTime, myThid)
-             CALL MNC_CW_SET_UDIM('sice', 0, myThid)
-             CALL MNC_CW_I_W_S('I','sice',0,0,'iter', myIter, myThid)
-             CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
-     &            myTime,myThid)
-             CALL MNC_CW_RL_W('D','sice',0,0,'si_UWIND',uwind,myThid)
-             CALL MNC_CW_RL_W('D','sice',0,0,'si_VWIND',vwind,myThid)
-             CALL MNC_CW_RS_W('D','sice',0,0,'fu',fu,myThid)
-             CALL MNC_CW_RS_W('D','sice',0,0,'fv',fv,myThid)
-             CALL MNC_CW_RS_W('D','sice',0,0,'EmPmR',EmPmR,myThid)
-             CALL MNC_CW_RS_W('D','sice',0,0,'Qnet',Qnet,myThid)
-             CALL MNC_CW_RS_W('D','sice',0,0,'Qsw',Qsw,myThid)
-           ENDIF
+          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            CALL MNC_CW_SET_UDIM('sice', -1, myThid)
+            CALL MNC_CW_RL_W_S('D','sice',0,0,'T', myTime, myThid)
+            CALL MNC_CW_SET_UDIM('sice', 0, myThid)
+            CALL MNC_CW_I_W_S('I','sice',0,0,'iter', myIter, myThid)
+            CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
+     &           myTime,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_UWIND',uwind,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_VWIND',vwind,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'fu',fu,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'fv',fv,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'EmPmR',EmPmR,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'Qnet',Qnet,myThid)
+            CALL MNC_CW_RS_W('D','sice',0,0,'Qsw',Qsw,myThid)
+          ENDIF
 #endif
-           IF (SEAICE_dump_mdsio) THEN
-             WRITE(suff,'(I10.10)') myIter
-             _BARRIER
-             _BEGIN_MASTER( myThid )
-             CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
-             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
-             _END_MASTER( myThid )
-             _BARRIER
-           ENDIF
-
+          IF (SEAICE_dump_mdsio) THEN
+            WRITE(suff,'(I10.10)') myIter
+            _BARRIER
+            _BEGIN_MASTER( myThid )
+            CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
+            _END_MASTER( myThid )
+            _BARRIER
+          ENDIF
+          
 #ifdef SEAICE_DEBUG
        CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( vwind , 'Current vwind ', myIter, myThid )
@@ -93,80 +93,113 @@ C     == Local variables ==
        CALL PLOT_FIELD_XYRL( Qsw   , 'Current Qsw   ', myIter, myThid )
 #endif
 
-            DO bj=myByLo(myThid),myByHi(myThid)
-               DO bi=myBxLo(myThid),myBxHi(myThid)
-                  DO j=1,sNy
-                     DO i=1,sNx
-                        arr(i,j,bi,bj)=UICE(i,j,1,bi,bj)
-                     ENDDO
-                  ENDDO
-               ENDDO
+          DO bj=myByLo(myThid),myByHi(myThid)
+            DO bi=myBxLo(myThid),myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  arr(i,j,bi,bj)=UICE(i,j,1,bi,bj)
+                ENDDO
+              ENDDO
             ENDDO
+          ENDDO
+
+          IF (SEAICE_dump_mdsio) THEN
             _BARRIER
             _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'UICE.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
+          ENDIF
+#ifdef ALLOW_MNC
+          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_UICE',arr,myThid)
+          ENDIF
+#endif
 #ifdef SEAICE_DEBUG
-       _EXCH_XY_R4( arr, myThid )
-       CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ', myIter, myThid )
+          _EXCH_XY_R4( arr, myThid )
+          CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ', 
+     &         myIter, myThid )
 #endif
 
-            DO bj=myByLo(myThid),myByHi(myThid)
-               DO bi=myBxLo(myThid),myBxHi(myThid)
-                  DO j=1,sNy
-                     DO i=1,sNx
-                        arr(i,j,bi,bj)=VICE(i,j,1,bi,bj)
-                     ENDDO
-                  ENDDO
-               ENDDO
+          DO bj=myByLo(myThid),myByHi(myThid)
+            DO bi=myBxLo(myThid),myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  arr(i,j,bi,bj)=VICE(i,j,1,bi,bj)
+                ENDDO
+              ENDDO
             ENDDO
+          ENDDO
+          IF (SEAICE_dump_mdsio) THEN
             _BARRIER
             _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'VICE.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
-#ifdef SEAICE_DEBUG
-       _EXCH_XY_R4( arr, myThid )
-       CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ', myIter, myThid )
+          ENDIF
+#ifdef ALLOW_MNC
+          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_VICE',arr,myThid)
+          ENDIF
 #endif
-            
-            DO bj=myByLo(myThid),myByHi(myThid)
-               DO bi=myBxLo(myThid),myBxHi(myThid)
-                  DO j=1,sNy
-                     DO i=1,sNx
-                        arr(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
-                     ENDDO
-                  ENDDO
-               ENDDO
+#ifdef SEAICE_DEBUG
+          _EXCH_XY_R4( arr, myThid )
+          CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ', 
+     &         myIter, myThid )
+#endif
+          
+          DO bj=myByLo(myThid),myByHi(myThid)
+            DO bi=myBxLo(myThid),myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  arr(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
+                ENDDO
+              ENDDO
             ENDDO
+          ENDDO
+          IF (SEAICE_dump_mdsio) THEN
             _BARRIER
             _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'HEFF.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
-#ifdef SEAICE_DEBUG
-       _EXCH_XY_R4( arr, myThid )
-       CALL PLOT_FIELD_XYRS( arr   , 'Current heff  ', myIter, myThid )
+          ENDIF
+#ifdef ALLOW_MNC
+          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_HEFF',arr,myThid)
+          ENDIF
 #endif
-            
-            DO bj=myByLo(myThid),myByHi(myThid)
-               DO bi=myBxLo(myThid),myBxHi(myThid)
-                  DO j=1,sNy
-                     DO i=1,sNx
-                        arr(i,j,bi,bj)=AREA(i,j,1,bi,bj)
-                     ENDDO
-                  ENDDO
-               ENDDO
+#ifdef SEAICE_DEBUG
+          _EXCH_XY_R4( arr, myThid )
+          CALL PLOT_FIELD_XYRS( arr   , 'Current heff  ',
+     &         myIter, myThid )
+#endif
+          
+          DO bj=myByLo(myThid),myByHi(myThid)
+            DO bi=myBxLo(myThid),myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  arr(i,j,bi,bj)=AREA(i,j,1,bi,bj)
+                ENDDO
+              ENDDO
             ENDDO
+          ENDDO
+          IF (SEAICE_dump_mdsio) THEN
             _BARRIER
             _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'AREA.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
+          ENDIF
+#ifdef ALLOW_MNC
+          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
+            CALL MNC_CW_RS_W('D','sice',0,0,'si_AREA',arr,myThid)
+          ENDIF
+#endif
 #ifdef SEAICE_DEBUG
-       _EXCH_XY_R4( arr, myThid )
-       CALL PLOT_FIELD_XYRS( arr   , 'Current area  ', myIter, myThid )
+          _EXCH_XY_R4( arr, myThid )
+          CALL PLOT_FIELD_XYRS( arr   , 'Current area  ',
+     &         myIter, myThid )
 #endif
 
          ENDIF

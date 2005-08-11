@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.2 2005/08/10 19:18:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.3 2005/08/11 02:50:12 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,6 +71,26 @@ CEOP
         CALL MNC_CW_ADD_VATTR_TEXT('si_LWDOWN','units','W/m^2', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('si_LWDOWN','description',
      &       'Downward longwave radiation', myThid)
+
+        CALL MNC_CW_ADD_VNAME('si_UICE','U_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_UICE','units','m/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_UICE','description',
+     &       'Ice U velocity', myThid)
+
+        CALL MNC_CW_ADD_VNAME('si_VICE','V_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_VICE','units','m/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_VICE','description',
+     &       'Ice V velocity', myThid)
+
+        CALL MNC_CW_ADD_VNAME('si_HEFF','Cen_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_HEFF','units','m', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_HEFF','description',
+     &       'Effective ice thickness',myThid)
+
+        CALL MNC_CW_ADD_VNAME('si_AREA','Cen_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_AREA','units','m^2/m^2',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_AREA','description',
+     &       'Fractional ice-covered area',myThid)
 
 C       Time averages
         CALL MNC_CW_ADD_VNAME('si_UICEtave','U_xy_Hn__-__t',3,4,myThid)
