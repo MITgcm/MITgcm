@@ -11,12 +11,6 @@
  viscA4=0.,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- diffKrT=0.,
- diffKhT=0.,
- diffK4T=0.,
- diffKrS=0.,
- diffKhS=0.,
- diffK4S=0.,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
  gravity=9.81,
@@ -57,12 +51,9 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
  delR=1.E5,
  Ro_SeaLevel=1.E5,
- groundAtK1=.TRUE.,
  &
 
 # Input datasets
