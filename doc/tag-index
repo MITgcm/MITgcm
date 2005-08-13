@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.531 2005/08/11 03:03:43 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.532 2005/08/13 19:08:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,8 @@ $Name:  $
 
 o fix annoying months-old bug in mnc/mdsio output for seaice pkg
   - bug was reported by Jean-Michel and Ian Fenty
+o fix initialization Pb in AIM-Ocean coupled model (aim_sice2aim.F)
+  update exp. cpl_aim+ocn output. 
 o Implement 4-level checkpointing: AUTODIFF_4_LEVEL_CHECKPOINT
   Needed for high-res. runs with large global files 
   to be able to limit tapelev size
