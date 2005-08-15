@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.162 2005/07/31 22:01:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.163 2005/08/15 23:05:28 molod Exp $
 C $Name:  $
 C
 
@@ -295,6 +295,7 @@ C     calendarDumps :: When set, approximate months (30-31 days) and years (360-
 C                      for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
 C                      KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
 C                      calendar months and years.  Requires pkg/cal.
+C     nodumps       :: Logical Flag to indicate whether to do ANY dumps at all
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -327,7 +328,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & calendarDumps
+     & calendarDumps, nodumps
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -404,6 +405,7 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
       LOGICAL calendarDumps
+      LOGICAL nodumps
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
