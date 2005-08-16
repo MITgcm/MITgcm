@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.18 2005/07/29 15:50:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.19 2005/08/16 20:36:10 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -85,6 +85,11 @@ C----------------------------------------------------------------------
       IF ( fluidIsAir ) THEN
         tUnit4c= 'K   '
         sUnit4c= 'g/kg'
+#ifdef ALLOW_FIZHI
+      IF(useFIZHI)THEN
+        sUnit4c= 'kg/kg'
+      ENDIF
+#endif /* ALLOW_FIZHI */
       ELSE
         tUnit4c= 'degC'
         sUnit4c= 'psu '
@@ -129,21 +134,21 @@ C-    state variables of the main code (and related quadratic var):
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SALT    '
-      diagTitle = 'Salt or Water Vapor mixing ratio (g/kg)'
+      diagTitle = 'Salt or Water Vapor mixing ratio'
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SSS     '
-      diagTitle = 'Sea Surface Salinity (g/kg)'
+      diagTitle = 'Sea Surface Salinity '
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SALTanom'
-      diagTitle = 'Salt anomaly (=SALT-35; g/kg)'
+      diagTitle = 'Salt anomaly (=SALT-35)'
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -297,21 +302,21 @@ C-    state variables of the main code (and related quadratic var):
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'USLTMASS'
-      diagTitle = 'Zonal Mass-Weight Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Zonal Mass-Weight Transp of Salt '
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VSLTMASS'
-      diagTitle = 'Meridional Mass-Weight Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Meridional Mass-Weight Transp of Salt'
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WSLTMASS'
-      diagTitle = 'Vertical Mass-Weight Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Vertical Mass-Weight Transp of Salt '
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -339,21 +344,21 @@ C-    state variables of the main code (and related quadratic var):
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UVELSLT '
-      diagTitle = 'Zonal Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Zonal Transp of Salt '
       diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VVELSLT '
-      diagTitle = 'Meridional Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Meridional Transp of Salt '
       diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WVELSLT '
-      diagTitle = 'Vertical Transp of Salt (g/kg.m/s)'
+      diagTitle = 'Vertical Transp of Salt '
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
