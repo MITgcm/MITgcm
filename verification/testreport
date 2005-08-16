@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.70 2005/07/28 21:12:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.71 2005/08/16 17:12:46 jmc Exp $
 #  $Name:  $
 #
 
@@ -124,6 +124,11 @@ testoutput_for_prop()
             echo Not same Nb of lines when searching for "$2" ":" $lncntA $lncntB 1>&2
         fi
         return 99
+    fi
+    non_real_numb=`egrep -c -i 'NAN|INF' tmp1.txt`
+    if [ $non_real_numb -gt 0 ]; then
+	echo testoutput_for_prop: output.txt has $non_real_numb not real numbers 1>&2
+	return 99
     fi
     if [ $debug -gt 0 ]; then
 	echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
