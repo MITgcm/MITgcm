@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.122 2005/07/30 23:39:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.123 2005/08/16 22:52:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -218,6 +218,11 @@ C         (1 + dt * K * d_zz) theta[n] = theta*
 C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
 CEOP
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &   CALL DEBUG_ENTER( 'DYNAMICS', myThid )
+#endif
 
 C-- Call to routine for calculation of
 C   Eliassen-Palm-flux-forced U-tendency,
@@ -488,8 +493,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Step forward W field in N-H algorithm
       IF ( momStepping .AND. nonHydrostatic ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('CALC_GW',myThid)
+         IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('CALC_GW', myThid )
 #endif
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW( myTime, myIter, myThid )
@@ -542,6 +547,11 @@ Cml)
        CALL DEBUG_STATS_RL(Nr,gsNm1,'GsNm1 (DYNAMICS)',myThid)
 #endif
       ENDIF
+#endif
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &   CALL DEBUG_LEAVE( 'DYNAMICS', myThid )
 #endif
 
       RETURN
