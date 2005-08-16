@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.532 2005/08/13 19:08:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.533 2005/08/16 22:50:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix initialisation Pb in calc_gw (get NANs in exp5 with g77)
 o fix annoying months-old bug in mnc/mdsio output for seaice pkg
   - bug was reported by Jean-Michel and Ian Fenty
 o fix initialization Pb in AIM-Ocean coupled model (aim_sice2aim.F)
