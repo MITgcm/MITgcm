@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.23 2005/07/13 00:46:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.24 2005/08/16 21:29:38 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
@@ -43,6 +44,7 @@ C     == Local variables ==
       _RL tmpMk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpFac, uBarC, vBarC
+      _RL dummy1, dummy2, dummy3, dummy4, kappa, getcon
       INTEGER i,j,K,bi,bj
       INTEGER km1
       
@@ -337,6 +339,30 @@ C--   fill tracer state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(theta,'THETA   ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(salt, 'SALT    ',0,Nr,0,1,1,myThid)
+
+#ifdef ALLOW_FIZHI
+      IF((useFIZHI).and.(DIAGNOSTICS_IS_ON('RELHUM  ',myThid)))THEN
+       kappa = getcon('KAPPA')
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        do j = 1,sNy
+         do i = 1,sNx
+          do K = 1,Nr
+           dummy1 = theta(i,j,k,bi,bj) * ((rc(k)/100.)/1000.)**kappa
+           dummy2 = rc(k) / 100.
+           call qsat(dummy1,dummy2,dummy3,dummy4,.false.)
+           tmpMk(i,j,K,bi,bj) = hfacC(i,j,K,bi,bj) * 
+     .                    salt(i,j,k,bi,bj) * 100. / dummy3
+           if(k.lt.4) print *,' Temp ',dummy1,' Pres ',dummy2,' q ',
+     .      salt(i,j,k,bi,bj),' qstar ',dummy3,' rh ',tmpMk(i,j,K,bi,bj)
+          enddo
+         enddo
+        enddo
+       enddo
+       enddo
+       CALL DIAGNOSTICS_FILL(tmpMk, 'RELHUM  ',0,Nr,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_FIZHI */
 
         CALL DIAGNOSTICS_SCALE_FILL(theta,tmpFac,2,
      &                              'THETASQ ',0,Nr,0,1,1,myThid)

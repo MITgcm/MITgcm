@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.19 2005/08/16 20:36:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.20 2005/08/16 21:29:38 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -136,6 +136,13 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'SALT    '
       diagTitle = 'Salt or Water Vapor mixing ratio'
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'RELHUM  '
+      diagTitle = 'Relative Humidity               '
+      diagUnits = 'percent         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
