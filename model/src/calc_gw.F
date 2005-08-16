@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.20 2005/07/30 23:38:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.21 2005/08/16 22:42:49 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -61,8 +61,8 @@ C     flx_Dn       :: Temp. used for fVol vertical terms.
       _RL    fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    del2w(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     I,J,K - Loop counters
-      INTEGER i,j,k, kP1, kUp
+C     i,j,k - Loop counters
+      INTEGER i,j,k, kP1
       _RL  wOverride
       _RS  hFacWtmp
       _RS  hFacStmp
@@ -102,7 +102,7 @@ C        slipSideFac = 0. _d 0
         DO K=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           gWNM1(i,j,k,bi,bj) = gW(i,j,k,bi,bj) 
+           gwNm1(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
            gW(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -182,7 +182,6 @@ C     First compute the fraction of open water for the w-control volume
 C     at the southern face
             hFacCtmp=max(hFacC(I,J,K-1,bi,bj)-Half,0. _d 0)
      &           +   min(hFacC(I,J,K  ,bi,bj),Half)
-            recip_hFacCtmp = 0. _d 0
             IF (hFacCtmp .GT. 0.) THEN
              recip_hFacCtmp = 1./hFacCtmp
             ELSE
@@ -201,6 +200,13 @@ CML ************************************************************
 CML   No-slip Boundary conditions for bi-harmonic dissipation
 CML   need to be implemented here!
 CML ************************************************************
+         ELSE
+C-    Initialize del2w to zero:
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            del2w(i,j) = 0. _d 0
+           ENDDO
+          ENDDO
          ENDIF
 
 C Flux on Southern face
@@ -242,7 +248,7 @@ C     First compute the fraction of open water for the w-control volume
 C     at the western face
            hFacWtmp=max(hFacW(I,J,K-1,bi,bj)-Half,0. _d 0)
      &         +    min(hFacW(I,J,K  ,bi,bj),Half)
-                 tmp_UbarZ=Half*(
+           tmp_UbarZ=Half*(
      &         _hFacW(I,J,K-1,bi,bj)*uVel( I ,J,K-1,bi,bj)
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
            Flx_EW(I,J,bi,bj)=
@@ -299,7 +305,7 @@ caja           and an hFacUS (above V points) too...
        ENDDO
       ENDDO
 
-     
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO K=2,Nr
@@ -307,7 +313,7 @@ caja           and an hFacUS (above V points) too...
           DO i=iMin,iMax
            wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
      &     +deltatMom*nh_Am2*( ab15*gW(i,j,k,bi,bj)
-     &                 +ab05*gWNM1(i,j,k,bi,bj) )
+     &                 +ab05*gwNm1(i,j,k,bi,bj) )
            IF (hFacC(I,J,K,bi,bj).EQ.0.) wVel(i,j,k,bi,bj)=0.
           ENDDO
          ENDDO
