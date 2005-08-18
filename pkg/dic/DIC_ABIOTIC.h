@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.4 2004/09/02 19:47:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.5 2005/08/18 18:24:28 stephd Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -21,7 +21,7 @@ C     |==========================================================|
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
      &                     ak1p,ak2p,ak3p,aksi,
-     &                     ff,ft,st,bt
+     &                     ff,ft,st,bt, Ksp_TP_Calc
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -37,6 +37,7 @@ C     |==========================================================|
       _RL  ft(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
        COMMON /OXYGEN_CHEM/
      &              oA0,oA1,oA2,oA3,oA4,oA5,

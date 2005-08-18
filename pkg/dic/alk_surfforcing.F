@@ -55,7 +55,6 @@ C NOTE: Be very careful with signs here!
 C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
-cQQ           GALK(i,j)=gsm_ALK*ftotflux(i,j,bi,bj)/gsm_S
               GALK(i,j)=gsm_ALK*surfaceForcingS(i,j,bi,bj)*
      &                  recip_drF(1)/gsm_S
 c OR

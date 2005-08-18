@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.3 2004/09/02 19:47:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.4 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 #ifdef DIC_BIOTIC
@@ -9,8 +9,8 @@ C     |==========================================================|
 
       COMMON /BIOTIC_NEEDS/
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave, 
-     &     fluxCO2ave, dic_timeave,
-     &     alpha, rain_ratio, InputFe,
+     &     fluxCO2ave, omegaCave, pfluxave, cfluxave, dic_timeave,
+     &     alpha, rain_ratio, InputFe, omegaC, pHlast,
      &     Kpo4, DOPfraction, zcrit, KRemin,
      &     KDOPremin,zca,R_op,R_cp,R_np, R_fep,
      &     o2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
@@ -27,12 +27,17 @@ C     For averages
       _RL pCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL OmegaCave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL pfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL cfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL DIC_timeave(nSx,nSy,nR)
 
 C     values for biogeochemistry
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pHlast(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL Kpo4            
       _RL DOPfraction   
       _RL zcrit

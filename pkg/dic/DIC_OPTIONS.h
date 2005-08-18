@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.3 2004/09/02 19:47:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.4 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -9,6 +9,9 @@ C $Name:  $
 #include "CPP_OPTIONS.h"
 
 C CPP Macros go here
+#undef CAR_DISS
+#define DIC_BIOTIC
+#undef  ALLOW_FE
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */

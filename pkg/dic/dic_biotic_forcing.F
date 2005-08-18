@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.7 2004/12/04 00:15:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.8 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -80,6 +80,7 @@ c  freefe                 :: iron not bound to ligand
       _RL  SURC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SURO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  BIO(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  BIO_kar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  CAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -89,6 +90,7 @@ c  freefe                 :: iron not bound to ligand
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
        INTEGER I,J,k
+       INTEGER nCALCITEstep
 CEOP
 
        DO k=1,Nr
@@ -103,6 +105,7 @@ CEOP
            SURC(i,j)=0.d0
            CAR(i,j,k)=0.d0
            BIO(i,j,k)=0.d0
+           BIO_kar(i,j,k)=0.d0
            bioac(i,j,k)=0.d0
            pflux(i,j,k)=0.d0
            cflux(i,j,k)=0.d0
@@ -151,9 +154,26 @@ c flux of po4 from layers with biological activity
      &                    myIter,myTime,myThid)
 
 c carbonate
+#ifdef CAR_DISS
+c dissolution only below saturation horizon
+c code following methid by Karsten Friis
+         nCALCITEstep = 3600
+         IF(myIter .lt. (nIter0+5) .or.
+     &               mod(myIter,nCALCITEstep) .eq. 0)THEN
+           CALL CALCITE_SATURATION(
+     I                    bi,bj,imin,imax,jmin,jmax,
+     I                    myIter,myTime,myThid)
+        ENDIF
+c
+        CALL CAR_FLUX_OMEGA_TOP( bioac, cflux,
+     &                    bi,bj,imin,imax,jmin,jmax,
+     &                    myIter,myTime,myThid)
+#else
+c old OCMIP way
         CALL CAR_FLUX( bioac, cflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
+#endif
 
 c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
@@ -167,6 +187,7 @@ c add all tendencies for PO4, DOP, ALK, DIC
            GDOP(i,j,k)=+bioac(i,j,k)*DOPfraction
      &         - maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
            GALK(i,j,k)=+2.d0*car(i,j,k)-R_NP*bio(i,j,k)
+           BIO_kar(i,j,k)=R_NP*bio(i,j,k)
            GDIC(i,j,k)=car(i,j,k)+R_CP*bio(i,j,k)
            if (PTR_O2(i,j,k).gt.o2crit) then
              GO2(i,j,k)=R_OP*bio(i,j,k)
@@ -222,6 +243,12 @@ c save averages
      &                          BIOac(i,j,k)*deltaTclock
             CARave(i,j,k,bi,bj)=CARave(i,j,k,bi,bj)+
      &                          CAR(i,j,k)*deltaTclock
+            OmegaCave(i,j,k,bi,bj)= OmegaCave(i,j,k,bi,bj)+
+     &                           OmegaC(i,j,k,bi,bj)*deltaTclock
+            pfluxave(i,j,k,bi,bj)= pfluxave(i,j,k,bi,bj) +
+     &                           pflux(i,j,k)*deltaTclock
+            cfluxave(i,j,k,bi,bj)= cfluxave(i,j,k,bi,bj) +
+     &                           cflux(i,j,k)*deltaTclock
             if (k.eq.1) then
               SURave(i,j,bi,bj)=SURave(i,j,bi,bj)+
      &                          SURC(i,j)*deltaTclock

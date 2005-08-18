@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.7 2005/08/01 21:07:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.8 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -62,6 +62,12 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(fluxCO2ave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(OmegaCave, DIC_timeave, nR ,
+     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeave, 1 ,
+     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeave, 1 ,
+     &                 bi,bj,myThid)
         ENDDO
        ENDDO
        
@@ -80,6 +86,12 @@ C      Normalize by integrated time
          CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
      &        myIter,myThid)
          CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_pfluxtave.',suff,pfluxave,
+     &        myIter,myThid)
+         CALL WRITE_FLD_XY_RL('DIC_cfluxtave.',suff,cfluxave,
      &        myIter,myThid)
        ENDIF
 
@@ -103,6 +115,12 @@ C      Normalize by integrated time
      &        'D','dic_tave',0,0,'dic_pCO2_ave',pCO2ave,myThid)
          CALL MNC_CW_RL_W(
      &        'D','dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_pflux_ave',pfluxave,myThid)
+         CALL MNC_CW_RL_W(
+     &        'D','dic_tave',0,0,'dic_cflux_ave',cfluxave,myThid)
        ENDIF
 #endif
 
@@ -116,6 +134,9 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
+         CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(pfluxave,1,bi,bj,myThid)
+         CALL TIMEAVE_RESET(cfluxave,1,bi,bj,myThid)
          do k=1,Nr
            DIC_TimeAve(bi,bj,k)=0.d0
          enddo

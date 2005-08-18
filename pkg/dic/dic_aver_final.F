@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.3 2005/04/06 18:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.4 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.4 2005/04/06 18:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.5 2005/08/18 18:24:29 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -45,6 +45,9 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(pCO2ave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pHave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(fluxCO2ave,   1,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(OmegaCave,   Nr,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(pfluxave,   1,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(cfluxave,   1,  bi, bj, myThid)
           print*,'QQ start timeave'
           do k=1,Nr
             DIC_TimeAve(bi,bj,k)=0.d0
