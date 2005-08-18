@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.6 2005/05/06 19:02:41 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.7 2005/08/18 18:22:00 stephd Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -36,18 +36,18 @@ C     myTime - Current time of simulation ( s )
 CEOP
 
 C--   Write model state to binary file
-      CALL OFFLINE_STATE( myTime, myIter, myThid )
-
-#ifdef ALLOW_TIMEAVE
-C--   Do time averages
-      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
-c       CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
-#ifdef ALLOW_PTRACERS
-       IF ( usePTRACERS )
-     & CALL PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
-#endif
-      ENDIF
-#endif
+c      CALL OFFLINE_STATE( myTime, myIter, myThid )
+c
+c#ifdef ALLOW_TIMEAVE
+cC--   Do time averages
+c      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
+cc       CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
+c#ifdef ALLOW_PTRACERS
+c       IF ( usePTRACERS )
+c     & CALL PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
+c#endif
+c      ENDIF
+c#endif
 
 #ifdef ALLOW_GCHEM
 C--   Do gchem diagnostics.
