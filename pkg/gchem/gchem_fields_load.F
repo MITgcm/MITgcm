@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.4 2004/11/19 21:28:47 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.5 2005/08/18 19:29:51 stephd Exp $
 C$Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -33,7 +33,7 @@ c
 cccccccccccccccccccccccccc
 c load external data     c
 cccccccccccccccccccccccccc
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_DIC
        call  DIC_FIELDS_LOAD (myIter,myTime,myThid)
 #endif
 

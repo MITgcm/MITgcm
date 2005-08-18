@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.10 2004/11/23 20:20:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.11 2005/08/18 19:29:51 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -52,7 +52,7 @@ CEOP
 ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_DIC
 c find global surface averages
        gsm_s = 0.
        gsm_dic = 0.
@@ -85,7 +85,7 @@ C$taf loop = parallel
 c
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 c
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_DIC
 #ifdef ALLOW_FE
           call DIC_BIOTIC_Forcing( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
      &                          Ptracer(1-Olx,1-Oly,1,bi,bj,2),
