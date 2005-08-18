@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.7 2005/05/14 22:51:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.8 2005/08/18 18:23:02 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -46,6 +46,11 @@ CEOP
      &                   AtmospFile,
      &                   IronFile,
      &                   SilicaFile,
+     &                   Filename1,
+     &                   Filename2,
+     &                   Filename3,
+     &                   Filename4,
+     &                   Filename5,
      &                   nsubtime
 
 C Set defaults values for parameters in GCHEM.h
@@ -56,8 +61,11 @@ C Set defaults values for parameters in GCHEM.h
        IceFile=' '
        IronFile=' '
        SilicaFile=' '
-
-
+       Filename1=' '
+       Filename2=' '
+       Filename3=' '
+       Filename4=' '
+       Filename5=' '
 C Open and read the data.gchem file
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'

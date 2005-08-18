@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.7 2005/05/14 22:51:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.8 2005/08/18 18:23:02 stephd Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -31,6 +31,11 @@ C
       CHARACTER*(MAX_LEN_FNAM) IceFile
       CHARACTER*(MAX_LEN_FNAM) IronFile
       CHARACTER*(MAX_LEN_FNAM) SilicaFile
+      CHARACTER*(MAX_LEN_FNAM) Filename1
+      CHARACTER*(MAX_LEN_FNAM) Filename2
+      CHARACTER*(MAX_LEN_FNAM) Filename3
+      CHARACTER*(MAX_LEN_FNAM) Filename4
+      CHARACTER*(MAX_LEN_FNAM) Filename5
 
       COMMON /GCHEM_PARAMS/
      &                   WindFile,
@@ -38,6 +43,11 @@ C
      &                   IceFile,
      &                   IronFile,
      &                   SilicaFile,
+     &                   Filename1,
+     &                   Filename2,
+     &                   Filename3,
+     &                   Filename4,
+     &                   Filename5,
      &                   nsubtime
 CEOP
 
