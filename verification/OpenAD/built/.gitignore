@@ -5,6 +5,7 @@
 *.f
 *.F90
 *.f90
+*.mod
 *.o
 *.data
 *.meta
