@@ -1,6 +1,10 @@
 *akefile
 *.log
+*.F
+*.h
 *.f
+*.F90
+*.f90
 *.o
 *.data
 *.meta
