@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_reclen.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_reclen.F,v 1.2 2005/08/19 22:42:02 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -13,14 +13,17 @@ C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
       implicit none
-C Arguments
-      integer filePrec
-      integer nnn
-      integer mythid
+
 C Global variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+C
+C Arguments
+      integer filePrec
+      integer nnn
+      integer mythid
+C
 C Local
       character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------

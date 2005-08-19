@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.3 2005/05/19 21:46:15 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.4 2005/08/19 22:42:02 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -26,6 +26,12 @@ C
 C Created: 03/20/99 adcroft@mit.edu
 
       implicit none
+
+C Global variables / common blocks
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
 C Arguments
       character*(*) mFileName
       character*(*) dFileName
@@ -35,11 +41,6 @@ C Arguments
       integer nrecords
       integer myIter
       integer mythid
-
-C Global variables / common blocks
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
 
 C Functions
 
