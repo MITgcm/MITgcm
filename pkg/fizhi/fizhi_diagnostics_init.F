@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.3 2005/07/29 16:07:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.4 2005/08/19 00:30:18 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1595,13 +1595,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Pressures for Fizhi (mb)'
       diagUnits = 'mb  (hPa)       '
       diagCode = 'SM      ML      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName  = 'RELHUM  '
-      diagTitle = 'Relative Humidity (fraction)'
-      diagUnits = 'Fraction        '
-      diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
