@@ -1,0 +1,58 @@
+Starting a configuration for OpenAD
+19-Aug-2005, heimbach@mit.edu, utke@mcs.anl.gov, cnh@mit.edu
+############################################################
+                                                                                                                                                      
+This experiment is derived from global_ocean.90x40x15,
+but excludes packages gmredi, kpp.
+                                                                                                                                                      
+STEP 1:
+######
+To bypass incomplete canonicalizer, convert COMMON blocks to MODULES.
+Successfully completed.
+The built process needed to be modified, and some routines
+needed changes. Most changes were commited to default routines,
+the remaining changes are kept in code/ for now.
+                                                                                                                                                      
+To build:
+--------
+o short version:
+---------------
+make makefile ; make depend ; make cb2m ; make makefile ; make small_f ; make allmods ; make
+
+o long version:
+--------------
+# (chdir to built/; assume we are in built/)
+#
+# generate makefile using ifort and modified genmake2 in ../code/
+../code/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -mods ../code
+#
+# make dependencies
+make depend
+#
+# invoke script to convert COMMON block headers to MODULE headers
+# converts FILE.h to FILE_mod.h which uses newi module FILE_mod.F90
+make cb2m
+#
+# re-generate makefile which takes into account newly created files
+# FILE_mod.h, FILE_mod.F90
+make makefile
+#
+# make .f, .f90
+make small_f
+#
+# first compile all module files .f90
+make allmods
+#
+# compile everything else
+make
+
+To clean:
+--------
+# Since soft links get overwritten, for now do:
+make CLEAN ; rm *.F *.F90 *.h
+
+to run:
+------
+ln -s ../input/* .
+./mitgcmuv >! output.txt
+
