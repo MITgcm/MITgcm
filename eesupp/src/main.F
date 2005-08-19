@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.15 2004/10/22 11:50:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.16 2005/08/19 23:13:05 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -102,7 +102,14 @@ C     necessary but doing this is the safest method.
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "THE_MODEL_COMMON_BLOCKS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#include "SURFACE.h"
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
+#endif
 
 C     !LOCAL VARIABLES:
 C--   Local variables
@@ -197,7 +204,14 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "THE_MODEL_COMMON_BLOCKS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#include "SURFACE.h"
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
+#endif
 
 C     !INPUT PARAMETERS:
       integer myThid

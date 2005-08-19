@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.7 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.8 2005/08/19 23:13:05 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -48,7 +48,7 @@ C                                           calculating message tags.
 C     biW, biE, bjN, bjS :: Tile x and y indices to west, east,
 C                           south and north.
 C     bi, bj   :: Tile loop counter
-C     pi, pj   :: Process loop counter
+C     picnt, pjcnt   :: Process loop counter
 C     bi0, bj0 :: Base global index coordinate ( on CS there is no global
 C                 coord).
       INTEGER bi0(nPx)
@@ -103,11 +103,11 @@ C        It will only change if the tile size changes or the global
 C        grid changes.
 C     bi0 and bj0 are the base global tile grid coordinate for the first
 C     tile in this process.
-      DO pi = 1, nPx
-       bi0(pi) = pi
+      DO picnt = 1, nPx
+       bi0(picnt) = picnt
       ENDDO
-      DO pj = 1, nPy
-       bj0(pj) = pj
+      DO pjcnt = 1, nPy
+       bj0(pjcnt) = pjcnt
       ENDDO
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
