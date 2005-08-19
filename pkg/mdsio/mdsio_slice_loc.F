@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.5 2004/04/29 18:00:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.6 2005/08/19 18:01:29 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -41,6 +41,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EESUPPORT.h"
 
 C Routine arguments
       character*(*) fName
@@ -62,6 +63,14 @@ C Local variables
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
+cph(
+      integer i, x_size
+      PARAMETER ( x_size = Nx )
+      Real*4 x_buffer_r4(x_size)
+      Real*8 x_buffer_r8(x_size)
+      Real*8 global   (Nx)
+      _RL    local(1-OLx:sNx+OLx,nSx,nSy)
+cph)
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -86,6 +95,8 @@ C Assume nothing
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
+
+      if ( .not. useSingleCPUIO ) then
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
@@ -224,7 +235,117 @@ C If global file was opened then close it
        fileIsOpen = .FALSE.
       endif
 
+      endif
+c     endif ( .not. useSingleCPUIO )
+
       _END_MASTER( myThid )
+
+      if ( useSingleCPUIO ) then
+
+C master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+        IF( mpiMyId .EQ. 0 ) THEN
+#else
+        IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+
+C Check first for global file with simple name (ie. fName)
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
+
+C If negative check for global file with MDS name (ie. fName.data)
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, x_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELDXZ: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELDXZ: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELDXZ'
+         endif
+
+        ENDIF
+       _END_MASTER( myThid )
+
+       DO k=1,nNz
+
+        _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+         IF( mpiMyId .EQ. 0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+          irec = k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           read(dUnit,rec=irec) x_buffer_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size, x_buffer_r4 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO I=1,Nx
+             global(I) = x_buffer_r4(I)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          elseif (filePrec .eq. precFloat64) then
+           read(dUnit,rec=irec) x_buffer_r8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size, x_buffer_r8 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO I=1,Nx
+             global(I) = x_buffer_r8(I)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          else
+           write(msgbuf,'(a)')
+     &            ' MDSREADFIELDXZ: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELDXZ'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+        CALL SCATTER_XZ(global,local,mythid)
+        if (arrType .eq. 'RS') then
+           call PASStoRSxz( local,arr,k,nNz,mythid )
+        elseif (arrType .eq. 'RL') then
+           call PASStoRLxz( local,arr,k,nNz,mythid )
+        else
+           write(msgbuf,'(a)')
+     &          ' MDSREADFIELDXZ: illegal value for arrType'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELDXZ'
+        endif
+
+       ENDDO
+c      ENDDO k=1,nNz
+
+       _BEGIN_MASTER( myThid )
+        close( dUnit )
+       _END_MASTER( myThid )
+
+      endif
+c     endif ( useSingleCPUIO )
 
 C     ------------------------------------------------------------------
       return
@@ -270,6 +391,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EESUPPORT.h"
 
 C Routine arguments
       character*(*) fName
@@ -291,6 +413,14 @@ C Local variables
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
+cph(
+      integer j, y_size
+      PARAMETER ( y_size = Ny )
+      Real*4 y_buffer_r4(y_size)
+      Real*8 y_buffer_r8(y_size)
+      Real*8 global   (Ny)
+      _RL    local(1-OLy:sNy+OLy,nSx,nSy)
+cph)
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -312,6 +442,8 @@ C Assume nothing
       globalFile = .FALSE.
       fileIsOpen = .FALSE.
       IL=ILNBLNK( fName )
+
+      if ( .not. useSingleCPUIO ) then
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -453,7 +585,117 @@ C If global file was opened then close it
        fileIsOpen = .FALSE.
       endif
 
+      endif
+c     endif ( .not. useSingleCPUIO )
+
       _END_MASTER( myThid )
+
+      if ( useSingleCPUIO ) then
+
+C master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+        IF( mpiMyId .EQ. 0 ) THEN
+#else
+        IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+
+C Check first for global file with simple name (ie. fName)
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
+
+C If negative check for global file with MDS name (ie. fName.data)
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, y_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELDYZ: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELDYZ: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELDYZ'
+         endif
+
+        ENDIF
+       _END_MASTER( myThid )
+
+       DO k=1,nNz
+
+        _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+         IF( mpiMyId .EQ. 0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+          irec = k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           read(dUnit,rec=irec) y_buffer_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( y_size, y_buffer_r4 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO J=1,Ny
+             global(J) = y_buffer_r4(J)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          elseif (filePrec .eq. precFloat64) then
+           read(dUnit,rec=irec) y_buffer_r8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( y_size, y_buffer_r8 )
+#endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO J=1,Ny
+             global(J) = y_buffer_r8(J)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          else
+           write(msgbuf,'(a)')
+     &            ' MDSREADFIELDYZ: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELDYZ'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+        CALL SCATTER_YZ(global,local,mythid)
+        if (arrType .eq. 'RS') then
+           call PASStoRSyz( local,arr,k,nNz,mythid )
+        elseif (arrType .eq. 'RL') then
+           call PASStoRLyz( local,arr,k,nNz,mythid )
+        else
+           write(msgbuf,'(a)')
+     &          ' MDSREADFIELDYZ: illegal value for arrType'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELDYZ'
+        endif
+
+       ENDDO
+c      ENDDO k=1,nNz
+
+       _BEGIN_MASTER( myThid )
+        close( dUnit )
+       _END_MASTER( myThid )
+
+      endif
+c     endif ( useSingleCPUIO )
 
 C     ------------------------------------------------------------------
       return
@@ -503,6 +745,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EESUPPORT.h"
 
 C Routine arguments
       character*(*) fName
@@ -510,7 +753,10 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+cph(
+cph      Real arr(*)
+      _RL arr(1-oLx:sNx+oLx,nNz,nSx,nSy)
+cph)
       integer irecord
       integer myIter
       integer myThid
@@ -525,6 +771,16 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+cph(
+      character*(80) metaFName
+      integer dimList(3,3),ndims
+      integer i, x_size
+      PARAMETER ( x_size = Nx )
+      Real*4 x_buffer_r4(x_size)
+      Real*8 x_buffer_r8(x_size)
+      Real*8 global(Nx)
+      _RL    local(1-OLx:sNx+OLx,nSx,nSy)
+cph)
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -548,6 +804,101 @@ C Assume nothing
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
+
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      if (useSingleCpuIO) then
+
+C Master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         length_of_rec=MDS_RECLEN(filePrec,x_size,mythid)
+         if (irecord .EQ. 1) then
+          open( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         else
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         endif
+        ENDIF
+       _END_MASTER( myThid )
+
+C Gather array and write it to file, one vertical level at a time
+       DO k=1,nNz
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO I=1-Olx,sNx+Olx
+            local(I,bi,bj) = arr(I,k,bi,bj)
+           ENDDO
+         ENDDO
+        ENDDO
+        CALL GATHER_XZ( global, local, myThid )
+        _BEGIN_MASTER( myThid )
+         IF( mpiMyId .EQ. 0 ) THEN
+          irec=k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO I=1,Nx
+             x_buffer_r4(I) = global(I)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size, x_buffer_r4 )
+#endif
+           write(dUnit,rec=irec) x_buffer_r4
+          elseif (filePrec .eq. precFloat64) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO I=1,Nx
+             x_buffer_r8(I) = global(I)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size, x_buffer_r8 )
+#endif
+           write(dUnit,rec=irec) x_buffer_r8
+          else
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEFIELDXZ: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+       ENDDO
+
+C Close data-file and create meta-file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         close( dUnit )
+         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         dimList(1,1)=x_size
+         dimList(2,1)=1
+         dimList(3,1)=x_size
+         dimList(1,2)=1
+         dimList(2,2)=1
+         dimList(3,2)=1
+         dimList(1,3)=nNz
+         dimList(2,3)=1
+         dimList(3,3)=nNz
+         ndims=3
+         if (nNz .EQ. 1) ndims=2
+         call MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+        ENDIF
+       _END_MASTER( myThid )
+C To be safe, make other processes wait for I/O completion
+       _BARRIER
+
+      elseif ( .NOT. useSingleCpuIO ) then
+      _BEGIN_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
@@ -663,6 +1014,11 @@ C writing their data before we update the meta-file
 
       _END_MASTER( myThid )
 
+#ifdef ALLOW_USE_MPI
+C endif useSingleCpuIO
+      endif
+#endif /* ALLOW_USE_MPI */
+
 C     ------------------------------------------------------------------
       return
       end
@@ -712,6 +1068,7 @@ C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EESUPPORT.h"
 
 C Routine arguments
       character*(*) fName
@@ -719,7 +1076,10 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+cph(
+cph      Real arr(*)
+      _RL arr(1-oLy:sNy+oLy,nNz,nSx,nSy)
+cph)
       integer irecord
       integer myIter
       integer myThid
@@ -734,6 +1094,16 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+cph(
+      character*(80) metaFName
+      integer dimList(3,3),ndims
+      integer j, y_size
+      PARAMETER ( y_size = Ny )
+      Real*4 y_buffer_r4(y_size)
+      Real*8 y_buffer_r8(y_size)
+      Real*8 global(Ny)
+      _RL    local(1-OLy:sNy+OLy,nSx,nSy)
+cph)
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -757,6 +1127,101 @@ C Assume nothing
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
+
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      if (useSingleCpuIO) then
+
+C Master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         length_of_rec=MDS_RECLEN(filePrec,y_size,mythid)
+         if (irecord .EQ. 1) then
+          open( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         else
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         endif
+        ENDIF
+       _END_MASTER( myThid )
+
+C Gather array and write it to file, one vertical level at a time
+       DO k=1,nNz
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO J=1-Oly,sNy+Oly
+            local(J,bi,bj) = arr(J,k,bi,bj)
+           ENDDO
+         ENDDO
+        ENDDO
+        CALL GATHER_YZ( global, local, myThid )
+        _BEGIN_MASTER( myThid )
+         IF( mpiMyId .EQ. 0 ) THEN
+          irec=k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO J=1,Ny
+             y_buffer_r4(J) = global(J)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( y_size, y_buffer_r4 )
+#endif
+           write(dUnit,rec=irec) y_buffer_r4
+          elseif (filePrec .eq. precFloat64) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+c
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+            DO J=1,Ny
+             y_buffer_r8(J) = global(J)
+            ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( y_size, y_buffer_r8 )
+#endif
+           write(dUnit,rec=irec) y_buffer_r8
+          else
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEFIELDYZ: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEFIELDYZ'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+       ENDDO
+
+C Close data-file and create meta-file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         close( dUnit )
+         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         dimList(1,1)=1
+         dimList(2,1)=1
+         dimList(3,1)=1
+         dimList(1,2)=y_size
+         dimList(2,2)=1
+         dimList(3,2)=y_size
+         dimList(1,3)=nNz
+         dimList(2,3)=1
+         dimList(3,3)=nNz
+         ndims=3
+         if (nNz .EQ. 1) ndims=2
+         call MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+        ENDIF
+       _END_MASTER( myThid )
+C To be safe, make other processes wait for I/O completion
+       _BARRIER
+
+      elseif ( .NOT. useSingleCpuIO ) then
+      _BEGIN_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
@@ -871,6 +1336,11 @@ C writing their data before we update the meta-file
        _BARRIER
 
       _END_MASTER( myThid )
+
+#ifdef ALLOW_USE_MPI
+C endif useSingleCpuIO
+      endif
+#endif /* ALLOW_USE_MPI */
 
 C     ------------------------------------------------------------------
       return

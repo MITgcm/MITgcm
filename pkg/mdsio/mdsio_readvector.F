@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.6 2005/07/20 20:01:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.7 2005/08/19 18:01:29 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -246,7 +246,7 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
-          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
           inquire( file=dataFname, exist=exst )
           if (exst) globalFile = .TRUE.
          endif

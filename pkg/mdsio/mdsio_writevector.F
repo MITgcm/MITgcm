@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.4 2005/07/20 20:01:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.5 2005/08/19 18:01:29 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -131,7 +131,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
-         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,vec_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -198,7 +198,7 @@ C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
-         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         write(metaFName(1:128),'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=vec_size
          dimList(2,1)=1
          dimList(3,1)=vec_size
