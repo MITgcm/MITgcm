@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.11 2005/08/19 18:01:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.12 2005/08/19 18:27:51 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -199,6 +199,7 @@ c-- useSingleCpuIO
       endif
 
       if ( .not. useSingleCpuIO ) then
+cph      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
       if ( .not. ( globalFile ) ) then
 
 C If we are reading from a global file then we open it here
@@ -329,7 +330,7 @@ C If global file was opened then close it
 c      end of if ( .not. ( globalFile ) ) then
       endif
 
-c      else of if ( .not. ( useSingleCPUIO ) ) then
+c      else of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
       else
 
        DO k=1,nNz
