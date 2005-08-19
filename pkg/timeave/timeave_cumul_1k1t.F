@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_1k1t.F,v 1.3 2003/12/05 02:27:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_1k1t.F,v 1.4 2005/08/19 22:50:26 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVE_CUMUL_1K1T( 
      O              fldtave, 
-     I              fld, deltaT, 
+     I              fld, deltaTloc, 
      I              Ksize, k, bi, bj, myThid )
 C     *==========================================================*
 C     | SUBROUTINE TIMEAVE_CUMUL_1K1T
@@ -27,7 +27,7 @@ C     bi,bj   - current tile indices
       INTEGER Ksize
       _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
-      _RL deltaT
+      _RL deltaTloc
       INTEGER k, bi, bj, myThid
 
 CEndofinterface
@@ -39,7 +39,7 @@ C     i,j - Loop counters
       DO j=1,sNy
         DO i=1,sNx
           fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
-     &                         + fld(i,j)*deltaT
+     &                         + fld(i,j)*deltaTloc
         ENDDO
       ENDDO
  

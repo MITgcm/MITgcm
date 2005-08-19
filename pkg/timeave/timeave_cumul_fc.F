@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_cumul_fc.F,v 1.3 2003/12/05 02:27:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_cumul_fc.F,v 1.4 2005/08/19 22:50:26 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVE_CUMUL_FC( 
      O              fldtave, 
-     I              fld, Ksize, deltaT, 
+     I              fld, Ksize, deltaTloc, 
      I              bi, bj, myThid )
 C     /==========================================================\
 C     | SUBROUTINE TIMEAVE_CUMUL_FC                              |
@@ -25,7 +25,7 @@ C     Ksize - 3rd dimension of local arrays (Input and Output fields)
       INTEGER Ksize
       _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
-      _RL deltaT
+      _RL deltaTloc
       INTEGER bi, bj, myThid
 
 CEndofinterface
@@ -40,7 +40,7 @@ C      DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
-     &                       + deltaT*fld(i,j,k,bi,bj)
+     &                       + deltaTloc*fld(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_cumul_1k.F,v 1.3 2003/12/05 02:27:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_cumul_1k.F,v 1.4 2005/08/19 22:50:26 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE TIMEAVE_CUMUL_1K( fld, fldtave, deltaT, 
+      SUBROUTINE TIMEAVE_CUMUL_1K( fld, fldtave, deltaTloc, 
      &                             bi, bj, K, myThid )
 C     /==========================================================\
 C     | SUBROUTINE TIMEAVE_CUMUL_1K                              |
@@ -22,7 +22,7 @@ C     fld  - Input Field
 C     fldtave - time averaged Field
       _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL deltaT
+      _RL deltaTloc
       INTEGER bi, bj, K, myThid
 
 CEndofinterface
@@ -37,7 +37,7 @@ C       DO K=1,Nr
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,K,bi,bj)=
-     &       fldtave(i,j,K,bi,bj)+fld(i,j,K,bi,bj)*deltaT
+     &       fldtave(i,j,K,bi,bj)+fld(i,j,K,bi,bj)*deltaTloc
            ENDDO
           ENDDO
 C        ENDDO

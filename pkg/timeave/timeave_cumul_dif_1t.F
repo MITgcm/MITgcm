@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_dif_1t.F,v 1.2 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_dif_1t.F,v 1.3 2005/08/19 22:50:26 heimbach Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVE_CUMUL_DIF_1T( 
      O   fldtave,
-     I   fld1, fld2, Ksize, dir, deltaT,
+     I   fld1, fld2, Ksize, dir, deltaTloc,
      I   bi, bj, myThid )
 C     /==========================================================*
 C     | SUBROUTINE TIMEAVE_CUMUL_DIF_1T
@@ -29,7 +29,7 @@ C     Ksize   - 3rd dimension of local arrays (Input and Output fields)
       _RL fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RL fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
-      _RL deltaT
+      _RL deltaTloc
       INTEGER bi, bj, myThid
 
 CEndofinterface
@@ -47,7 +47,7 @@ C     i,j,k,bi,bj  - Loop counters
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
      &        - ( fld1(i,j,k,bi,bj) - fld1(i-1,j,k,bi,bj) )
      &          * recip_dxC(i,j,bi,bj)
-     &          * fld2(i,j,k) * deltaT
+     &          * fld2(i,j,k) * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -60,7 +60,7 @@ C     i,j,k,bi,bj  - Loop counters
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
      &        - ( fld1(i,j,k,bi,bj) - fld1(i,j-1,k,bi,bj) )
      &          * recip_dyC(i,j,bi,bj)
-     &          * fld2(i,j,k) * deltaT
+     &          * fld2(i,j,k) * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -73,7 +73,7 @@ C     i,j,k,bi,bj  - Loop counters
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
      &        + ( fld1(i,j,k,bi,bj) - fld1(i,j,k-1,bi,bj) )
      &          * recip_drC(k)
-     &          * fld2(i,j,k) * deltaT
+     &          * fld2(i,j,k) * deltaTloc
           ENDDO
          ENDDO
         ENDDO

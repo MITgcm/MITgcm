@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.6 2004/07/26 16:57:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.7 2005/08/19 22:50:26 heimbach Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVE_CUMUL_2V( 
      O   fldtave,
-     I   fld1, fld2, Ksize, dir, deltaT,
+     I   fld1, fld2, Ksize, dir, deltaTloc,
      I   bi, bj, myThid )
 C     /==========================================================*
 C     | SUBROUTINE TIMEAVE_CUMUL_2V
@@ -32,7 +32,7 @@ C     Ksize - 3rd dimension of local arrays (Input and Output fields)
       _RL fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RL fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
-      _RL deltaT
+      _RL deltaTloc
       INTEGER bi, bj, myThid
 
 CEndofinterface
@@ -52,7 +52,7 @@ C      DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
-     &       +  fld1(i,j,k,bi,bj)*fld2(i,j,k,bi,bj)*deltaT
+     &       +  fld1(i,j,k,bi,bj)*fld2(i,j,k,bi,bj)*deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -68,7 +68,7 @@ c-    2nd field shifted by -dX/2 (e.g.: 1=T, 2=U) :
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
      &       + .5 * ( fld1(i-1,j,k,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *   fld2(i,j,k,bi,bj)
-     &                *   deltaT
+     &                *   deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -82,7 +82,7 @@ c-    2nd field shifted by -dY/2 (e.g.: 1=T, 2=V) :
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
      &       + .5 * ( fld1(i,j-1,k,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *   fld2(i,j,k,bi,bj)
-     &                *   deltaT
+     &                *   deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -97,7 +97,7 @@ c-    2nd field shifted by -dR/2 (e.g.: 1=T, 2=W) :
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
      &       + .5 * ( fld1(i,j,km1,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *   fld2(i,j,k,bi,bj)
-     &                *   deltaT
+     &                *   deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -112,7 +112,7 @@ c           (e.g.: 1=U, 2=V, product at the corner) :
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
      &      + .25 _d 0*( fld1(i,j-1,k,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *( fld2(i-1,j,k,bi,bj) + fld2(i,j,k,bi,bj) )
-     &                * deltaT
+     &                * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -129,7 +129,7 @@ c-    1rst & 2nd fields shifted by -dR/2 & -dX/2 (e.g.: 1=U, 2=W):
      &                *( fld2(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
      &                  +fld2( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
      &                 )*recip_rAw(i,j,bi,bj)
-     &                * deltaT
+     &                * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -146,7 +146,7 @@ c-    1rst & 2nd fields shifted by -dR/2 & -dY/2 (e.g.: 1=V, 2=W):
      &                *( fld2(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
      &                  +fld2(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
      &                 )*recip_rAs(i,j,bi,bj)
-     &                * deltaT
+     &                * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -163,7 +163,7 @@ c-    (e.g.: used for advective form of vertical advection: w.du/dr)
      &                *( fld2(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
      &                  +fld2( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
      &                 )*recip_rAw(i,j,bi,bj)
-     &                * deltaT
+     &                * deltaTloc
           ENDDO
          ENDDO
         ENDDO
@@ -180,7 +180,7 @@ c-    (e.g.: used for advective form of vertical advection: w.dv/dr)
      &                *( fld2(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
      &                  +fld2(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
      &                 )*recip_rAs(i,j,bi,bj)
-     &                * deltaT
+     &                * deltaTloc
           ENDDO
          ENDDO
         ENDDO
