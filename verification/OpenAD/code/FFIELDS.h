@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code/Attic/FFIELDS.h,v 1.1 2005/08/19 21:48:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code/Attic/FFIELDS.h,v 1.2 2005/08/19 23:20:28 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -173,8 +173,8 @@ C     Above use static heap storage to allow exchange.
       COMMON /TDFIELDS_r2/
      &                pload0, pload1
 
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pload1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pload0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #endif /* ALLOW_EXF */
