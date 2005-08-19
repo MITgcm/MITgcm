@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.533 2005/08/16 22:50:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.534 2005/08/19 23:49:45 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57q_post
 o fix initialisation Pb in calc_gw (get NANs in exp5 with g77)
 o fix annoying months-old bug in mnc/mdsio output for seaice pkg
   - bug was reported by Jean-Michel and Ian Fenty
@@ -16,6 +17,9 @@ o Changed some tests for adjoint:
   * carbon/ now tests AUTODIFF_2_LEVEL_CHECKPOINT
   * natl_box_adjoint/code_bulk/ tests AUTODIFF_4_LEVEL_CHECKPOINT
   * global_ocean.90x40x15/ back to default 3-level checkpointing
+o Modifications to enable scripted COMMON to MODULE conversion
+  * verification/OpenAD/code/ has necessary scripts and description;
+  * converts, compiles and runs successfully;
 
 checkpoint57p_post
 o reading of delXfile & delYfile moved from ini_parms.F to ini_grid.F
