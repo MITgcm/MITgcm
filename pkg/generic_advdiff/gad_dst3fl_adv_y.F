@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.6 2004/09/24 16:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.7 2005/08/19 22:19:35 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_DST3FL_ADV_Y( 
-     I           bi,bj,k,deltaT,
+     I           bi,bj,k,deltaTloc,
      I           vTrans, vVel,
      I           maskLocS, tracer,
      O           vT,
@@ -23,7 +23,7 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
-      _RL deltaT
+      _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -51,7 +51,7 @@ C     vFld    :: velocity [m/s], meridional component
 c       vFld = vVel(i,j,k,bi,bj)
         vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
      &       *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
-        cfl=abs(vFld*deltaT*recip_dyC(i,j,bi,bj))
+        cfl=abs(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2.D0-cfl)*(1.D0-cfl)*oneSixth
         d1=(1.D0-cfl*cfl)*oneSixth
 c       thetaP=0.D0

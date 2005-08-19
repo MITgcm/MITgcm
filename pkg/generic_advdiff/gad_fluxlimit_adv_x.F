@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.5 2004/09/24 16:53:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.6 2005/08/19 22:19:35 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_FLUXLIMIT_ADV_X
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_X( 
-     I           bi,bj,k,deltaT,
+     I           bi,bj,k,deltaTloc,
      I           uTrans, uVel,
      I           maskLocW, tracer,
      O           uT,
@@ -40,7 +40,7 @@ C  uVel                 :: zonal flow
 C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
-      _RL deltaT
+      _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -94,7 +94,7 @@ c       uFld = uVel(i,j,k,bi,bj)
      &   uTrans(i,j)*(Tracer(i,j)+Tracer(i-1,j))*0.5 _d 0
      &   -0.5*(
      &        (1-Cr)*ABS(uTrans(i,j))
-     &        +uTrans(i,j)*uFld*deltaT
+     &        +uTrans(i,j)*uFld*deltaTloc
      &         *recip_dxC(i,j,bi,bj)*Cr
      &        )*Rj
        ENDDO
