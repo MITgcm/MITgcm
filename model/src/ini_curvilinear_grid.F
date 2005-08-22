@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.20 2005/07/13 00:41:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.21 2005/08/22 23:07:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,17 +38,19 @@ C     === Global variables ===
 #ifndef ALLOW_EXCH2
 C- note: default is to use "new" grid files (OLD_GRID_IO undef) with EXCH2
 C    but can still use (on 1 cpu) OLD_GRID_IO and EXCH2 independently
+#ifdef ALLOW_MDSIO
 #define OLD_GRID_IO
+#endif
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_CARTESIAN_GRID
+C     myThid -  Number of this instance of INI_CURVILINEAR_GRID
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi,bj, myTile, myiter
+      INTEGER bi,bj, myIter
       INTEGER I,J
       CHARACTER*(MAX_LEN_FNAM) fName
 #ifdef ALLOW_MNC
@@ -56,6 +58,7 @@ C     == Local variables ==
 #endif
 #ifdef ALLOW_EXCH2
       _RL buf(sNx*nSx*nPx+1)
+      INTEGER myTile
 #else
       _RL buf(sNx+1,sNy+1)
 #endif
@@ -470,7 +473,7 @@ C--   Require that 0 <= longitude < 360 if using exf package
 
 C--   Now let's look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
-         myiter = 1
+         myIter = 1
          CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
      &        myIter, myThid )
          CALL PLOT_FIELD_XYRL( YC      , 'Current YC      ' ,
@@ -546,7 +549,9 @@ C     == Local variables ==
       INTEGER I,J,dUnit, iLen
       INTEGER length_of_rec
       INTEGER MDS_RECLEN
+#ifdef ALLOW_EXCH2
       INTEGER TN, dNx, dNy, TBX, TBY, TNX, TNY, II, iBase
+#endif
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 

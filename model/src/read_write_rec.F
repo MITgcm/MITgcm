@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.6 2003/09/27 19:24:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.7 2005/08/22 23:07:14 jmc Exp $
 C $Name:  $
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.
@@ -86,9 +87,10 @@ C     ENDIF
 C
       fType='RS'
       nNz=1
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -136,9 +138,10 @@ C     ENDIF
 C
       fType='RL'
       nNz=1
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -187,9 +190,10 @@ C     ENDIF
 C
       fType='RS'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -238,9 +242,10 @@ C     ENDIF
 C
       fType='RL'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -287,9 +292,10 @@ C     ENDIF
 C
       fType='RS'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELDXZ( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -337,9 +343,10 @@ C     ENDIF
 C
       fType='RL'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELDXZ( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -388,9 +395,10 @@ C     ENDIF
 C
       fType='RS'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELDYZ( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -439,9 +447,10 @@ C     ENDIF
 C
       fType='RL'
       nNz=Nr
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELDYZ( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END
 
@@ -494,9 +503,10 @@ C
       fType='RS'
       nNz=1
 C     globalFile=.FALSE.
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
-C
+#endif
       RETURN
       END
 
@@ -549,9 +559,10 @@ C
       fType='RL'
       nNz=1
 C     globalFile=.FALSE.
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
-C
+#endif
       RETURN
       END
 
@@ -604,9 +615,10 @@ C
       fType='RS'
       nNz=Nr
 C     globalFile=.FALSE.
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
-C
+#endif
       RETURN
       END
 
@@ -659,8 +671,9 @@ C
       fType='RL'
       nNz=Nr
 C     globalFile=.FALSE.
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
-C
+#endif
       RETURN
       END

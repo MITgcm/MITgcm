@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.23 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.24 2005/08/22 23:07:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -128,6 +128,7 @@ C      data for the period ahead and the period behind myTime.
      &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
      &  intime0, intime1, myIter, myTime
 
+#ifdef ALLOW_MDSIO
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
      &        'RS', 1, taux0, intime0, myThid )
@@ -204,6 +205,7 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
      &        'RS', 1, pload1, intime1, myThid )
       ENDIF
 #endif
+#endif /* ALLOW_MDSIO */
 
        _END_MASTER(myThid)
 C
