@@ -1,0 +1,18 @@
+# Example "data.mnc" file
+# Lines beginning "#" are comments
+ &MNC_01
+# mnc_echo_gvtypes=.FALSE.,
+# mnc_use_indir=.FALSE.,
+ mnc_use_outdir=.TRUE.,
+ mnc_outdir_str='mnc_test_',
+ mnc_outdir_date=.TRUE.,
+ monitor_mnc=.FALSE.,
+#timeave_mnc=.FALSE.,
+#snapshot_mnc=.FALSE.,
+#autodiff_mnc=.FALSE.,
+ pickup_write_mnc=.FALSE.,
+ pickup_read_mnc=.FALSE.,
+ &
+# Note: Some systems use & as the
+# namelist terminator. Other systems
+# use a / character (as shown here).

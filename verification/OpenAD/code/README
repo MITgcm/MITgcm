@@ -53,6 +53,10 @@ make CLEAN ; rm *.F *.F90 *.h
 
 to run:
 ------
+# paremeter files are in input/
 ln -s ../input/* .
+# initial and forcing fields are elsewhere;
+# get these from verif. exp. global_ocean.90x40x15/input/*.bin
+ln -s ../../global_ocean.90x40x15/input/*.bin .
 ./mitgcmuv >! output.txt
 
