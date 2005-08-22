@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rs.F,v 1.1 2001/08/17 18:34:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rs.F,v 1.2 2005/08/22 23:00:58 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
       SUBROUTINE READ_FLD_XY_RS( pref,suff,field,myIter,myThid)
 C READ_FLD_XY_RS is a "front-end" interface to the low-level I/O
@@ -41,8 +41,9 @@ C
       fType='RS'
       nNz=1
       irec=1
+#ifdef ALLOW_MDSIO
       CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
      &     nNz, field, irec, myThid )
-C
+#endif
       RETURN
       END

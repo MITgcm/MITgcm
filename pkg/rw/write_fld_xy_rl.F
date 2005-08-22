@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xy_rl.F,v 1.1 2001/08/17 18:34:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xy_rl.F,v 1.2 2005/08/22 23:00:58 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
       SUBROUTINE WRITE_FLD_XY_RL( pref,suff,field,myIter,myThid)
 C WRITE_FLD_XY_RL is a "front-end" interface to the low-level I/O
@@ -44,8 +44,9 @@ C
       fType='RL'
       nNz=1
       irec=1
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
-C
+#endif
       RETURN
       END

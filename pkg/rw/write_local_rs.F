@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rs.F,v 1.1 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rs.F,v 1.2 2005/08/22 23:00:58 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
       SUBROUTINE WRITE_LOCAL_RS(
      I          pref,suff,nNr,field,bi,bj,iRec,myIter,myThid)
@@ -47,9 +47,10 @@ C     e.g. U.0000000100
       ENDIF
 C
       fType='RS'
+#ifdef ALLOW_MDSIO
       CALL MDS_WRITELOCAL(
      &     fullName, writeBinaryPrec, globalFile,
      &     fType, nNr, field, bi, bj, iRec, myIter, myThid )
-C
+#endif
       RETURN
       END

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.2 2005/03/31 04:54:04 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.3 2005/08/22 23:00:58 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
       SUBROUTINE WRITE_LOCAL_RL(
      I          pref,suff,nNr,field,bi,bj,iRec,myIter,myThid)
@@ -47,6 +47,7 @@ C     e.g. U.0000000100
       ENDIF
 C
       fType='RL'
+#ifdef ALLOW_MDSIO
       IF (nSx.EQ.1.AND.nSy.EQ.1) THEN
 C The hack below replaces MDS_WRITELOCAL with MDSWRITEFIELD_LOC for
 C single-threaded execution because the former does not support the
@@ -60,6 +61,6 @@ C functionality is superseded by pkg/diagnostics.
      &        fullName, writeBinaryPrec, globalFile,
      &        fType, nNr, field, bi, bj, iRec, myIter, myThid )
       ENDIF
-C
+#endif
       RETURN
       END
