@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.8 2005/08/19 23:13:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.9 2005/08/22 19:12:14 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -53,7 +53,7 @@ C     bi0, bj0 :: Base global index coordinate ( on CS there is no global
 C                 coord).
       INTEGER bi0(nPx)
       INTEGER bj0(nPy)
-      INTEGER bi, bj, pi, pj
+      INTEGER bi, bj, picnt, pjcnt
       INTEGER pxW, pxE, pyN, pyS
       INTEGER procW, procE, procN, procS
       INTEGER totalTileCount
