@@ -69,7 +69,9 @@ To build:
 --------
 o short version:
 ---------------
-../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -mods ../code_ad
+../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
 make depend ; make cb2m ; make makefile ; make small_f ; make allmods
 make ad_input_code.f
+make adtaf
+make adall
 
