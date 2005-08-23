@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.2 2005/08/23 13:06:43 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.3 2005/08/23 15:48:56 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2072,7 +2072,7 @@ cb2m: \$(CB2MFILES)
 	./cb2m1.csh 
 	./cb2m2.bash
 
-allmods: SIZE_mod.f90 EEPARAMS_mod.f90 PARAMS_mod.f90 BAR2_mod.f90 BARRIER_mod.f90 CD_CODE_VARS_mod.f90 CG2D_mod.f90 CG3D_mod.f90 DFILE_mod.f90 DYNVARS_mod.f90 EEIO_mod.f90 EESUPPORT_mod.f90 EOS_mod.f90 EXCH_JAM_mod.f90 EXCH_mod.f90 FC_NAMEMANGLE_mod.f90 FFIELDS_mod.f90 GAD_mod.f90 GLOBAL_MAX_mod.f90 GLOBAL_SUM_mod.f90 GRID_mod.f90 GW_mod.f90 MONITOR_mod.f90 MPI_INFO_mod.f90 SOLVE_FOR_PRESSURE3D_mod.f90 SOLVE_FOR_PRESSURE_mod.f90 SURFACE_mod.f90 TIMEAVE_STATV_mod.f90 tamc_mod.f90 tamc_keys_mod.f90 adcost_mod.f90 cost_mod.f90 g_cost_mod.f90 ctrl_mod.f90 ctrl_dummy_mod.f90 ctrl_weights_mod.f90 optim_mod.f90 grdchk_mod.f90 
+allmods: SIZE_mod.f90 EEPARAMS_mod.f90 PARAMS_mod.f90 BAR2_mod.f90 BARRIER_mod.f90 CD_CODE_VARS_mod.f90 CG2D_mod.f90 CG3D_mod.f90 DFILE_mod.f90 DYNVARS_mod.f90 EEIO_mod.f90 EESUPPORT_mod.f90 EOS_mod.f90 EXCH_JAM_mod.f90 EXCH_mod.f90 FC_NAMEMANGLE_mod.f90 FFIELDS_mod.f90 GAD_mod.f90 GLOBAL_MAX_mod.f90 GLOBAL_SUM_mod.f90 GRID_mod.f90 GW_mod.f90 MONITOR_mod.f90 MPI_INFO_mod.f90 SOLVE_FOR_PRESSURE3D_mod.f90 SOLVE_FOR_PRESSURE_mod.f90 SURFACE_mod.f90 TIMEAVE_STATV_mod.f90 tamc_mod.f90 tamc_keys_mod.f90 cost_mod.f90 g_cost_mod.f90 ctrl_mod.f90 ctrl_dummy_mod.f90 ctrl_weights_mod.f90 optim_mod.f90 grdchk_mod.f90 
 	\$(FC) -c -fixed \$^
 
 small_f: \$(F77FILES) \$(F90FILES)
