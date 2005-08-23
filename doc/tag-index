@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.534 2005/08/19 23:49:45 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.535 2005/08/23 13:43:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o move some basic S/R (used elsewhere in the code) from pkg/mdsio to eesupp/src
+  allows to compile without pkg/mdsio (& test successfully hs94.1x64x5)
 
 checkpoint57q_post
 o fix initialisation Pb in calc_gw (get NANs in exp5 with g77)
