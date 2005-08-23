@@ -1,11 +1,5 @@
 
 C----------------------------------------
-C subroutine mdsfindunit
-C----------------------------------------
-CADJ SUBROUTINE  mdsfindunit   INPUT  =   2
-CADJ SUBROUTINE  mdsfindunit   OUTPUT = 1
-
-C----------------------------------------
 C subroutine mdsreadfield
 C----------------------------------------
 CADJ SUBROUTINE mdsreadfield  INPUT  = 1,2,3,4,  6,7
@@ -30,18 +24,6 @@ C subroutine mdswritevector
 C----------------------------------------
 CADJ SUBROUTINE mdswritevector  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
 CADJ SUBROUTINE mdswritevector  OUTPUT =
-
-C----------------------------------------
-C subroutine mds_byteswapr8
-C----------------------------------------
-CADJ SUBROUTINE mds_byteswapr8  INPUT  = 1,2
-CADJ SUBROUTINE mds_byteswapr8  OUTPUT = 2
-
-C----------------------------------------
-C subroutine mds_byteswapr4
-C---------------------------------------- 
-CADJ SUBROUTINE mds_byteswapr4  INPUT  = 1,2
-CADJ SUBROUTINE mds_byteswapr4  OUTPUT = 2
 
 C----------------------------------------
 C subroutine mdsreadfieldxz
