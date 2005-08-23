@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.5 2005/08/13 20:50:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.6 2005/08/23 18:25:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -44,7 +44,15 @@ C     !LOCAL VARIABLES:
       integer bislot,bjslot,iunit
       integer recl
       integer bi,bj,fileprec
-      Real*8 globalarr(Nx,Ny,8)
+      integer xsize, ysize
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xsize = exch2_domain_nxt * sNx )
+       PARAMETER ( ysize = exch2_domain_nyt * sNy )
+#else
+       PARAMETER ( xsize = Nx )
+       PARAMETER ( ysize = Ny )
+#endif
+      Real*8 globalarr(xsize,ysize,8)
       _RL tempgrid(sNx,sNy)
       _RL temptile(nchp)
       _RL fracland(sNx,sNy,Nsx,Nsy)
