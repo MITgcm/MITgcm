@@ -60,3 +60,16 @@ ln -s ../input/* .
 ln -s ../../global_ocean.90x40x15/input/*.bin .
 ./mitgcmuv >! output.txt
 
+STEP 2:
+######
+Generate code for AD-related routines.
+Similar to step 1, but look in code_ad/ instead of code/
+
+To build:
+--------
+o short version:
+---------------
+../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -mods ../code_ad
+make depend ; make cb2m ; make makefile ; make small_f ; make allmods
+make ad_input_code.f
+

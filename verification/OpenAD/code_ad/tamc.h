@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/tamc.h,v 1.1 2005/08/18 17:53:05 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/tamc.h,v 1.2 2005/08/23 13:06:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,9 +60,9 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =     3 )
+      parameter( nchklev_1      =     2 )
       integer    nchklev_2
-      parameter( nchklev_2      =   120 )
+      parameter( nchklev_2      =   240 )
       integer    nchklev_3
       parameter( nchklev_3      =    60 )
 
