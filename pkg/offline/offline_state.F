@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_state.F,v 1.4 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_state.F,v 1.5 2005/08/24 23:23:34 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -44,10 +44,10 @@ C     !LOCAL VARIABLES:
 CEOP
 
       IF ( 
-     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock) .OR. 
-     &     myTime.EQ.endTime .OR.
-     &     myTime.EQ.startTime
-     &     ) THEN
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
+     &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                             myTime.EQ.startTime  )
+     &   ) THEN
          IF ( dumpFreq .EQ. 0.0 ) THEN
             iRec = 1
          ELSE

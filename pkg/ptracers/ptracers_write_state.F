@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.13 2005/07/30 00:58:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.14 2005/08/24 23:23:34 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -47,8 +47,8 @@ C     iRec      :: record number
       EXTERNAL IO_ERRCOUNT
 
       IF ( DIFFERENT_MULTIPLE( PTRACERS_dumpFreq, myTime, deltaTClock )
-     & .OR.myTime.EQ.endTime
-     & .OR.myTime.EQ.startTime
+     &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                             myTime.EQ.startTime  )
      &   ) THEN
        
 C     Write to files

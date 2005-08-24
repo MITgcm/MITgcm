@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.5 2005/08/11 21:08:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.6 2005/08/24 23:23:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -305,9 +305,10 @@ C--    Reset averages to zero
 
 C     Dump a snap-shot of main state variables:
       IF ( 
-     &  DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime,deltaTClock)
-     &     .OR. myTime.EQ.startTime
-     &     .OR. myTime.EQ.endTime ) THEN
+     &     DIFFERENT_MULTIPLE( thSIce_diagFreq, myTime, deltaTClock )
+     &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                             myTime.EQ.startTime  )
+     &   ) THEN
 
         IF ( thSIce_snapshot_mdsio ) THEN
           

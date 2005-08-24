@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.8 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.9 2005/08/24 23:23:34 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -48,10 +48,10 @@ C     fn      :: character buffer for creating filename
       EXTERNAL DIFFERENT_MULTIPLE
 
       IF (
-     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock).OR.
-     &     myTime.EQ.endTime .OR.
-     &     myTime.EQ.startTime
-     &     ) THEN
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
+     &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                             myTime.EQ.startTime  )
+     &   ) THEN
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
