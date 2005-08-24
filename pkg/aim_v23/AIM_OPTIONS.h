@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.7 2005/06/23 20:02:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.8 2005/08/24 23:19:45 jmc Exp $
 C $Name:  $
 
 C  CPP options file for AIM package 
@@ -18,8 +18,10 @@ C  - do not include minor changes (added to avoid negative Q).
 C  allow dew to form on land (=negative evaporation)
 #undef ALLOW_DEW_ON_LAND
 
+#ifdef ALLOW_TIMEAVE
 C  allow time average diagnostic:
-#define ALLOW_AIM_TAVE
+# define ALLOW_AIM_TAVE
+#endif
 
 C  allow time average diagnostic:
 #define ALLOW_CLR_SKY_DIAG
