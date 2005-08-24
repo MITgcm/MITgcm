@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.93 2005/07/11 22:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.94 2005/08/24 23:13:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -565,7 +565,6 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ndef ALLOW_OFFLINE */
 
 #ifdef ALLOW_TIMEAVE
-#ifndef MINIMAL_TAVE_OUTPUT
         useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
         IF (taveFreq.GT.0. .AND. useVariableK ) THEN
@@ -577,7 +576,6 @@ c          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
 c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
          ENDIF
         ENDIF
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */ 
 
 #ifndef ALLOW_OFFLINE
@@ -637,12 +635,10 @@ C--      Apply open boundary conditions
         IF ( taveFreq.GT. 0. _d 0 .AND. fluidIsWater ) THEN
           CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
         ENDIF
-#ifndef MINIMAL_TAVE_OUTPUT
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
         ENDIF
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */ 
 
 #endif /* SINGLE_LAYER_MODE */

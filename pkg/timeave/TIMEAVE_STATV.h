@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.16 2004/12/04 01:54:04 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.17 2005/08/24 23:17:22 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -67,7 +67,6 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave
      &                 ,etatave,uVeltave,vVeltave,wVeltave
      &                 ,thetatave,salttave,phiHydLowtave
-#ifndef MINIMAL_TAVE_OUTPUT
      &                 ,UTtave,VTtave,WTtave,UStave,VStave,WStave
      &                 ,Eta2tave,TTtave,UUtave,VVtave,UVtave
      &                 ,TdiffRtave
@@ -77,7 +76,6 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                 ,phiHydtave
      &                 ,phiHydLow2Tave
      &                 ,ConvectCountTave
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
       _RL  uFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  tFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -89,7 +87,6 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifndef MINIMAL_TAVE_OUTPUT
       _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -109,7 +106,6 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ConvectCountTave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
 
 #ifdef NONLIN_FRSURF
 C     hUtave       :: average zonal flow (=hFacW*uVel) (still in m/s !)
@@ -118,7 +114,6 @@ C     hFacCtave    :: average thickness fraction of open water, Center
 C     hFacWtave    :: average thickness fraction of open water, West side
 C     hFacStave    :: average thickness fraction of open water, South side
 
-#ifndef MINIMAL_TAVE_OUTPUT
       COMMON /TAVE_THICKNESS/ 
      &              hUtave, hVtave
 c    &            , hFacCtave, hFacWtave, hFacStave 
@@ -127,7 +122,6 @@ c    &            , hFacCtave, hFacWtave, hFacStave
 c     _RL  hFacCtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacWtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacStave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* NONLIN_FRSURF */
 
 #endif /* ALLOW_TIMEAVE */ 

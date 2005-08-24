@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.30 2005/05/25 04:03:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.31 2005/08/24 23:17:22 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -97,7 +97,6 @@ C         Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
      &         bi,bj,myThid)
-#ifndef MINIMAL_TAVE_OUTPUT
           CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
@@ -131,7 +130,6 @@ C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
      &         bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(ConvectCountTave,TimeAve_full,Nr,
      &         bi,bj,myThid)
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
         ENDDO
         ENDDO
 
@@ -156,7 +154,6 @@ c         writeBinaryPrec = precFloat32
           CALL WRITE_FLD_XYZ_RL('uVeltave.',suff,uVeltave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('wVeltave.',suff,wVeltave,myIter,myThid)
-#ifndef MINIMAL_TAVE_OUTPUT
           CALL WRITE_FLD_XY_RL('Eta2tave.',suff,Eta2tave ,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
@@ -183,7 +180,6 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
 #endif /* ALLOW_MOM_VECINV */
           CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,
      &         myIter,myThid)
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
           IF ( fluidIsWater ) THEN
             CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
      &           myIter,myThid)
@@ -195,15 +191,12 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
      &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,
      &           myIter,myThid)
-#ifndef MINIMAL_TAVE_OUTPUT
             CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
      &           myIter,myThid)
             CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
      &           myIter,myThid)
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
           ENDIF
           
-#ifndef MINIMAL_TAVE_OUTPUT
 #ifdef NONLIN_FRSURF
           CALL WRITE_FLD_XYZ_RL('hUtave.',suff,hUtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('hVtave.',suff,hVtave,myIter,myThid)
@@ -211,7 +204,6 @@ C         CALL WRITE_FLD_XYZ_RL('hFacCtave.',suff,hFacCtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacWtave.',suff,hFacWtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacStave.',suff,hFacStave,myIter,myThid)
 #endif /* NONLIN_FRSURF */ 
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
           
 C         writeBinaryPrec = prevPrec
 C         Reread IO error counter

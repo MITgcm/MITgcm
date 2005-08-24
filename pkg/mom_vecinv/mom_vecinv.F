@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.44 2005/07/30 23:52:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.45 2005/08/24 23:16:05 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -456,14 +456,12 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDIF
 
 #ifdef ALLOW_TIMEAVE
-#ifndef MINIMAL_TAVE_OUTPUT
        IF (taveFreq.GT.0.) THEN
          CALL TIMEAVE_CUMUL_1K1T(uZetatave,vCf,deltaTClock,
      &                           Nr, k, bi, bj, myThid)
          CALL TIMEAVE_CUMUL_1K1T(vZetatave,uCf,deltaTClock,
      &                           Nr, k, bi, bj, myThid)
        ENDIF
-#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)

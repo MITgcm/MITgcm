@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.40 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.41 2005/08/24 23:13:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,11 +149,8 @@ C     to the core dynamical model
       CALL INI_MODEL_IO( myThid )
 
 C--   Write grid data and geometry arrays
-#ifdef MINIMAL_TAVE_OUTPUT
-      IF ( startTime .EQ. baseTime ) CALL WRITE_GRID( myThid )
-#else
-      CALL WRITE_GRID( myThid )
-#endif /* MINIMAL_TAVE_OUTPUT */
+      IF ( debugLevel.GE.debLevA .OR. 
+     &     startTime.EQ.baseTime ) CALL WRITE_GRID( myThid )
 
 #ifdef COMPONENT_MODULE
 C--   Post component-model configuration information to coupler
