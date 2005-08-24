@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjustment.cs-32x32x1/code/CPP_OPTIONS.h,v 1.4 2005/07/27 04:23:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/adjustment.cs-32x32x1/code/CPP_OPTIONS.h,v 1.5 2005/08/24 23:04:13 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -43,9 +43,6 @@ C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
 C          because the old code did not have no-slip BCs
 #undef  OLD_ADV_BCS
-
-C o Minimal time-averaged output: S, T, U, V, W, ETA, and phiHydLow.
-#undef MINIMAL_TAVE_OUTPUT
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
