@@ -1,21 +1,12 @@
 #
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.8 2004/05/14 17:43:11 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.9 2005/08/24 23:24:40 jmc Exp $
 #
 #  This is the package "groups" definition file where groups of packages
 #  are defined so they can be conveniently substituted.
 #
 
-
-# JMC says that aim, aim_v23, land should be off by default
-# bulk_forcing
-
-#EH3  Please keep mnc off by default until I get a chance to fix the
-#EH3  is-NetCDF-available code in genamke2:
-#EH3
-#EH3  gfd : mom_fluxform mom_vecinv generic_advdiff debug mdsio mnc rw monitor
-
 gfd : mom_common mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor
 
-oceanic : gfd gmredi kpp timeave
+oceanic : gfd gmredi kpp
 
-atmospheric : gfd timeave shap_filt
+atmospheric : gfd shap_filt
