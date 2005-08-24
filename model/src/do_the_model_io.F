@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.54 2005/08/15 23:05:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.55 2005/08/24 23:10:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,7 +50,7 @@ C     Generaly only thread 1 does IO here. It can not start until
 C     all threads fields are ready.
       IF (debugMode) THEN 
         IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
-     &     .AND. (.not. nodumps) ) THEN
+     &     ) THEN
 
           _BARRIER
 
@@ -68,9 +68,7 @@ C         Write "text-plots" of certain fields
       ENDIF
 
 C     Write model state to binary file
-      if( .not. nodumps ) then
-       CALL WRITE_STATE( myTime, myIter, myThid )
-      endif
+      CALL WRITE_STATE( myTime, myIter, myThid )
 
 #ifdef ALLOW_TIMEAVE
 C     Do time averages
@@ -80,9 +78,8 @@ C     Do time averages
 #endif
 
 #ifdef ALLOW_FIZHI
-      if( .not. nodumps ) then
-      if(useFIZHI) call fizhi_write_state( myTime, myIter, myThid )
-      endif
+      IF ( useFIZHI ) 
+     &     CALL FIZHI_WRITE_STATE( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_AIM
