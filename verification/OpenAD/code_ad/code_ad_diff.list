@@ -26,7 +26,6 @@ GLOBAL_SUM_mod.f90
 grdchk_mod.f90
 GRID_mod.f90
 GW_mod.f90
-MONITOR_mod.f90
 MPI_INFO_mod.f90
 optim_mod.f90
 SOLVE_FOR_PRESSURE3D_mod.f90
@@ -34,4 +33,3 @@ SOLVE_FOR_PRESSURE_mod.f90
 SURFACE_mod.f90
 tamc_keys_mod.f90
 tamc_mod.f90
-TIMEAVE_STATV_mod.f90
