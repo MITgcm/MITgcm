@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.76 2005/06/26 16:32:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.77 2005/08/24 23:09:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -422,6 +422,8 @@ C     zcoord ::
      &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
+      CALL WRITE_0D_L(dumpInitAndLast,INDEX_NONE,'dumpInitAndLast=',
+     &  ' /* write out Initial & Last iter. model state */')
       CALL WRITE_0D_L(snapshot_mdsio,INDEX_NONE,
      &     'snapshot_mdsio =', '   /* Model IO flag. */')
 #ifdef ALLOW_MNC

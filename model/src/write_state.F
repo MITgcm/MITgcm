@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.54 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.55 2005/08/24 23:12:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,11 +76,9 @@ CEOP
 
       IF ( 
      &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
-#ifndef MINIMAL_TAVE_OUTPUT
-     &     .OR. myTime.EQ.endTime
-     &     .OR. myTime.EQ.startTime
-#endif /* MINIMAL_TAVE_OUTPUT */
-     &     ) THEN
+     &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                             myTime.EQ.startTime  )
+     &   ) THEN
         IF ( dumpFreq .EQ. 0.0 ) THEN
           iRec = 1
         ELSE

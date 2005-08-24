@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.163 2005/08/15 23:05:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.164 2005/08/24 23:08:35 jmc Exp $
 C $Name:  $
 C
 
@@ -295,7 +295,8 @@ C     calendarDumps :: When set, approximate months (30-31 days) and years (360-
 C                      for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
 C                      KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
 C                      calendar months and years.  Requires pkg/cal.
-C     nodumps       :: Logical Flag to indicate whether to do ANY dumps at all
+C     dumpInitAndLast :: dumps model state to files at Initial (nIter0) 
+C                        & Last iteration, in addition multiple of dumpFreq iter.
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -326,9 +327,9 @@ C     nodumps       :: Logical Flag to indicate whether to do ANY dumps at all
      & usePickupBeforeC35, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
-     & outputTypesInclusive, debugMode,
+     & outputTypesInclusive, dumpInitAndLast, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & calendarDumps, nodumps
+     & calendarDumps
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -398,6 +399,7 @@ C     nodumps       :: Logical Flag to indicate whether to do ANY dumps at all
       LOGICAL usePickupBeforeC35
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2
+      LOGICAL dumpInitAndLast
       LOGICAL debugMode
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed
@@ -405,7 +407,6 @@ C     nodumps       :: Logical Flag to indicate whether to do ANY dumps at all
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
       LOGICAL calendarDumps
-      LOGICAL nodumps
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

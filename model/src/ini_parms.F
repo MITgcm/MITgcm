@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.164 2005/08/15 23:05:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.165 2005/08/24 23:09:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -186,17 +186,18 @@ C--   Elliptic solver parameters
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
-     & deltaT, deltaTmom, deltaTtracer, dTtracerLev, deltaTfreesurf,
+     & deltaT, deltaTClock, deltaTmom, 
+     & deltaTtracer, dTtracerLev, deltaTfreesurf,
      & forcing_In_AB, abEps, alph_AB, beta_AB, startFromPickupAB2, 
      & tauCD, rCD,
      & baseTime, startTime, endTime, chkPtFreq,
-     & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
+     & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
      & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq, 
      & outputTypesInclusive, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle,
-     & calendarDumps, nodumps
+     & calendarDumps
 
 C--   Gridding parameters
       NAMELIST /PARM04/
