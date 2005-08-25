@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.2 2005/08/25 16:19:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.3 2005/08/25 18:23:12 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -20,15 +20,18 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_COST
 #include "SEAICE_COST.h"
-
 #include "cost.h"
 #include "ctrl.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
       integer mythid
+
+#ifdef ALLOW_COST
 
 c     == local variables ==
 
@@ -103,5 +106,7 @@ c--   Each process has calculated the global part for itself.
       pChkptFreq = 0.
       monitorFreq = 0.
       useDiagnostics = .FALSE.
+
+#endif
 
       end
