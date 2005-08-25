@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.42 2005/08/01 21:07:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.43 2005/08/25 16:11:30 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -196,6 +196,13 @@ C AMM
 #ifdef ALLOW_LAND
 C--   Initialise & Read Land package parameters
       IF (useLand) CALL LAND_INITIALISE( myThid )
+#endif
+
+#if (defined (ALLOW_SEAICE) && defined (ALLOW_COST))
+C--   Initialise ecco-specific cost function.
+C--   This needs to preceed the call ctrl_init
+C--   in order to provide the weight files
+      CALL SEAICE_COST_INIT_FIXED( myThid )
 #endif
 
 #if (defined (ALLOW_ECCO) && defined (ALLOW_COST))

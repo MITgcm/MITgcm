@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.21 2005/08/10 03:34:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.22 2005/08/25 16:10:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -937,7 +937,7 @@ c--   Sum all cost function contributions.
      &    CALL DEBUG_CALL('cost_final',myThid)
 #endif
       call timer_start('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
-      call ecco_cost_final( mythid )
+      call cost_final( mythid )
       call timer_stop ('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
 
 #endif /* ALLOW_COST */

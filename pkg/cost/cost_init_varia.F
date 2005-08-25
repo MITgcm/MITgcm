@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.6 2004/10/26 20:10:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
-      subroutine cost_initvaria( mythid )
+      subroutine cost_init_varia( mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_initvaria
+c     SUBROUTINE cost_init_varia
 c     ==================================================================
 c
 c     o Initialise the variable cost function part.
@@ -19,7 +19,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_initvaria
+c     SUBROUTINE cost_init_varia
 c     ==================================================================
 
       implicit none
@@ -87,8 +87,12 @@ cph because we need it in ADM*TLM
        enddo
       enddo
 
+#ifdef ALLOW_SEAICE
+      call seaice_cost_init_varia( mythid )
+#endif
+
 #ifdef ALLOW_ECCO
-      call ecco_cost_initvaria( mythid )
+      call ecco_cost_init_varia( mythid )
 #endif
 
 c--   Initialise the "global" parts of the cost function.

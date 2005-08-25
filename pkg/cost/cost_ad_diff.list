@@ -1,6 +1,6 @@
 cost_accumulate_mean.f
 cost_final.f
-cost_initvaria.f	
+cost_init_varia.f	
 cost_tile.f	
 cost_test.f	
 cost_tracer.f	

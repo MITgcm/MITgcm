@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.13 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.14 2005/08/25 16:10:42 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -90,7 +90,6 @@ c--   Read the namelist input.
      &                   mult_obcsn, mult_obcss,
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
      &                   mult_curmtr, mult_ageos,
-     &                   mult_ice,
      &                   mult_kapgm, mult_diffkr,
      &                   whflux0, wsflux0, wtau0,
      &                   watemp0, waqh0, 
@@ -98,9 +97,6 @@ c--   Read the namelist input.
      &                   wmean_hflux, wmean_sflux, wmean_tau,
      &                   wmean_atemp, wmean_aqh, wmean_precip, 
      &                   wmean_swflux, wmean_swdown, wmean_wind,
-     &                   costIceStart1, costIceStart2,
-     &                   costIceEnd1, costIceEnd2,
-     &                   cost_ice_flag,
      &                   cost_iprec, cost_yftype
 
       _BEGIN_MASTER( myThid )
@@ -220,7 +216,6 @@ c--     Set default values.
         mult_obcsvol          =      0. _d 0
         mult_ageos            =      0. _d 0
         mult_curmtr           =      0. _d 0
-        mult_ice              =      0. _d 0
         mult_kapgm            =      0. _d 0
         mult_diffkr           =      0. _d 0
         watemp0               =      0. _d 0
@@ -241,11 +236,6 @@ c--     Set default values.
         wmean_hflux           =      0. _d 0
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
-        costIceStart1         =      0
-        costIceStart2         =      0
-        costIceEnd1           =      0
-        costIceEnd2           =      0
-        cost_ice_flag         =      1
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'

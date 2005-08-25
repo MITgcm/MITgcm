@@ -8,8 +8,6 @@ c       fields and counters associated with the averaging.
 c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
-c     added sea-ice term: menemenlis@jpl.nasa.gov 26-Feb-2003
-c
 c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
@@ -274,7 +272,6 @@ c     objf_scatxm - time-mean zonal SCAT  contribution
 c     objf_scatym - time-mean meridional SCAT  contribution
 c     objf_scatx  - zonal SCAT  contribution
 c     objf_scaty  - meridional SCAT  contribution
-c     objf_ice    - sea-ice volume
 c     objf_kapgm  - kappa GM contribution
 c     objf_diffkr - diffusion contribution
 c     objf_theta_ini_fin - final vs. initial theta misfit
@@ -339,7 +336,6 @@ c                  function contributions.
      &                objf_obcsvol,
      &                objf_curmtr,
      &                objf_ageos,
-     &                objf_ice,
      &                objf_kapgm,
      &                objf_diffkr,
      &                objf_theta_ini_fin,
@@ -401,7 +397,6 @@ c                  function contributions.
       _RL  objf_obcsvol
       _RL  objf_curmtr(nsx,nsy)
       _RL  objf_ageos(nsx,nsy)
-      _RL  objf_ice  (nsx,nsy)
       _RL  objf_kapgm(nsx,nsy)
       _RL  objf_diffkr(nsx,nsy)
       _RL  objf_theta_ini_fin(nsx,nsy)
@@ -464,7 +459,6 @@ c                  function contributions.
      &                num_obcsvol,
      &                num_curmtr,
      &                num_ageos,
-     &                num_ice,
      &                num_kapgm,
      &                num_diffkr,
      &                num_theta_ini_fin,
@@ -526,7 +520,6 @@ c                  function contributions.
       _RL  num_obcsvol
       _RL  num_curmtr(nsx,nsy)
       _RL  num_ageos(nsx,nsy)
-      _RL  num_ice  (nsx,nsy)
       _RL  num_kapgm(nsx,nsy)
       _RL  num_diffkr(nsx,nsy)
       _RL  num_theta_ini_fin(nsx,nsy)
@@ -574,7 +567,6 @@ c                  function contributions.
      &                    mult_obcsvol,
      &                    mult_curmtr,
      &                    mult_ageos,
-     &                    mult_ice,
      &                    mult_kapgm,
      &                    mult_diffkr,
      &                    mult_ini_fin,
@@ -620,7 +612,6 @@ c                  function contributions.
       _RL  mult_obcsvol
       _RL  mult_curmtr
       _RL  mult_ageos
-      _RL  mult_ice
       _RL  mult_kapgm
       _RL  mult_diffkr
       _RL  mult_ini_fin
@@ -1092,11 +1083,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           ersstartdate1,
      &                           ersstartdate2,
      &                           scatstartdate1,
-     &                           scatstartdate2,
-     &                           costIceStart1,
-     &                           costIceStart2,
-     &                           costIceEnd1,
-     &                           costIceEnd2
+     &                           scatstartdate2
 
       integer tmistartdate1
       integer tmistartdate2
@@ -1114,27 +1101,14 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer ersstartdate2
       integer scatstartdate1
       integer scatstartdate2
-      integer costIceStart1
-      integer costIceStart2
-      integer costIceEnd1
-      integer costIceEnd2
 
       common /ecco_cost_data_times_r/
      &                           topexperiod,
      &                           ersperiod,
-     &                           scatperiod,
-     &                           costIceStart,
-     &                           costIceEnd
+     &                           scatperiod
       _RL topexperiod
       _RL ersperiod
       _RL scatperiod
-      _RL costIceStart
-      _RL costIceEnd
-
-c     cost_ice_flag  - cost_ice flag (see cost_ice.F)
-
-      common /ecco_cost_ice_i/ cost_ice_flag
-      integer cost_ice_flag
 
 c     ==================================================================
 c     END OF HEADER COST

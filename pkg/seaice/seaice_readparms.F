@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.26 2005/08/11 02:50:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.27 2005/08/25 16:10:42 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
 
       SUBROUTINE SEAICE_READPARMS( myThid )
@@ -16,6 +17,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE_PARAMS.h"
+#ifdef ALLOW_COST
+#include "SEAICE_COST.h"
+#endif
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -56,6 +60,15 @@ C--   SEAICE parameters
      & SEAICE_EPS, SEAICE_EPS_SQ, 
      & SEAICE_tave_mnc
 c    & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
+
+#ifdef ALLOW_COST
+      NAMELIST /SEAICE_PARM02/
+     &                   mult_ice,
+     &                   costIceStart1, costIceStart2,
+     &                   costIceEnd1, costIceEnd2,
+     &                   cost_ice_flag
+
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -152,6 +165,15 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
 
+#ifdef ALLOW_COST
+      mult_ice          =      0. _d 0
+      costIceStart1     =      0
+      costIceStart2     =      0
+      costIceEnd1       =      0
+      costIceEnd2       =      0
+      cost_ice_flag     =      1
+#endif
+
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
@@ -170,6 +192,26 @@ C--   Read settings from model parameter file "data.seaice".
 C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
+
+#ifdef ALLOW_COST
+      READ(UNIT=iUnit,NML=SEAICE_PARM02,IOSTAT=errIO)
+      IF ( errIO .LT. 0 ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS'
+       CALL PRINT_ERROR( msgBuf , mythid)
+       WRITE(msgBuf,'(A)')
+     &  'Error reading numerical model '
+       CALL PRINT_ERROR( msgBuf , mythid)
+       WRITE(msgBuf,'(A)')
+     &  'parameter file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf , mythid)
+       WRITE(msgBuf,'(A)')
+     &  'Problem in namelist SEAICE_PARM02'
+       CALL PRINT_ERROR( msgBuf , mythid)
+C      CALL MODELDATA_EXAMPLE( myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+#endif
 
       CLOSE(iUnit)
 

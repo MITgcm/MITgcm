@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ice.F,v 1.2 2005/05/05 23:49:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/cost_ice.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
 
-#include "COST_CPPOPTIONS.h"
+#include "SEAICE_OPTIONS.h"
 
       subroutine cost_ice           (
      I                                mytime,
@@ -56,10 +56,10 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
-#include "cost.h"
-#include "ecco_cost.h"
+#include "SEAICE_COST.h"
 #include "SEAICE.h"
 #include "DYNVARS.h"
+#include "cost.h"
 #endif /* ALLOW_COST_ICE */
 
 c     == routine arguments ==
@@ -211,6 +211,9 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
             STOP 'ABNORMAL END: S/R COST_ICE'
          endif
       endif
+cph(
+      print *, 'ph-ice ', objf_ice(1,1)
+cph)
 
 #endif /* ALLOW_COST_ICE */
 

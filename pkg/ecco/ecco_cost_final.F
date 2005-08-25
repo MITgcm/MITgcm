@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.12 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.13 2005/08/25 16:10:42 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -10,10 +10,6 @@ c     SUBROUTINE cost_final
 c     ==================================================================
 c
 c     o Sum of all cost function contributions.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     added sea-ice term: menemenlis@jpl.nasa.gov 26-Feb-2003
 c
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -58,7 +54,6 @@ c     == local variables ==
       _RL f_scatx, f_scaty, f_scatxm, f_scatym
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
       _RL f_ageos, f_curmtr
-      _RL f_ice
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
       _RL f_eddytau
@@ -77,7 +72,6 @@ c     == local variables ==
       _RL no_scatx, no_scaty, no_scatxm, no_scatym
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
       _RL no_ageos, no_curmtr
-      _RL no_ice
       _RL no_ini_fin
       _RL no_kapgm, no_diffkr
       _RL no_eddytau
@@ -151,7 +145,6 @@ c     == end of interface ==
       f_obcse   = 0. _d 0
       f_curmtr  = 0. _d 0
       f_ageos   = 0. _d 0
-      f_ice     = 0. _d 0
       f_ini_fin = 0. _d 0
       f_kapgm   = 0. _d 0
       f_diffkr  = 0. _d 0
@@ -211,7 +204,6 @@ c     == end of interface ==
       no_obcse   = 0. _d 0
       no_curmtr  = 0. _d 0
       no_ageos   = 0. _d 0
-      no_ice     = 0. _d 0
       no_ini_fin = 0. _d 0
       no_kapgm   = 0. _d 0
       no_diffkr  = 0. _d 0
@@ -274,7 +266,6 @@ c--   Sum up all contributions.
      &            + mult_obcse   * objf_obcse(bi,bj)  
      &            + mult_curmtr  * objf_curmtr(bi,bj)
      &            + mult_ageos   * objf_ageos(bi,bj)
-     &            + mult_ice     * objf_ice(bi,bj)
      &            + mult_kapgm   * objf_kapgm(bi,bj)
      &            + mult_diffkr  * objf_diffkr(bi,bj)
      &            + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
@@ -331,7 +322,6 @@ c--   Sum up all contributions.
           f_scatym = f_scatym + objf_scatym(bi,bj)
           f_curmtr = f_curmtr + objf_curmtr(bi,bj)
           f_ageos = f_ageos + objf_ageos(bi,bj)
-          f_ice = f_ice + objf_ice(bi,bj)
           f_kapgm = f_kapgm + objf_kapgm(bi,bj)
           f_diffkr = f_diffkr + objf_diffkr(bi,bj)
           f_ini_fin = f_ini_fin +
@@ -387,7 +377,6 @@ c--   Sum up all contributions.
           no_scatym = no_scatym + num_scatym(bi,bj)
           no_curmtr = no_curmtr + num_curmtr(bi,bj)
           no_ageos = no_ageos + num_ageos(bi,bj)
-          no_ice = no_ice + num_ice(bi,bj)
           no_kapgm = no_kapgm + num_kapgm(bi,bj)
           no_diffkr = no_diffkr + num_diffkr(bi,bj)
           no_ini_fin = no_ini_fin +
@@ -461,8 +450,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_ageos , myThid )
       _GLOBAL_SUM_R8( f_kapgm , myThid )
       _GLOBAL_SUM_R8( f_diffkr , myThid )
-      _GLOBAL_SUM_R8( f_ice , myThid )
-      _GLOBAL_SUM_R8( f_ini_fin , myThid )
+       _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
 
       _GLOBAL_SUM_R8( no_temp , myThid )
@@ -521,7 +509,6 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_ageos , myThid )
       _GLOBAL_SUM_R8( no_kapgm , myThid )
       _GLOBAL_SUM_R8( no_diffkr , myThid )
-      _GLOBAL_SUM_R8( no_ice , myThid )
       _GLOBAL_SUM_R8( no_ini_fin , myThid )
       _GLOBAL_SUM_R8( no_eddytau , myThid )
 
@@ -634,8 +621,6 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_curmtr  =',f_curmtr
       write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_ice     =',f_ice
-      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_kapgm   =',f_kapgm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_diffkr  =',f_diffkr
@@ -713,7 +698,6 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_obcsw =', f_obcsw, no_obcsw
         write(ifc,*) 'f_obcse =', f_obcse, no_obcse
         write(ifc,*) 'f_ageos =', f_ageos, no_ageos
-        write(ifc,*) 'f_ice   =', f_ice, no_ice
         write(ifc,*) 'f_kapgm =', f_kapgm, no_kapgm
         write(ifc,*) 'f_diffkr=', f_diffkr, no_diffkr
         write(ifc,*) 'f_ini_fin =', f_ini_fin, no_ini_fin
