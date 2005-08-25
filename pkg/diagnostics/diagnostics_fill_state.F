@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.25 2005/08/25 18:43:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.26 2005/08/25 20:51:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,7 +41,6 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tmpMk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpFac, uBarC, vBarC
 #ifdef ALLOW_FIZHI
@@ -274,32 +273,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( DIAGNOSTICS_IS_ON('PRESSURE',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           do j = 1,sNy
-           do i = 1,sNx
-            do K = 1,Nr
-             tmpMk1(i,j,K,bi,bj) = 0.
-            enddo
-           enddo
-           enddo
-           do j = 1,sNy
-           do i = 1,sNx
-            if(ksurfC(i,j,bi,bj).ne.0.) 
-     .          tmpMk1(i,j,ksurfC(i,j,bi,bj),bi,bj) = 
-     .                            (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))
-           enddo
-           enddo
-           do j = 1,sNy
-           do i = 1,sNx
-            do K = ksurfC(i,j,bi,bj)+1,Nr+1
-             tmpMk1(i,j,K,bi,bj) = tmpMk1(i,j,K-1,bi,bj) - 
-     .                        drF(K-1)*hfacC(i,j,K-1,bi,bj)
-            enddo
-            do K = 1,Nr
-             tmpMk(i,j,K,bi,bj) = 
-     .           (tmpMk1(i,j,K,bi,bj) + tmpMk1(i,j,K+1,bi,bj)) /2.
-            enddo
-           enddo
-           enddo
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmp1k(i,j,bi,bj) = R_low(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           DO k = Nr,1,-1
+            DO j = 1,sNy
+             DO i = 1,sNx
+              tmpMk(i,j,k,bi,bj) = tmp1k(i,j,bi,bj)
+     &                      + drF(k)*hFacC(i,j,k,bi,bj)*0.5 _d 0
+              tmp1k(i,j,bi,bj) =   tmp1k(i,j,bi,bj)
+     &                      + drF(k)*hFacC(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'PRESSURE',0,Nr,0,1,1,myThid)
