@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.536 2005/08/24 23:36:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.537 2005/08/25 22:21:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove SST,SSS,UVEL_k2,VVEL_k2 diagnostics.
 o move pkg timeave out of pkg-groups "oceanic" & "atmospheric" (pkg/pkg_groups)
 o remove MINIMAL_TAVE_OUTPUT option ; 
   add "dumpInitAndLast" to replace "nodumps" (and MINIMAL_TAVE_OUTPUT).
