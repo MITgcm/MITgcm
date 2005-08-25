@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/cost_ice.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/cost_ice.F,v 1.2 2005/08/25 16:19:39 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -211,9 +211,6 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
             STOP 'ABNORMAL END: S/R COST_ICE'
          endif
       endif
-cph(
-      print *, 'ph-ice ', objf_ice(1,1)
-cph)
 
 #endif /* ALLOW_COST_ICE */
 

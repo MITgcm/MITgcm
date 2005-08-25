@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.2 2005/08/25 16:19:39 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -72,10 +72,6 @@ c--   Sum up all contributions.
 
         enddo
       enddo
-cph(
-      print *, 'ph-ice ', fc, mult_ice, objf_ice(1,1)
-cph)
-
 
 c--   Do global summation.
       _GLOBAL_SUM_R8( fc , myThid )
