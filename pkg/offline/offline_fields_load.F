@@ -34,6 +34,9 @@ C     === Global variables ===
 #include "GMREDI.h"
 #include "GMREDI_TAVE.h"
 #endif
+#ifdef ALLOW_KPP
+#include "KPP.h"
+#endif
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
@@ -66,10 +69,10 @@ C     aWght, bWght :: Interpolation weights
       COMMON /OFFLINEFFIELDS/
      &                 uvel0, vvel0, wvel0, tave0, save0, 
      &                 conv0, gmkx0, gmky0, gmkz0, hflx0,
-     &                 sflx0,
+     &                 sflx0, kdfs0, kght0,
      &                 uvel1, vvel1, wvel1, tave1, save1,
      &                 conv1, gmkx1, gmky1, gmkz1, hflx1,
-     &                 sflx1
+     &                 sflx1, kdfs1, kght1
       _RS  uvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  uvel1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  vvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -92,6 +95,10 @@ C     aWght, bWght :: Interpolation weights
       _RS  hflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sflx0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  kdfs0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  kdfs1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  kght0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  kght1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RS  tmp      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  tmp
       _RL  sfac     (1-OLy:sNy+OLy,nSy)
@@ -124,6 +131,8 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkz0 ,myThid )
        CALL LEF_ZERO2( hflx0 ,myThid )
        CALL LEF_ZERO2( sflx0 ,myThid )
+       CALL LEF_ZERO3( kdfs0 ,myThid )
+       CALL LEF_ZERO3( kght0 ,myThid )
        CALL LEF_ZERO3( uvel1 ,myThid )
        CALL LEF_ZERO3( vvel1 ,myThid )
        CALL LEF_ZERO3( wvel1 ,myThid )
@@ -135,6 +144,8 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkz1 ,myThid )
        CALL LEF_ZERO2( hflx1 ,myThid )
        CALL LEF_ZERO2( sflx1 ,myThid )
+       CALL LEF_ZERO3( kdfs1 ,myThid )
+       CALL LEF_ZERO3( kght1 ,myThid )
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
@@ -243,6 +254,7 @@ c
        ENDIF
 c
 
+#ifdef ALLOW_GMREDI
        IF (GMwxFile       .NE. ' ' ) THEN
         WRITE(fn2,'(A)') GMwxFile
         I1=IFNBLNK(fn2)
@@ -278,6 +290,7 @@ c
      &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz1,   1,myThid)
        ENDIF
+#endif
 c
        IF (HFluxFile      .NE. ' ') THEN
         WRITE(fn2,'(A)') HFluxFile
@@ -302,6 +315,32 @@ c
      &        intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,sflx1,   1,myThid)
        ENDIF
+c
+#ifdef ALLOW_KPP
+       IF (KPP_DiffSFile      .NE. ' ') THEN
+        WRITE(fn2,'(A)') KPP_DiffSFile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,kdfs0,   1,myThid)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,kdfs1,   1,myThid)
+       ENDIF
+c
+       IF (KPP_ghatFile      .NE. ' ') THEN
+        WRITE(fn2,'(A)') KPP_ghatFile
+        I1=IFNBLNK(fn2)
+        I2=ILNBLNK(fn2)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime0*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,kght0,   1,myThid)
+        WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
+     &        intime1*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,kght1,   1,myThid)
+       ENDIF
+#endif
 c
 #endif /* else NOT_MODEL_FILES */
 
@@ -330,6 +369,11 @@ C
        _EXCH_XY_R4(hflx1 , myThid )
        _EXCH_XY_R4(sflx0, myThid )
        _EXCH_XY_R4(sflx1, myThid )
+       _EXCH_XYZ_R4(kdfs0 , myThid )
+       _EXCH_XYZ_R4(kdfs1 , myThid )
+       _EXCH_XYZ_R4(kght0, myThid )
+       _EXCH_XYZ_R4(kght1, myThid ) 
+
 
  
 c
@@ -372,6 +416,12 @@ C--   Interpolate uvel, vvel, wvel
      &                       +aWght*sflx1(i,j,bi,bj)
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)/
      &       (recip_horiVertRatio*rhoConst)
+#ifdef ALLOW_KPP
+          KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
+     &                       +aWght*kdfs1(i,j,k,bi,bj)
+          KPPghat(i,j,k,bi,bj) = bWght*kght0(i,j,k,bi,bj)
+     &                       +aWght*kght1(i,j,k,bi,bj)
+#endif
          ENDDO
         ENDDO
        ENDDO
