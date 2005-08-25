@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.6 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.7 2005/08/25 22:32:44 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -89,7 +89,7 @@ C exchange coeff, accounting for ice cover and Schmidt no.
      &             pisvel(i,j,bi,bj)
      &             / sqrt(SchmidtNoO2(i,j)/660.0)
 c ice influence
-cQQ           Kwexch(i,j)  =(1.d0-Fice(i,j,bi,bj))*Kwexch(i,j)
+              Kwexch(i,j)  =(1.d0-Fice(i,j,bi,bj))*Kwexch(i,j)
 
               ttemp = theta(i,j,k,bi,bj)
               stemp = salt(i,j,k,bi,bj)
@@ -129,7 +129,8 @@ cQQ PTR_O2?
 C update surface tendencies      
         DO j=jMin,jMax
           DO i=iMin,iMax
-           SGO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)*recip_drF(1) 
+           SGO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)
+     &         *recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
           ENDDO
          ENDDO
 #endif

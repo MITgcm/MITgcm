@@ -68,8 +68,9 @@ C$TAF INIT bio_export = static, 10
            lit=sfac(j)
            DO k=1,nlev
 C$TAF STORE lit = bio_export
-             atten=(k0*drF(k)*.5)
-             if (k.gt.1) atten=atten+(k0*drF(k-1)*.5)
+             atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5)
+             if (k.gt.1) atten=atten+(k0*drF(k-1)
+     &                         *hFacC(i,j,k-1,bi,bj)*.5)
              lit=lit*exp(-atten)*(1.d0-Fice(i,j,bi,bj))
              if (lit.lt.0.d0.or.lit.gt.150) then
                  print*,'QQ lit', lit

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.8 2005/08/18 18:24:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.9 2005/08/25 22:32:44 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -204,7 +204,8 @@ c add all tendencies for PO4, DOP, ALK, DIC
                GO2(i,j,1)=GO2(i,j,1)+SURO(i,j)
 #ifdef ALLOW_FE
                GFE(i,j,1)=GFE(i,j,1)+alpfe*
-     &                    InputFe(i,j,bi,bj)/drF(1)
+     &                    InputFe(i,j,bi,bj)*recip_drF(1)
+     &                       *recip_hFacC(i,j,1,bi,bj)
 #endif
            ENDIF
           ENDDO

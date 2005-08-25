@@ -126,7 +126,8 @@ c Karstens version
 c - gives NaNs (because using kierrate, not dissolution rate)???
 c                flux_l = flux_u*(1.0-KierRate)**(drF(k)/WsinkPIC)
 c MICKS NEW VERSION... based on vertical sinking/remin balance
-                 dumrate = -1.0d0*DissolutionRate*drF(ko)/WsinkPIC
+                 dumrate = -1.0d0*DissolutionRate*drF(ko)*
+     &                       hFacC(i,j,ko,bi,bj)/WsinkPIC
                  flux_l = flux_u*exp(dumrate)
 c TEST ............................
 c           if(i .eq. 76 .and. j .eq. 36)then
