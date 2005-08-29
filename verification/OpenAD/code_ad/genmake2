@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.4 2005/08/24 20:22:00 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.5 2005/08/29 19:22:01 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2072,7 +2072,45 @@ cb2m: \$(CB2MFILES)
 	./cb2m1.csh 
 	./cb2m2.bash
 
-allmods: SIZE_mod.f90 EEPARAMS_mod.f90 PARAMS_mod.f90 BAR2_mod.f90 BARRIER_mod.f90 CD_CODE_VARS_mod.f90 CG2D_mod.f90 CG3D_mod.f90 DFILE_mod.f90 DYNVARS_mod.f90 EEIO_mod.f90 EESUPPORT_mod.f90 EOS_mod.f90 EXCH_JAM_mod.f90 EXCH_mod.f90 FC_NAMEMANGLE_mod.f90 FFIELDS_mod.f90 GAD_mod.f90 GLOBAL_MAX_mod.f90 GLOBAL_SUM_mod.f90 GRID_mod.f90 GW_mod.f90 MPI_INFO_mod.f90 SOLVE_FOR_PRESSURE3D_mod.f90 SOLVE_FOR_PRESSURE_mod.f90 SURFACE_mod.f90 tamc_mod.f90 tamc_keys_mod.f90 cost_mod.f90 g_cost_mod.f90 ctrl_mod.f90 ctrl_dummy_mod.f90 ctrl_weights_mod.f90 optim_mod.f90 grdchk_mod.f90 
+# files resulting from the module extraction
+CONV_MODULE_FILES = \
+SIZE_mod \
+EEPARAMS_mod \
+PARAMS_mod \
+BAR2_mod \
+BARRIER_mod \
+CD_CODE_VARS_mod \
+CG2D_mod \
+CG3D_mod \
+DFILE_mod \
+DYNVARS_mod \
+EEIO_mod \
+EESUPPORT_mod \
+EOS_mod \
+EXCH_JAM_mod \
+EXCH_mod \
+FC_NAMEMANGLE_mod \
+FFIELDS_mod \
+GAD_mod \
+GLOBAL_MAX_mod \
+GLOBAL_SUM_mod \
+GRID_mod \
+GW_mod \
+MPI_INFO_mod \
+SOLVE_FOR_PRESSURE3D_mod \
+SOLVE_FOR_PRESSURE_mod \
+SURFACE_mod \
+tamc_mod \
+tamc_keys_mod \
+cost_mod \
+g_cost_mod \
+ctrl_mod \
+ctrl_dummy_mod \
+ctrl_weights_mod \
+optim_mod \
+grdchk_mod 
+
+allmods: \$(addsuffix .f90, \$(CONV_MODULE_FILES))
 	\$(FC) -c -fixed \$^
 
 small_f: \$(F77FILES) \$(F90FILES)
@@ -2216,6 +2254,96 @@ adonlyfwd:
  
 adtrick:
 	patch < \$(TOOLSDIR)/ad_taf_output.f.adtrick.diff
+
+# ... OpenAD ...
+OPENADFILES  =      \
+w2f__types          \
+active_module       \
+OpenAD_checkpoints  \
+OpenAD_dct          \
+OpenAD_rev          \
+OpenAD_tape         \
+iaddr
+
+adopen: ad_input_code.canon.xb.x2w.w2f.pp.f
+
+ifndef OPENADROOT
+  \$(error "Error:  environment variable OPENADROOT not defined!")
+endif
+
+ifndef XAIFSCHEMAROOT
+  \$(error "Error:  environment variable XAIFSCHEMAROOT not defined!")
+endif
+
+ifndef XAIFBOOSTERROOT
+  \$(error "Error:  environment variable XAIFBOOSTERROOT not defined!")
+endif
+
+######################################################
+# transformation
+######################################################
+
+# paste all modules into the ad_input_code file 
+# so we can do the single file transformation
+# and strip all comments and blanks to reduce 
+# the file size in order to reduce perl's memory requirements 
+ad_input_code_sf.f : \$(addsuffix .f90, \$(CONV_MODULE_FILES)) ad_input_code.f 
+	cat \$^ | sed -f ../code_ad/strip.sed > \$@
+
+# canonicalizer
+ad_input_code_sf.canon.f: ad_input_code_sf.f canon.pl
+	perl canon.pl \$< \$@
+
+# F -> WHIRL
+ad_input_code_sf.canon.B: ad_input_code_sf.canon.f mfef90
+	./mfef90 -F -N132 \$<
+
+# WHIRL -> XAIF
+ad_input_code_sf.canon.xaif : ad_input_code_sf.canon.B whirl2xaif
+	./whirl2xaif -o \$@ \$<
+
+# XAIF -> XAIF'
+ad_input_code_sf.canon.xb.xaif : ad_input_code_sf.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd xaifBooster
+	./xaifBooster -i \$< -c ${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I
+
+# XAIF' -> WHIRL'
+ad_input_code_sf.canon.xb.x2w.B : ad_input_code_sf.canon.xb.xaif xaif2whirl
+	./xaif2whirl --structured ad_input_code_sf.canon.B \$<
+
+# WHIRL' -> F'
+ad_input_code_sf.canon.xb.x2w.w2f.f: ad_input_code_sf.canon.xb.x2w.B whirl2f whirl2f_be
+	./whirl2f -openad \$<
+
+# postprocess F'
+ad_input_code_sf.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.f multi-pp.pl
+	perl multi-pp.pl \$<
+
+# extract all transformed modules 
+all_mods.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.pp.f
+	cat \$< | sed -n '/MODULE /,/END MODULE/p' > \$@
+
+# remove the transformed globals module from the transformed ad_input_code file
+ad_input_code.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.pp.f
+	cat \$< | sed '/MODULE /,/END MODULE/d' > \$@
+
+# setup some links
+%.xsd:
+	\$(LN) \${XAIFSCHEMAROOT}/schema/\$@ .
+
+mfef90: 
+	\$(LN) \${OPENADROOT}/Open64/osprey1.0/targ_ia32_ia64_linux/crayf90/sgi/mfef90 .
+
+whirl2xaif xaif2whirl: 
+	\$(LN) \${OPENADROOT}/OpenADFortTk/OpenADFortTk-i686-Linux/bin/\$@ .
+
+%.pl: 
+	\$(LN) \${OPENADROOT}/OpenADFortTk/OpenADFortTk-i686-Linux/bin/\$@ .
+
+whirl2f whirl2f_be:
+	\$(LN) \${OPENADROOT}/Open64/osprey1.0/targ_ia32_ia64_linux/whirl2f/\$@ .
+
+xaifBooster:
+	./pickAlgorithm.bash
 
 # ... FTL ...
 ftlall: ftl_taf
