@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.26 2005/08/30 21:38:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.27 2005/08/30 22:28:50 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -249,6 +249,22 @@ c
 # endif
 #endif
 c
+#ifdef ALLOW_SEAICE
+c
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adarea',
+     &         adarea, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adheff',
+     &         adheff, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adhsnow',
+     &         adhsnow, myThid)
+# ifdef SEAICE_ALLOW_DYNAMICS
+          CALL MNC_CW_RL_W('D','adstate',0,0,'aduice',
+     &         aduice, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'advice',
+     &         advice, myThid)
+# endif
+c
+#endif
         ENDIF
 #endif /* ALLOW_MNC */
 

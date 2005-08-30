@@ -13,6 +13,9 @@ C--   heimbach@mit.edu 11-Jan-2001
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
       common /g_dynvars_r/ 
      &                     g_etan, g_etah,
@@ -88,6 +91,20 @@ cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_swdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_lwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_rad_down_r/ g_swdown, g_lwdown
+# endif
+#endif
+
+#ifdef ALLOW_SEAICE
+      _RL g_area(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      common /g_seaice_dynvars_1/ g_area
+c
+      _RL g_heff(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL g_hsnow(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_seaice_trans/ g_heff, g_hsnow
+# ifdef SEAICE_ALLOW_DYNAMICS
+      _RL g_uice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL g_vice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      common /g_seaice_dynvars_2/ g_uice, g_vice
 # endif
 #endif
 

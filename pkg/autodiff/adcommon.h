@@ -13,6 +13,9 @@ C--   heimbach@mit.edu 11-Jan-2001
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
       common /addynvars_r/ 
      &                     adetan, adetah,
@@ -97,6 +100,20 @@ cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adlwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_rad_down_r/
      &     adswdown, adlwdown
+# endif
+#endif
+
+#ifdef ALLOW_SEAICE
+      _RL adarea(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      common /adseaice_dynvars_1/ adarea
+c
+      _RL adheff(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL adhsnow(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adseaice_trans/ adheff, adhsnow
+# ifdef SEAICE_ALLOW_DYNAMICS
+      _RL aduice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL advice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      common /adseaice_dynvars_2/ aduice, advice
 # endif
 #endif
 
