@@ -2,3 +2,6 @@
  &SEAICE_PARM01
       SEAICEwriteState  = .TRUE.
  &
+#
+ &SEAICE_PARM02
+ &
