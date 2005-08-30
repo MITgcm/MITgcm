@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.6 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.7 2005/08/30 21:38:55 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -130,6 +130,96 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
      &     'coordinates','XC YC RC iter', myThid)
 #endif
+
+#ifdef ALLOW_EXF
+c
+      CALL MNC_CW_ADD_VNAME('adustress', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adustress',
+     &     'units','[cost]/[N/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adustress','long_name',
+     &     'adjoint zonal wind stress', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adustress',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('advstress', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advstress',
+     &     'units','[cost]/[N/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advstress','long_name',
+     &     'adjoint meridional wind stress', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advstress',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('adhflux', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adhflux',
+     &     'units','[cost]/[W/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adhflux','long_name',
+     &     'adjoint net upward heat flux', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adhflux',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('adsflux', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adsflux',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adsflux','long_name',
+     &     'adjoint net upward freshwater flux', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adsflux',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+# ifdef ALLOW_ATM_TEMP
+      CALL MNC_CW_ADD_VNAME('adatemp', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adatemp',
+     &     'units','[cost]/[degK]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adatemp','long_name',
+     &     'adjoint surface air temperature', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adatemp',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('adaqh', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adaqh',
+     &     'units','[cost]/[kg/kg]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adaqh','long_name',
+     &     'adjoint specific humidity', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adaqh',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('adprecip', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adprecip',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adprecip','long_name',
+     &     'adjoint precipitation', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adprecip',
+     &     'coordinates','XC YC RC iter', myThid)
+# endif
+
+# ifdef ALLOW_ATM_WIND
+      CALL MNC_CW_ADD_VNAME('aduwind', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('aduwind',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('aduwind','long_name',
+     &     'adjoint zonal wind speed', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('aduwind',
+     &     'coordinates','XC YC RC iter', myThid)
+c
+      CALL MNC_CW_ADD_VNAME('advwind', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advwind',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advwind','long_name',
+     &     'adjoint meridional wind speed', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('advwind',
+     &     'coordinates','XC YC RC iter', myThid)
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+      CALL MNC_CW_ADD_VNAME('adswdown', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adswdown',
+     &     'units','[cost]/[W/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adswdown','long_name',
+     &     'adjoint downward shortwave radiation', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adswdown',
+     &     'coordinates','XC YC RC iter', myThid)
+# endif
+c
+#endif
+
 
 C     Write coordinates to "adstate" file
       CALL MNC_CW_SET_UDIM('adstate', 0, myThid)

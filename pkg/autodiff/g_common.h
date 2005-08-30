@@ -8,6 +8,12 @@ C--   heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+#include "PACKAGES_CONFIG.h"
+
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
+
       common /g_dynvars_r/ 
      &                     g_etan, g_etah,
      &                     g_uvel, g_vvel, g_wvel, 
@@ -66,7 +72,7 @@ cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_ustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_vstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_stress_r/ g_ustress, g_vstress
-# ifdef ALLOW_ATEMP
+# ifdef ALLOW_ATM_TEMP
       _RL g_atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_aqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_lwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -77,6 +83,11 @@ cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_vwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_atm_wind_r/ g_uwind, g_vwind
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+      _RL g_swdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_lwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_rad_down_r/ g_swdown, g_lwdown
 # endif
 #endif
 

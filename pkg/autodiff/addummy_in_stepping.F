@@ -1,6 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.25 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.26 2005/08/30 21:38:55 heimbach Exp $
 
+#include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: addummy_in_stepping
@@ -137,6 +141,24 @@ c
      &       suff, adhflux, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJsflux.',
      &       suff, adsflux, myIter, myThid)
+# ifdef ALLOW_ATM_TEMP
+        CALL WRITE_FLD_XY_RL ( 'ADJatemp.',
+     &       suff, adatemp, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJaqh.',
+     &       suff, adaqh, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJprecip.',
+     &       suff, adprecip, myIter, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
+        CALL WRITE_FLD_XY_RL ( 'ADJuwind.',
+     &       suff, aduwind, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJvwind.',
+     &       suff, advwind, myIter, myThid)
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+        CALL WRITE_FLD_XY_RL ( 'ADJswdown.',
+     &       suff, adswdown, myIter, myThid)
+# endif
 #endif
 c
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -196,6 +218,35 @@ c
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', adsss, myThid)
+#endif
+c
+#ifdef ALLOW_EXF
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adustress', 
+     &         adustress, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'advstress',
+     &         advstress, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adhflux',
+     &         adhflux, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adsflux',
+     &         adsflux, myThid)
+# ifdef ALLOW_ATM_TEMP
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adatemp',
+     &         adatemp, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adaqh',
+     &         adaqh, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adprecip',
+     &         adprecip, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
+          CALL MNC_CW_RL_W('D','adstate',0,0,'aduwind',
+     &         aduwind, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'advwind',
+     &         advwind, myThid)
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adswdown',
+     &         adswdown, myThid)
+# endif
 #endif
 c
         ENDIF

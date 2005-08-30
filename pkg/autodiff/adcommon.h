@@ -8,6 +8,12 @@ C--   heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+#include "PACKAGES_CONFIG.h"
+
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
+
       common /addynvars_r/ 
      &                     adetan, adetah,
      &                     aduvel, advvel, adwvel, 
@@ -74,7 +80,7 @@ cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_stress_r/ adustress, advstress
-# ifdef ALLOW_ATEMP
+# ifdef ALLOW_ATM_TEMP
       _RL adatemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adaqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adlwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -85,6 +91,12 @@ cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL aduwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_atm_wind_r/ aduwind, advwind
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+      _RL adswdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adlwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_rad_down_r/
+     &     adswdown, adlwdown
 # endif
 #endif
 
