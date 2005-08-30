@@ -2,6 +2,7 @@
  &SEAICE_PARM01
       SEAICE_initialHEFF = 1.0
       SEAICEwriteState  = .TRUE.
+ &
 #
  &SEAICE_PARM02
   mult_ice   = 1.,
