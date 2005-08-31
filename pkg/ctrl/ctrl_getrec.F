@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.6 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.7 2005/08/31 00:03:29 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -211,6 +211,22 @@ c     Map the field parameters.
      I        mythid
      &        )
          fldperiod = xx_obcseperiod
+         lArgErr = .false.
+      else if ( thefield .eq. 'xx_sst'   ) then
+         call cal_CopyDate(
+     I        xx_sststartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_sstperiod
+         lArgErr = .false.
+      else if ( thefield .eq. 'xx_sss'   ) then
+         call cal_CopyDate(
+     I        xx_sssstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_sssperiod
          lArgErr = .false.
       endif
       

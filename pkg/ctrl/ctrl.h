@@ -319,6 +319,17 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_swdown1
 #endif
 
+#if (defined  (ALLOW_SST_CONTROL))
+      common /controlaux_sst_r/
+     &                      xx_sst0,
+     &                      xx_sst1
+#endif
+#if (defined  (ALLOW_SSS_CONTROL))
+      common /controlaux_sss_r/
+     &                      xx_sss0,
+     &                      xx_sss1
+#endif
+
 #if     (defined  (ALLOW_HFLUX_CONTROL))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -358,6 +369,14 @@ c     xx_tauv1 - meridional wind stress record after  current date.
 #if (defined  (ALLOW_SWDOWN_CONTROL))
       _RL xx_swdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_swdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_SST_CONTROL))
+      _RL xx_sst0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_sst1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_SSS_CONTROL))
+      _RL xx_sss0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_sss1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -510,6 +529,8 @@ c     xx_obcssperiod - sampling interval
      &                      , xx_swdownperiod
      &                      , xx_uwindperiod
      &                      , xx_vwindperiod
+     &                      , xx_sstperiod
+     &                      , xx_sssperiod
      &                      , xx_obcsnperiod
      &                      , xx_obcssperiod
      &                      , xx_obcswperiod
@@ -525,6 +546,8 @@ c     xx_obcssperiod - sampling interval
       _RL     xx_swdownperiod
       _RL     xx_uwindperiod
       _RL     xx_vwindperiod
+      _RL     xx_sstperiod
+      _RL     xx_sssperiod
       _RL     xx_obcsnperiod
       _RL     xx_obcssperiod
       _RL     xx_obcswperiod
@@ -560,6 +583,10 @@ c                         control part.
      &                      , xx_uwindstartdate2
      &                      , xx_vwindstartdate1
      &                      , xx_vwindstartdate2
+     &                      , xx_sststartdate1
+     &                      , xx_sststartdate2
+     &                      , xx_sssstartdate1
+     &                      , xx_sssstartdate2
      &                      , xx_hfluxstartdate
      &                      , xx_sfluxstartdate
      &                      , xx_tauustartdate
@@ -571,6 +598,8 @@ c                         control part.
      &                      , xx_swdownstartdate
      &                      , xx_uwindstartdate
      &                      , xx_vwindstartdate
+     &                      , xx_sststartdate
+     &                      , xx_sssstartdate
      &                      , xx_obcsnstartdate1
      &                      , xx_obcsnstartdate2
      &                      , xx_obcssstartdate1
@@ -605,6 +634,10 @@ c                         control part.
       integer xx_uwindstartdate2
       integer xx_vwindstartdate1
       integer xx_vwindstartdate2
+      integer xx_sststartdate1
+      integer xx_sststartdate2
+      integer xx_sssstartdate1
+      integer xx_sssstartdate2
       integer xx_obcsnstartdate1
       integer xx_obcsnstartdate2
       integer xx_obcssstartdate1
@@ -625,6 +658,8 @@ c                         control part.
       integer xx_swdownstartdate(4)
       integer xx_uwindstartdate(4)
       integer xx_vwindstartdate(4)
+      integer xx_sststartdate(4)
+      integer xx_sssstartdate(4)
       integer xx_obcsnstartdate(4)
       integer xx_obcssstartdate(4)
       integer xx_obcswstartdate(4)

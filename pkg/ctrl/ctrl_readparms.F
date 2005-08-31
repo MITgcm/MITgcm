@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.18 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.19 2005/08/31 00:03:30 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -106,7 +106,9 @@ c--   Read the namelist input.
      &  xx_kapgm_file,
      &  xx_tr1_file,
      &  xx_sst_file,
+     &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sss_file,
+     &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
      &  xx_hfacc_file,
      &  xx_efluxy_file,
      &  xx_efluxp_file,
@@ -204,7 +206,13 @@ c--     Set default values.
         xx_diffkr_file      = 'xx_diffkr'
         xx_kapgm_file       = 'xx_kapgm'
         xx_tr1_file         = 'xx_ptr'
+        xx_sststartdate1    =   0
+        xx_sststartdate2    =   0
+        xx_sstperiod        =   0. _d 0
         xx_sst_file         = 'xx_sst'
+        xx_sssstartdate1    =   0
+        xx_sssstartdate2    =   0
+        xx_sssperiod        =   0. _d 0
         xx_sss_file         = 'xx_sss'
         xx_hfacc_file       = 'xx_hfacc'
         xx_efluxy_file      = 'xx_efluxy'

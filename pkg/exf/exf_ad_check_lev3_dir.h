@@ -121,5 +121,13 @@ CADJ STORE xx_swflux1    = tapelev3, key = ilev_3
 CADJ STORE xx_swdown0    = tapelev3, key = ilev_3
 CADJ STORE xx_swdown1    = tapelev3, key = ilev_3
 # endif
+# ifdef ALLOW_SST_CONTROL
+CADJ STORE xx_sst0    = tapelev3, key = ilev_3
+CADJ STORE xx_sst1    = tapelev3, key = ilev_3
+# endif
+# ifdef ALLOW_SSS_CONTROL
+CADJ STORE xx_sss0    = tapelev3, key = ilev_3
+CADJ STORE xx_sss1    = tapelev3, key = ilev_3
+# endif
 
 #endif /* ALLOW_EXF */

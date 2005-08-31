@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.23 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.24 2005/08/31 00:03:30 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -224,8 +224,7 @@ C     place holder of obsolete variable jG
      &         weighttype, wsalt, lxxadxx, mythid)
 #endif
 
-#if (defined (ALLOW_HFLUX_CONTROL) || \
-     defined (ALLOW_HFLUX0_CONTROL))
+#if (defined (ALLOW_HFLUX_CONTROL) || defined (ALLOW_HFLUX0_CONTROL))
           ivartype = 3
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whflux"
@@ -234,8 +233,7 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#if (defined (ALLOW_SFLUX_CONTROL) || \
-     defined (ALLOW_SFLUX0_CONTROL))
+#if (defined (ALLOW_SFLUX_CONTROL) || defined (ALLOW_SFLUX0_CONTROL))
           ivartype = 4
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsflux"
@@ -244,8 +242,7 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#if (defined (ALLOW_USTRESS_CONTROL) || \
-     defined (ALLOW_TAUU0_CONTROL))
+#if (defined (ALLOW_USTRESS_CONTROL) || defined (ALLOW_TAUU0_CONTROL))
           ivartype = 5
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
@@ -254,8 +251,7 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#if (defined (ALLOW_VSTRESS_CONTROL) || \
-     defined (ALLOW_TAUV0_CONTROL))
+#if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
           ivartype = 6
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
@@ -363,7 +359,7 @@ C     place holder of obsolete variable jG
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_SST0_CONTROL
+#if (defined (ALLOW_SST_CONTROL) || defined (ALLOW_SST0_CONTROL))
           ivartype = 18
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsst0"
@@ -372,7 +368,7 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_SSS0_CONTROL
+#if (defined (ALLOW_SSS_CONTROL) || defined (ALLOW_SSS0_CONTROL))
           ivartype = 19
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsss0"

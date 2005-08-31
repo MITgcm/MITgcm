@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.19 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.20 2005/08/31 00:03:30 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -512,18 +512,64 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_SST0_CONTROL
+#if (defined (ALLOW_SST_CONTROL))
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_sststartdate1, xx_sststartdate2,
+     &                     xx_sststartdate , mythid )
+        call cal_TimePassed( xx_sststartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_sstperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_sstperiod) + 2
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_sst_file, 18, 118, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#elif (defined (ALLOW_SST0_CONTROL))
+
         call ctrl_init_ctrlvar ( 
      &       xx_sst_file, 18, 118, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
-#endif /* ALLOW_SST0_CONTROL */
+
+#endif /* ALLOW_SST_CONTROL */
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_SSS0_CONTROL
+#if (defined (ALLOW_SSS_CONTROL))
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_sssstartdate1, xx_sssstartdate2,
+     &                     xx_sssstartdate , mythid )
+        call cal_TimePassed( xx_sssstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_sssperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_sssperiod) + 2
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_sss_file, 19, 119, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#elif (defined (ALLOW_SSS0_CONTROL))
+
         call ctrl_init_ctrlvar ( 
      &       xx_sss_file, 19, 119, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
+
 #endif /* ALLOW_SSS0_CONTROL */
 
 c----------------------------------------------------------------------
