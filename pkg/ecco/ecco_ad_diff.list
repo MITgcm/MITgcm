@@ -9,6 +9,7 @@ cost_ctdt.f
 cost_drift.f                    
 cost_drifter.f                  
 cost_driftw.f                   
+cost_generic.f
 cost_forcing.f                  
 cost_forcing_gen.f
 cost_geoid.f                    

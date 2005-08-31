@@ -1,16 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.3 2005/04/29 10:31:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.4 2005/08/31 19:00:52 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_Hyd(
-     I                     myiter,
-     I                     mytime,
-     I                     mythid
-     &                   )
+      subroutine cost_hyd( myiter, mytime, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_Hyd
+c     SUBROUTINE cost_hyd
 c     ==================================================================
 c
 c     o Evaluate cost function contributions of temperature, salt, and
@@ -24,7 +20,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_Hyd
+c     SUBROUTINE cost_hyd
 c     ==================================================================
 
       implicit none
@@ -33,6 +29,12 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "GRID.h"
+
+#include "cal.h"
+#include "ctrl.h"
+#include "ctrl_dummy.h"
+#include "ecco_cost.h"
 
 c     == routine arguments ==
 
@@ -43,6 +45,13 @@ c     == routine arguments ==
 c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
+      integer nnzbar
+      integer nnzobs
+      _RL spminloc
+      _RL spmaxloc
+      _RL spzeroloc
+      _RL localperiod
+
 c     == end of interface ==
 
 
@@ -50,7 +59,21 @@ c     == end of interface ==
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_sst( myiter, mytime, mythid )
+      nnzbar = nr
+      nnzobs = 1
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      call cost_generic(
+     &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
+     &     nnzobs, sstdatfile, sstdat,
+     &     nmonsrec, modelstartdate, localperiod,
+     &     maskC, wsst, 
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_sst, num_sst,
+     &     myiter, mytime, mythid )
+cph      call cost_sst   ( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_ARGO_THETA_COST_CONTRIBUTION
@@ -78,14 +101,42 @@ c     == end of interface ==
       write(msgbuf,'(a)') 'ph-cost call cost_tmi'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_tmi( myiter, mytime, mythid )
+      nnzbar = nr
+      nnzobs = 1
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      call cost_generic(
+     &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
+     &     nnzobs, sstdatfile, sstdat,
+     &     nmonsrec, modelstartdate, localperiod,
+     &     maskC, wsst, 
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_tmi, num_tmi,
+     &     myiter, mytime, mythid )
+cph      call cost_tmi( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_sss'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_sss   ( myiter, mytime, mythid )
+      nnzbar = nr
+      nnzobs = 1
+      spminloc = 20.
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      call cost_generic(
+     &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
+     &     nnzobs, sssdatfile, sssdat,
+     &     nmonsrec, modelstartdate, localperiod,
+     &     maskC, wsss, 
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_sss, num_sss,
+     &     myiter, mytime, mythid )
+cph      call cost_sss   ( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_CTDS_COST_CONTRIBUTION
