@@ -3,14 +3,18 @@
 # - forward/adjoint run
 # - optimization cost function
 # - The input data is real*8
+# - The tests below assume that a "taf" executable is available
+#   (http://www.fastopt.de/)
 
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
 cd verification/natl_box_adjoint
 gunzip results*/output*.gz
 mkdir exe
-cd exe
-ln -s ../build/mitgcmuv_ad .
-ln -s ../build/mitgcmuv_ftl .
+cd input
+wget -nd -r -A"PH*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input
+cd ../input_seaice
+wget -nd -r -A"*labsea*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
+wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
 
 ####################
@@ -31,7 +35,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To run: 
  cd ../exe
  cp ../input/* .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -60,7 +64,7 @@ ln -s ../build/mitgcmuv_ftl .
  cp ../input_bulk/* .
  cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input/PH_*.data .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -88,7 +92,7 @@ ln -s ../build/mitgcmuv_ftl .
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -117,7 +121,7 @@ ln -s ../build/mitgcmuv_ftl .
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -149,7 +153,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../exe
  cp ../input_seaice/* .
  cp ../input_bulk/data.grdchk .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -169,13 +173,11 @@ ln -s ../build/mitgcmuv_ftl .
 # To run:
  cd ../exe
  cp ../input_seaice/* .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt > grad-res.txt
-# A reference output is in:
- grep grad-res ../results_seaice/output_exp6.txt_adm
-# plot with matlab:
  cd ../results_seaice
+# plot with matlab:
  matlab
  lookat_exp8
 
@@ -183,17 +185,16 @@ ln -s ../build/mitgcmuv_ftl .
 ####################
 # Experiment no. 8 #
 ####################
->>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
 # Same as experiment 7, but starting from a checkpoint file.
 
 # To run:
- cd ../../../exe
- cp ../verification/natl_box_adjoint/input_seaice/* .
+ cd ../exe
+ cp ../input_seaice/* .
  cp data.001 data
- ./mitgcmuv >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
- grep "ph-grd 3" output.txt > ph-grd.txt
- cd ../verification/natl_box_adjoint/results_seaice
+ grep grad-res output.txt > grad-res.txt
+ cd ../results_seaice
  matlab
  lookat_exp8
 
@@ -201,20 +202,19 @@ ln -s ../build/mitgcmuv_ftl .
 ####################
 # Experiment no. 9 #
 ####################
->>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
 # Same as experiment 8, but starting from time step 180.
 # This includes a location (12,8) which experiences a phase
 # transition from no-ice to sea-ice, and which therefore has
 # a very large and inaccurate gradient.
 
 # To run:
- cd ../../../exe
- cp ../verification/natl_box_adjoint/input_seaice/* .
+ cd ../exe
+ cp ../input_seaice/* .
  cp data.180 data
- ./mitgcmuv >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 # To verify the results of the gradient check, type:
- grep "ph-grd 3" output.txt > ph-grd.txt
- cd ../verification/natl_box_adjoint/results_seaice
+ grep grad-res output.txt > grad-res.txt
+ cd ../results_seaice
  matlab
  lookat_exp8
 
@@ -244,9 +244,9 @@ ln -s ../build/mitgcmuv_ftl .
  cp data.24 data
  cp ../input_bulk/data.grdchk .
 # run the ADM
- ./mitgcmuv_ad >&! output.txt_adm
+ ../build/mitgcmuv_ad >&! output.txt_adm
 # run the TLM
- ./mitgcmuv_ftl >&! output.txt_tlm
+ ../build/mitgcmuv_ftl >&! output.txt_tlm
 
 # For 100 days, adjoint gradient is NAN
 
@@ -414,9 +414,9 @@ ln -s ../build/mitgcmuv_ftl .
  cp data.seaice.lsr data.seaice
  cp ../input_bulk/data.grdchk .
 # run the ADM
- ./mitgcmuv_ad >&! output.txt_adm
+ ../build/mitgcmuv_ad >&! output.txt_adm
 # run the TLM
- ./mitgcmuv_ftl >&! output.txt_tlm
+ ../build/mitgcmuv_ftl >&! output.txt_tlm
 
 # To verify the results of the gradient check, type:
  grep grad-res output.txt_adm
@@ -434,7 +434,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../exe
  cp ../input_seaice/* .
  cp data.seaice.lsr data.seaice
- ./mitgcmuv_ad >&! output.txt_adm
+ ../build/mitgcmuv_ad >&! output.txt_adm
 # To verify the results of the gradient check, type:
  grep grad-res output.txt_adm > grad-res.txt
  cd ../results_seaice
@@ -474,7 +474,7 @@ ln -s ../build/mitgcmuv_ftl .
  cp data.100day data
  cp ../verification/natl_box_adjoint/input_bulk/data.grdchk .
  cp data.seaice.lsr data.seaice
- ./mitgcmuv >&! output.txt
+ ../build/mitgcmuv >&! output.txt
 # To verify the results of the gradient check, type:
  grep "ph-grd 3" output.txt
 
@@ -514,7 +514,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../exe
  cp ../input_seaice/* .
  cp ../input_bulk/data.grdchk .
- ./mitgcmuv_ad >&! output.txt
+ ../build/mitgcmuv_ad >&! output.txt
 
 # To verify the results of the gradient check, type:
  grep grad-res output.txt

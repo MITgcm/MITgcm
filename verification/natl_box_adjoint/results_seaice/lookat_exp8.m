@@ -4,18 +4,18 @@
 
 path('../../lab_sea/matlab',path);
 load SSMI
-fn='../../../exe/adxx_atemp.0000000000.001.001.data';
+fn='../exe/adxx_atemp.0000000000.001.001.data';
 a=readbin(fn,[20 16],1,'real*8');
-fn='../../../exe/ph-grd.txt';
+fn='../exe/grad-res.txt';
 fin=fopen(fn,'r'); b=0*a; c=0*a; d=0*a;
 tmp=fgetl(fin); tmp=fgetl(fin); tmp=fgetl(fin);
 for i=1:150
   tmp=fgetl(fin);
-  tmp=fgetl(fin); arr1=sscanf(tmp(8:85),'%f');
-  tmp=fgetl(fin); arr2=sscanf(tmp(8:85),'%f');
-  b(arr1(4),arr1(5))=arr2(7);
-  c(arr1(4),arr1(5))=arr2(8);
-  d(arr1(4),arr1(5))=arr2(9);
+  tmp=fgetl(fin); arr1=sscanf(tmp(10:85),'%f');
+  tmp=fgetl(fin); arr2=sscanf(tmp(10:85),'%f');
+  b(arr1(3),arr1(4))=arr2(6);
+  c(arr1(3),arr1(4))=arr2(7);
+  d(arr1(3),arr1(4))=arr2(8);
 end
 
 clf reset, orient tall, wysiwyg
