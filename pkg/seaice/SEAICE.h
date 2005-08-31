@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.15 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.16 2005/08/31 00:05:58 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -28,12 +28,15 @@ C             note: for non-zero AREA, actual ice
 C                thickness is HEFF / AREA
 C \ev
 CEOP
-      COMMON/SEAICE_DYNVARS/UICE,VICE,AREA
-      COMMON/SEAICE_DYNVARS1/
-     &       ETA,ZETA,DRAGS,DRAGA,AMASS,FORCEX,FORCEY,UICEC,VICEC
+      COMMON/SEAICE_DYNVARS_1/AREA
+      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+
+      COMMON/SEAICE_DYNVARS_2/UICE,VICE
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+
+      COMMON/SEAICE_DYNVARS_3/
+     &       ETA,ZETA,DRAGS,DRAGA,AMASS,FORCEX,FORCEY,UICEC,VICEC
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DRAGS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -45,12 +48,13 @@ CEOP
       _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       COMMON/SEAICE_TRANS/HEFF,HSNOW
+      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+
       COMMON/ARRAY/HEFFM,UVM
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
       COMMON/SALT_WATER/SEAICE_SALT
-      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
