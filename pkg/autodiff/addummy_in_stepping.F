@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.27 2005/08/30 22:28:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.28 2005/08/31 00:04:32 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -221,46 +221,60 @@ c
 #endif
 c
 #ifdef ALLOW_EXF
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adustress', 
+          CALL MNC_CW_SET_UDIM('adexf', -1, myThid)
+          CALL MNC_CW_RL_W_S('D','adexf',0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM('adexf', 0, myThid)
+          CALL MNC_CW_I_W_S('I','adexf',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','adexf',0,0,'model_time',myTime,
+     &         myThid)
+c
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adustress', 
      &         adustress, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'advstress',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'advstress',
      &         advstress, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adhflux',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adhflux',
      &         adhflux, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adsflux',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adsflux',
      &         adsflux, myThid)
 # ifdef ALLOW_ATM_TEMP
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adatemp',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adatemp',
      &         adatemp, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adaqh',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adaqh',
      &         adaqh, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adprecip',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adprecip',
      &         adprecip, myThid)
 # endif
 # ifdef ALLOW_ATM_WIND
-          CALL MNC_CW_RL_W('D','adstate',0,0,'aduwind',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'aduwind',
      &         aduwind, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'advwind',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'advwind',
      &         advwind, myThid)
 # endif
 # ifdef ALLOW_DOWNWARD_RADIATION
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adswdown',
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adswdown',
      &         adswdown, myThid)
 # endif
 #endif
 c
 #ifdef ALLOW_SEAICE
 c
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adarea',
+          CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
+          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
+          CALL MNC_CW_I_W_S('I','adseaice',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'model_time',myTime,
+     &         myThid)
+c
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adarea',
      &         adarea, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adheff',
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adheff',
      &         adheff, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adhsnow',
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         adhsnow, myThid)
 # ifdef SEAICE_ALLOW_DYNAMICS
-          CALL MNC_CW_RL_W('D','adstate',0,0,'aduice',
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
      &         aduice, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'advice',
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
      &         advice, myThid)
 # endif
 c
