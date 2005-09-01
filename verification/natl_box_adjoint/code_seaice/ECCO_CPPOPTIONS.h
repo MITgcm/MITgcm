@@ -71,16 +71,16 @@ C       >>> Cost function contributions
 # undef ALLOW_USTRESS_COST_CONTRIBUTION
 # undef ALLOW_VSTRESS_COST_CONTRIBUTION
 
-# define ALLOW_ATEMP_COST_CONTRIBUTION
-# define ALLOW_AQH_COST_CONTRIBUTION
-# define ALLOW_PRECIP_COST_CONTRIBUTION
-# define ALLOW_SWFLUX_COST_CONTRIBUTION
-# define ALLOW_UWIND_COST_CONTRIBUTION
-# define ALLOW_VWIND_COST_CONTRIBUTION
+# undef ALLOW_ATEMP_COST_CONTRIBUTION
+# undef ALLOW_AQH_COST_CONTRIBUTION
+# undef ALLOW_PRECIP_COST_CONTRIBUTION
+# undef ALLOW_SWDOWN_COST_CONTRIBUTION
+# undef ALLOW_UWIND_COST_CONTRIBUTION
+# undef ALLOW_VWIND_COST_CONTRIBUTION
 
-# define ALLOW_THETA_COST_CONTRIBUTION
-# define ALLOW_SALT_COST_CONTRIBUTION
-# define ALLOW_SST_COST_CONTRIBUTION
+# undef ALLOW_THETA_COST_CONTRIBUTION
+# undef ALLOW_SALT_COST_CONTRIBUTION
+# undef ALLOW_SST_COST_CONTRIBUTION
 # undef ALLOW_SSS_COST_CONTRIBUTION
 
 # undef  ALLOW_SSH_MEAN_COST_CONTRIBUTION
@@ -114,13 +114,17 @@ c       >>> Make sure that ALLOW_OBCS is defined
 c       >>> Sea-ice volume
 # define ALLOW_COST_ICE
 
+c       >>> Sea-ice misfit to obs
+# define ALLOW_SEAICE_COST_SMR_AREA
+
 #endif /* ALLOW_COST */
 
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 C 
-#define  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#define EXCLUDE_CTRL_PACK
+#undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
@@ -136,7 +140,7 @@ C       >>> Atmospheric state.
 #define  ALLOW_ATEMP_CONTROL
 #define  ALLOW_AQH_CONTROL
 #define  ALLOW_PRECIP_CONTROL
-#define  ALLOW_SWFLUX_CONTROL
+#define  ALLOW_SWDOWN_CONTROL
 #define  ALLOW_UWIND_CONTROL
 #define  ALLOW_VWIND_CONTROL
 
