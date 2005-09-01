@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.5 2005/09/01 05:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.6 2005/09/01 22:45:26 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -110,7 +110,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, tmidatfile, tmidat, mult_tmi,
-     &     nmonsrec, modelstartdate, localperiod,
+     &     nmonsrec, tmistartdate, localperiod,
      &     maskC, wsst, 
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_tmi, num_tmi,

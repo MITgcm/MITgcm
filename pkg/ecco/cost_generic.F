@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.2 2005/09/01 05:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.3 2005/09/01 22:45:26 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -76,10 +76,13 @@ c     == local variables ==
       integer irec
       integer  il
       integer localrec
+      integer obsrec
 
       logical doglobalread
       logical ladinit
 
+      _RL spval
+      parameter (spval = -9999. )
       _RL localwww
       _RL localcost
       _RL junk
@@ -99,6 +102,7 @@ cnew(
       integer yday, ymod
       integer md, dd, sd, ld, wd
       integer mody, modm
+      integer beginmodel, beginlocal
       logical exst
 cnew)
 
@@ -156,6 +160,7 @@ c--   Loop over records for the second time.
 cnew(
         if ( localperiod .EQ. 86400. ) then
 c-- assume daily fields
+           obsrec = -1
            daytime = FLOAT(secondsperday*(irec-1))
            dayiter = hoursperday*(irec-1)
            call cal_getdate( dayiter, daytime, daydate, mythid )
@@ -174,9 +179,16 @@ c-- assume daily fields
            localrec = int(diffsecs/localperiod) + 1
         else
 c-- assume monthly fields
-           mody = modelstartdate(1)/10000
-           modm = modelstartdate(1)/100 - mody*100
-           yday = mody + INT((modm-1+irec-1)/12)
+           beginlocal = localstartdate(1)/10000
+           beginmodel = modelstartdate(1)/10000
+           obsrec = 
+     &           ( beginmodel - beginlocal )*nmonthyear
+     &         + ( mod(modelstartdate(1)/100,100)
+     &            -mod(localstartdate(1)/100,100) )
+     &         + irec
+           mody   = modelstartdate(1)/10000
+           modm   = modelstartdate(1)/100 - mody*100
+           yday   = mody + INT((modm-1+irec-1)/12)
            localrec = 1 + MOD(modm-1+irec-1,12)
         endif
 
@@ -186,11 +198,25 @@ c-- assume monthly fields
         inquire( file=fname2, exist=exst )
         if (.NOT. exst) then
            write(fname2(1:128),'(a)') localobsfile(1:il)
-           localrec = irec
+           localrec = obsrec
         endif
- 
-        call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs, 
-     &       localobs, localrec, mythid )
+
+        if ( localrec .GT. 0 ) then 
+          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs, 
+     &         localobs, localrec, mythid )
+        else
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do k = 1,nnzobs
+                do j = jmin,jmax
+                  do i = imin,imax
+                     localobs(i,j,k,bi,bj) = spval
+                  enddo
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
 cnew)
 
         do bj = jtlo,jthi
