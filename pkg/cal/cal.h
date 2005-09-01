@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.2 2004/03/04 19:33:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.3 2005/09/01 05:26:43 heimbach Exp $
 
 
 c     ==================================================================
@@ -83,7 +83,9 @@ c     secondsperminute - number of seconds in a calendars minute.
      &               modeliter0,
      &               modeliterend,
      &               modelintsteps,
-     &               modelstepsperday
+     &               modelstepsperday,
+     &               startdate_1,
+     &               startdate_2
 
       integer refdate(4)
       integer nmonthyear
@@ -104,6 +106,9 @@ c     secondsperminute - number of seconds in a calendars minute.
       integer modeliterend
       integer modelintsteps
       integer modelstepsperday
+
+      integer startdate_1
+      integer startdate_2
 
 
       common /cal_l/ 

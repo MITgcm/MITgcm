@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.7 2005/05/29 17:49:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.8 2005/09/01 05:26:43 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -54,6 +54,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "cal.h"
 
 c     == routine arguments ==
 
@@ -83,8 +84,6 @@ c     == local variables ==
 
 c     Variables related to the calendar tool.
       character*(9) TheCalendar
-      integer       startdate_1
-      integer       startdate_2
       integer       iUnit
 
       character*(max_len_mbuf) msgbuf
