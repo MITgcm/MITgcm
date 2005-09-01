@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.538 2005/08/31 00:10:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.539 2005/09/01 06:08:55 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,6 +12,14 @@ o move some basic S/R (used elsewhere in the code) from pkg/mdsio to eesupp/src
   allows to compile without pkg/mdsio (& test successfully hs94.1x64x5)
 o add MNC output for adjoint of EXF (adexf), SEAICE (adseaice)
 o add time-dependent SST, SSS control
+o cost terms in ecco/ modularized (new cost_generic.F)
+o cost_averages routines are modularized (new cost_averagesgeneric.F)
+o new infrastructure for seaice model vs. obs misfits in seaice/
+  * driver from the_main_loop.F is seaice_cost_driver.F
+  * first term is AREA vs. SMR observation misfit (ALLOW_SEAICE_COST_SMR_AREA)
+  * gradient check in Exp. 6a of natl_box_adjoint/
+o natl_box_adjoint input_seaice for Lab. Sea now available online via wget
+  (see README file)
 
 checkpoint57q_post
 o fix initialisation Pb in calc_gw (get NANs in exp5 with g77)
