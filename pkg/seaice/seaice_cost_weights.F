@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.1 2005/09/01 05:34:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.2 2005/09/01 14:23:45 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -31,6 +31,7 @@ c     == routine arguments ==
 
       integer  mythid
 
+#ifdef ALLOW_COST
 c     == local variables ==
 
       integer bi,bj
@@ -63,17 +64,6 @@ c     == end of interface ==
       imin = 1-olx
       imax = snx+olx
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              wsmrarea (i,j,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
-
-
 c--   Define frame.
       do j = jmin,jmax
         do i = imin,imax
@@ -88,6 +78,16 @@ c--       North/South and West/East edges set to zero.
       enddo
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              wsmrarea (i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
 c--   
       nnz   = 1
       irec  = 1
@@ -130,5 +130,7 @@ c--
         enddo
       enddo
 #endif /* ALLOW_SEAICE_COST_SMR_AREA */
+
+#endif
 
       end

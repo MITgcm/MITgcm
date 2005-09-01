@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.2 2005/09/01 14:28:22 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
@@ -23,12 +23,15 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "SEAICE_COST.h"
+#ifdef ALLOW_COST
+# include "SEAICE_COST.h"
+#endif
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifdef ALLOW_COST
 c     == local variables ==
 
       integer bi,bj
@@ -72,8 +75,10 @@ c--   Initialize the tiled cost function contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
           objf_ice(bi,bj)     = 0. _d 0
+          objf_smrarea(bi,bj) = 0. _d 0
 c
           num_ice(bi,bj)      = 0. _d 0
+          num_smrarea(bi,bj)  = 0. _d 0
         enddo
       enddo
 
@@ -96,6 +101,8 @@ c               tmidat(i,j,bi,bj)     = 0. _d 0
       enddo
 
       _BARRIER
+
+#endif
 
       return
       end

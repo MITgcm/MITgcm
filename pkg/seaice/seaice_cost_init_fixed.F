@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.2 2005/09/01 05:34:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.3 2005/09/01 14:28:22 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -26,8 +26,9 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
-#include "SEAICE_COST.h"
-
+#ifdef ALLOW_COST
+# include "SEAICE_COST.h"
+#endif
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -36,6 +37,7 @@ c     == routine arguments ==
 
       integer mythid
 
+#ifdef ALLOW_COST
 c     == local variables ==
 
       integer tempDate1(4)
@@ -102,5 +104,7 @@ cph         call seaice_cost_init_barfiles( mythid )
 #endif
 
       _BARRIER
+
+#endif /* ALLOW_COST */
 
       end
