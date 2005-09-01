@@ -159,6 +159,28 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # A reference output is in:
  grep grad-res ../results_seaice/output_exp6.txt_adm
 
+####################
+# Experiment no. 6a #
+####################
+# Same as experiment 6, but cost function is now misfit between
+# daily mean seaice model AREA (fractional ice coverage) and
+# Scanning Microwave Radiometer (SMR) observations;
+# fileneme: labsea_daily92to03_20x16_ICECONC
+# Gradient check needs to run long enough (e.g. 240 timesteps)
+# for sufficiently large gradients to build.
+#
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ cp ../input_seaice/data.240 data
+ cp ../input_seaice/data.seaice.cost_smrarea data.seaice
+ cp ../input_bulk/data.grdchk .
+ ../build/mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp6a.txt_adm
+
 
 ####################
 # Experiment no. 7 #
