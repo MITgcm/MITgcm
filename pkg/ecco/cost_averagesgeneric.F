@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.1 2005/09/01 05:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.2 2005/09/01 23:24:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -25,7 +25,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "SEAICE.h"
 
 #ifdef ALLOW_COST
 # include "optim.h"
