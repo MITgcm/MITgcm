@@ -1,6 +1,7 @@
 cost_argo_salt.f                
 cost_argo_theta.f               
 cost_atlantic.f                 
+cost_averagesgeneric.f
 cost_averagesfields.f           
 cost_averagesflags.f            
 cost_averagesinit.f             

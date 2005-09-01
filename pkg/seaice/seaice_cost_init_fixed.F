@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.2 2005/09/01 05:34:31 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -59,20 +59,23 @@ c     == end of interface ==
       _BEGIN_MASTER( myThid )
 
 c--   Sea-ice cost function start and stop times in model seconds.
-
+c
         call cal_FullDate  ( costIceStart1 , costIceStart2,
      &                       tempDate1     , mythid )
         call cal_TimePassed( modelstartdate, tempDate1    ,
      &                       tempDate2     , mythid )
         call cal_ToSeconds ( tempDate2 , costIceStart , mythid )
         costIceStart = costIceStart + startTime
-
+c
         call cal_FullDate  ( costIceEnd1   , costIceEnd2  ,
      &                       tempDate1     , mythid )
         call cal_TimePassed( modelstartdate, tempDate1    ,
      &                       tempDate2     , mythid )
         call cal_ToSeconds ( tempDate2 , costIceEnd , mythid )
         costIceEnd = costIceEnd + startTime
+c--
+        call cal_FullDate( smrareastartdate1, smrareastartdate2,
+     &                 smrareastartdate, mythid )
 
       _END_MASTER( mythid )
 
@@ -80,7 +83,7 @@ c--   Sea-ice cost function start and stop times in model seconds.
 
 c--   Get the weights that are to be used for the individual cost
 c--   function contributions.
-cph      call seaice_cost_weights( mythid )
+      call seaice_cost_weights( mythid )
 
 c--   Initialise adjoint of monthly mean files calculated
 c--   in cost_averagesfields (and their ad...).

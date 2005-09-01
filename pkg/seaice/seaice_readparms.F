@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.27 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.28 2005/09/01 05:34:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,10 +18,13 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_COST
-#include "SEAICE_COST.h"
+# include "SEAICE_COST.h"
 #endif
 #ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
+# include "MNC_PARAMS.h"
+#endif
+#ifdef ALLOW_CAL
+# include "cal.h"
 #endif
 
 C     === Routine arguments ===
@@ -63,11 +66,13 @@ c    & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
-     &                   mult_ice,
-     &                   costIceStart1, costIceStart2,
-     &                   costIceEnd1, costIceEnd2,
-     &                   cost_ice_flag
-
+     &          mult_ice, cost_ice_flag,
+     &          costIceStart1, costIceStart2,
+     &          costIceEnd1, costIceEnd2,
+     &          cost_ice_flag,
+     &          mult_smrarea, smrareadatfile, smrareabarfile,
+     &          wsmrarea0, wmean_smrarea, smrarea_errfile,
+     &          smrareastartdate1, smrareastartdate2, smrareaperiod
 #endif
 
       _BEGIN_MASTER(myThid)
@@ -166,12 +171,23 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       SEAICE_EPS_SQ     = -99999.
 
 #ifdef ALLOW_COST
-      mult_ice          =      0. _d 0
-      costIceStart1     =      0
-      costIceStart2     =      0
-      costIceEnd1       =      0
-      costIceEnd2       =      0
-      cost_ice_flag     =      1
+      mult_ice          =  0. _d 0
+      costIceStart1     =  0
+      costIceStart2     =  0
+      costIceEnd1       =  0
+      costIceEnd2       =  0
+      cost_ice_flag     =  1
+c
+      mult_smrarea      =  0. _d 0
+      wsmrarea0         =  0.5 _d 0
+      wmean_smrarea     =  0.5 _d 0
+      smrareabarfile    =  'smrareabar'
+      smrareadatfile    =  ' '
+      smrarea_errfile   =  ' '
+# ifdef ALLOW_CAL
+      smrareastartdate1 = startDate_1
+      smrareastartdate2 = startDate_2
+# endif
 #endif
 
 C--   Read settings from model parameter file "data.seaice".

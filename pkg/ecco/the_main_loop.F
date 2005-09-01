@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.22 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.23 2005/09/01 05:32:57 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -444,7 +444,7 @@ CADJ STORE area  = comlev1, key = ikey_dynamics
          CALL SEAICE_MODEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
 #ifdef ALLOW_COST_ICE
-         CALL COST_ICE    ( myTime, myIter, myThid )
+         CALL COST_ICE_TEST ( myTime, myIter, myThid )
 #endif
       ENDIF
 #endif /* ALLOW_SEAICE */
@@ -825,6 +825,16 @@ c--   Compute cost function contribution of Temperature and Salinity.
       call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
       call cost_hyd( myiter, mytime, mythid )
       call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
+
+#ifdef ALLOW_SEAICE
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('seaice_cost_driver',myThid)
+#endif
+      call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
+      call seaice_cost_driver( myiter, mytime, mythid )
+      call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
+#endif
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE

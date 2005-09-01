@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.1 2005/08/31 19:00:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.2 2005/09/01 05:32:56 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
       subroutine cost_generic( 
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
-     &     nnzobs, localobsfile, localobs,
+     &     nnzobs, localobsfile, localobs, mult_local,
      &     nrecloc, localstartdate, localperiod,
      &     localmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
@@ -52,6 +52,7 @@ c     == routine arguments ==
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_localbar_mean_dummy
+      _RL mult_local
       _RL mytime
       _RL localperiod
       _RL spminloc
@@ -121,6 +122,13 @@ c--   Initialise local variables.
 
       localwww = 0. _d 0
 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          objf_local(bi,bj) = 0. _d 0
+          num_local(bi,bj) = 0. _d 0
+        enddo
+      enddo
+
 c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
@@ -129,6 +137,8 @@ c--   First, read tiled data.
       il=ilnblnk( localbarfile )
       write(fname1(1:128),'(2a,i10.10)') 
      &     localbarfile(1:il),'.',optimcycle
+
+      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
 
 c--   Loop over records for the second time.
       do irec = 1, nrecloc
@@ -222,6 +232,9 @@ c--
 
       enddo
 c--   End of second loop over records.
+
+c--   End of mult_local or localobsfile
+      endif
 
 #endif /* ifdef ALLOW_COST */
 

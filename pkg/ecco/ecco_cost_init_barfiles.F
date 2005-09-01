@@ -28,6 +28,9 @@ c     == global variables ==
 #include "ecco_cost.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_COST.h"
+#endif
 
 c     == routine arguments ==
 
@@ -55,6 +58,8 @@ c     == local variables ==
       character*(128) fnametauybar
       character*(128) fnamehfluxbar
       character*(128) fnamesfluxbar
+      character*(128) fnamesmrareabar
+c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
       character*(128) adfnamesbar
@@ -65,6 +70,7 @@ c     == local variables ==
       character*(128) adfnametauybar
       character*(128) adfnamehfluxbar
       character*(128) adfnamesfluxbar
+      character*(128) adfnamesmrareabar
 
 c     == external functions ==
 
@@ -338,6 +344,27 @@ c     &                        optimcycle, mythid, xx_sflux_mean_dummy )
 #endif
       enddo
 #endif
+
+#ifdef ALLOW_SEAICE
+
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
+      ilps=ilnblnk( smrareabarfile )
+      write(fnamesmrareabar,'(2a,i10.10)') 
+     &     smrareabarfile(1:ilps), '.', optimcycle
+      write(adfnamesmrareabar,'(3a,i10.10)')
+     &     yadprefix, smrareabarfile(1:ilps), '.', optimcycle
+
+      do irec = 1, ndaysrec
+c        call active_write_xy( fnamesmrareabar, tmpfld2d, irec,
+c     &                        optimcycle, mythid, xx_smrareabar_mean_dummy )
+#ifndef ALLOW_TANGENTLINEAR_RUN
+        call active_write_xy( adfnamesmrareabar, tmpfld2d, irec,
+     &        optimcycle,mythid, xx_smrareabar_mean_dummy )
+#endif
+      enddo
+#endif /* ALLOW_SEAICE_COST_SMR_AREA */
+
+#endif /* ALLOW_SEAICE */
 
 #endif /* ALLOW_COST */
 

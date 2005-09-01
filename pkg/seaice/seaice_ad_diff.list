@@ -15,6 +15,7 @@ seaice_readparms.f
 seaice_exch.f
 seaice_exch_uv.f
 lsr.f
-seaice_cost_init_varia.f
+seaice_cost_driver.f
 seaice_cost_final.f
-cost_ice.f
+seaice_cost_init_varia.f
+cost_ice_test.f

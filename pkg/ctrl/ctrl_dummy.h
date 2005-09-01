@@ -61,6 +61,7 @@ c     ==================================================================
      &                  , xx_vwind_mean_dummy
      &                  , xx_theta_ini_fin_dummy
      &                  , xx_salt_ini_fin_dummy
+     &                  , xx_smrareabar_mean_dummy
 
       _RL xx_theta_dummy
       _RL xx_salt_dummy
@@ -115,6 +116,7 @@ c
       _RL xx_vwind_mean_dummy
       _RL xx_theta_ini_fin_dummy
       _RL xx_salt_ini_fin_dummy
+      _RL xx_smrareabar_mean_dummy
 
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES

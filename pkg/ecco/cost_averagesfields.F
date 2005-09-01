@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.3 2005/07/28 13:51:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.4 2005/09/01 05:32:56 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
-      subroutine cost_AveragesFields(
-     I                                mytime,
-     I                                mythid
-     &                              )
+      subroutine cost_averagesfields( mytime, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_AveragesFields
+c     SUBROUTINE cost_averagesfields
 c     ==================================================================
 c
 c     o Compute time averages of etaN, theta, and salt. The counters
@@ -27,7 +27,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_AveragesFields
+c     SUBROUTINE cost_averagesfields
 c     ==================================================================
 
       implicit none
@@ -43,10 +43,16 @@ c     == global variables ==
 #include "GW.h"
 #endif
 
-#include "exf_fields.h"
 #include "optim.h"
 #include "ecco_cost.h"
 #include "ctrl_dummy.h"
+#ifdef ALLOW_EXF
+# include "exf_fields.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE.h"
+# include "SEAICE_COST.h"
+#endif
 
 c     == routine arguments ==
 
@@ -105,73 +111,21 @@ c     == end of interface ==
  
 c--   Get the time flags and record numbers for the time averaging.
 
-      call cost_AveragesFlags(
-     I                         myiter,  mytime,     mythid,
-     O                         first,   startofday, startofmonth,
-     O                         inday,   inmonth,
-     O                         last,    endofday,   endofmonth,
-     O                         sum1day, dayrec,
-     O                         sum1mon, monrec
-     &                        )
+      call cost_averagesflags(
+     I                    myiter,  mytime,     mythid,
+     O                    first,   startofday, startofmonth,
+     O                    inday,   inmonth,
+     O                    last,    endofday,   endofmonth,
+     O                    sum1day, dayrec,
+     O                    sum1mon, monrec
+     &                  )
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-c--   First, do the daily averages.
-      if (first .or. startofday) then
-c--     Assign the first value to the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = jmin,jmax
-              do i =  imin,imax
-                psbar(i,j,bi,bj) = etaN(i,j,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofday) then
-c--     Add the last value and devide by the number of accumulated
-c--     records.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-                psbar(i,j,bi,bj)  = (psbar (i,j,bi,bj) +
-     &                               etaN(i,j,bi,bj)   )/
-     &                              float(sum1day)
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save psbar on file.
-        if (optimcycle .ge. 0) then
-          ilps=ilnblnk( psbarfile )
-          write(fnamepsbar,'(2a,i10.10)') 
-     &         psbarfile(1:ilps), '.', optimcycle
-        endif
-
-        call active_write_xy( fnamepsbar, psbar, dayrec, optimcycle,
-     &                        mythid, xx_psbar_mean_dummy )
-
-      else if (       (       inday         ) .and.
-     &          .not. (first .or. startofday) .and.
-     &          .not. (last  .or. endofday  )       ) then
-c--     Accumulate the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
-                psbar(i,j,bi,bj) = psbar(i,j,bi,bj) + etaN(i,j,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Daily flags are set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; psbar part.'
-      endif
+      call cost_averagesgeneric(
+     &     psbarfile, 
+     &     psbar, etan, xx_psbar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
@@ -180,131 +134,18 @@ c--     Accumulate the array holding the average.
      defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
-c--   Next, do the monthly average for temperature.
-      if (first .or. startofmonth) then
-c--     Assign the first value to the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  tbar(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofmonth) then
-c--     Add the last value and devide by the number of accumulated
-c--     records.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i = imin,imax
-                  tbar(i,j,k,bi,bj)  = (tbar (i,j,k,bi,bj) +
-     &                                  theta(i,j,k,bi,bj)   )/
-     &                                 float(sum1mon)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save tbar on file.
-        if (optimcycle .ge. 0) then
-          ilt=ilnblnk( tbarfile )
-          write(fnametbar,'(2a,i10.10)') tbarfile(1:ilt),'.',optimcycle
-        endif
-
-        call active_write_xyz( fnametbar, tbar, monrec, optimcycle,
-     &                         mythid, xx_tbar_mean_dummy )
-
-      else if (       (       inmonth         ) .and.
-     &          .not. (first .or. startofmonth) .and.
-     &          .not. (last  .or. endofmonth  )       ) then
-c--     Accumulate the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  tbar(i,j,k,bi,bj) = tbar (i,j,k,bi,bj) +
-     &                                theta(i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; tbar part (3d).'
-      endif
+      call cost_averagesgeneric(
+     &     tbarfile, 
+     &     tbar, theta, xx_tbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, nr, mythid )
 #else
 #ifdef ALLOW_SST_COST_CONTRIBUTION
-c--   Next, do the monthly averages for sea surface temperature.
-      if (first .or. startofmonth) then
-c--     Assign the first value to the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i =  imin,imax
-                tbar(i,j,bi,bj) = theta(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofmonth) then
-c--     Add the last value and devide by the number of accumulated
-c--     records.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i = imin,imax
-                tbar(i,j,bi,bj)  = (tbar (i,j,bi,bj)  +
-     &                              theta(i,j,k,bi,bj)  )/
-     &                             float(sum1mon)
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save tbar (2d) on file.
-        if (optimcycle .ge. 0) then
-          ilt=ilnblnk( tbarfile )
-          write(fnametbar,'(2a,i10.10)') tbarfile(1:ilt),'.',optimcycle
-        endif
-
-        call active_write_xy( fnametbar, tbar, monrec, optimcycle,
-     &                        mythid, xx_tbar_mean_dummy)
-
-      else if (       (       inmonth         ) .and.
-     &          .not. (first .or. startofmonth) .and.
-     &          .not. (last  .or. endofmonth  )       ) then
-c--     Accumulate the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i =  imin,imax
-                tbar(i,j,bi,bj) = tbar (i,j,bi,bj) +
-     &                            theta(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; tbar part (2d).'
-      endif
+      call cost_averagesgeneric(
+     &     tbarfile, 
+     &     tbar, theta(1-Olx,1-Oly,1,1,1), xx_tbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, 1, mythid )
 #endif
 #endif
 
@@ -313,197 +154,27 @@ c--     Accumulate the array holding the average.
      defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
-c--   Next, do the monthly averages for salinity.
-      if (first .or. startofmonth) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  sbar(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofmonth) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i = imin,imax
-                  sbar(i,j,k,bi,bj)  = (sbar (i,j,k,bi,bj) +
-     &                                  salt(i,j,k,bi,bj)   )/
-     &                                 float(sum1mon)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save sbar.
-        if (optimcycle .ge. 0) then
-          ils=ilnblnk( sbarfile )
-          write(fnamesbar,'(2a,i10.10)') sbarfile(1:ils),'.',
-     &                                             optimcycle
-        endif
-
-        call active_write_xyz( fnamesbar, sbar, monrec, optimcycle,
-     &                         mythid, xx_sbar_mean_dummy)
-
-      else if (       (       inmonth         ) .and.
-     &          .not. (first .or. startofmonth) .and.
-     &          .not. (last  .or. endofmonth  )       ) then
-c--     Accumulate sbar.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  sbar(i,j,k,bi,bj) = sbar (i,j,k,bi,bj) +
-     &                                salt (i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; sbar part.'
-      endif
+      call cost_averagesgeneric(
+     &     sbarfile, 
+     &     sbar, salt, xx_sbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, nr, mythid )
 #else
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
-c--   Next, do the monthly averages for sea surface salinity.
-      if (first .or. startofmonth) then
-c--     Assign the first value to the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i =  imin,imax
-                sbar(i,j,bi,bj) = salt(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofmonth) then
-c--     Add the last value and devide by the number of accumulated
-c--     records.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i = imin,imax
-                sbar(i,j,bi,bj)  = (sbar (i,j,bi,bj)  +
-     &                              salt(i,j,k,bi,bj)  )/
-     &                             float(sum1mon)
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save sbar (2d) on file.
-        if (optimcycle .ge. 0) then
-          ilt=ilnblnk( sbarfile )
-          write(fnamesbar,'(2a,i10.10)') sbarfile(1:ilt),'.',optimcycle
-        endif
-
-        call active_write_xy( fnamesbar, sbar, monrec, optimcycle,
-     &                        mythid, xx_tbar_mean_dummy)
-
-
-      else if (       (       inmonth         ) .and.
-     &          .not. (first .or. startofmonth) .and.
-     &          .not. (last  .or. endofmonth  )       ) then
-c--     Accumulate the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            k = 1
-            do j = jmin,jmax
-              do i =  imin,imax
-                sbar(i,j,bi,bj) = sbar (i,j,bi,bj) +
-     &                            salt(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; sbar part (2d).'
-      endif
+      call cost_averagesgeneric(
+     &     sbarfile, 
+     &     sbar, salt(1-Olx,1-Oly,1,1,1), xx_sbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, 1, mythid )
 #endif  
 #endif
 
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
-c--   Next, do the averages for velocitty.
-        if (first .or. startofmonth) then
-c--     Assign the first value to the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  wbar(i,j,k,bi,bj) = wvel(i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else if (last .or. endofmonth) then
-c--     Add the last value and devide by the number of accumulated
-c--     records.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i = imin,imax
-                  wbar(i,j,k,bi,bj)  = (wbar (i,j,k,bi,bj) +
-     &                                  wvel(i,j,k,bi,bj)   )/
-     &                                 float(sum1mon)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-
-c--     Save wbar on file.
-        if (optimcycle .ge. 0) then
-          ilt=ilnblnk( wbarfile )
-          write(fnamewbar,'(2a,i10.10)') wbarfile(1:ilt),'.',optimcycle
-        endif
-
-        call active_write_xyz( fnamewbar, wbar, monrec, optimcycle,
-     &                         mythid, xx_wbar_mean_dummy )
-
-      else if (       (       inmonth         ) .and.
-     &          .not. (first .or. startofmonth) .and.
-     &          .not. (last  .or. endofmonth  )       ) then
-c--     Accumulate the array holding the average.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
-                do i =  imin,imax
-                  wbar(i,j,k,bi,bj) = wbar (i,j,k,bi,bj) +
-     &                                wvel(i,j,k,bi,bj)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-      else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; tbar part (3d).'
-      endif
+      call cost_averagesgeneric(
+     &     wbarfile, 
+     &     wbar, wvel, xx_wbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, nr, mythid )
 #endif
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
@@ -580,11 +251,7 @@ c--     Accumulate ubar and vbar.
           enddo
         enddo
       else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; ubar part.'
+        stop   ' ... stopped in cost_averagesfields; ubar part.'
       endif
       
 #endif
@@ -651,11 +318,7 @@ c--     Accumulate ubar and vbar.
           enddo
         enddo
       else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; tauxbar part.'
+        stop   ' ... stopped in cost_averagesfields; tauxbar part.'
       endif
 
      
@@ -719,11 +382,7 @@ c--     Accumulate ubar and vbar.
           enddo 
        enddo
       else
-        print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; hfluxbar part.'
+        stop   ' ... stopped in cost_averagesfields; hfluxbar part.'
       endif
 
 #endif
@@ -779,13 +438,22 @@ c--     Accumulate ubar and vbar.
         enddo
       else
         print*
-        print*,' cost_AveragesFields: Monthly flags a set',
-     &                              ' inappropriately.'
-        print*
-        stop   ' ... stopped in cost_AveragesFields; sfluxbar part.'
+        stop   ' ... stopped in cost_averagesfields; sfluxbar part.'
       endif
 
 #endif
+
+#ifdef ALLOW_SEAICE
+
+# ifdef ALLOW_SEAICE_COST_SMR_AREA
+      call cost_averagesgeneric(
+     &     smrareabarfile, 
+     &     smrareabar, area, xx_smrareabar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+# endif
+
+#endif /* ALLOW_SEAICE */
 
       return
       end
