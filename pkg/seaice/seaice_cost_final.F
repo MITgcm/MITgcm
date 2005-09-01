@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.4 2005/09/01 05:34:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.5 2005/09/01 06:18:02 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -47,7 +47,7 @@ c     == local variables ==
       _RL no_ice
       _RL no_smrarea
 
-      character*20 cfname
+      character*23 cfname
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
