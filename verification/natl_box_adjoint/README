@@ -7,6 +7,11 @@
 #   (http://www.fastopt.de/)
 
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
+cvs co MITgcm_code
+cvs co MITgcm/verification/natl_box_adjoint
+cvs co MITgcm/verification/lab_sea
+cd MITgcm
+emacs verification/natl_box_adjoint/README &
 cd verification/natl_box_adjoint
 gunzip results*/output*.gz
 mkdir exe
@@ -35,7 +40,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # To run: 
  cd ../exe
  cp ../input/* .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -64,7 +70,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_bulk/* .
  cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input/PH_*.data .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -92,7 +99,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -121,7 +129,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
  cp ../input/PH_*.data .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -153,7 +162,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cd ../exe
  cp ../input_seaice/* .
  cp ../input_bulk/data.grdchk .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -176,7 +186,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_seaice/data.240 data
  cp ../input_seaice/data.seaice.cost_smrarea data.seaice
  cp ../input_bulk/data.grdchk .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
@@ -196,7 +207,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # To run:
  cd ../exe
  cp ../input_seaice/* .
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt > grad-res.txt
  cd ../results_seaice
@@ -214,7 +226,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cd ../exe
  cp ../input_seaice/* .
  cp data.001 data
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt > grad-res.txt
  cd ../results_seaice
@@ -234,7 +247,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cd ../exe
  cp ../input_seaice/* .
  cp data.180 data
- ../build/mitgcmuv_ad >&! output.txt
+ \rm output.txt
+ ../build/mitgcmuv_ad >& output.txt
 # To verify the results of the gradient check, type:
  grep grad-res output.txt > grad-res.txt
  cd ../results_seaice
@@ -255,7 +269,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -ieee -mods=../code_seaice
+ ../../../tools/genmake2 -mods=../code_seaice
  make depend
  make adall
  make ftlall
@@ -266,9 +280,11 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp data.24 data
  cp ../input_bulk/data.grdchk .
 # run the ADM
- ../build/mitgcmuv_ad >&! output.txt_adm
+ \rm output.txt_adm
+ ../build/mitgcmuv_ad >& output.txt_adm
 # run the TLM
- ../build/mitgcmuv_ftl >&! output.txt_tlm
+ \rm output.txt_tlm
+ ../build/mitgcmuv_ad >& output.txt_tlm
 # To verify the results of the gradient check, type:
  grep grad-res output.txt_adm
  grep grad-res output.txt_tlm
@@ -278,7 +294,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 
 # Now run for 100 days:
  cp data.100day data
- ../build/mitgcmuv_ad >&! output.txt_adm
+ \rm output.txt_adm
+ ../build/mitgcmuv_ad >& output.txt_adm
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
@@ -289,7 +306,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 
 # Now modify data.pkg and run for 100 days without KPP and GM:
  emacs -nw data.pkg
- ../build/mitgcmuv_ad < /dev/null >&! output.txt_adm &
+ \rm output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
@@ -300,7 +318,8 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 
 # Now modify data and run for 375 days without KPP and GM:
  emacs -nw data
- ../build/mitgcmuv_ad < /dev/null >&! output.txt_adm &
+ \rm output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
@@ -309,8 +328,16 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  grad-res     0    1   17    2    1   0.896287794E+12 0.896287828E+12 0.896287760E+12
  grad-res     0    1    1   20    0   0.341242829E+09 0.341148397E+09 0.276729326E-03
 
-
-
+# Now modify data and run for 3650 days without KPP and GM:
+ emacs -nw data
+ \rm output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
+ grep grad-res output.txt_adm
+#
+ grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
+ grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
+ grad-res -------------------------------
+ 
 
 
 
