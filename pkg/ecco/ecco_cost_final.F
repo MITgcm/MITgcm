@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.13 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.14 2005/09/02 23:54:30 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -22,6 +22,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 #include "cost.h"
 #include "ecco_cost.h"
@@ -715,6 +718,12 @@ c--   Each process has calculated the global part for itself.
       pChkptFreq = 0.
       monitorFreq = 0.
       useDiagnostics = .FALSE.
+
+#ifdef ALLOW_MNC
+      monitor_mnc=.FALSE.
+      snapshot_mnc=.FALSE.
+      timeave_mnc=.FALSE.
+#endif
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')
