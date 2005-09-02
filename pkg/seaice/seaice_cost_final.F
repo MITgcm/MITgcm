@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.5 2005/09/01 06:18:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.6 2005/09/02 22:36:51 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -114,11 +114,8 @@ c--   Each process has calculated the global part for itself.
         
       _END_MASTER( mythid )
 
-      taveFreq   = 0.
-      dumpFreq   = 0.
-      pChkptFreq = 0.
-      monitorFreq = 0.
-      useDiagnostics = .FALSE.
+      SEAICE_dumpFreq = 0.
+      SEAICE_taveFreq = 0.
 
 #endif
 
