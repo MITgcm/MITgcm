@@ -171,7 +171,7 @@ C   on or off. The implementation automatically takes care of this.
 #define INCLUDE_EXTERNAL_FORCING_PACKAGE
 
 C   Do more printout for the protocol file than usual.
-#define EXF_VERBOSE
+#undef EXF_VERBOSE
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP

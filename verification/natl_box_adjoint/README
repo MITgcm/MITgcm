@@ -159,6 +159,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # A reference output is in:
  grep grad-res ../results_seaice/output_exp6.txt_adm
 
+
 ####################
 # Experiment no. 6a #
 ####################
@@ -259,8 +260,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  make adall
  make ftlall
 
-# To run:
-# PH: I modified data to run 24 timesteps only
+# First run for 24 hours:
  cd ../exe
  cp ../input_seaice/* .
  cp data.24 data
@@ -269,108 +269,55 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  ../build/mitgcmuv_ad >&! output.txt_adm
 # run the TLM
  ../build/mitgcmuv_ftl >&! output.txt_tlm
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt_adm
+ grep grad-res output.txt_tlm
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp10.txt_adm
+ grep grad-res ../results_seaice/output_exp10.txt_tlm
 
-# For 100 days, adjoint gradient is NAN
+# Now run for 100 days:
+ cp data.100day data
+ ../build/mitgcmuv_ad >&! output.txt_adm
+ grep grad-res output.txt_adm
+#
+ grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
+ grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
+ grad-res -------------------------------
+ grad-res     0    1   17    2    1   0.584991977E+12 0.584969292E+12 0.585035823E+12
+ grad-res     0    1    1   20    0   -.154328414E+42 -.332655172E+12 0.100000000E+01
 
-# Following table compares finite difference gradient for various choices
-# of grdchk_eps.
- 1.d-12   -.177327175E+20 0.140230277E+20 -.254542273E+20 0.138603531E+19
- 1.d-8    0.174714613E+16 -.527867903E+15 0.403581037E+15 0.377322748E+12
- 1.d-4    0.999954825E+11 0.156018218E+12 -.474931072E+11 -.357260091E+11
- 1.d-2    0.634576350E+09 -.185440863E+10 -.599212833E+09 -.334417056E+10
+# Now modify data.pkg and run for 100 days without KPP and GM:
+ emacs -nw data.pkg
+ ../build/mitgcmuv_ad < /dev/null >&! output.txt_adm &
+ grep grad-res output.txt_adm
+#
+ grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
+ grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
+ grad-res -------------------------------
+ grad-res     0    1   17    2    1   0.775568418E+12 0.775568716E+12 0.775568120E+12
+ grad-res     0    1    1   20    0   0.298288524E+10 0.298245351E+10 0.144733246E-03
 
-# Following table compares adjoint and finite difference gradient for
-# various choices of nTimeSteps
-# with nTimeSteps=4
- adj grad  0.103151639E+00 0.308058453E+00 -.732758366E+04 -.161844794E+06
- 1.d-4     0.305175781E+00 0.305175781E+00 -.732757568E+04 -.161844788E+06
-# with nTimeSteps=24
- adj grad  0.137444822E+04 0.365984818E+04 0.256198267E+05 -.204077640E+06
- 1.d-4     0.137313843E+04 0.365982056E+04 0.256221008E+05 -.204077454E+06
-# with nTimeSteps=240
- adj grad  0.443328852E+39 -.133652133E+38 -.905448973E+38 -.598093614E+40
- 1.d-4     -.209616183E+10 0.257127391E+10 -.917457365E+10 0.104622205E+10
-# with nTimeSteps=480
- adj grad  -.217869560E+39 0.656820132E+37 0.444973903E+38 0.293927165E+40
- 1.d-4     -.848343350E+09 0.186724144E+10 -.768266406E+10 0.188919420E+10
-# with nTimeSteps=960
- adj grad  -.125255788E+49 0.377613667E+47 0.255820763E+48 0.168982206E+50
- 1.d-4     0.683065531E+10 -.241320782E+11 -.359080729E+11 0.222805821E+11
-# with nTimeSteps=1920
- adj grad  0.993422132E+94 -.299490969E+93 -.202895220E+94 -.134022280E+96
- 1.d-4     0.677603652E+12 0.115923780E+12 -.383606246E+12 -.393716060E+12
-# with nTimeSteps=2400
- adj grad  0.204800998+114 -.617421814+112 -.418282846+113 -.276296408+115
- 1.d-4     0.796041873E+12 0.280172355E+12 -.429971310E+12 -.655627972E+12
-# with nTimeSteps=3600
- adj grad  0.123800977+143 -.373227788+141 -.252849475+142 -.167019524+144
- 1.d-4     0.154270431E+12 0.246315840E+12 0.392679620E+12 0.816557457E+11
-
-# With cost_ice_flag = 2
-# adj grad  0.500216760+194 -.353450868+194 -.799381224+195 -.173412383+194
-# 1.d-04    -.327859949E+08 -.300222927E+10 0.252204364E+09 -.658448165E+10
-# 1.d-03    -.572185323E+08 0.614938314E+08 -.850914638E+09 0.248982808E+08
-# 1.d-02    -.624721639E+07 -.147537212E+08 -.114497432E+09 -.358163526E+08
-# 1.d-01    0.603974309E+07 -.684786020E+07 -.149337451E+09 -.601790080E+07
-# 1.d-00    -.497381448E+06 -.404972657E+05 -.142684281E+09 -.501277195E+08
-
-# 100 day experiment with cost_ice_flag = 3, but in North Atlantic
-# domain, i.e., with no sea-ice is OK
- adj grad  0.234593317E+17 0.166950683E+17 0.238665515E+17 0.249850733E+17
- 1.d-4     0.234313954E+17 0.166674930E+17 0.238322031E+17 0.249217155E+17
-
-# with same order of magnitude results as those from pkg/exf bulk formulae
- adj grad  0.279968788E+17 0.226979382E+17 0.269224396E+17 0.323359773E+17
- 1.d-4     0.279944626E+17 0.226935335E+17 0.269274317E+17 0.323399293E+17
-
-# 10 day experiment with cost_ice_flag = 3 is OK
- adj grad  0.353941629E+17 0.955451129E+16 -.265793314E+17 0.232229067E+16
- 1.d-4     0.353943893E+17 0.955563114E+16 -.265195776E+17 0.232137949E+16
- 1-fd/adj  -.639540199E-05 -.117207086E-03 0.224813073E-02 0.392362727E-03
-
-# 100 day experiment with cost_ice_flag = 3 fails
- adj grad  0.134326162+285 0.434825818+285 0.353667347+285 -.121707013+286
- 1.d-4     -.248910431E+20 -.581887317E+20 0.530805948E+18 0.554441614E+20
-
-# 100 day experiment with cost_ice_flag = 4 fails
- adj grad  0.942881479+279 0.305219181+280 0.248251262+280 -.854303341+280
- 1.d-4     0.550158678E+19 -.107685572E+20 -.139042495E+20 0.445855968E+20
-
-# 100 day experiment with cost_ice_flag = 5 fails
- adj grad  0.149606733+285 0.484290396+285 0.393899563+285 -.135552065+286
- 1.d-4     -.300535490E+20 -.689378119E+20 0.300954675E+19 0.767231924E+20
+# Now modify data and run for 375 days without KPP and GM:
+ emacs -nw data
+ ../build/mitgcmuv_ad < /dev/null >&! output.txt_adm &
+ grep grad-res output.txt_adm
+#
+ grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
+ grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
+ grad-res -------------------------------
+ grad-res     0    1   17    2    1   0.896287794E+12 0.896287828E+12 0.896287760E+12
+ grad-res     0    1    1   20    0   0.341242829E+09 0.341148397E+09 0.276729326E-03
 
 
-# With cost_ice_flag = 6, i.e., a quadratic cost function
-# 1.d-04    -.525101466E+01 -.328685504E+03 0.267928050E+02 -.563072857E+03
-# 1.d-03    -.313705632E+01 0.463320361E+01 -.458088751E+02 0.571140277E+00
-# 1.d-02    -.232806373E+00 -.104311448E+01 0.173597838E+02 -.394705606E+01
-# 1.d-01    0.515424287E+00 -.578962143E+00 0.108556846E+02 -.563596055E+00
-# 1.d-00    -.480177391E-01 -.327366136E-02 0.107190195E+02 -.498391127E+01
-# adj grad  NAN             NAN             NAN             NAN
 
-# 100 day experiments with all albedos set to a constant 0.4, with
-# IMAX_TICE=50, and with HSNOW=0 also fail with NANs
 
-# 100-day with undef  ALLOW_GMREDI
- adj grad  0.846385475+258 0.198955589+259 0.729012228+259 0.320320183+256
- 1.d-4     -.577220699E+12 -.987464011E+12 -.342421713E+12 -.553564700E+12
 
-# Adjoint gradient is OK for 100 days is KPP and GM
-# are undefined in CPP_OPTIONS file:
- adj grad  0.717330426E+06 0.106802371E+07 0.443223909E+06 -.581863641E+08
- 1.d-4     0.717581787E+06 0.106213684E+07 0.441527100E+06 -.581863293E+08
-# Above experiment fails with NANs when extended to 375 days
-# but it works OK is SEAICE_initialHEFF = 0.0 instead of 1.0
- adj grad  -.256772533E+05 -.782710992E+05 -.273621212E+05 -.133527839E+09
- 1.d-4     -.256640625E+05 -.779858398E+05 -.272338867E+05 -.133528066E+09
-# 10-yr experiment with above parameters fails with NANs
 
-# 100-day with yneg=0 in growth.F
- adj grad  -.246704815E+07 -.171229406E+09 -.113862028E+08 -.156706660E+08
- 1.d-4     -.246699463E+07 -.171229277E+09 -.113861792E+08 -.156706763E+08
-# 375-day with yneg=0 in growth.F
- (in progress)
+
+
+
+
 
 
 #####################
