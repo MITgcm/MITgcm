@@ -284,7 +284,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  ../build/mitgcmuv_ad >& output.txt_adm
 # run the TLM
  \rm output.txt_tlm
- ../build/mitgcmuv_ad >& output.txt_tlm
+ ../build/mitgcmuv_ftl >& output.txt_tlm
 # To verify the results of the gradient check, type:
  grep grad-res output.txt_adm
  grep grad-res output.txt_tlm
