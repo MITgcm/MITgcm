@@ -92,6 +92,14 @@ cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_lwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_rad_down_r/ g_swdown, g_lwdown
 # endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+      _RL g_climsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_clim_sst_r/ g_climsst
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+      _RL g_climsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_clim_sss_r/ g_climsss
+# endif
 #endif
 
 #ifdef ALLOW_SEAICE

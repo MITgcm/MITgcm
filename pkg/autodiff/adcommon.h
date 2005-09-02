@@ -101,6 +101,14 @@ cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_rad_down_r/
      &     adswdown, adlwdown
 # endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+      _RL adclimsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_clim_sst_r/ adclimsst
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+      _RL adclimsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_clim_sss_r/ adclimsss
+# endif
 #endif
 
 #ifdef ALLOW_SEAICE

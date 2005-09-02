@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.28 2005/08/31 00:04:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.29 2005/09/02 23:21:22 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -159,6 +159,14 @@ c
         CALL WRITE_FLD_XY_RL ( 'ADJswdown.',
      &       suff, adswdown, myIter, myThid)
 # endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+        CALL WRITE_FLD_XY_RL ( 'ADJclimsst.',
+     &       suff, adclimsst, myIter, myThid)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+        CALL WRITE_FLD_XY_RL ( 'ADJclimsss.',
+     &       suff, adclimsss, myIter, myThid)
+# endif
 #endif
 c
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -253,6 +261,14 @@ c
 # ifdef ALLOW_DOWNWARD_RADIATION
           CALL MNC_CW_RL_W('D','adexf',0,0,'adswdown',
      &         adswdown, myThid)
+# endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adclimsst',
+     &         adclimsst, myThid)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adclimsss',
+     &         adclimsss, myThid)
 # endif
 #endif
 c
