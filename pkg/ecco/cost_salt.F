@@ -1,16 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.6 2005/04/29 10:31:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.7 2005/09/02 16:02:11 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_Salt(
-     I                       myiter,
-     I                       mytime,
-     I                       mythid
-     &                     )
+      subroutine cost_salt( myiter, mytime, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_Salt
+c     SUBROUTINE cost_salt
 c     ==================================================================
 c
 c     o Evaluate cost function contribution of salinity.
@@ -27,7 +23,7 @@ c
 c              - set ladinit to .true. to initialise adsbar file
 c
 c     ==================================================================
-c     SUBROUTINE cost_Salt
+c     SUBROUTINE cost_salt
 c     ==================================================================
 
       implicit none
@@ -59,7 +55,7 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer irec
+      integer irec, irectmp
       integer levmon
       integer levoff
       integer ilsalt
@@ -116,11 +112,11 @@ c--   Read tiled data.
 
 #ifdef GENERIC_BAR_MONTH
 c--   Loop over month
-      do irec = 1,12
+      do irec = 1,min(nmonsrec,12)
          nyears=int((nmonsrec-irec)/12)+1
-         if(nyears.gt.0) then
             do iyear=1,nyears
             mrec=irec+(iyear-1)*12
+            irectmp=mrec
 c--     Read time averages and the monthly mean data.
             call active_read_xyz( fnamesalt, sbar, mrec,
      &           doglobalread, ladinit,
@@ -145,11 +141,12 @@ c--     Read time averages and the monthly mean data.
                   enddo
                enddo
             enddo
-         enddo
+            enddo
 #else
 c--   Loop over records.
       do irec = 1,nmonsrec
 
+        irectmp=irec
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamesalt, sbar, irec,
      &                        doglobalread, ladinit,
@@ -158,7 +155,7 @@ c--     Read time averages and the monthly mean data.
 #endif
 c--     Determine the month to be read.
         levoff = mod(modelstartdate(1)/100,100)
-        levmon = (irec-1) + levoff
+        levmon = (irectmp-1) + levoff
         levmon = mod(levmon-1,12)+1
 
         call mdsreadfield( sdatfile, cost_iprec, cost_yftype, 
@@ -182,15 +179,6 @@ c--           Determine the mask or weights
                   else if (sdat(i,j,k,bi,bj) .gt. spmax) then
                     cmask(i,j) = 0. _d 0
                   endif
-                  
-cph(
-cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
-cph               below statement could be replaced by following
-cph               to make it independnet of Nr:
-cph
-cph               if ( rC(K) .GT. -1000. ) then
-cph)
-
                 enddo
               enddo
 
@@ -198,9 +186,6 @@ c--           Compute model data misfit and cost function term for
 c             the salinity field.
               do j = jmin,jmax
                 do i = imin,imax
-cph(
-cph no more discard of data for z < 1000
-cph)
                   if ( _hFacC(i,j,k,bi,bj) .ne. 0. ) then
                      fctile = fctile +
      &                    (wsalt(k,bi,bj)*cmask(i,j)*
@@ -218,76 +203,12 @@ c--         End of loop over layers.
             fcthread         = fcthread         + fctile
             objf_salt(bi,bj) = objf_salt(bi,bj) + fctile
 
-#ifdef ECCO_VERBOSE
-c--         Print cost function for each tile in each thread.
-            write(msgbuf,'(a)') ' '
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3)')
-     &        ' cost_Salt: irec,bi,bj          =  ',irec,bi,bj
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,d22.15)')
-     &        '     cost function (salinity) = ',
-     &        fctile
-            call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a)') ' '
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-#endif
-
           enddo
         enddo
 
-#ifdef ECCO_VERBOSE
-c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread , myThid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_Salt: irec = ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,d22.15)')
-     &    ' global cost function value',
-     &    ' (salinity) = ',fcthread
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-#endif
-
-#ifdef GENERIC_BAR_MONTH
-        endif
-#endif
       enddo
 c--   End of loop over records.
 
-#else
-c--   Do not enter the calculation of the salinity contribution to
-c--   the final cost function.
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_Salt: no contribution of salinity field ',
-     &                 'to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_Salt: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return
