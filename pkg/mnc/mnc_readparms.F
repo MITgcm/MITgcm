@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.24 2005/08/05 23:44:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.25 2005/09/02 11:40:14 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -29,10 +29,9 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i, iUnit, nl, isu1,isu2,mdu, errio, IL
+      integer i, nl, ku
       character*(MAX_LEN_MBUF) data_file
       character*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
@@ -40,7 +39,6 @@ C     !LOCAL VARIABLES:
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc,
      &     mnc_outdir_str, mnc_indir_str, mnc_max_fsize
-      LOGICAL  exst
 
 C     Functions
       integer ILNBLNK
@@ -75,115 +73,28 @@ C     Set the file name
       WRITE(data_file,'(a)') 'data.mnc'
       nl = ILNBLNK(data_file)
 
-C     Verify that the file exists and, if not, disable MNC
-      INQUIRE( FILE=data_file, EXIST=exst )
-      IF (exst) THEN
-        WRITE(msgbuf,'(3a)')
-     &       ' MNC_READPARMS: opening file ''',
+      WRITE(msgbuf,'(3a)') ' MNC_READPARMS: opening file ''',
      &       data_file(1:nl), ''''
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , mythid)
-      ELSE
-c       WRITE(msgBuf,'(3a)')
-c    &       'Data file: ''',data_file(1:nl),
-c    &       ''' does not exist so MNC will be disabled'
-c       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-c    &       SQUEEZE_RIGHT , mythid)
-c       RETURN
-C- jmc: found strange things when data.mnc is missing: 
-C       "MNC will be disabled" is not implemented
-C       => Safer, in this case, to stop the run here.
-        WRITE(msgBuf,'(3a)')
-     &       'Data file: ''',data_file(1:nl),
-     &       ''' does not exist ==> STOP'
-        CALL PRINT_ERROR( msgBuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_READPARMS'
-      ENDIF
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &     SQUEEZE_RIGHT,mythid)
 
-C     Open files
-      isu1 = 60
-      isu2 = 61
-      mdu = 62
-#ifdef TARGET_BGL
-      OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
-#else
-      OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
-      OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-#endif
-      OPEN(UNIT=mdu, FILE=data_file, STATUS='OLD', IOSTAT=errio)
-      IF ( errio .LT. 0 ) THEN
-        WRITE(msgBuf,'(3a)')
-     &       'Unable to open data file: ''',data_file(1:nl),
-     &       ''' so MNC will be disabled'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R MNC_READPARMS'
-        RETURN
-      ENDIF     
+      CALL OPEN_COPY_DATA_FILE(data_file(1:nl),'MNC_READPARMS',
+     &     ku, myThid )
+      READ(ku,NML=MNC_01)
+      CLOSE(ku)
       
-      DO WHILE ( .TRUE. )
-        READ(mdu,FMT='(A)',END=1001) RECORD
-        IL = MAX(ILNBLNK(RECORD),1)
-        IF ( RECORD(1:1) .NE. commentCharacter ) THEN
-          CALL NML_SET_TERMINATOR( RECORD )
-          WRITE(UNIT=isu1,FMT='(A)') RECORD(:IL)
-        ENDIF
-        WRITE(UNIT=isu2,FMT='(A)') RECORD(:IL)
-      ENDDO
- 1001 CONTINUE
-      CLOSE(mdu)
-      
-C--   Report contents of model parameter file
-      WRITE(msgBuf,'(A)') 
-     &     '// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &     SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(3a)') '// Parameter file "',data_file(1:nl),'"'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &     SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
-     &     '// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-      iUnit = isu2
-      REWIND(iUnit)
-      DO WHILE ( .TRUE. )
-        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
-        IL = MAX(ILNBLNK(RECORD),1)
-        WRITE(msgBuf,'(2a)') '>',RECORD(:IL)
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &       SQUEEZE_RIGHT , 1)
-      ENDDO
- 2001 CONTINUE
-      CLOSE(iUnit)
-      WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-
-      iUnit = isu1
-      REWIND(iUnit)
-      READ(UNIT=iUnit,NML=MNC_01,IOSTAT=errio,err=3)
-      GOTO 4
- 3    CONTINUE
-      WRITE(msgBuf,'(A,A,A)')
-     &     'ERROR: while reading file ''',data_file(1:nl), 
-     &     ''' -- please check file contents'
-      CALL PRINT_ERROR( msgBuf , 1)
-      STOP 'ABNORMAL END: S/R MNC_READPARMS'
- 4    CONTINUE
-
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &     SQUEEZE_RIGHT,mythid)
 
 C     Pickups must always be read in an EXCLUSIVE fashion
       IF (pickup_read_mnc)  pickup_read_mdsio = .FALSE.
 
 C     IO handling is done in one of two senses:
 C     (1) outputTypesInclusive=.TRUE. is an "inclusive-or" meaning that
-C     one or more write methods can occur simultaneously and
+C         one or more write methods can occur simultaneously or
 C     (2) outputTypesInclusive=.FALSE. is an "exclusive-or" meaning that
-C     only one write method can occur in a given run
+C         only one write method can occur in a given run
 C     
 C     Since all the *_mdsio flags default to .TRUE. and
 C     outputTypesInclusive defaults to .FALSE., the logic here is
