@@ -1,16 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.5 2005/05/27 21:41:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.6 2005/09/02 16:14:20 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_Drift(
-     I                       myiter,
-     I                       mytime,
-     I                       mythid
-     &                     )
+      subroutine cost_drift( myiter, mytime, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_Drift
+c     SUBROUTINE cost_drift
 c     ==================================================================
 c
 c     o Evaluate cost function contribution of the t and S difference
@@ -21,7 +17,7 @@ c
 c              Elisabeth Remy eremy@ucsd.edu   july 31 2001
 c
 c     ==================================================================
-c     SUBROUTINE cost_Drift
+c     SUBROUTINE cost_drift
 c     ==================================================================
 
       implicit none
@@ -137,11 +133,6 @@ c--   Number of full years
       nfmin = MAX(INT(FLOAT(nmonsrec)/12.),1)
 c--   Prevent code from crashing if integrated for less than a year
       minrec = MIN(nmonsrec,12)
-cph(
-      print *, 'ph-cost-drift: nfmin, minrec ', nfmin, minrec
-      print *, 'ph-cost-drift: weight ', 
-     &         wsalt(1,1,1)/(nfmin*errsannurescal)**2
-cph)
 
 c--   Loop over records.
       do irec = 1,minrec
@@ -249,48 +240,8 @@ c--       End of loop over layers.
           objf_tdrift(bi,bj) = objf_tdrift(bi,bj) + fctilet
           objf_sdrift(bi,bj) = objf_sdrift(bi,bj) + fctiles
 
-#ifdef ECCO_VERBOSE
-c--       Print cost function for each tile in each thread.
-          write(msgbuf,'(a)') ' '
-          call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-          write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3)')
-     &        ' cost_Drift: irec,bi,bj          =  ',irec,bi,bj
-          call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-          write(msgbuf,'(a,d22.15)')
-     &        '     cost function (temperature) = ',
-     &        fctilet+fctiles
-          call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-          write(msgbuf,'(a)') ' '
-          call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-#endif
-
         enddo
       enddo
-
-#ifdef ECCO_VERBOSE
-c--     Print cost function for all tiles.
-c        _GLOBAL_SUM_R8( fcthread_tdrift , myThid )
-c        _GLOBAL_SUM_R8( fcthread_tdrifs , myThid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_Drift: irec = ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,d22.15)')
-     &    ' global cost function value',
-     &    ' (temp + salt) = ',fcthread_tdrift+fcthread_tdrifs
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-#endif
 
 #endif
 
