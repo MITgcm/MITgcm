@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.6 2005/09/02 22:36:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.7 2005/09/02 23:20:39 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -20,6 +20,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "SEAICE_PARAMS.h"
 #ifdef ALLOW_COST
 #include "SEAICE_COST.h"
 #include "cost.h"
