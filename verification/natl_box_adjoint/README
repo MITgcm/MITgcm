@@ -307,7 +307,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # Now modify data.pkg and run for 100 days without KPP and GM:
  emacs -nw data.pkg
  \rm output.txt_adm
- ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm &
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
@@ -319,7 +319,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
 # Now modify data and run for 375 days without KPP and GM:
  emacs -nw data
  \rm output.txt_adm
- ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm &
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
@@ -327,11 +327,20 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  grad-res -------------------------------
  grad-res     0    1   17    2    1   0.896287794E+12 0.896287828E+12 0.896287760E+12
  grad-res     0    1    1   20    0   0.341242829E+09 0.341148397E+09 0.276729326E-03
+ grad-res -------------------------------
+ grad-res     0    2   20    4    1   0.896287794E+12 0.896287837E+12 0.896287752E+12
+ grad-res     0    2    2   40    0   0.425898569E+09 0.424819718E+09 0.253311730E-02
+ grad-res -------------------------------
+ grad-res     0    3   19    6    1   0.896287794E+12 0.896287810E+12 0.896287779E+12
+ grad-res     0    3    3   60    0   0.155522387E+09 0.155305087E+09 0.139722658E-02
+ grad-res -------------------------------
+ grad-res     0    4   11    8    1   0.896287794E+12 0.896335295E+12 0.896334240E+12
+ grad-res     0    4    4   80    0   0.205181064E+12 0.527474334E+10 0.974292251E+00
 
 # Now modify data and run for 3650 days without KPP and GM:
  emacs -nw data
  \rm output.txt_adm
- ../build/mitgcmuv_ad < /dev/null >& output.txt_adm
+ ../build/mitgcmuv_ad < /dev/null >& output.txt_adm &
  grep grad-res output.txt_adm
 #
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
