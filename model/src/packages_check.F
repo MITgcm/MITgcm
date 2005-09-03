@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.28 2005/05/31 18:24:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.29 2005/09/03 04:17:57 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,10 @@ CEOP
 
 #ifdef ALLOW_COST
       CALL COST_CHECK( myThid )
+#endif
+
+#ifdef ALLOW_GRDCHK
+      CALL GRDCHK_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
