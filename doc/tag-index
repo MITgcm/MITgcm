@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.539 2005/09/01 06:08:55 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.540 2005/09/04 19:38:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add diagnostics for (almost) each term of the momentum Eq.
 o remove SST,SSS,UVEL_k2,VVEL_k2 diagnostics.
 o move pkg timeave out of pkg-groups "oceanic" & "atmospheric" (pkg/pkg_groups)
 o remove MINIMAL_TAVE_OUTPUT option ; 
