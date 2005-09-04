@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.2 2005/06/22 00:30:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.3 2005/09/04 19:22:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -46,6 +46,12 @@ c     _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 c     _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rCenter, rUpwind, upwindFac
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*8 diagName
+      LOGICAL     DIAGNOSTICS_IS_ON
+      EXTERNAL    DIAGNOSTICS_IS_ON
+      _RL vf (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -188,6 +194,37 @@ C--   Solve tri-diagonal system :
       ELSEIF ( diagonalNumber .NE. 1 ) THEN
         STOP 'MOM_IMPLICIT_R: no solver available.'
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   Diagnostics of vertical viscous flux:
+      IF ( useDiagnostics .AND. implicitViscosity ) THEN
+        diagName = 'VISrI_Vm'
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         DO k= 1,Nr
+          IF ( k.EQ.1 ) THEN
+C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
+C         otherwise counter is not incremented !!
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+               vf(i,j) = 0. _d 0
+             ENDDO
+            ENDDO
+          ELSE
+            DO j=jMin,jMax
+             DO i=iMin,iMax
+               vf(i,j) =
+     &             -KappaRV(i,j,k)*rAs(i,j,bi,bj)*recip_drC(k)
+     &            * (gV(i,j,k,bi,bj) - gV(i,j,k-1,bi,bj))*rkSign
+     &            *_maskS(i,j,k,bi,bj)
+     &            *_maskS(i,j,k-1,bi,bj)
+             ENDDO
+            ENDDO
+          ENDIF
+          CALL DIAGNOSTICS_FILL(vf,diagName, k,1, 2,bi,bj, myThid)
+         ENDDO
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
