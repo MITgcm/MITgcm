@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.43 2005/08/25 16:11:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.44 2005/09/04 19:24:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,8 @@ C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
 C       |
 C       |-- GAD_INIT
+C       |
+C       |-- MOM_INIT_FIXED
 C       |
 C       |-- CD_CODE_INIT_FIXED
 C       |
@@ -55,6 +57,8 @@ C       |
 C       |-- FIZHI_INIT_FIXED
 C       |
 C       |-- LAND_INITIALISE
+C       |
+C       |-- SEAICE_COST_INIT_FIXED
 C       |
 C       |-- ECCO_COST_INIT_FIXED
 C       |
@@ -101,6 +105,13 @@ CEOP
 #ifdef ALLOW_GENERIC_ADVDIFF
 C--   Initialize fixed params for GAD
       CALL GAD_INIT( myThid )
+#endif
+
+#ifdef ALLOW_MOM_COMMON
+C--   Initialize fixed params for Momentum pkgs (common, fluxform, vecinv)
+      IF ( momStepping ) THEN
+       CALL MOM_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_CD_CODE

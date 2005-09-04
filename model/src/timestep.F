@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.38 2005/07/30 22:09:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.39 2005/09/04 19:24:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,6 +282,15 @@ C     Step forward meridional velocity (store in Gv)
      &        )*_maskS(i,j,k,bi,bj)
         ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+#ifdef ALLOW_CD_CODE
+      IF ( useCDscheme .AND. useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(guCor,'Um_Cori ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(gvCor,'Vm_Cori ',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_CD_CODE */
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
