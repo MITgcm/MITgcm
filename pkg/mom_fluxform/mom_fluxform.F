@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.23 2005/07/30 22:07:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.24 2005/09/04 19:29:03 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -314,6 +314,15 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
          ENDDO
         ENDDO
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(fZon,'ADVx_Um ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fMer,'ADVy_Um ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fVerU(1-Olx,1-Oly,kUp),
+     &                               'ADVrE_Um',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif
+
 #ifdef NONLIN_FRSURF
 C-- account for 3.D divergence of the flow in rStar coordinate:
         IF ( select_rStar.GT.0 ) THEN
@@ -382,6 +391,15 @@ C--   Tendency is minus divergence of the fluxes
      &     )
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(fZon, 'VISCx_Um',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fMer, 'VISCy_Um',k,1,2,bi,bj,myThid)
+          IF (.NOT.implicitViscosity)
+     &    CALL DIAGNOSTICS_FILL(fVrUp,'VISrE_Um',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
         IF (no_slip_sides) THEN
@@ -473,8 +491,17 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &      +( fMer(i,  j)     - fMer(i,j-1) )*vDvdyFac
      &      +(fVerV(i,j,kDown) - fVerV(i,j,kUp))*rkSign*rVelDvdrFac
      &     )
-       ENDDO
-      ENDDO
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(fZon,'ADVx_Vm ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fMer,'ADVy_Vm ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fVerV(1-Olx,1-Oly,kUp),
+     &                               'ADVrE_Vm',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif
 
 #ifdef NONLIN_FRSURF
 C-- account for 3.D divergence of the flow in rStar coordinate:
@@ -543,6 +570,15 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &     )
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(fZon, 'VISCx_Vm',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(fMer, 'VISCy_Vm',k,1,2,bi,bj,myThid)
+          IF (.NOT.implicitViscosity)
+     &    CALL DIAGNOSTICS_FILL(fVrUp,'VISrE_Vm',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (no_slip_sides) THEN
@@ -614,12 +650,20 @@ c     ELSE
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+fuFac*cf(i,j)
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics )
+     &    CALL DIAGNOSTICS_FILL(cf,'Um_Cori ',k,1,2,bi,bj,myThid)
+#endif
         CALL MOM_V_CORIOLIS(bi,bj,k,uFld,cf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+fvFac*cf(i,j)
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics )
+     &    CALL DIAGNOSTICS_FILL(cf,'Vm_Cori ',k,1,2,bi,bj,myThid)
+#endif
       ENDIF
 
       IF (nonHydrostatic.OR.quasiHydrostatic) THEN
@@ -640,6 +684,21 @@ C--   Set du/dt & dv/dt on boundaries to zero
         gvDiss(i,j)     = gvDiss(i,j)    *_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       IF (bottomDragTerms)
+     &  CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
+     &                               'Um_Advec',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
+     &                               'Vm_Advec',k,1,2,bi,bj,myThid)
+       IF (momViscosity) THEN
+        CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gvDiss,'Vm_Diss ',k,1,2,bi,bj,myThid)
+       ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

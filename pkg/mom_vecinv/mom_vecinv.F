@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.45 2005/08/24 23:16:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.46 2005/09/04 19:29:03 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -208,7 +208,7 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
        ENDIF
 C      Calculate dissipation terms for U and V equations
 C      in terms of vorticity and divergence
-       IF (    viscAhD.NE.0. .OR. viscAhZ.NE.0. 
+       IF (    viscAhD.NE.0. .OR. viscAhZ.NE.0.
      &    .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
      &    .OR. viscAhGrid.NE.0. .OR. viscA4Grid.NE.0.
      &    .OR. viscC2leith.NE.0. .OR. viscC4leith.NE.0.
@@ -360,7 +360,7 @@ C--   Horizontal Coriolis terms
 c     IF (useCoriolis .AND. .NOT.useCDscheme
 c    &    .AND. .NOT. useAbsVorticity) THEN
 C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvection=F
-      IF ( useCoriolis .AND. 
+      IF ( useCoriolis .AND.
      &     .NOT.( useCDscheme .OR. useAbsVorticity.AND.momAdvection )
      &   ) THEN
        IF (useAbsVorticity) THEN
@@ -378,6 +378,7 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
          gV(i,j,k,bi,bj) = vCf(i,j)
         ENDDO
        ENDDO
+
        IF ( writeDiag ) THEN
          IF (snapshot_mdsio) THEN
            CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
@@ -392,6 +393,13 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
          ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(uCf,'Um_Cori ',k,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(vCf,'Vm_Cori ',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -463,6 +471,12 @@ C--   Horizontal advection of relative (or absolute) vorticity
      &                           Nr, k, bi, bj, myThid)
        ENDIF
 #endif /* ALLOW_TIMEAVE */
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(uCf,'Um_AdvZ3',k,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(vCf,'Vm_AdvZ3',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
        IF ( .NOT. momImplVertAdv ) THEN
@@ -478,6 +492,12 @@ C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(uCf,'Um_AdvRe',k,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(vCf,'Vm_AdvRe',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
        ENDIF
 
 C--   Bernoulli term
@@ -539,7 +559,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
           CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
           CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('D','I10',1,hdiv,bi,bj,k,myIter,myThid)
+          CALL WRITE_LOCAL_RL('D','I10',1,hDiv,bi,bj,k,myIter,myThid)
         ENDIF
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
@@ -557,11 +577,27 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'KE',KE,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'D', hdiv,
+          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'D', hDiv,
      &          offsets, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(hDiv,  'momHDiv ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(vort3, 'momVort3',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
+     &                               'Um_Advec',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
+     &                               'Vm_Advec',k,1,2,bi,bj,myThid)
+       IF (momViscosity) THEN
+        CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gvDiss,'Vm_Diss ',k,1,2,bi,bj,myThid)
+       ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_MOM_VECINV */
 
