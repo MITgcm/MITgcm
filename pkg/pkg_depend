@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.14 2005/04/20 14:18:40 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.15 2005/09/04 19:12:03 jmc Exp $
 #
 
 #  This file contains a terse list of package dependencies that
@@ -29,13 +29,14 @@ aim_v23		-aim
 #  Ask AJA about:
 #    flt
 
-#  According to JMC, the following probably don't have any dependencies
+#  the following probably don't have any dependencies
 generic_advdiff
 gmredi
 
 #  Known dependencies
 mom_fluxform	+mom_common
 mom_vecinv	+mom_common
+cd_code         +mom_common
 shap_filt	+mom_vecinv
 ptracers	+generic_advdiff
 seaice		-thsice
@@ -59,5 +60,4 @@ matrix          +ptracers
 matrix          -gchem
 
 #  Need more information on the following:
-
 obcs
