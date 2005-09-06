@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.41 2005/08/24 23:13:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.42 2005/09/06 02:16:10 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,7 +33,7 @@ C      |-- PACKAGES_BOOT
 C      |
 C      |-- PACKAGES_READPARMS
 C      | |
-C      | | - MNC_INIT + MNC_CW_INIT
+C      | | - MNC_INIT + MNC_CW_INIT + INI_MNC_VARS
 C      | |
 C      | | - ${PKG}_READPARMS
 C      |

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.41 2005/06/22 21:24:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.42 2005/09/06 02:16:10 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,7 +28,7 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_READPARMS
 C       |
-C       |-- MNC_READPARMS + MNC_INIT + MNC_CW_INIT
+C       |-- MNC_READPARMS + MNC_INIT + MNC_CW_INIT + INI_MNC_VARS
 C       |
 C       |-- RUNCLOCK_READPARMS
 C       |
@@ -108,6 +108,11 @@ C     Read run-time flags and initialize look-up tables for MNC
 CEH3       IF ( mnc_echo_gvtypes ) THEN
 CEH3       CALL MNC_CW_DUMP( myThid )
 CEH3       ENDIF
+        
+C       Write units/set precision/etc for I/O of variables/arrays
+C       belonging to the core dynamical model
+        CALL INI_MNC_VARS( myThid )
+
       ENDIF
 #endif
 
