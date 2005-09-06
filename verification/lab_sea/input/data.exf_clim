@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/Attic/data.exf_clim,v 1.4 2003/05/23 21:58:05 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/Attic/data.exf_clim,v 1.5 2005/09/06 22:35:15 heimbach Exp $
 #
 # *********************************
 # External Forcing Climatology Data
@@ -23,7 +23,7 @@
  climtempfile       = ' ',
  climsaltfile       = ' ',
  climsstfile        = ' ',
- climsssfile        = 'SSS.labsea',
+ climsssfile        = 'SSS_monthly.labsea1979',
 #
  exf_clim_iprec     = 32,
  exf_clim_yftype    = 'RL',

@@ -49,7 +49,7 @@
  sBeta =7.4E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='POLY3',
+ eosType='JMD95Z',
  readBinaryPrec=32,
  writeBinaryPrec=32,
  saltStepping=.TRUE.,
@@ -144,8 +144,8 @@
 #   saltClimFile    - File containing salt climatology used for relaxation
 #
  &PARM05
- bathyFile       = 'bathy.labsea',
- hydrogThetaFile = 'LevCli_temp.labsea',
- hydrogSaltFile  = 'LevCli_salt.labsea',
+ bathyFile       = 'bathy.labsea1979',
+ hydrogThetaFile = 'LevCli_temp.labsea1979',
+ hydrogSaltFile  = 'LevCli_salt.labsea1979',
  &
 
