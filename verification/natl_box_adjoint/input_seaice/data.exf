@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_seaice/Attic/data.exf,v 1.2 2003/11/06 22:32:28 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_seaice/Attic/data.exf,v 1.3 2005/09/06 16:25:30 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -49,6 +49,5 @@
 #
  exf_iprec   = 64,
  exf_yftype  = 'RL',
-#
-#ph EXFwindOnBgrid    = .TRUE.
+ repeatPeriod = 31536000,
  &
