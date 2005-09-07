@@ -1,13 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.6 2005/08/06 11:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.7 2005/09/07 02:44:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_forcing(
-     I                         myiter,
-     I                         mytime,
-     I                         mythid
-     &                       )
+      subroutine cost_forcing( myiter, mytime, mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_forcing

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.4 2005/09/02 21:11:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.5 2005/09/07 02:44:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -149,6 +149,10 @@ c--   First, read tiled data.
 
 c--   Loop over records for the second time.
       do irec = 1, nrecloc
+cph(
+        if ( localobsfile .EQ. sstdatfile )
+     &        print *, 'ph-sst A ', irec, nrecloc
+cph)
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,

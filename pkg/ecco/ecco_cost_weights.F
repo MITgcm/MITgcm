@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.13 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.14 2005/09/07 02:44:38 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -1124,9 +1124,11 @@ c
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wprecip', wprecip, 1, 0, mythid, dummy)
 #endif
+
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wswflux', wswflux, 1, 0, mythid, dummy)
 #endif
+
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wswdown', wswdown, 1, 0, mythid, dummy)
 #endif
@@ -1143,6 +1145,14 @@ c
       call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
 #elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
       call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_SST_COST_CONTRIBUTION))
+      call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_SSS_COST_CONTRIBUTION))
+      call active_write_xy_loc( 'wsss', wsst, 1, 0, mythid, dummy)
 #endif
 
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION

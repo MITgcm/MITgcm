@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.23 2005/09/01 05:32:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.24 2005/09/07 02:44:38 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,8 +83,10 @@ c They provide the fields to be stored.
 # include "DYNVARS.h"
 # include "FFIELDS.h"
 # include "EOS.h"
-# include "GAD.h"
 
+# ifdef ALLOW_GENERIC_ADVDIFF
+#  include "GAD.h"
+# endif
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"
 # endif

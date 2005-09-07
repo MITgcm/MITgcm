@@ -18,8 +18,6 @@ cost_hyd.f
 cost_mean_heatflux.f            
 cost_mean_saltflux.f            
 cost_readers.f                  
-cost_readsssfields.f            
-cost_readsstfields.f            
 cost_readscatxfields.f          
 cost_readscatyfields.f          
 cost_readtopex.f                
@@ -29,8 +27,6 @@ cost_salt0.f
 cost_scat.f                     
 cost_ssh.f                      
 cost_ssh_mean.f                 
-cost_sss.f                      
-cost_sst.f                      
 cost_tau_eddy.f
 cost_theta.f                    
 cost_theta0.f                   
@@ -48,8 +44,6 @@ cost_readargot.f
 cost_readargos.f                
 cost_ctdtclim.f                 
 cost_ctdsclim.f                 
-cost_readtmifields.f            
-cost_tmi.f                      
 cost_curmtr.f
 ecco_cost_final.f
 ecco_cost_init_barfiles.f
