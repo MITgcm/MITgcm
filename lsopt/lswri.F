@@ -32,24 +32,24 @@ C     ========= Local variables ========================================
 
 C=======================================================================
 
-      if (lphprint) 
-     &   print *, 'pathei: formatted output of xx, gg, in lswri: ',
-     &   phniter
+c      if (lphprint) 
+c     &   print *, 'pathei: formatted output of xx, gg, in lswri: ',
+c     &   phniter
 c
-      open(95,
-     &     FILE='PH_X.dat',
-     &     FORM='UNFORMATTED',
-     &     ACCESS='DIRECT',
-     &     RECL=NN*isize)
-      write(95,REC=phniter+1) xx
-      close(95)
+c      open(95,
+c     &     FILE='PH_X.dat',
+c     &     FORM='UNFORMATTED',
+c     &     ACCESS='DIRECT',
+c     &     RECL=NN*isize)
+c      write(95,REC=phniter+1) xx
+c      close(95)
 c
-      open(95,
-     &     FILE='PH_G.dat',
-     &     FORM='UNFORMATTED',
-     &     ACCESS='DIRECT',
-     &     RECL=NN*isize)
-      write(95,REC=phniter+1) gg
-      close(95)
+c      open(95,
+c     &     FILE='PH_G.dat',
+c     &     FORM='UNFORMATTED',
+c     &     ACCESS='DIRECT',
+c     &     RECL=NN*isize)
+c      write(95,REC=phniter+1) gg
+c      close(95)
 
       end
