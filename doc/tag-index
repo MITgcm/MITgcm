@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.541 2005/09/06 02:16:09 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.542 2005/09/07 15:24:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57r_post
 o make MNC variable initialization happen earlier
 o add diagnostics for (almost) each term of the momentum Eq.
 o remove SST,SSS,UVEL_k2,VVEL_k2 diagnostics.
