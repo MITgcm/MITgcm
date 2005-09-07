@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.5 2005/08/29 19:22:01 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.6 2005/09/07 13:57:25 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2265,7 +2265,7 @@ OpenAD_rev          \
 OpenAD_tape         \
 iaddr
 
-adopen: ad_input_code.canon.xb.x2w.w2f.pp.f
+adopen: ad_input_code.mfepp.canon.xb.x2w.w2f.pp.f
 
 ifndef OPENADROOT
   \$(error "Error:  environment variable OPENADROOT not defined!")
@@ -2279,51 +2279,52 @@ ifndef XAIFBOOSTERROOT
   \$(error "Error:  environment variable XAIFBOOSTERROOT not defined!")
 endif
 
-######################################################
-# transformation
-######################################################
-
-# paste all modules into the ad_input_code file 
-# so we can do the single file transformation
-# and strip all comments and blanks to reduce 
+# strip all comments and blanks to reduce 
 # the file size in order to reduce perl's memory requirements 
-ad_input_code_sf.f : \$(addsuffix .f90, \$(CONV_MODULE_FILES)) ad_input_code.f 
+ad_input_code_sf.f : ad_input_code.f 
 	cat \$^ | sed -f ../code_ad/strip.sed > \$@
 
+# mfef90 preprocessing
+# expand statement functions 
+# expose mfef90 specific substring handling 
+ad_input_code_sf.w2f.f: ad_input_code_sf.f mfef90 whirl2f whirl2f_be
+	./mfef90 -F -N132 \$< 
+	./whirl2f \$<
+
 # canonicalizer
-ad_input_code_sf.canon.f: ad_input_code_sf.f canon.pl
+ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.pl
 	perl canon.pl \$< \$@
 
 # F -> WHIRL
-ad_input_code_sf.canon.B: ad_input_code_sf.canon.f mfef90
+ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f mfef90
 	./mfef90 -F -N132 \$<
 
 # WHIRL -> XAIF
-ad_input_code_sf.canon.xaif : ad_input_code_sf.canon.B whirl2xaif
+ad_input_code_sf.w2f.canon.xaif : ad_input_code_sf.w2f.canon.B whirl2xaif
 	./whirl2xaif -o \$@ \$<
 
 # XAIF -> XAIF'
-ad_input_code_sf.canon.xb.xaif : ad_input_code_sf.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd xaifBooster
-	./xaifBooster -i \$< -c ${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I
+ad_input_code_sf.w2f.canon.xb.xaif : ad_input_code_sf.w2f.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
+	./openad_adm -i \$< -c ${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I
 
 # XAIF' -> WHIRL'
-ad_input_code_sf.canon.xb.x2w.B : ad_input_code_sf.canon.xb.xaif xaif2whirl
-	./xaif2whirl --structured ad_input_code_sf.canon.B \$<
+ad_input_code_sf.w2f.canon.xb.x2w.B : ad_input_code_sf.w2f.canon.xb.xaif xaif2whirl
+	./xaif2whirl --structured ad_input_code_sf.w2f.canon.B \$<
 
 # WHIRL' -> F'
-ad_input_code_sf.canon.xb.x2w.w2f.f: ad_input_code_sf.canon.xb.x2w.B whirl2f whirl2f_be
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.f: ad_input_code_sf.w2f.canon.xb.x2w.B whirl2f whirl2f_be
 	./whirl2f -openad \$<
 
 # postprocess F'
-ad_input_code_sf.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.f multi-pp.pl
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.f multi-pp.pl
 	perl multi-pp.pl \$<
 
 # extract all transformed modules 
-all_mods.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.pp.f
+all_mods.xb.x2w.w2f.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.pp.f
 	cat \$< | sed -n '/MODULE /,/END MODULE/p' > \$@
 
 # remove the transformed globals module from the transformed ad_input_code file
-ad_input_code.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.canon.xb.x2w.w2f.pp.f
+ad_input_code.w2f.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.pp.f
 	cat \$< | sed '/MODULE /,/END MODULE/d' > \$@
 
 # setup some links
@@ -2342,8 +2343,8 @@ whirl2xaif xaif2whirl:
 whirl2f whirl2f_be:
 	\$(LN) \${OPENADROOT}/Open64/osprey1.0/targ_ia32_ia64_linux/whirl2f/\$@ .
 
-xaifBooster:
-	./pickAlgorithm.bash
+openad_adm:
+	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/test/t \$@
 
 # ... FTL ...
 ftlall: ftl_taf
