@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.3 2005/09/01 05:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.4 2005/09/07 03:02:11 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -89,6 +89,7 @@ c--       Initialise temperature average (3d).
             enddo
           enddo
           xx_tbar_mean_dummy = 0. _d 0
+          nnztbar = nr
 #else
 #ifdef ALLOW_SST_COST_CONTRIBUTION
 c--       Initialise temperature average (2d).
@@ -99,6 +100,7 @@ c--       Initialise temperature average (2d).
             enddo
           enddo
           xx_tbar_mean_dummy = 0. _d 0
+          nnztbar = 1
 #endif
 #endif
 
@@ -115,6 +117,7 @@ c--       Initialise salt average.
             enddo
           enddo
           xx_sbar_mean_dummy = 0. _d 0
+          nnzsbar = nr
 #else
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
 c--       Initialise salinity average (2d).
@@ -125,6 +128,7 @@ c--       Initialise salinity average (2d).
             enddo
           enddo
           xx_sbar_mean_dummy = 0. _d 0
+          nnzsbar = 1
 #endif          
 #endif
 

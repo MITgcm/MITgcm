@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.6 2005/09/01 22:45:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.7 2005/09/07 03:02:11 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -59,7 +59,7 @@ c     == end of interface ==
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      nnzbar = nr
+      nnzbar = nnztbar
       nnzobs = 1
       spminloc = -1.8
       spmaxloc = 40.
@@ -101,7 +101,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_tmi'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      nnzbar = nr
+      nnzbar = nnztbar
       nnzobs = 1
       spminloc = -1.8
       spmaxloc = 40.
@@ -122,7 +122,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_sss'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      nnzbar = nr
+      nnzbar = nnzsbar
       nnzobs = 1
       spminloc = 20.
       spmaxloc = 40.

@@ -627,9 +627,13 @@ c                the current model integration.
 
       common /ecco_cost_i/
      &                nmonsrec,
-     &                ndaysrec
+     &                ndaysrec,
+     &                nnztbar,
+     &                nnzsbar
       integer nmonsrec
       integer ndaysrec
+      integer nnztbar
+      integer nnzsbar
 
 
 c     Data files for the weights used in the cost function:
