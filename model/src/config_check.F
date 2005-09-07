@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.25 2005/09/07 02:51:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.26 2005/09/07 13:55:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -214,7 +214,7 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'Re-compile with pkg "generic_advdiff" in packages.conf'
         CALL PRINT_ERROR( msgBuf , 1)
-cph        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
 
