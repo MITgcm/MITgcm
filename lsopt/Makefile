@@ -37,7 +37,7 @@ ECCOOPTLIB  = liblsopt_ecco.a
 #---------
 #CPPFLAGS      = -DIS_DOUBLE
 #FC              = ifort
-#FFLAGS          = -mp -132 -r8 -i4 -w95 -W0 -WB -CB -fpe0 -traceback
+#FFLAGS          = -mp -132 -r8 -i4 -w95 -W0 -WB -CB -fpe0 -traceback -convert big_endian -assume byterecl
 
 # O3K
 #---------
