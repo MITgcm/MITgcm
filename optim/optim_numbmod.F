@@ -107,7 +107,6 @@ c     == local variables ==
 c     == external ==
 
       integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -126,6 +125,12 @@ c     == end of interface ==
      &  xx_atempstartdate1, xx_atempstartdate2, xx_atempperiod,
      &  xx_aqh_file,
      &  xx_aqhstartdate1, xx_aqhstartdate2, xx_aqhperiod,
+     &  xx_precip_file,
+     &  xx_precipstartdate1, xx_precipstartdate2, xx_precipperiod,
+     &  xx_swflux_file,
+     &  xx_swfluxstartdate1, xx_swfluxstartdate2, xx_swfluxperiod,
+     &  xx_swdown_file,
+     &  xx_swdownstartdate1, xx_swdownstartdate2, xx_swdownperiod,
      &  xx_uwind_file,
      &  xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod,
      &  xx_vwind_file,
@@ -142,11 +147,18 @@ c     == end of interface ==
      &  xx_kapgm_file,
      &  xx_tr1_file,
      &  xx_sst_file,
+     &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sss_file,
+     &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
      &  xx_hfacc_file,
      &  xx_efluxy_file,
      &  xx_efluxp_file,
      &  xx_bottomdrag_file,
+     &  xx_edtaux_file,
+     &  xx_edtauy_file,
+     &  xx_uvel_file,
+     &  xx_vvel_file,
+     &  xx_etan_file,
      &  doInitXX,
      &  doPackDiag,
      &  doZscaleUnpack,
