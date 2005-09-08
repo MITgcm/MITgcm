@@ -1,0 +1,12 @@
+#
+# ********************************
+# Off-line optimization parameters
+# ********************************
+ &OPTIM
+ optimcycle=0,
+ numiter=1,
+ nfunc=9,
+ fmin=343789.,
+ iprint=10,
+ nupdate=6,
+ &
