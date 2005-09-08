@@ -37,3 +37,10 @@
 > -lblas1
 >
 > That works.
+
+Some BLAS    libraries provided in lsopt/ are
+SGI O3K:     libblas1.a_IRIX64.gz
+SUN:         libblas1.a_SUN.gz
+SGI Altix:   libgoto_it2-r0.95.so.gz
+PC Pentium4: libgoto_p4_512-r0.94.so.gz
+
