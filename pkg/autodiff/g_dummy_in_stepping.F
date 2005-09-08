@@ -94,9 +94,9 @@ c
         CALL WRITE_FLD_XYZ_RL( 
      &       'G_Jvvel.',suff, g_vvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jwvel.',suff, g_vvel, myIter, myThid)
+     &       'G_Jwvel.',suff, g_wvel, myIter, myThid)
         CALL WRITE_FLD_XY_RL(
-     &       'G_Jetan.',suff, g_vvel, myIter, myThid)
+     &       'G_Jetan.',suff, g_etan, myIter, myThid)
 
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr, 
