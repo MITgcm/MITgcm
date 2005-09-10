@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.5 2005/09/10 20:40:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.6 2005/09/10 22:14:18 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -60,7 +60,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &  .OR. dumpInitAndLast.AND.( myTime+land_deltaT.EQ.endTime )
      &   ) THEN 
 
-        IF ( land_timeave_mdsio ) THEN
+        IF ( land_snapshot_mdsio ) THEN
 
        iterWr = myIter+1
        WRITE(suff,'(I10.10)') iterWr
@@ -101,12 +101,12 @@ c      _BARRIER
         ENDIF
 
 #ifdef ALLOW_MNC
-        IF ( land_timeave_mnc ) THEN
+        IF ( land_snapshot_mnc ) THEN
 
           DO k = 1,80
             fmnc(k:k) = ' '
           ENDDO
-          WRITE(fmnc,'(a9)') 'land_tave'
+          WRITE(fmnc,'(a)') 'land'
 
           CALL MNC_CW_SET_UDIM(fmnc, -1, myThid)
           CALL MNC_CW_RL_W_S('D',fmnc,0,0,'T', myTime, myThid)

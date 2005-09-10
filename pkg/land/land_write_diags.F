@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.5 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.6 2005/09/10 22:14:18 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -99,6 +99,8 @@ C      Normalize by integrated time
         ENDDO
        ENDDO
 
+       IF ( land_timeave_mdsio ) THEN
+
        _BARRIER
        _BEGIN_MASTER( myThid )
 
@@ -134,6 +136,40 @@ C-     find wether we are writing globalFile or tile-files:
 
        _END_MASTER( myThid )
        _BARRIER
+
+       ENDIF
+
+#ifdef ALLOW_MNC
+       IF ( land_timeave_mnc ) THEN
+         
+         DO k = 1,MAX_LEN_MBUF
+           fn(k:k) = ' '
+         ENDDO
+         WRITE(fn,'(a)') 'land_tave'
+         CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
+         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_groundT', land_grTtave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_enthalp', land_entave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_groundW', land_grWtave, myThid)
+         
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_skinT', land_sTtave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_hSnow', land_hStave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_snAge', land_sAtave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_RunOff', land_ROftave, myThid)
+         CALL MNC_CW_RL_W('D',fn,0,0,
+     &        'land_enRnOf', land_eROtave, myThid)
+         
+       ENDIF
+#endif
 
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
