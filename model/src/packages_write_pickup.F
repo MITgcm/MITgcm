@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.16 2005/09/10 18:30:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.17 2005/09/10 20:40:26 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -213,9 +213,10 @@ C     Write restart file for floats
 #endif
 
 #ifdef ALLOW_LAND
-C     Write pickup file for Lnad package:
+C     Write pickup file for Land package:
       IF (useLand) THEN
-        CALL LAND_WRITE_PICKUP(fn,myTime,myIter,myThid)
+        CALL LAND_WRITE_PICKUP(permCheckPoint,fn,
+     &       myTime,myIter,myThid)
       ENDIF
 #endif
 

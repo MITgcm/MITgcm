@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.8 2005/07/30 23:53:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.9 2005/09/10 20:40:27 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -26,6 +26,9 @@ C-- size for MITgcm & Land package :
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "LAND_PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==       
@@ -70,7 +73,10 @@ C     land_dzF       :: layer thickness
      &    land_calc_alb, land_oldPickup, 
      &    land_grT_iniFile, land_grW_iniFile, land_snow_iniFile,
      &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
-     &    land_dzF
+     &    land_dzF,
+     &     land_timeave_mnc, land_snapshot_mnc,
+     &     land_pickup_write_mnc, land_pickup_read_mnc
+
 
 C--   Physical constants :
 C     land_grdLambda  :: Thermal conductivity of the ground
@@ -115,6 +121,17 @@ C-    Set default value:
       land_taveFreq = taveFreq
       land_diagFreq = dumpFreq
       land_monFreq = monitorFreq
+#ifdef ALLOW_MNC
+      land_timeave_mnc       = timeave_mnc .AND. useMNC
+      land_snapshot_mnc      = snapshot_mnc .AND. useMNC
+      land_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
+      land_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
+#else
+      land_timeave_mnc       = .FALSE.
+      land_snapshot_mnc      = .FALSE.
+      land_pickup_write_mnc  = .FALSE.
+      land_pickup_read_mnc   = .FALSE.
+#endif
       land_grdLambda= 0.42 _d 0
       land_heatCs   = 1.13 _d 6
       land_CpWater  =  4.2 _d 3
@@ -218,6 +235,35 @@ C-    If land_monFreq is > 0, then must compile the monitor pkg
       ENDIF
 #endif /* ALLOW_MONITOR */
 
+#ifdef ALLOW_MNC
+      land_timeave_mnc      =
+     &     land_timeave_mnc .AND. useMNC
+      land_snapshot_mnc     =
+     &     land_snapshot_mnc .AND. useMNC
+      land_pickup_write_mnc =
+     &     land_pickup_write_mnc .AND. useMNC
+      land_pickup_read_mnc  =
+     &     land_pickup_read_mnc .AND. useMNC
+
+      land_timeave_mdsio      = (.NOT. land_timeave_mnc)
+     &     .OR. outputTypesInclusive
+      land_snapshot_mdsio     = (.NOT. land_snapshot_mnc)
+     &     .OR. outputTypesInclusive
+      land_pickup_write_mdsio = (.NOT. land_pickup_write_mnc)
+     &     .OR. outputTypesInclusive
+      land_pickup_read_mdsio  = (.NOT. land_pickup_read_mnc)
+     &     .OR. outputTypesInclusive
+#else
+      land_timeave_mnc        = .FALSE.
+      land_snapshot_mnc       = .FALSE.
+      land_pickup_write_mnc   = .FALSE.
+      land_pickup_read_mnc    = .FALSE.
+      land_timeave_mdsio      = .TRUE.
+      land_snapshot_mdsio     = .TRUE.
+      land_pickup_write_mdsio = .TRUE.
+      land_pickup_read_mdsio  = .TRUE.
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
 
@@ -290,6 +336,16 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
      &   ' /* layer thickness ( m ) */')
        CALL WRITE_1D_R8(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
      &  ,' /* recip. vertical spacing (m-1) */')
+      CALL WRITE_0D_L( land_timeave_mnc, INDEX_NONE,
+     &     'land_timeave_mnc =',' /* use MNC for Tave output */')
+      CALL WRITE_0D_L( land_snapshot_mnc, INDEX_NONE,
+     &     'land_snapshot_mnc =',' /* use MNC for snapshot output */')
+      CALL WRITE_0D_L( land_pickup_write_mnc, INDEX_NONE,
+     &     'land_pickup_write_mnc =',
+     &     ' /* use MNC for writing pickups */')
+      CALL WRITE_0D_L( land_pickup_read_mnc, INDEX_NONE,
+     &     'land_pickup_read_mnc =',
+     &     ' /* use MNC for reading pickups */')
 
 C- namelist LAND_PHYS_PAR:
        CALL WRITE_0D_R8(land_grdLambda,INDEX_NONE,'land_grdLambda =',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_mnc_init.F,v 1.1 2004/07/09 03:17:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_mnc_init.F,v 1.2 2005/09/10 20:40:27 edhill Exp $
 C $Name:  $
       
 #include "LAND_OPTIONS.h"
@@ -219,6 +219,37 @@ C               Time dimension
           ENDDO
         ENDDO
       ENDDO
+
+C     Now add the variable definitions
+      CALL MNC_CW_ADD_VNAME(
+     &     'land_groundT','Cen_xy_Hn__Zland__t',4,5,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_groundT','units','---',myThid)
+
+      CALL MNC_CW_ADD_VNAME(
+     &     'land_enthalp','Cen_xy_Hn__Zland__t',4,5,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_enthalp','units','---',myThid)
+
+      CALL MNC_CW_ADD_VNAME(
+     &     'land_groundW','Cen_xy_Hn__Zland__t',4,5,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_groundW','units','---',myThid)
+
+      CALL MNC_CW_ADD_VNAME('land_skinT','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_skinT','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_hSnow','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_hSnow','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_snAge','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_snAge','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_RunOff','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_RunOff','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_enRnOf','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_enRnOf','units','---',myThid)
+
+      CALL MNC_CW_ADD_VNAME('land_HeatFx','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_HeatFx','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_frWaFx','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_frWaFx','units','---',myThid)
+      CALL MNC_CW_ADD_VNAME('land_EnWaFx','Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('land_EnWaFx','units','---',myThid)
 
 #endif  /*  ALLOW_MNC  */
       

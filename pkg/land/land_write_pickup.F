@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.3 2005/09/10 20:40:27 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -6,7 +6,8 @@ C $Name:  $
 CBOP
 C     !ROUTINE: LAND_WRITE_PICKUP 
 C     !INTERFACE:
-      SUBROUTINE LAND_WRITE_PICKUP( suff, myTime, myIter, myThid )
+      SUBROUTINE LAND_WRITE_PICKUP( isperm, suff,
+     &     myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -27,10 +28,12 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C     isperm  :: flag for permanent or rolling checkpoint
 C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
 C     myTime  :: current time
 C     myIter  :: time-step number
 C     myThid  :: Number of this instance
+      LOGICAL isperm
       CHARACTER*(*) suff
       _RL myTime
       INTEGER myIter
@@ -55,11 +58,14 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       lChar = ILNBLNK(suff)
+
+      IF ( land_pickup_write_mdsio ) THEN
+
+C--   Write fields as consecutive records
       WRITE(fn,'(A,A)') 'pickup_land.',suff(1:lChar)
       prec = precFloat64
       lgf = globalFiles
 
-C--   Write fields as consecutive records
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
      &                   land_enthalp,1,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
@@ -71,6 +77,45 @@ C--   Write fields as consecutive records
      &                   land_hSnow,  k+2,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
      &                   land_snowAge,k+3,myIter,myThid)
+
+      ENDIF
+
+#ifdef ALLOW_MNC
+      IF ( land_pickup_write_mnc ) THEN
+
+        DO k = 1,MAX_LEN_FNAM
+          fn(k:k) = ' '
+        ENDDO
+        IF ( isperm ) THEN
+          WRITE(fn,'(A)') 'pickup_land'
+        ELSE
+          WRITE(fn,'(A,A)') 'pickup_land.',suff(1:lChar)
+        ENDIF
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        IF ( isperm ) THEN
+          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+        ELSE
+          CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
+        ENDIF
+
+        CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
+
+        CALL MNC_CW_RL_W('D',fn,0,0,
+     &       'land_enthalp', land_enthalp, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,
+     &       'land_groundW', land_groundW, myThid)
+
+        CALL MNC_CW_RL_W('D',fn,0,0,
+     &       'land_skinT', land_skinT, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,
+     &       'land_hSnow', land_hSnow, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,
+     &       'land_snAge', land_snowAge, myThid)
+
+      ENDIF
+#endif /*  ALLOW_MNC  */
 
 #endif /* ALLOW_LAND */
 

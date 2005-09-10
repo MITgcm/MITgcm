@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.3 2005/09/10 20:40:27 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -43,6 +43,8 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      IF ( land_pickup_read_mdsio ) THEN
+
       WRITE(fn,'(A,I10.10)') 'pickup_land.',myIter
       prec = precFloat64
 
@@ -62,6 +64,34 @@ C-    Read fields as consecutive records
       CALL MDSREADFIELD(fn,prec,'RL', 1, land_snowAge,k+3, myThid)
 
       ENDIF
+
+      ENDIF
+
+#ifdef ALLOW_MNC
+      IF ( land_pickup_read_mnc ) THEN
+
+        DO k = 1,MAX_LEN_FNAM
+          fn(k:k) = ' '
+        ENDDO
+        WRITE(fn,'(A)') 'pickup_land'
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
+
+        CALL MNC_CW_RL_R('D',fn,0,0,
+     &       'land_enthalp', land_enthalp, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,
+     &       'land_groundW', land_groundW, myThid)
+
+        CALL MNC_CW_RL_R('D',fn,0,0,
+     &       'land_skinT', land_skinT, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,
+     &       'land_hSnow', land_hSnow, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,
+     &       'land_snAge', land_snowAge, myThid)
+
+      ENDIF
+#endif
 
 C- jmc: exchange is not really necessary for land model
 C-      and presently exchange S/R cannot work for 3d array where 3rd dim <> Nr
