@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.21 2005/08/22 23:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.22 2005/09/10 18:30:06 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,6 +121,7 @@ C--   Set everything to zero everywhere
      &       SQUEEZE_RIGHT , myThid)
         CALL MNC_FILE_CLOSE_ALL_MATCHING(mncFn, myThid)
         CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
+        CALL MNC_CW_SET_CITER(mncFn, 2, -1, -1, -1, myThid)
         CALL MNC_CW_RS_R('R',mncFn,0,0,'XC', XC,  myThid)
         CALL MNC_CW_RS_R('R',mncFn,0,0,'XG', XG,  myThid)
         CALL MNC_CW_RS_R('R',mncFn,0,0,'YC', YC,  myThid)

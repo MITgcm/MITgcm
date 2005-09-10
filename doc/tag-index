@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.542 2005/09/07 15:24:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.543 2005/09/10 18:30:05 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o various changes to mnc including:
+  - all files use the new "BASENAME[[.ITER].{t|f}NUM].nc" format
+  - output can now be grouped so that all files within a group 
+      change the ITER portion of their names in lock-step together
+  - can now read ("global") PER-FACE (in addition to PER-TILE) files
+      and works with both EXCH1 and EXCH2 (but needs more testing)
+  - writing works for all verification test cases w/ g77 on Linux
 
 checkpoint57r_post
 o make MNC variable initialization happen earlier

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.7 2004/10/21 13:38:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.8 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -126,4 +126,3 @@ C     Functions
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-

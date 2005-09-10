@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.19 2004/12/17 21:28:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.20 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -17,6 +17,10 @@ C     that the lookup tables start in a well-defined state.
       
 C     !USES:
 #include "mnc_common.h"
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -55,6 +59,7 @@ C     Blank the CW tables
         mnc_cw_fgnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_fgud(g) = 0
         mnc_cw_fgis(g) = 0
+        mnc_cw_fgci(g) = 1
 C       mnc_cw_cvnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         DO i = 1,MNC_CW_MAX_I
           mnc_cw_dn(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
@@ -76,7 +81,28 @@ C       mnc_cw_cvnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
 C          mnc_cw_cvse(i,g) = 0
         ENDDO
       ENDDO
-      
+
+      DO i = 1,MNC_MAX_INFO
+        mnc_cw_cit(1,i) = 0
+        mnc_cw_cit(2,i) = 0
+        mnc_cw_cit(3,i) = -1
+      ENDDO
+
+C     The default for all file types is to add the iter to the name and
+C     grow them in "lock step" together
+      mnc_cw_cit(1,1) = 1
+      mnc_cw_cit(2,1) = nIter0
+
+C     Here, we do not add the iter to the file name
+      mnc_cw_cit(1,2) = -1
+      mnc_cw_cit(2,2) = -1
+
+C     For checkpoint files, we want to use the current iter but we do
+C     not (by default, anyway) want to update the current iter for
+C     everything else
+      mnc_cw_cit(1,3) = 3
+      mnc_cw_cit(2,3) = nIter0
+
 C     DO i = 1,MNC_CW_CVDAT
 C     mnc_cw_cvdt(i) = 0.0D0
 C     ENDDO

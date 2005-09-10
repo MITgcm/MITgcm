@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.15 2005/06/09 16:38:24 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.16 2005/09/10 18:30:06 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -248,7 +248,8 @@ C     Write pickup file for diagnostics package
 #ifdef ALLOW_PTRACERS
 C     Write restart file for passive tracers
       IF (usePTRACERS) THEN
-        CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
+        CALL PTRACERS_WRITE_CHECKPOINT(permCheckPoint, 
+     &       fn,myIter,myTime,myThid)
       ENDIF
 #endif /* ALLOW_PTRACERS */
 

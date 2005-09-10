@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.24 2004/12/17 21:28:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.25 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -606,6 +606,93 @@ C     Global tile number for simple (non-cube) domains
 #endif
 
 CEH3      write(*,*) 'iG,jG,uniq_tnum :', iG,jG,uniq_tnum
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 1
+C     !ROUTINE: MNC_CW_GET_FACE_NUM
+
+C     !INTERFACE:
+      SUBROUTINE MNC_CW_GET_FACE_NUM( 
+     I     bi, bj, 
+     O     uniq_fnum, 
+     I     myThid )
+
+C     !DESCRIPTION:
+
+C     !USES:
+      implicit none
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj, uniq_fnum
+CEOP
+
+#ifdef ALLOW_EXCH2
+
+      uniq_fnum = exch2_myFace( W2_myTileList(bi) )
+
+#else
+
+C     Global face number for simple (EXCH "1") domains
+      uniq_fnum = -1
+
+#endif
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 1
+C     !ROUTINE: MNC_CW_GET_XYFO
+
+C     !INTERFACE:
+      SUBROUTINE MNC_CW_GET_XYFO( 
+     I     bi, bj, 
+     O     ixoff, iyoff, 
+     I     myThid )
+
+C     !DESCRIPTION:
+
+C     !USES:
+      implicit none
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj, ixoff,iyoff
+CEOP
+
+C     !LOCAL VARIABLES:
+      integer uniq_tnum
+
+#ifdef ALLOW_EXCH2
+
+      uniq_tnum = W2_myTileList(bi)
+      ixoff = exch2_tbasex( uniq_tnum )
+      iyoff = exch2_tbasey( uniq_tnum )
+
+#else
+
+C     Global tile number for simple (non-cube) domains
+C     iG = bi+(myXGlobalLo-1)/sNx
+C     jG = bj+(myYGlobalLo-1)/sNy
+C     uniq_tnum = (jG - 1)*(nPx*nSx) + iG
+      ixoff = myXGlobalLo + bi * sNx
+      iyoff = myYGlobalLo + bj * sNy
+
+#endif
 
       RETURN
       END

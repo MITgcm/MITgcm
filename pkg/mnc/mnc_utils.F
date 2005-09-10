@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.12 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.13 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -303,3 +303,42 @@ C     Reaching this point means all tests passed
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 1
+C     !ROUTINE: MNC_PSNCM
+
+C     !INTERFACE:
+      SUBROUTINE MNC_PSNCM(
+     O     ostring,
+     I     ival, n )
+
+C     !DESCRIPTION:
+C     Print a zero-padded integer to a String with an N-Character
+C     Minimum length
+
+      IMPLICIT NONE
+
+C     !INPUT PARAMETERS:
+C     ostring :: String to contain formatted output
+      CHARACTER*(*) ostring
+      INTEGER ival, n
+CEOP
+
+C     !LOCAL VARIABLES:
+      INTEGER i, lens, nmin
+      CHARACTER*(25) tmp
+
+      lens = LEN(ostring)
+      DO i = 1,lens
+        ostring(i:i) = ' '
+      ENDDO
+      WRITE(tmp,'(I25.25)') ival
+      nmin = ival / 10 + 1
+      IF (nmin .LT. n)  nmin = n
+      ostring(1:nmin) = tmp((26-nmin):25)
+
+C
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+

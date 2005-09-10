@@ -90,6 +90,7 @@ Heres a further "convenience wrapper" written on top of the above UI:
   MNC_COMP_VTYPE_VAR( ind_vt, ind_fv_ids, ires, myThid )
 
 
+
 To-Do:
 ======
 
@@ -98,35 +99,8 @@ To-Do:
 
  2) UNITS -- as with the names we need to follow conventions
 
- 3) AM described her "diags" (or "myDiags" or "mDiags") interface
-    which should use MNC for output.  The data storage idea is similar
-    to the MNC tables-of-indicies approach but also includes one huge
-    double-precision "accumulator" to hold all the temporary values
-    (eg. partial sums for averages, current max/mins):
-
-      vname ( ni ) 
-      vlen  ( ni ) 
-      vind  ( ni ) ------+
-                         |
-
-      vij_diag ( i, j, [...] )  w/ lat/lon indicies
-      vgl_diag ( [...] )        wo/ lat/lon indicies (global)
-
- 4) CNH pointed out that grid interpolation needs to be handled
+ 3) CNH pointed out that grid interpolation needs to be handled
     "on-the-fly" since pre-processing would result in overly large
     input files.  We need an interpolation API...
-
- 5) From the group meeting on 2004/01/21, we need to define
-    "sub-grids" corresponding to:
-
-         var_name       HGRID       VGRID       TIME
-         ===========================================
-         u              U_xy        r_c         t
-         eta            T_xy        -           t
-         rac            T_xy        -           -
-
-    And write a convenience wrapper so that users can write variables
-    using just two function calls.  JMC and I worked out the
-    following:
 
 

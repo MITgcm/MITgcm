@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.27 2005/07/06 21:17:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.28 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -87,6 +87,10 @@ C     mnc_cw_fgnm  (f)  :: file group name (or "base name")
 C     mnc_cw_fgud  (f)  :: file group unlimited dim value
 C     mnc_cw_fgis  (f)  :: file group sequence number
 C     mnc_cw_fgig  (f)  :: file group unlim dim is growing
+C     mnc_cw_fgci  (f)  :: file CITER group number (cig) ------+
+C     .                                                        |
+C     mnc_cw_cit (3,cig):: CITER (1) flag, (2) current, and    |
+C     .                          (3) next model Iter values <--+
 C     .
 C     mnc_cw_gname (g)  :: Gtype names              <--------+
 C     mnc_cw_ndim  (g)  :: number of dimensions              |
@@ -116,28 +120,23 @@ C     v                 :: Vtype index
 C     c                 :: CV index
 CEOP
 
-      integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
-      integer MNC_CW_MAX_I, MNC_CW_CVDAT
-      parameter ( MNC_MAX_ID   =   4000 )
-      parameter ( MNC_MAX_CHAR =    100 )
-      parameter ( MNC_MAX_INFO =    800 )
-      parameter ( MNC_CW_MAX_I =    150 )
-      parameter ( MNC_CW_CVDAT =  50000 )
+#include "MNC_SIZE.h"
 
       COMMON /MNC_VARS_C/
      &     mnc_blank_name, 
      &     mnc_f_names, mnc_g_names, mnc_v_names, mnc_d_names, 
      &     mnc_out_path
 
-      COMMON /MNC_VARS_I/
-     &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids,  mnc_f_alld,
-     &     mnc_d_size,  mnc_d_ids
-
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_g_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_v_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_d_names(MNC_MAX_ID)
+
+      COMMON /MNC_VARS_I/
+     &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids,  mnc_f_alld,
+     &     mnc_d_size,  mnc_d_ids
+
       integer mnc_f_info(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_fd_ind(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_fv_ids(MNC_MAX_ID,MNC_MAX_INFO)
@@ -159,7 +158,8 @@ C     &     mnc_cw_cvnm
      &     mnc_cw_is,    mnc_cw_ie,
      &     mnc_cw_vgind, mnc_cw_vnat,
      &     mnc_cw_vbij,  mnc_cw_viat,
-     &     mnc_cw_fgud,  mnc_cw_fgis,  mnc_cw_fgig
+     &     mnc_cw_fgud,  mnc_cw_fgis,  mnc_cw_fgig, mnc_cw_fgci,
+     &     mnc_cw_cit
 C     &     mnc_cw_cvse
 
       COMMON /MNC_CW_VARS_R/
@@ -188,6 +188,9 @@ C     &     mnc_cw_cvdt
       integer mnc_cw_fgud(MNC_MAX_ID)
       integer mnc_cw_fgis(MNC_MAX_ID)
       integer mnc_cw_fgig(MNC_MAX_ID)
+      integer mnc_cw_fgci(MNC_MAX_ID)
+
+      integer mnc_cw_cit(3,MNC_MAX_INFO)
 
 C      character*(MNC_MAX_CHAR) mnc_cw_cvnm(MNC_MAX_ID)
 C      integer mnc_cw_cvse(2,MNC_MAX_ID)

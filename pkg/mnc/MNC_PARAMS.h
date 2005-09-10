@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.10 2005/06/27 20:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.11 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
 C
 
@@ -47,6 +47,13 @@ C     readgrid_mnc     :: read INI_CURVILINEAR_GRID() info using mnc
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
      &     readgrid_mnc
+
+C     ===  PARM_MNC_I Common Block  ===
+C     mnc_curr_iter    :: current iter for file names
+
+      COMMON /PARM_MNC_I/
+     &     mnc_curr_iter
+      INTEGER mnc_curr_iter
 
 C     ===  PARM_MNC_R Common Block  ===
 C     mnc_max_fsize    :: maximum file size

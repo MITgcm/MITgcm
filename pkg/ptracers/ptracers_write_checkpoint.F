@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.6 2005/07/30 00:58:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.7 2005/09/10 18:30:07 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,8 @@ CBOP
 C !ROUTINE: PTRACERS_WRITE_CHECKPOINT
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_WRITE_CHECKPOINT( suff,myIter,myTime,myThid )
+      SUBROUTINE PTRACERS_WRITE_CHECKPOINT( permCheckPoint, 
+     &     suff,myIter,myTime,myThid )
 
 C !DESCRIPTION:
 C     Writes current state of passive tracers to a pickup file
@@ -21,10 +22,12 @@ C !USES: ===============================================================
 #include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  suff                 :: suffix for pickup file (eg. ckptA or 0000000010)
-C  myIter               :: time-step number
-C  myTime               :: model time
-C  myThid               :: thread number
+C     permCheckPoint  :: permanent or a rolling checkpoint
+C     suff            :: suffix for pickup file (eg. ckptA or 0000000010)
+C     myIter          :: time-step number
+C     myTime          :: model time
+C     myThid          :: thread number
+      LOGICAL permCheckPoint
       CHARACTER*(*) suff
       INTEGER myIter
       _RL myTime
@@ -41,26 +44,42 @@ C  iRec    		:: record number
 C  fn   		:: character buffer for creating filename
 C  prec 		:: precision of pickup files
 C  lgf  		:: flag to write "global" files
-      INTEGER iTracer,prec,iRec,iChar,lChar
+      INTEGER i,iTracer,prec,iRec,iChar,lChar
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
 CEOP
 
+      DO i = 1,MAX_LEN_FNAM
+        fn(i:i) = ' '
+      ENDDO
+
 #ifdef ALLOW_MNC
       IF ( PTRACERS_pickup_write_mnc ) THEN
-C       Read variables from the pickup file
-        CALL MNC_FILE_CLOSE_ALL_MATCHING(
-     &       'pickup_ptracers', myThid)
-        CALL MNC_CW_SET_UDIM('pickup_ptracers', 1, myThid)
+        IF ( permCheckPoint ) THEN
+          WRITE(fn,'(a)') 'pickup_ptracers'
+        ELSE
+          WRITE(fn,'(2a)') 'pickup_ptracers.', suff
+        ENDIF
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        IF ( permCheckPoint ) THEN
+          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
+        ELSE
+          CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
+        ENDIF
+C       The following two values should probably be for the n-1 time
+C       step since we're saving the gPtrNm1 variable first
+        CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         DO iTracer = 1,PTRACERS_numInUse
-          CALL MNC_CW_RL_W('D','pickup_ptracers',0,0,
-     &         PTRACERS_names(iTracer),
+          CALL MNC_CW_RL_W('D',fn,0,0, PTRACERS_names(iTracer),
      &         gPtrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
-        CALL MNC_CW_SET_UDIM('pickup_ptracers', 2, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 2, myThid)
+        CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         DO iTracer = 1,PTRACERS_numInUse
-          CALL MNC_CW_RL_W('D','pickup_ptracers',0,0,
-     &         PTRACERS_names(iTracer),
+          CALL MNC_CW_RL_W('D',fn,0,0, PTRACERS_names(iTracer),
      &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
       ENDIF

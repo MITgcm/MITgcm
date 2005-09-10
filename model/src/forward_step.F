@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.118 2005/07/30 23:39:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.119 2005/09/10 18:30:06 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -423,6 +423,17 @@ C--   Step forward fields and calculate time tendency terms.
 C--   Update time-counter
       myIter = nIter0 + iLoop
       myTime = startTime + deltaTClock * float(iLoop)
+
+#ifdef ALLOW_MNC
+C     Update the default next iter for MNC
+      IF ( useMNC ) THEN
+         CALL MNC_CW_CITER_SETG( 1, 1, -1, myIter )
+
+C        TODO: Logic should be added here so that users can specify, on
+C        a per-citer-group basis, when it is time to update the
+C        "current" (and not just the "next") iteration
+       ENDIF
+#endif
 
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF

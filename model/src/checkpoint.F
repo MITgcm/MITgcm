@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.55 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.56 2005/09/10 18:30:06 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -232,8 +232,10 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
       
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_read_mnc) THEN
+        WRITE(fn,'(A)') 'pickup'
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
@@ -598,9 +600,18 @@ C         &    myIter,myThid)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_write_mnc) THEN
-        CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+        IF ( permCheckPoint ) THEN
+          WRITE(fn,'(A)') 'pickup'
+        ELSE
+          WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
+        ENDIF
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        IF ( permCheckPoint ) THEN
+          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+        ELSE
+          CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
+        ENDIF
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
-        CALL MNC_CW_SET_UDIM(fn, 0, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
