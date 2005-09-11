@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.9 2005/06/23 20:02:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.10 2005/09/11 04:35:31 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -75,7 +75,6 @@ C     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
-C     aim_tave_mnc :: write TimeAverage output using MNC
       NAMELIST /AIM_PARAMS/
      &    aim_useFMsurfBC, aim_useMMsurfFc, 
      &    aim_surfPotTemp, aim_energPrecip, aim_splitSIOsFx,
@@ -85,7 +84,8 @@ C     aim_tave_mnc :: write TimeAverage output using MNC
      &    aim_swcFile,
      &    aim_dragStrato,
      &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq,
-     &    aim_tave_mnc
+     &     aim_timeave_mnc, aim_snapshot_mnc,
+     &     aim_pickup_write_mnc, aim_pickup_read_mnc
 
 C--   Physical constants (common PHYCON) :
 C       P0    = reference pressure                 [Pa=N/m2]
@@ -263,14 +263,29 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
 #endif /* ALLOW_AIM_TAVE */
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. aim_tave_mnc ) aim_tave_mdsio = .FALSE.
-      ENDIF
+      aim_timeave_mnc      =
+     &     aim_timeave_mnc .AND. useMNC
+      aim_snapshot_mnc     =
+     &     aim_snapshot_mnc .AND. useMNC
+      aim_pickup_write_mnc =
+     &     aim_pickup_write_mnc .AND. useMNC
+      aim_pickup_read_mnc  =
+     &     aim_pickup_read_mnc .AND. useMNC
+
+      aim_timeave_mdsio      = (.NOT. aim_timeave_mnc)
+     &     .OR. outputTypesInclusive
+      aim_snapshot_mdsio     = (.NOT. aim_snapshot_mnc)
+     &     .OR. outputTypesInclusive
+      aim_pickup_write_mdsio = (.NOT. aim_pickup_write_mnc)
+     &     .OR. outputTypesInclusive
+      aim_pickup_read_mdsio  = (.NOT. aim_pickup_read_mnc)
+     &     .OR. outputTypesInclusive
 #else
-C     Stop if MNC is not compiled-in and aim_tave_mnc=.TRUE.
-      IF (aim_tave_mnc) THEN
-        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: aim_tave_mnc=.TRUE. ',
+C     Stop if MNC is not compiled-in and aim_*_mnc=.TRUE.
+      IF ( aim_timeave_mnc .OR. aim_snapshot_mnc
+     &     .OR. aim_pickup_write_mnc .OR. aim_pickup_read_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 
+     &       'AIM_READPARMS: one or more aim_*_mnc vars is .TRUE. ',
      &       'but ALLOW_MNC is undefined'
         CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(2A)') 'Please re-compile with the MNC ',
@@ -278,6 +293,14 @@ C     Stop if MNC is not compiled-in and aim_tave_mnc=.TRUE.
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R AIM_READPARMS'
       ENDIF
+      aim_timeave_mnc        = .FALSE.
+      aim_snapshot_mnc       = .FALSE.
+      aim_pickup_write_mnc   = .FALSE.
+      aim_pickup_read_mnc    = .FALSE.
+      aim_timeave_mdsio      = .TRUE.
+      aim_snapshot_mdsio     = .TRUE.
+      aim_pickup_write_mdsio = .TRUE.
+      aim_pickup_read_mdsio  = .TRUE.
 #endif /* ALLOW_MNC */
 
 

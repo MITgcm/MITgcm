@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.9 2005/06/23 20:02:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.10 2005/09/11 04:35:31 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -112,7 +112,7 @@ C      Normalize by integrated time
        _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_MNC
-       IF (useMNC .AND. aim_tave_mnc) THEN
+       IF (useMNC .AND. aim_timeave_mnc) THEN
 C        C             12345678
          mncfn(1:8) = 'aim_tave'
          CALL MNC_CW_SET_UDIM(mncfn, -1, myThid)
@@ -144,7 +144,7 @@ C        C             12345678
        ENDIF
 #endif /*  ALLOW_MNC  */
 
-       IF (aim_tave_mdsio) THEN
+       IF (aim_timeave_mdsio) THEN
 
 C        find wether we are writing globalFile or tile-files:
          CALL GET_WRITE_GLOBAL_FLD( gf )
