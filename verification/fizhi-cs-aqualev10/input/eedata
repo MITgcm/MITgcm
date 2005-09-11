@@ -4,6 +4,8 @@
 # nTy - No. threads per process in Y
  &EEPARMS
  useCubedSphereExchange=.TRUE.,
+# unlimit the stack size for the FIZHI rad code
+ useSETRLSTK=.TRUE.,
 # Activate one line below to support 2, 3 or 6 way multi-threading
 #nTx=2,
 #nTx=3,

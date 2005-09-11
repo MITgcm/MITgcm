@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.545 2005/09/11 04:37:01 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.546 2005/09/11 18:52:25 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add HAVE_SETRLSTK define and useSETRLSTK flag (eedata) which calls 
+  a C routine to unlimit the stack size
 o mnc-ify pkg/aim snapshot vars
 o mnc-ify pkg/land as requested by Daniel
 o various changes to mnc including:

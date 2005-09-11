@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.129 2005/09/05 14:56:47 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.130 2005/09/11 18:52:26 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -689,6 +689,42 @@ EOF
 }
 
 
+check_HAVE_SETRLSTK()  {
+    get_fortran_c_namemangling
+    cat <<EOF > genmake_tc_1.c
+$FC_NAMEMANGLE
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+void FC_NAMEMANGLE(setrlstk) ()
+{
+    struct rlimit rls;
+    rls.rlim_cur = RLIM_INFINITY;
+    rls.rlim_max = RLIM_INFINITY;
+    setrlimit(RLIMIT_STACK, &rls);
+    return;
+}
+EOF
+    make genmake_tc_1.o >> genmake_warnings 2>&1
+    RET_C=$?
+    cat <<EOF > genmake_tc_2.$FS
+      program hello
+      external setrlstk
+      call setrlstk()
+      end
+EOF
+    $FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o >> genmake_warnings 2>&1
+    RET_F=$?
+    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_warnings 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	HAVE_SETRLSTK=t
+	DEFINES="$DEFINES -DHAVE_SETRLSTK"
+    fi
+    rm -f genmake_tc*
+}
+
+
 check_HAVE_STAT()  {
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
@@ -844,6 +880,7 @@ HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
 HAVE_CLOC=
+HAVE_SETRLSTK=
 HAVE_STAT=
 HAVE_NETCDF=
 HAVE_ETIME=
@@ -1381,6 +1418,15 @@ rm -f genmake_tcomp*
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
 if test "x$HAVE_CLOC" != x ; then
+    echo "yes"
+else
+    echo "no"
+fi
+rm -f genmake_t*
+
+printf "  Can we unlimit the stack size using $FC...  "
+check_HAVE_SETRLSTK
+if test "x$HAVE_SETRLSTK" != x ; then
     echo "yes"
 else
     echo "no"

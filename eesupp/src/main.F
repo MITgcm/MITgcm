@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.16 2005/08/19 23:13:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.17 2005/09/11 18:52:26 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -128,6 +128,12 @@ C--   Trap errors
        fatalError = .TRUE.
        GOTO 999
       ENDIF
+
+#ifdef HAVE_SETRLSTK
+      IF (useSETRLSTK) THEN
+        CALL setrlstk
+      ENDIF
+#endif
 
 #ifdef HAVE_PTHREADS
 C      IF (usePTHREADS) THEN

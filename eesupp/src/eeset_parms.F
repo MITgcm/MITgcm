@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.19 2005/08/05 23:44:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.20 2005/09/11 18:52:26 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -46,7 +46,7 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange,
-     & printMapIncludesZeros
+     & printMapIncludesZeros, useSETRLSTK
 CEOP
 
 
@@ -86,6 +86,9 @@ C
 C     useCoupler is a flag which controls communications with other
 C     model components through a coupler interface.
 C
+C     useSETRLSTK is a flag which toggles calling a small C routine 
+C     which sets the stack size to "unlimited" using setrlimit()
+C     
       notUsingXPeriodicity       = .FALSE.
       notUsingYPeriodicity       = .FALSE.
       useCubedSphereExchange     = .FALSE.
@@ -93,6 +96,7 @@ C
       useCoupler                 = .FALSE.
       nTx                        = 1
       nTy                        = 1
+      useSETRLSTK                = .FALSE.
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
