@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.119 2005/09/10 18:30:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.120 2005/09/11 18:17:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -427,7 +427,7 @@ C--   Update time-counter
 #ifdef ALLOW_MNC
 C     Update the default next iter for MNC
       IF ( useMNC ) THEN
-         CALL MNC_CW_CITER_SETG( 1, 1, -1, myIter )
+         CALL MNC_CW_CITER_SETG( 1, 1, -1, myIter , myThid )
 
 C        TODO: Logic should be added here so that users can specify, on
 C        a per-citer-group basis, when it is time to update the
