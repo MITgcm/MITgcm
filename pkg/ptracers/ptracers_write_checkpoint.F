@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.7 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.8 2005/09/11 15:06:48 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -47,6 +47,8 @@ C  lgf  		:: flag to write "global" files
       INTEGER i,iTracer,prec,iRec,iChar,lChar
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 CEOP
 
       DO i = 1,MAX_LEN_FNAM
@@ -58,7 +60,8 @@ CEOP
         IF ( permCheckPoint ) THEN
           WRITE(fn,'(a)') 'pickup_ptracers'
         ELSE
-          WRITE(fn,'(2a)') 'pickup_ptracers.', suff
+          lChar = ILNBLNK(suff)
+          WRITE(fn,'(2a)') 'pickup_ptracers.', suff(1:lChar)
         ENDIF
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
