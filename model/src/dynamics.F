@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.123 2005/08/16 22:52:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.124 2005/09/11 20:52:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -433,7 +433,7 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRU,recip_HFacW,
+     I         -1, KappaRU,recip_HFacW,
      U         gU,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -442,7 +442,7 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRV,recip_HFacS,
+     I         -2, KappaRV,recip_HFacS,
      U         gV,
      I         myThid )
         ENDIF
