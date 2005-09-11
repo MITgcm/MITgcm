@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.24 2004/12/20 19:11:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.25 2005/09/11 20:54:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -211,14 +211,22 @@ CADJ loop = sequential
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics .AND.tracerId.GE.1 ) THEN
+      IF ( useDiagnostics .AND.tracerId.NE.0 ) THEN
+        IF ( tracerId.GE. 1 ) THEN
 C--   Set diagnostic suffix for the current tracer
 #ifdef ALLOW_GENERIC_ADVDIFF
-        diagSufx = GAD_DIAG_SUFX( tracerId, myThid )
+          diagSufx = GAD_DIAG_SUFX( tracerId, myThid )
 #else
-        diagSufx = 'aaaa'
+          diagSufx = 'aaaa'
 #endif
-        diagName = 'DFrI'//diagSufx
+          diagName = 'DFrI'//diagSufx
+        ELSEIF ( tracerId.EQ. -1 ) THEN
+          diagName = 'VISrI_Um'
+        ELSEIF ( tracerId.EQ. -2 ) THEN
+          diagName = 'VISrI_Vm'
+        ELSE
+          STOP 'IMPLIDIFF: should never reach this point !'
+        ENDIF
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO k= 1,Nr
           IF ( k.EQ.1 ) THEN
@@ -229,13 +237,35 @@ C         otherwise counter is not incremented !!
                df(i,j) = 0. _d 0
              ENDDO
             ENDDO
-          ELSE
+          ELSEIF ( tracerId.GE.1 ) THEN
             DO j=1,sNy
              DO i=1,sNx
                df(i,j) =
-     &              rA(i,j,bi,bj)
+     &             -rA(i,j,bi,bj)
      &            * KappaRX(i,j,k)*recip_drC(k)
-     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))
+     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+             ENDDO
+            ENDDO
+          ELSEIF ( tracerId.EQ.-1 ) THEN
+            DO j=1,sNy
+             DO i=1,sNx+1
+               df(i,j) =
+     &             -rAw(i,j,bi,bj)
+     &            * KappaRX(i,j,k)*recip_drC(k)
+     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+     &            * _maskW(i,j,k,bi,bj)
+     &            * _maskW(i,j,k-1,bi,bj)
+             ENDDO
+            ENDDO
+          ELSEIF ( tracerId.EQ.-2 ) THEN
+            DO j=1,sNy+1
+             DO i=1,sNx
+               df(i,j) =
+     &             -rAs(i,j,bi,bj)
+     &            * KappaRX(i,j,k)*recip_drC(k)
+     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
+     &            * _maskS(i,j,k,bi,bj)
+     &            * _maskS(i,j,k-1,bi,bj)
              ENDDO
             ENDDO
           ENDIF
