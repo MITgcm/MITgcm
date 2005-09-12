@@ -17,12 +17,22 @@ C--   heimbach@mit.edu 11-Jan-2001
 # include "SEAICE_OPTIONS.h"
 #endif
 
+
+#ifdef EXACT_CONSERV
+      common /addynvars_r/
+     &                     adetan, adetah, 
+     &                     aduvel, advvel, adwvel,
+     &                     adtheta, adsalt, 
+     &                     adgu, adgv, adgt, adgs, 
+     &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
+#else
       common /addynvars_r/ 
-     &                     adetan, adetah,
+     &                     adetan,
      &                     aduvel, advvel, adwvel, 
      &                     adtheta, adsalt, 
      &                     adgu, adgv, adgt, adgs, 
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
+#endif
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
