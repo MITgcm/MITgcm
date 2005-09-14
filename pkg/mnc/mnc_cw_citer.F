@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_citer.F,v 1.1 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_citer.F,v 1.2 2005/09/14 19:27:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -25,9 +25,26 @@ C     !INPUT PARAMETERS:
       integer igroup, iflag, ival_curr, ival_next, myThid
 CEOP
 
+C     !LOCAL VARIABLES:
+      integer i
+
       mnc_cw_cit(1,igroup) = iflag
       IF ( ival_curr .GT. 0 ) THEN
-        mnc_cw_cit(2,igroup) = ival_curr
+
+        IF ( mnc_cw_cit(2,igroup) .NE. ival_curr ) THEN
+
+C         The current iteration number has changed so we need to reset
+C         the unlimited dimension for all the files in this citer group
+          DO i = 1,MNC_MAX_ID
+            IF ( mnc_cw_fgci(i) .eq. igroup ) THEN
+              mnc_cw_fgud(i) = 0
+            ENDIF
+          ENDDO
+
+          mnc_cw_cit(2,igroup) = ival_curr
+
+        ENDIF
+        
       ENDIF
       IF ( ival_next .GT. 0 ) THEN
         mnc_cw_cit(3,igroup) = ival_next
