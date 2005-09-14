@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.546 2005/09/11 18:52:25 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.547 2005/09/14 17:57:54 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o In response to JMC's bug report, genmake2 now ignores any soft-links
+  that it finds in the *current* directory when searching for files.
+  Soft-links found in any other source directories will still work as
+  they did before.
 o add HAVE_SETRLSTK define and useSETRLSTK flag (eedata) which calls 
   a C routine to unlimit the stack size
 o mnc-ify pkg/aim snapshot vars

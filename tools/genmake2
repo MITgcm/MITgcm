@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.130 2005/09/11 18:52:26 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.131 2005/09/14 17:57:54 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -874,6 +874,7 @@ NOOPTFLAGS=
 MPI=
 MPIPATH=
 TS=
+HAVE_TEST_L=
 
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
@@ -1337,6 +1338,11 @@ Error: The command "ln -s" failed -- please specify a working soft-link
 
 EOF
     exit 1
+fi
+test -L genmake_tlink > /dev/null 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    HAVE_TEST_L=t
 fi
 rm -f genmake_test_ln genmake_tlink
 
@@ -1920,6 +1926,7 @@ for d in $alldirs ; do
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
+		ignore_f=f
                 case $d/$sf in
                   ./$PACKAGES_DOT_H)
 			;;
@@ -1930,33 +1937,41 @@ for d in $alldirs ; do
                   ./BUILD_INFO.h)
 			;;
                   *)
-		  	touch .links.tmp/$sf
-		  	deplist="$deplist $sf"
+			#  For the local directory *ONLY*,
+			#  ignore all soft-links
+			if test "x$HAVE_TEST_L" = xt -a "x$d" = x. -a -L $sf ; then
+			    ignore_f=t
+			else
+			    touch .links.tmp/$sf
+			    deplist="$deplist $sf"
+			fi
 			;;
                 esac
-		extn=`echo $sf | $AWK -F. '{print $NF}'`
-		case $extn in
-		    F)
-			echo    " \\"  >> srclist.inc
-			printf " $sf" >> srclist.inc
-			;;
-		    F90)
-			echo    " \\"  >> f90srclist.inc
-			printf " $sf" >> f90srclist.inc
-			;;
-		    c)
-			echo    " \\"  >> csrclist.inc
-			printf " $sf" >> csrclist.inc
-			;;
-		    h)
-			echo    " \\"  >> hlist.inc
-			printf " $sf" >> hlist.inc
-			;;
-		    flow)
-			echo    " \\"  >> ad_flow_files.inc
-			printf " $sf" >> ad_flow_files.inc
-			;;
-		esac
+		if test "x$ignore_f" = xf ; then
+		    extn=`echo $sf | $AWK -F. '{print $NF}'`
+		    case $extn in
+			F)
+			    echo    " \\"  >> srclist.inc
+			    printf " $sf" >> srclist.inc
+			    ;;
+			F90)
+			    echo    " \\"  >> f90srclist.inc
+			    printf " $sf" >> f90srclist.inc
+			    ;;
+			c)
+			    echo    " \\"  >> csrclist.inc
+			    printf " $sf" >> csrclist.inc
+			    ;;
+			h)
+			    echo    " \\"  >> hlist.inc
+			    printf " $sf" >> hlist.inc
+			    ;;
+			flow)
+			    echo    " \\"  >> ad_flow_files.inc
+			    printf " $sf" >> ad_flow_files.inc
+			    ;;
+		    esac
+		fi
 	    fi
 	fi
     done
