@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.120 2005/09/11 18:17:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.121 2005/09/14 18:32:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,12 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+#endif
 
 #ifdef ALLOW_SHAP_FILT
 # include "SHAP_FILT.h"
@@ -432,6 +438,16 @@ C     Update the default next iter for MNC
 C        TODO: Logic should be added here so that users can specify, on
 C        a per-citer-group basis, when it is time to update the
 C        "current" (and not just the "next") iteration
+
+C        TODO: the following is just a temporary band-aid (mostly, for
+C        Baylor) until someone writes a routine that better handles time
+C        boundaries such as weeks, months, years, etc.
+         IF ( mnc_filefreq .GT. 0 ) THEN
+           IF (DIFFERENT_MULTIPLE(mnc_filefreq,myTime,deltaTClock)) 
+     &          THEN
+             CALL MNC_CW_CITER_SETG( 1, 1, myIter, -1 , myThid )
+           ENDIF
+         ENDIF
        ENDIF
 #endif
 

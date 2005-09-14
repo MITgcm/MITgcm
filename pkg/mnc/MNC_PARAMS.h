@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.11 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.12 2005/09/14 18:32:07 edhill Exp $
 C $Name:  $
 C
 
@@ -52,8 +52,9 @@ C     ===  PARM_MNC_I Common Block  ===
 C     mnc_curr_iter    :: current iter for file names
 
       COMMON /PARM_MNC_I/
-     &     mnc_curr_iter
+     &     mnc_curr_iter, mnc_filefreq
       INTEGER mnc_curr_iter
+      INTEGER mnc_filefreq
 
 C     ===  PARM_MNC_R Common Block  ===
 C     mnc_max_fsize    :: maximum file size
