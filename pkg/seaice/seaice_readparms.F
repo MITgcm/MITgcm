@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.28 2005/09/01 05:34:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.29 2005/09/15 05:13:39 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,8 +146,6 @@ C--   set default sea ice parameters
       DIFF1      = 2.0*DIFF1
       A22        = 0.15      _d 0
       HO         = 0.5       _d 0
-C DOUBLE HO BECAUSE OF MOD IN GROWTH
-      HO=2.0*HO
       WindForcingStart  = -99999.
       WindForcingEnd    = -99999.
       WindForcingPeriod = -99999.
