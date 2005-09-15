@@ -1,0 +1,46 @@
+# $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/README,v 1.1 2005/09/15 16:22:24 jmc Exp $
+# $Name:  $
+
+Some tools (matlab scripts for now) specific to the Cubed-Sphere grid :
+
+split_C_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
+        apply to cell-centered CS-field ; extend the face array by 
+        adding 1 row & 1 column (like the exchanges)
+split_Z_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
+        apply to cell-corner CS-field ; extend the face array by 
+        adding 1 row & 1 column (like the exchanges)
+split_UV_cub.m  :: split the 2 C-grid components of a vector 
+        (2d,3d global CS-field) into 6 faces ; extend the face array 
+        by adding 1 row or 1 column (like the exchanges)
+
+cubeZ2latlon.m  :: interpolate a CS-field to regular Lat-lon grid ;
+        similar to cube2latlon.m but apply to a field that is
+        located at the corner point of the C-grid cell.
+        (deal with the 2 "missing corners")
+
+calc_vort_cs.m  :: compute vorticity (vertical component) on CS-grid
+        from MITgcm output velocity fields u,c (on C-grid); 
+        Use the model discretization of vorticity. 
+
+the following scripts are reading a file that contains the orientation
+        of the local direction of the CS-grid relative to E-W,N-S direction.  
+  file= proj_cs[]_2uEvN.bin :: cos & sin of rotation angle, 
+                      format:: real*8, big-endian, size=32x6x32 x2(cos+sin)
+        for standard cs32 grid, the corresponding file is:
+           verification/global_ocean.cs32x15/input/proj_cs32_2uEvN.bin 
+
+rotate_csAg_EN.m :: Rotate cell centered (A-grid) U,V vector components
+        of CS-grid to East,North directions. works for 2D or 3D vector.
+
+rotate_csCg_EN.m :: Rotate MITgcm C-grid U,V vector components of CS-grid 
+        to East,North directions. done in 2 steps: 1rst compute the average
+        at the cell-center and then rotate the vector.
+
+uvLatLon2cube.m :: interpolate a 2 components vector field U,V (on A-grid)
+        to the MITgcm CS-grid (C-grid).
+ 
+More in dir bk_line:
+ Scripts that generate "broken-lines" (used to compute Meridional Transport
+  stream-function and vertically integrated horizontal stream-function)
+ + a README file + an example for each one.
+
