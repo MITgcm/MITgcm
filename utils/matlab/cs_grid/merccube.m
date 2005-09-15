@@ -23,6 +23,10 @@ function [] = merccube(XX,YY,C)
 % xc=rdmds('XC');
 % yc=rdmds('YC');
 % mercube(xc,yc,ps);shading interp
+%
+% Written by adcroft@.mit.edu, 2004.
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/merccube.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
+% $Name:  $
 
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=XX*180/pi;

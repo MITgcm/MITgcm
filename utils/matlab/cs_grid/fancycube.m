@@ -20,8 +20,10 @@ function [] = fancycube(XX,YY,C,H,r)
 % ps=rdmds('Eta.0000000000');
 % h=rdmds('ETOPO5');
 % fancycube(xg,yg,ps,h,0.05/5000);
-
-% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/fancycube.m,v 1.2 2005/05/06 17:32:54 adcroft Exp $
+%
+% Written by adcroft@.mit.edu, 2005.
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/fancycube.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
+% $Name:  $
 
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=tiles(XX*180/pi,1:6);

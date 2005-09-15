@@ -1,9 +1,10 @@
-function [U,V] = uvcube2latlon_fast(del,u,v)
-% [ui,vi]=cube2latlon_fast(del,u,v);
+function [U,V,ub,vb] = uvcube2latlon(LON,LAT,u,v,xc,yc)
+% [ui,vi]=cube2latlon(x,y,u,v,xi,yi);
 %
 % Re-grids model output on expanded spherical cube to lat-lon grid.
-%  del   pre-processed transformation data
+%  x,y   are 2-D arrays of the cell-centered coordinates 
 %  u,v   is a 2-D or 3-D horizontal components of model flow fields.
+%  xi,yi are vectors of the new regular lat-lon grid to interpolate to.
 %  ui,vi are the flow fields with dimensions of size(xi) x size(yi) size(u,3).
 %
 % e.g.
@@ -12,10 +13,11 @@ function [U,V] = uvcube2latlon_fast(del,u,v)
 % >> u=rdmds('uVeltave.0000513360');
 % >> v=rdmds('vVeltave.0000513360');
 % >> xi=-179:2:180;yi=-89:2:90;
-% >> del=cube2latlon_preprocess(xi,yi,xc,yc);
-% >> [ui,vi]=uvcube2latlon_fast(del,u,v);
+% >> [ui,vi]=uvcube2latlon(x,y,u,v,xi,yi);
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/uvcube2latlon_fast.m,v 1.1 2004/06/04 17:03:50 adcroft Exp $
+% Written by adcroft@.mit.edu, 2001.
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlon.m,v 1.1 2005/09/15 20:04:57 jmc Exp $
+% $Name:  $
 
 NN=size(u);
 [nnx ny nz]=size(u);
@@ -51,8 +53,11 @@ for k=1:6;
 end
 end
 
-U=reshape(U,[nnx NN(2:end)]);
-V=reshape(V,[nnx NN(2:end)]);
+ub=reshape(U,[nnx NN(2:end)]);
+vb=reshape(V,[nnx NN(2:end)]);
 
-U=cube2latlon_fast(del,U);
-V=cube2latlon_fast(del,V);
+%U=cube2latlon(LON,LAT,U,xc,yc);
+%V=cube2latlon(LON,LAT,V,xc,yc);
+del=cube2latlon_preprocess(LON,LAT,xc,yc);
+U=cube2latlon_fast(del,ub);
+V=cube2latlon_fast(del,vb);
