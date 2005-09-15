@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.18 2005/08/11 02:50:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.19 2005/09/15 15:03:29 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -80,9 +80,18 @@ C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
-C     SEAICE_sensHeat    - sensible heat transfer coefficient
-C     SEAICE_latentWater - latent heat transfer coefficient for water
-C     SEAICE_latentIce   - latent heat transfer coefficient for ice
+C     SEAICE_sensHeat    - buld sensible heat transfer coefficient 
+C                          = (sensible heat transfer coefficient)
+C                          x (heat capacity of air) 
+C                          x (density of air)
+C     SEAICE_latentWater - bulk latent heat transfer coefficient for water
+C                          = (latent heat transfer coefficient for water)
+C                          x (specific latent heat water to water vapor)
+C                          x (density of air)
+C     SEAICE_latentIce   - bulk latent heat transfer coefficient for ice
+C                          = (latent heat transfer coefficient for ice)
+C                          x (latent heat ice to water vapor) 
+C                          x (density of air)
 C     SEAICE_iceConduct  - sea-ice conductivity
 C     SEAICE_snowConduct - snow conductivity
 C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity

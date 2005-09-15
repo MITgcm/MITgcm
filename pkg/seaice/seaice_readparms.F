@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.29 2005/09/15 05:13:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.30 2005/09/15 15:03:28 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -120,8 +120,11 @@ C--   set default sea ice parameters
       SEAICE_wetSnowAlb  = 0.7    _d 0
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
+C     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
       SEAICE_sensHeat    = 2.284  _d +00
+C     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3
       SEAICE_latentWater = 5.6875 _d +03
+C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       SEAICE_latentIce   = 6.4474 _d +03
       SEAICE_iceConduct  = 2.1656 _d +00
       SEAICE_snowConduct = 3.1    _d -01
