@@ -1,7 +1,29 @@
-# $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/README,v 1.1 2005/09/15 16:22:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/README,v 1.2 2005/09/15 20:06:33 jmc Exp $
 # $Name:  $
 
-Some tools (matlab scripts for now) specific to the Cubed-Sphere grid :
+Matlab scripts (written by Alistair) specific to Cubed-Shere grid:
+ [initially in utils/matlab and moved here Sep. 15, 2005]
+
+Interpolate to Lat-Lon grid:
+ cube2latlon.m 
+ cube2latlon_fast.m 
+ cube2latlon_preprocess.m 
+ uvcube2latlon.m
+ uvcube2latlon_fast.m 
+
+make graphics of cs-grid fields:
+ merccube.m 
+ displaytiles.m 
+ drawedges.m 
+ fancycube.m 
+ plotcube.m 
+
+others:
+ permutetiles.m 
+ tiles.m
+
+--------------------------------------------------------------------------
+Some tools specific to the Cubed-Sphere grid :
 
 split_C_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
         apply to cell-centered CS-field ; extend the face array by 
