@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.2 2005/09/04 19:35:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.3 2005/09/15 14:53:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -39,7 +39,24 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Add diagnostics to the (long) list
+C---  Add diagnostics to the (long) list of available diagnostics:
+
+C--   add diagnostics for viscosity coefficients:
+#ifdef ALLOW_MOM_VECINV
+      diagName  = 'VISCAH  '
+      diagTitle = 'Harmonic Viscosity Coefficient in (m2/s)        '
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VISCA4  '
+      diagTitle = 'Biharmonic Viscosity Coefficient in (m4/s)        '
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* ALLOW_MOM_VECINV */
 
 C--    add diagnostics of simple derivative quantities:
        diagName  = 'momKE   '
