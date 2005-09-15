@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.18 2005/07/11 22:34:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.19 2005/09/15 14:55:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -472,6 +472,10 @@ C--   end bi,bj loops.
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
+      ENDIF
+      IF ( ivdc_kappa.NE.0 .AND. useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( IVDConvCount,'CONVADJ ',
+     &                         0, Nr, 0, 1, 1, myThid )
       ENDIF
 #endif
 

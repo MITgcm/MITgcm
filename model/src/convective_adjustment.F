@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.28 2005/08/24 23:13:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.29 2005/09/15 14:55:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -177,6 +177,13 @@ C--       End DO K=1,Nr
      I                            Nr, deltaTclock, bi, bj, myThid)
           ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifdef ALLOW_DIAGNOSTICS 
+          IF ( myIter.NE.nIter0 .AND. useDiagnostics ) THEN
+            CALL DIAGNOSTICS_FILL( ConvectCount, 'CONVADJ ',
+     I                             0, Nr, 2, bi, bj, myThid )
+          ENDIF
+#endif /*  ALLOW_DIAGNOSTICS */
 
 C--   End IF (DIFFERENT_MULTIPLE)
       ENDIF
