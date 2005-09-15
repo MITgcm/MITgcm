@@ -14,9 +14,7 @@ INCLUDES='-I/opt/mpich/gm/intel8.0/include'
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
-    FOPTIM='-O3 -align'
-#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
-#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    FOPTIM='-O3 -fp -align'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
 else
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -CB'
