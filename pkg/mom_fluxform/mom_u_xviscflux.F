@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_xviscflux.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_xviscflux.F,v 1.5 2005/09/16 20:57:09 baylor Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,6 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld, del2u,
      O        xViscFluxU,
+     I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      I        myThid)
 
 C !DESCRIPTION:
@@ -36,6 +37,10 @@ C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -53,9 +58,9 @@ C     - Laplacian  and bi-harmonic terms
         xViscFluxU(i,j) =
      &    _dyF(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
      &     *(
-     &       -viscAh*(uFld(i+1,j)-uFld(i,j))
+     &       -viscAh_D(i,j)*(uFld(i+1,j)-uFld(i,j))
      &       *cosFacU(J,bi,bj)
-     &       +viscA4*(del2u(i+1,j)       -del2u(i,j)       )
+     &       +viscA4_D(i,j)*(del2u(i+1,j)       -del2u(i,j)       )
 #ifdef COSINEMETH_III
      &       *sqcosFacU(J,bi,bj)
 #else

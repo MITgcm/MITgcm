@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_yviscflux.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_yviscflux.F,v 1.5 2005/09/16 20:57:09 baylor Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,6 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        vFld, del2v,
      O        yViscFluxV,
+     I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      I        myThid)
 
 C !DESCRIPTION:
@@ -36,6 +37,10 @@ C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -53,11 +58,11 @@ C     - Laplacian  and bi-harmonic terms
         yViscFluxV(i,j) =
      & _dxF(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
      &     *(
-     &       -viscAh*(vFld(i,j+1)-vFld(i,j))
+     &       -viscAh_D(i,j)*(vFld(i,j+1)-vFld(i,j))
 #ifdef ISOTROPIC_COS_SCALING
      &       *cosFacU(J,bi,bj)
 #endif
-     &       +viscA4*(del2v(i,j+1)       -del2v(i,j)       )
+     &       +viscA4_D(i,j)*(del2v(i,j+1)       -del2v(i,j)       )
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
      &       *sqCosFacU(J,bi,bj)

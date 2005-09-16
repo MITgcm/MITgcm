@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.24 2005/09/04 19:29:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.25 2005/09/16 20:57:09 baylor Exp $
 C $Name:  $
 
 CBOI
@@ -121,12 +121,12 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  rTransU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  rTransV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uDudxFac
@@ -145,7 +145,7 @@ c     _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  ArDvdrFac
       _RL  fvFac
       _RL  mtFacV
-      LOGICAL bottomDragTerms
+      LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
 CEOP
 
 C     Initialise intermediate terms
@@ -231,18 +231,11 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
        ENDDO
       ENDDO
 
-      IF (bottomDragTerms) THEN
-        CALL MOM_CALC_KE(bi,bj,k,3,uFld,vFld,KE,myThid)
-      ENDIF
-
-      IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.) THEN
-         CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,
-     O                         tension,
-     I                         myThid)
-         CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,
-     O                        strain,
-     I                        myThid)
-      ENDIF
+      CALL MOM_CALC_KE(bi,bj,k,2,uFld,vFld,KE,myThid)
+      CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
+      CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
+      CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
+      CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
 
 C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
@@ -270,10 +263,14 @@ C---  Calculate vertical transports (at k+1) below U & V points :
      I                        myTime, myIter, myThid)
       ENDIF
 
-c     IF (momViscosity) THEN
-c    &  CALL MOM_CALC_VISCOSITY(bi,bj,k,
-c    I                         uFld,vFld,
-c    O                         viscAh_D,viscAh_Z,myThid)
+      IF (momViscosity) THEN
+       CALL MOM_CALC_VISC(
+     I        bi,bj,k,
+     O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
+     O        harmonic,biharmonic,useVariableViscosity,
+     I        hDiv,vort3,tension,strain,KE,
+     I        myThid)
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -359,14 +356,16 @@ C-    endif momAdvection.
 C---  Calculate eddy fluxes (dissipation) between cells for zonal flow.
 
 C     Bi-harmonic term del^2 U -> v4F
-        IF ( viscA4.NE.0. ) 
+        IF (biharmonic) 
      &  CALL MOM_U_DEL2U(bi,bj,k,uFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_U_XVISCFLUX(bi,bj,k,uFld,v4F,fZon,myThid)
+        CALL MOM_U_XVISCFLUX(bi,bj,k,uFld,v4F,fZon,
+     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_U_YVISCFLUX(bi,bj,k,uFld,v4F,hFacZ,fMer,myThid)
+        CALL MOM_U_YVISCFLUX(bi,bj,k,uFld,v4F,hFacZ,fMer,
+     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
@@ -538,14 +537,16 @@ C-    endif momAdvection.
       IF (momViscosity) THEN
 C---  Calculate eddy fluxes (dissipation) between cells for meridional flow.
 C     Bi-harmonic term del^2 V -> v4F
-        IF ( viscA4.NE.0. ) 
+        IF (biharmonic) 
      &  CALL MOM_V_DEL2V(bi,bj,k,vFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_V_XVISCFLUX(bi,bj,k,vFld,v4f,hFacZ,fZon,myThid)
+        CALL MOM_V_XVISCFLUX(bi,bj,k,vFld,v4f,hFacZ,fZon,
+     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_V_YVISCFLUX(bi,bj,k,vFld,v4f,fMer,myThid)
+        CALL MOM_V_YVISCFLUX(bi,bj,k,vFld,v4f,fMer,
+     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
