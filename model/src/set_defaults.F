@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.99 2005/08/24 23:09:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.100 2005/09/16 19:33:06 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -100,8 +100,6 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscC2leith         = 0.D0
       viscC2leithD        = 0.D0
       viscC2smag          = 0.D0
-      viscAstrain         = 0.D3
-      viscAtension        = 0.D3
       diffKhT             = 0.D3
       diffKhS             = 0.D3
       viscArDefault       = 0.D-3
@@ -120,6 +118,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscA4Max           = 1.D21
       viscC4leith         = 0.D0
       viscC4leithD        = 0.D0
+      viscC4smag          = 0.D0
       diffK4T             = 0.D11
       diffK4S             = 0.D11
       cosPower            = 0.
@@ -148,6 +147,7 @@ Cml      sBeta               = 7.4D-4
       useNHMTerms         = .FALSE.
       useFullLeith        = .FALSE.
       useAnisotropicViscAGridMax = .FALSE.
+      useStrainTensionVisc = .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       momImplVertAdv      = .FALSE.

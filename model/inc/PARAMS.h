@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.164 2005/08/24 23:08:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.165 2005/09/16 19:33:05 baylor Exp $
 C $Name:  $
 C
 
@@ -231,6 +231,7 @@ C                       on irregular grids)
 C     useAnisotropicViscAGridMax :: Set to true to use Alistair's latest
 C              anisotropic length scale.  It is used only for maximum viscosity
 C              calculations.  Alistair recommends a value of viscA*GridMax=.25
+C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
@@ -306,7 +307,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempForcing,
      & saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
-     & useFullLeith, useAnisotropicViscAGridMax,
+     & useFullLeith, useAnisotropicViscAGridMax, useStrainTensionVisc,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
@@ -351,7 +352,9 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL saltAdvection
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
-      LOGICAL useFullLeith, useAnisotropicViscAGridMax
+      LOGICAL useFullLeith
+      LOGICAL useAnisotropicViscAGridMax
+      LOGICAL useStrainTensionVisc
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
@@ -474,7 +477,8 @@ C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Vorticity  part) ( m^4/s )
 C     viscC2leith :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
-C     viscC2smag  :: Smagorinsky non-dimensional viscosity factor
+C     viscC2smag  :: Smagorinsky non-dimensional viscosity factor (harmonic)
+C     viscC4smag  :: Smagorinsky non-dimensional viscosity factor (biharmonic)
 C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAhGridMax:: maximum and minimum harmonic viscosity coefficients ...
@@ -585,11 +589,11 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
-     & viscC2smag,
+     & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, 
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
-     & viscC4leith, viscC4leithD, viscAr, viscAstrain, viscAtension,
+     & viscC4leith, viscC4leithD, viscAr,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
@@ -655,8 +659,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscC2leith
       _RL viscC2leithD
       _RL viscC2smag
-      _RL viscAstrain
-      _RL viscAtension
+      _RL viscC4smag
       _RL viscAr
       _RL viscA4 
       _RL viscA4W

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.165 2005/08/24 23:09:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.166 2005/09/16 19:33:05 baylor Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -133,12 +133,12 @@ C--   Continuous equation parameters
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith,
-     & useFullLeith, useAnisotropicViscAGridMax,
-     & viscC2leithD, viscC4leithD, viscC2Smag,
+     & useFullLeith, useAnisotropicViscAGridMax, useStrainTensionVisc,
+     & viscC2leithD, viscC4leithD, viscC2Smag, viscC4Smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
-     & viscAz,  cosPower, viscAstrain, viscAtension,
+     & viscAz,  cosPower,
      & diffKhT, diffKzT, diffK4T,
      & diffKhS, diffKzS, diffK4S,
      & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
