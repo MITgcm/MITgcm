@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.8 2005/08/18 18:24:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.9 2005/09/16 20:16:31 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -64,9 +64,9 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(OmegaCave, DIC_timeave, nR ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeave, nR ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeave, nR ,
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
@@ -89,9 +89,9 @@ C      Normalize by integrated time
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
      &        myIter,myThid)
-         CALL WRITE_FLD_XY_RL('DIC_pfluxtave.',suff,pfluxave,
+         CALL WRITE_FLD_XYZ_RL('DIC_pfluxtave.',suff,pfluxave,
      &        myIter,myThid)
-         CALL WRITE_FLD_XY_RL('DIC_cfluxtave.',suff,cfluxave,
+         CALL WRITE_FLD_XYZ_RL('DIC_cfluxtave.',suff,cfluxave,
      &        myIter,myThid)
        ENDIF
 
@@ -135,8 +135,8 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(pfluxave,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(cfluxave,1,bi,bj,myThid)
+         CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(cfluxave,Nr,bi,bj,myThid)
          do k=1,Nr
            DIC_TimeAve(bi,bj,k)=0.d0
          enddo
