@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.131 2005/09/14 17:57:54 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.132 2005/09/16 00:50:49 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2121,6 +2121,11 @@ depend:
 	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
+
+lib: libmitgcmuv.a
+
+libmitgcmuv.a: \$(OBJFILES)
+	ar rcv libmitgcmuv.a \$(OBJFILES)
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(SPECIAL_FILES)
 
