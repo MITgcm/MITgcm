@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.3 2005/09/15 14:53:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.4 2005/09/16 19:32:20 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -42,21 +42,33 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  Add diagnostics to the (long) list of available diagnostics:
 
 C--   add diagnostics for viscosity coefficients:
-#ifdef ALLOW_MOM_VECINV
-      diagName  = 'VISCAH  '
-      diagTitle = 'Harmonic Viscosity Coefficient in (m2/s)        '
+      diagName  = 'VISCAHD '
+      diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'VISCA4  '
-      diagTitle = 'Biharmonic Viscosity Coefficient in (m4/s)        '
+      diagName  = 'VISCA4D '
+      diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
-#endif /* ALLOW_MOM_VECINV */
+
+      diagName  = 'VISCAHZ '
+      diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VISCA4Z '
+      diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C--    add diagnostics of simple derivative quantities:
        diagName  = 'momKE   '

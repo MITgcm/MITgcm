@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.46 2005/09/04 19:29:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.47 2005/09/16 19:32:20 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -188,6 +188,10 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
+      CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
+
+      CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
+
       IF (useAbsVorticity)
      & CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
@@ -198,39 +202,27 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
      &     .OR. viscA4Grid.NE.0.
      &     .OR. viscC4leith.NE.0.
      &     .OR. viscC4leithD.NE.0.
+     &     .OR. viscC4smag.NE.0.
      &    ) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      &                      myThid)
-         CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
-         CALL MOM_CALC_RELVORT3(
-     &                         bi,bj,k,del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
+
 C      Calculate dissipation terms for U and V equations
-C      in terms of vorticity and divergence
-       IF (    viscAhD.NE.0. .OR. viscAhZ.NE.0.
-     &    .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
-     &    .OR. viscAhGrid.NE.0. .OR. viscA4Grid.NE.0.
-     &    .OR. viscC2leith.NE.0. .OR. viscC4leith.NE.0.
-     &    .OR. viscC2leithD.NE.0. .OR. viscC4leithD.NE.0.
-     &    ) THEN
-         CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
-     O                       guDiss,gvDiss,
-     &                       myThid)
-       ENDIF
-C      or in terms of tension and strain
-       IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.
-     O      .OR. viscC2smag.ne.0) THEN
-         CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,
-     O                         tension,
-     I                         myThid)
-         CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,
-     O                        strain,
-     I                        myThid)
-         CALL MOM_HDISSIP(bi,bj,k,
-     I                    tension,strain,hFacZ,viscAtension,viscAstrain,
+
+C      in terms of tension and strain
+       IF (useStrainTensionVisc) THEN
+         CALL MOM_HDISSIP(bi,bj,k,hDiv,vort3,tension,strain,KE,
+     I                    hFacZ,
      O                    guDiss,gvDiss,
      I                    myThid)
+       ELSE
+C      in terms of vorticity and divergence
+         CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,tension,strain,KE,
+     I                       hFacZ,dStar,zStar,
+     O                       guDiss,gvDiss,
+     &                       myThid)         
        ENDIF
       ENDIF
 
