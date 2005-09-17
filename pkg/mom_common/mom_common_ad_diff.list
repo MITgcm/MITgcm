@@ -5,6 +5,7 @@ mom_calc_ke.f
 mom_calc_relvort3.f
 mom_calc_strain.f
 mom_calc_tension.f
+mom_calc_visc.f
 mom_hdissip.f
 mom_u_bottomdrag.f
 mom_u_rviscflux.f
