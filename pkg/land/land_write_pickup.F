@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.3 2005/09/10 20:40:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.4 2005/09/17 03:17:06 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -98,6 +98,7 @@ C--   Write fields as consecutive records
         ELSE
           CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
         ENDIF
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
 
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)

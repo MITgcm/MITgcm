@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.7 2005/09/10 18:30:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.8 2005/09/17 03:17:06 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -53,7 +53,8 @@ C       Read variables from the pickup file
         WRITE(fn,'(A)') 'pickup_cd'
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
-        CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
+        CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'uVelD',uVelD, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'vVelD',vVelD, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Unm1',Unm1, myThid)
@@ -143,6 +144,7 @@ C       Read variables from the pickup file
         ELSE
           CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
         ENDIF
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'uVelD',uVelD, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'vVelD',vVelD, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Unm1',Unm1, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.7 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.8 2005/09/17 03:17:06 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,6 +8,7 @@ CBOP
 C     !ROUTINE: DIAGNOSTICS_WRITE_PICKUP 
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_WRITE_PICKUP(
+     I     isPerm, 
      I     suff, 
      I     myTime,
      I     myIter,
@@ -27,10 +28,12 @@ C     == Global variables ===
 #include "DIAGNOSTICS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     isPerm  :: permanent checkpoint flag
 C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
 C     myTime  :: current time
 C     myIter  :: time-step number
 C     myThid  :: Number of this instance
+      LOGICAL isPerm
       CHARACTER*(*) suff
       _RL myTime
       INTEGER myIter
@@ -80,12 +83,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           DO i = 1,MAX_LEN_FNAM
             diag_mnc_bn(i:i) = ' '
           ENDDO
-          WRITE(diag_mnc_bn,'(A)') 'pickup_diagnostics'
+          
+          IF ( isPerm ) THEN
+            WRITE(diag_mnc_bn,'(A)') 'pickup_diagnostics'
+          ELSE
+            ii = ILNBLNK(suff)
+            WRITE(diag_mnc_bn,'(A,A)')
+     &           'pickup_diagnostics.',suff(1:ii)
+          ENDIF
+
+          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+          IF ( isPerm ) THEN
+            CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+          ELSE
+            CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
+          ENDIF
+C         Then set the actual unlimited dimension
+          CALL MNC_CW_SET_UDIM(fn, 1, myThid)
 
 C         Update the record dimension by writing the iteration number
-          CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
           CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
           CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
 
 C         Write the qdiag() array

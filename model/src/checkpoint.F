@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.56 2005/09/10 18:30:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.57 2005/09/17 03:17:05 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -605,12 +605,15 @@ C         &    myIter,myThid)
         ELSE
           WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
         ENDIF
-        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+C       First ***define*** the file group name
+        CALL MNC_CW_SET_UDIM(fn, 0, myThid)
         IF ( permCheckPoint ) THEN
           CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
         ELSE
           CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
         ENDIF
+C       Then set the actual unlimited dimension
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
