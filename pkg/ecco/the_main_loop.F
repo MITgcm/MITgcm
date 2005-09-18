@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.24 2005/09/07 02:44:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.25 2005/09/18 13:05:04 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -398,6 +398,20 @@ c--     Set the model iteration counter and the model time.
 #endif
 
 
+C--   Switch on/off diagnostics for snap-shot output:
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+      ENDIF
+#endif
+
+C--   State-variables diagnostics
+      IF ( usediagnostics ) THEN
+        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+        CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
+        CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+      ENDIF
+
 #ifdef ALLOW_COST
 
 c--     Accumulate time averages of temperature, salinity, and SSH.
@@ -670,6 +684,13 @@ C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
         CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
         CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+C--   State-variables diagnostics
+       IF ( usediagnostics ) THEN
+        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+        CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
+        CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+       ENDIF
 
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
