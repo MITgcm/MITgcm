@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.547 2005/09/14 17:57:54 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.548 2005/09/19 01:27:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o  diagnostics "VISCAHD" & "VISCA4D" replace "VISCAH" & "VISCA4".
 o In response to JMC's bug report, genmake2 now ignores any soft-links
   that it finds in the *current* directory when searching for files.
   Soft-links found in any other source directories will still work as
