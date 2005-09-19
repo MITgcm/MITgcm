@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.1 2005/09/16 19:33:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.2 2005/09/19 20:46:23 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -117,10 +117,10 @@ C This is the vector magnitude of the vorticity gradient squared
 C This is the vector magnitude of grad (div.v) squared
 C Using it in Leith serves to damp instabilities in w.
            grdDiv=0.25*(
-     &      ((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))**2
-     &      +((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj))**2
-     &      +((hDiv(i-1,j)-hDiv(i,j))*recip_DXG(i-1,j,bi,bj))**2
-     &      +((hDiv(i,j-1)-hDiv(i,j))*recip_DYG(i,j-1,bi,bj))**2)
+     &      ((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))**2
+     &      +((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj))**2
+     &      +((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
+     &      +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2)
 
            IF ( (viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
      &          .NE. 0. ) THEN
@@ -145,13 +145,13 @@ c (and differs by as much as 4X)
            grdVrt=max(grdVrt,
      &      abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
 
-           grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))
+           grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj)))
+     &      abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj)))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i-1,j)-hDiv(i,j))*recip_DXG(i-1,j,bi,bj)))
+     &      abs((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj)))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i,j-1)-hDiv(i,j))*recip_DYG(i,j-1,bi,bj)))
+     &      abs((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)))
 
 c This approximation is good to the same order as above...
            Alth2=(viscC2leith*grdVrt+(viscC2leithD*grdDiv))*L3
@@ -231,10 +231,10 @@ C This is the vector magnitude of the vorticity gradient squared
 
 C This is the vector magnitude of grad(div.v) squared
            grdDiv=0.25*(
-     &       ((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))**2
-     &      +((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj))**2
-     &      +((hDiv(i+1,j+1)-hDiv(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
-     &      +((hDiv(i+1,j+1)-hDiv(i+1,j))*recip_DYG(i+1,j,bi,bj))**2)
+     &       ((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
+     &      +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2
+     &      +((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj))**2
+     &      +((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYC(i-1,j,bi,bj))**2)
 
            IF ( (viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
      &          .NE. 0. ) THEN
@@ -258,13 +258,14 @@ C but this approximation will work on cube (and differs by 4X)
            grdVrt=max(grdVrt,
      &       abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
 
-           grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))
+           grdDiv=abs((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj)))
+     &      abs((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i+1,j+1)-hDiv(i,j+1))*recip_DXG(i-1,j,bi,bj)))
+     &      abs((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXG(i,j-1,bi,bj)))
            grdDiv=max(grdDiv,
-     &      abs((hDiv(i+1,j+1)-hDiv(i+1,j))*recip_DYG(i,j-1,bi,bj)))
+     &      abs((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYG(i-1,j,bi,bj)))
+
 
 C This if statement is just to prevent bitwise changes when leithd=0
            Alth2=(viscC2leith*grdVrt+(viscC2leithD*grdDiv))*L3
