@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.166 2005/09/16 19:33:05 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.167 2005/09/19 22:53:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,6 +114,8 @@ C     tempDiffusion :: diffusion of temperature on/off (flag not used)
 C     zonal_filt_lat :: Moved to package "zonal_filt"
 C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
 C     rkFac      :: removed from namelist ; replaced by -rkSign
+C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
+C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
@@ -122,6 +124,7 @@ C                 or that have moved to a different input file and/or namelist.
       _RL trac_EvPrRn
       _RL zonal_filt_lat
       _RL rkFac
+      _RL viscAstrain, viscAtension
       LOGICAL groundAtK1
       INTEGER nRetired
 
@@ -138,7 +141,7 @@ C--   Continuous equation parameters
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
-     & viscAz,  cosPower,
+     & viscAz,  cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T,
      & diffKhS, diffKzS, diffK4S,
      & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
@@ -247,6 +250,8 @@ C--   Initialise retired parameters to unlikely value
       gravitySign     = UNSET_RL
       rkFac           = UNSET_RL
       groundAtK1      = .FALSE.
+      viscAstrain     = UNSET_RL
+      viscAtension    = UNSET_RL
 
 C--   Open the parameter file
 #ifdef TARGET_BGL
@@ -672,6 +677,26 @@ C     Check for retired parameters still being used
        CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to turn off diffusion',
      &  ' => set diffusivity to zero'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( viscAstrain .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "viscAstrain" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to use Strain & Tension',
+     &  ' formulation => set useStrainTensionVisc to TRUE'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( viscAtension .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "viscAtension" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to use Strain & Tension',
+     &  ' formulation => set useStrainTensionVisc to TRUE'
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
 
@@ -1147,10 +1172,7 @@ C--   Check whether any retired parameters were found.
 C--   Stop if they were
       IF ( nRetired .GT. 0 ) THEN    
        WRITE(msgBuf,'(A)')
-     &  'Error reading '
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data"'
+     &  'Error reading parameter file "data"'
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A)')
      &  'some out of date parameters were found in the namelist'
