@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.32 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.33 2005/09/19 02:24:40 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -776,9 +776,10 @@ C           There is only one face
           ENDIF
 
 C         Try to open the PER-FACE file
+C         WRITE(*,*) 'trying: "', path_fname, '"'
           err = NF_OPEN(path_fname, NF_NOWRITE, fid)
           IF ( err .EQ. NF_NOERR ) THEN
-            f_or_t = 0
+            f_or_t = 1
           ELSE
 
 C           Create the PER-TILE file name
@@ -788,9 +789,10 @@ C           Create the PER-TILE file name
             WRITE(path_fname,'(2a,a1,a,a3)') 
      &           mnc_indir_str(1:npath), fname(1:ntot), 't',
      &           tmpnm(1:k), '.nc'
+C           WRITE(*,*) 'trying: "', path_fname, '"'
             err = NF_OPEN(path_fname, NF_NOWRITE, fid)
             IF ( err .EQ. NF_NOERR ) THEN
-              f_or_t = 1
+              f_or_t = 0
             ELSE
               k = ILNBLNK(path_fname)
               write(msgbuf,'(4a)') 
@@ -811,19 +813,26 @@ C           Create the PER-TILE file name
           err = NF_INQ_VARID(fid, vtype, idv)
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
+          k = ILNBLNK(path_fname)
+          fname(1:k) = path_fname(1:k)
+          nfname = k
+
 #endif
 
           IF ( f_or_t .EQ. 1 ) THEN
-            write(msgbuf,'(4a)') 
-     &           'MNC_CW_RX_R: per-face reads are not yet ',
-     &           'implemented -- so pester Ed to finish them'
-            CALL print_error(msgbuf, mythid)
-            STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
 
+C           write(msgbuf,'(2a)') 
+C           &           'MNC_CW_RX_R: per-face reads are not yet ',
+C           &           'implemented -- so pester Ed to finish them'
+C           CALL print_error(msgbuf, mythid)
+C           STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
+            
 C           Get the X,Y PER-FACE offsets
             CALL MNC_CW_GET_XYFO(lbi,lbj, ixoff,iyoff, myThid)
 
           ENDIF
+
+C         WRITE(*,*) 'f_or_t = ',f_or_t
 
 C         Check that the current sNy,sNy values and the in-file values
 C         are compatible and WARN (only warn) if not
