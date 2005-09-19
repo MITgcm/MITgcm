@@ -2,7 +2,7 @@
 #
 #PBS -q long
 #PBS -N eh3_g77
-#PBS -l nodes=2:ppn=1
+#PBS -l nodes=2:ppn=2
 #PBS -e /home/edhill/test_outp/eh3_gnu.stderr
 #PBS -o /home/edhill/test_outp/eh3_gnu.stdout
 #PBS -V
@@ -18,7 +18,7 @@ cd $HERE
 FC=g77
 RUNIT=$HERE"/runit_"$FC
 MF=$HERE"/mf_"$FC
-cat $PBS_NODEFILE > $MF
+cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 

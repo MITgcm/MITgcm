@@ -2,7 +2,7 @@
 #
 #PBS -q long
 #PBS -N eh3_ifc
-#PBS -l nodes=2:ppn=1
+#PBS -l nodes=2:ppn=2
 #PBS -e /home/edhill/test_outp/eh3_intel.stderr
 #PBS -o /home/edhill/test_outp/eh3_intel.stdout
 #PBS -V
@@ -18,7 +18,7 @@ cd $HERE
 FC=ifc
 RUNIT=$HERE"/runit_"$FC
 MF=$HERE"/mf_"$FC
-cat $PBS_NODEFILE > $MF
+cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 
