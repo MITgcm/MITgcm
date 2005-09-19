@@ -64,10 +64,11 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- endTime=86400.,
+# endTime=86400.,
+ ntimeSteps=12,
  deltaT=1200.,
  abEps=0.01,
- pchkptFreq=43200.,
+ pchkptFreq=7200.,
  taveFreq=7200.,
  dumpFreq=7200.,
  diagFreq=7200.,
