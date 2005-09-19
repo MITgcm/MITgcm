@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.47 2005/09/16 19:32:20 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.48 2005/09/19 19:58:05 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -207,6 +207,9 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      &                      myThid)
+         CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
+         CALL MOM_CALC_RELVORT3(bi,bj,k,
+     &                          del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
 
 C      Calculate dissipation terms for U and V equations
