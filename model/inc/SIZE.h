@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.26 2001/09/21 15:13:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.27 2005/09/19 18:42:35 baylor Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -6,7 +6,7 @@ C $Name:  $
   as an error then it means you have not placed your configuration
   files in the appropriate place. 
   You need to place you own copy of SIZE.h in the include
-  path for the model.
+  path for the model, and comment out these lines.
 
 C
 CBOP
