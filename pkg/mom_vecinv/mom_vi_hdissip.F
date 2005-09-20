@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.26 2005/09/16 19:32:20 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.27 2005/09/20 19:43:39 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -55,7 +55,7 @@ C     == Local variables ==
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,
+     I        hDiv,vort3,tension,strain,KE,hfacZ,
      I        myThid)
 
 C     - Laplacian  terms

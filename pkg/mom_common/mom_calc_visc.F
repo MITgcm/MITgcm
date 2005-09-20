@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.3 2005/09/20 13:09:10 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.4 2005/09/20 19:43:37 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,
+     I        hDiv,vort3,tension,strain,KE,hFacZ,
      I        myThid)
 
       IMPLICIT NONE
