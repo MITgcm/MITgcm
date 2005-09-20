@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.548 2005/09/19 01:27:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.549 2005/09/20 16:04:26 baylor Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o Add clearing-house for viscosity calculations, mom_calc_visc and 
+  correct numerous bugs in LeithD and Smagorinsky discretizations.  
+  mom_calc_visc now allows for Smagorinsky, Leith and LeithD to be 
+  used simultaneously, and to be used in mom_vecinv and mom_fluxform. 
+  Mom_vecinv can be used with standard viscous calculation (mom_vi_hdissip.F)
+  and with Strain-Tension viscous term calculation (mom_hdissip.F).  
+  The Strain-Tension form is now called with useStrainTensonVisc=.true.
+  ViscAhStrain and viscAhTension are now retired.
 o  diagnostics "VISCAHD" & "VISCA4D" replace "VISCAH" & "VISCA4".
 o In response to JMC's bug report, genmake2 now ignores any soft-links
   that it finds in the *current* directory when searching for files.
