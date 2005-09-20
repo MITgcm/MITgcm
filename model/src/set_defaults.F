@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.100 2005/09/16 19:33:06 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.101 2005/09/20 21:01:30 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -97,6 +97,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscAhGridMin       = 0.D0
       viscAhGridMax       = 1.D21
       viscAhMax           = 1.D21
+      viscAhReMax         = 1.D21
       viscC2leith         = 0.D0
       viscC2leithD        = 0.D0
       viscC2smag          = 0.D0
@@ -116,6 +117,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscA4GridMax       = 1.D21
       viscA4GridMin       = 0.D0
       viscA4Max           = 1.D21
+      viscA4ReMax           = 1.D21
       viscC4leith         = 0.D0
       viscC4leithD        = 0.D0
       viscC4smag          = 0.D0

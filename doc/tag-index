@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.550 2005/09/20 18:09:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.551 2005/09/20 21:01:29 baylor Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+o Clean, new version of mom_calc_visc.  Adds a new feature, viscAhRemax
+  and viscA4Remax, which allow one to limit the minimum viscosity by specifying
+  a maximum grid-scale Reynolds number.  Also, changes all length calculations
+  in the case of grid anisotropy to geometric mean of dx**2 and dy**2.
+  Suggested values of viscosity parameters found in mom_calc_visc. 
+  Many new viscosity diagnostics available.
 
 checkpoint57s_post
 o Add clearing-house for viscosity calculations, mom_calc_visc and 

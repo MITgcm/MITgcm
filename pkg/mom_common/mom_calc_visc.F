@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.5 2005/09/20 20:41:43 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.6 2005/09/20 21:01:30 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -91,7 +91,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL smag2fac, smag4fac
-      _RL viscAhRemax, viscA4Remax
+      _RL viscAhRe_max, viscA4Re_max
       _RL Alin,Alinmin,grdVrt,grdDiv
       _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
       _RL Uscl,U4scl
@@ -136,7 +136,7 @@ C     == Local variables ==
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC2smag.NE.0.)
 
-      IF (harmonic) viscAhremax=50
+      IF (harmonic) viscAhre_max=viscAhremax
 
       biharmonic=
      &      (viscA4.NE.0.)
@@ -147,7 +147,7 @@ C     == Local variables ==
      &  .OR.(viscC4leithD.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
 
-      IF (biharmonic) viscA4remax=50
+      IF (biharmonic) viscA4re_max=viscA4remax
 
       calcleith=
      &      (viscC2leith.NE.0.)
@@ -190,8 +190,8 @@ C These are (powers of) length scales
      &                        *recip_DYF(I,J,bi,bj))**2) )
 
 C Velocity Reynolds Scale
-         Uscl=sqrt(KE(i,j)*L2*0.5)/viscAhRemax
-         U4scl=0.125*L2*Uscl/viscA4Remax
+         Uscl=sqrt(KE(i,j)*L2*0.5)/viscAhRe_max
+         U4scl=0.125*L2*Uscl/viscA4Re_max
 
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
@@ -294,8 +294,8 @@ C These are (powers of) length scales
 
 C Velocity Reynolds Scale
          Uscl=sqrt((KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))*L2*0.125)/
-     &         viscAhRemax
-         U4scl=0.125*L2*Uscl/viscA4Remax
+     &         viscAhRe_max
+         U4scl=0.125*L2*Uscl/viscA4Re_max
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN

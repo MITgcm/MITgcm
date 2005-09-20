@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.165 2005/09/16 19:33:05 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.166 2005/09/20 21:01:30 baylor Exp $
 C $Name:  $
 C
 
@@ -476,15 +476,19 @@ C                  (act on Divergence part) ( m^4/s )
 C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Vorticity  part) ( m^4/s )
 C     viscC2leith :: Leith non-dimensional viscosity factor (grad(vort))
-C     viscC2leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
+C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
 C     viscC2smag  :: Smagorinsky non-dimensional viscosity factor (harmonic)
 C     viscC4smag  :: Smagorinsky non-dimensional viscosity factor (biharmonic)
 C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
-C                 momentum laterally ( m^2/s )
+C                   momentum laterally ( m^2/s )
+C     viscAhReMax :: Maximum gridscale Reynolds number for eddy viscosity 
+C                   coeff. for mixing of momentum laterally (non-dim)
 C     viscAhGridMax:: maximum and minimum harmonic viscosity coefficients ...
-C     viscAhGridMin::  in terms of non-dimensional grid-size dependent viscosity
+C     viscAhGridMin::  in terms of non-dimensional grid-size dependent visc.
 C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
+C     viscA4ReMax :: Maximum Gridscale Reynolds number for 
+C                  biharmonic viscosity coeff. momentum laterally (non-dim)
 C     viscAhGrid:: non-dimensional grid-size dependent viscosity
 C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
 C     viscA4GridMax:: maximum and minimum biharmonic viscosity coefficients ...
@@ -593,6 +597,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, 
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscAhRemax, viscA4Remax,
      & viscC4leith, viscC4leithD, viscAr,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
@@ -653,6 +658,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAhD
       _RL viscAhZ
       _RL viscAhMax
+      _RL viscAhReMax
       _RL viscAhGrid
       _RL viscAhGridMax
       _RL viscAhGridMin
@@ -666,6 +672,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscA4D
       _RL viscA4Z
       _RL viscA4Max
+      _RL viscA4ReMax
       _RL viscA4Grid, viscA4GridMax, viscA4GridMin
       _RL viscC4leith
       _RL viscC4leithD

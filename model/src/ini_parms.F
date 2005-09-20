@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.167 2005/09/19 22:53:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.168 2005/09/20 21:01:30 baylor Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -141,6 +141,7 @@ C--   Continuous equation parameters
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscA4ReMax, viscAhReMax,
      & viscAz,  cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T,
      & diffKhS, diffKzS, diffK4S,

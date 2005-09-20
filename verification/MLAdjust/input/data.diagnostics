@@ -18,6 +18,14 @@
   frequency(2) = 86400.,
   fields(1,2) = 'UVELTH  ','VVELTH ','WVELTH ',
   filename(2) = 'thetaflx',
+  frequency(3) = 86400.,
+  fields(1,3) = 'VISCAHD ','VISCA4D ','VISCAHZ ','VISCA4Z ',
+                'VAHDMAX ','VA4DMAX ','VAHZMAX ','VA4ZMAX ',
+                'VAHDMIN ','VA4DMIN ','VAHZMIN ','VA4ZMIN ',
+                'VAHDLTH ','VA4DLTH ','VAHZLTH ','VA4ZLTH ',
+                'VAHDLTHD','VA4DLTHD','VAHZLTHD','VA4ZLTHD',
+                'VAHDSMAG','VA4DSMAG','VAHZSMAG','VA4ZSMAG',
+  filename(3) = 'visc',
  &
 
 
