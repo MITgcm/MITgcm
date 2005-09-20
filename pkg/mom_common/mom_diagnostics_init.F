@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.4 2005/09/16 19:32:20 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.5 2005/09/20 20:41:43 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -42,6 +42,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  Add diagnostics to the (long) list of available diagnostics:
 
 C--   add diagnostics for viscosity coefficients:
+      diagName  = 'VISCAHZ '
+      diagTitle = 'Harmonic Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VISCA4Z '
+      diagTitle = 'Biharmonic Visc Coefficient (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
       diagName  = 'VISCAHD '
       diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
@@ -56,19 +70,147 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'VISCAHZ '
-      diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (Zeta Pt)'
+      diagName  = 'VAHZMAX '
+      diagTitle = 'CFL-MAX Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'VISCA4Z '
-      diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (Zeta Pt)'
+      diagName  = 'VA4ZMAX '
+      diagTitle = 'CFL-MAX Biharm Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHDMAX '
+      diagTitle = 'CFL-MAX Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4DMAX '
+      diagTitle = 'CFL-MAX Biharm Visc Coefficient (m4/s) (Div Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHZMIN '
+      diagTitle = 'RE-MIN Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4ZMIN '
+      diagTitle = 'RE-MIN Biharm Visc Coefficient (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHDMIN '
+      diagTitle = 'RE-MIN Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4DMIN '
+      diagTitle = 'RE-MIN Biharm Visc Coefficient (m4/s) (Div Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHZLTH '
+      diagTitle = 'Leith Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4ZLTH '
+      diagTitle = 'Leith Biharm Visc Coefficient (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHDLTH '
+      diagTitle = 'Leith Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4DLTH '
+      diagTitle = 'Leith Biharm Visc Coefficient (m4/s) (Div Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHZLTHD'
+      diagTitle = 'LeithD Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4ZLTHD'
+      diagTitle = 'LeithD Biharm Visc Coefficient (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHDLTHD'
+      diagTitle = 'LeithD Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4DLTHD'
+      diagTitle = 'LeithD Biharm Visc Coefficient (m4/s) (Div Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHZSMAG'
+      diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4ZSMAG'
+      diagTitle = 'Smagorinsky Biharm Visc Coeff. (m4/s) (Zeta Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VAHDSMAG'
+      diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VA4DSMAG'
+      diagTitle = 'Smagorinsky Biharm Visc Coeff. (m4/s) (Div Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+
 
 C--    add diagnostics of simple derivative quantities:
        diagName  = 'momKE   '
@@ -89,6 +231,20 @@ C--    add diagnostics of simple derivative quantities:
        diagName  = 'momVort3'
        diagTitle = '3rd component (vertical) of Vorticity'
        diagCode  = 'SZ      MR      '
+       diagUnits = 's^-1            '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+       diagName  = 'Strain  '
+       diagTitle = 'Horizontal Strain of Horizontal Velocities'
+       diagCode  = 'SZ      MR      '
+       diagUnits = 's^-1            '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+
+       diagName  = 'Tension '
+       diagTitle = 'Horizontal Tension of Horizontal Velocities'
+       diagCode  = 'SM      MR      '
        diagUnits = 's^-1            '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
