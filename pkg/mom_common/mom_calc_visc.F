@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.2 2005/09/19 20:46:23 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.3 2005/09/20 13:09:10 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -162,7 +162,7 @@ c This approximation is good to the same order as above...
           Asmag2=smag2fac*L2
      &           *sqrt(tension(i,j)**2
      &           +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
-     &                 +strain(i-1, j )**2+strain( i ,j-1)**2))
+     &                 +strain(i  , j )**2+strain(i+1,j+1)**2))
          ELSE
           Asmag2=0d0
          ENDIF
@@ -170,8 +170,8 @@ c This approximation is good to the same order as above...
          IF (smag4fac.NE.0.) THEN
           Asmag4=smag4fac*L4
      &             *sqrt(tension(i,j)**2
-     &             +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
-     &                   +strain(i-1, j )**2+strain( i ,j-1)**2))
+     &           +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
+     &                 +strain(i  , j )**2+strain(i+1,j+1)**2))
          ELSE
           Asmag4=0d0
          ENDIF
@@ -275,8 +275,8 @@ C This if statement is just to prevent bitwise changes when leithd=0
          IF (smag2fac.NE.0.) THEN
           Asmag2=smag2fac*L2
      &           *sqrt(strain(i,j)**2
-     &              +0.25*(tension( i , j )**2+tension( i ,j+1)**2
-     &                +tension(i+1, j )**2+tension(i+1,j+1)**2))
+     &              +0.25*(tension( i , j )**2+tension( i ,j-1)**2
+     &                    +tension(i-1, j )**2+tension(i-1,j-1)**2))
          ELSE
           Asmag2=0d0
          ENDIF
@@ -284,8 +284,8 @@ C This if statement is just to prevent bitwise changes when leithd=0
          IF (smag4fac.NE.0.) THEN
           Asmag4=smag4fac*L4
      &             *sqrt(strain(i,j)**2
-     &             +0.25*(tension( i , j )**2+tension( i ,j+1)**2
-     &                +tension(i+1, j )**2+tension(i+1,j+1)**2))
+     &              +0.25*(tension( i , j )**2+tension( i ,j-1)**2
+     &                    +tension(i-1, j )**2+tension(i-1,j-1)**2))
          ELSE
           Asmag4=0d0
          ENDIF
