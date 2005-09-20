@@ -4,29 +4,25 @@
 #
 # Continuous equation parameters
  &PARM01
- viscAr=5.E-5,
+ viscAr=5.E-3,
 # This is the minimum viscosity used total=viscah+viscleith
 # Often U*deltaX/2 for grid noise (Griffies and Hallberg,2000)
-# viscAh=1.E2,
+# viscAh=3.E1,
 # This is the standard Leith Viscosity, prop to grad(curl v_h)
 # viscC2leith=5.,
 # This is an additional Leith Viscosity, prop to grad(div.v_h)
 # It traps instabilities that have no signal in grad(curl v_h)
- viscC2leith=0.2,
- viscC2leithD=0.2,
- viscC4leith=0.2,
- viscC4leithD=0.2,
-#  useStrainTensionVisc=.TRUE.,
+# viscC2leithD=5.,
 # This is harmonic Smagorinsky Coefficient
 # 0.15=value from 3-d turbulence theory; 
 # 3-4=stable oceanic values (Griffies and Hallberg, 2000)
- viscC2Smag=0.7,
- viscC4Smag=0.7,
+ viscC2Smag=4.,
 # This is the max Viscosity used, be it Smag or Leith, and it scales 
 # with grid size and timestep
- viscAhGridMax=1,
- viscA4GridMax=1,
+# Often 0.5 for stability (Griffies and Hallberg,2000)
+ viscAhGridMax=0.5,
  useFullLeith=.TRUE.,
+ useStrainTensionVisc=.TRUE.,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
  ivdc_kappa=10.,
@@ -65,17 +61,17 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- endTime=34560000.,
+#endTime=86400.,
 #- for testing, only run for 12 iterations:
-# nTimeSteps=120,
- deltaT=300.,
+ nTimeSteps=12,
+ deltaT=1200.,
  abEps=0.01,
 #- for testing, reduce amount of output by commenting out output frequencies:
 #pchkptFreq=43200.,
 #taveFreq=7200.,
- dumpFreq=86400.,
+#dumpFreq=7200.,
 #diagFreq=7200.,
- monitorFreq=86400.,
+ monitorFreq=1200.,
  cadjfreq=0.,
  /
 
@@ -83,16 +79,16 @@
  &PARM04
  usingCartesianGrid=.TRUE.,
  usingSphericalPolarGrid=.FALSE.,
-  delR= 5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
-    5d1, 5d1, 5d1, 5d1, 5d1,
- delxfile='dx_variable.bin',
- delyfile='dy_variable.bin',
+  delR= 5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+ dxspacing=1d3,
+ dyspacing=1d3,
  /
 
 # Input datasets
