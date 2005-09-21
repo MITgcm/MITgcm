@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.7 2005/09/21 14:32:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.8 2005/09/21 15:11:22 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -160,14 +160,14 @@ C     == Local variables ==
      &  .OR.(viscC4smag.NE.0.)
 
       IF (deltaTmom.NE.0.) THEN
-       recip_dt=1./deltaTmom
+       recip_dt=1d0/deltaTmom
       ELSE
-       recip_dt=0.
+       recip_dt=0d0
       ENDIF
 
       IF (calcsmag) THEN
         smag2fac=(viscC2smag/pi)**2
-        smag4fac=0.125*(viscC4smag/pi)**2
+        smag4fac=0.125d0*(viscC4smag/pi)**2
       ENDIF
 
 C     - Viscosity
@@ -177,33 +177,35 @@ C     - Viscosity
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 C These are (powers of) length scales 
-         L2=2./((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
+         L2=2d0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
-         L2rdt=0.25*recip_dt*L2
+         L2rdt=0.25d0*recip_dt*L2
 
-         L4rdt=recip_dt/( 6.*(recip_DXF(I,J,bi,bj)**4
+         L4rdt=recip_dt/( 6d0*(recip_DXF(I,J,bi,bj)**4
      &                       +recip_DYF(I,J,bi,bj)**4)
-     &                   +8.*((recip_DXF(I,J,bi,bj)
+     &                   +8d0*((recip_DXF(I,J,bi,bj)
      &                        *recip_DYF(I,J,bi,bj))**2) )
 
 C Velocity Reynolds Scale
-         Uscl=sqrt(KE(i,j)*L2*0.5)/viscAhRe_max
-         U4scl=0.125*L2*Uscl/viscA4Re_max
+         Uscl=sqrt(KE(i,j)*L2*0.5d0)/viscAhRe_max
+         U4scl=0.125d0*L2*Uscl/viscA4Re_max
 
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
-          grdVrt=0.25*(
+          grdVrt=0.25d0*(
      &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
      &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
-     &     +((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
-     &     +((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj))**2)
+     &     +((vort3(i+1,j+1)-vort3(i,j+1))
+     &               *recip_DXG(i,j+1,bi,bj))**2
+     &     +((vort3(i+1,j+1)-vort3(i+1,j))
+     &               *recip_DYG(i+1,j,bi,bj))**2)
 
 C This is the vector magnitude of grad (div.v) squared
 C Using it in Leith serves to damp instabilities in w.
-          grdDiv=0.25*(
+          grdDiv=0.25d0*(
      &     ((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))**2
      &     +((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj))**2
      &     +((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
@@ -239,11 +241,11 @@ c (and differs by as much as 4X)
 c This approximation is good to the same order as above...
           viscAh_Dlth(i,j)=
      &      (viscC2leith*grdVrt+(viscC2leithD*grdDiv))*L3
-          viscA4_Dlth(i,j)=0.125*
+          viscA4_Dlth(i,j)=0.125d0*
      &      (viscC4leith*grdVrt+(viscC4leithD*grdDiv))*L5
           viscAh_DlthD(i,j)=
      &      ((viscC2leithD*grdDiv))*L3
-          viscA4_DlthD(i,j)=0.125*
+          viscA4_DlthD(i,j)=0.125d0*
      &      ((viscC4leithD*grdDiv))*L5
          ELSE
           viscAh_Dlth(i,j)=0d0
@@ -255,7 +257,7 @@ c This approximation is good to the same order as above...
          IF (calcsmag) THEN
           viscAh_DSmg(i,j)=L2
      &       *sqrt(tension(i,j)**2
-     &       +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
+     &       +0.25d0*(strain(i+1, j )**2+strain( i ,j+1)**2
      &              +strain(i  , j )**2+strain(i+1,j+1)**2))
           viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
           viscAh_DSmg(i,j)=smag2fac*viscAh_DSmg(i,j)
@@ -282,31 +284,31 @@ C  BiHarmonic on Div.u points
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
-         L2=2./((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
+         L2=2d0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
-         L2rdt=0.25*recip_dt*L2
+         L2rdt=0.25d0*recip_dt*L2
          L4rdt=recip_dt/
-     &     ( 6.*(recip_DXF(I,J,bi,bj)**4+recip_DYF(I,J,bi,bj)**4)
-     &      +8.*((recip_DXF(I,J,bi,bj)*recip_DYF(I,J,bi,bj))**2))
+     &     ( 6d0*(recip_DXF(I,J,bi,bj)**4+recip_DYF(I,J,bi,bj)**4)
+     &      +8d0*((recip_DXF(I,J,bi,bj)*recip_DYF(I,J,bi,bj))**2))
 
 C Velocity Reynolds Scale
-         Uscl=sqrt((KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))*L2*0.125)/
-     &         viscAhRe_max
-         U4scl=0.125*L2*Uscl/viscA4Re_max
+         Uscl=sqrt((KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))
+     &         *L2*0.125d0)/viscAhRe_max
+         U4scl=0.125d0*L2*Uscl/viscA4Re_max
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN
-          grdVrt=0.25*(
+          grdVrt=0.25d0*(
      &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
      &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
      &     +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
      &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2)
 
 C This is the vector magnitude of grad(div.v) squared
-          grdDiv=0.25*(
+          grdDiv=0.25d0*(
      &     ((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
      &     +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2
      &     +((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj))**2
@@ -355,7 +357,7 @@ C but this approximation will work on cube (and differs by 4X)
          IF (calcsmag) THEN
           viscAh_ZSmg(i,j)=L2
      &      *sqrt(strain(i,j)**2
-     &        +0.25*(tension( i , j )**2+tension( i ,j-1)**2
+     &        +0.25d0*(tension( i , j )**2+tension( i ,j-1)**2
      &              +tension(i-1, j )**2+tension(i-1,j-1)**2))
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
@@ -412,13 +414,13 @@ C  BiHarmonic on Zeta points
        CALL DIAGNOSTICS_FILL(viscA4_ZLth,'VA4ZLTH ',k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DLthD,'VAHDLTHD'
-     &    ,k,1,2,bi,bj,myThid)
+     &   ,k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DLthD,'VA4DLTHD'
-     &    ,k,1,2,bi,bj,myThid)
+     &   ,k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD'
-     &    ,k,1,2,bi,bj,myThid)
+     &   ,k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD'
-     &    ,k,1,2,bi,bj,myThid)
+     &   ,k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DSmg,'VA4DSMAG',k,1,2,bi,bj,myThid)
