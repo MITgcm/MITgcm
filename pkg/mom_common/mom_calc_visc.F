@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.6 2005/09/20 21:01:30 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.7 2005/09/21 14:32:59 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -411,10 +411,14 @@ C  BiHarmonic on Zeta points
        CALL DIAGNOSTICS_FILL(viscAh_ZLth,'VAHZLTH ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZLth,'VA4ZLTH ',k,1,2,bi,bj,myThid)
 
-       CALL DIAGNOSTICS_FILL(viscAh_DLthD,'VAHDLTHD',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_DLthD,'VA4DLTHD',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_DLthD,'VAHDLTHD'
+     &    ,k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_DLthD,'VA4DLTHD'
+     &    ,k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD'
+     &    ,k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD'
+     &    ,k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DSmg,'VA4DSMAG',k,1,2,bi,bj,myThid)
