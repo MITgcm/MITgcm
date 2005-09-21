@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.6 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.7 2005/09/21 19:35:29 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,6 +66,10 @@ C ===============
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       integer i,offset,Lena,newindx,jindx
       _RL undef,getcon
+      INTEGER iSp, ndId, j,l
+      INTEGER region2fill(0:nRegions)
+      _RL     scaleFact
+      _RL     gridField(sNx*sNy,nlevs), gridFrac(sNx*sNy)
 
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
@@ -162,6 +166,93 @@ C-      Check for consistency with Nb of levels reserved in storage array
        ENDDO
 
 C--   do the filling: ends here.
+         ENDIF
+        ENDIF
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Global/Regional Statistics :
+      scaleFact = 1. _d 0
+
+C Run through list of active statistics-diagnostics to make sure
+C we are trying to compute & fill a valid diagnostic
+
+      DO n=1,diagSt_nbLists
+       DO m=1,diagSt_nbActv(n)
+        IF ( chardiag.EQ.diagSt_Flds(m,n) .AND. iSdiag(m,n).GT.0 ) THEN
+         iSp = iSdiag(m,n)
+         IF ( qSdiag(0,0,iSp,bi,bj).GE.0. ) THEN
+           ndId = jSdiag(m,n)
+C-    Find list of regions to fill:
+           DO j=0,nRegions
+            region2fill(j) = diagSt_region(j,n)
+           ENDDO
+C-    if this diagnostics appears in several lists (with same freq)
+C     then add regions from other lists
+           DO l=1,diagSt_nbLists
+            DO k=1,diagSt_nbActv(l)
+             IF ( iSdiag(k,l).EQ.-iSp ) THEN
+              DO j=0,nRegions
+               region2fill(j) = MAX(region2fill(j),diagSt_region(j,l))
+              ENDDO
+             ENDIF
+            ENDDO
+           ENDDO
+
+C-      Which part of field to add : k = 3rd index,
+C         and do the loop >> do k=kFirst,kLast <<
+       IF (kLev.LE.0) THEN
+        kFirst = 1
+        kLast  = nLevs
+       ELSE
+        kFirst = 1
+        kLast  = 1
+       ENDIF
+
+C-    Fill local array with grid-space field after conversion.
+       offset = ib*(npeice-1)
+       Lena    = min(ib,numpts-offset)
+       offset = offset+1
+
+       DO i=1,sNx*sNy
+         gridFrac(i)= 0.
+       ENDDO
+       DO i=1,Lena
+         newindx = indx(i+offset-1)
+         gridFrac(newindx)=gridFrac(newindx)+chfr(i)
+       ENDDO
+
+       DO k = kFirst,kLast
+        DO i=1,sNx*sNy
+         gridField(i,k)= 0.
+        ENDDO
+        if( check ) then
+         undef = getcon('UNDEF')
+         do i= 1,Lena
+          newindx = indx(i+offset-1)
+          if(gridField(newindx,k).eq.undef 
+     .                           .or.field(i,k).eq.undef)then
+           gridField(newindx,k)= undef
+          else
+           gridField(newindx,k)=gridField(newindx,k)
+     &                         +field(i,k)*chfr(i)/gridFrac(newindx)
+          endif
+         enddo
+        else
+         do i= 1,Lena
+          newindx = indx(i+offset-1)
+          gridField(newindx,k)=gridField(newindx,k)
+     &                        +field(i,k)*chfr(i)/gridFrac(newindx)
+         enddo
+        endif
+       ENDDO
+
+C-    diagnostics is valid and Active: Now do the filling
+           CALL DIAGSTATS_FILL(
+     I              gridField, gridFrac, scaleFact, 1, 1,
+     I              ndId, iSp, region2fill, kLev, nLevs,
+     I              3, bi, bj, myThid )
          ENDIF
         ENDIF
        ENDDO
