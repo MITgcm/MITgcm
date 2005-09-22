@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.10 2005/09/22 00:21:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.11 2005/09/22 14:00:59 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -188,17 +188,25 @@ C     - Viscosity
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 C These are (powers of) length scales 
-         L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
+         IF (useAreaViscLength) THEN
+          L2=Ra(i,j,bi,bj)
+         ELSE
+          L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
+         ENDIF
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
          L2rdt=0.25 _d 0*recip_dt*L2
 
-         L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
+         IF (useAreaViscLength) THEN
+          L4rdt=0.125 _d 0*recip_dt*Ra(i,j,bi,bj)**2
+         ELSE
+          L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
      &                            +recip_DYF(I,J,bi,bj)**4)
      &                   +8. _d 0*((recip_DXF(I,J,bi,bj)
      &                             *recip_DYF(I,J,bi,bj))**2) )
+         ENDIF
 
 C Velocity Reynolds Scale
          Uscl=sqrt(KE(i,j)*L2)*viscAhRe_max
@@ -295,15 +303,24 @@ C  BiHarmonic on Div.u points
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
-         L2=2. _d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
+         IF (useAreaViscLength) THEN
+          L2=RaZ(i,j,bi,bj)
+         ELSE
+          L2=2._d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
+         ENDIF
+
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
          L2rdt=0.25 _d 0*recip_dt*L2
-         L4rdt=recip_dt/
-     &     ( 6. _d 0*(recip_DXF(I,J,bi,bj)**4+recip_DYF(I,J,bi,bj)**4)
-     &      +8. _d 0*((recip_DXF(I,J,bi,bj)*recip_DYF(I,J,bi,bj))**2))
+         IF (useAreaViscLength) THEN
+          L4rdt=0.125 _d 0*recip_dt*RaZ(i,j,bi,bj)**2
+         ELSE
+          L4rdt=recip_dt/
+     &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
+     &      +8. _d 0*((recip_DXV(I,J,bi,bj)*recip_DYU(I,J,bi,bj))**2))
+         ENDIF
 
 C Velocity Reynolds Scale
          Uscl=sqrt(0.25 _d 0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))

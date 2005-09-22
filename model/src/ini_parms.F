@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.168 2005/09/20 21:01:30 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.169 2005/09/22 14:00:59 baylor Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,13 +119,15 @@ C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVis
 C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
+C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
+C                 use old method by setting useAreaViscLength=.true.
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
       _RL zonal_filt_lat
       _RL rkFac
       _RL viscAstrain, viscAtension
-      LOGICAL groundAtK1
+      LOGICAL groundAtK1, useAnisotropicViscAGridMax
       INTEGER nRetired
 
 C--   Continuous equation parameters
@@ -137,6 +139,7 @@ C--   Continuous equation parameters
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith,
      & useFullLeith, useAnisotropicViscAGridMax, useStrainTensionVisc,
+     & useAreaViscLength,
      & viscC2leithD, viscC4leithD, viscC2Smag, viscC4Smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
@@ -253,6 +256,7 @@ C--   Initialise retired parameters to unlikely value
       groundAtK1      = .FALSE.
       viscAstrain     = UNSET_RL
       viscAtension    = UNSET_RL
+      useAnisotropicViscAgridMax=.TRUE.
 
 C--   Open the parameter file
 #ifdef TARGET_BGL
@@ -505,11 +509,6 @@ C--  horizontal viscosity (acting on Divergence or Vorticity)
       IF ( viscAhZ .EQ. UNSET_RL ) viscAhZ = viscAh
       IF ( viscA4D .EQ. UNSET_RL ) viscA4D = viscA4
       IF ( viscA4Z .EQ. UNSET_RL ) viscA4Z = viscA4
-C--  useAnisotropicViscAGridMax requires that viscA*GridMax be set
-      IF ( useAnisotropicViscAGridMax ) THEN
-         IF ( viscAhGridMax .EQ. 1.D21 ) viscAhGridMax = 0.25
-         IF ( viscA4GridMax .EQ. 1.D21 ) viscA4GridMax = 0.25
-      ENDIF
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( viscAp .NE. UNSET_RL ) pCoordInputData = .TRUE.
@@ -698,6 +697,13 @@ C     Check for retired parameters still being used
        CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to use Strain & Tension',
      &  ' formulation => set useStrainTensionVisc to TRUE'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF (useAnisotropicViscAgridMax .NEQV. .TRUE. ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "useAnisotropicViscAgridMax" ',
+     &  'is not allowed in "data" substitute useAreaViscLength=true'
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
 

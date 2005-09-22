@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.102 2005/09/21 23:18:28 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.103 2005/09/22 14:00:59 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -148,7 +148,7 @@ Cml      sBeta               = 7.4D-4
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
       useFullLeith        = .FALSE.
-      useAnisotropicViscAGridMax = .FALSE.
+      useAreaViscLength   = .FALSE.
       useStrainTensionVisc = .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.

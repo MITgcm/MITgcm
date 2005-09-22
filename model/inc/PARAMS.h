@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.166 2005/09/20 21:01:30 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.167 2005/09/22 14:00:59 baylor Exp $
 C $Name:  $
 C
 
@@ -226,11 +226,10 @@ C                     and off.
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux 
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
-C     useFullLeith   :: Set to true to use full Leith viscosity (may be unstable
+C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
 C                       on irregular grids)
-C     useAnisotropicViscAGridMax :: Set to true to use Alistair's latest
-C              anisotropic length scale.  It is used only for maximum viscosity
-C              calculations.  Alistair recommends a value of viscA*GridMax=.25
+C     useAreaViscLength :: Set to true to use old scaling for viscous
+C              lengths, e.g., L2=Raz.  May be preferable for cube sphere.
 C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
@@ -307,7 +306,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempForcing,
      & saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
-     & useFullLeith, useAnisotropicViscAGridMax, useStrainTensionVisc,
+     & useFullLeith, useStrainTensionVisc,
+     & useAreaViscLength,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
@@ -353,8 +353,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
       LOGICAL useFullLeith
-      LOGICAL useAnisotropicViscAGridMax
       LOGICAL useStrainTensionVisc
+      LOGICAL useAreaViscLength
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
