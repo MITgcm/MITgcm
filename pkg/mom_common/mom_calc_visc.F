@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.9 2005/09/21 23:17:34 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.10 2005/09/22 00:21:23 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -137,9 +137,9 @@ C     == Local variables ==
      &  .OR.(viscC2smag.NE.0.)
 
       IF ((harmonic).and.(viscAhremax.ne.0.)) THEN
-        viscAhre_max=sqrt(2d0)/viscAhRemax
+        viscAhre_max=sqrt(2. _d 0)/viscAhRemax
       ELSE
-        viscAhre_max=0d0
+        viscAhre_max=0. _d 0
       ENDIF
 
       biharmonic=
@@ -152,9 +152,9 @@ C     == Local variables ==
      &  .OR.(viscC4smag.NE.0.)
 
       IF ((biharmonic).and.(viscA4remax.ne.0.)) THEN
-        viscA4re_max=0.125d0*sqrt(2d0)/viscA4Remax
+        viscA4re_max=0.125 _d 0*sqrt(2. _d 0)/viscA4Remax
       ELSE
-        viscA4re_max=0d0
+        viscA4re_max=0. _d 0
       ENDIF
 
       calcleith=
@@ -168,17 +168,17 @@ C     == Local variables ==
      &  .OR.(viscC4smag.NE.0.)
 
       IF (deltaTmom.NE.0.) THEN
-       recip_dt=1d0/deltaTmom
+       recip_dt=1. _d 0/deltaTmom
       ELSE
-       recip_dt=0d0
+       recip_dt=0. _d 0
       ENDIF
 
       IF (calcsmag) THEN
         smag2fac=(viscC2smag/pi)**2
-        smag4fac=0.125d0*(viscC4smag/pi)**2
+        smag4fac=0.125 _d 0*(viscC4smag/pi)**2
       ELSE
-        smag2fac=0d0
-        smag4fac=0d0
+        smag2fac=0. _d 0
+        smag4fac=0. _d 0
       ENDIF
 
 C     - Viscosity
@@ -188,17 +188,17 @@ C     - Viscosity
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 C These are (powers of) length scales 
-         L2=2d0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
+         L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
-         L2rdt=0.25d0*recip_dt*L2
+         L2rdt=0.25 _d 0*recip_dt*L2
 
-         L4rdt=recip_dt/( 6d0*(recip_DXF(I,J,bi,bj)**4
-     &                       +recip_DYF(I,J,bi,bj)**4)
-     &                   +8d0*((recip_DXF(I,J,bi,bj)
-     &                        *recip_DYF(I,J,bi,bj))**2) )
+         L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
+     &                            +recip_DYF(I,J,bi,bj)**4)
+     &                   +8. _d 0*((recip_DXF(I,J,bi,bj)
+     &                             *recip_DYF(I,J,bi,bj))**2) )
 
 C Velocity Reynolds Scale
          Uscl=sqrt(KE(i,j)*L2)*viscAhRe_max
@@ -206,7 +206,7 @@ C Velocity Reynolds Scale
 
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
-          grdVrt=0.25d0*(
+          grdVrt=0.25 _d 0*(
      &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
      &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
      &     +((vort3(i+1,j+1)-vort3(i,j+1))
@@ -216,7 +216,7 @@ C This is the vector magnitude of the vorticity gradient squared
 
 C This is the vector magnitude of grad (div.v) squared
 C Using it in Leith serves to damp instabilities in w.
-          grdDiv=0.25d0*(
+          grdDiv=0.25 _d 0*(
      &     ((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))**2
      &     +((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj))**2
      &     +((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
@@ -224,11 +224,11 @@ C Using it in Leith serves to damp instabilities in w.
 
           viscAh_DLth(i,j)=
      &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-          viscA4_DLth(i,j)=0.125d0*
+          viscA4_DLth(i,j)=0.125 _d 0*
      &     sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
           viscAh_DLthd(i,j)=
      &     sqrt(viscC2leithD**2*grdDiv)*L3
-          viscA4_DLthd(i,j)=0.125d0*
+          viscA4_DLthd(i,j)=0.125 _d 0*
      &     sqrt(viscC4leithD**2*grdDiv)*L5
          ELSEIF (calcleith) THEN
 C but this approximation will work on cube
@@ -252,29 +252,29 @@ c (and differs by as much as 4X)
 c This approximation is good to the same order as above...
           viscAh_Dlth(i,j)=
      &      (viscC2leith*grdVrt+(viscC2leithD*grdDiv))*L3
-          viscA4_Dlth(i,j)=0.125d0*
+          viscA4_Dlth(i,j)=0.125 _d 0*
      &      (viscC4leith*grdVrt+(viscC4leithD*grdDiv))*L5
           viscAh_DlthD(i,j)=
      &      ((viscC2leithD*grdDiv))*L3
-          viscA4_DlthD(i,j)=0.125d0*
+          viscA4_DlthD(i,j)=0.125 _d 0*
      &      ((viscC4leithD*grdDiv))*L5
          ELSE
-          viscAh_Dlth(i,j)=0d0
-          viscA4_Dlth(i,j)=0d0
-          viscAh_DlthD(i,j)=0d0
-          viscA4_DlthD(i,j)=0d0
+          viscAh_Dlth(i,j)=0. _d 0
+          viscA4_Dlth(i,j)=0. _d 0
+          viscAh_DlthD(i,j)=0. _d 0
+          viscA4_DlthD(i,j)=0. _d 0
          ENDIF
 
          IF (calcsmag) THEN
           viscAh_DSmg(i,j)=L2
      &       *sqrt(tension(i,j)**2
-     &       +0.25d0*(strain(i+1, j )**2+strain( i ,j+1)**2
-     &              +strain(i  , j )**2+strain(i+1,j+1)**2))
+     &       +0.25 _d 0*(strain(i+1, j )**2+strain( i ,j+1)**2
+     &                  +strain(i  , j )**2+strain(i+1,j+1)**2))
           viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
           viscAh_DSmg(i,j)=smag2fac*viscAh_DSmg(i,j)
          ELSE
-          viscAh_DSmg(i,j)=0d0
-          viscA4_DSmg(i,j)=0d0
+          viscAh_DSmg(i,j)=0. _d 0
+          viscA4_DSmg(i,j)=0. _d 0
          ENDIF
 
 C  Harmonic on Div.u points
@@ -295,32 +295,32 @@ C  BiHarmonic on Div.u points
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
-         L2=2d0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
+         L2=2. _d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2**2.5)
 
-         L2rdt=0.25d0*recip_dt*L2
+         L2rdt=0.25 _d 0*recip_dt*L2
          L4rdt=recip_dt/
-     &     ( 6d0*(recip_DXF(I,J,bi,bj)**4+recip_DYF(I,J,bi,bj)**4)
-     &      +8d0*((recip_DXF(I,J,bi,bj)*recip_DYF(I,J,bi,bj))**2))
+     &     ( 6. _d 0*(recip_DXF(I,J,bi,bj)**4+recip_DYF(I,J,bi,bj)**4)
+     &      +8. _d 0*((recip_DXF(I,J,bi,bj)*recip_DYF(I,J,bi,bj))**2))
 
 C Velocity Reynolds Scale
-         Uscl=sqrt(0.25d0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))
+         Uscl=sqrt(0.25 _d 0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))
      &         *L2)*viscAhRe_max
-         U4scl=sqrt(0.25d0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1)))
+         U4scl=sqrt(0.25 _d 0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1)))
      &         *L3*viscA4Re_max
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN
-          grdVrt=0.25d0*(
+          grdVrt=0.25 _d 0*(
      &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
      &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
      &     +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
      &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2)
 
 C This is the vector magnitude of grad(div.v) squared
-          grdDiv=0.25d0*(
+          grdDiv=0.25 _d 0*(
      &     ((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
      &     +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2
      &     +((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj))**2
@@ -328,11 +328,11 @@ C This is the vector magnitude of grad(div.v) squared
 
           viscAh_ZLth(i,j)=
      &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-          viscA4_ZLth(i,j)=0.125d0*
+          viscA4_ZLth(i,j)=0.125 _d 0*
      &     sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
           viscAh_ZLthD(i,j)=
      &     sqrt(viscC2leithD**2*grdDiv)*L3
-          viscA4_ZLthD(i,j)=0.125d0*
+          viscA4_ZLthD(i,j)=0.125 _d 0*
      &     sqrt(viscC4leithD**2*grdDiv)*L5
 
          ELSEIF (calcleith) THEN
@@ -349,28 +349,28 @@ C but this approximation will work on cube (and differs by 4X)
           grdDiv=max(grdDiv,
      &     abs((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)))
           grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXG(i,j-1,bi,bj)))
+     &     abs((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj)))
           grdDiv=max(grdDiv,
-     &     abs((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYG(i-1,j,bi,bj)))
+     &     abs((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYC(i-1,j,bi,bj)))
 
           viscAh_ZLth(i,j)=(viscC2leith*grdVrt
      &                     +(viscC2leithD*grdDiv))*L3
-          viscA4_ZLth(i,j)=0.125d0*(viscC4leith*grdVrt
+          viscA4_ZLth(i,j)=0.125 _d 0*(viscC4leith*grdVrt
      &                     +(viscC4leithD*grdDiv))*L5
           viscAh_ZLthD(i,j)=((viscC2leithD*grdDiv))*L3
-          viscA4_ZLthD(i,j)=0.125d0*((viscC4leithD*grdDiv))*L5
+          viscA4_ZLthD(i,j)=0.125 _d 0*((viscC4leithD*grdDiv))*L5
          ELSE
-          viscAh_ZLth(i,j)=0d0
-          viscA4_ZLth(i,j)=0d0
-          viscAh_ZLthD(i,j)=0d0
-          viscA4_ZLthD(i,j)=0d0
+          viscAh_ZLth(i,j)=0. _d 0
+          viscA4_ZLth(i,j)=0. _d 0
+          viscAh_ZLthD(i,j)=0. _d 0
+          viscA4_ZLthD(i,j)=0. _d 0
          ENDIF
 
          IF (calcsmag) THEN
           viscAh_ZSmg(i,j)=L2
      &      *sqrt(strain(i,j)**2
-     &        +0.25d0*(tension( i , j )**2+tension( i ,j-1)**2
-     &              +tension(i-1, j )**2+tension(i-1,j-1)**2))
+     &        +0.25 _d 0*(tension( i , j )**2+tension( i ,j-1)**2
+     &                   +tension(i-1, j )**2+tension(i-1,j-1)**2))
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
          ENDIF
