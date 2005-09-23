@@ -17,6 +17,7 @@
  bottomDragQuadratic=2.E-3,
  viscA4=0.E12,
  viscC4Leith=0.1,
+ useAreaViscLength=.TRUE.,
  diffKhT=0.0E0
  diffKzT=0.E-2,
  diffKhS=0.E0,
