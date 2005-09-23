@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.48 2005/09/19 19:58:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.49 2005/09/23 19:19:37 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -182,7 +182,7 @@ C note (jmc) : Dissipation and Vort3 advection do not necesary
 C              use the same maskZ (and hFacZ)  => needs 2 call(s)
 c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
-      CALL MOM_CALC_KE(bi,bj,k,2,uFld,vFld,KE,myThid)
+      CALL MOM_CALC_KE(bi,bj,k,0,uFld,vFld,KE,myThid)
 
       CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
