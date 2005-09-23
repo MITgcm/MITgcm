@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.25 2005/09/16 20:57:09 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.26 2005/09/23 15:19:38 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -268,7 +268,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,
+     I        hDiv,vort3,tension,strain,KE,hFacZ,
      I        myThid)
       ENDIF
 
