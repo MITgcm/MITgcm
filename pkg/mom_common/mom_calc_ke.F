@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.2 2005/08/24 15:33:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.3 2005/09/23 19:16:25 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -53,7 +53,7 @@ C                 1  /  ___I    ___J   \
 C           KE = --- |   U    +  V     |
 C                 2  \                 /
 C
-      IF (KEscheme.EQ.1) THEN
+      IF (KEscheme.EQ.-1) THEN
        DO J=1-OLy,sNy+OLy-1
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.125*(
@@ -62,7 +62,7 @@ C
        ENDDO
       ENDDO
 
-      ELSEIF (KEscheme.EQ.2) THEN
+      ELSEIF (KEscheme.EQ.0) THEN
 C       This defn of KE should be used for the vector invariant equations.
 C                       _____I  _____J
 C                 1  /     2       2   \
@@ -72,38 +72,54 @@ C
        DO J=1-OLy,sNy+OLy-1
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
-     &             uFld( i , j )*uFld( i , j )
-     &            +uFld(i+1, j )*uFld(i+1, j )
-     &            +vFld( i , j )*vFld( i , j )
+     &           ( uFld( i , j )*uFld( i , j )
+     &            +uFld(i+1, j )*uFld(i+1, j ) )
+     &         + ( vFld( i , j )*vFld( i , j )
      &            +vFld( i ,j+1)*vFld( i ,j+1) )
+     &                  )
         ENDDO
        ENDDO
 
-      ELSEIF (KEscheme.EQ.3) THEN
-C       As above but including the lopping factors and should be used
+      ELSEIF (KEscheme.EQ.1) THEN
+C       As above but including the area
+       DO J=1-OLy,sNy+OLy-1
+        DO I=1-OLx,sNx+OLx-1
+         KE(i,j) = 0.25*(
+     &           ( uFld(i, j )*uFld(i, j )*rAw(i ,j, bi,bj)
+     &            +uFld(i+1,j)*uFld(i+1,j)*rAw(i+1,j,bi,bj) )
+     &         + ( vFld(i, j )*vFld(i, j )*rAs(i ,j, bi,bj)
+     &            +vFld(i,j+1)*vFld(i,j+1)*rAs(i,j+1,bi,bj) )
+     &                  )*recip_rA(i,j,bi,bj)
+        ENDDO
+       ENDDO
+
+      ELSEIF (KEscheme.EQ.2) THEN
+C       As KEscheme=0 but including the lopping factors and should be used
 C       for the conservative form of the momentum equations.
        DO J=1-OLy,sNy+OLy-1
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
-     &             uFld( i , j )*uFld( i , j )*hFacW(i,j,k,bi,bj)
-     &            +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1,j,k,bi,bj)
-     &            +vFld( i , j )*vFld( i , j )*hFacS(i,j,k,bi,bj)
-     &            +vFld( i ,j+1)*vFld( i ,j+1)*hFacS(i,j+1,k,bi,bj)
+     &           ( uFld( i , j )*uFld( i , j )*hFacW(i,j,k,bi,bj)
+     &            +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1,j,k,bi,bj) )
+     &         + ( vFld( i , j )*vFld( i , j )*hFacS(i,j,k,bi,bj)
+     &            +vFld( i ,j+1)*vFld( i ,j+1)*hFacS(i,j+1,k,bi,bj) )
      &            )*recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 
-      ELSEIF (KEscheme.EQ.4) THEN
-C       As above but including the area and should be used
-C       for the conservative form of the momentum equations.
+      ELSEIF (KEscheme.EQ.3) THEN
+C       As above but including the area
        DO J=1-OLy,sNy+OLy-1
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
+     &           (
      &    uFld(i, j )*uFld(i, j )*hFacW(i ,j, k,bi,bj)*rAw(i ,j, bi,bj)
      &   +uFld(i+1,j)*uFld(i+1,j)*hFacW(i+1,j,k,bi,bj)*rAw(i+1,j,bi,bj)
-     &   +vFld(i, j )*vFld(i, j )*hFacS(i, j, k,bi,bj)*rAs(i ,j, bi,bj)
+     &           )  
+     &         + (
+     &    vFld(i, j )*vFld(i, j )*hFacS(i, j, k,bi,bj)*rAs(i ,j, bi,bj)
      &   +vFld(i,j+1)*vFld(i,j+1)*hFacS(i,j+1,k,bi,bj)*rAs(i,j+1,bi,bj)
-     &                  )*recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
+     &           )      )*recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
         ENDDO
        ENDDO
 

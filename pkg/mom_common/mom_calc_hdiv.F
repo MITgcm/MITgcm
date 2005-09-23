@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hdiv.F,v 1.1 2004/05/24 18:40:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hdiv.F,v 1.2 2005/09/23 19:16:25 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -50,10 +50,10 @@ C       that only considers the horizontal grid variations.
 C       This discretization takes into account the fractional areas
 C       due to the lopping. Whether we should do this is not clear!
          hDiv(I,J)= 
-     &    (  uFld(i+1, j )*dyg(i+1, j ,bi,bj)*hFacW(i+1, j ,K,bi,bj)
-     &      -uFld( i , j )*dyg( i , j ,bi,bj)*hFacW( i , j ,K,bi,bj)
-     &      +vFld( i ,j+1)*dxg( i ,j+1,bi,bj)*hFacS( i ,j+1,K,bi,bj)
-     &      -vFld( i , j )*dxg( i , j ,bi,bj)*hFacS( i , j ,K,bi,bj)
+     &    ( ( uFld(i+1, j )*dyg(i+1, j ,bi,bj)*hFacW(i+1, j ,K,bi,bj)
+     &       -uFld( i , j )*dyg( i , j ,bi,bj)*hFacW( i , j ,K,bi,bj) )
+     &     +( vFld( i ,j+1)*dxg( i ,j+1,bi,bj)*hFacS( i ,j+1,K,bi,bj)
+     &       -vFld( i , j )*dxg( i , j ,bi,bj)*hFacS( i , j ,K,bi,bj) )
      &    )*recip_rA(I,J,bi,bj)
      &     *recip_hFacC(i,j,k,bi,bj)
         ENDDO
