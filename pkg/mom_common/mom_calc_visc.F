@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.11 2005/09/22 14:00:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.12 2005/09/23 15:35:53 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,hfacZ,
+     I        hDiv,vort3,tension,strain,KE,hFacZ,
      I        myThid)
 
       IMPLICIT NONE
@@ -189,7 +189,7 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 C These are (powers of) length scales 
          IF (useAreaViscLength) THEN
-          L2=Ra(i,j,bi,bj)
+          L2=rA(i,j,bi,bj)
          ELSE
           L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
          ENDIF
@@ -200,7 +200,7 @@ C These are (powers of) length scales
          L2rdt=0.25 _d 0*recip_dt*L2
 
          IF (useAreaViscLength) THEN
-          L4rdt=0.125 _d 0*recip_dt*Ra(i,j,bi,bj)**2
+          L4rdt=0.125 _d 0*recip_dt*rA(i,j,bi,bj)**2
          ELSE
           L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
      &                            +recip_DYF(I,J,bi,bj)**4)
@@ -304,9 +304,9 @@ C  BiHarmonic on Div.u points
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
          IF (useAreaViscLength) THEN
-          L2=RaZ(i,j,bi,bj)
+          L2=rAz(i,j,bi,bj)
          ELSE
-          L2=2._d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
+          L2=2. _d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
          ENDIF
 
          L3=(L2**1.5)
@@ -315,7 +315,7 @@ C These are (powers of) length scales
 
          L2rdt=0.25 _d 0*recip_dt*L2
          IF (useAreaViscLength) THEN
-          L4rdt=0.125 _d 0*recip_dt*RaZ(i,j,bi,bj)**2
+          L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
          ELSE
           L4rdt=recip_dt/
      &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
