@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.6 2005/09/07 13:57:25 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.7 2005/09/23 14:32:52 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2265,7 +2265,7 @@ OpenAD_rev          \
 OpenAD_tape         \
 iaddr
 
-adopen: ad_input_code.mfepp.canon.xb.x2w.w2f.pp.f
+adopen: ad_input_code.w2f.canon.xb.x2w.w2f.pp.f
 
 ifndef OPENADROOT
   \$(error "Error:  environment variable OPENADROOT not defined!")
@@ -2287,9 +2287,12 @@ ad_input_code_sf.f : ad_input_code.f
 # mfef90 preprocessing
 # expand statement functions 
 # expose mfef90 specific substring handling 
-ad_input_code_sf.w2f.f: ad_input_code_sf.f mfef90 whirl2f whirl2f_be
+# add the w2f__types module
+ad_input_code_sf.w2f.f: ad_input_code_sf.f mfef90 whirl2f whirl2f_be w2f__types.f90
 	./mfef90 -F -N132 \$< 
 	./whirl2f \$<
+	cat w2f__types.f90 \$@ > \$@.1
+	mv \$@.1 \$@  
 
 # canonicalizer
 ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.pl
@@ -2333,6 +2336,10 @@ ad_input_code.w2f.canon.xb.x2w.w2f.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.p
 
 mfef90: 
 	\$(LN) \${OPENADROOT}/Open64/osprey1.0/targ_ia32_ia64_linux/crayf90/sgi/mfef90 .
+
+# link the type module from Open64
+w2f__types.f90 :
+	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/testRoundTrip/\$@ .
 
 whirl2xaif xaif2whirl: 
 	\$(LN) \${OPENADROOT}/OpenADFortTk/OpenADFortTk-i686-Linux/bin/\$@ .
