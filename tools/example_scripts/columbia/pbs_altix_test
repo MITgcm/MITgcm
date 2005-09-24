@@ -25,7 +25,8 @@ echo "done"
 ulimit -s unlimited
 
 cd MITgcm/verification/
-./testreport -of=/nobackup2/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
+./testreport -mpi \
+   -of=/nobackup2/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
    -command '(mpirun -np 2 ./mitgcmuv >& output.txt ; echo -n hi)' \
    -j 16 -a edhill@mitgcm.org
 
