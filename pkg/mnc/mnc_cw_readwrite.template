@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.33 2005/09/19 02:24:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.34 2005/09/24 03:44:54 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -213,9 +213,11 @@ C         Create the file name
           CALL MNC_PSNCM(tmpnm, uniq_tnum, MNC_DEF_TMNC)
           k = ILNBLNK(tmpnm)
           IF ( mnc_cw_cit(1,mnc_cw_fgci(indfg)) .GT. -1 ) THEN
+            j = mnc_cw_cit(2,mnc_cw_fgci(indfg))
+            IF ( mnc_cw_fgis(indfg) .GT. j )
+     &           j = mnc_cw_fgis(indfg)
             write(fname,'(a,a1,i10.10,a2,a,a3)') fbname(n1:n2),
-     &           '.', mnc_cw_cit(2,mnc_cw_fgci(indfg)),
-     &           '.t',tmpnm(1:k),'.nc'
+     &           '.', j, '.t', tmpnm(1:k), '.nc'
           ELSEIF ( mnc_cw_cit(1,mnc_cw_fgci(indfg)) .EQ. -1 ) THEN
 C           Leave off the myIter value entirely
             write(fname,'(a,a2,a,a3)') fbname(n1:n2), '.t',
@@ -302,9 +304,14 @@ C               we are all done writing to it.
                   CALL print_error(msgbuf, mythid)
                   STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
                 ENDIF
-                mnc_cw_cit(2,mnc_cw_fgci(indfg)) 
-     &               = mnc_cw_cit(3,mnc_cw_fgci(indfg))
-                mnc_cw_cit(3,mnc_cw_fgci(indfg)) = -1
+                mnc_cw_fgis(indfg) = mnc_cw_cit(3,mnc_cw_fgci(indfg))
+C               DO NOT BUMP THE CURRENT ITER FOR ALL FILES IN THIS CITER
+C               GROUP SINCE THIS IS ONLY GROWTH TO AVOID FILE SIZE
+C               LIMITS FOR THIS ONE BASENAME GROUP, NOT GROWTH OF THE
+C               ENTIRE CITER GROUP !!!
+C               mnc_cw_cit(2,mnc_cw_fgci(indfg)) 
+C               &   = mnc_cw_cit(3,mnc_cw_fgci(indfg))
+C               mnc_cw_cit(3,mnc_cw_fgci(indfg)) = -1
 #endif
                 fs_isdone = 1
                 GOTO 10
