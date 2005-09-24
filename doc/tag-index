@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.551 2005/09/20 21:01:29 baylor Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.552 2005/09/24 00:43:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add brackets in multi-terms sum to get same truncation, independent of
+  the face number (manage to get exactly same value of gU,gV at the cs-edge)
+  affects several test. exp. Update global_ocean.cs32x15 (+.thsice).
 o Clean, new version of mom_calc_visc.  Adds a new feature, viscAhRemax
   and viscA4Remax, which allow one to limit the minimum viscosity by specifying
   a maximum grid-scale Reynolds number.  Also, changes all length calculations
