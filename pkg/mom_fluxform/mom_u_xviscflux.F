@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_xviscflux.F,v 1.5 2005/09/16 20:57:09 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_xviscflux.F,v 1.6 2005/09/26 15:27:11 baylor Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld, del2u,
      O        xViscFluxU,
-     I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
+     I        viscAh_D,viscA4_D,
      I        myThid)
 
 C !DESCRIPTION:
@@ -37,9 +37,7 @@ C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 

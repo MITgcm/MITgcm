@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.5 2005/04/11 14:47:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.6 2005/09/26 15:27:11 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -10,6 +10,8 @@ C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_SIDEDRAG(
      I        bi,bj,k,
      I        uFld, del2u, hFacZ,
+     I        viscAh_Z,viscA4_Z,
+     I        harmonic,biharmonic,useVariableViscosity,
      O        uDragTerms,
      I        myThid)
 
@@ -37,6 +39,9 @@ C  myThid               :: thread number
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      LOGICAL harmonic,biharmonic,useVariableViscosity
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -49,7 +54,6 @@ C  hFacZClosedN         :: fractional open water to north
 C  hFacZClosedS         :: fractional open water to south
       INTEGER I,J
       _RS hFacZClosedS,hFacZClosedN
-      _RL Ahtmp,A4tmp
 CEOP
 
 C     - Laplacian  and bi-harmonic terms
@@ -57,34 +61,45 @@ C     - Laplacian  and bi-harmonic terms
        DO i=1-Olx,sNx+Olx-1
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
-        Ahtmp=min(viscAh+viscAhGrid*rAw(i,j,bi,bj)/deltaTmom,
-     &            viscAhMax)
-        A4tmp=min(viscA4+viscA4Grid*(rAw(i,j,bi,bj)**2)/deltaTmom,
-     &            viscA4Max)
-        A4tmp=min(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
-        A4tmp=max(A4tmp,viscA4GridMin*(rAw(i,j,bi,bj)**2)/deltaTmom)
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)
-     &   *( hFacZClosedS*_dxV(i, j ,bi,bj)
-     &      *_recip_dyU(i, j ,bi,bj)
-     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)
-     &      *_recip_dyU(i,j+1,bi,bj) )
-     &   *drF(k)*2.*(
+     &   *( hFacZClosedS*_dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
 #ifdef ISOTROPIC_COS_SCALING
-     &                viscAh*uFld(i,j)*cosFacU(J,bi,bj)
+     &         *(viscAh_Z(i,j  )*uFld(i,j)*cosFacU(J,bi,bj)
 #ifdef COSINEMETH_III
-     &               -viscA4*del2u(i,j)*sqcosFacU(J,bi,bj)
+     &           -viscA4_Z(i,j  )*del2u(i,j)*sqcosFacU(J,bi,bj))
 #else
-     &               -viscA4*del2u(i,j)*cosFacU(J,bi,bj)
+     &           -viscA4_Z(i,j  )*del2u(i,j)*cosFacU(J,bi,bj))
 #endif
 #else
-     &                Ahtmp*uFld(i,j)
-     &               -A4tmp*del2u(i,j)
+     &         *(viscAh_Z(i,j  )*uFld(i,j)
+     &           -viscA4_Z(i,j  )*del2u(i,j))
+#endif
+     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj) 
+#ifdef ISOTROPIC_COS_SCALING
+     &         *(viscAh_Z(i,j+1)*uFld(i,j)*cosFacU(J,bi,bj)
+#ifdef COSINEMETH_III
+     &           -viscA4_Z(i,j+1)*del2u(i,j)*sqcosFacU(J,bi,bj))
+#else
+     &           -viscA4_Z(i,j+1)*del2u(i,j)*cosFacU(J,bi,bj))
+#endif
+#else
+     &         *(viscAh_Z(i,j+1)*uFld(i,j)
+     &           -viscA4_Z(i,j+1)*del2u(i,j))
 #endif
      &              )
+     &      *drF(k)*2.
        ENDDO
       ENDDO
 
       RETURN
       END
+
+
+
+
+
+
+
+

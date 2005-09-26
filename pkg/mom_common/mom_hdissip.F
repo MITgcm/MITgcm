@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.5 2005/09/20 19:43:38 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.6 2005/09/26 15:27:11 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,6 +7,8 @@ C $Name:  $
      I        bi,bj,k,
      I        hDiv,vort3,tension,strain,KE,
      I        hFacZ,
+     I        viscAh_s,viscAh_t,viscA4_s,viscA4_t,
+     I        harmonic,biharmonic,useVariableViscosity,
      O        uDissip,vDissip,
      I        myThid)
       IMPLICIT NONE
@@ -32,22 +34,15 @@ C     == Routine arguments ==
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      LOGICAL harmonic, biharmonic, useVariableViscosity
       INTEGER myThid
 
 C     == Local variables ==
       INTEGER I,J
-      _RL viscAh_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAh_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL harmonic, biharmonic, useVariableViscosity
-
-      CALL MOM_CALC_VISC(
-     I        bi,bj,k,
-     O        viscAh_s,viscAh_t,viscA4_s,viscA4_t,
-     O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,hfacZ,
-     I        myThid)
 
 C     - Laplacian and bi-harmonic terms
       IF (harmonic) THEN

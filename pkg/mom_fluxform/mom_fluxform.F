@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.26 2005/09/23 15:19:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.27 2005/09/26 15:27:11 baylor Exp $
 C $Name:  $
 
 CBOI
@@ -361,11 +361,11 @@ C     Bi-harmonic term del^2 U -> v4F
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
         CALL MOM_U_XVISCFLUX(bi,bj,k,uFld,v4F,fZon,
-     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
+     I    viscAh_D,viscA4_D,myThid)
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
         CALL MOM_U_YVISCFLUX(bi,bj,k,uFld,v4F,hFacZ,fMer,
-     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
+     I    viscAh_Z,viscA4_Z,myThid)
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
@@ -403,7 +403,13 @@ C--   Tendency is minus divergence of the fluxes
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-         CALL MOM_U_SIDEDRAG(bi,bj,k,uFld,v4F,hFacZ,vF,myThid)
+         CALL MOM_U_SIDEDRAG(
+     I        bi,bj,k,
+     I        uFld, v4f, hFacZ,
+     I        viscAh_Z,viscA4_Z,
+     I        harmonic,biharmonic,useVariableViscosity,
+     O        vF,
+     I        myThid)
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -542,11 +548,11 @@ C     Bi-harmonic term del^2 V -> v4F
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
         CALL MOM_V_XVISCFLUX(bi,bj,k,vFld,v4f,hFacZ,fZon,
-     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
+     I    viscAh_Z,viscA4_Z,myThid)
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
         CALL MOM_V_YVISCFLUX(bi,bj,k,vFld,v4f,fMer,
-     I    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,myThid)
+     I    viscAh_D,viscA4_D,myThid)
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
@@ -584,7 +590,13 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
       IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-         CALL MOM_V_SIDEDRAG(bi,bj,k,vFld,v4F,hFacZ,vF,myThid)
+         CALL MOM_V_SIDEDRAG(
+     I        bi,bj,k,
+     I        vFld, v4f, hFacZ,
+     I        viscAh_Z,viscA4_Z,
+     I        harmonic,biharmonic,useVariableViscosity,
+     O        vF,
+     I        myThid)
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
