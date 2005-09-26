@@ -9,6 +9,9 @@
 #                 when this entry is missing, select all common levels of this list
 #  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
 #                 for the list of all available diag. in this particular config)
+#  fileflags(n) : 8-char string containing per-file flags (a 'D' in the first 
+#                 character means double precision and its generally a good idea
+#                 for second-moment diagnostics to avoid precision loss)
 #-----------------
  &diagnostics_list
   diag_mnc     = .TRUE.,
@@ -16,15 +19,18 @@
    levels(1,1) = 1.,
    fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
    filename(1) = 'surfDiag',
+#   fileflags(1)= 'D       ',
   frequency(2) = 2592000.,
    levels(1,2) = 1.,2.,3.,4.,5.,
    fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SHAP_dU ',
    filename(2) = 'dynDiag',
+#   fileflags(2)= 'D       ',
   frequency(3) = 2592000.,
    levels(1,3) = 1.,2.,3.,4.,5.,
    fields(1,3) = 'UVELSQ  ','VVELSQ  ','THETASQ ','UV_VEL_C',
                  'UTHMASS ','VTHMASS ','WVELTH  ',
    filename(3) = 'secmoms',
+#   fileflags(3)= 'D       ',
  &
 
 # Parameter for Diagnostics of per level statistics:
