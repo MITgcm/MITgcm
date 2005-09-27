@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.5 2005/09/26 15:27:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.6 2005/09/27 00:13:37 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
+#define SIDEDRAG_OLD_VERSION
 
 CBOP
 C !ROUTINE: MOM_V_SIDEDRAG
@@ -56,6 +57,43 @@ C  hFacZClosedW         :: fractional open water to west
       _RS hFacZClosedE,hFacZClosedW
 CEOP
 
+#ifdef SIDEDRAG_OLD_VERSION
+      _RL Ahtmp,A4tmp
+
+C     - Laplacian  and bi-harmonic terms
+      DO j=1-Oly,sNy+Oly-1
+       DO i=1-Olx,sNx+Olx-1
+        hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
+        Ahtmp=min(viscAh+viscAhGrid*rAs(i,j,bi,bj)/deltaTmom,
+     &            viscAhMax)
+        A4tmp=min(viscA4+viscA4Grid*(rAs(i,j,bi,bj)**2)/deltaTmom,
+     &            viscA4Max)
+        IF (viscA4GridMax.GT.0.) THEN
+           A4tmp=min(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
+        ENDIF
+        A4tmp=max(A4tmp,viscA4GridMin*(rAw(i,j,bi,bj)**2)/deltaTmom)
+        vDragTerms(i,j) =
+     &   -_recip_hFacS(i,j,k,bi,bj)
+     &   *recip_drF(k)*recip_rAs(i,j,bi,bj)
+     &   *( hFacZClosedW*_dyU( i ,j,bi,bj)
+     &      *_recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)
+     &      *_recip_dxV(i+1,j,bi,bj) )
+     &   *drF(k)*2.*(
+     &                Ahtmp*vFld(i,j)*cosFacV(J,bi,bj)
+     &               -A4tmp*del2v(i,j)*cosFacV(J,bi,bj)
+#ifdef COSINEMETH_III
+     &               -viscA4*del2v(i,j)*sqcosFacV(J,bi,bj)
+#else
+     &               -viscA4*del2v(i,j)*cosFacV(J,bi,bj)
+#endif
+     &              )
+       ENDDO
+      ENDDO
+
+#else /* SIDEDRAG_OLD_VERSION */
+
 C     - Laplacian  and bi-harmonic terms
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
@@ -93,6 +131,7 @@ C     - Laplacian  and bi-harmonic terms
        ENDDO
       ENDDO
 
+#endif /* (not) SIDEDRAG_OLD_VERSION */
+
       RETURN
       END
-
