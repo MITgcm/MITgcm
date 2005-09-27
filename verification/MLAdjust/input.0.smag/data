@@ -1,0 +1,121 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ viscAr=5.E-5,
+# This is the background viscosity used total=viscah+viscleith
+# viscAh=1.E2,
+# viscA4=1.E2,
+# This is the background viscosity used on vorticity points
+# viscAhZ=1.E2,
+# viscA4Z=1.E2,
+# This is the background viscosity used on divergence points
+# viscAhD=1.E2,
+# viscA4D=1.E2,
+# viscAhd and viscahz are set to viscah if they are unset initially
+#
+# This is a maximum gridscale Reynolds number limiter
+# ViscAhRemax=10,
+# ViscA4Remax=10,
+# This is a minimum autoscaling viscosity
+# ViscAhGridMin=.01,
+# ViscA4GridMin=.01,
+# This is the standard Leith Viscosity, prop to grad(curl v_h)
+ viscC2leith=0.2,
+# viscC4leith=0.2,
+# This is an additional Leith Viscosity, prop to grad(div.v_h)
+# It traps instabilities that have no signal in grad(curl v_h)
+ viscC2leithD=0.2,
+# viscC4leithD=0.2,
+# This is harmonic Smagorinsky Coefficient
+# 0.2-0.9=value from 3-d turbulence theory; Smagorinsky (1993)
+# 2.2-4=stable oceanic values (Griffies and Hallberg, 2000)
+# 0.7 c2smag is approximately the same as 0.12 c2leith+c2leithd
+# 1.0 c2smag is approximately the same as 0.25 c2leith+c2leithd
+ viscC2Smag=1.0,
+# viscC4Smag=1.0,
+# This is the max Viscosity used, be it Smag or Leith, and it scales 
+# with grid size and timestep
+ viscAhGridMax=1.0,
+# viscA4GridMax=1.0,
+# This uses the full grad(vort) and grad(div)
+ useFullLeith=.TRUE.,
+# This uses the Strain-Tension form for calculating viscous terms
+ useStrainTensionVisc=.FALSE.,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ f0=7.29e-5,
+ beta=0.E-11,
+ eosType='LINEAR',
+# Using Temperature as only Active Tracer
+ tAlpha=2.E-4,
+# Using Salinity as Spice
+ sBeta =0.E-4,
+ saltStepping=.TRUE.,
+ gravity=9.81,
+ rhonil=1035.,
+ implicitFreeSurface=.TRUE.,
+ usejamartwetpoints=.TRUE.,
+ rigidLid=.FALSE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ tempAdvScheme=33,
+ saltAdvScheme=33,
+ nonHydrostatic=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ /
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-11,
+ cg3dMaxIters=40,
+ cg3dTargetResidual=1.E-9,
+ /
+
+# Time stepping parameters
+ &PARM03
+ niter0=0,
+#endTime=86400.,
+#- for testing, only run for 12 iterations:
+ nTimeSteps=12,
+ deltaT=1200.,
+ abEps=0.01,
+#- for testing, reduce amount of output by commenting out output frequencies:
+#pchkptFreq=43200.,
+#taveFreq=7200.,
+#dumpFreq=7200.,
+#diagFreq=7200.,
+ monitorFreq=1200.,
+ cadjfreq=0.,
+ /
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+  delR= 5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+    5d0, 5d0, 5d0, 5d0, 5d0,
+ dxspacing=1d3,
+ dyspacing=1d3,
+ /
+
+# Input datasets
+ &PARM05
+ bathyFile='topo_sl.bin',
+ hydrogThetaFile='thetaInitial.bin',
+ hydrogSaltFile='spiceInitial.bin',
+ /
+
