@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.5 2005/09/27 03:05:14 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.6 2005/09/27 13:31:40 baylor Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -140,7 +140,7 @@ CEOP
       CALL MNC_CW_ADD_VNAME('Tdiftave', 'Cen_xy_Hn__C__t',4,5,myThid)
 
       CALL MNC_CW_ADD_VNAME('uZtave', 'U_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('UZtave','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('uZtave','units','m/s^2', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('uZtave','description',
      &     'Zonal Vel. and Rel. Vorticity Product t-ave', myThid)
 
