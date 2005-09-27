@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.1 2005/09/06 02:16:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.2 2005/09/27 02:45:56 baylor Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -283,20 +283,75 @@ C     CALL MNC_CW_ADD_VATTR_TEXT('','units','', myThid)
 C     CALL MNC_CW_ADD_VATTR_TEXT('','long_name',
 C     &     'potential_temperature', myThid)
       
-      CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('fU', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('zV', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('zU', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('KEx','Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('KEy','Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('Ds', 'Cen_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('fV', 'V_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fV','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fV','description',
+     &     'Merid. Planetary Coriolis Acceleration (f x U)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('fU', 'U_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fU','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('fU','description',
+     &     'Zonal. Planetary Coriolis Acceleration (f x V)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('zV', 'V_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('zV','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('zV','description',
+     &     'Merid. Relative Coriolis Acceleration (Zeta x U)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('zU', 'U_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('zU','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('zU','description',
+     &     'Zonal. Relative Coriolis Acceleration (Zeta x V)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('KEx','U_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEx','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEx','description',
+     &     'Kinetic Energy Gradient Zonal Acceleration', myThid)
+
+      CALL MNC_CW_ADD_VNAME('KEy','V_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEx','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEx','description',
+     &     'Kinetic Energy Gradient Merid. Acceleration', myThid)
+
+      CALL MNC_CW_ADD_VNAME('Ds', 'Cor_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Ds','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Ds','description',
+     &     'Horiz. Velocity Shear Strain Rate (u_y+v_x)', myThid)
+
       CALL MNC_CW_ADD_VNAME('Dt', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('Du', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('Dv', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('Z3', 'Cen_xy_Hn__C__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('W3', 'Cen_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Dt','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Dt','description',
+     &     'Horiz. Velocity Tension Rate (u_x-v_y)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('Du', 'U_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Du','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Du','description',
+     &     'Explicit Viscous Zonal Acceleration', myThid)
+
+      CALL MNC_CW_ADD_VNAME('Dv', 'V_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Dv','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Dv','description',
+     &     'Explicit Viscous Merid. Acceleration', myThid)
+
+      CALL MNC_CW_ADD_VNAME('Z3', 'Cor_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Z3','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Z3','description',
+     &     'Vertical Relative Vorticity (v_x-u_y)', myThid)
+
+      CALL MNC_CW_ADD_VNAME('W3', 'Cor_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('W3','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('W3','description',
+     &     'Vertical Absolute Vorticity (v_x-u_y+f)', myThid)
+
       CALL MNC_CW_ADD_VNAME('KE', 'Cen_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KE','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KE','description',
+     &     'Kinetic Energy of Horiz. Vel. (u^2+v^2)/2', myThid)
+
       CALL MNC_CW_ADD_VNAME('D',  'Cen_xy_Hn__C__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('D','units','1/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('D','description',
+     &     'Divergence of Horiz. Vel. (u_x+v_y)', myThid)
 
 C     Define variables from FFIELDS.h
       CALL MNC_CW_ADD_VNAME('fu', 'U_xy_Hn__-__t', 3,4, myThid)
