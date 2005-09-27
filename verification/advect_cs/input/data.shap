@@ -1,6 +1,0 @@
-# Packages
- &SHAP_PARM01
- nShapT=0,
- nShapUV=4,
- Shap_funct=20,
- &
