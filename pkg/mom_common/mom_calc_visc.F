@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.14 2005/09/27 00:18:20 jmc Exp $
+C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
 
@@ -70,10 +72,6 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_EXCH2
-#include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
-#endif /* ALLOW_EXCH2 */
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -118,43 +116,6 @@ C     == Local variables ==
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcLeith,calcSmag
-      LOGICAL northWestCorner, northEastCorner,
-     &        southWestCorner, southEastCorner
-#ifdef ALLOW_EXCH2
-      INTEGER myTile
-#endif /* ALLOW_EXCH2 */
-
-C     Special stuff for Cubed Sphere
-      southWestCorner = .FALSE.
-      southEastCorner = .FALSE.
-      northWestCorner = .FALSE.
-      northEastCorner = .FALSE.
-      IF (useCubedSphereExchange) THEN
-#ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southWestCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northWestCorner = .TRUE.
-       ENDIF
-#else
-       southWestCorner = .TRUE.
-       southEastCorner = .TRUE.
-       northWestCorner = .TRUE.
-       northEastCorner = .TRUE.
-#endif /* ALLOW_EXCH2 */
-      ENDIF
 
       useVariableViscosity=
      &      (viscAhGrid.NE.0.)
@@ -354,7 +315,7 @@ C These are (powers of) length scales
 
          L2rdt=0.25 _d 0*recip_dt*L2
          IF (useAreaViscLength) THEN
-          L4rdt=0.125 _d 0*recip_dt*RaZ(i,j,bi,bj)**2
+          L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
          ELSE
           L4rdt=recip_dt/
      &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
