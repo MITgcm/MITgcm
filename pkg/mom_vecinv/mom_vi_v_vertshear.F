@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.7 2005/06/22 00:33:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.8 2005/09/27 23:42:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_V_VERTSHEAR( 
+      SUBROUTINE MOM_VI_V_VERTSHEAR(
      I        bi,bj,K,
      I        vFld,wFld,
      U        vShearTerm,
      I        myThid)
       IMPLICIT NONE
-C     /==========================================================\
-C     | S/R MOM_V_VERTSHEAR                                      |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | S/R MOM_V_VERTSHEAR
+C     *==========================================================*
+C     *==========================================================*
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -31,6 +31,8 @@ C     == Local variables ==
       INTEGER I,J,Kp1,Km1
       _RL mask_Kp1,mask_Km1,wBarYm,wBarYp
       _RL vZm,vZp
+      LOGICAL  rAdvAreaWeight
+      PARAMETER( rAdvAreaWeight =.TRUE.)
 c     _RL vmask_Kp1,vmask_K,vmask_Km1
 c     LOGICAL freeslipK,noslipK
 c     PARAMETER(freeslipK=.TRUE.)
@@ -57,17 +59,33 @@ c       wBarYm=0.5*(wFld(I,J,K,bi,bj)+wFld(I,J-1,K,bi,bj))
 c       wBarYp=0.5*(wFld(I,J,Kp1,bi,bj)+wFld(I,J-1,Kp1,bi,bj))
 c    &              *mask_Kp1
 
-C       Transport at interface k
+       IF ( rAdvAreaWeight ) THEN
+C       Transport at interface k : Area weighted average
         wBarYm=0.5*(
      &    wFld(I,J,K,bi,bj)*rA(i,j,bi,bj)*maskC(i,j,Km1,bi,bj)
      &   +wFld(I,J-1,K,bi,bj)*rA(i,j-1,bi,bj)*maskC(i,j-1,Km1,bi,bj)
      &             )*mask_Km1
+     &              *recip_rAs(i,j,bi,bj)
 
 C       Transport at interface k+1 (here wFld is already masked)
         wBarYp=0.5*(
      &    wFld(I,J,Kp1,bi,bj)*rA(i,j,bi,bj)
      &   +wFld(I,J-1,Kp1,bi,bj)*rA(i,j-1,bi,bj)
      &             )*mask_Kp1
+     &              *recip_rAs(i,j,bi,bj)
+       ELSE
+C       Transport at interface k : simple average
+        wBarYm=0.5*(
+     &    wFld(I,J,K,bi,bj)*maskC(i,j,Km1,bi,bj)
+     &   +wFld(I,J-1,K,bi,bj)*maskC(i,j-1,Km1,bi,bj)
+     &             )*mask_Km1
+
+C       Transport at interface k+1 (here wFld is already masked)
+        wBarYp=0.5*(
+     &    wFld(I,J,Kp1,bi,bj)
+     &   +wFld(I,J-1,Kp1,bi,bj)
+     &             )*mask_Kp1
+       ENDIF
 
 C delta_Z( V )  @ interface k
 c       vmask_Km1=mask_Km1*maskS(i,j,Km1,bi,bj)
@@ -101,14 +119,14 @@ c2   &                  *_maskS(I,J,K,bi,bj)
           vShearTerm(I,J)=-0.5*
      &                   (     (wBarYp*vZp+wBarYm*vZm)
      &                        +(ABS(wBarYp)*vZp-ABS(wBarYm)*vZm)
-     &                   )*recip_rAs(i,j,bi,bj)
-     &                    *recip_hFacS(i,j,k,bi,bj)
+     &                   )*recip_hFacS(i,j,k,bi,bj)
      &                    *recip_drF(K)
+c3   &                    *recip_rAs(i,j,bi,bj)
         ELSE
           vShearTerm(I,J)=-0.5*(wBarYp*vZp+wBarYm*vZm)
-     &                    *recip_rAs(i,j,bi,bj)
      &                    *recip_hFacS(i,j,k,bi,bj)
      &                    *recip_drF(K)
+c3   &                    *recip_rAs(i,j,bi,bj)
         ENDIF
        ENDDO
       ENDDO
