@@ -12,12 +12,18 @@
 #-----------------
  &diagnostics_list
   diag_mnc=.TRUE.,
-  frequency(1) = 86400.,
-  fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
-  filename(1) = 'spiceflx',
-  frequency(2) = 86400.,
-  fields(1,2) = 'UVELTH  ','VVELTH ','WVELTH ',
-  filename(2) = 'thetaflx',
+  frequency(1) = 7200.,
+  fields(1,1) = 'momKE   ','momHDiv ','momVort3',
+                'Strain  ','Tension ',
+  filename(1) = 'mom',
+  frequency(2) = 7200.,
+  fields(1,2) = 'VISCAHD ','VISCA4D ','VISCAHZ ','VISCA4Z ',
+                'VAHDMAX ','VA4DMAX ','VAHZMAX ','VA4ZMAX ',
+                'VAHDMIN ','VA4DMIN ','VAHZMIN ','VA4ZMIN ',
+                'VAHDLTH ','VA4DLTH ','VAHZLTH ','VA4ZLTH ',
+                'VAHDLTHD','VA4DLTHD','VAHZLTHD','VA4ZLTHD',
+                'VAHDSMAG','VA4DSMAG','VAHZSMAG','VA4ZSMAG',
+  filename(2) = 'visc',
  &
 
 
