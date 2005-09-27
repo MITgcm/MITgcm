@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/diff_phase_multiple.F,v 1.1 2005/05/14 19:44:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/diff_phase_multiple.F,v 1.2 2005/09/27 16:47:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -59,7 +59,7 @@ C         Test v1 to see if its a "closest multiple"
           d1 = v1-v4
           d2 = v2-v4
           d3 = v3-v4
-          IF ( ABS(d1) .LE. ABS(d2) .AND. ABS(d1) .LE. ABS(d3) )
+          IF ( ABS(d1) .LT. ABS(d2) .AND. ABS(d1) .LE. ABS(d3) )
      &        DIFF_PHASE_MULTIPLE = .TRUE.
 
         ENDIF
