@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.27 2005/09/26 15:27:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.28 2005/09/27 13:38:21 baylor Exp $
 C $Name:  $
 
 CBOI
@@ -700,8 +700,11 @@ C--   Set du/dt & dv/dt on boundaries to zero
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       IF (bottomDragTerms)
-     &  CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(hDiv,  'momHDiv ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(vort3, 'momVort3',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(strain,'Strain  ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
      &                               'Um_Advec',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
