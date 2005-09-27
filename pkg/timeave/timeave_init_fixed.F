@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.4 2005/05/13 20:47:10 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.5 2005/09/27 03:05:14 baylor Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -60,42 +60,94 @@ CEOP
      &     'time-averaged salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Stave',
      &     'coordinates','XC YC RC iter', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Stave','description',
+     &     'time-averaged salinity', myThid)
 
       CALL MNC_CW_ADD_VNAME('uVeltave', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('uVeltave','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('uVeltave',
      &     'coordinates','XU YU RC iter', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('uVeltave','description',
+     &     'time-averaged zonal velocity', myThid)
 
       CALL MNC_CW_ADD_VNAME('vVeltave', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('vVeltave','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('vVeltave',
      &     'coordinates','XV YV RC iter', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave','description',
+     &     'time-averaged merid. velocity', myThid)
 
       CALL MNC_CW_ADD_VNAME('wVeltave', 'Cen_xy_Hn__L__t',4,5,myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('wVeltave','units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave','description',
+     &     'time-averaged vertical velocity', myThid)
 
       CALL MNC_CW_ADD_VNAME('UTtave', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('UTtave','units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UTtave','description',
+     &     'Zonal velocity and potential temp. t-ave product', myThid)
 
       CALL MNC_CW_ADD_VNAME('VTtave', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('VTtave','units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VTtave','description',
+     &     'Merid velocity and potential temp. t-ave product', myThid)
 
       CALL MNC_CW_ADD_VNAME('WTtave', 'Cen_xy_Hn__L__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('WTtave','units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('WTtave','description',
+     &     'Vert. velocity and potential temp. t-ave product', myThid)
 
       CALL MNC_CW_ADD_VNAME('UStave', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UStave','units','psu*m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UStave','description',
+     &     'Zonal velocity and Salinity t-ave product', myThid)
+
       CALL MNC_CW_ADD_VNAME('VStave', 'V_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VStave','units','psu*m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VStave','description',
+     &     'Merid velocity and Salinity t-ave product', myThid)
+
       CALL MNC_CW_ADD_VNAME('WStave', 'Cen_xy_Hn__L__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('WStave','units','psu*m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('WStave','description',
+     &     'Vert velocity and Salinity t-ave product', myThid)
 
       CALL MNC_CW_ADD_VNAME('TTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('TTtave','units','degC^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('TTtave','description',
+     &     'Potl Temp Squared t-ave', myThid)
+
       CALL MNC_CW_ADD_VNAME('UUtave', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UUtave','units','m^2/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UUtave','description',
+     &     'Zonal Vel. Squared t-ave', myThid)
+
       CALL MNC_CW_ADD_VNAME('VVtave', 'V_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VVtave','units','m^2/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VVtave','description',
+     &     'Merid Vel. Squared t-ave', myThid)
+
       CALL MNC_CW_ADD_VNAME('UVtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UVtave','units','m^2/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UVtave','description',
+     &     'Horiz. Vel. Product t-ave', myThid)
+
       CALL MNC_CW_ADD_VNAME('KEtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEtave','units','m^2/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('KEtave','description',
+     &     'Kinetic Energy t-ave', myThid)
+
       CALL MNC_CW_ADD_VNAME('Tdiftave', 'Cen_xy_Hn__C__t',4,5,myThid)
 
-      CALL MNC_CW_ADD_VNAME('uZtave', 'U_xy_Hn__L__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('vZtave', 'V_xy_Hn__L__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('uZtave', 'U_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UZtave','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('uZtave','description',
+     &     'Zonal Vel. and Rel. Vorticity Product t-ave', myThid)
+
+      CALL MNC_CW_ADD_VNAME('vZtave', 'V_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('vZtave','units','m/s^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('vZtave','description',
+     &     'Merid Vel. and Rel. Vorticity Product t-ave', myThid)
 
       CALL MNC_CW_ADD_VNAME('PhHytave', 'Cen_xy_Hn__C__t',4,5,myThid)
 
@@ -103,6 +155,8 @@ CEOP
       CALL MNC_CW_ADD_VNAME('PHL2tave', 'Cen_xy_Hn__-__t',3,4,myThid)
 
       CALL MNC_CW_ADD_VNAME('Convtave', 'Cen_xy_Hn__C__t',4,5,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Convtave','description',
+     &     'Convection t-ave', myThid)
 
       CALL MNC_CW_ADD_VNAME('uFluxtave', 'Cen_xy_Hn__-__t',3,4,myThid)
       CALL MNC_CW_ADD_VNAME('vFluxtave', 'Cen_xy_Hn__-__t',3,4,myThid)
