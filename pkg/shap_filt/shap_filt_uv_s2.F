@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.10 2005/02/15 00:21:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.11 2005/09/27 22:11:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -236,13 +236,30 @@ C---  end if useCubedSphereExchange:
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
          IF (N.GT.nShapUV-nShapUVPhys) THEN
+           IF (Shap_uvLength.LT.0.) THEN
+             DO j=0,sNy+1
+              DO i=0,sNx+1
+                hDiv(i,j) = hDiv(i,j) * rA(i,j,bi,bj)
+                vort3(i,j)= vort3(i,j)*rAz(i,j,bi,bj)
+              ENDDO
+             ENDDO
+           ENDIF
            CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
            CALL MOM_VI_DEL2UV(
      I                    bi,bj,k,hDiv,vort3,hFacZ,
      O                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
      O                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
      I                    myThid) 
-           IF (Shap_uvLength.EQ.0.) THEN
+           IF (Shap_uvLength.LT.0.) THEN
+            DO j=1,sNy+1
+             DO i=1,sNx+1
+              tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
+     &                                          *_maskW(i,j,k,bi,bj)
+              tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
+     &                                          *_maskS(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ELSEIF (Shap_uvLength.EQ.0.) THEN
             DO j=1,sNy+1
              DO i=1,sNx+1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)

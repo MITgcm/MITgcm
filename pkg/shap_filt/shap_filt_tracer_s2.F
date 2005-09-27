@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.7 2005/02/15 00:21:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.8 2005/09/27 22:11:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: SHAP_FILT_TRACER_S2
 C     !INTERFACE:
@@ -18,10 +18,10 @@ C     | o Options for computational filter (no grid spacing)
 C     |   or physical space filter (with grid spacing) or both.
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
- 
+
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -42,22 +42,23 @@ C     myThid :: Thread number for this instance of SHAP_FILT_TRACER_S2
       _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
       INTEGER myThid
- 
+
 #ifdef ALLOW_SHAP_FILT
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER nShapComput
+      INTEGER nShapComput, nShapPhysic
       INTEGER bi,bj,K,I,J,N
       _RL tmpGrd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-      IF (nShapTr.gt.0) THEN
+      IF (nShapTr.GT.0) THEN
 C-------
 C  Apply computational filter ^(nShap-nShapPhys) without grid factor
 C  then apply Physical filter ^nShapPhys  with grid factors 
 C-------
-        nShapComput = nShapTr - nShapTrPhys
+        nShapComput = MAX( 0, nShapTr - nShapTrPhys )
+        nShapPhysic = nShapTr - nShapComput
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -82,11 +83,11 @@ C-- Computational Filter
         ELSE
           _EXCH_XY_R8( tmpFld, myThid )
         ENDIF
- 
+
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,kSize
- 
+
            DO J=1,sNy
             DO I=1,sNx
              tmpGrd(i,j) =
@@ -113,7 +114,7 @@ C-- Computational Filter
 C      end loop N=1,nShapComput
        ENDDO
 
-       DO N=1,nShapTrPhys
+       DO N=1,nShapPhysic
 C-- Physical space Filter 
 
         IF (kSize.EQ.Nr) THEN
@@ -148,7 +149,7 @@ C-- Physical space Filter
             ENDDO
            ENDDO
 
-           IF (Shap_TrLength.EQ.0.) THEN
+           IF (Shap_TrLength.LE.0.) THEN
             DO J=1,sNy
              DO I=1,sNx
               tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)

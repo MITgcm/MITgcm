@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.8 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.9 2005/09/27 22:11:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -63,9 +63,9 @@ CEOP
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1, Nr
-            IF ( tempStepping ) 
+            IF ( tempStepping )
      &       CALL SHAP_FILT_TRACEROLD( tFld,bi,bj,k,myTime,myThid )
-            IF ( saltStepping ) 
+            IF ( saltStepping )
      &       CALL SHAP_FILT_TRACEROLD( sFld,bi,bj,k,myTime,myThid )
           ENDDO
          ENDDO
@@ -81,7 +81,8 @@ CEOP
             CALL SHAP_FILT_TRACER_S1(
      U           tFld, Shap_tmpFld1,
      I           nShapT, Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.21) THEN
+          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.20
+     &                            .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
      U           tFld, Shap_tmpFld1,
      I           nShapT, Nr, myTime, myThid )
@@ -89,10 +90,10 @@ CEOP
             CALL SHAP_FILT_TRACER_S4(
      U           tFld, Shap_tmpFld1,
      I           nShapT, Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.20) THEN
-            CALL SHAP_FILT_TRACER_S2G(
-     U           tFld, Shap_tmpFld1,
-     I           nShapT, Nr, myTime, myThid )
+c         ELSEIF (Shap_funct.EQ.20) THEN
+c           CALL SHAP_FILT_TRACER_S2G(
+c    U           tFld, Shap_tmpFld1,
+c    I           nShapT, Nr, myTime, myThid )
           ELSE
            STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in T block'
           ENDIF
@@ -122,12 +123,13 @@ C               is directly proportional to Delta-Tr due to the Filter
 
         ENDIF
 
-        IF ( saltStepping .AND. nShapS.GT.0) THEN 
+        IF ( saltStepping .AND. nShapS.GT.0) THEN
           IF (Shap_funct.EQ.1) THEN
             CALL SHAP_FILT_TRACER_S1(
      U           sFld, Shap_tmpFld1,
      I           nShapS, Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.21) THEN
+          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.20
+     &                            .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
      U           sFld, Shap_tmpFld1,
      I           nShapS, Nr, myTime, myThid )
@@ -135,10 +137,10 @@ C               is directly proportional to Delta-Tr due to the Filter
             CALL SHAP_FILT_TRACER_S4(
      U           sFld, Shap_tmpFld1,
      I           nShapS, Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.20) THEN
-            CALL SHAP_FILT_TRACER_S2G(
-     U           sFld, Shap_tmpFld1,
-     I           nShapS, Nr, myTime, myThid )
+c         ELSEIF (Shap_funct.EQ.20) THEN
+c           CALL SHAP_FILT_TRACER_S2G(
+c    U           sFld, Shap_tmpFld1,
+c    I           nShapS, Nr, myTime, myThid )
           ELSE
            STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in S block'
           ENDIF

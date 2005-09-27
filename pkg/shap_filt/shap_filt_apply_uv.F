@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.6 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.7 2005/09/27 22:11:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -17,7 +17,7 @@ C     | o Apply Shapiro filter on momentum :
 C     |   filter the argments uFld & vFld.
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -80,7 +80,7 @@ CEOP
             CALL SHAP_FILT_UV_S1(
      U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,
      I           Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.2) THEN
+          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.20) THEN
             CALL SHAP_FILT_UV_S2(
      U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,
      I           Nr, myTime, myThid )
@@ -88,10 +88,10 @@ CEOP
             CALL SHAP_FILT_UV_S4(
      U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,
      I           Nr, myTime, myThid )
-          ELSEIF (Shap_funct.EQ.20) THEN
-            CALL SHAP_FILT_UV_S2G(
-     U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,
-     I           Nr, myTime, myThid )
+c         ELSEIF (Shap_funct.EQ.20) THEN
+c           CALL SHAP_FILT_UV_S2G(
+c    U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,
+c    I           Nr, myTime, myThid )
           ELSEIF (Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_UV_S2C(
      U           uFld, vFld, Shap_tmpFld1, Shap_tmpFld2,

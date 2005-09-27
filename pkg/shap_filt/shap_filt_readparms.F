@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.11 2005/02/12 23:02:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.12 2005/09/27 22:11:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -51,7 +51,7 @@ c     SHAPIsOn=.TRUE.
 
 C--   Default flags and values for Shapiro Filter
       Shap_funct = 2
-      shap_filt_uvStar =.TRUE. 
+      shap_filt_uvStar =.TRUE.
       shap_filt_TrStagg=.TRUE.
       nShapT = 0
       nShapS = -1
@@ -68,7 +68,7 @@ C--   Default flags and values for Shapiro Filter
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=SHAP_PARM01)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &   ' SHAP_FILT_READPARMS: finished reading data.shap'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -79,47 +79,54 @@ C--   Close the open data file
 C     for backward compatibility:
       IF (nShapS.EQ.-1) nShapS = nShapT
 
+      IF (Shap_funct.EQ.20) THEN
+C     use shap-funct S2 with nShap_Phys=nShap
+C     to get exactly the same results as shap-funct S2G.
+        nShapTrPhys = MAX(nShapT,nShapS)
+        nShapUVPhys = nShapUV
+      ENDIF
+
 C- print out some kee parameters :
       CALL WRITE_0D_I( Shap_funct, INDEX_NONE,
      & 'Shap_funct =',
-     & '   /* select Shapiro filter function */')  
+     & '   /* select Shapiro filter function */')
       CALL WRITE_0D_I( nShapT , INDEX_NONE,
      & 'nShapT =',
-     & '   /* power of Shapiro filter for Temperat */')  
+     & '   /* power of Shapiro filter for Temperat */')
       CALL WRITE_0D_I( nShapS , INDEX_NONE,
      & 'nShapS =',
-     & '   /* power of Shapiro filter for Salinity */')  
+     & '   /* power of Shapiro filter for Salinity */')
       CALL WRITE_0D_I( nShapUV, INDEX_NONE,
      & 'nShapUV =',
-     & '   /* power of Shapiro filter for momentum */')  
+     & '   /* power of Shapiro filter for momentum */')
 
       IF (Shap_funct.EQ.2) THEN
        CALL WRITE_0D_I( nShapTrPhys, INDEX_NONE,
      & 'nShapTrPhys =',
-     & '   /* power of physical-space filter (Tracer) */')  
+     & '   /* power of physical-space filter (Tracer) */')
        CALL WRITE_0D_I( nShapUVPhys, INDEX_NONE,
      & 'nShapUVPhys =',
-     & '   /* power of physical-space filter (Momentum) */')  
+     & '   /* power of physical-space filter (Momentum) */')
       ENDIF
 
       CALL WRITE_0D_R8( Shap_Trtau, INDEX_NONE,
      & 'Shap_Trtau =',
-     & '   /* time scale of Shapiro filter (Tracer) */')  
+     & '   /* time scale of Shapiro filter (Tracer) */')
       CALL WRITE_0D_R8( Shap_TrLength, INDEX_NONE,
      & 'Shap_TrLength =',
-     & '   /* Length scale of Shapiro filter (Tracer) */')  
+     & '   /* Length scale of Shapiro filter (Tracer) */')
       CALL WRITE_0D_R8( Shap_uvtau, INDEX_NONE,
      & 'Shap_uvtau =',
-     & '   /* time scale of Shapiro filter (Momentum) */')  
+     & '   /* time scale of Shapiro filter (Momentum) */')
       CALL WRITE_0D_R8( Shap_uvLength, INDEX_NONE,
      & 'Shap_uvLength =',
-     & '   /* Length scale of Shapiro filter (Momentum) */')  
+     & '   /* Length scale of Shapiro filter (Momentum) */')
       CALL WRITE_0D_R8( Shap_noSlip, INDEX_NONE,
      & 'Shap_noSlip =',
-     &  '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')  
+     &  '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')
       CALL WRITE_0D_R8( Shap_diagFreq, INDEX_NONE,
      & 'Shap_diagFreq =',
-     & '   /* Frequency^-1 for diagnostic output (s)*/')  
+     & '   /* Frequency^-1 for diagnostic output (s)*/')
 
 C--   Check the Options :
 #ifndef USE_OLD_SHAPIRO_FILTERS
@@ -136,13 +143,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 C--   Check the parameters :
- 
+
       IF ( .NOT.shap_filt_uvStar ) THEN
- 
+
 C- Notes: applying the filter at the end of the time step (after SOLVE_FOR_P)
 C    affects the barotropic flow divergence ; this might not be consistent
 C    with some option of the code.
- 
+
         IF ( rigidLid ) THEN
          WRITE(msgBuf,'(2A)') 'SHAP_FILT with rigidLid ',
      &                         'needs shap_filt_uvStar=.true.'
@@ -156,8 +163,8 @@ C    with some option of the code.
      &    'requires to recompute Eta after ==> turn on exactConserv '
          CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
         ENDIF
- 
-      ENDIF                    
+
+      ENDIF
 
 C-    Some Filters / options are not available on CS-grid:
       IF (useCubedSphereExchange) THEN
@@ -175,8 +182,8 @@ C-    Some Filters / options are not available on CS-grid:
      &     ' ; => use instead Shap_funct=2 & nShap[]Phys=0'
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R SHAP_FILT_READPARMS'
-       ENDIF                    
-      ENDIF                    
+       ENDIF
+      ENDIF
 
       _END_MASTER(myThid)
 
