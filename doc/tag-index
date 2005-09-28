@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.552 2005/09/24 00:43:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.553 2005/09/28 00:20:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o minor change in averaging W (mom_vi_?_vertshear.F) that affects truncation
+  error; update output from global_ocean.cs32x15(+.thsice) & MLAdjust (all 5).
 o add brackets in multi-terms sum to get same truncation, independent of
   the face number (manage to get exactly same value of gU,gV at the cs-edge)
   affects several test. exp. Update global_ocean.cs32x15 (+.thsice).
