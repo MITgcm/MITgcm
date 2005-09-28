@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.51 2005/09/27 13:38:42 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.52 2005/09/28 15:53:20 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -192,22 +192,22 @@ C note (jmc) : Dissipation and Vort3 advection do not necesary
 C              use the same maskZ (and hFacZ)  => needs 2 call(s)
 c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
-      CALL MOM_CALC_KE(bi,bj,k,0,uFld,vFld,KE,myThid)
+      CALL MOM_CALC_KE(bi,bj,k,selectKEscheme,uFld,vFld,KE,myThid)
 
       CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
-
-      CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
-
-      CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
 
       IF (useAbsVorticity)
      & CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
       IF (momViscosity) THEN
 C      Calculate Viscosities
-      CALL MOM_CALC_VISC(
+       CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
+
+       CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
+
+       CALL MOM_CALC_VISC(
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        harmonic,biharmonic,useVariableViscosity,
@@ -611,13 +611,13 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(hDiv,  'momHDiv ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(vort3, 'momVort3',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(strain,'Strain  ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
      &                               'Um_Advec',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
      &                               'Vm_Advec',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
+        CALL DIAGNOSTICS_FILL(strain,'Strain  ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gvDiss,'Vm_Diss ',k,1,2,bi,bj,myThid)
        ENDIF

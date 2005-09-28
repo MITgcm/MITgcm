@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.8 2005/09/27 23:42:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.9 2005/09/28 15:53:19 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -32,7 +32,6 @@ C     == Local variables ==
       _RL  mask_Kp1,mask_Km1,wBarXm,wBarXp
       _RL  uZm,uZp
       LOGICAL  rAdvAreaWeight
-      PARAMETER( rAdvAreaWeight =.TRUE.)
 c     _RL  umask_Kp1,umask_K,umask_Km1
 c     LOGICAL freeslipK,noslipK
 c     PARAMETER(freeslipK=.TRUE.)
@@ -41,6 +40,11 @@ c     LOGICAL freeslip1,noslip1
 c     PARAMETER(freeslip1=.TRUE.)
 c     PARAMETER(noslip1=.NOT.freeslip1)
 c1    _RL  wBarXZ,uZbarZ
+
+      rAdvAreaWeight =.TRUE.
+C-    Area-weighted average either in KE or in vert. advection:
+      IF ( selectKEscheme.EQ.1 .OR. selectKEscheme.EQ.3 )
+     &  rAdvAreaWeight =.FALSE.
 
       Kp1=min(K+1,Nr)
       mask_Kp1=1.
