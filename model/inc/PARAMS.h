@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.167 2005/09/22 14:00:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.168 2005/09/28 01:34:01 jmc Exp $
 C $Name:  $
 C
 
@@ -151,9 +151,10 @@ C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
 C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
-C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector 
+C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
+C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
 C     debugLevel          :: debug level selector: higher -> more writing
 
       COMMON /PARM_I/
@@ -168,6 +169,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        nonlinFreeSurf, select_rStar,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
+     &        selectKEscheme,
      &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -186,6 +188,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER select_rStar
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
+      INTEGER selectKEscheme 
       INTEGER debugLevel
 
 C
