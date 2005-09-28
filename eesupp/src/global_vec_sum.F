@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.1 2005/09/28 01:58:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.2 2005/09/28 23:21:33 edhill Exp $
 C $Name:  $
 
 C     Perform a global sum on an array of threaded vectors.
@@ -186,8 +186,8 @@ C       Sum within the process first
 #ifndef ALWAYS_USE_MPI
         IF ( usingMPI ) THEN
 #endif
-          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_REAL,MPI_SUM,
-     &         MPI_COMM_MODEL,mpiRC)
+          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_DOUBLE_PRECISION,
+     &         MPI_SUM,MPI_COMM_MODEL,mpiRC)
 #ifndef ALWAYS_USE_MPI
         ENDIF
 #endif
@@ -289,7 +289,7 @@ C       Sum within the process first
 #ifndef ALWAYS_USE_MPI
         IF ( usingMPI ) THEN
 #endif
-          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_REAL,MPI_SUM,
+          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_INTEGER,MPI_SUM,
      &         MPI_COMM_MODEL,mpiRC)
 #ifndef ALWAYS_USE_MPI
         ENDIF
