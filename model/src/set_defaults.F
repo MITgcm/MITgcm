@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.103 2005/09/22 14:00:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.104 2005/09/28 01:34:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -179,6 +179,7 @@ Cml      sBeta               = 7.4D-4
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.
       upwindShear         = .FALSE.
+      selectKEscheme      = 0
       debugLevel          = debLevA
       inAdMode            = .FALSE.
       inAdExact           = .TRUE.

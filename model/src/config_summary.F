@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.79 2005/09/22 14:00:59 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.80 2005/09/28 01:34:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -300,6 +300,8 @@ C     zcoord ::
      & 'highOrderVorticity=',' /* High order interp. of vort. flag */')
       CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
      & 'upwindShear=', ' /* Upwind vertical Shear advection flag */')
+      CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
+     & 'selectKEscheme=', ' /* Kinetic Energy scheme selector */')
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
