@@ -1,0 +1,24 @@
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4+mpi_datastar,v 1.1 2005/09/28 02:13:06 edhill Exp $
+#  $Name:  $
+#
+#
+#  This file was created for the SDSC "datastar" machine:
+#     http://www.sdsc.edu/user_services/
+#  by Matthew Mazloff <mmazloff@MIT.EDU> on Tue Sep 27 2005
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DTARGET_AIX -DWORDLENGTH=4'
+
+INCLUDES='-I/usr/lpp/ppe.poe/include/thread64'
+CPP='/lib/cpp -P'
+CC='mpcc_r -q64'
+FC='mpxlf_r -q64'
+LINK='mpxlf_r -q64'
+LIBS='-L/usr/local/apps/mass -lmass'
+FFLAGS='-qfixed=132'
+FOPTIM='-O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+
