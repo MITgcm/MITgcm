@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.23 2005/09/17 03:17:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.24 2005/09/28 01:43:55 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,22 +123,24 @@ C--   Set everything to zero everywhere
         CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
         CALL MNC_CW_SET_CITER(mncFn, 2, -1, -1, -1, myThid)
         CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'XC', XC,  myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'XG', XG,  myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'YC', YC,  myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'YG', YG,  myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxC',DXC, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyC',DYC, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxF',DXF, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyF',DYF, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxG',DXG, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyG',DYG, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dxV',DXV, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'dyU',DYU, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'rA', RA,  myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAz',RAZ, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAw',RAW, myThid)
-        CALL MNC_CW_RS_R('R',mncFn,0,0,'rAs',RAS, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XC', XC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XG', XG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YC', YC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YG', YG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxC',DXC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyC',DYC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxF',DXF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyF',DYF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxG',DXG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyG',DYG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxV',DXV, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyU',DYU, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rA', RA,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAz',RAZ, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAw',RAW, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',RAS, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleCS',angleCosC,myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleSN',angleSinC,myThid)
 
         _END_MASTER(myThid)
 
