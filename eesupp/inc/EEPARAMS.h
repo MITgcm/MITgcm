@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.17 2005/09/11 18:52:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.18 2005/09/28 01:58:25 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -15,15 +15,7 @@ C     | environment support routines.                            |
 C     *==========================================================*
 CEOP
 
-C     MAX_LEN_MBUF         - Default message buffer max. size
-C     MAX_LEN_FNAM         - Default file name max. size
-C     MAX_LEN_PREC         - Default record length for reading "parameter" files
-      INTEGER MAX_LEN_MBUF
-      PARAMETER ( MAX_LEN_MBUF = 512 )
-      INTEGER MAX_LEN_FNAM
-      PARAMETER ( MAX_LEN_FNAM = 512 )
-      INTEGER MAX_LEN_PREC
-      PARAMETER ( MAX_LEN_PREC = 200 )
+#include "EESIZE.h"
 
 C     SQUEEZE_RIGHT       - Flag indicating right blank space removal
 C                           from text field.
@@ -34,8 +26,8 @@ C                           space removal from text field.
 C     PRINT_MAP_XY        - Flag indicating to plot map as XY slices
 C     PRINT_MAP_XZ        - Flag indicating to plot map as XZ slices
 C     PRINT_MAP_YZ        - Flag indicating to plot map as YZ slices
-C     commentCharacter    - Variable used in column 1 of parameter files to
-C                           indicate comments.
+C     commentCharacter    - Variable used in column 1 of parameter
+C                           files to indicate comments.
 C     INDEX_I             - Variable used to select an index label
 C     INDEX_J               for formatted input parameters.
 C     INDEX_K
@@ -63,7 +55,6 @@ C     INDEX_NONE
      &            INDEX_K    = 3,
      &            INDEX_NONE = 4 )
 
-
 C     EXCH_IGNORE_CORNERS - Flag to select ignoring or
 C     EXCH_UPDATE_CORNERS   updating of corners during
 C                           an edge exchange.
@@ -81,39 +72,6 @@ C     TANGENT_SIMULATION
       PARAMETER ( FORWARD_SIMULATION = 0,
      &            REVERSE_SIMULATION = 1,
      &            TANGENT_SIMULATION = 2 )
-
-
-C     Particularly weird and obscure voodoo numbers
-C     lShare  - This wants to be the length in
-C               [148]-byte words of the size of
-C               the address "window" that is snooped
-C               on an SMP bus. By separating elements in
-C               the global sum buffer we can avoid generating
-C               extraneous invalidate traffic between
-C               processors. The length of this window is usually
-C               a cache line i.e. small O(64 bytes).
-C               The buffer arrays are usually short arrays
-C               and are declared REAL ARRA(lShare[148],LBUFF).
-C               Setting lShare[148] to 1 is like making these arrays
-C               one dimensional.
-      INTEGER cacheLineSize
-      INTEGER lShare1
-      INTEGER lShare4
-      INTEGER lShare8
-      PARAMETER ( cacheLineSize = 256 )
-      PARAMETER ( lShare1 =  cacheLineSize )
-      PARAMETER ( lShare4 =  cacheLineSize/4 )
-      PARAMETER ( lShare8 =  cacheLineSize/8 )
-
-C     MAX_NO_THREADS  - Maximum number of threads allowed.
-C     MAX_NO_PROCS    - Maximum number of processes allowed.
-C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
-      INTEGER MAX_NO_THREADS
-      PARAMETER ( MAX_NO_THREADS =   32 )
-      INTEGER MAX_NO_PROCS
-      PARAMETER ( MAX_NO_PROCS   =  2048 )
-      INTEGER MAX_NO_BARRIERS
-      PARAMETER ( MAX_NO_BARRIERS = 1 )
 
 C--   COMMON /EEPARAMS_L/ Execution environment public logical variables.
 C     eeBootError - Flag indicating error during multi-processing
