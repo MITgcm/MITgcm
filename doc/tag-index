@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.553 2005/09/28 00:20:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.554 2005/09/28 01:59:58 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp: split EEPARAMS into EESIZE/EEPARAMS and add a vector global sum
 o minor change in averaging W (mom_vi_?_vertshear.F) that affects truncation
   error; update output from global_ocean.cs32x15(+.thsice) & MLAdjust (all 5).
 o add brackets in multi-terms sum to get same truncation, independent of
