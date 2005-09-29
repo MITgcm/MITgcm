@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.55 2005/08/24 23:12:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.56 2005/09/29 01:54:17 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,7 @@ C     myTime - Current time of simulation ( s )
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(1) pf
       INTEGER iRec
 CEOP
 
@@ -151,24 +152,31 @@ c         CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
+
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
+
 C         Write dynvars using the MNC package
           CALL MNC_CW_SET_UDIM('state', -1, myThid)
           CALL MNC_CW_RL_W_S('D','state',0,0,'T', myTime, myThid)
           CALL MNC_CW_SET_UDIM('state', 0, myThid)
           CALL MNC_CW_I_W_S('I','state',0,0,'iter', myIter, myThid)
 C         CALL MNC_CW_RL_W_S('D','state',0,0,'model_time',myTime,myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'U', uVel, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'V', vVel, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'Temp', theta, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'S', salt, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'Eta', etaN, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'W', wVel, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'U', uVel, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'V', vVel, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'Temp', theta, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'S', salt, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'Eta', etaN, myThid)
+          CALL MNC_CW_RL_W(pf,'state',0,0,'W', wVel, myThid)
           IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
             CALL MNC_CW_SET_UDIM('phiHyd', -1, myThid)
             CALL MNC_CW_RL_W_S('D','phiHyd',0,0,'T',myTime,myThid)
             CALL MNC_CW_SET_UDIM('phiHyd', 0, myThid)
             CALL MNC_CW_I_W_S('I','phiHyd',0,0,'iter',myIter,myThid)
-            CALL MNC_CW_RL_W('D','phiHyd',0,0,'phiHyd',
+            CALL MNC_CW_RL_W(pf,'phiHyd',0,0,'phiHyd',
      &           totPhiHyd, myThid)
           ENDIF
           IF ( fluidIsWater .AND. (myIter .NE. nIter0) ) THEN
@@ -176,13 +184,12 @@ C         CALL MNC_CW_RL_W_S('D','state',0,0,'model_time',myTime,myThid)
             CALL MNC_CW_RL_W_S('D','phiHydLow',0,0,'T', myTime, myThid)
             CALL MNC_CW_SET_UDIM('phiHydLow', 0, myThid)
             CALL MNC_CW_I_W_S('I','phiHydLow',0,0,'iter',myIter,myThid)
-            CALL MNC_CW_SET_UDIM('phiHydLow', 0, myThid)
-            CALL MNC_CW_RL_W('D','phiHydLow',0,0,'phiHydLow',
+            CALL MNC_CW_RL_W(pf,'phiHydLow',0,0,'phiHydLow',
      &           phiHydLow, myThid)
           ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
           IF (nonHydroStatic) THEN
-            CALL MNC_CW_RL_W('D','state',0,0,'phi_nh',phi_nh,myThid)
+            CALL MNC_CW_RL_W(pf,'state',0,0,'phi_nh',phi_nh,myThid)
           ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
         ENDIF
