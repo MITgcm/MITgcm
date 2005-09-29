@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.4 2005/06/22 00:31:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.5 2005/09/29 18:36:43 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -88,6 +88,12 @@ C-  No-slip BCs impose a drag at bottom
         ENDIF
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_FILL(uDragTerms,'UBotDrag',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

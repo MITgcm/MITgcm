@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.9 2005/09/29 03:39:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.10 2005/09/29 18:36:43 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -153,6 +153,12 @@ C       (but this might just be what we want ...)
       ENDDO
 
 #endif /* (not) SIDEDRAG_OLD_VERSION */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_FILL(uDragTerms,'USidDrag',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

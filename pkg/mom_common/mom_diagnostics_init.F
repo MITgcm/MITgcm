@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.6 2005/09/29 16:47:16 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.7 2005/09/29 18:36:42 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -252,6 +252,27 @@ C--    add diagnostics of simple derivative quantities:
 
 C--    add diagnostics of tendencies from each terms
        diagUnits = 'm/s^2           '
+
+       diagName  = 'UBotDrag'
+       diagTitle = 'U momentum tendency from Bottom Drag'
+       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagName  = 'VBotDrag'
+       diagTitle = 'V momentum tendency from Bottom Drag'
+       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagName  = 'USidDrag'
+       diagTitle = 'U momentum tendency from Side Drag'
+       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagName  = 'VSidDrag'
+       diagTitle = 'V momentum tendency from Side Drag'
+       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
 
        diagName  = 'Um_Diss '
        diagTitle = 'U momentum tendency from Dissipation'
