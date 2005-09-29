@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.555 2005/09/29 12:19:52 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.556 2005/09/29 20:05:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix bug in non-linear free-surf side-drag ; generate new output for
+  global_ocean.cs32x15(+.thsice) & global_ocean_pressure.
 o make mnc honor the writeBinaryPrec flag for most kinds of output
 o eesupp: split EEPARAMS into EESIZE/EEPARAMS and add a vector global sum
 o minor change in averaging W (mom_vi_?_vertshear.F) that affects truncation
