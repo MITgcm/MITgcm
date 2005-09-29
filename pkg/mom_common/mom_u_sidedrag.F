@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.8 2005/09/29 03:33:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.9 2005/09/29 03:39:59 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -113,7 +113,7 @@ C-      this will not give any side-drag along thin wall.
 C       (but this might just be what we want ...)
 #ifdef NONLIN_FRSURF
         hFacZClosedS = h0FacW(i,j,k,bi,bj) - h0FacW(i,j-1,k,bi,bj)
-        hFacZClosedN = hF0acW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
+        hFacZClosedN = h0FacW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
 #else
         hFacZClosedS = hFacW(i,j,k,bi,bj) - hFacW(i,j-1,k,bi,bj)
         hFacZClosedN = hFacW(i,j,k,bi,bj) - hFacW(i,j+1,k,bi,bj)
