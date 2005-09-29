@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.16 2005/08/11 02:50:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.17 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,7 +36,14 @@ C     == Local variables ==
       _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
       INTEGER thisdate(4), prevdate(4)
       LOGICAL dumpFiles
-         
+      CHARACTER*(1) pf
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
+      
       IF (SEAICEwriteState) THEN
 
         IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
@@ -50,13 +57,13 @@ C     == Local variables ==
             CALL MNC_CW_I_W_S('I','sice',0,0,'iter', myIter, myThid)
             CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
      &           myTime,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_UWIND',uwind,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_VWIND',vwind,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'fu',fu,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'fv',fv,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'EmPmR',EmPmR,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'Qnet',Qnet,myThid)
-            CALL MNC_CW_RS_W('D','sice',0,0,'Qsw',Qsw,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'fu',fu,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'fv',fv,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'EmPmR',EmPmR,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'Qnet',Qnet,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'Qsw',Qsw,myThid)
           ENDIF
 #endif
           IF (SEAICE_dump_mdsio) THEN
@@ -112,7 +119,7 @@ C     == Local variables ==
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_UICE',arr,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UICE',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
@@ -139,7 +146,7 @@ C     == Local variables ==
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_VICE',arr,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VICE',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
@@ -166,7 +173,7 @@ C     == Local variables ==
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_HEFF',arr,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
@@ -193,7 +200,7 @@ C     == Local variables ==
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W('D','sice',0,0,'si_AREA',arr,myThid)
+            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_AREA',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
@@ -299,25 +306,25 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'T', myTime, myThid)
          CALL MNC_CW_SET_UDIM('sice_tave', 0, myThid)
          CALL MNC_CW_I_W_S('I','sice_tave',0,0,'iter', myIter, myThid)
-         CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'model_time',
-     &        myTime,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+C        CALL MNC_CW_RL_W_S('D','sice_tave',0,0,'model_time',
+C    &        myTime,myThid)
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_UICEtave',UICEtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_VICEtave',VICEtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_FUtave',FUtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_FVtave',FVtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_EmPmRtave',EmPmRtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_QNETtave',QNETtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_QSWtave',QSWtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_HEFFtave',HEFFtave,myThid)
-         CALL MNC_CW_RL_W('R','sice_tave',0,0,
+         CALL MNC_CW_RL_W(pf,'sice_tave',0,0,
      &        'si_AREAtave',AREAtave,myThid)
        ENDIF
 #endif

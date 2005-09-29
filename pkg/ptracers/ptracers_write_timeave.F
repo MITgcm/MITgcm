@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.6 2005/07/30 00:58:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -54,6 +54,7 @@ C     TimeAve ::  total time over average
       CHARACTER*(MAX_LEN_FNAM) name
 C     Functions
       INTEGER ILNBLNK
+      CHARACTER*(1) pf
 #endif /*  ALLOW_MNC  */
 
 C     Final Time Averages and Dump Files if needed
@@ -80,6 +81,11 @@ C       Write to files
 
 #ifdef ALLOW_MNC
         IF ( PTRACERS_timeave_mnc ) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           CALL MNC_CW_SET_UDIM('ptr_tave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','ptr_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('ptr_tave', 0, myThid)
@@ -93,14 +99,14 @@ C       Write to files
      &         myThid)
 
           DO ii = 1,PTRACERS_numInUse
-            CALL MNC_CW_RL_W('D','ptr_tave',0,0,PTRACERS_names(ii),
+            CALL MNC_CW_RL_W(pf,'ptr_tave',0,0,PTRACERS_names(ii),
      &           ptracertave(1-OLx,1-OLy,1,1,1,ii),myThid)
             DO jj = 1,MAX_LEN_FNAM
               name(jj:jj) = ' '
             ENDDO
             ilnb = ILNBLNK(PTRACERS_names(ii))
             WRITE(name,'(a,a)') 'surf_',PTRACERS_names(ii)(1:ilnb)
-            CALL MNC_CW_RL_W('D','ptr_flux_tave',0,0,name,
+            CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0,name,
      &           ptracerFluxtave(1-OLx,1-OLy,1,1,ii),myThid)
           ENDDO
         ENDIF

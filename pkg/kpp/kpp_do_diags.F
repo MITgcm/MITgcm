@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.21 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.22 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -67,7 +67,14 @@ C     !LOCAL VARIABLES:
       _RL DDTT
       INTEGER thisdate(4), prevdate(4)
       LOGICAL dumpFiles
+      CHARACTER*(1) pf
 CEOP
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 C----------------------------------------------------------------
 C     Dump snapshot of KPP variables.
@@ -126,15 +133,15 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL MNC_CW_RL_W_S('D','kpp_state',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
           CALL MNC_CW_I_W_S('I','kpp_state',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W('D','kpp_state',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPviscAz', KPPviscAz, myThid)
-          CALL MNC_CW_RL_W('D','kpp_state',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPdiffKzT', KPPdiffKzT, myThid)
-          CALL MNC_CW_RL_W('D','kpp_state',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPdiffKzS', KPPdiffKzS, myThid)
-          CALL MNC_CW_RL_W('D','kpp_state',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPghat', KPPghat, myThid)
-          CALL MNC_CW_RL_W('D','kpp_state',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPhbl', KPPhbl, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
@@ -274,15 +281,15 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL MNC_CW_RL_W_S('D','kpp_timeave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
           CALL MNC_CW_I_W_S('I','kpp_timeave',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPviscAz', KPPviscAzTave, myThid)
-          CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPdiffKzT', KPPdiffKzTTave, myThid)
-          CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPdiffKzS', KPPdiffKzSTave, myThid)
-          CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPghat', KPPghatTave, myThid)
-          CALL MNC_CW_RL_W('D','kpp_timeave',0,0,
+          CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPhbl', KPPhblTave, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.10 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.11 2005/09/29 12:19:51 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -37,6 +37,7 @@ C     == Local variables ==
       LOGICAL gf
 #ifdef ALLOW_MNC
       CHARACTER*(8) mncfn
+      CHARACTER*(1) pf
 #endif
       
 #ifdef ALLOW_AIM_TAVE
@@ -113,6 +114,11 @@ C      Normalize by integrated time
 
 #ifdef ALLOW_MNC
        IF (useMNC .AND. aim_timeave_mnc) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
 C        C             12345678
          mncfn(1:8) = 'aim_tave'
          CALL MNC_CW_SET_UDIM(mncfn, -1, myThid)
@@ -120,27 +126,27 @@ C        C             12345678
          CALL MNC_CW_SET_UDIM(mncfn, 0, myThid)
          CALL MNC_CW_I_W_S('I',mncfn,0,0,'iter',myIter,myThid)
          
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'USTRtave',  USTRtave,  myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'VSTRtave',  VSTRtave,  myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'TSRtave',   TSRtave,   myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'OLRtave',   OLRtave,   myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'SSRtave',   SSRtave,   myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'SLRtave',   SLRtave,   myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'SHFtave',   SHFtave,   myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'EVAPtave',  EVAPtave,  myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'PRECNVtave',PRECNVtave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'PRECLStave',PRECLStave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'CLOUDCtave',CLOUDCtave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'CLTOPtave', CLTOPtave, myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'CBMFtave',  CBMFtave,  myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'DRAGtave',  DRAGtave,  myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimV0tave', aimV0tave, myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimT0tave', aimT0tave, myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimQ0tave', aimQ0tave, myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'EnFxPrtave',EnFxPrtave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'albedotave',albedotave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'dTsurftave',dTsurftave,myThid)
-         CALL MNC_CW_RL_W('D',mncfn,0,0,'aimRHtave', aimRHtave, myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'USTRtave',  USTRtave,  myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'VSTRtave',  VSTRtave,  myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'TSRtave',   TSRtave,   myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'OLRtave',   OLRtave,   myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'SSRtave',   SSRtave,   myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'SLRtave',   SLRtave,   myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'SHFtave',   SHFtave,   myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'EVAPtave',  EVAPtave,  myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'PRECNVtave',PRECNVtave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'PRECLStave',PRECLStave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'CLOUDCtave',CLOUDCtave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'CLTOPtave', CLTOPtave, myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'CBMFtave',  CBMFtave,  myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'DRAGtave',  DRAGtave,  myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'aimV0tave', aimV0tave, myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'aimT0tave', aimT0tave, myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'aimQ0tave', aimQ0tave, myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'EnFxPrtave',EnFxPrtave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'albedotave',albedotave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'dTsurftave',dTsurftave,myThid)
+         CALL MNC_CW_RL_W(pf,mncfn,0,0,'aimRHtave', aimRHtave, myThid)
        ENDIF
 #endif /*  ALLOW_MNC  */
 

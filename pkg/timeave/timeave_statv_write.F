@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.31 2005/08/24 23:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.32 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -52,7 +52,8 @@ C     useVariableK :: T when vertical diffusion is not constant
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER thisdate(4), prevdate(4)
       LOGICAL dumpFiles
- 
+      CHARACTER*(1) pf
+
 C     Final Time Averages and Dump Files if needed
       dumpFiles = .FALSE.
       IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) )
@@ -232,65 +233,71 @@ C         Check for IO errors
 #ifdef ALLOW_MNC        
         IF (useMNC .AND. timeave_mnc) THEN
           
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
+
           CALL MNC_CW_SET_UDIM('tave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','tave',0,0,'T', myTime, myThid)
           CALL MNC_CW_SET_UDIM('tave', 0, myThid)
           CALL MNC_CW_I_W_S('I','tave',0,0,'iter', myIter, myThid)
-          CALL MNC_CW_RL_W_S('D','tave',0,0,'model_time',myTime,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'ETAtave',etatave,myThid)
+C         CALL MNC_CW_RL_W_S('D','tave',0,0,'model_time',myTime,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'ETAtave',etatave,myThid)
 C         EH3: something is wrong here...
-C         CALL MNC_CW_RL_W('D','tave',0,0,'Eta2tave',Eta2tave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'Ttave',thetatave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'Stave',salttave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'uVeltave',uVeltave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'vVeltave',vVeltave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'wVeltave',wVeltave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'UTtave',UTtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'VTtave',VTtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'WTtave',WTtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'UStave',UStave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'VStave',VStave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'WStave',WStave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'TTtave',TTtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'UUtave',UUtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'VVtave',VVtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'UVtave',UVtave,myThid)
-C         CALL MNC_CW_RL_W('D','tave',0,0,'KEtave',KEtave,myThid)
+C         CALL MNC_CW_RL_W(pf,'tave',0,0,'Eta2tave',Eta2tave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'Ttave',thetatave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'Stave',salttave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'uVeltave',uVeltave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'vVeltave',vVeltave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'wVeltave',wVeltave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'UTtave',UTtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'VTtave',VTtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'WTtave',WTtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'UStave',UStave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'VStave',VStave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'WStave',WStave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'TTtave',TTtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'UUtave',UUtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'VVtave',VVtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'UVtave',UVtave,myThid)
+C         CALL MNC_CW_RL_W(pf,'tave',0,0,'KEtave',KEtave,myThid)
           IF (useVariableK) THEN
-            CALL MNC_CW_RL_W('D','tave',0,0,'Tdiftave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'Tdiftave',
      &           TdiffRtave,myThid)
           ENDIF
 #ifdef ALLOW_MOM_VECINV
           IF (vectorInvariantMomentum) THEN
-            CALL MNC_CW_RL_W('D','tave',0,0,'uZtave',uZetatave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'vZtave',vZetatave,myThid)
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'uZtave',uZetatave,myThid)
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'vZtave',vZetatave,myThid)
           ENDIF
 #endif /* ALLOW_MOM_VECINV */
-          CALL MNC_CW_RL_W('D','tave',0,0,'PhHytave',
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'PhHytave',
      &         phiHydtave,myThid)
           IF ( fluidIsWater ) THEN
-            CALL MNC_CW_RL_W('D','tave',0,0,'PHLtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'PHLtave',
      &           phiHydLowtave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'PHL2tave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'PHL2tave',
      &           phiHydLow2tave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'Convtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'Convtave',
      &           ConvectCountTave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'uFluxtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'uFluxtave',
      &           uFluxtave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'vFluxtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'vFluxtave',
      &           vFluxtave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'tFluxtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'tFluxtave',
      &           tFluxtave,myThid)
-            CALL MNC_CW_RL_W('D','tave',0,0,'sFluxtave',
+            CALL MNC_CW_RL_W(pf,'tave',0,0,'sFluxtave',
      &           sFluxtave,myThid)
           ENDIF
 
 #ifdef NONLIN_FRSURF
-          CALL MNC_CW_RL_W('D','tave',0,0,'hUtave',hUtave,myThid)
-          CALL MNC_CW_RL_W('D','tave',0,0,'hVtave',hVtave,myThid)
-C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacCtave',hFacCtave,myThid)
-C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacWtave',hFacWtave,myThid)
-C         CALL MNC_CW_RL_W('D','tave',0,0,'hFacStave',hFacStave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'hUtave',hUtave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'hVtave',hVtave,myThid)
+C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacCtave',hFacCtave,myThid)
+C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacWtave',hFacWtave,myThid)
+C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacStave',hFacStave,myThid)
 #endif /* NONLIN_FRSURF */ 
 
         ENDIF

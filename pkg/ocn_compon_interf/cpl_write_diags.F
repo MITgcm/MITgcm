@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.7 2005/05/25 04:03:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.8 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,6 +40,14 @@ C     bi,bj  - Tile index
       INTEGER bi,bj
       CHARACTER*(MAX_LEN_MBUF) fn
       LOGICAL gf
+      CHARACTER*(1) pf
+
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 #ifdef ALLOW_TIMEAVE
 
@@ -112,29 +120,29 @@ c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
           CALL MNC_CW_RL_W_S('D','cpl_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('cpl_tave', 0, myThid)
           CALL MNC_CW_I_W_S('I','cpl_tave',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'SLPtave',SLPtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'HFtave',HFtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'QSWtave',QSWtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'TXtave',TXtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'TYtave',TYtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'FWtave',FWtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'SFxtave',SFxtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'SICtave',SICtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'MXLtave',MXLtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'SSTtave',SSTtave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'SSStave',SSStave,myThid)
-          CALL MNC_CW_RL_W('D','cpl_tave',0,0,
+          CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'vSqtave',vSqtave,myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */

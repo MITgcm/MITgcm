@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.9 2005/09/16 20:16:31 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.10 2005/09/29 12:19:51 edhill Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -36,9 +36,15 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(1) pf
 
 #ifdef DIC_BIOTIC
 
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 #ifdef ALLOW_TIMEAVE
 
@@ -102,25 +108,25 @@ C      Normalize by integrated time
          CALL MNC_CW_SET_UDIM('dic_tave', 0, myThid)
          CALL MNC_CW_I_W_S('I','dic_tave',0,0,'iter',myIter,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_BIO_ave',BIOave,myThid)
+     &        pf,'dic_tave',0,0,'dic_BIO_ave',BIOave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_CAR_ave',CARave,myThid)
+     &        pf,'dic_tave',0,0,'dic_CAR_ave',CARave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_SUR_ave',SURave,myThid)
+     &        pf,'dic_tave',0,0,'dic_SUR_ave',SURave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_SURO_ave',SUROave,myThid)
+     &        pf,'dic_tave',0,0,'dic_SURO_ave',SUROave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_pH_ave',pHave,myThid)
+     &        pf,'dic_tave',0,0,'dic_pH_ave',pHave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_pCO2_ave',pCO2ave,myThid)
+     &        pf,'dic_tave',0,0,'dic_pCO2_ave',pCO2ave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
+     &        pf,'dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
+     &        pf,'dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_pflux_ave',pfluxave,myThid)
+     &        pf,'dic_tave',0,0,'dic_pflux_ave',pfluxave,myThid)
          CALL MNC_CW_RL_W(
-     &        'D','dic_tave',0,0,'dic_cflux_ave',cfluxave,myThid)
+     &        pf,'dic_tave',0,0,'dic_cflux_ave',cfluxave,myThid)
        ENDIF
 #endif
 

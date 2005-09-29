@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.6 2005/08/24 23:23:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -50,6 +50,7 @@ C     == Local variables ==
 #ifdef ALLOW_MNC
       INTEGER i
       CHARACTER*(MAX_LEN_MBUF) mncf
+      CHARACTER*(1) pf
 #endif
 
 #ifdef ALLOW_TIMEAVE
@@ -232,6 +233,11 @@ C        find wether we are writing globalFile or tile-files:
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. thSIce_tave_mnc ) THEN
+         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+           pf(1:1) = 'D'
+         ELSE
+           pf(1:1) = 'R'
+         ENDIF
          DO i = 1,MAX_LEN_MBUF
            mncf(i:i) = ' '
          ENDDO
@@ -241,35 +247,35 @@ C        C             123456789 1
          CALL MNC_CW_RL_W_S('D',mncf,0,0,'T', myTime, myThid)
          CALL MNC_CW_SET_UDIM(mncf, 0, myThid)
          CALL MNC_CW_I_W_S('I',mncf,0,0,'iter', myIter, myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'fract_ave', ice_fract_Ave, myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'iceH_ave',  ice_iceH_Ave,  myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'snowH_ave', ice_snowH_Ave, myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'Tsrf_ave',  ice_Tsrf_Ave,  myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'Tice1_ave', ice_Tice1_Ave, myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'Tice2_ave', ice_Tice2_Ave, myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'snowPr_ave',ice_snowPr_Ave,myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'albedo_ave',ice_albedo_Ave,myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'flx2oc_ave',ice_flx2oc_Ave,myThid)
-         CALL MNC_CW_RL_W('D',mncf,0,0,
+         CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'frw2oc_ave',ice_frw2oc_Ave,myThid)
          IF ( fluidIsWater ) THEN
-           CALL MNC_CW_RL_W('D',mncf,0,0,
+           CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'flxAtm_ave',ice_flxAtm_Ave,myThid)
-           CALL MNC_CW_RL_W('D',mncf,0,0,
+           CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'frwAtm_ave',ice_frwAtm_Ave,myThid)
          ENDIF
          IF ( stepFwd_oceMxL ) THEN
-           CALL MNC_CW_RL_W('D',mncf,0,0,'tMxL_ave',ice_tMxL_Ave,myThid)
-           CALL MNC_CW_RL_W('D',mncf,0,0,'sMxL_ave',ice_sMxL_Ave,myThid)
+           CALL MNC_CW_RL_W(pf,mncf,0,0,'tMxL_ave',ice_tMxL_Ave,myThid)
+           CALL MNC_CW_RL_W(pf,mncf,0,0,'sMxL_ave',ice_sMxL_Ave,myThid)
          ENDIF
        ENDIF
 #endif
@@ -345,6 +351,11 @@ C     Dump a snap-shot of main state variables:
 
 #ifdef ALLOW_MNC
         IF ( thSIce_snapshot_mnc ) THEN
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           DO i = 1,MAX_LEN_MBUF
             mncf(i:i) = ' '
           ENDDO
@@ -354,18 +365,18 @@ C         C             123456789 12345
           CALL MNC_CW_I_W_S('I',mncf,0,0,'iter', myIter, myThid)
           CALL MNC_CW_SET_UDIM(mncf, 0, myThid)
           CALL MNC_CW_RL_W_S('D',mncf,0,0,'T', myTime, myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'iceMask',   iceMask,   myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'iceHeight', iceHeight, myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'snowHeight',snowHeight,myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'Tsrf',      Tsrf,      myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'Tice1',     Tice1,     myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'Tice2',     Tice1,     myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'Qice1',     Qice1,     myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'Qice2',     Qice2,     myThid)
-          CALL MNC_CW_RL_W('D',mncf,0,0,'snowAge',   snowAge,   myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'iceMask',   iceMask,   myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'iceHeight', iceHeight, myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'snowHeight',snowHeight,myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'Tsrf',      Tsrf,      myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'Tice1',     Tice1,     myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'Tice2',     Tice1,     myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'Qice1',     Qice1,     myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'Qice2',     Qice2,     myThid)
+          CALL MNC_CW_RL_W(pf,mncf,0,0,'snowAge',   snowAge,   myThid)
           IF ( stepFwd_oceMxL ) THEN
-            CALL MNC_CW_RL_W('D',mncf,0,0,'tOceMxL',tOceMxL,myThid)
-            CALL MNC_CW_RL_W('D',mncf,0,0,'sOceMxL',sOceMxL,myThid)
+            CALL MNC_CW_RL_W(pf,mncf,0,0,'tOceMxL',tOceMxL,myThid)
+            CALL MNC_CW_RL_W(pf,mncf,0,0,'sOceMxL',sOceMxL,myThid)
           ENDIF
         ENDIF
 #endif  /* ALLOW_MNC */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.6 2005/09/10 22:14:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -46,6 +46,13 @@ C     == Local variables ==
       INTEGER bi, bj, k, nrec
       CHARACTER*(MAX_LEN_MBUF) msgBuf, suff, fn
       LOGICAL gf
+      CHARACTER*(1) pf
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 #ifdef ALLOW_AIM
       IF ( land_monFreq.NE.0. ) THEN
@@ -150,22 +157,22 @@ C-     find wether we are writing globalFile or tile-files:
          CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
          CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_groundT', land_grTtave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_enthalp', land_entave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_groundW', land_grWtave, myThid)
          
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_skinT', land_sTtave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_hSnow', land_hStave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_snAge', land_sAtave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_RunOff', land_ROftave, myThid)
-         CALL MNC_CW_RL_W('D',fn,0,0,
+         CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_enRnOf', land_eROtave, myThid)
          
        ENDIF

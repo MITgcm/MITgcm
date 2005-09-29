@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.554 2005/09/28 01:59:58 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.555 2005/09/29 12:19:52 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o make mnc honor the writeBinaryPrec flag for most kinds of output
 o eesupp: split EEPARAMS into EESIZE/EEPARAMS and add a vector global sum
 o minor change in averaging W (mom_vi_?_vertshear.F) that affects truncation
   error; update output from global_ocean.cs32x15(+.thsice) & MLAdjust (all 5).

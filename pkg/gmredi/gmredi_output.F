@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.4 2005/07/29 18:24:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.5 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -45,7 +45,13 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, K
       CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(1) pf
 
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) ) 
 
@@ -73,13 +79,13 @@ C     == Local variables ==
           CALL MNC_CW_SET_UDIM('gm_inst', 0, myThid)
           CALL MNC_CW_I_W_S('I','gm_inst',0,0,'iter',myIter,myThid)
 #ifdef GM_NON_UNITY_DIAGONAL
-          CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kux',Kux,myThid)
-          CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kvy',Kvy,myThid)
+          CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kux',Kux,myThid)
+          CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kvy',Kvy,myThid)
 #endif
 #ifdef GM_EXTRA_DIAGONAL
           IF (GM_ExtraDiag) THEN
-            CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kuz',Kuz,myThid)
-            CALL MNC_CW_RL_W('D','gm_inst',0,0,'Kvz',Kvz,myThid)
+            CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kuz',Kuz,myThid)
+            CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kvz',Kvz,myThid)
           ENDIF 
 #endif
         ENDIF
@@ -147,21 +153,21 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W_S('D','gm_tave',0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM('gm_tave', 0, myThid)
          CALL MNC_CW_I_W_S('I','gm_tave',0,0,'iter',myIter,myThid)
-         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwx',GM_Kwx_T,myThid)
-         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwy',GM_Kwy_T,myThid)
-         CALL MNC_CW_RL_W('D','gm_tave',0,0,'Kwz',GM_Kwz_T,myThid)
+         CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'Kwx',GM_Kwx_T,myThid)
+         CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'Kwy',GM_Kwy_T,myThid)
+         CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'Kwz',GM_Kwz_T,myThid)
 #ifdef GM_VISBECK_VARIABLE_K
          IF (GM_Visbeck_alpha.NE.0.) THEN
-           CALL MNC_CW_RL_W('D','gm_tave',0,0,'VisbK', 
+           CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'VisbK', 
      &          Visbeck_K_T, myThid)
          ENDIF
 #endif
 #ifdef GM_BOLUS_ADVEC
          IF (GM_AdvForm) THEN
            CALL MNC_CW_RL_W(
-     &          'D','gm_tave',0,0,'PsiX', GM_PsiXtave, myThid)
+     &          pf,'gm_tave',0,0,'PsiX', GM_PsiXtave, myThid)
            CALL MNC_CW_RL_W(
-     &          'D','gm_tave',0,0,'PsiY', GM_PsiYtave, myThid)
+     &          pf,'gm_tave',0,0,'PsiY', GM_PsiYtave, myThid)
          ENDIF
 #endif
        ENDIF

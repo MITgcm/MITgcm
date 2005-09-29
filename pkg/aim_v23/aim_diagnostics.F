@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.15 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.16 2005/09/29 12:19:51 edhill Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -47,8 +47,15 @@ C     == Local variables ==
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpVar(NGP)
 #endif
+      CHARACTER*(1) pf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 C--  mean surf. temp. change:
        DO J=1,NGP
@@ -97,21 +104,21 @@ C--   write clear-sky tendencies to files :
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. aim_snapshot_mnc ) THEN
-         
+
          WRITE(suff,'(a)') 'aim_tend'
          CALL MNC_CW_SET_UDIM(suff, -1, myThid)
          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM(suff, 0, myThid)
          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
 
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dT_RSW',TT_RSW,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dT_RLW',TT_RLW,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dT_CNV',TT_CNV,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dT_PBL',TT_PBL,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dT_LSC',TT_LSC,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dQ_CNV',QT_CNV,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dQ_PBL',QT_PBL,myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,'aim_dQ_LSC',QT_LSC,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_RSW',TT_RSW,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_RLW',TT_RLW,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_CNV',TT_CNV,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_PBL',TT_PBL,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_LSC',TT_LSC,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_CNV',QT_CNV,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_PBL',QT_PBL,myThid)
+         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_LSC',QT_LSC,myThid)
          
        ENDIF
 #endif
@@ -192,49 +199,49 @@ C--
          CALL MNC_CW_SET_UDIM(suff, 0, myThid)
          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
 
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_DRAG0',DRAG(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SPEED0',SPEED0(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_TSR',TSR(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_OLR',OLR(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SSR0',SSR(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SLR0',SLR(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SHF0',SHF(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_EVAP0',EVAP(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_PRECNV',PRECNV(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_PRECLS',PRECLS(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_CLOUDC',CLOUDC(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_CLTOP',CLTOP(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_CBMF',CBMF(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_T0',T0(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_Q0',Q0(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_EnPrec',EnPrec(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_alb10',alb1(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_dTsurf1',dTsurf(1,1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_TSWclr',TSWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_OLWclr',OLWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SSWclr',SSWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W('D',suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SLWclr',SLWclr(1,myThid),myThid)
          
        ENDIF

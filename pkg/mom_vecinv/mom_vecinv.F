@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.52 2005/09/28 15:53:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.53 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -103,6 +103,7 @@ c     _RL  mtFacV
 
 #ifdef ALLOW_MNC
       INTEGER offsets(9)
+      CHARACTER*(1) pf
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -118,6 +119,11 @@ C--   (at least in part)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. snapshot_mnc .AND. writeDiag) THEN
+        IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+          pf(1:1) = 'D'
+        ELSE
+          pf(1:1) = 'R'
+        ENDIF
         IF ((bi .EQ. 1).AND.(bj .EQ. 1).AND.(k .EQ. 1)) THEN
           CALL MNC_CW_SET_UDIM('mom_vi', -1, myThid)
           CALL MNC_CW_RL_W_S('D','mom_vi',0,0,'T',myTime,myThid)
@@ -409,9 +415,9 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'fV', uCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'fV', uCf,
      &          offsets, myThid)
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'fU', vCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'fU', vCf,
      &          offsets, myThid)
          ENDIF
 #endif /*  ALLOW_MNC  */
@@ -478,9 +484,9 @@ C--   Horizontal advection of relative (or absolute) vorticity
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'zV', uCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'zV', uCf,
      &          offsets, myThid)
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'zU', vCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'zU', vCf,
      &          offsets, myThid)
          ENDIF
 #endif /*  ALLOW_MNC  */
@@ -543,9 +549,9 @@ C--   Bernoulli term
          ENDIF
 #ifdef ALLOW_MNC
          IF (useMNC .AND. snapshot_mnc) THEN
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'KEx', uCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'KEx', uCf,
      &          offsets, myThid)
-           CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj, 'KEy', vCf,
+           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'KEy', vCf,
      &          offsets, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
@@ -586,21 +592,21 @@ C--   Set du/dt & dv/dt on boundaries to zero
         ENDIF
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Ds',strain,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Ds',strain,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dt',tension,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Dt',tension,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Du',guDiss,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Du',guDiss,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Dv',gvDiss,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Dv',gvDiss,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'Z3',vort3,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Z3',vort3,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'W3',omega3,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'W3',omega3,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'KE',KE,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'KE',KE,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET('D','mom_vi',bi,bj,'D', hDiv,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'D', hDiv,
      &          offsets, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */

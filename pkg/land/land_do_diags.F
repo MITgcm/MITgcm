@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.6 2005/09/10 22:14:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -51,6 +51,7 @@ C     == Local Variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
 #ifdef ALLOW_MNC
       CHARACTER*(80) fmnc
+      CHARACTER*(1) pf
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -103,6 +104,11 @@ c      _BARRIER
 #ifdef ALLOW_MNC
         IF ( land_snapshot_mnc ) THEN
 
+          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+            pf(1:1) = 'D'
+          ELSE
+            pf(1:1) = 'R'
+          ENDIF
           DO k = 1,80
             fmnc(k:k) = ' '
           ENDDO
@@ -114,29 +120,29 @@ c      _BARRIER
 C         TODO: Why does JMC use iterWr instead of myIter ???
           CALL MNC_CW_I_W_S('I',fmnc,0,0,'iter', iterWr, myThid)
 
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_groundT', land_groundT, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_enthalp', land_enthalp, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_groundW', land_groundW, myThid)
 
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_skinT', land_skinT, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_hSnow', land_hSnow, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_snAge', land_snowAge, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_RunOff', land_runOff, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_enRnOf', land_enRnOf, myThid)
 
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_HeatFx', land_HeatFlx, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_frWaFx', land_Pr_m_Ev, myThid)
-          CALL MNC_CW_RL_W('D',fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fmnc,0,0,
      &         'land_EnWaFx', land_EnWFlux, myThid)
           
         ENDIF

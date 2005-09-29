@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.14 2005/08/24 23:23:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.15 2005/09/29 12:19:52 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -40,6 +40,7 @@ C     iRec      :: record number
       INTEGER iTracer
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
+      CHARACTER*(1) pf
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -51,6 +52,12 @@ C     iRec      :: record number
      &                             myTime.EQ.startTime  )
      &   ) THEN
        
+        IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+          pf(1:1) = 'D'
+        ELSE
+          pf(1:1) = 'R'
+        ENDIF
+
 C     Write to files
        _BARRIER
        _BEGIN_MASTER( myThid )
@@ -62,7 +69,7 @@ C     Write to files
         CALL MNC_CW_SET_UDIM('ptracers', 0, myThid)
         CALL MNC_CW_I_W_S('I','ptracers',0,0,'iter',myIter,myThid)
         DO iTracer = 1,PTRACERS_numInUse
-         CALL MNC_CW_RL_W('D','ptracers',0,0,PTRACERS_names(iTracer),
+         CALL MNC_CW_RL_W(pf,'ptracers',0,0,PTRACERS_names(iTracer),
      &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
        ENDIF
