@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.7 2005/09/27 00:13:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.8 2005/09/29 03:33:28 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -28,6 +28,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -54,17 +55,26 @@ C  i,j                  :: loop indices
 C  hFacZClosedN         :: fractional open water to north
 C  hFacZClosedS         :: fractional open water to south
       INTEGER I,J
-      _RS hFacZClosedS,hFacZClosedN
+      _RL hFacZClosedS,hFacZClosedN
 CEOP
 
 #ifdef SIDEDRAG_OLD_VERSION
       _RL Ahtmp,A4tmp
 
 C     - Laplacian  and bi-harmonic terms
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=2-Oly,sNy+Oly-1
+       DO i=2-Olx,sNx+Olx-1
+#ifdef NONLIN_FRSURF
+C-      this will not give any side-drag along thin wall.
+C       (but this might just be what we want ...)
+        hFacZClosedS = h0FacW(i,j,k,bi,bj) - h0FacW(i,j-1,k,bi,bj)
+        hFacZClosedN = h0FacW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
+        hFacZClosedS = MAX( 0. _d 0, hFacZClosedS )
+        hFacZClosedN = MAX( 0. _d 0, hFacZClosedN )
+#else
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
+#endif
         Ahtmp=min(viscAh+viscAhGrid*rAw(i,j,bi,bj)/deltaTmom,
      &            viscAhMax)
         A4tmp=min(viscA4+viscA4Grid*(rAw(i,j,bi,bj)**2)/deltaTmom,
@@ -97,10 +107,19 @@ C     - Laplacian  and bi-harmonic terms
 #else /* SIDEDRAG_OLD_VERSION */
 
 C     - Laplacian  and bi-harmonic terms
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
-        hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
-        hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
+      DO j=2-Oly,sNy+Oly-1
+       DO i=2-Olx,sNx+Olx-1
+C-      this will not give any side-drag along thin wall.
+C       (but this might just be what we want ...)
+#ifdef NONLIN_FRSURF
+        hFacZClosedS = h0FacW(i,j,k,bi,bj) - h0FacW(i,j-1,k,bi,bj)
+        hFacZClosedN = hF0acW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
+#else
+        hFacZClosedS = hFacW(i,j,k,bi,bj) - hFacW(i,j-1,k,bi,bj)
+        hFacZClosedN = hFacW(i,j,k,bi,bj) - hFacW(i,j+1,k,bi,bj)
+#endif
+        hFacZClosedS = MAX( 0. _d 0, hFacZClosedS )
+        hFacZClosedN = MAX( 0. _d 0, hFacZClosedN )
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)
