@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.6 2005/06/22 00:18:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.7 2005/09/30 00:59:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CALC_R_STAR
@@ -46,7 +49,7 @@ C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,k,bi,bj
       INTEGER ii,jj
-      INTEGER km, numbWrite, numbWrMax
+      INTEGER numbWrite, numbWrMax
       _RL tmpfldW, tmpfldS
 c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
@@ -58,12 +61,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('CALC_R_STAR',myThid)
 #endif
-
-      IF (usingPCoords) THEN
-       km = Nr
-      ELSE
-       km = 1
-      ENDIF 
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -119,7 +116,7 @@ C-- Compute the new column thikness :
         ENDDO
         DO j=1,sNy
          DO i=1,sNx+1
-          IF (maskW(i,j,km,bi,bj).EQ.1. ) THEN
+          IF ( ksurfW(i,j,bi,bj).LE.Nr ) THEN
            tmpfldW = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
      &             - MAX( R_low(i-1,j,bi,bj), R_low(i,j,bi,bj) )
            rStarFacW(i,j,bi,bj) = 
@@ -134,7 +131,7 @@ C-- Compute the new column thikness :
         ENDDO
         DO j=1,sNy+1
          DO i=1,sNx
-          IF (maskS(i,j,km,bi,bj).EQ.1. ) THEN
+          IF ( ksurfS(i,j,bi,bj).LE.Nr ) THEN
            tmpfldS = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
      &             - MAX( R_low(i,j-1,bi,bj), R_low(i,j,bi,bj) )
            rStarFacS(i,j,bi,bj) = 
@@ -220,6 +217,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    2nd bi,bj loop :
 
 #ifdef ALLOW_EXCH2
+#ifdef W2_FILL_NULL_REGIONS
 C- Note: rStarFacC was non-zero EVERYWHERE before exch, but exch2 put zeros
 C        in the corner regions of the tile (e.g.:[1-Olx:0,1-Oly:0])
 C       => need to add those lines (or to fix exch2):
@@ -228,23 +226,24 @@ C       => need to add those lines (or to fix exch2):
           ii = sNx+i
           jj = sNy+j
 
-          IF (maskH(1-i,1-j,bi,bj).EQ.0.) rStarFacC(1-i,1-j,bi,bj) = 1.
-          IF (maskH(ii, 1-j,bi,bj).EQ.0.) rStarFacC(ii, 1-j,bi,bj) = 1.
-          IF (maskH(1-i,jj, bi,bj).EQ.0.) rStarFacC(1-i,jj, bi,bj) = 1.
-          IF (maskH(ii, jj, bi,bj).EQ.0.) rStarFacC(ii, jj, bi,bj) = 1.
+          IF (ksurfC(1-i,1-j,bi,bj).GT.Nr) rStarFacC(1-i,1-j,bi,bj)= 1.
+          IF (ksurfC(ii, 1-j,bi,bj).GT.Nr) rStarFacC(ii, 1-j,bi,bj)= 1.
+          IF (ksurfC(1-i,jj, bi,bj).GT.Nr) rStarFacC(1-i,jj, bi,bj)= 1.
+          IF (ksurfC(ii, jj, bi,bj).GT.Nr) rStarFacC(ii, jj, bi,bj)= 1.
 
-c         IF (ksurfW(1-i,1-j,bi,bj).LE.Nr) rStarFacW(1-i,1-j,bi,bj)=1.
-          IF (maskW(1-i,1-j,km,bi,bj).EQ.0.) rStarFacW(1-i,1-j,bi,bj)=1.
-          IF (maskW(ii, 1-j,km,bi,bj).EQ.0.) rStarFacW(ii, 1-j,bi,bj)=1.
-          IF (maskW(1-i,jj, km,bi,bj).EQ.0.) rStarFacW(1-i,jj, bi,bj)=1.
-          IF (maskW(ii, jj, km,bi,bj).EQ.0.) rStarFacW(ii, jj, bi,bj)=1.
+          IF (ksurfW(1-i,1-j,bi,bj).GT.Nr) rStarFacW(1-i,1-j,bi,bj)= 1.
+          IF (ksurfW(ii, 1-j,bi,bj).GT.Nr) rStarFacW(ii, 1-j,bi,bj)= 1.
+          IF (ksurfW(1-i,jj, bi,bj).GT.Nr) rStarFacW(1-i,jj, bi,bj)= 1.
+          IF (ksurfW(ii, jj, bi,bj).GT.Nr) rStarFacW(ii, jj, bi,bj)= 1.
 
-          IF (maskS(1-i,1-j,km,bi,bj).EQ.0.) rStarFacS(1-i,1-j,bi,bj)=1.
-          IF (maskS(ii, 1-j,km,bi,bj).EQ.0.) rStarFacS(ii, 1-j,bi,bj)=1.
-          IF (maskS(1-i,jj, km,bi,bj).EQ.0.) rStarFacS(1-i,jj, bi,bj)=1.
-          IF (maskS(ii, jj, km,bi,bj).EQ.0.) rStarFacS(ii, jj, bi,bj)=1.
+          IF (ksurfS(1-i,1-j,bi,bj).GT.Nr) rStarFacS(1-i,1-j,bi,bj)= 1.
+          IF (ksurfS(ii, 1-j,bi,bj).GT.Nr) rStarFacS(ii, 1-j,bi,bj)= 1.
+          IF (ksurfS(1-i,jj, bi,bj).GT.Nr) rStarFacS(1-i,jj, bi,bj)= 1.
+          IF (ksurfS(ii, jj, bi,bj).GT.Nr) rStarFacS(ii, jj, bi,bj)= 1.
+
          ENDDO
         ENDDO
+#endif /* W2_FILL_NULL_REGIONS */
 #endif /* ALLOW_EXCH2 */
 
         DO j=1-Oly,sNy+Oly
