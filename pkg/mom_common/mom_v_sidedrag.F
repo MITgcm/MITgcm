@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.9 2005/09/29 18:36:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.10 2005/09/30 00:11:34 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -92,11 +92,10 @@ C       (but this might just be what we want ...)
      &      *_recip_dxV(i+1,j,bi,bj) )
      &   *drF(k)*2.*(
      &                Ahtmp*vFld(i,j)*cosFacV(J,bi,bj)
-     &               -A4tmp*del2v(i,j)*cosFacV(J,bi,bj)
 #ifdef COSINEMETH_III
      &               -viscA4*del2v(i,j)*sqcosFacV(J,bi,bj)
 #else
-     &               -viscA4*del2v(i,j)*cosFacV(J,bi,bj)
+     &               -A4tmp*del2v(i,j)*cosFacV(J,bi,bj)
 #endif
      &              )
        ENDDO
