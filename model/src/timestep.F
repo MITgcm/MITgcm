@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.40 2005/09/29 16:47:16 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.41 2005/09/30 00:22:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,9 +56,14 @@ C     == Local variables ==
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
 C    Allow diagnosis of external forcing
+      LOGICAL externForcDiagIsOn
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
       _RL     gUext(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVext(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 #ifdef ALLOW_CD_CODE
       _RL     guCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gvCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -86,6 +91,14 @@ C-- including or excluding momentum forcing from Adams-Bashforth:
       momForcing_In_AB = .TRUE.
       momDissip_In_AB  = .TRUE.
 
+#ifdef ALLOW_DIAGNOSTICS
+      externForcDiagIsOn = useDiagnostics .AND. momForcing
+      IF ( externForcDiagIsOn ) THEN
+        externForcDiagIsOn = DIAGNOSTICS_IS_ON('Um_Ext  ',myThid)
+     &                  .OR. DIAGNOSTICS_IS_ON('Vm_Ext  ',myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialize local arrays (not really necessary but safer)
@@ -93,8 +106,6 @@ C-    Initialize local arrays (not really necessary but safer)
        DO i=1-Olx,sNx+Olx
         gUtmp(i,j) = 0. _d 0
         gVtmp(i,j) = 0. _d 0
-        gUext(i,j) = 0. _d 0
-        gVext(i,j) = 0. _d 0
 #ifdef ALLOW_CD_CODE
         guCor(i,j) = 0. _d 0
         gvCor(i,j) = 0. _d 0
@@ -129,9 +140,9 @@ C--   Dissipation term inside the Adams-Bashforth:
 C--   Forcing term inside the Adams-Bashforth:
       IF (momForcing .AND. momForcing_In_AB) THEN
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         DO j=jMin,jMax
-          DO i=iMin,iMax
+        IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
+         DO j=1,sNy+1
+          DO i=1,sNx+1
            gUext(i,j) = gU(i,j,k,bi,bj)
            gVext(i,j) = gV(i,j,k,bi,bj)
           ENDDO
@@ -147,9 +158,9 @@ C--   Forcing term inside the Adams-Bashforth:
      I     myTime,myThid)
 
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         DO j=jMin,jMax
-          DO i=iMin,iMax
+        IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
+         DO j=1,sNy+1
+          DO i=1,sNx+1
            gUext(i,j) = gU(i,j,k,bi,bj)-gUext(i,j)
            gVext(i,j) = gV(i,j,k,bi,bj)-gVext(i,j)
           ENDDO
@@ -202,9 +213,9 @@ C     (not recommended with CD-scheme ON)
         ENDDO
        ENDIF
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
+        DO j=1,sNy+1
+         DO i=1,sNx+1
           gUext(i,j) = gU(i,j,k,bi,bj)
           gVext(i,j) = gV(i,j,k,bi,bj)
          ENDDO
@@ -220,20 +231,13 @@ C     (not recommended with CD-scheme ON)
      I     myTime,myThid)
 
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
+        DO j=1,sNy+1
+         DO i=1,sNx+1
           gUext(i,j) = gU(i,j,k,bi,bj)-gUext(i,j)
           gVext(i,j) = gV(i,j,k,bi,bj)-gVext(i,j)
          ENDDO
         ENDDO
-       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(gUext,'Um_Ext  ',k,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(gVext,'Vm_Ext  ',k,1,2,bi,bj,myThid)
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -340,6 +344,10 @@ C     Step forward meridional velocity (store in Gv)
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
+          CALL DIAGNOSTICS_FILL(gUext,'Um_Ext  ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(gVext,'Vm_Ext  ',k,1,2,bi,bj,myThid)
+      ENDIF
 #ifdef ALLOW_CD_CODE
       IF ( useCDscheme .AND. useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(guCor,'Um_Cori ',k,1,2,bi,bj,myThid)
