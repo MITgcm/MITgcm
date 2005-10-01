@@ -1,0 +1,14 @@
+ &OFFLINE_PARM01
+  UvelFile= 'input_off/uVeltave',
+  VvelFile= 'input_off/vVeltave',
+  WvelFile= 'input_off/wVeltave',
+  ConvFile= 'input_off/Convtave',
+ &end
+
+ &OFFLINE_PARM02
+  offlineIter0=0,
+  deltaToffline=43200.,
+  offlineForcingPeriod=43200.,
+  offlineForcingCycle=518400.,
+ &end
+

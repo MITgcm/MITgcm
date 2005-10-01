@@ -1,0 +1,27 @@
+#!/bin/csh
+# invoking MPICH/MPICH-GM mpirun on ACES Linux clusters
+#
+
+#PBS -q four
+#PBS -N document
+#PBS -l nodes=4:ppn=2,walltime=00:10:00
+#PBS -e myrunMPICH.stderr
+#PBS -o myrunMPICH.stdout
+#PBS -m ae
+#PBS -V
+
+if ( -f /etc/profile.d/modules.csh ) then
+  source /etc/profile.d/modules.csh
+endif
+
+module add mpich/pgi
+
+
+set verbose
+cd /net/ds-01/scratch-3/helen/documentation/example_run_06
+cat $PBS_NODEFILE | sort | uniq > mf
+set ncpus = ( `wc -l mf | awk '{print $1}'` )
+# mpirun.ch_gm -machinefile mf -s -v --gm-kill 5 -np $ncpus ./mitgcmuv
+mpirun -machinefile mf -np $ncpus ./mitgcmuv
+
+

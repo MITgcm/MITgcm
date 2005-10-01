@@ -1,0 +1,4 @@
+#!/bin/csh
+rm *.meta *.data mf myrun* STD*
+
+

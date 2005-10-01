@@ -1,0 +1,46 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ &
+#
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+#
+# Time stepping parameters
+ &PARM03
+ nIter0  = 0,
+ nTimeSteps = 720,
+ deltaTtracer= 43200.0,
+ deltaTClock = 43200.0,
+ pChkptFreq=31104000.,
+ chkptFreq= 31104000.,
+ dumpFreq=  2592000.,
+ taveFreq=  311040000.,
+ monitorFreq= 1.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ &
+#
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.TRUE.,
+ delR=  50.,  70., 100., 140., 190., 
+       240., 290., 340., 390., 440., 
+       490., 540., 590., 640., 690.,
+ phiMin=-90.,
+ dxSpacing=2.8125,
+ dySpacing=2.8125,
+ &
+#
+# Input datasets
+ &PARM05
+ bathyFile=      'depth_g77.bin',
+ &

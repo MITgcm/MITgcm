@@ -1,0 +1,25 @@
+ &PTRACERS_PARM01
+ PTRACERS_numInUse=2,
+ PTRACERS_Iter0= 0,
+ PTRACERS_write_mnc=.TRUE.,
+#
+# tracer 1 - dic
+# PTRACERS_names(1)='tr1',
+# PTRACERS_long_names(1)='TR1',
+# PTRACERS_units(1)='mol/m^3',
+ PTRACERS_advScheme(1)=77,
+ PTRACERS_diffKh(1)=0.E3,
+ PTRACERS_diffKr(1)=5.E-5,
+# PTRACERS_useGMRedi(1)=.TRUE. ,
+# PTRACERS_useKPP(1)=.FALSE. ,
+ PTRACERS_initialFile(1)='tracer1.bin',
+# tracer 2 - alk
+# PTRACERS_names(2)='tr2',
+# PTRACERS_units(2)='mol/m^3',
+ PTRACERS_advScheme(2)=77,
+ PTRACERS_diffKh(2)=0.E3,
+ PTRACERS_diffKr(2)=5.E-5,
+# PTRACERS_useGMRedi(2)=.TRUE. ,
+# PTRACERS_useKPP(2)=.FALSE. ,
+ PTRACERS_initialFile(2)='tracer2.bin',
+ &
