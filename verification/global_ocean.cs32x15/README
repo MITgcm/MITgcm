@@ -27,7 +27,11 @@ Comments:
 * package thSIce and bulk_forc are included but not used in the standard
   set-up.
 
-* additional forcing fields and parameter files are provided (in inp_thsice) 
+* additional forcing fields and parameter files are provided (in input.thsice)
   in order to illustrate the use of thSIce pkg. 
   the output of a short run (20.iter) is given in results/output_thsice.txt
 
+October 1rst, 2005:
+* input.viscA4/data has been added to test biharmonic viscosity on CS-grid
+  with side-drag. However, this set of parameters has only be used for 
+  short tests and is not recommended to begin with.
