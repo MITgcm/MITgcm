@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.26 2005/09/07 13:55:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.27 2005/10/01 18:35:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -245,15 +245,6 @@ C     o If calendarDumps is set, pkg/cal is required
       ENDIF
 #endif
 
-#ifndef ALLOW_MATRIX
-      IF (useMATRIX) THEN
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: useMATRIX is TRUE and #undef ALLOW_MATRIX'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-#endif
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-  check parameter consistency :
@@ -439,6 +430,14 @@ C- jmc: but ultimately, this block can/will be removed.
       IF ( useCDscheme .AND. useCubedSphereExchange ) THEN
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: CD-scheme not implemented on CubedSphere grid'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( highOrderVorticity .AND. useCubedSphereExchange ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: highOrderVorticity Scheme does not work',
+     &   ' on CubedSphere grid'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
