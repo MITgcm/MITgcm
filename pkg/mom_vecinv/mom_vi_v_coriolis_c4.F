@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.5 2005/06/20 23:23:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.6 2005/10/01 19:17:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -88,10 +88,11 @@ C-      using SadournyCoriolis discretization:
 C-      not using SadournyCoriolis discretization:
 
          uBarXY=0.25*(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
-     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj))
+     &               )
          IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)

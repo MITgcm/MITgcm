@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.8 2005/04/28 14:57:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.9 2005/10/01 19:17:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_U_CORIOLIS( 
+      SUBROUTINE MOM_VI_U_CORIOLIS(
      I        bi,bj,k,
      I        vFld,omega3,hFacZ,r_hFacZ,
      O        uCoriolisTerm,
@@ -36,16 +36,16 @@ C     == Local variables ==
       _RS epsil
       PARAMETER ( use_original_hFac=.FALSE. )
 
-      epsil = 1. _d -9 
+      epsil = 1. _d -9
 
       DO J=1-Oly,sNy+Oly-1
        DO I=2-Olx,sNx+Olx
         IF ( use_original_hFac ) THEN
          vBarXY=0.25*(
-     &       vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
-     &      +vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj))
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj))
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj)))
          IF (upwindVorticity) THEN
           IF (vBarXY.GT.0.) THEN
            vort3u=omega3(I,J)*r_hFacZ(i,j)
@@ -78,11 +78,11 @@ C     == Local variables ==
         ELSE
 c--      test a different formulation (relatively to hFac)
          vBarXY=0.5*(
-     &       vFld( i , j )*dxG( i , j ,bi,bj)*hFacZ(i,j)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacZ(i,j)
-     &      +vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacZ(i,j+1)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacZ(i,j+1)
-     &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i,j+1) ) 
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacZ(i,j)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacZ(i,j)  )
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacZ(i,j+1)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacZ(i,j+1))
+     &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i,j+1) )
          IF (upwindVorticity) THEN
           IF (vBarXY.GT.0.) THEN
            vort3u=omega3(i,j)
@@ -90,17 +90,17 @@ c--      test a different formulation (relatively to hFac)
            vort3u=omega3(i,j+1)
           ENDIF
          ELSE
-           vort3u=0.5*(omega3(i,j)+omega3(i,j+1)) 
+           vort3u=0.5*(omega3(i,j)+omega3(i,j+1))
          ENDIF
         ENDIF
 
         IF (useJamartMomAdv)
      &   vBarXY = vBarXY * 4. _d 0 * hFacW(i,j,k,bi,bj)
-     &   / MAX( epsil, hFacS( i , j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj)
-     &                +hFacS( j ,i+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj) )
+     &   / MAX( epsil, (hFacS(i, j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj))
+     &                +(hFacS(i,j+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj)) )
 
         uCoriolisTerm(i,j)=
-     &   +vort3u*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj) 
+     &   +vort3u*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
 cph *note* put these comments after end of continued line
 cph        to ensure TAMC compatibility
 C high order vorticity advection term

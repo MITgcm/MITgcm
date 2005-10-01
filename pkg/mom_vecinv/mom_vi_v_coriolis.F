@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.8 2005/04/28 14:57:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.9 2005/10/01 19:17:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_V_CORIOLIS( 
+      SUBROUTINE MOM_VI_V_CORIOLIS(
      I        bi,bj,k,
      I        uFld,omega3,hFacZ,r_hFacZ,
      O        vCoriolisTerm,
@@ -42,10 +42,10 @@ C     == Local variables ==
        DO I=1-Olx,sNx+Olx-1
         IF ( use_original_hFac ) THEN
          uBarXY=0.25*(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
-     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj))
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj)))
          IF (upwindVorticity) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)
@@ -78,10 +78,10 @@ C     == Local variables ==
         ELSE
 c--      test a different formulation (relatively to hFac)
          uBarXY=0.5*(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ(i,j)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ(i,j)
-     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j)
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ(i,j)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ(i,j)  )
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j))
      &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
          IF (upwindVorticity) THEN
           IF (uBarXY.GT.0.) THEN
@@ -96,8 +96,8 @@ c--      test a different formulation (relatively to hFac)
 
         IF (useJamartMomAdv)
      &   uBarXY = uBarXY * 4. _d 0 * hFacS(i,j,k,bi,bj)
-     &   / MAX( epsil, hFacW( i , j ,k,bi,bj)+hFacW( i ,j-1,k,bi,bj)
-     &                +hFacW(i+1, j ,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj) )
+     &   / MAX( epsil, (hFacW( i ,j,k,bi,bj)+hFacW( i ,j-1,k,bi,bj))
+     &                +(hFacW(i+1,j,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj)) )
 
         vCoriolisTerm(i,j)=
      &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)

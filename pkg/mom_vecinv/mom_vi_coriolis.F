@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.6 2004/07/20 17:46:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.7 2005/10/01 19:17:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_CORIOLIS( 
+      SUBROUTINE MOM_VI_CORIOLIS(
      I        bi,bj,K,
      I        uFld,vFld,hFacZ,r_hFacZ,
      O        uCoriolisTerm,vCoriolisTerm,
@@ -41,12 +41,12 @@ C- Partial-cell generalization of the Wet-point average method :
        DO J=1-Oly,sNy+Oly-1
         DO I=2-Olx,sNx+Olx
          vBarXY=(
-     &       vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
-     &      +vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj) )
-     &   / MAX( epsil, hFacS( i , j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj)
-     &                +hFacS( i ,j+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj) )
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj))
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj)))
+     &   / MAX( epsil, (hFacS(i, j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj))
+     &                +(hFacS(i,j+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj)) )
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(I,J,K,bi,bj)
@@ -57,10 +57,11 @@ C- Simple average, no hFac :
        DO J=1-Oly,sNy+Oly-1
         DO I=2-Olx,sNx+Olx
          vBarXY=0.25*(
-     &       vFld( i , j )*dxG( i , j ,bi,bj)
-     &      +vFld( i ,j+1)*dxG( i ,j+1,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj) )
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj))
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj))
+     &               )
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(I,J,K,bi,bj)
@@ -73,12 +74,12 @@ C- Partial-cell generalization of the Wet-point average method :
        DO J=2-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx-1
          uBarXY=(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
-     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj) )
-     &   / MAX( epsil, hFacW( i , j ,k,bi,bj)+hFacW( i ,j-1,k,bi,bj)
-     &                +hFacW(i+1, j ,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj) )
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj)))
+     &   / MAX( epsil, (hFacW( i ,j,k,bi,bj)+hFacW( i ,j-1,k,bi,bj))
+     &                +(hFacW(i+1,j,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj)) )
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(I,J,K,bi,bj)
@@ -89,10 +90,11 @@ C- Simple average, no hFac :
        DO J=2-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx-1
          uBarXY=0.25*(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)
-     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj) )
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj))
+     &               )
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(I,J,K,bi,bj)
