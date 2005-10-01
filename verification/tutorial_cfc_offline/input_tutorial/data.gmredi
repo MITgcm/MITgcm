@@ -1,0 +1,10 @@
+ &GM_PARM01 
+  GM_background_K    = 1.e+3,
+  GM_taper_scheme    = 'gkw91',
+  GM_maxSlope        = 1.e-2,
+  GM_Kmin_horiz      = 100.,
+  GM_Scrit           = 4.e-3,
+  GM_Sd              = 1.e-3,
+ &
+
+

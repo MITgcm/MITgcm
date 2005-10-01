@@ -1,0 +1,17 @@
+ &OFFLINE_PARM01
+  UvelFile= 'input_off/uVeltave',
+  VvelFile= 'input_off/vVeltave',
+  WvelFile= 'input_off/wVeltave',
+  GMwxFile= 'input_off/GM_Kwx-T',
+  GMwyFile= 'input_off/GM_Kwy-T',
+  GMwzFile= 'input_off/GM_Kwz-T',
+  ConvFile= 'input_off/Convtave',
+ &end
+
+ &OFFLINE_PARM02
+  offlineIter0=4248000,
+  deltaToffline=43200.,
+  offlineForcingPeriod=2592000.,
+  offlineForcingCycle=31104000.,
+ &end
+

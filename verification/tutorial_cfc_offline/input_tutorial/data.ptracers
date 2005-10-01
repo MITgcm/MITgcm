@@ -1,0 +1,19 @@
+ &PTRACERS_PARM01
+ PTRACERS_numInUse=2,
+ PTRACERS_Iter0= 4248000,
+#
+# tracer 1 - CFC11
+ PTRACERS_advScheme(1)=77,
+ PTRACERS_diffKh(1)=0.E3,
+ PTRACERS_diffKr(1)=5.E-5,
+ PTRACERS_useGMRedi(1)=.TRUE. ,
+ PTRACERS_useKPP(1)=.FALSE. ,
+ PTRACERS_initialFile(1)=' ',
+# tracer 2 - CFC12
+ PTRACERS_advScheme(2)=77,
+ PTRACERS_diffKh(2)=0.E3,
+ PTRACERS_diffKr(2)=5.E-5,
+ PTRACERS_useGMRedi(2)=.TRUE. ,
+ PTRACERS_useKPP(2)=.FALSE. ,
+ PTRACERS_initialFile(2)=' ',
+ &
