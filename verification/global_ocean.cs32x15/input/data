@@ -7,8 +7,8 @@
  tRef=15*20.,
  sRef=15*35.,
  viscAh =3.E5,
-#- biharmonic Viscosity (requires to change Olx=Oly=3)
-#viscA4 =3.E15, <- close to stability limit with deltaTmom=20mn
+#- biharmonic Viscosity: this is close to the stability limit with deltaTmom=20mn
+#viscA4 =3.E15,
  viscAr =1.E-3,
  diffKhT=0., 
  diffK4T=0., 
