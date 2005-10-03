@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.14 2005/09/27 00:18:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.15 2005/10/03 21:43:03 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -92,7 +92,7 @@ C     == Local variables ==
       INTEGER I,J
       _RL smag2fac, smag4fac
       _RL viscAhRe_max, viscA4Re_max
-      _RL Alin,grdVrt,grdDiv
+      _RL Alin,grdVrt,grdDiv, keZpt
       _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
       _RL Uscl,U4scl
       _RL viscAh_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -209,8 +209,16 @@ C These are (powers of) length scales
          ENDIF
 
 C Velocity Reynolds Scale
-         Uscl=sqrt(KE(i,j)*L2)*viscAhRe_max
-         U4scl=sqrt(KE(i,j))*L3*viscA4Re_max
+         IF ( viscAhRe_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
+           Uscl=sqrt(KE(i,j)*L2)*viscAhRe_max
+         ELSE
+           Uscl=0.
+         ENDIF
+         IF ( viscA4Re_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
+           U4scl=sqrt(KE(i,j))*L3*viscA4Re_max
+         ELSE
+           U4scl=0.
+         ENDIF
 
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
@@ -322,11 +330,21 @@ C These are (powers of) length scales
      &      +8. _d 0*((recip_DXV(I,J,bi,bj)*recip_DYU(I,J,bi,bj))**2))
          ENDIF
 
-C Velocity Reynolds Scale
-         Uscl=sqrt(0.25 _d 0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1))
-     &         *L2)*viscAhRe_max
-         U4scl=sqrt(0.25 _d 0*(KE(i,j)+KE(i,j+1)+KE(i+1,j)+KE(i+1,j+1)))
-     &         *L3*viscA4Re_max
+C Velocity Reynolds Scale (Pb here at CS-grid corners !)
+         IF ( viscAhRe_max.GT.0. .OR. viscA4Re_max.GT.0. ) THEN
+           keZpt=0.25 _d 0*( (KE(i,j)+KE(i-1,j-1))
+     &                      +(KE(i-1,j)+KE(i,j-1)) )
+           IF ( keZpt.GT.0. ) THEN
+             Uscl = sqrt(keZpt*L2)*viscAhRe_max
+             U4scl= sqrt(keZpt)*L3*viscA4Re_max
+           ELSE
+             Uscl =0.
+             U4scl=0.
+           ENDIF
+         ELSE
+           Uscl =0.
+           U4scl=0.
+         ENDIF
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN
