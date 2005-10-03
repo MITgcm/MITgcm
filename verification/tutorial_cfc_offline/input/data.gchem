@@ -1,0 +1,5 @@
+ &GCHEM_PARM01
+  iceFile='fice.bin',
+  windFile='tren_speed.bin',
+  nsubtime=1,
+ &
