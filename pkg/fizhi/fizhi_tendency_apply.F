@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.9 2005/02/18 19:43:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.10 2005/10/03 18:49:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -35,7 +35,7 @@ C=======================================================================
 
       integer i, j
 
-      if(klev.eq.Nr .or. rC(klev).lt.7000.)then
+      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        rayleighdrag = 1./(31.*86400.*2.)
       else
        rayleighdrag = 0.
@@ -84,7 +84,7 @@ C=======================================================================
 
       integer i, j
 
-      if(klev.eq.Nr .or. rC(klev).lt.7000.)then
+      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        rayleighdrag = 1./(31.*86400.*2.)
       else
        rayleighdrag = 0.
@@ -132,7 +132,7 @@ C=======================================================================
 
       integer i, j
 
-      if(klev.eq.Nr .or. rC(klev).lt.7000.)then
+      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        cp = getcon('CP')
        kappa = getcon('KAPPA')
        pNrkappa = (rC(klev)/100000.)**kappa 
