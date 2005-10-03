@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.557 2005/09/30 00:15:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.558 2005/10/03 02:06:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o test biharmonic viscosity + no-slip with exp: global_ocean.cs32x15.viscA4
+o finish adding brackets (coriolis S/R, vecinv) in multi-terms sum to get
+  same truncation, independent of the face number: affects affects several
+  test. exp.: Update global_ocean.cs32x15 (+.thsice) & MLAdjust (all 5).
 o fix bug in mom_v_sidedrag (biharmonic viscosity was counted 2 times);
-  note that biharmonic viscosity + no-slip is not tested in any experiment.
+  note that biharmonic viscosity + no-slip was not tested in any experiment.
 o fix bug in non-linear free-surf side-drag ; generate new output for
   global_ocean.cs32x15(+.thsice) & global_ocean_pressure.
 o make mnc honor the writeBinaryPrec flag for most kinds of output
