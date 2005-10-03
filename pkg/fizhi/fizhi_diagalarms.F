@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.3 2005/06/02 22:56:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.4 2005/10/03 18:46:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -34,6 +34,7 @@ c -------------------
       integer mmdd,hhmmss,nsecf2
       character *9 tagname
       integer  nymdb,nhmsb
+      integer absfreq
 
 c Set Alarm Clocks
 c ----------------
@@ -44,7 +45,8 @@ c ----------------------------------------------------------------------
 
 C-    2D/3D field diagnostics:
       do n = 1,nlists
-       if(freq(n).lt.100.) then
+       absfreq = abs(freq(n))
+       if(absfreq.lt.100.) then
         nymdb = nymd
         nhmsb = nhms
        else
@@ -52,15 +54,16 @@ C-    2D/3D field diagnostics:
         nhmsb = 0
        endif
        write(tagname,'(A,I2.2)')'diagtag',n
-       mmdd = int(freq(n))
-       hhmmss = int((freq(n) - int(freq(n)))*1.e6)
+       mmdd = int(absfreq)
+       hhmmss = int((absfreq - int(absfreq))*1.e6)
        nincr = mmdd * 1.e6 + hhmmss
        call set_alarm(tagname,nymdb,nhmsb,nincr)
       enddo
 
 C-    Global/Regional statistics diagnostics:
       do n = 1,diagSt_nbLists
-       if(freq(n).lt.100.) then
+       absfreq = abs(diagSt_freq(n))
+       if(absfreq.lt.100.) then
         nymdb = nymd
         nhmsb = nhms
        else
@@ -68,8 +71,8 @@ C-    Global/Regional statistics diagnostics:
         nhmsb = 0
        endif
        write(tagname,'(A,I2.2)')'diagStg',n
-       mmdd = int(diagSt_freq(n))
-       hhmmss = int((diagSt_freq(n) - int(diagSt_freq(n)))*1.e6)
+       mmdd = int(absfreq)
+       hhmmss = int((absfreq - int(absfreq))*1.e6)
        nincr = mmdd * 1.e6 + hhmmss
        call set_alarm(tagname,nymdb,nhmsb,nincr)
       enddo
