@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.15 2005/10/03 21:43:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.16 2005/10/04 02:49:13 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -95,6 +95,8 @@ C     == Local variables ==
       _RL Alin,grdVrt,grdDiv, keZpt
       _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
       _RL Uscl,U4scl
+      _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -183,6 +185,42 @@ C     == Local variables ==
 
 C     - Viscosity
       IF (useVariableViscosity) THEN
+
+C      horizontal gradient of horizontal divergence:
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          divDx(i,j) = 0.
+          divDy(i,j) = 0.
+        ENDDO
+       ENDDO
+       IF (calcleith) THEN
+C-       gradient in x direction:
+#ifndef ALLOW_AUTODIFF_TAMC
+         IF (useCubedSphereExchange) THEN
+C        to compute d/dx(hDiv), fill corners with appropriate values:
+           CALL FILL_CS_CORNER_TR_RL( .TRUE., hDiv, bi,bj, myThid )
+         ENDIF
+#endif
+         DO j=2-Oly,sNy+Oly-1
+          DO i=2-Olx,sNx+Olx-1
+            divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+
+C-       gradient in y direction:
+#ifndef ALLOW_AUTODIFF_TAMC
+         IF (useCubedSphereExchange) THEN
+C        to compute d/dy(hDiv), fill corners with appropriate values:
+           CALL FILL_CS_CORNER_TR_RL(.FALSE., hDiv, bi,bj, myThid )
+         ENDIF
+#endif
+         DO j=2-Oly,sNy+Oly-1
+          DO i=2-Olx,sNx+Olx-1
+            divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ENDIF
+
        DO j=2-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
@@ -232,11 +270,10 @@ C This is the vector magnitude of the vorticity gradient squared
 
 C This is the vector magnitude of grad (div.v) squared
 C Using it in Leith serves to damp instabilities in w.
-          grdDiv=0.25 _d 0*(
-     &     ((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))**2
-     &     +((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj))**2
-     &     +((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
-     &     +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2)
+          grdDiv=0.25 _d 0*( (divDx(i+1,j)*divDx(i+1,j)
+     &                        + divDx(i,j)*divDx(i,j) )
+     &                     + (divDy(i,j+1)*divDy(i,j+1)
+     &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_DLth(i,j)=
      &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
@@ -257,13 +294,9 @@ c (and differs by as much as 4X)
           grdVrt=max(grdVrt,
      &     abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
 
-          grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXC(i+1,j,bi,bj))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYC(i,j+1,bi,bj)))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj)))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)))
+          grdDiv=max( abs(divDx(i+1,j)), abs(divDx(i,j)) ) 
+          grdDiv=max( grdDiv, abs(divDy(i,j+1)) )
+          grdDiv=max( grdDiv, abs(divDy(i,j))   )
 
 c This approximation is good to the same order as above...
           viscAh_Dlth(i,j)=
@@ -355,11 +388,10 @@ C This is the vector magnitude of the vorticity gradient squared
      &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2)
 
 C This is the vector magnitude of grad(div.v) squared
-          grdDiv=0.25 _d 0*(
-     &     ((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))**2
-     &     +((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj))**2
-     &     +((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj))**2
-     &     +((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYC(i-1,j,bi,bj))**2)
+          grdDiv=0.25 _d 0*( (divDx(i,j-1)*divDx(i,j-1)
+     &                        + divDx(i,j)*divDx(i,j) )
+     &                     + (divDy(i-1,j)*divDy(i-1,j)
+     &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_ZLth(i,j)=
      &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
@@ -380,13 +412,9 @@ C but this approximation will work on cube (and differs by 4X)
           grdVrt=max(grdVrt,
      &     abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
 
-          grdDiv=abs((hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i,j-1)-hDiv(i-1,j-1))*recip_DXC(i,j-1,bi,bj)))
-          grdDiv=max(grdDiv,
-     &     abs((hDiv(i-1,j)-hDiv(i-1,j-1))*recip_DYC(i-1,j,bi,bj)))
+          grdDiv=max( abs(divDx(i,j)), abs(divDx(i,j-1)) ) 
+          grdDiv=max( grdDiv, abs(divDy(i,j))   )
+          grdDiv=max( grdDiv, abs(divDy(i-1,j)) )
 
           viscAh_ZLth(i,j)=(viscC2leith*grdVrt
      &                     +(viscC2leithD*grdDiv))*L3
