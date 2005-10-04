@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.27 2005/10/01 18:35:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.28 2005/10/04 02:47:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -250,10 +250,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-  check parameter consistency :
 
       IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
-     &     ( viscC4leith.NE.0. .OR. viscA4Grid.NE.0.
-     &      .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0. ) ) THEN
+     &     ( viscC4leithD.NE.0.  .OR. viscC4leith.NE.0.
+     &     .OR. viscC4smag.NE.0. .OR. viscA4Grid.NE.0.
+     &     .OR. viscA4D.NE.0.    .OR. viscA4Z.NE.0. ) ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Biharmonic Visc. (viscA4) with',
+     &  ' overlap (Olx,Oly) smaller than 3'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF                 
+      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
+     &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
+     &   ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
      &  ' overlap (Olx,Oly) smaller than 3'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
