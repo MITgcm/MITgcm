@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.559 2005/10/03 12:57:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.560 2005/10/04 03:43:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o CS-grid: fix divergence contribution to Leith viscosity. Affects (@ 
+  truncation level) 4/5 MLAdjust test results (11&12 digits match).
 
 checkpoint57t_post
 o test biharmonic viscosity + no-slip with exp: global_ocean.cs32x15.viscA4
