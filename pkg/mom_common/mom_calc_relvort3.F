@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.5 2005/09/30 01:19:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.6 2005/10/06 00:58:34 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -126,22 +126,14 @@ C                                       |
 C                                      U(1,-1)
          I=1
          J=1
-C-    to get the same truncation, independent from the face Nb:
-         IF ( MOD(myFace,2).EQ.1 ) THEN
-          vort3(I,J)=
+C-    to get the same truncation, independent from the face Nb,
+C     do (1+2)+3, and always in the same order (exch3 convention order):
+         vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
-     &      ( uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &       +vFld(I,J)*dyC(I,J,bi,bj)     )
-     &      - uFld(I,J)*dxC(I,J,bi,bj)
+     &      ( vFld(I,J)*dyC(I,J,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj) )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
-         ELSE
-          vort3(I,J)=
-     &     +recip_rAz(I,J,bi,bj)*(
-     &      (-uFld(I,J)*dxC(I,J,bi,bj)
-     &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
-     &      + vFld(I,J)*dyC(I,J,bi,bj)
-     &     )
-         ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
 c        vort3(I,J)=
 c    &     +recip_rAz(I,J,bi,bj)*(
@@ -149,9 +141,9 @@ c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I-1,J)=
+         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyC(I-1,J,bi,bj)
      &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
@@ -160,7 +152,7 @@ c    &     )
      &                             )
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskW(i-1,j,k,bi,bj)*maskS(i,j-1,k,bi,bj)
-        vort3(I,J-1)=vort3(I-1,J)
+         vort3(I,J-1)=vort3(I-1,J)
 #endif
        ENDIF
 
@@ -176,27 +168,28 @@ C               |                          |
 C              U(N+1,-1)
          I=sNx+1
          J=1
-C-    to get the same truncation, independent from the face Nb:
-         IF ( myFace.EQ.4 ) THEN
+C-    to get the same truncation, independent from the face Nb,
+C      (exch3 convention order):
+         IF ( myFace.EQ.2 ) THEN
+          vort3(I,J)=
+     &     +recip_rAz(I,J,bi,bj)*(
+     &      (-uFld(I,J)*dxC(I,J,bi,bj)
+     &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &     )
+         ELSEIF ( myFace.EQ.4 ) THEN
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (-vFld(I-1,J)*dyC(I-1,J,bi,bj)
      &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
      &      - uFld(I,J)*dxC(I,J,bi,bj)
      &     )
-         ELSEIF ( myFace.EQ.6 ) THEN
+         ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &       -uFld(I,J)*dxC(I,J,bi,bj)     )
      &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
-     &     )
-         ELSE
-          vort3(I,J)=
-     &     +recip_rAz(I,J,bi,bj)*(
-     &      (-uFld(I,J)*dxC(I,J,bi,bj)
-     &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
-     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
@@ -206,9 +199,9 @@ c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I+1,J)=
+         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyC(I+1,J,bi,bj)
      &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
@@ -217,7 +210,7 @@ c    &     )
      &                           )
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskW(i+1,j,k,bi,bj)*maskS(i-1,j-1,k,bi,bj)
-        vort3(I,J-1)=vort3(I+1,J)
+         vort3(I,J-1)=vort3(I+1,J)
 #endif
        ENDIF
 
@@ -233,15 +226,16 @@ C                  |                          |
 C                 U(0,N)       D(0,N)        U(1,N)       TILE
          I=1
          J=sNy+1
-C-    to get the same truncation, independent from the face Nb:
+C-    to get the same truncation, independent from the face Nb,
+C      (exch3 convention order):
          IF ( myFace.EQ.1 ) THEN
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
-     &      (+vFld(I,J)*dyC(I,J,bi,bj)
-     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
-     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &       +vFld(I,J)*dyC(I,J,bi,bj)     )
+     &       -uFld(I,J)*dxC(I,J,bi,bj)
      &     )
-         ELSEIF ( myFace.EQ.5 ) THEN
+         ELSEIF ( myFace.EQ.3 ) THEN
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (-uFld(I,J)*dxC(I,J,bi,bj)
@@ -251,9 +245,9 @@ C-    to get the same truncation, independent from the face Nb:
          ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
-     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &       +vFld(I,J)*dyC(I,J,bi,bj)     )
-     &       -uFld(I,J)*dxC(I,J,bi,bj)
+     &      (+vFld(I,J)*dyC(I,J,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
@@ -263,9 +257,9 @@ c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I-1,J)=
+         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyC(I-1,J,bi,bj)
      &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
@@ -274,7 +268,7 @@ c    &     )
      &                           )
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskS(i,j+1,k,bi,bj)*maskW(i-1,j-1,k,bi,bj)
-        vort3(I,J+1)=vort3(I-1,J)
+         vort3(I,J+1)=vort3(I-1,J)
 #endif
        ENDIF
 
@@ -291,19 +285,20 @@ C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
          I=sNx+1
          J=sNy+1
 C-    to get the same truncation, independent from the face Nb:
+C      (exch3 convention order):
          IF ( MOD(myFace,2).EQ.1 ) THEN
-          vort3(I,J)=
-     &     +recip_rAz(I,J,bi,bj)*(
-     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
-     &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
-     &     )
-         ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (-uFld(I,J)*dxC(I,J,bi,bj)
      &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
      &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &     )
+         ELSE
+          vort3(I,J)=
+     &     +recip_rAz(I,J,bi,bj)*(
+     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
+     &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
      &     )
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
@@ -313,9 +308,9 @@ c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I+1,J)=
+         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyC(I+1,J,bi,bj)
      &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
@@ -324,7 +319,7 @@ c    &     )
      &                           )
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskS(i-1,j+1,k,bi,bj)*maskW(i+1,j-1,k,bi,bj)
-        vort3(I,J+1)=vort3(I+1,J)
+         vort3(I,J+1)=vort3(I+1,J)
 #endif
        ENDIF
       ENDIF
