@@ -46,3 +46,10 @@ C subroutine  mnc_cw_add_vname
 C----------------------------------------
 CADJ SUBROUTINE mnc_cw_add_vname  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE mnc_cw_add_vname  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_citer_setg
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_citer_setg  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE mnc_cw_citer_setg  OUTPUT =
+
