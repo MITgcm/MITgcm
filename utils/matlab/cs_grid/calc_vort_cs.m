@@ -8,7 +8,7 @@ function [vort,z6t]=calc_vort_cs(u3d,v3d,dxC,dyC,rAz);
 %   z6t(nc+1,nc+1,*,6) = face splitted.
 %
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc_vort_cs.m,v 1.1 2005/09/15 16:22:24 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc_vort_cs.m,v 1.2 2005/10/06 01:16:44 jmc Exp $
 % $Name:  $
 
 dims=size(u3d); nx=dims(1); nc=dims(2); ncp=nc+1; n2p=nc+2; nPg=nx*nc ;
@@ -61,24 +61,24 @@ for k=1:nr,
  for n=1:3,
    f=2*n-1; %- odd face number
    vc=-vv2(1,1,f); %- S-W corner
-   z6t(1,1,f,k)   = (vv2(2,1,f)+vc) -vv1(1,2,f);
+   z6t(1,1,f,k)   = (vv2(2,1,f)-vv1(1,2,f))+vc;
    vc=+vv2(n2p,1,f); %- S-E corner
-   z6t(ncp,1,f,k) =-(vv2(ncp,1,f)+vv1(ncp,2,f))+vc;
+   z6t(ncp,1,f,k) = (vc-vv1(ncp,2,f))-vv2(ncp,1,f);
    vc=+vv2(n2p,ncp,f); %- N-E corner
-   z6t(ncp,ncp,f,k)=(vv1(ncp,ncp,f)+vc)-vv2(ncp,ncp,f);
+   z6t(ncp,ncp,f,k)=(vc-vv2(ncp,ncp,f))+vv1(ncp,ncp,f);
    vc=-vv2(1,ncp,f); %- N-W corner
-   vc3=[vv1(1,ncp,f) vc vv2(2,ncp,f) vv1(1,ncp,f) vc];
+   vc3=[vc vv2(2,ncp,f) vv1(1,ncp,f) vc vv2(2,ncp,f)];
    z6t(1,ncp,f,k) = (vc3(n+2)+vc3(n+1))+vc3(n);
    f=2*n; %- even face number
    vc=-vv2(1,1,f); %- S-W corner
-   z6t(1,1,f,k)   = (vc -vv1(1,2,f))+vv2(2,1,f);
+   z6t(1,1,f,k)   = (vv2(2,1,f)-vv1(1,2,f))+vc;
    vc=+vv2(n2p,1,f); %- S-E corner
    vc3=[-vv1(ncp,2,f) -vv2(ncp,1,f) vc -vv1(ncp,2,f) -vv2(ncp,1,f)];
    z6t(ncp,1,f,k) = (vc3(n)+vc3(n+1))+vc3(n+2);
    vc=+vv2(n2p,ncp,f); %- N-E corner
-   z6t(ncp,ncp,f,k)=(vc-vv2(ncp,ncp,f))+vv1(ncp,ncp,f);
+   z6t(ncp,ncp,f,k)=(vv1(ncp,ncp,f)+vc)-vv2(ncp,ncp,f);
    vc=-vv2(1,ncp,f); %- N-W corner
-   z6t(1,ncp,f,k) = (vv1(1,ncp,f)+vv2(2,ncp,f))+vc;
+   z6t(1,ncp,f,k) = (vv2(2,ncp,f)+vc)+vv1(1,ncp,f);
  end
 %- divide by rAz:
  z6t(:,:,:,k)=z6t(:,:,:,k)./aZ;
@@ -87,9 +87,6 @@ end
 %- put in compressed form: 
 vort=zeros(nPg+2,nr);
 %  extract the interior
-%vv3=z6t(1:nc,1:nc,:,k);
-%vv3=permute(vv3,[1 3 2]);
-%vort([1:nPg],k)=reshape(vv3,[nPg 1]);
  vort([1:nPg],:)=reshape(permute(z6t(1:nc,1:nc,:,:),[1 3 2 4]),[nPg nr]);
 %  put back the 2 missing corners (N.W corner of 1rst face & S.E corner of 2nd face)
  vort(nPg+1,:)=z6t(1,ncp,1,:);
