@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.4 2005/02/12 23:08:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.5 2005/10/07 00:21:07 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
-#define CALC_CS_CORNER_EXTENDED
+#undef CALC_CS_CORNER_EXTENDED
 
       SUBROUTINE SHAP_FILT_RELVORT3(
      I        bi,bj,k,
@@ -40,6 +40,7 @@ C     == Local variables ==
       INTEGER i,j
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
+      INTEGER myFace
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif /* ALLOW_EXCH2 */
@@ -59,10 +60,10 @@ C     == Local variables ==
 C       Horizontal curl of flow field - ignoring lopping factors
         vort3(I,J)=
      &      recip_rAz(I,J,bi,bj)*(
-     &      vFld(I,J)*dyc(I,J,bi,bj)
-     &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
-     &     -uFld(I,J)*dxc(I,J,bi,bj)
-     &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
+     &      ( vFld(I,J)*dyC(I,J,bi,bj)
+     &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
+     &     -( uFld(I,J)*dxC(I,J,bi,bj)
+     &       -uFld(I,J-1)*dxC(I,J-1,bi,bj) )
      &                           )
 
 C       Horizontal curl of flow field - including lopping factors
@@ -87,29 +88,19 @@ C     RETURN
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
        AZcorner = 0.75 _d 0
-       southWestCorner = .FALSE.
-       southEastCorner = .FALSE.
-       northWestCorner = .FALSE.
-       northEastCorner = .FALSE.
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southWestCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northWestCorner = .TRUE.
-       ENDIF
+       myFace = exch2_myFace(myTile)
+         southWestCorner = exch2_isWedge(myTile).EQ.1
+     &               .AND. exch2_isSedge(myTile).EQ.1
+         southEastCorner = exch2_isEedge(myTile).EQ.1
+     &               .AND. exch2_isSedge(myTile).EQ.1
+         northEastCorner = exch2_isEedge(myTile).EQ.1
+     &               .AND. exch2_isNedge(myTile).EQ.1
+         northWestCorner = exch2_isWedge(myTile).EQ.1
+     &               .AND. exch2_isNedge(myTile).EQ.1
 #else
+       myFace = bi
        southWestCorner = .TRUE.
        southEastCorner = .TRUE.
        northWestCorner = .TRUE.
@@ -128,26 +119,33 @@ C                                       |
 C                                      U(1,-1)
          I=1
          J=1
-c        vort3(I,J)=
-c    &     +recip_rAz(I,J,bi,bj)*(
+C-    to get the same truncation, independent from the face Nb,
+C     do (1+2)+3, and always in the same order (exch3 convention order):
          vort3(I,J)=
      &     +recip_rA(I,J,bi,bj)/AZcorner*(
-     &      vFld(I,J)*dyc(I,J,bi,bj)
-     &     -uFld(I,J)*dxc(I,J,bi,bj)
-     &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
+     &      ( vFld(I,J)*dyC(I,J,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj) )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
-c       IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+C-    the quick way, but do not get the same truncation on the 3 faces:
+c        vort3(I,J)=
+c    &     +recip_rA(I,J,bi,bj)/AZcorner*(
+c    &      vFld(I,J)*dyC(I,J,bi,bj)
+c    &     -uFld(I,J)*dxC(I,J,bi,bj)
+c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
+c    &     )
+c        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I-1,J)=
+         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
-     &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
-     &     -vFld(I-2,J)*dyc(I-2,J,bi,bj)
-     &     -uFld(I-1,J)*dxc(I-1,J,bi,bj)
-     &     +vFld(I+0,J-1)*dyc(I+0,J-1,bi,bj)
+     &      vFld(I-1,J)*dyC(I-1,J,bi,bj)
+     &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
+     &     -uFld(I-1,J)*dxC(I-1,J,bi,bj)
+     &     +vFld(I+0,J-1)*dyC(I+0,J-1,bi,bj)
      &                             )
 c    &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
 c    &     *maskW(i-1,j,k,bi,bj)*maskS(i,j-1,k,bi,bj)
-        vort3(I,J-1)=vort3(I-1,J)
+         vort3(I,J-1)=vort3(I-1,J)
 #endif
        ENDIF
 
@@ -163,26 +161,49 @@ C               |                          |
 C              U(N+1,-1)
          I=sNx+1
          J=1
-c        vort3(I,J)=
-c    &     +recip_rAz(I,J,bi,bj)*(
-         vort3(I,J)=
+C-    to get the same truncation, independent from the face Nb,
+C      (exch3 convention order):
+         IF ( myFace.EQ.2 ) THEN
+          vort3(I,J)=
      &     +recip_rA(I-1,J,bi,bj)/AZcorner*(
-     &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
-     &     -uFld(I,J)*dxc(I,J,bi,bj)
-     &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
+     &      (-uFld(I,J)*dxC(I,J,bi,bj)
+     &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
-c       IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         ELSEIF ( myFace.EQ.4 ) THEN
+          vort3(I,J)=
+     &     +recip_rA(I-1,J,bi,bj)/AZcorner*(
+     &      (-vFld(I-1,J)*dyC(I-1,J,bi,bj)
+     &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
+     &      - uFld(I,J)*dxC(I,J,bi,bj)
+     &     )
+         ELSE
+          vort3(I,J)=
+     &     +recip_rA(I-1,J,bi,bj)/AZcorner*(
+     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
+     &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
+     &     )
+         ENDIF
+C-    the quick way, but do not get the same truncation on the 3 faces:
+c        vort3(I,J)=
+c    &     +recip_rA(I-1,J,bi,bj)/AZcorner*(
+c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
+c    &     -uFld(I,J)*dxC(I,J,bi,bj)
+c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
+c    &     )
+c        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I+1,J)=
+         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
-     &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
-     &     -vFld(I-0,J)*dyc(I-0,J,bi,bj)
-     &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
-     &     -vFld(I-1,J-1)*dyc(I-1,J-1,bi,bj)
+     &      vFld(I+1,J)*dyC(I+1,J,bi,bj)
+     &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
+     &     -uFld(I+1,J)*dxC(I+1,J,bi,bj)
+     &     -vFld(I-1,J-1)*dyC(I-1,J-1,bi,bj)
      &                           )
 c    &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
 c    &     *maskW(i+1,j,k,bi,bj)*maskS(i-1,j-1,k,bi,bj)
-        vort3(I,J-1)=vort3(I+1,J)
+         vort3(I,J-1)=vort3(I+1,J)
 #endif
        ENDIF
 
@@ -198,26 +219,49 @@ C                  |                          |
 C                 U(0,N)       D(0,N)        U(1,N)       TILE
          I=1
          J=sNy+1
-c        vort3(I,J)=
-c    &     +recip_rAz(I,J,bi,bj)*(
-         vort3(I,J)=
+C-    to get the same truncation, independent from the face Nb,
+C      (exch3 convention order):
+         IF ( myFace.EQ.1 ) THEN
+          vort3(I,J)=
      &     +recip_rA(I,J-1,bi,bj)/AZcorner*(
-     &      vFld(I,J)*dyc(I,J,bi,bj)
-     &     -uFld(I,J)*dxc(I,J,bi,bj)
-     &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
+     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &       +vFld(I,J)*dyC(I,J,bi,bj)     )
+     &       -uFld(I,J)*dxC(I,J,bi,bj)
      &     )
-c       IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         ELSEIF ( myFace.EQ.3 ) THEN
+          vort3(I,J)=
+     &     +recip_rA(I,J-1,bi,bj)/AZcorner*(
+     &      (-uFld(I,J)*dxC(I,J,bi,bj)
+     &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
+     &      + vFld(I,J)*dyC(I,J,bi,bj)
+     &     )
+         ELSE
+          vort3(I,J)=
+     &     +recip_rA(I,J-1,bi,bj)/AZcorner*(
+     &      (+vFld(I,J)*dyC(I,J,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &     )
+         ENDIF
+C-    the quick way, but do not get the same truncation on the 3 faces:
+c        vort3(I,J)=
+c    &     +recip_rA(I,J-1,bi,bj)/AZcorner*(
+c    &      vFld(I,J)*dyC(I,J,bi,bj)
+c    &     -uFld(I,J)*dxC(I,J,bi,bj)
+c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
+c    &     )
+c        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I-1,J)=
+         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
-     &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
-     &     -vFld(I-2,J)*dyc(I-2,J,bi,bj)
-     &     +vFld(I-0,J+1)*dyc(I-0,J+1,bi,bj)
-     &     +uFld(I-1,J-1)*dxc(I-1,J-1,bi,bj)
+     &      vFld(I-1,J)*dyC(I-1,J,bi,bj)
+     &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
+     &     +vFld(I-0,J+1)*dyC(I-0,J+1,bi,bj)
+     &     +uFld(I-1,J-1)*dxC(I-1,J-1,bi,bj)
      &                           )
 c    &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
 c    &     *maskS(i,j+1,k,bi,bj)*maskW(i-1,j-1,k,bi,bj)
-        vort3(I,J+1)=vort3(I-1,J)
+         vort3(I,J+1)=vort3(I-1,J)
 #endif
        ENDIF
 
@@ -233,26 +277,42 @@ C                 |                              |
 C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
          I=sNx+1
          J=sNy+1
-c        vort3(I,J)=
-c    &     +recip_rAz(I,J,bi,bj)*(
-         vort3(I,J)=
+C-    to get the same truncation, independent from the face Nb:
+C      (exch3 convention order):
+         IF ( MOD(myFace,2).EQ.1 ) THEN
+          vort3(I,J)=
      &     +recip_rA(I-1,J-1,bi,bj)/AZcorner*(
-     &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
-     &     -uFld(I,J)*dxc(I,J,bi,bj)
-     &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
+     &      (-uFld(I,J)*dxC(I,J,bi,bj)
+     &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
+     &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &     )
-c       IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
+         ELSE
+          vort3(I,J)=
+     &     +recip_rA(I-1,J-1,bi,bj)/AZcorner*(
+     &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
+     &       -uFld(I,J)*dxC(I,J,bi,bj)     )
+     &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
+     &     )
+         ENDIF
+C-    the quick way, but do not get the same truncation on the 3 faces:
+c        vort3(I,J)=
+c    &     +recip_rA(I-1,J-1,bi,bj)/AZcorner*(
+c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
+c    &     -uFld(I,J)*dxC(I,J,bi,bj)
+c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
+c    &     )
+c        IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
-        vort3(I+1,J)=
+         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
-     &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
-     &     -vFld(I-0,J)*dyc(I-0,J,bi,bj)
-     &     -vFld(I-1,J+1)*dyc(I-1,J+1,bi,bj)
-     &     +uFld(I+1,J-1)*dxc(I+1,J-1,bi,bj)
+     &      vFld(I+1,J)*dyC(I+1,J,bi,bj)
+     &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
+     &     -vFld(I-1,J+1)*dyC(I-1,J+1,bi,bj)
+     &     +uFld(I+1,J-1)*dxC(I+1,J-1,bi,bj)
      &                           )
 c    &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
 c    &     *maskS(i-1,j+1,k,bi,bj)*maskW(i+1,j-1,k,bi,bj)
-        vort3(I,J+1)=vort3(I+1,J)
+         vort3(I,J+1)=vort3(I+1,J)
 #endif
        ENDIF
       ENDIF
