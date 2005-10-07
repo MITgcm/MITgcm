@@ -63,23 +63,16 @@ ln -s ../../global_ocean.90x40x15/input/*.bin .
 STEP 2:
 ######
 Generate code for AD-related routines.
+
 Similar to step 1, but look in code_ad/ instead of code/
 
 To build:
 --------
 o short version:
 ---------------
+
 ../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
-make depend ; make cb2m ; \rm adcost_mod.F90
-make makefile ; make small_f
-make ad_input_code.f
-make adopen
-make allmods
+
 make adall
 
-TAF-generated adjoint code has one bug: line
-      adfc = 0.d0
-needs to be replaced by
-      adfc = 1.d0
-(corresponds to seeding of dependent variable).
 
