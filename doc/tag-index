@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.560 2005/10/04 03:43:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.561 2005/10/07 00:36:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o reduce number of exch calls in shap_filt (s2). 
 o CS-grid: fix divergence contribution to Leith viscosity. Affects (@ 
   truncation level) 4/5 MLAdjust test results (11&12 digits match).
 
