@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.8 2005/10/07 20:40:34 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.9 2005/10/07 22:37:20 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1910,10 +1910,12 @@ for d in $alldirs ; do
 	fi
     done
     if test "x$deplist" != x ; then
-	echo "" >> srclinks.tmp
+      if test "$d" != "." ; then
+  	echo "" >> srclinks.tmp
 	echo "#  These files are linked from $d" >> srclinks.tmp
 	echo "$deplist :" >> srclinks.tmp
 	printf "\t\$(LN) %s/\$@ \$@\n" $d >> srclinks.tmp
+      fi
     fi
 done
 rm -rf .links.tmp
@@ -2129,7 +2131,7 @@ CLEAN: Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
-	-rm -f \$(EXECUTABLE) output.txt STD*
+	-rm -f \$(EXECUTABLE) output.txt ad_output.txt STD*
 
 Clean: clean cleanlinks
 	-rm -f *.F
@@ -2234,6 +2236,8 @@ grdchk
 
 adAll: adDepend \$(EXE_AD)
 
+CANON_F90_SRC_FILES=\$(addsuffix _mod.F90, \$(CANON_F90_SRC_NAMES))
+
 adDepend: \$(ALL_LINKED_FILES) \$(CANON_F90_SRC_FILES)
 	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
@@ -2259,8 +2263,6 @@ AD_OBJ_FILES=ad_input_code.w2f.canon.xb.x2w.w2f.pp.o
 openad: ad_input_code.w2f.canon.xb.x2w.w2f.pp.f
 .PHONY: openad
 
-CANON_F90_SRC_FILES=\$(addsuffix _mod.F90, \$(CANON_F90_SRC_NAMES))
-
 CB2MFILES= cb2m1.csh cb2m1.awk cb2m2.bash 
 
 \$(CANON_F90_SRC_FILES): \$(ALL_LINKED_FILES) \$(CB2MFILES) 
@@ -2275,7 +2277,7 @@ CB2MFILES= cb2m1.csh cb2m1.awk cb2m2.bash
 small_f: \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
 .PHONY: small_f
 
-output.txt: \$(AD_EXE)
+ad_output.txt: \$(AD_EXE)
 	@printf 'running ... '
 	@\$(AD_EXE) > \$@
 
@@ -2306,8 +2308,8 @@ ad_input_code_sf.w2f.f: ad_input_code_sf.f mfef90 whirl2f whirl2f_be w2f__types.
 	mv \$@.1 \$@  
 
 # canonicalizer
-ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.pl
-	perl canon.pl \$< \$@
+ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.v0.py
+	python canon.v0.py \$< > \$@
 
 # F -> WHIRL
 ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f mfef90
@@ -2357,6 +2359,9 @@ whirl2xaif xaif2whirl:
 
 %.pl: 
 	\$(LN) \${OPENADROOT}/OpenADFortTk/OpenADFortTk-i686-Linux/bin/\$@ .
+
+%.py: 
+	\$(LN) \${OPENADROOT}/OpenADFortTk/tools/canonicalize/\$@ .
 
 whirl2f whirl2f_be:
 	\$(LN) \${OPENADROOT}/Open64/osprey1.0/targ_ia32_ia64_linux/whirl2f/\$@ .
