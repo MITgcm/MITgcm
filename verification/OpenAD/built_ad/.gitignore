@@ -6,6 +6,7 @@
 *.F90
 *.f90
 *.mod
+*.mod-whirl
 *.o
 *.data
 *.meta
