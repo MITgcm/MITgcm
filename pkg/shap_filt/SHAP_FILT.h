@@ -1,19 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.7 2004/06/26 01:15:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.8 2005/10/07 00:24:01 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHAP_FILT
 
 C-    Package flag and logical parameters :
-C     shap_filt_uvStar  :: filter applied to u*,v* (before SOLVE_FOR_P) 
-C     shap_filt_TrStagg :: if using a Stager time-step, filter T,S before
+C     shap_filt_uvStar  :: filter applied to u*,v* (before SOLVE_FOR_P)
+C     shap_filt_TrStagg :: if using a Stagger time-step, filter T,S before
 C                           computing PhiHyd ;
 C                           has no effect if syncr. time step is used
+C     Shap_alwaysExchUV :: always call exch(U,V)    nShapUV times
+C     Shap_alwaysExchTr :: always call exch(Tracer) nShapTr times
+C               Note :: those exchanges are part of the filtering itself and
+C                       are not dealing with the validity of the output field
+C                       in the overlap region.
 
       LOGICAL shap_filt_uvStar, shap_filt_TrStagg
-      COMMON /SHAP_FILT_PARM_L/ 
-     &        shap_filt_uvStar, shap_filt_TrStagg
+      LOGICAL Shap_alwaysExchUV, Shap_alwaysExchTr
+      COMMON /SHAP_FILT_PARM_L/
+     &        shap_filt_uvStar, shap_filt_TrStagg,
+     &        Shap_alwaysExchUV, Shap_alwaysExchTr
 
-C-    Shapiro Filter integer parameters :  
+C-    Shapiro Filter integer parameters :
 C     Shap_funct :: define which Shapiro Filter function is used
 C        = 1  (S1) : [1 - d_xx^n - d_yy^n]
 C        = 4  (S4) : [1 - d_xx^n][1- d_yy^n]

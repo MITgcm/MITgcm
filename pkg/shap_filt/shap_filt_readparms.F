@@ -1,14 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.12 2005/09/27 22:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.13 2005/10/07 00:24:01 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: SHAP_FILT_READPARMS
+C     !INTERFACE:
       SUBROUTINE SHAP_FILT_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE SHAP_FILT_READPARMS                           |
-C     | o Routine to initialize Shapiro Filter parameters        |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SHAP_FILT_READPARMS
+C     | o Routine to initialize Shapiro Filter parameters
+C     *==========================================================*
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,22 +25,26 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "SHAP_FILT.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_SHAP_FILT
 
-      NAMELIST /SHAP_PARM01/
-     &   Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
-     &   nShapT,nShapS, nShapTrPhys, Shap_Trtau, Shap_TrLength,
-     &   nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
-     &   Shap_noSlip, Shap_diagFreq
-
+C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+CEOP
+
+      NAMELIST /SHAP_PARM01/
+     &   Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
+     &   Shap_alwaysExchUV, Shap_alwaysExchTr,
+     &   nShapT,nShapS, nShapTrPhys, Shap_Trtau, Shap_TrLength,
+     &   nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
+     &   Shap_noSlip, Shap_diagFreq
 
 C--   SHAP_FILT_READPARMS has been called so we know that
 C     the package is active.
@@ -51,8 +63,10 @@ c     SHAPIsOn=.TRUE.
 
 C--   Default flags and values for Shapiro Filter
       Shap_funct = 2
-      shap_filt_uvStar =.TRUE.
-      shap_filt_TrStagg=.TRUE.
+      shap_filt_uvStar  = .TRUE.
+      shap_filt_TrStagg = .TRUE.
+      Shap_alwaysExchUV = .FALSE.
+      Shap_alwaysExchTr = .FALSE.
       nShapT = 0
       nShapS = -1
       nShapUV = 0
@@ -86,6 +100,16 @@ C     to get exactly the same results as shap-funct S2G.
         nShapUVPhys = nShapUV
       ENDIF
 
+      IF ( Shap_funct.EQ.1 .OR. Shap_funct.EQ.4
+     &     .OR. Shap_funct.EQ.21
+     &     .OR. Olx.LT.3 .OR. Oly.LT.3 ) THEN
+        Shap_alwaysExchUV = .TRUE.
+      ENDIF
+      IF ( Shap_funct.EQ.1 .OR. Shap_funct.EQ.4
+     &   ) THEN
+        Shap_alwaysExchTr = .TRUE.
+      ENDIF
+
 C- print out some kee parameters :
       CALL WRITE_0D_I( Shap_funct, INDEX_NONE,
      & 'Shap_funct =',
@@ -99,6 +123,16 @@ C- print out some kee parameters :
       CALL WRITE_0D_I( nShapUV, INDEX_NONE,
      & 'nShapUV =',
      & '   /* power of Shapiro filter for momentum */')
+
+      CALL WRITE_0D_L( shap_filt_uvStar,  INDEX_NONE,
+     & 'shap_filt_uvStar =',' /* apply filter before Press. Solver */')
+      CALL WRITE_0D_L( shap_filt_TrStagg, INDEX_NONE,
+     & 'shap_filt_TrStagg =',
+     & ' /* filter T,S before calc PhiHyd (staggerTimeStep) */')
+      CALL WRITE_0D_L( Shap_alwaysExchUV, INDEX_NONE,
+     & 'Shap_alwaysExchUV =',' /* always exch(U,V)    nShapUV times*/')
+      CALL WRITE_0D_L( Shap_alwaysExchTr, INDEX_NONE,
+     & 'Shap_alwaysExchTr =',' /* always exch(Tracer) nShapTr times*/')
 
       IF (Shap_funct.EQ.2) THEN
        CALL WRITE_0D_I( nShapTrPhys, INDEX_NONE,
