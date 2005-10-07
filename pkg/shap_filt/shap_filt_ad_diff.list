@@ -1,12 +1,11 @@
 shap_filt_apply_ts.f
 shap_filt_apply_uv.f
+shap_filt_computvort.f
 shap_filt_relvort3.f
 shap_filt_tracer_s1.f
 shap_filt_tracer_s2.f
-shap_filt_tracer_s2g.f
 shap_filt_tracer_s4.f
 shap_filt_uv_s1.f
 shap_filt_uv_s2.f
-shap_filt_uv_s2g.f
 shap_filt_uv_s2c.f
 shap_filt_uv_s4.f
