@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.8 2005/09/27 22:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.9 2005/10/07 00:27:53 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -47,24 +47,25 @@ C     myThid :: Thread number for this instance of SHAP_FILT_TRACER_S2
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER nShapComput, nShapPhysic
-      INTEGER bi,bj,K,I,J,N
+      INTEGER nShapComput
+      INTEGER bi,bj,k,i,j,n
       _RL tmpGrd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
       IF (nShapTr.GT.0) THEN
 C-------
 C  Apply computational filter ^(nShap-nShapPhys) without grid factor
-C  then apply Physical filter ^nShapPhys  with grid factors 
+C  then apply Physical filter ^nShapPhys  with grid factors
 C-------
-        nShapComput = MAX( 0, nShapTr - nShapTrPhys )
-        nShapPhysic = nShapTr - nShapComput
+        nShapComput = nShapTr - nShapTrPhys
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,kSize
-           DO J=1-Oly,sNy+Oly
-            DO I=1-Olx,sNx+Olx
+          DO k=1,kSize
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
              tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
             ENDDO
            ENDDO
@@ -73,111 +74,131 @@ C-------
         ENDDO
 
 
-C      ( d_xx +d_yy )^n tmpFld 
+C      ( d_xx +d_yy )^n tmpFld
 
-C-- Computational Filter 
-       DO N=1,nShapComput
+       DO n=1,nShapTr
 
-        IF (kSize.EQ.Nr) THEN
+        IF ( MOD(n,2).EQ.1 .OR. Shap_alwaysExchTr ) THEN
+         IF (kSize.EQ.Nr) THEN
           _EXCH_XYZ_R8( tmpFld, myThid )
-        ELSE
+         ELSEIF (kSize.EQ.1) THEN
           _EXCH_XY_R8( tmpFld, myThid )
+         ELSE
+          STOP 'S/R SHAP_FILT_TRACER_S2: kSize is wrong'
+         ENDIF
         ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,kSize
+          DO k=1,kSize
 
-           DO J=1,sNy
-            DO I=1,sNx
-             tmpGrd(i,j) =
-     &        ( tmpFld(i+1,j,k,bi,bj)-tmpFld( i ,j,k,bi,bj) )
-     &            *_maskW(i+1,j,k,bi,bj)
-     &       -( tmpFld( i ,j,k,bi,bj)-tmpFld(i-1,j,k,bi,bj) )
-     &            *_maskW( i ,j,k,bi,bj)
-     &       +( tmpFld(i,j+1,k,bi,bj)-tmpFld(i, j ,k,bi,bj) )
-     &            *_maskS(i,j+1,k,bi,bj)
-     &       -( tmpFld(i, j ,k,bi,bj)-tmpFld(i,j-1,k,bi,bj) )
-     &            *_maskS(i, j ,k,bi,bj)
-            ENDDO
-           ENDDO
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-           DO J=1,sNy
-            DO I=1,sNx
-             tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
-            ENDDO
-           ENDDO
-
-          ENDDO
-         ENDDO
-        ENDDO
-C      end loop N=1,nShapComput
-       ENDDO
-
-       DO N=1,nShapPhysic
-C-- Physical space Filter 
-
-        IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( tmpFld, myThid )
-        ELSE
-          _EXCH_XY_R8( tmpFld, myThid )
-        ENDIF
-
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,kSize
-
-           DO J=1,sNy
-            DO I=1,sNx
-             tmpGrd(i,j) =
-     &        ( tmpFld(i+1,j,k,bi,bj)-tmpFld( i ,j,k,bi,bj) )
-     &            *_hFacW(i+1,j,k,bi,bj)
-     &            *DYG(i+1,j,bi,bj)
-     &            *recip_DXC(i+1,j,bi,bj)
-     &       -( tmpFld( i ,j,k,bi,bj)-tmpFld(i-1,j,k,bi,bj) )
-     &            *_hFacW( i ,j,k,bi,bj)
-     &            *DYG( i ,j,bi,bj)
-     &            *recip_DXC( i ,j,bi,bj)
-     &       +( tmpFld(i,j+1,k,bi,bj)-tmpFld(i, j ,k,bi,bj) )
-     &            *_hFacS(i,j+1,k,bi,bj)
-     &            *DXG(i,j+1,bi,bj)
-     &            *recip_DYC(i,j+1,bi,bj)
-     &       -( tmpFld(i, j ,k,bi,bj)-tmpFld(i,j-1,k,bi,bj) )
-     &            *_hFacS(i, j ,k,bi,bj)
-     &            *DXG(i, j ,bi,bj)
-     &            *recip_DYC(i, j ,bi,bj)
-            ENDDO
-           ENDDO
-
-           IF (Shap_TrLength.LE.0.) THEN
-            DO J=1,sNy
-             DO I=1,sNx
-              tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
-     &           *recip_hFacC(i,j,k,bi,bj)
+C--        Calculate gradient in X direction:
+           IF ( .NOT.Shap_alwaysExchTr
+     &          .AND. useCubedSphereExchange ) THEN
+C          to compute d/dx(tmpFld), fill corners with appropriate values:
+             CALL FILL_CS_CORNER_TR_RL( .TRUE., 
+     &                                 tmpFld(1-Olx,1-Oly,k,bi,bj), 
+     &                                 bi,bj, myThid )
+           ENDIF
+           IF ( n.LE.nShapComput ) THEN
+C-         Computational space: del_i
+             DO j=0,sNy+1
+              DO i=0,sNx+2
+               tmpFdx(i,j) = 
+     &            ( tmpFld(i,j,k,bi,bj)-tmpFld(i-1,j,k,bi,bj) )
+     &                     *_maskW(i,j,k,bi,bj)
+              ENDDO
              ENDDO
-            ENDDO
            ELSE
-            DO J=1,sNy
-             DO I=1,sNx
-              tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
-     &           *recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
-     &           *Shap_TrLength*Shap_TrLength
+C-         Physical space: grad_x
+             DO j=0,sNy+1
+              DO i=0,sNx+2
+               tmpFdx(i,j) = 
+     &            ( tmpFld(i,j,k,bi,bj)-tmpFld(i-1,j,k,bi,bj) )
+     &                     *_hFacW(i,j,k,bi,bj)
+     &                     *dyG(i,j,bi,bj)*recip_dxC(i,j,bi,bj)
+              ENDDO
              ENDDO
-            ENDDO
            ENDIF
 
+C--        Calculate gradient in Y direction:
+           IF ( .NOT.Shap_alwaysExchTr
+     &          .AND. useCubedSphereExchange ) THEN
+C          to compute d/dy(tmpFld), fill corners with appropriate values:
+             CALL FILL_CS_CORNER_TR_RL(.FALSE., 
+     &                                 tmpFld(1-Olx,1-Oly,k,bi,bj), 
+     &                                 bi,bj, myThid )
+           ENDIF
+           IF ( n.LE.nShapComput ) THEN
+C-         Computational space: del_j
+             DO j=0,sNy+2
+              DO i=0,sNx+1
+               tmpFdy(i,j) = 
+     &            ( tmpFld(i,j,k,bi,bj)-tmpFld(i,j-1,k,bi,bj) )
+     &                     *_maskS(i,j,k,bi,bj)
+              ENDDO
+             ENDDO
+           ELSE
+C-         Physical space: grad_y
+             DO j=0,sNy+2
+              DO i=0,sNx+1
+               tmpFdy(i,j) = 
+     &            ( tmpFld(i,j,k,bi,bj)-tmpFld(i,j-1,k,bi,bj) )
+     &                     *_hFacS(i,j,k,bi,bj)
+     &                     *dxG(i,j,bi,bj)*recip_dyC(i,j,bi,bj)
+              ENDDO
+             ENDDO
+           ENDIF
+
+C--        Calculate (d_xx + d_yy) tmpFld :
+           DO j=0,sNy+1
+             DO i=0,sNx+1
+               tmpGrd(i,j) = ( tmpFdx(i+1,j) - tmpFdx(i,j) )
+     &                     + ( tmpFdy(i,j+1) - tmpFdy(i,j) )
+             ENDDO
+           ENDDO
+
+C--        Computational space Filter 
+           IF ( n.LE.nShapComput ) THEN
+             DO j=0,sNy+1
+              DO i=0,sNx+1
+               tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
+              ENDDO
+             ENDDO
+C--        Physical space Filter 
+           ELSEIF (Shap_TrLength.LE.0.) THEN
+             DO j=0,sNy+1
+              DO i=0,sNx+1
+               tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
+     &             *recip_hFacC(i,j,k,bi,bj)
+              ENDDO
+             ENDDO
+           ELSE
+             DO j=0,sNy+1
+              DO i=0,sNx+1
+               tmpFld(i,j,k,bi,bj) = -0.125*tmpGrd(i,j)
+     &             *recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
+     &             *Shap_TrLength*Shap_TrLength
+              ENDDO
+             ENDDO
+           ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C      end k,bi,bj loop:
           ENDDO
          ENDDO
         ENDDO
-C      end loop N=1,nShapTrPhys
+C      end loop n=1,nShapTr
        ENDDO
 
 C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,kSize
-          DO J=1,sNy
-           DO I=1,sNx
+         DO k=1,kSize
+          DO j=1,sNy
+           DO i=1,sNx
             field(i,j,k,bi,bj)=field(i,j,k,bi,bj)
      &            -tmpFld(i,j,k,bi,bj)*dTtracerLev(1)/Shap_Trtau
             tmpFld(i,j,k,bi,bj)= -tmpFld(i,j,k,bi,bj)/Shap_Trtau
@@ -187,13 +208,13 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
         ENDDO
        ENDDO
 
-        IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( field, myThid )
-        ELSEIF (kSize.EQ.1) THEN
-          _EXCH_XY_R8( field, myThid )
-        ELSE
-          STOP 'S/R SHAP_FILT_TRACER_S4: kSize is wrong'
-        ENDIF
+c       IF (kSize.EQ.Nr) THEN
+c         _EXCH_XYZ_R8( field, myThid )
+c       ELSEIF (kSize.EQ.1) THEN
+c         _EXCH_XY_R8( field, myThid )
+c       ELSE
+c         STOP 'S/R SHAP_FILT_TRACER_S2: kSize is wrong'
+c       ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */

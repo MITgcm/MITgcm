@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.11 2005/09/27 22:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.12 2005/10/07 00:27:53 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -45,8 +45,8 @@ C     myThid :: Thread number for this instance of SHAP_FILT_UV_S2
       INTEGER kSize
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
-      _RL tmpFldU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy) 
-      _RL tmpFldV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy) 
+      _RL tmpFldU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFldV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL     myTime
       INTEGER myThid
 
@@ -64,17 +64,11 @@ C------
 
 C     !LOCAL VARIABLES: 
 C     == Local variables ==
-      INTEGER bi,bj,k,i,j,N
+      INTEGER bi,bj,k,i,j,n
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS maskZ
-      LOGICAL northWestCorner, northEastCorner,
-     &        southWestCorner, southEastCorner
-#ifdef ALLOW_EXCH2
-      INTEGER myTile
-#endif /* ALLOW_EXCH2 */
 CEOP
 
       IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
@@ -83,7 +77,7 @@ CEOP
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,kSize
            DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx 
+            DO i=1-Olx,sNx+Olx
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &                *_maskW(i,j,k,bi,bj)
              tmpFldV(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
@@ -98,21 +92,28 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   [d_xx+d_yy]^n tmpFld
 
-       DO N=1,nShapUV
+       DO n=1,nShapUV
 
-        IF (kSize.EQ.Nr) THEN
-          CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
-        ELSE
-          CALL EXCH_UV_XY_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        IF ( MOD(n,2).EQ.1 .OR. Shap_alwaysExchUV ) THEN
+          IF (kSize.EQ.Nr) THEN
+            CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+          ELSEIF (kSize.EQ.1) THEN
+            CALL EXCH_UV_XY_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+          ELSE
+            STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
+          ENDIF
         ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,kSize
 
+           IF ( n.LE.nShapUVPhys .OR.
+     &          n.GT.nShapUV-nShapUVPhys )
+     &     CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
+
 C-    [d_xx+d_yy] tmpFld
-         IF (N.LE.nShapUVPhys) THEN
-           CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
+         IF (n.LE.nShapUVPhys) THEN
            CALL MOM_CALC_HDIV(bi,bj,k,2,
      I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
      I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
@@ -130,129 +131,38 @@ C-    [d_xx+d_yy] tmpFld
 #endif
          ELSE
 C-    replace Physical calc Div & Vort by computational one :
-           DO j=0,sNy+1
-            DO i=0,sNx+1
-             hDiv(i,j)=tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj)
-     &                +tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj)
+           DO j=2-Oly,sNy+Oly-1
+            DO i=2-Olx,sNx+Olx-1
+             hDiv(i,j)=(tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj))
+     &                +(tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj))
             ENDDO
            ENDDO
-           DO j=1,sNy+1
-            DO i=1,sNx+1
-             vort3(i,j)=(tmpFldV(i,j,k,bi,bj)-tmpFldV(i-1,j,k,bi,bj)
-     &                  -tmpFldU(i,j,k,bi,bj)+tmpFldU(i,j-1,k,bi,bj)
-     &                  )
-             maskZ = (maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj))
-     &              *(maskS(i,j,k,bi,bj)+maskS(i-1,j,k,bi,bj))
-             IF (maskZ.LT.1.) vort3(i,j)=0.
-            ENDDO
-           ENDDO
-
-C-    Special stuff for Cubed Sphere
-           IF (useCubedSphereExchange) THEN
-#ifdef ALLOW_EXCH2
-            myTile = W2_myTileList(bi)
-            southWestCorner = exch2_isWedge(myTile).EQ.1
-     &                  .AND. exch2_isSedge(myTile).EQ.1
-            southEastCorner = exch2_isEedge(myTile).EQ.1
-     &                  .AND. exch2_isSedge(myTile).EQ.1
-            northEastCorner = exch2_isEedge(myTile).EQ.1
-     &                  .AND. exch2_isNedge(myTile).EQ.1
-            northWestCorner = exch2_isWedge(myTile).EQ.1
-     &                  .AND. exch2_isNedge(myTile).EQ.1
-#else
-            southWestCorner = .TRUE.
-            southEastCorner = .TRUE.
-            northWestCorner = .TRUE.
-            northEastCorner = .TRUE.
-#endif /* ALLOW_EXCH2 */
-C---
-            IF ( southWestCorner ) THEN
-             i=1
-             j=1
-             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
-     &              +maskS(i,j,k,bi,bj)
-             IF (maskZ.GE.2.) THEN
-              vort3(i,j)=
-     &          tmpFldV(i,j,k,bi,bj)
-     &         -tmpFldU(i,j,k,bi,bj)
-     &         +tmpFldU(i,j-1,k,bi,bj)
-              vort3(i,j)=vort3(i,j)*4. _d 0 / 3. _d 0
-             ELSE
-              vort3(i,j)=0.
-             ENDIF
-            ENDIF
-C---
-            IF ( southEastCorner ) THEN
-             i=sNx+1
-             j=1
-             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
-     &                                 +maskS(i-1,j,k,bi,bj)
-             IF (maskZ.GE.2.) THEN
-              vort3(i,j)=
-     &         -tmpFldV(i-1,j,k,bi,bj)
-     &         -tmpFldU(i,j,k,bi,bj)
-     &         +tmpFldU(i,j-1,k,bi,bj)
-              vort3(i,j)=vort3(i,j)*4. _d 0 / 3. _d 0
-             ELSE
-              vort3(i,j)=0.
-             ENDIF
-            ENDIF
-C---
-            IF ( northWestCorner ) THEN
-             i=1
-             j=sNy+1
-             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
-     &              +maskS(i,j,k,bi,bj)
-             IF (maskZ.GE.2.) THEN
-              vort3(i,j)=
-     &          tmpFldV(i,j,k,bi,bj)
-     &         -tmpFldU(i,j,k,bi,bj)
-     &         +tmpFldU(i,j-1,k,bi,bj)
-              vort3(i,j)=vort3(i,j)*4. _d 0 / 3. _d 0
-             ELSE
-              vort3(i,j)=0.
-             ENDIF
-            ENDIF
-C---
-            IF ( northEastCorner ) THEN
-             i=sNx+1
-             j=sNy+1
-             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
-     &                                 +maskS(i-1,j,k,bi,bj)
-             IF (maskZ.GE.2.) THEN
-              vort3(i,j)=
-     &         -tmpFldV(i-1,j,k,bi,bj)
-     &         -tmpFldU(i,j,k,bi,bj)
-     &         +tmpFldU(i,j-1,k,bi,bj)
-              vort3(i,j)=vort3(i,j)*4. _d 0 / 3. _d 0
-             ELSE
-              vort3(i,j)=0.
-             ENDIF
-            ENDIF
-C---  end if useCubedSphereExchange:
-           ENDIF
+           CALL SHAP_FILT_COMPUTVORT(
+     I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+     I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+     O                    vort3,
+     I                    k,bi,bj,myThid)
          ENDIF
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-         IF (N.GT.nShapUV-nShapUVPhys) THEN
+         IF (n.GT.nShapUV-nShapUVPhys) THEN
            IF (Shap_uvLength.LT.0.) THEN
-             DO j=0,sNy+1
-              DO i=0,sNx+1
+             DO j=2-Oly,sNy+Oly-1
+              DO i=2-Olx,sNx+Olx-1
                 hDiv(i,j) = hDiv(i,j) * rA(i,j,bi,bj)
                 vort3(i,j)= vort3(i,j)*rAz(i,j,bi,bj)
               ENDDO
              ENDDO
            ENDIF
-           CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
            CALL MOM_VI_DEL2UV(
      I                    bi,bj,k,hDiv,vort3,hFacZ,
      O                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
      O                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
-     I                    myThid) 
+     I                    myThid)
            IF (Shap_uvLength.LT.0.) THEN
-            DO j=1,sNy+1
-             DO i=1,sNx+1
+            DO j=3-Oly,sNy+Oly-1
+             DO i=3-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                                          *_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -260,8 +170,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSEIF (Shap_uvLength.EQ.0.) THEN
-            DO j=1,sNy+1
-             DO i=1,sNx+1
+            DO j=3-Oly,sNy+Oly-1
+             DO i=3-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                            *rAw(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -269,29 +179,44 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSE
-            DO j=1,sNy+1
-             DO i=1,sNx+1
+            DO j=3-Oly,sNy+Oly-1
+             DO i=3-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &               *Shap_uvLength*Shap_uvLength*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
      &               *Shap_uvLength*Shap_uvLength*_maskS(i,j,k,bi,bj)
              ENDDO
             ENDDO
-           ENDIF 
+           ENDIF
          ELSE
-           DO j=1,sNy
-            DO i=1,sNx+1
+C-       replace derivatives in physical space of Div & Vort by computational ones:
+#ifndef ALLOW_AUTODIFF_TAMC
+           IF ( .NOT.Shap_alwaysExchUV
+     &          .AND. useCubedSphereExchange ) THEN
+C          to compute d/dx(hDiv), fill corners with appropriate values:
+             CALL FILL_CS_CORNER_TR_RL( .TRUE., hDiv, bi,bj, myThid )
+           ENDIF
+#endif
+           DO j=3-Oly,sNy+Oly-2
+            DO i=3-Olx,sNx+Olx-1
              tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*
-     &                   ( hDiv(i,j)-hDiv(i-1,j)
-     &                    -vort3(i,j+1)+vort3(i,j)
+     &                   ( (hDiv(i,j) - hDiv(i-1,j))
+     &                    -(vort3(i,j+1)-vort3(i,j))
      &                   )*maskW(i,j,k,bi,bj)
             ENDDO
            ENDDO
-           DO j=1,sNy+1
-            DO i=1,sNx
+#ifndef ALLOW_AUTODIFF_TAMC
+           IF ( .NOT.Shap_alwaysExchUV
+     &          .AND. useCubedSphereExchange ) THEN
+C          to compute d/dy(hDiv), fill corners with appropriate values:
+             CALL FILL_CS_CORNER_TR_RL(.FALSE., hDiv, bi,bj, myThid )
+           ENDIF
+#endif
+           DO j=3-Oly,sNy+Oly-1
+            DO i=3-Olx,sNx+Olx-2
              tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*
-     &                   ( vort3(i+1,j)-vort3(i,j)
-     &                    +hDiv(i,j)-hDiv(i,j-1)
+     &                   ( (hDiv(i,j) - hDiv(i,j-1))
+     &                    +(vort3(i+1,j)-vort3(i,j))
      &                   )*maskS(i,j,k,bi,bj)
             ENDDO
            ENDDO
@@ -302,7 +227,7 @@ C end loops  k / bi / bj
           ENDDO
          ENDDO
         ENDDO
-C end loop N=1,nShapUV
+C end loop n=1,nShapUV
        ENDDO
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -311,8 +236,8 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,kSize
-          DO j=1,sNy+1
-           DO i=1,sNx
+          DO j=1,sNy
+           DO i=1,sNx+1
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &                  -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
             tmpFldU(i,j,k,bi,bj)= -tmpFldU(i,j,k,bi,bj)/Shap_uvtau
@@ -329,13 +254,13 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
         ENDDO
        ENDDO
 
-        IF (kSize.EQ.Nr) THEN
-          CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
-        ELSEIF (kSize.EQ.1) THEN
-          CALL EXCH_UV_XY_RL(uFld,vFld,.TRUE.,myThid)
-        ELSE
-          STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
-        ENDIF
+c       IF (kSize.EQ.Nr) THEN
+c         CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+c       ELSEIF (kSize.EQ.1) THEN
+c         CALL EXCH_UV_XY_RL(uFld,vFld,.TRUE.,myThid)
+c       ELSE
+c         STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
+c       ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */
