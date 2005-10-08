@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.9 2005/10/07 22:37:20 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.10 2005/10/08 17:17:07 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2139,7 +2139,7 @@ Clean: clean cleanlinks
 	-rm -f genmake_state genmake_*optfile genmake_warnings make.log run.log *.bak
 
 clean:
-	-rm -rf *.o *.$FS *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template *_mod.h *_mod.F90 *.mod-whirl
+	-rm -rf *.o *.$FS *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template *_mod.h *_mod.F90 *.mod-whirl ad_input*
 
 cleanlinks:
 	-find . -type l -exec rm {} \;
