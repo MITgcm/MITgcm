@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.10 2005/10/08 17:17:07 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.11 2005/10/09 17:32:18 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2308,8 +2308,8 @@ ad_input_code_sf.w2f.f: ad_input_code_sf.f mfef90 whirl2f whirl2f_be w2f__types.
 	mv \$@.1 \$@  
 
 # canonicalizer
-ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.v0.py
-	python canon.v0.py \$< > \$@
+ad_input_code_sf.w2f.canon.f: ad_input_code_sf.w2f.f canon.v1.py
+	python canon.v1.py \$< > \$@
 
 # F -> WHIRL
 ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f mfef90
