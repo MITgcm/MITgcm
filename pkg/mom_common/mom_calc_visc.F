@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.17 2005/10/10 17:23:07 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.18 2005/10/10 18:45:30 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -51,10 +51,10 @@ C      harmonic viscosity>0.25*viscAhgridmax*L**2/deltaT
 C      biharmonic viscosity>viscA4gridmax*L**4/32/deltaT (approx)
 C
 C     RECOMMENDED VALUES
-C     viscC2Leith=?
-C     viscC2LeithD=?
-C     viscC4Leith=?
-C     viscC4LeithD=?
+C     viscC2Leith=1-3
+C     viscC2LeithD=1-3
+C     viscC4Leith=1-3
+C     viscC4LeithD=1.5-3
 C     viscC2smag=2.2-4 (Griffies and Hallberg,2000) 
 C               0.2-0.9 (Smagorinsky,1993)
 C     viscC4smag=2.2-4 (Griffies and Hallberg,2000) 
