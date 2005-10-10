@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.28 2005/10/10 15:16:56 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.29 2005/10/10 15:55:29 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -77,22 +77,18 @@ CEOP
 
       IF (equationOfState.EQ.'LINEAR') THEN
 
-C ***NOTE***
-C In the linear EOS, to make the static stability calculation meaningful
-C we alway calculate the perturbation with respect to the surface level.
-C **********
+       IF ( usingPCoords ) THEN
+        kr        = Nr 
+       ELSE
+        kr        = 1
+       ENDIF
+
        dRho = rhoNil-rhoConst
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         kr=ksurfC(i,j,bi,bj)
-         IF (kr.LE.Nr) THEN
-           refTemp=tRef(kr)
-           refSalt=sRef(kr)
-         ELSE
-           refTemp=0. _d 0
-           refSalt=0. _d 0
-         ENDIF 
+         refTemp=tRef(kr)
+         refSalt=sRef(kr)
 
          rholoc(i,j)=rhoNil*(
      &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
