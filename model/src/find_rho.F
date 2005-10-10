@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.29 2005/10/10 15:55:29 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.30 2005/10/10 15:56:34 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,14 +82,12 @@ CEOP
        ELSE
         kr        = 1
        ENDIF
-
+       refTemp=tRef(kr)
+       refSalt=sRef(kr)
        dRho = rhoNil-rhoConst
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         refTemp=tRef(kr)
-         refSalt=sRef(kr)
-
          rholoc(i,j)=rhoNil*(
      &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
      &   -tAlpha*(tFld(i,j,k,bi,bj)-refTemp) )
