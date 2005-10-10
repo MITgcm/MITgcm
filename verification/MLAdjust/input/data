@@ -36,7 +36,7 @@
 # 1.0 smag is approximately the same as 1.85 leith+leithd
 # for this grid spacing
 # viscC2Smag=1.0,
- viscC4Smag=1.85,
+ viscC4Smag=1.0,
 # This is the max Viscosity used, be it Smag or Leith, and it scales 
 # with grid size and timestep
 # viscAhGridMax=1.0,
