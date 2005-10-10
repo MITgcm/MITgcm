@@ -24,19 +24,19 @@
 # ViscA4GridMin=.01,
 # This is the standard Leith Viscosity coefficient, 
 # visc=(visc2leith/pi)**3 grad(curl v_h)
-# viscC2leith=1.85,
+# viscC2leith=1.0,
  viscC4leith=1.85,
 # This is an additional Leith Viscosity, prop to grad(div.v_h)
 # It traps instabilities that have no signal in grad(curl v_h)
-# viscC2leithD=1.85,
+# viscC2leithD=1.0,
  viscC4leithD=1.85,
 # This is harmonic Smagorinsky Coefficient
 # 0.2-0.9=value from 3-d turbulence theory; Smagorinsky (1993)
 # 2.2-4=stable oceanic values (Griffies and Hallberg, 2000)
-# 1.0 c2smag is approximately the same as 1.85 c2leith+c2leithd
+# 1.0 smag is approximately the same as 1.85 leith+leithd
 # for this grid spacing
 # viscC2Smag=1.0,
- viscC4Smag=1.0,
+ viscC4Smag=1.85,
 # This is the max Viscosity used, be it Smag or Leith, and it scales 
 # with grid size and timestep
 # viscAhGridMax=1.0,
