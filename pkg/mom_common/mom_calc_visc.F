@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.18 2005/10/10 18:45:30 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.19 2005/10/10 19:49:48 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -187,15 +187,15 @@ C     == Local variables ==
 
       IF (calcleith) THEN
         IF (useFullLeith) THEN
-         leith2fac=(viscC2leith/pi)**6
-         leith4fac=0.015625 _d 0*(viscC4leith/pi)**6
+         leith2fac =(viscC2leith /pi)**6
          leithD2fac=(viscC2leithD/pi)**6
+         leith4fac =0.015625 _d 0*(viscC4leith /pi)**6
          leithD4fac=0.015625 _d 0*(viscC4leithD/pi)**6
         ELSE
-         leith2fac=(viscC2leith/pi)**3
+         leith2fac =(viscC2leith /pi)**3
          leithD2fac=(viscC2leithD/pi)**3
-         leith4fac=0.0125 _d 0*(viscC4leith/pi)**3
-         leithD4fac=0.0125 _d 0*(viscC4leithD/pi)**3
+         leith4fac =0.125 _d 0*(viscC4leith /pi)**3
+         leithD4fac=0.125 _d 0*(viscC4leithD/pi)**3
         ENDIF
       ELSE
         leith2fac=0. _d 0

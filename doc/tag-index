@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.564 2005/10/10 05:59:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.565 2005/10/10 19:49:48 baylor Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o Redefine viscC?Leith*.  Change the coefficients of Leith viscosity 
+  to be proportional to enstrophy dissipation length.  Thus,
+   viscC?leith?_new=pi*(viscC?leith?_old)^(1/3)
+  This is now consistent with Smagorinsky and with the manual.
 
 checkpoint57u_post
 o OBCS and PTRACERS: add open boundary support for passive tracers
