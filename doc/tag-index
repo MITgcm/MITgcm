@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.561 2005/10/07 00:36:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.562 2005/10/10 05:55:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OBCS and PTRACERS: add open boundary support for passive tracers
+  - either use homogenous (pseudo) v.Neumann conditions or prescribe 
+    OB-values from file; this is not different from the way theta and salinity
+    are treated
+  - however, Orlanski-radiation conditions are not supported, and the model
+    will stop if you use pTracers and Orlanski at the same time. 
+  - beefed up the rountine obcs_external_fields_load: now only those open
+    boundary values are overwritten with values from files for which there 
+    are really files, otherwise the OB-fields remain untouched. This makes
+    it possible to use different OBs at different ends of the domain (as 
+    with EXF)
 o reduce number of exch calls in shap_filt (s2). 
 o CS-grid: fix divergence contribution to Leith viscosity. Affects (@ 
   truncation level) 4/5 MLAdjust test results (11&12 digits match).
