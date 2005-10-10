@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.562 2005/10/10 05:55:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.563 2005/10/10 05:57:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57s_post
 o OBCS and PTRACERS: add open boundary support for passive tracers
   - either use homogenous (pseudo) v.Neumann conditions or prescribe 
     OB-values from file; this is not different from the way theta and salinity
