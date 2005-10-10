@@ -16,7 +16,7 @@
  no_slip_bottom=.TRUE.,
  bottomDragQuadratic=2.E-3,
  viscA4=0.E12,
- viscC4Leith=0.1,
+ viscC4Leith=1.458198138065,
  useAreaViscLength=.TRUE.,
  diffKhT=0.0E0
  diffKzT=0.E-2,
