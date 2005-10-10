@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.6 2004/10/19 17:52:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.7 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -27,6 +27,11 @@ c     == global variables ==
 #ifdef ALLOW_EXF
 # include "exf_param.h"
 #endif
+#ifdef ALLOW_PTRACERS.h
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS.h"
+# include "OBCS_PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 c     == routine arguments ==
 
@@ -42,6 +47,9 @@ c     == local variables ==
       integer count0, count1
       integer year0, year1
       _RL     fac
+#ifdef ALLOW_PTRACERS
+      integer iTracer, i,j,k
+#endif /* ALLOW_PTRACERS */
 
 c     == end of interface ==
 
@@ -68,6 +76,18 @@ c     == end of interface ==
       call exf_set_obcs_xz(  OBNs, OBNs0, OBNs1, OBNsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+#ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do itracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_xz(  OBNptr (1-Olx,1,1,1,iTracer)
+     I                       , OBNptr0(1-Olx,1,1,1,iTracer)
+     I                       , OBNptr1(1-Olx,1,1,1,iTracer) 
+     I                       , OBNptrFile(iTracer), 's'
+     I                       , fac, first, changed, count0, count1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+#endif /* ALLOW_PTRACERS */
 #endif
 
 #ifdef ALLOW_OBCS_SOUTH
@@ -93,6 +113,18 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 
+#ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do itracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_xz(  OBSptr (1-Olx,1,1,1,iTracer)
+     I                       , OBSptr0(1-Olx,1,1,1,iTracer)
+     I                       , OBSptr1(1-Olx,1,1,1,iTracer) 
+     I                       , OBSptrFile(iTracer), 's'
+     I                       , fac, first, changed, count0, count1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+#endif /* ALLOW_PTRACERS */
 #endif
 
 #ifdef ALLOW_OBCS_EAST
@@ -117,7 +149,18 @@ c     == end of interface ==
       call exf_set_obcs_yz(  OBEs, OBEs0, OBEs1, OBEsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-
+#ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do itracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_yz(  OBEptr (1-Oly,1,1,1,iTracer)
+     I                       , OBEptr0(1-Oly,1,1,1,iTracer)
+     I                       , OBEptr1(1-Oly,1,1,1,iTracer) 
+     I                       , OBEptrFile(iTracer), 's'
+     I                       , fac, first, changed, count0, count1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+#endif /* ALLOW_PTRACERS */
 #endif
 
 #ifdef ALLOW_OBCS_WEST
@@ -142,7 +185,18 @@ c     == end of interface ==
       call exf_set_obcs_yz(  OBWs, OBWs0, OBWs1, OBWsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-
+#ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do itracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_yz(  OBWptr (1-Oly,1,1,1,iTracer)
+     I                       , OBWptr0(1-Oly,1,1,1,iTracer)
+     I                       , OBWptr1(1-Oly,1,1,1,iTracer) 
+     I                       , OBWptrFile(iTracer), 's'
+     I                       , fac, first, changed, count0, count1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+#endif /* ALLOW_PTRACERS */
 #endif
 
 #ifdef ALLOW_OBCS_CONTROL

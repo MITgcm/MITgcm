@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.11 2004/10/19 17:40:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.12 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -21,6 +21,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h" 
 #include "OBCS.h"
+#ifdef ALLOW_PTRACERS.h
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
+#include "OBCS_PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     == Routine arguments ==
       INTEGER bi, bj
@@ -36,8 +41,18 @@ C     == Routine arguments ==
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
+C     I,J,K        - loop indices
+C     I_obc, J_obc - local index of open boundary
+C     msgBuf       - Informational/error meesage buffer
       INTEGER I, J , K, I_obc, J_obc
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_OBCS_BALANCE
       _RL Tr_T, Ar_T, Tr, Ar 
+#endif /* ALLOW_OBCS_BALANCE */
+#ifdef ALLOW_PTRACERS
+      INTEGER iTracer
+#endif /* ALLOW_PTRACERS */
+
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('OBCS_CALC',myThid)
@@ -181,6 +196,154 @@ C         Southern OB
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+C
+C     Calculate some default open boundary conditions for passive tracers:
+C     The default is a homogeneous v.Neumann conditions, that is, the 
+C     tracer gradient across the open boundary is nearly zero; 
+C     only nearly, because the boundary conditions are applied throughout 
+C     the time step during which the interior field does change; therefore
+C     we have to use the values from the previous time step here. If you 
+C     really want exact v.Neumann conditions, you have to modify
+C     obcs_apply_ptracer directly.
+C
+# ifdef ALLOW_OBCS_EAST
+C     Eastern OB
+#  ifdef ALLOW_DEBUG
+       IF (debugMode)
+     &      CALL DEBUG_MSG('OBCS_CALC: East, pTracers',myThid)
+#  endif
+       IF (useOrlanskiEast) THEN
+#  ifdef ALLOW_ORLANSKI
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: useOrlanskiEast Rad OBC with'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: pTracers not yet implemented'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R OBCS_CALC'
+#  endif
+       ELSE
+        DO iTracer=1,PTRACERS_numInUse
+         DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+           I_obc=OB_Ie(J,bi,bj)
+           IF (I_obc.ne.0) THEN
+            OBEptr(J,K,bi,bj,iTracer) = 
+     &           pTracer(I_obc-1,J,K,bi,bj,iTracer)
+     &           *_maskW(I_obc,J,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+# endif /* ALLOW_OBCS_EAST */
+
+C ------------------------------------------------------------------------------
+
+# ifdef ALLOW_OBCS_WEST
+C     Western OB
+#  ifdef ALLOW_DEBUG
+       IF (debugMode) 
+     &      CALL DEBUG_MSG('OBCS_CALC: West, pTracers',myThid)
+#  endif
+       IF (useOrlanskiWest) THEN
+#  ifdef ALLOW_ORLANSKI
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: useOrlanskiWest Rad OBC with'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: pTracers not yet implemented'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R OBCS_CALC'
+#  endif
+       ELSE
+        DO iTracer=1,PTRACERS_numInUse
+         DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+           I_obc=OB_Iw(J,bi,bj)
+           IF (I_obc.ne.0) THEN
+            OBWptr(J,K,bi,bj,iTracer) = 
+     &           pTracer(I_obc+1,J,K,bi,bj,iTracer)
+     &           *_maskW(I_obc+1,J,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+# endif /* ALLOW_OBCS_WEST */
+
+C ------------------------------------------------------------------------------
+
+# ifdef ALLOW_OBCS_NORTH
+C         Northern OB
+#  ifdef ALLOW_DEBUG
+       IF (debugMode) 
+     &     CALL DEBUG_MSG('OBCS_CALC: North, pTracers',myThid)
+#  endif
+       IF (useOrlanskiNorth) THEN
+#  ifdef ALLOW_ORLANSKI
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: useOrlanskiNorth Rad OBC with'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: pTracers not yet implemented'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R OBCS_CALC'
+#  endif
+       ELSE
+        DO iTracer=1,PTRACERS_numInUse
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           J_obc=OB_Jn(I,bi,bj)
+           IF (J_obc.ne.0) THEN
+            OBNptr(I,K,bi,bj,iTracer) =
+     &           pTracer(I,J_obc-1,K,bi,bj,iTracer)
+     &           *_maskS(I,J_obc,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+# endif /* ALLOW_OBCS_NORTH */
+
+C ------------------------------------------------------------------------------
+
+# ifdef ALLOW_OBCS_SOUTH
+C         Southern OB
+# ifdef ALLOW_DEBUG
+       IF (debugMode) 
+     &      CALL DEBUG_MSG('OBCS_CALC: South, pTracers',myThid)
+#endif
+       IF (useOrlanskiSouth) THEN   
+#ifdef ALLOW_ORLANSKI
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: useOrlanskiSouth Rad OBC with'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: ERROR: pTracers not yet implemented'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R OBCS_CALC'
+#endif
+       ELSE
+        DO iTracer=1,PTRACERS_numInUse
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+           J_obc=OB_Js(I,bi,bj)
+           IF (J_obc.ne.0) THEN
+            OBSptr(I,K,bi,bj,iTracer) = 
+     &           pTracer(I,J_obc+1,K,bi,bj,iTracer)
+     &           *_maskS(I,J_obc+1,K,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+# endif /* ALLOW_OBCS_SOUTH */
+C     end if (usePTracers)
+      ENDIF	
+#endif /* ALLOW_PTRACERS */
 
 C ------------------------------------------------------------------------------
 

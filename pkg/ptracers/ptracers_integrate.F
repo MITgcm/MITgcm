@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.24 2005/04/20 15:54:57 spk Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.25 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -175,6 +175,15 @@ C Integrate forward in time, storing in gPtr:  G=T+dt*G
      I                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myThid )
 
+#ifdef   ALLOW_OBCS
+C Apply open boundary conditions
+         IF (useOBCS) THEN
+          CALL OBCS_APPLY_PTRACER( 
+     I         bi, bj, k, iTracer, 
+     U         gPtr(1-Olx,1-Oly,k,bi,bj,iTracer),
+     I         myThid )
+         END IF
+#endif   /* ALLOW_OBCS */
 C end of tracer loop
       ENDDO
 

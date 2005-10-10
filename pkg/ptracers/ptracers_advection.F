@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.6 2004/12/05 22:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.7 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -59,7 +59,7 @@ C Loop over tracers
      I                        PTRACERS_ImplVertAdv(iTracer),
      I                        PTRACERS_advScheme(iTracer),
      I                        PTRACERS_advScheme(iTracer),
-     I                        GAD_TR1,
+     I                        GAD_TR1+iTracer-1,
      I                        uVel, vVel, wVel,
      I                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      O                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),

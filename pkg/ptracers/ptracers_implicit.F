@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.3 2005/03/25 00:29:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.4 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -51,6 +51,7 @@ C  iTracer :: tracer index
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER GAD_TR
+      INTEGER K
 CEOP
 
       iMin=0
@@ -115,6 +116,18 @@ CADJ &     key=iptrkey, byte=isbyte
      I         GAD_TR, kappaRk, recip_HFacC,
      U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I         myThid )
+
+#ifdef   ALLOW_OBCS
+C--      Apply open boundary conditions
+        IF ( useOBCS ) THEN
+         DO K=1,Nr
+          CALL OBCS_APPLY_PTRACER( 
+     I         bi, bj, K, iTracer,
+     U         gPtr(1-Olx,1-Oly,K,bi,bj,iTracer),
+     I         myThid )
+         ENDDO
+        ENDIF
+#endif   /* ALLOW_OBCS */
 
         ENDIF
 C End of tracer loop

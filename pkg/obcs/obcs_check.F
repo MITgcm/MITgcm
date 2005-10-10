@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.6 2004/09/24 12:32:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.7 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -59,6 +59,17 @@ C     msgBuf      - Informational/error meesage buffer
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
+#ifdef ALLOW_PTRACERS
+       IF (usePTracers) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: pTracers not yet implemented'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+#endif ALLOW_PTRACERS
       ENDIF
 
 #ifndef ALLOW_OBCS_PRESCRIBE

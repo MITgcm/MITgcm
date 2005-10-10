@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.4 2005/07/06 08:22:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.5 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
-
 #include "OBCS_OPTIONS.h"
  
 CBOP
@@ -12,10 +11,12 @@ C     *==========================================================*
 C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_LOAD                           
 C     | o Control reading of fields from external source.         
 C     *==========================================================*
-C     | External source field loading routine.                    
+C     | External source field loading routine for open boundaries.
 C     | This routine is called every time we want to              
-C     | load a a set of external fields. The routine decides      
-C     | which fields to load and then reads them in.              
+C     | load a a set of external open boundary fields. 
+C     | Only if there are fields available (file names are not empty)
+C     | the open boundary fields are overwritten.
+C     | The routine decides which fields to load and then reads them in.
 C     | This routine needs to be customised for particular        
 C     | experiments.                                              
 C     | Notes                                                     
@@ -35,7 +36,7 @@ C     | - Forcing period and cycle are the same as for other fields
 C     |   in external forcing.
 C     | - constant boundary values are also read here and not
 C     |   directly in obcs_init_variables (which calls obcs_calc 
-C     |   which in turn call this routine)
+C     |   which in turn calls this routine)
 C     *==========================================================*
 C     \ev
 
@@ -56,18 +57,25 @@ C     myIter - Simulation timestep number
       _RL     myTime
       INTEGER myIter
  
-#if (defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE)
 C     if external forcing (exf) package is enabled, all loading of external
 C     fields is done by exf
-#ifndef ALLOW_EXF
+#if (defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE && !defined ALLOW_EXF)
+C
 #include "OBCS.h"
+#ifdef ALLOW_PTRACERS.h
+#include "PTRACERS_SIZE.h"
+#include "OBCS_PTRACERS.h"
+#include "PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
-      INTEGER bi,bj,i,j,k,intime0,intime1
+C     msgBuf       :: Informational/error meesage buffer
+      INTEGER intime0,intime1,iTracer
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       IF ( periodicExternalForcing ) THEN
@@ -97,16 +105,18 @@ C Now calculate whether it is time to update the forcing arrays
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
-     &  'S/R OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
+       WRITE(msgBuf,'(1X,A,2I5,I10,1P1E20.12)')
+     &  'OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
      &  intime0, intime1, myIter, myTime
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                   SQUEEZE_RIGHT,myThid)
 
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
       IF ( OBEuFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
      &        'RL', Nr, OBEu0, intime0, myThid )
-       CALL MDSREADFIELDXz ( OBEuFile, readBinaryPrec,
+       CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
      &        'RL', Nr, OBEu1, intime1, myThid )
       ENDIF
       IF ( OBEvFile .NE. ' '  ) THEN
@@ -133,7 +143,7 @@ C     Western boundary
       IF ( OBWuFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
      &        'RL', Nr, OBWu0, intime0, myThid )
-       CALL MDSREADFIELDXz ( OBWuFile, readBinaryPrec,
+       CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
      &        'RL', Nr, OBWu1, intime1, myThid )
       ENDIF
       IF ( OBWvFile .NE. ' '  ) THEN
@@ -160,7 +170,7 @@ C     Northern boundary
       IF ( OBNuFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBNuFile, readBinaryPrec,
      &        'RL', Nr, OBNu0, intime0, myThid )
-       CALL MDSREADFIELDXz ( OBNuFile, readBinaryPrec,
+       CALL MDSREADFIELDXZ ( OBNuFile, readBinaryPrec,
      &        'RL', Nr, OBNu1, intime1, myThid )
       ENDIF
       IF ( OBNvFile .NE. ' '  ) THEN
@@ -187,7 +197,7 @@ C     Southern boundary
       IF ( OBSuFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBSuFile, readBinaryPrec,
      &        'RL', Nr, OBSu0, intime0, myThid )
-       CALL MDSREADFIELDXz ( OBSuFile, readBinaryPrec,
+       CALL MDSREADFIELDXZ ( OBSuFile, readBinaryPrec,
      &        'RL', Nr, OBSu1, intime1, myThid )
       ENDIF
       IF ( OBSvFile .NE. ' '  ) THEN
@@ -209,6 +219,59 @@ C     Southern boundary
      &        'RL', Nr, OBSs1, intime1, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_PTRACERS
+      IF (usePTRACERS) THEN
+C     read boundary values for passive tracers
+       DO iTracer = 1, PTRACERS_numInUse
+# ifdef ALLOW_OBCS_EAST
+C     Eastern boundary
+        IF ( OBEptrFile(iTracer) .NE. ' '  ) THEN
+         CALL MDSREADFIELDYZ ( OBEptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBEptr0(1-Oly,1,1,1,iTracer), 
+     &        intime0, myThid )
+         CALL MDSREADFIELDYZ ( OBEptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBEptr1(1-Oly,1,1,1,iTracer), 
+     &        intime1, myThid )
+        ENDIF
+# endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_OBCS_WEST
+C     Western boundary
+        IF ( OBWptrFile(iTracer) .NE. ' '  ) THEN
+         CALL MDSREADFIELDYZ ( OBWptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBWptr0(1-Oly,1,1,1,iTracer), 
+     &        intime0, myThid )
+         CALL MDSREADFIELDYZ ( OBWptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBWptr1(1-Oly,1,1,1,iTracer), 
+     &        intime1, myThid )
+        ENDIF
+# endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_OBCS_NORTH
+C     Northern boundary
+        IF ( OBNptrFile(iTracer) .NE. ' '  ) THEN
+         CALL MDSREADFIELDXZ ( OBNptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBNptr0(1-Olx,1,1,1,iTracer), 
+     &        intime0, myThid )
+         CALL MDSREADFIELDXZ ( OBNptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBNptr1(1-Olx,1,1,1,iTracer), 
+     &        intime1, myThid )
+        ENDIF
+# endif /* ALLOW_OBCS_NORTH */
+# ifdef ALLOW_OBCS_SOUTH
+C     Southern boundary
+        IF ( OBSptrFile(iTracer) .NE. ' '  ) THEN
+         CALL MDSREADFIELDXZ ( OBSptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBSptr0(1-Olx,1,1,1,iTracer), 
+     &        intime0, myThid )
+         CALL MDSREADFIELDXZ ( OBSptrFile(itracer), readBinaryPrec,
+     &        'RL', Nr, OBSptr1(1-Olx,1,1,1,iTracer), 
+     &        intime1, myThid )
+        ENDIF
+# endif /* ALLOW_OBCS_SOUTH */
+C     end do iTracer
+       ENDDO
+C     end if (usePTRACERS)
+      ENDIF
+#endif /* ALLOW_PTRACERS */
        _END_MASTER(myThid)
 C
 C     At this point in external_fields_load the input fields are exchanged.
@@ -217,68 +280,23 @@ C     slices and they are not planned, either, so the approriate fields
 C     are exchanged after the open boundary conditions have been 
 C     applied. (in DYNAMICS and DO_FIELDS_BLOCKING_EXCHANGES)
 C
+C     time to read new data?
       ENDIF
 
-C--   Interpolate OBSu, OBSv, OBSt, OBSs
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K = 1, Nr
-         DO j=1-Oly,sNy+Oly
-#ifdef ALLOW_OBCS_EAST
-          OBEu(j,k,bi,bj)   = bWght*OBEu0(j,k,bi,bj)  
-     &                       +aWght*OBEu1(j,k,bi,bj)
-          OBEv(j,k,bi,bj)   = bWght*OBEv0(j,k,bi,bj)  
-     &                       +aWght*OBEv1(j,k,bi,bj)
-          OBEt(j,k,bi,bj)   = bWght*OBEt0(j,k,bi,bj)  
-     &                       +aWght*OBEt1(j,k,bi,bj)
-          OBEs(j,k,bi,bj)   = bWght*OBEs0(j,k,bi,bj)  
-     &                       +aWght*OBEs1(j,k,bi,bj)
-#endif /* ALLOW_OBCS_EAST */
-#ifdef ALLOW_OBCS_WEST 
-          OBWu(j,k,bi,bj)   = bWght*OBWu0(j,k,bi,bj)  
-     &                       +aWght*OBWu1(j,k,bi,bj)
-          OBWv(j,k,bi,bj)   = bWght*OBWv0(j,k,bi,bj)  
-     &                       +aWght*OBWv1(j,k,bi,bj)
-          OBWt(j,k,bi,bj)   = bWght*OBWt0(j,k,bi,bj)  
-     &                       +aWght*OBWt1(j,k,bi,bj)
-          OBWs(j,k,bi,bj)   = bWght*OBWs0(j,k,bi,bj)  
-     &                       +aWght*OBWs1(j,k,bi,bj)
-#endif /* ALLOW_OBCS_WEST */
-         ENDDO	
-         DO i=1-Olx,sNx+Olx
-#ifdef ALLOW_OBCS_NORTH
-          OBNu(i,k,bi,bj)   = bWght*OBNu0(i,k,bi,bj)  
-     &                       +aWght*OBNu1(i,k,bi,bj)
-          OBNv(i,k,bi,bj)   = bWght*OBNv0(i,k,bi,bj)  
-     &                       +aWght*OBNv1(i,k,bi,bj)
-          OBNt(i,k,bi,bj)   = bWght*OBNt0(i,k,bi,bj)  
-     &                       +aWght*OBNt1(i,k,bi,bj)
-          OBNs(i,k,bi,bj)   = bWght*OBNs0(i,k,bi,bj)  
-     &                       +aWght*OBNs1(i,k,bi,bj)
-#endif /* ALLOW_OBCS_NORTH */
-#ifdef ALLOW_OBCS_SOUTH
-          OBSu(i,k,bi,bj)   = bWght*OBSu0(i,k,bi,bj)  
-     &                       +aWght*OBSu1(i,k,bi,bj)
-          OBSv(i,k,bi,bj)   = bWght*OBSv0(i,k,bi,bj)  
-     &                       +aWght*OBSv1(i,k,bi,bj)
-          OBSt(i,k,bi,bj)   = bWght*OBSt0(i,k,bi,bj)  
-     &                       +aWght*OBSt1(i,k,bi,bj)
-          OBSs(i,k,bi,bj)   = bWght*OBSs0(i,k,bi,bj)  
-     &                       +aWght*OBSs1(i,k,bi,bj)
-#endif /* ALLOW_OBCS_SOUTH */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 C     if not periodicForcing
       ELSE
+       aWght = 0. _d 0
+       bWght = 1. _d 0
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
         _BEGIN_MASTER(myThid)
 C      Read constant boundary conditions only for myIter = nIter0
-       WRITE(*,*)
-     &  'S/R OBCS_EXTERNAl_FIELDS_LOAD: Reading new data',myTime,myIter
-       inTime0 = 1
+        WRITE(msgBuf,'(1X,A,I10,1P1E20.12)')
+     &       'OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &       myIter, myTime
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &       SQUEEZE_RIGHT,myThid)
+        inTime0 = 1
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
         IF ( OBEuFile .NE. ' '  ) THEN
@@ -355,49 +373,235 @@ C     Southern boundary
      &        'RL', Nr, OBSs0, inTime0, myThid )
         ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_PTRACERS
+        IF (usePTRACERS) THEN
+C     read passive tracer boundary values
+         DO iTracer = 1, PTRACERS_numInUse
+# ifdef ALLOW_OBCS_EAST
+C     Eastern boundary
+          IF ( OBEptrFile(iTracer) .NE. ' '  ) THEN
+           CALL MDSREADFIELDYZ ( OBEptrFile(iTracer), readBinaryPrec,
+     &          'RL', Nr, OBEptr0(1-Oly,1,1,1,iTracer),
+     &          inTime0, myThid )
+          ENDIF
+# endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_OBCS_WEST
+C     Western boundary
+          IF ( OBWptrFile(iTracer) .NE. ' '  ) THEN
+           CALL MDSREADFIELDYZ ( OBWptrFile(iTracer), readBinaryPrec,
+     &          'RL', Nr, OBWptr0(1-Oly,1,1,1,iTracer),
+     &          inTime0, myThid )
+          ENDIF
+# endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_OBCS_NORTH
+C     Northern boundary
+          IF ( OBNptrFile(iTracer) .NE. ' '  ) THEN
+           CALL MDSREADFIELDXZ ( OBNptrFile(iTracer), readBinaryPrec,
+     &          'RL', Nr, OBNptr0(1-Olx,1,1,1,iTracer),
+     &          inTime0, myThid )
+          ENDIF
+# endif /* ALLOW_OBCS_NORTH */
+# ifdef ALLOW_OBCS_SOUTH
+C     Southern boundary
+          IF ( OBSptrFile(iTracer) .NE. ' '  ) THEN
+           CALL MDSREADFIELDXZ ( OBSptrFile(iTracer), readBinaryPrec,
+     &          'RL', Nr, OBSptr0(1-Olx,1,1,1,iTracer),
+     &          inTime0, myThid )
+          ENDIF
+# endif /* ALLOW_OBCS_SOUTH */
+C     end do iTracer
+         ENDDO
+C     end if (usePTRACERS)
+        ENDIF
+#endif /* ALLOW_PTRACERS */
         _END_MASTER(myThid)
 C     endif myIter .EQ. nIter0
        ENDIF
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K = 1, Nr
-          DO j=1-Oly,sNy+Oly
-#ifdef ALLOW_OBCS_EAST
-           OBEu(j,k,bi,bj) = OBEu0(j,k,bi,bj)  
-           OBEv(j,k,bi,bj) = OBEv0(j,k,bi,bj)  
-           OBEt(j,k,bi,bj) = OBEt0(j,k,bi,bj)  
-           OBEs(j,k,bi,bj) = OBEs0(j,k,bi,bj)  
-#endif /* ALLOW_OBCS_EAST */
-#ifdef ALLOW_OBCS_WEST
-           OBWu(j,k,bi,bj) = OBWu0(j,k,bi,bj)  
-           OBWv(j,k,bi,bj) = OBWv0(j,k,bi,bj)  
-           OBWt(j,k,bi,bj) = OBWt0(j,k,bi,bj)  
-           OBWs(j,k,bi,bj) = OBWs0(j,k,bi,bj)  
-#endif /* ALLOW_OBCS_WEST */
-          ENDDO
-          DO i=1-Olx,sNx+Olx
-#ifdef ALLOW_OBCS_NORTH
-           OBNu(i,k,bi,bj) = OBNu0(i,k,bi,bj)  
-           OBNv(i,k,bi,bj) = OBNv0(i,k,bi,bj)  
-           OBNt(i,k,bi,bj) = OBNt0(i,k,bi,bj)  
-           OBNs(i,k,bi,bj) = OBNs0(i,k,bi,bj)  
-#endif /* ALLOW_OBCS_NORTH */
-#ifdef ALLOW_OBCS_SOUTH
-           OBSu(i,k,bi,bj) = OBSu0(i,k,bi,bj)  
-           OBSv(i,k,bi,bj) = OBSv0(i,k,bi,bj)  
-           OBSt(i,k,bi,bj) = OBSt0(i,k,bi,bj)  
-           OBSs(i,k,bi,bj) = OBSs0(i,k,bi,bj)  
-#endif /* ALLOW_OBCS_SOUTH */
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO	
 C     endif for periodicForcing
       ENDIF
 
-#endif /* ALLOW_EXF */
-#endif /* ALLOw_OBCS AND ALLOW_OBCS_PRESCRIBE */
+C--   Now interpolate OBSu, OBSv, OBSt, OBSs, OBSptr, etc.
+C--   For periodicForcing, aWght = 0. and bWght = 1. so that the 
+C--   interpolation boilds down to copying the time-independent 
+C--   forcing field OBSu0 to OBSu
+#ifdef ALLOW_OBCS_EAST
+       IF ( OBEuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBEu, OBEu0, OBEu1, aWght, bWght, myThid )
+       IF ( OBEvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBEv, OBEv0, OBEv1, aWght, bWght, myThid )
+       IF ( OBEtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &      OBEt, OBEt0, OBEt1, aWght, bWght, myThid )
+       IF ( OBEsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBEs, OBEs0, OBEs1, aWght, bWght, myThid )
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+       IF ( OBWuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBWu, OBWu0, OBWu1, aWght, bWght, myThid )
+       IF ( OBWvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBWv, OBWv0, OBWv1, aWght, bWght, myThid )
+       IF ( OBWtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
+     &      OBWt, OBWt0, OBWt1, aWght, bWght, myThid )
+       IF ( OBWsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     &      OBWs, OBWs0, OBWs1, aWght, bWght, myThid )
+#endif /* ALLOW_OBCS_WEST */
+#ifdef ALLOW_OBCS_NORTH
+       IF ( OBNuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBNu, OBNu0, OBNu1, aWght, bWght, myThid )
+       IF ( OBNvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBNv, OBNv0, OBNv1, aWght, bWght, myThid )
+       IF ( OBNtFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &      OBNt, OBNt0, OBNt1, aWght, bWght, myThid )
+       IF ( OBNsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBNs, OBNs0, OBNs1, aWght, bWght, myThid )
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+       IF ( OBSuFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBSu, OBSu0, OBSu1, aWght, bWght, myThid )
+       IF ( OBSvFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBSv, OBSv0, OBSv1, aWght, bWght, myThid )
+       IF ( OBStFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
+     &      OBSt, OBSt0, OBSt1, aWght, bWght, myThid )
+       IF ( OBSsFile .NE. ' '  ) CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     &      OBSs, OBSs0, OBSs1, aWght, bWght, myThid )
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_PTRACERS
+      IF (usePTRACERS) THEN
+C     "interpolate" passive tracer boundary values
+       DO iTracer = 1, PTRACERS_numInUse
+# ifdef ALLOW_OBCS_EAST
+        IF ( OBEptrFile(iTracer) .NE. ' '  )
+     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     O       OBWptr (1-Oly,1,1,1,iTracer), 
+     I       OBWptr0(1-Oly,1,1,1,iTracer), 
+     I       OBWptr1(1-Oly,1,1,1,iTracer), aWght, bWght, myThid )
+# endif /* ALLOW_OBCS_EAST */
+# ifdef ALLOW_OBCS_WEST
+        IF ( OBWptrFile(iTracer) .NE. ' '  )
+     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     O       OBWptr (1-Oly,1,1,1,iTracer), 
+     I       OBWptr0(1-Oly,1,1,1,iTracer), 
+     I       OBWptr1(1-Oly,1,1,1,iTracer), aWght, bWght, myThid )
+# endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_OBCS_NORTH
+        IF ( OBNptrFile(iTracer) .NE. ' '  )
+     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     O       OBNptr (1-Olx,1,1,1,iTracer), 
+     I       OBNptr0(1-Olx,1,1,1,iTracer), 
+     I       OBNptr1(1-Olx,1,1,1,iTracer), aWght, bWght, myThid )
+# endif /* ALLOW_OBCS_NORTH */
+# ifdef ALLOW_OBCS_SOUTH
+        IF ( OBSptrFile(iTracer) .NE. ' '  )
+     &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     O       OBSptr (1-Olx,1,1,1,iTracer), 
+     I       OBSptr0(1-Olx,1,1,1,iTracer), 
+     I       OBSptr1(1-Olx,1,1,1,iTracer), aWght, bWght, myThid )
+# endif /* ALLOW_OBCS_SOUTH */
+C     end do iTracer
+       ENDDO
+C     end if (usePTRACERS)
+      ENDIF
+#endif /* ALLOW_PTRACERS */
+CMLC     endif for periodicForcing
+CML      ENDIF
 
       RETURN
       END
 
+CBOP
+C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_XZ
+C     !INTERFACE:
+      SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_XZ( 
+     O     fld, 
+     I     fld0, fld1, aWght, bWght, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_XZ                       
+C     | o Interpolate between to records
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+ 
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myThid - Thread no. that called this routine.
+C     aWght, bWght :: Interpolation weights
+      INTEGER myThid
+      _RL aWght,bWght
+      _RL fld (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL fld0(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL fld1(1-Olx:sNx+Olx,Nr,nSx,nSy)
+
+C     !LOCAL VARIABLES:
+C     === Local arrays ===
+C     bi,bj,i,j :: loop counters
+      INTEGER bi,bj,i,k
+CEOP
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K = 1, Nr
+          DO i=1-Olx,sNx+Olx
+           fld(i,k,bi,bj)   = bWght*fld0(i,k,bi,bj)  
+     &                       +aWght*fld1(i,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO	
+
+      RETURN
+      END
+CBOP
+C     !ROUTINE: OBCS_EXTERNAL_FIELDS_INTERP_YZ
+C     !INTERFACE:
+      SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_YZ( 
+     O     fld, 
+     I     fld0, fld1, aWght, bWght, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_EXTERNAL_FIELDS_INTERP_YZ                       
+C     | o Interpolate between to records
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+ 
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myThid - Thread no. that called this routine.
+C     aWght, bWght :: Interpolation weights
+      INTEGER myThid
+      _RL aWght,bWght
+      _RL fld (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fld0(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fld1(1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+C     !LOCAL VARIABLES:
+C     === Local arrays ===
+C     bi,bj,i,j :: loop counters
+      INTEGER bi,bj,j,k
+CEOP
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K = 1, Nr
+          DO j=1-Oly,sNy+Oly
+           fld(j,k,bi,bj)   = bWght*fld0(j,k,bi,bj)  
+     &                       +aWght*fld1(j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO	
+
+#endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE AND .NOT. ALLOW_EXF */
+
+       RETURN
+       END

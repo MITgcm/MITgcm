@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.10 2004/09/27 08:57:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.11 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -19,6 +19,10 @@ C     === Global variables ===
 #ifdef ALLOW_ORLANSKI
 #include "ORLANSKI.h"
 #endif
+#ifdef ALLOW_PTRACERS.h
+#include "PTRACERS_SIZE.h"
+#include "OBCS_PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     === Routine arguments ===
       INTEGER myThid
@@ -34,6 +38,9 @@ C     === Routine arguments ===
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,
      &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe
+#ifdef ALLOW_PTRACERS
+     &        , OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile
+#endif
 
 #ifdef ALLOW_ORLANSKI
       NAMELIST /OBCS_PARM02/
@@ -52,7 +59,7 @@ C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER I,J
+      INTEGER I,J,iTracer
 
 C--   OBCS_READPARMS has been called so we know that
 C     the package is active.
@@ -102,6 +109,14 @@ C--   Default flags and values for OBCS
       OBWvFile = ' '
       OBWtFile = ' '
       OBWsFile = ' '
+#ifdef ALLOW_PTRACERS
+      DO iTracer = 1, PTRACERS_num
+       OBNptrFile(iTracer) = ' '
+       OBSptrFile(iTracer) = ' '
+       OBEptrFile(iTracer) = ' '
+       OBWptrFile(iTracer) = ' '
+      ENDDO
+#endif
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OBCS_PARM01)

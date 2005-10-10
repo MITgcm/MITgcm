@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.13 2004/10/20 14:16:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.14 2005/10/10 05:53:48 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -18,6 +18,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "OBCS.h"
+#ifdef ALLOW_PTRACERS.h
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
+#include "OBCS_PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_DEPTHS
@@ -30,6 +35,10 @@ C     == Local variables ==
       INTEGER I, J, K
       CHARACTER*(10) suff
       INTEGER prec
+#ifdef ALLOW_PTRACERS
+      INTEGER iTracer
+CML      _RL ptracerLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('OBCS_INIT_VARIABLES',myThid)
@@ -124,6 +133,48 @@ C     == Local variables ==
          ENDDO
         ENDDO
 
+#ifdef ALLOW_PTRACERS
+        DO iTracer=1,PTRACERS_numInUse
+         DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+#ifdef ALLOW_OBCS_NORTH
+           OBNptr (I,K,bi,bj,iTracer)=0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+           OBNptr0(I,K,bi,bj,iTracer)=0. _d 0
+           OBNptr1(I,K,bi,bj,iTracer)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_NORTH */
+
+#ifdef ALLOW_OBCS_SOUTH
+           OBSptr (I,K,bi,bj,iTracer)=0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+           OBSptr0(I,K,bi,bj,iTracer)=0. _d 0
+           OBSptr1(I,K,bi,bj,iTracer)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_SOUTH */
+          ENDDO
+
+          DO J=1-Oly,sNy+Oly
+#ifdef ALLOW_OBCS_EAST
+           OBEptr (J,K,bi,bj,iTracer)=0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+           OBEptr0(J,K,bi,bj,iTracer)=0. _d 0
+           OBEptr1(J,K,bi,bj,iTracer)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_EAST */
+
+#ifdef ALLOW_OBCS_WEST
+           OBWptr (J,K,bi,bj,iTracer)=0. _d 0
+# ifdef ALLOW_OBCS_PRESCRIBE
+           OBWptr0(J,K,bi,bj,iTracer)=0. _d 0
+           OBWptr1(J,K,bi,bj,iTracer)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_WEST */
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_PTRACERS */
+
 #ifdef NONLIN_FRSURF
         DO I=1-Olx,sNx+Olx
           OBNeta(I,bi,bj)=0.
@@ -183,6 +234,14 @@ C--   Apply OBCS values to initial conditions for consistancy
         DO K=1,Nr
          CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
          CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
+#ifdef ALLOW_PTRACERS
+         DO iTracer=1,PTRACERS_numInUse
+          CALL OBCS_APPLY_PTRACER( 
+     I         bi, bj, K, iTracer, 
+     U         ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
+     I         myThid )
+         ENDDO
+#endif /* ALLOW_PTRACERS */
         ENDDO
        ENDDO
       ENDDO
