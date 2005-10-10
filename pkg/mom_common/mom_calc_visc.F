@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.16 2005/10/04 02:49:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.17 2005/10/10 17:23:07 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -17,15 +17,15 @@ C     Calculate horizontal viscosities (L is typical grid width)
 C     harmonic viscosity=
 C       viscAh (or viscAhD on div pts and viscAhZ on zeta pts)
 C       +0.25*L**2*viscAhGrid/deltaT
-C       +sqrt(viscC2leith**2*grad(Vort3)**2
-C             +viscC2leithD**2*grad(hDiv)**2)*L**3
+C       +sqrt((viscC2leith/pi)**6*grad(Vort3)**2
+C             +(viscC2leithD/pi)**6*grad(hDiv)**2)*L**3
 C       +(viscC2smag/pi)**2*L**2*sqrt(Tension**2+Strain**2)
 C
 C     biharmonic viscosity=
 C       viscA4 (or viscA4D on div pts and viscA4Z on zeta pts)
 C       +0.25*0.125*L**4*viscA4Grid/deltaT (approx)
-C       +0.125*L**5*sqrt(viscC4leith**2*grad(Vort3)**2
-C                        +viscC4leithD**2*grad(hDiv)**2)
+C       +0.125*L**5*sqrt((viscC4leith/pi)**6*grad(Vort3)**2
+C                        +(viscC4leithD/pi)**6*grad(hDiv)**2)
 C       +0.125*L**4*(viscC4smag/pi)**2*sqrt(Tension**2+Strain**2)
 C
 C     Note that often 0.125*L**2 is the scale between harmonic and
@@ -91,6 +91,8 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL smag2fac, smag4fac
+      _RL leith2fac, leith4fac
+      _RL leithD2fac, leithD4fac
       _RL viscAhRe_max, viscA4Re_max
       _RL Alin,grdVrt,grdDiv, keZpt
       _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
@@ -181,6 +183,25 @@ C     == Local variables ==
       ELSE
         smag2fac=0. _d 0
         smag4fac=0. _d 0
+      ENDIF
+
+      IF (calcleith) THEN
+        IF (useFullLeith) THEN
+         leith2fac=(viscC2leith/pi)**6
+         leith4fac=0.015625 _d 0*(viscC4leith/pi)**6
+         leithD2fac=(viscC2leithD/pi)**6
+         leithD4fac=0.015625 _d 0*(viscC4leithD/pi)**6
+        ELSE
+         leith2fac=(viscC2leith/pi)**3
+         leithD2fac=(viscC2leithD/pi)**3
+         leith4fac=0.0125 _d 0*(viscC4leith/pi)**3
+         leithD4fac=0.0125 _d 0*(viscC4leithD/pi)**3
+        ENDIF
+      ELSE
+        leith2fac=0. _d 0
+        leith4fac=0. _d 0
+        leithD2fac=0. _d 0
+        leithD4fac=0. _d 0
       ENDIF
 
 C     - Viscosity
@@ -276,13 +297,13 @@ C Using it in Leith serves to damp instabilities in w.
      &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_DLth(i,j)=
-     &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-          viscA4_DLth(i,j)=0.125 _d 0*
-     &     sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+     &     sqrt(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+          viscA4_DLth(i,j)=
+     &     sqrt(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
           viscAh_DLthd(i,j)=
-     &     sqrt(viscC2leithD**2*grdDiv)*L3
-          viscA4_DLthd(i,j)=0.125 _d 0*
-     &     sqrt(viscC4leithD**2*grdDiv)*L5
+     &     sqrt(leithD2fac*grdDiv)*L3
+          viscA4_DLthd(i,j)=
+     &     sqrt(leithD4fac*grdDiv)*L5
          ELSEIF (calcleith) THEN
 C but this approximation will work on cube
 c (and differs by as much as 4X)
@@ -299,14 +320,10 @@ c (and differs by as much as 4X)
           grdDiv=max( grdDiv, abs(divDy(i,j))   )
 
 c This approximation is good to the same order as above...
-          viscAh_Dlth(i,j)=
-     &      (viscC2leith*grdVrt+(viscC2leithD*grdDiv))*L3
-          viscA4_Dlth(i,j)=0.125 _d 0*
-     &      (viscC4leith*grdVrt+(viscC4leithD*grdDiv))*L5
-          viscAh_DlthD(i,j)=
-     &      ((viscC2leithD*grdDiv))*L3
-          viscA4_DlthD(i,j)=0.125 _d 0*
-     &      ((viscC4leithD*grdDiv))*L5
+          viscAh_Dlth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          viscA4_Dlth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
+          viscAh_DlthD(i,j)=((leithD2fac*grdDiv))*L3
+          viscA4_DlthD(i,j)=((leithD4fac*grdDiv))*L5
          ELSE
           viscAh_Dlth(i,j)=0. _d 0
           viscA4_Dlth(i,j)=0. _d 0
@@ -394,13 +411,13 @@ C This is the vector magnitude of grad(div.v) squared
      &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_ZLth(i,j)=
-     &     sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-          viscA4_ZLth(i,j)=0.125 _d 0*
-     &     sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+     &     sqrt(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+          viscA4_ZLth(i,j)=
+     &     sqrt(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
           viscAh_ZLthD(i,j)=
-     &     sqrt(viscC2leithD**2*grdDiv)*L3
-          viscA4_ZLthD(i,j)=0.125 _d 0*
-     &     sqrt(viscC4leithD**2*grdDiv)*L5
+     &     sqrt(leithD2fac*grdDiv)*L3
+          viscA4_ZLthD(i,j)=
+     &     sqrt(leithD4fac*grdDiv)*L5
 
          ELSEIF (calcleith) THEN
 C but this approximation will work on cube (and differs by 4X)
@@ -416,12 +433,10 @@ C but this approximation will work on cube (and differs by 4X)
           grdDiv=max( grdDiv, abs(divDy(i,j))   )
           grdDiv=max( grdDiv, abs(divDy(i-1,j)) )
 
-          viscAh_ZLth(i,j)=(viscC2leith*grdVrt
-     &                     +(viscC2leithD*grdDiv))*L3
-          viscA4_ZLth(i,j)=0.125 _d 0*(viscC4leith*grdVrt
-     &                     +(viscC4leithD*grdDiv))*L5
-          viscAh_ZLthD(i,j)=((viscC2leithD*grdDiv))*L3
-          viscA4_ZLthD(i,j)=0.125 _d 0*((viscC4leithD*grdDiv))*L5
+          viscAh_ZLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
+          viscAh_ZLthD(i,j)=(leithD2fac*grdDiv)*L3
+          viscA4_ZLthD(i,j)=(leithD4fac*grdDiv)*L5
          ELSE
           viscAh_ZLth(i,j)=0. _d 0
           viscA4_ZLth(i,j)=0. _d 0
