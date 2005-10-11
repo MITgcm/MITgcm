@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.566 2005/10/11 01:34:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.567 2005/10/11 08:36:29 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix behavior of ptracers_monitor when monitor output is written to a 
+  netcdf-file; still not independent of monitor.F (writes in the same
+  file).
 o change default value of tRef (put a uniform, meaningful value for ocean 
   & atmos) and initialize sRef (was missing, as Martin mentioned).
 o Redefine viscC?Leith*.  Change the coefficients of Leith viscosity 
