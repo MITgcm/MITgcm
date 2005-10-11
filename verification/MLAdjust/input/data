@@ -4,6 +4,7 @@
 #
 # Continuous equation parameters
  &PARM01
+ tRef(1)=29.,
  viscAr=5.E-5,
 # This is the background viscosity used total=viscah+viscleith
 # viscAh=1.E2,
