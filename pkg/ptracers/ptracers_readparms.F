@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.21 2005/07/30 23:53:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.22 2005/10/11 08:35:36 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -61,8 +61,11 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
-     &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
+     &     PTRACERS_timeave_mnc, 
+     &     PTRACERS_snapshot_mnc,
+     &     PTRACERS_monitor_mnc,
+     &     PTRACERS_pickup_write_mnc, 
+     &     PTRACERS_pickup_read_mnc
 
 C     This routine has been called by the main model so we set our
 C     internal flag to indicate we are in business
@@ -96,11 +99,13 @@ C     Set defaults values for parameters in PTRACERS.h
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = timeave_mnc .AND. useMNC
       PTRACERS_snapshot_mnc     = snapshot_mnc .AND. useMNC
+      PTRACERS_monitor_mnc      = monitor_mnc .AND. useMNC
       PTRACERS_pickup_write_mnc = pickup_write_mnc .AND. useMNC
       PTRACERS_pickup_read_mnc  = pickup_read_mnc .AND. useMNC
 #else
       PTRACERS_timeave_mnc      = .FALSE.
       PTRACERS_snapshot_mnc     = .FALSE.
+      PTRACERS_monitor_mnc      = .FALSE.
       PTRACERS_pickup_write_mnc = .FALSE.
       PTRACERS_pickup_read_mnc  = .FALSE.
 #endif
@@ -182,17 +187,21 @@ C     Check that enough parameters were specified
 
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = 
-     &     PTRACERS_timeave_mnc .AND. useMNC
+     &     PTRACERS_timeave_mnc      .AND. useMNC
       PTRACERS_snapshot_mnc     = 
-     &     PTRACERS_snapshot_mnc .AND. useMNC
+     &     PTRACERS_snapshot_mnc     .AND. useMNC
+      PTRACERS_monitor_mnc      = 
+     &     PTRACERS_monitor_mnc      .AND. useMNC .AND. monitor_mnc
       PTRACERS_pickup_write_mnc = 
      &     PTRACERS_pickup_write_mnc .AND. useMNC
       PTRACERS_pickup_read_mnc  = 
-     &     PTRACERS_pickup_read_mnc .AND. useMNC
+     &     PTRACERS_pickup_read_mnc  .AND. useMNC
 
       PTRACERS_timeave_mdsio      = (.NOT. PTRACERS_timeave_mnc)
      &     .OR. outputTypesInclusive
       PTRACERS_snapshot_mdsio     = (.NOT. PTRACERS_snapshot_mnc)
+     &     .OR. outputTypesInclusive
+      PTRACERS_monitor_stdio      = (.NOT. PTRACERS_monitor_mnc)
      &     .OR. outputTypesInclusive
       PTRACERS_pickup_write_mdsio = (.NOT. PTRACERS_pickup_write_mnc)
      &     .OR. outputTypesInclusive
@@ -202,10 +211,12 @@ C     Check that enough parameters were specified
 #else
       PTRACERS_timeave_mnc        = .FALSE.
       PTRACERS_snapshot_mnc       = .FALSE.
+      PTRACERS_monitor_mnc        = .FALSE.
       PTRACERS_pickup_write_mnc   = .FALSE.
       PTRACERS_pickup_read_mnc    = .FALSE.
       PTRACERS_timeave_mdsio      = .TRUE.
       PTRACERS_snapshot_mdsio     = .TRUE.
+      PTRACERS_monitor_stdio      = .TRUE.
       PTRACERS_pickup_write_mdsio = .TRUE.
       PTRACERS_pickup_read_mdsio  = .TRUE.
 #endif

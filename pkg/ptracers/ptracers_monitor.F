@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.8 2005/05/15 03:06:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.9 2005/10/11 08:35:36 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,6 +18,9 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "EESUPPORT.h"
 #include "DYNVARS.h"
 #include "GRID.h"
@@ -48,7 +51,6 @@ C  ip                   :: ptracer number
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       CHARACTER*(MAX_LEN_MBUF) suff
       _RL dT
-      INTEGER time_as_int
       integer ip
 CEOP
 
@@ -56,6 +58,8 @@ CEOP
 
       IF ( DIFFERENT_MULTIPLE( PTRACERS_monitorFreq,myTime,dT ) ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+       mon_write_stdout = .FALSE.
+       mon_write_mnc    = .FALSE.
 
 C     Ptracers field monitor start 
        _BEGIN_MASTER(myThid)
@@ -63,7 +67,7 @@ C     Ptracers field monitor start
        IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
 #endif /* ALLOW_USE_MPI */
         
-        IF (monitor_stdio) THEN
+        IF (PTRACERS_monitor_stdio) THEN
          WRITE(msgBuf,'(2A)') '// ==========================',
      &        '============================='
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
@@ -81,6 +85,10 @@ C     Ptracers field monitor start
        ENDIF
 #endif /* ALLOW_USE_MPI */
         _END_MASTER(myThid)
+
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. PTRACERS_monitor_mnc) mon_write_mnc = .TRUE.
+#endif /*  ALLOW_MNC  */
 
         IF ( PTRACERS_monitorFreq .NE. monitorFreq ) THEN
 C     repeat printing of time to make grepping easier, default is not
@@ -123,6 +131,10 @@ C     Ptracers field monitor finish
         
         _END_MASTER(myThid)
        ENDIF
+
+       mon_write_stdout = .FALSE.
+       mon_write_mnc    = .FALSE.
+
 C     endif different multiple
       ENDIF
 
