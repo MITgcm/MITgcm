@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.30 2005/10/10 15:56:34 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.31 2005/10/11 00:09:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,7 +34,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "EOS.h"
 #include "GRID.h"
-#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -50,7 +49,7 @@ C     kRef :: Pressure reference level
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j,kr
+      INTEGER i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -77,13 +76,13 @@ CEOP
 
       IF (equationOfState.EQ.'LINEAR') THEN
 
-       IF ( usingPCoords ) THEN
-        kr        = Nr 
-       ELSE
-        kr        = 1
-       ENDIF
-       refTemp=tRef(kr)
-       refSalt=sRef(kr)
+C ***NOTE***
+C In the linear EOS, to make the static stability calculation meaningful
+C we alway calculate the perturbation with respect to the surface level.
+C **********
+       refTemp=tRef(kRef)
+       refSalt=sRef(kRef)
+
        dRho = rhoNil-rhoConst
 
        DO j=jMin,jMax
@@ -94,7 +93,7 @@ CEOP
      &        + dRho
         ENDDO
        ENDDO
-
+       
       ELSEIF (equationOfState.EQ.'POLY3') THEN
 
        refTemp=eosRefT(kRef)
