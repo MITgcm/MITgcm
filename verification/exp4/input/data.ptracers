@@ -1,0 +1,9 @@
+# This set-up is supposed to mimic salinity. That is, initially 
+# PTRACER(:,:,:,1) is identical to salinity, except that the 
+# open boundary conditions are different, so that PTRACER(:,:,:,1) evolves
+# differently than salinity.
+ &PTRACERS_PARM01
+ PTRACERS_numInUse=1,
+ PTRACERS_initialFile='S.init',
+ PTRACERS_names(1)='salt_mimic',
+ &

@@ -43,13 +43,30 @@ accuracy='real*8';
 h=-H+dh*exp( -(X.^2+Y.^2)/(2*(L^2)) );
 fid=fopen('topog.bump','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
-% Side walls + bump
-h(:,1)=0;
-h(:,ny)=0;
-fid=fopen('topog.bumpchannel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+% $$$ % Side walls + bump
+% $$$ h(:,1)=0;
+% $$$ h(:,ny)=0;
+% $$$ fid=fopen('topog.bumpchannel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
-% Simple channel
-h(:,1)=0;
-h(:,2:ny-1)=-H;
-h(:,ny)=0;
-fid=fopen('topog.channel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+% $$$ % Simple channel
+% $$$ h(:,1)=0;
+% $$$ h(:,2:ny-1)=-H;
+% $$$ h(:,ny)=0;
+% $$$ fid=fopen('topog.channel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+
+% initial fields for salinity
+si = 35;
+fid=fopen('S.init','w',ieee); fwrite(fid,si*ones(nx,ny,nz),accuracy); fclose(fid);
+
+% open boundary conditions;
+u0 = .25;
+s0 = si+1;
+
+% create two time slabs for testing
+uMerid = cat(3,u0*ones(nx,nz),zeros(nx,nz));
+uZonal = cat(3,u0*ones(ny,nz),zeros(ny,nz));
+sZonal = cat(3,s0*ones(ny,nz),s0*ones(ny,nz));
+
+fid=fopen('OBmeridU.bin','w',ieee); fwrite(fid,uMerid,accuracy); fclose(fid);
+fid=fopen('OBzonalU.bin','w',ieee); fwrite(fid,uZonal,accuracy); fclose(fid);
+fid=fopen('OBzonalS.bin','w',ieee); fwrite(fid,sZonal,accuracy); fclose(fid);

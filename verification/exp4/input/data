@@ -44,10 +44,15 @@
  nTimeSteps=10,
  deltaT=600.0,
  abEps=0.1,
- pChkptFreq=3000.0,
+ pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=10800.0,
  monitorFreq=1.,
+# for time dependent open boundary conditions comment 
+# in the following three lines
+# periodicExternalForcing=.TRUE.,
+# externForcingPeriod=600.,
+# externForcingCycle=1200.,
  &
 
 # Gridding parameters
@@ -62,4 +67,5 @@
 # Input datasets
  &PARM05
  bathyFile='topog.bump',
+ hydrogSaltFile='S.init',
  &

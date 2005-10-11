@@ -1,29 +1,40 @@
-Example: "Flow over a bump with Open Boundaries"
-================================================
+Example: "Flow over a bump with Open Boundaries and passive tracers"
+====================================================================
 
-To apply the changes to the default configuration of MITgcmUV:
-  cp ../verification/exp4/code/SIZE.h ../bin/
-  cp ../verification/exp4/code/CPP_OPTIONS.h ../bin/
-  cp ../verification/exp4/code/CPP_EEOPTIONS.h ../bin/
-  cp ../verification/exp4/code/set_obcs.F ../bin/
+default paths are (as used in testreport):
+  set build_dir = ${cwd}/build
+  set exe       = ${cwd}/build
+  set ROOT      = ${cwd}/../../
 
 Configure and compile the code:
-  cd bin
-  ../tools/genmake -makefile
+  mkdir ${build_dir}
+  cd ${build_dir}
+  ${ROOT}/tools/genmake2 -mods=${cwd}/code
   make depend
   make
 
 To run:
-  cd ../exe
-  cp ../verification/exp4/input/* .
-  ./mitgcmuv
+  mkdir ${exe_dir}
+  cd ${exe_dir}
+  cp ${cwd}/input/* .
+  ${build_dir}/mitgcmuv
 
 There is comparison output in the directory:
- ../verification/exp4/results
+ ..${cwd}/results
 
 Comments:
 The input data is real*8.
 
-
-See the file doc/OpenBound.html or doc/OpenBound.txt for information
-on open boundaries
+This experiment is a channel with topography and four open
+boundaries. Salinity is not dynamically active in this experiment
+(linear equation of state with sBeta=0). Different kinds of open
+boundary values are used: zonal (x-)velocity U is prescribed at all
+open boundaries with values that are read from data files (specified
+in data.obcs); meridional (y-)velocity V is set to zero on all
+boundaries, and temperature to tRef(z), both in obcs_calc.F, this is
+the default behavior; at the western boundary, salinity values are
+used for salinity and one passive tracer in the same way. Salinity is
+set to sLev at all other boundaries, while a (nearly) homogeneous
+v.Neumann condition is applied to the passive tracer (the latter is
+the default in obcs_calc.F). Open boundary parameters are set in
+data.obcs.
