@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.105 2005/10/11 00:13:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.106 2005/10/11 21:27:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -102,6 +102,9 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscArDefault       = 0.D-3
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
+      sideDragFactor      = 2. _d 0
+      bottomDragLinear    = 0.
+      bottomDragQuadratic = 0.
       diffKrTDefault      = 0.D-3
       diffKrSDefault      = 0.D-3
       diffKrBL79surf      = 0.D0
@@ -158,8 +161,6 @@ Cml      sBeta               = 7.4D-4
       allowFreezing       = .FALSE.
       useOldFreezing      = .FALSE.
       ivdc_kappa          = 0.D0
-      bottomDragLinear    = 0.
-      bottomDragQuadratic = 0.
       usePickupBeforeC35    = .FALSE.
       usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.

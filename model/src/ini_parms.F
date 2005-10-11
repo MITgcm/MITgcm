@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.171 2005/10/11 00:13:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.172 2005/10/11 21:27:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,7 +151,8 @@ C--   Continuous equation parameters
      & diffKhS, diffKzS, diffK4S,
      & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
      & atm_Cp, atm_Rd, atm_Rq,
-     & no_slip_sides,no_slip_bottom,
+     & no_slip_sides, sideDragFactor,
+     & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & useConstantF,
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
@@ -172,7 +173,6 @@ C--   Continuous equation parameters
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, ivdc_kappa,
-     & bottomDragLinear,bottomDragQuadratic,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
      & tempAdvScheme, tempVertAdvScheme, 
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,

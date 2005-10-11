@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.168 2005/09/28 01:34:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.169 2005/10/11 21:27:20 jmc Exp $
 C $Name:  $
 C
 
@@ -585,8 +585,12 @@ C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
 C     Ro_SeaLevel        :: standard position of Sea-Level in "R" coordinate, used as
 C                          starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
+C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides) 
+C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear   :: Drag coefficient built in to core dynamics
-C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
+C     bottomDragQuadratic   ( linear: 1/s, quadratic: 1/m )
+C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
+C                      (i.e. allows convection at different Rayleigh numbers)
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit, 
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, delX, delY,
@@ -623,10 +627,9 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
-     & bottomDragLinear,bottomDragQuadratic,nh_Am2,
+     & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & tCylIn, tCylOut
 
-      _RL nh_Am2
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
       _RL cg3dTargetResidual
@@ -739,8 +742,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL recip_horiVertRatio
       _RL ivdc_kappa
       _RL Ro_SeaLevel
+      _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic
+      _RL nh_Am2
       _RL tCylIn
       _RL tCylOut
 

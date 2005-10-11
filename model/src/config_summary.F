@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.80 2005/09/28 01:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.81 2005/10/11 21:27:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -141,10 +141,18 @@ C     zcoord ::
      &' /* Smagorinsky biharm viscosity factor (non-dim) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
+      CALL WRITE_0D_R8( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
+     & ' /* side-drag scaling factor (non-dim) */')
       CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
      &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
       CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
      & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
+      CALL WRITE_0D_R8( bottomDragLinear, INDEX_NONE,
+     & 'bottomDragLinear =',
+     & ' /* linear bottom-drag coefficient ( 1/s ) */')
+      CALL WRITE_0D_R8( bottomDragQuadratic, INDEX_NONE,
+     & 'bottomDragQuadratic =',
+     & ' /* quadratic bottom-drag coeff. ( 1/m ) */')
       CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
@@ -272,6 +280,8 @@ C     zcoord ::
 
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
+      CALL WRITE_0D_R8( nh_Am2, INDEX_NONE, 'nh_Am2 =',
+     & ' /* Non-Hydrostatic terms scaling factor */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_0D_L( momAdvection, INDEX_NONE,
