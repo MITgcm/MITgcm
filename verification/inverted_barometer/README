@@ -1,26 +1,14 @@
 Example: "4 Layer Double Gyre with Pressure Loading"
 ====================================================
 
-To apply the changes to the default configuration of MITgcmUV:
-  cp ../verification/inverted_barometer/code/SIZE.h ../model/inc/
-  cp ../verification/inverted_barometer/code/CPP_OPTIONS.h ../model/inc/
-  cp ../verification/inverted_barometer/code/CPP_EEOPTIONS.h ../eesupp/inc/
-
-Configure and compile the code:
-  cd bin
-  ../tools/genmake -makefile
-  make depend
-  make
-
-To run:
-  cd ../exe
-  cp ../verification/inverted_barometer/input/* .
-  dmpirun -np 4 mitgcmuv  ( Digital )
-
-There is comparison output in two directories:
- ../verification/inverted_barometer/results
-
 Comments:
 The input data is real*8 and can be generated with the supplied
-matlab script gendata.m  to change the input precision to
-real*4 change readBinaryPrec=32 in data as well as in gendata.m
+matlab script gendata.m  
+To change the input precision to real*4 change readBinaryPrec=32 in
+data as well as in gendata.m 
+
+The experiment follow roughly the analytical analysis 
+Wunsch and Stammer, Atmospheric loading and the oceanic "inverted
+barometer" effect. Rev. Geophys., 35, pp. 79-107, 1997.
+
+
