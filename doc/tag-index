@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.567 2005/10/11 08:36:29 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.568 2005/10/11 13:18:17 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o modify exp4 to test new obcs support reading from external files
+  and for passive tracers
 o fix behavior of ptracers_monitor when monitor output is written to a 
   netcdf-file; still not independent of monitor.F (writes in the same
   file).
