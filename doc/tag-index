@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.565 2005/10/10 19:49:48 baylor Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.566 2005/10/11 01:34:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change default value of tRef (put a uniform, meaningful value for ocean 
+  & atmos) and initialize sRef (was missing, as Martin mentioned).
 o Redefine viscC?Leith*.  Change the coefficients of Leith viscosity 
   to be proportional to enstrophy dissipation length.  Thus,
    viscC?leith?_new=pi*(viscC?leith?_old)^(1/3)
