@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.170 2005/09/28 01:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.171 2005/10/11 00:13:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,7 @@ C     dependency.
       _RL hFacMinDrDefault
       _RL delRDefault(Nr)
       _RS rkFacDefault
+      _RL tracerDefault
 C     zCoordInputData :: Variables used to select between different coordinate systems.
 C     pCoordInputData :: The vertical coordinate system in the rest of the model is 
 C     rCoordInputData :: written in terms of r. In the model "data" file input data can
@@ -345,6 +346,8 @@ C--   Set default "physical" parameters
       DO k=1,Nr
        diffKrNrT(k) = UNSET_RL
        diffKrNrS(k) = UNSET_RL
+       tRef(k)      = UNSET_RL
+       sRef(k)      = UNSET_RL
       ENDDO
       gBaro    = UNSET_RL
       rhoConst = UNSET_RL
@@ -438,6 +441,20 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
       ELSE
         atm_kappa = atm_Rd / atm_Cp
       ENDIF
+C-    set default vertical profile for temperature: tRef
+      tracerDefault = 20.
+      IF ( fluidIsAir ) tracerDefault = 300.
+      DO k=1,Nr
+        IF (tRef(k).EQ.UNSET_RL) tRef(k) = tracerDefault
+        tracerDefault = tRef(k)
+      ENDDO
+C-    set default vertical profile for salinity/water-vapour: sRef
+      tracerDefault = 30.
+      IF ( fluidIsAir ) tracerDefault = 0.
+      DO k=1,Nr
+        IF (sRef(k).EQ.UNSET_RL) sRef(k) = tracerDefault
+        tracerDefault = sRef(k)
+      ENDDO
 C--   On/Off flags for each terms of the momentum equation 
       nonHydrostatic   = momStepping .AND. nonHydrostatic
       quasiHydrostatic = momStepping .AND. quasiHydrostatic

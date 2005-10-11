@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.104 2005/09/28 01:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.105 2005/10/11 00:13:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -78,10 +78,6 @@ C     Coriolis map:
 
 
 C--   Set default "physical" parameters
-      DO K =1,Nr
-       tRef(K) = 30.D0 - FLOAT( K )
-Cml       sRef(K) = 35.D0
-      ENDDO
       nh_Am2              = 1.D0
       gravity             = 9.81D0
       rhoNil              = 999.8D0
