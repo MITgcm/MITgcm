@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.6 2005/10/06 00:58:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.7 2005/10/12 00:58:29 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -63,7 +63,7 @@ C       Horizontal curl of flow field - ignoring lopping factors
      &                           )
 
 C       Horizontal curl of flow field - including lopping factors
-        IF (hFacZ(i,j).NE.0.) THEN
+c       IF (hFacZ(i,j).NE.0.) THEN
 c        vort3(I,J)=
 c    &      recip_rAz(I,J,bi,bj)*(
 c    &      vFld(I,J)*dyc(I,J,bi,bj)*_hFacW(i,j,k,bi,bj)
@@ -72,40 +72,26 @@ c    &     -uFld(I,J)*dxc(I,J,bi,bj)*_hFacS(i,j,k,bi,bj)
 c    &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)*_hFacS(i,j-1,k,bi,bj)
 c    &                           )
 c    &                            /hFacZ(i,j)
-        ELSE
-         vort3(I,J)=0.
-        ENDIF
+c       ELSE
+c        vort3(I,J)=0.
+c       ENDIF
 
        ENDDO
       ENDDO
 
-C     RETURN
-
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
-       southWestCorner = .FALSE.
-       southEastCorner = .FALSE.
-       northWestCorner = .FALSE.
-       northEastCorner = .FALSE.
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
        myFace = exch2_myFace(myTile)
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southWestCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isSedge(myTile) .EQ. 1 ) THEN
-        southEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northEastCorner = .TRUE.
-       ENDIF
-       IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
-     &      exch2_isNedge(myTile) .EQ. 1 ) THEN
-        northWestCorner = .TRUE.
-       ENDIF
+       southWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       southEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       northEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
+       northWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
 #else
        myFace = bi
        southWestCorner = .TRUE.
@@ -141,7 +127,6 @@ c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
@@ -199,7 +184,6 @@ c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
@@ -257,7 +241,6 @@ c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
@@ -308,7 +291,6 @@ c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
 c    &     )
-         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
