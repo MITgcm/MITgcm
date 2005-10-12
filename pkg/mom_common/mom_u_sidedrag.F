@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.10 2005/09/29 18:36:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.11 2005/10/12 21:07:01 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
-#define SIDEDRAG_OLD_VERSION
 
 CBOP
 C !ROUTINE: MOM_U_SIDEDRAG
@@ -54,14 +53,16 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  hFacZClosedN         :: fractional open water to north
 C  hFacZClosedS         :: fractional open water to south
-      INTEGER I,J
+      INTEGER i,j
       _RL hFacZClosedS,hFacZClosedN
 CEOP
-
-#ifdef SIDEDRAG_OLD_VERSION
       _RL Ahtmp,A4tmp
 
-C     - Laplacian  and bi-harmonic terms
+
+      IF ( sideDragFactor.LE.0. ) THEN
+C--   Laplacian and bi-harmonic terms: variable-Viscosity coeff. from
+C     MOM_CALC_VISC are not used here (corresponds to the "old" version).
+
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 #ifdef NONLIN_FRSURF
@@ -90,11 +91,11 @@ C       (but this might just be what we want ...)
      &      *_recip_dyU(i,j+1,bi,bj) )
      &   *drF(k)*2.*(
 #ifdef ISOTROPIC_COS_SCALING
-     &                viscAh*uFld(i,j)*cosFacU(J,bi,bj)
+     &                viscAh*uFld(i,j)*cosFacU(j,bi,bj)
 #ifdef COSINEMETH_III
-     &               -viscA4*del2u(i,j)*sqcosFacU(J,bi,bj)
+     &               -viscA4*del2u(i,j)*sqcosFacU(j,bi,bj)
 #else
-     &               -viscA4*del2u(i,j)*cosFacU(J,bi,bj)
+     &               -viscA4*del2u(i,j)*cosFacU(j,bi,bj)
 #endif
 #else
      &                Ahtmp*uFld(i,j)
@@ -104,9 +105,10 @@ C       (but this might just be what we want ...)
        ENDDO
       ENDDO
 
-#else /* SIDEDRAG_OLD_VERSION */
+      ELSE
+C--   Laplacian and bi-harmonic terms: using variable-Viscosity coeff.
+C     from MOM_CALC_VISC, consistent with dissipation in the interior
 
-C     - Laplacian  and bi-harmonic terms
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 C-      this will not give any side-drag along thin wall.
@@ -125,34 +127,34 @@ C       (but this might just be what we want ...)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)
      &   *( hFacZClosedS*_dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
 #ifdef ISOTROPIC_COS_SCALING
-     &         *(viscAh_Z(i,j  )*uFld(i,j)*cosFacU(J,bi,bj)
+     &         *( viscAh_Z(i,j  )*uFld(i,j)*cosFacU(j,bi,bj)
 #ifdef COSINEMETH_III
-     &           -viscA4_Z(i,j  )*del2u(i,j)*sqcosFacU(J,bi,bj))
+     &           -viscA4_Z(i,j  )*del2u(i,j)*sqcosFacU(j,bi,bj) )
 #else
-     &           -viscA4_Z(i,j  )*del2u(i,j)*cosFacU(J,bi,bj))
+     &           -viscA4_Z(i,j  )*del2u(i,j)*cosFacU(j,bi,bj) )
 #endif
 #else
-     &         *(viscAh_Z(i,j  )*uFld(i,j)
-     &           -viscA4_Z(i,j  )*del2u(i,j))
+     &         *( viscAh_Z(i,j  )*uFld(i,j)
+     &           -viscA4_Z(i,j  )*del2u(i,j) )
 #endif
-     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj) 
+     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj)
 #ifdef ISOTROPIC_COS_SCALING
-     &         *(viscAh_Z(i,j+1)*uFld(i,j)*cosFacU(J,bi,bj)
+     &         *( viscAh_Z(i,j+1)*uFld(i,j)*cosFacU(j,bi,bj)
 #ifdef COSINEMETH_III
-     &           -viscA4_Z(i,j+1)*del2u(i,j)*sqcosFacU(J,bi,bj))
+     &           -viscA4_Z(i,j+1)*del2u(i,j)*sqcosFacU(j,bi,bj) )
 #else
-     &           -viscA4_Z(i,j+1)*del2u(i,j)*cosFacU(J,bi,bj))
+     &           -viscA4_Z(i,j+1)*del2u(i,j)*cosFacU(j,bi,bj) )
 #endif
 #else
-     &         *(viscAh_Z(i,j+1)*uFld(i,j)
-     &           -viscA4_Z(i,j+1)*del2u(i,j))
+     &         *( viscAh_Z(i,j+1)*uFld(i,j)
+     &           -viscA4_Z(i,j+1)*del2u(i,j) )
 #endif
-     &              )
-     &      *drF(k)*2.
+     &    )*drF(k)*sideDragFactor
        ENDDO
       ENDDO
 
-#endif /* (not) SIDEDRAG_OLD_VERSION */
+C--   end old-version / new-version IF blocks
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN

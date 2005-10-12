@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.10 2005/09/30 00:11:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.11 2005/10/12 21:07:01 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
-#define SIDEDRAG_OLD_VERSION
 
 CBOP
 C !ROUTINE: MOM_V_SIDEDRAG
@@ -54,14 +53,16 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  hFacZClosedE         :: fractional open water to east
 C  hFacZClosedW         :: fractional open water to west
-      INTEGER I,J
+      INTEGER i,j
       _RL hFacZClosedE,hFacZClosedW
 CEOP
-
-#ifdef SIDEDRAG_OLD_VERSION
       _RL Ahtmp,A4tmp
 
-C     - Laplacian  and bi-harmonic terms
+
+      IF ( sideDragFactor.LE.0. ) THEN
+C--   Laplacian and bi-harmonic terms: variable-Viscosity coeff. from
+C     MOM_CALC_VISC are not used here (corresponds to the "old" version).
+
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 #ifdef NONLIN_FRSURF
@@ -91,19 +92,20 @@ C       (but this might just be what we want ...)
      &     +hFacZClosedE*_dyU(i+1,j,bi,bj)
      &      *_recip_dxV(i+1,j,bi,bj) )
      &   *drF(k)*2.*(
-     &                Ahtmp*vFld(i,j)*cosFacV(J,bi,bj)
+     &                Ahtmp*vFld(i,j)*cosFacV(j,bi,bj)
 #ifdef COSINEMETH_III
-     &               -viscA4*del2v(i,j)*sqcosFacV(J,bi,bj)
+     &               -viscA4*del2v(i,j)*sqcosFacV(j,bi,bj)
 #else
-     &               -A4tmp*del2v(i,j)*cosFacV(J,bi,bj)
+     &               -A4tmp*del2v(i,j)*cosFacV(j,bi,bj)
 #endif
      &              )
        ENDDO
       ENDDO
 
-#else /* SIDEDRAG_OLD_VERSION */
+      ELSE
+C--   Laplacian and bi-harmonic terms: using variable-Viscosity coeff.
+C     from MOM_CALC_VISC, consistent with dissipation in the interior
 
-C     - Laplacian  and bi-harmonic terms
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 C-      this will not give any side-drag along thin wall.
@@ -121,25 +123,25 @@ C       (but this might just be what we want ...)
      &   -_recip_hFacS(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAs(i,j,bi,bj)
      &   *( hFacZClosedW*_dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
-     &         *(viscAh_Z(i  ,j)*vFld(i,j)*cosFacV(J,bi,bj)
+     &         *( viscAh_Z(i  ,j)*vFld(i,j)*cosFacV(j,bi,bj)
 #ifdef COSINEMETH_III
-     &           -viscA4_Z(i  ,j)*del2v(i,j)*sqcosFacV(J,bi,bj))
-#else 
-     &           -viscA4_Z(i  ,j)*del2v(i,j)*cosFacV(J,bi,bj))
-#endif
-     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj) 
-     &         *(viscAh_Z(i+1,j)*vFld(i,j)*cosFacV(J,bi,bj)
-#ifdef COSINEMETH_III
-     &           -viscA4_Z(i+1,j)*del2v(i,j)*sqcosFacV(J,bi,bj))
+     &           -viscA4_Z(i  ,j)*del2v(i,j)*sqcosFacV(j,bi,bj) )
 #else
-     &           -viscA4_Z(i+1,j)*del2v(i,j)*cosFacV(J,bi,bj))
+     &           -viscA4_Z(i  ,j)*del2v(i,j)*cosFacV(j,bi,bj) )
 #endif
-     &              )
-     &   *drF(k)*2.
+     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj)
+     &         *( viscAh_Z(i+1,j)*vFld(i,j)*cosFacV(j,bi,bj)
+#ifdef COSINEMETH_III
+     &           -viscA4_Z(i+1,j)*del2v(i,j)*sqcosFacV(j,bi,bj) )
+#else
+     &           -viscA4_Z(i+1,j)*del2v(i,j)*cosFacV(j,bi,bj) )
+#endif
+     &    )*drF(k)*sideDragFactor
        ENDDO
       ENDDO
 
-#endif /* (not) SIDEDRAG_OLD_VERSION */
+C--   end old-version / new-version IF blocks
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
