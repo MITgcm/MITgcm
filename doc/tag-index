@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.569 2005/10/12 02:13:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.570 2005/10/12 16:08:16 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove all the files from the cfc_offline test since they are now
+  incorporated into tutorial_cfc_offline which has been producing
+  identical results for a few days of testing
 o vorticity & strain are now computed without masking, to account for 
   no-slip-side BC in variable viscosity calculation ; mask is applied
   anyway later on, before computing advection/coriolis terms.

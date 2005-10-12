@@ -1,8 +1,0 @@
-# Packages
- &PACKAGES
- useGMRedi=.TRUE.,
- usePTRACERS=.TRUE.,
- useGCHEM=.TRUE.,
-#useMNC=.TRUE.,
- &
-  
