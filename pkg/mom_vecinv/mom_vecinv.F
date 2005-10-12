@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.53 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.54 2005/10/12 01:52:09 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -47,7 +47,7 @@ C     gvDiss :: dissipation tendency (all explicit terms), v component
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown                     - Index for upper and lower layers.
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C     myThid :: my Thread Id number
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -68,37 +68,38 @@ C     == Functions ==
 
 C     == Local variables ==
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vrF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      uCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL zStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     I,J,K - Loop counters
+      _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL del2u   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL del2v   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dStar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL zStar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tension (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hDiv    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     i,j,k  :: Loop counters
       INTEGER i,j,k
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
 c     _RL  mtFacU
       _RL  ArDvdrFac
 c     _RL  mtFacV
+      _RL  sideMaskFac
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
-      _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL omega3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL harmonic,biharmonic,useVariableViscosity
 
 #ifdef ALLOW_MNC
@@ -154,7 +155,7 @@ c       mT(i,j)    = 0.
         gvDiss(i,j)= 0.
         vort3(i,j) = 0.
         omega3(i,j)= 0.
-        ke(i,j)    = 0.
+        KE(i,j)    = 0.
         viscAh_Z(i,j) = 0.
         viscAh_D(i,j) = 0.
         viscA4_Z(i,j) = 0.
@@ -174,6 +175,14 @@ c     mTFacU       = mtFacMom*1.
 C     o V momentum equation
       ArDvdrFac    = vfFacMom*1.
 c     mTFacV       = mtFacMom*1.
+
+C note: using standard stencil (no mask) results in under-estimating
+C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
+      IF ( no_slip_sides ) THEN
+        sideMaskFac = sideDragFactor
+      ELSE
+        sideMaskFac = 0. _d 0
+      ENDIF
 
       IF (     no_slip_bottom
      &    .OR. bottomDragQuadratic.NE.0.
@@ -200,19 +209,29 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_KE(bi,bj,k,selectKEscheme,uFld,vFld,KE,myThid)
 
-      CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
-
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
-      IF (useAbsVorticity)
-     & CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
-
       IF (momViscosity) THEN
-C      Calculate Viscosities
+C--    For viscous term, compute horizontal divergence, tension & strain 
+C      and mask relative vorticity (free-slip case):
+
+       CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
+
        CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
 
        CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
 
+C-     account for no-slip / free-slip BC:
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          IF ( hFacZ(i,j).EQ.0. ) THEN
+            vort3(i,j)  = sideMaskFac*vort3(i,j)
+            strain(i,j) = sideMaskFac*strain(i,j)
+          ENDIF
+        ENDDO
+       ENDDO
+
+C--    Calculate Viscosities
        CALL MOM_CALC_VISC(
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
@@ -230,10 +249,34 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
      &                          del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
 
-C      Calculate dissipation terms for U and V equations
+C-    Strain diagnostics:
+       IF ( writeDiag ) THEN
+        IF (snapshot_mdsio) THEN
+          CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
+        ENDIF
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. snapshot_mnc) THEN
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Ds',strain,
+     &          offsets, myThid)
+        ENDIF
+#endif /*  ALLOW_MNC  */
+       ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C---   Calculate dissipation terms for U and V equations
 
 C      in terms of tension and strain
        IF (useStrainTensionVisc) THEN
+C        mask strain as if free-slip since side-drag is computed separately
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            IF ( hFacZ(i,j).EQ.0. ) strain(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
          CALL MOM_HDISSIP(bi,bj,k,hDiv,vort3,tension,strain,KE,
      I                    hFacZ,
      I                    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
@@ -249,12 +292,13 @@ C      in terms of vorticity and divergence
      O                       guDiss,gvDiss,
      &                       myThid)         
        ENDIF
+C--   if (momViscosity) end of block.
       ENDIF
 
 C-    Return to standard hfacZ (min-4) and mask vort3 accordingly:
 c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
-C---- Zonal momentum equation starts here
+C---  Other dissipation terms in Zonal momentum equation
 
 C--   Vertical flux (fVer is at upper face of "u" cell)
 
@@ -298,7 +342,6 @@ C-     No-slip BCs impose a drag at walls...
         ENDDO
        ENDDO
       ENDIF
-
 C-    No-slip BCs impose a drag at bottom
       IF (momViscosity.AND.bottomDragTerms) THEN
        CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
@@ -309,18 +352,7 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Metric terms for curvilinear grid systems
-c     IF (usingSphericalPolarMTerms) THEN
-C      o Spherical polar grid metric terms
-c      CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,mT,myThid)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
-c       ENDDO
-c      ENDDO
-c     ENDIF
-
-C---- Meridional momentum equation starts here
+C---  Other dissipation terms in Meridional momentum equation
 
 C--   Vertical flux (fVer is at upper face of "v" cell)
 
@@ -374,16 +406,35 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Metric terms for curvilinear grid systems
-c     IF (usingSphericalPolarMTerms) THEN
-C      o Spherical polar grid metric terms
-c      CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,mT,myThid)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
-c       ENDDO
-c      ENDDO
-c     ENDIF
+C-    Vorticity diagnostics:
+      IF ( writeDiag ) THEN
+        IF (snapshot_mdsio) THEN
+          CALL WRITE_LOCAL_RL('Z3','I10',1,vort3, bi,bj,k,myIter,myThid)
+        ENDIF
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. snapshot_mnc) THEN
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Z3',vort3,
+     &          offsets, myThid)
+        ENDIF
+#endif /*  ALLOW_MNC  */
+      ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C---  Prepare for Advection & Coriolis terms:
+C-    Mask relative vorticity and calculate absolute vorticity
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+         IF ( hFacZ(i,j).EQ.0. ) vort3(i,j) = 0.
+       ENDDO
+      ENDDO
+      IF (useAbsVorticity)
+     &  CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
 C--   Horizontal Coriolis terms
 c     IF (useCoriolis .AND. .NOT.useCDscheme
@@ -553,12 +604,29 @@ C--   Bernoulli term
      &          offsets, myThid)
            CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj, 'KEy', vCf,
      &          offsets, myThid)
-        ENDIF
+         ENDIF
 #endif /*  ALLOW_MNC  */
        ENDIF
 
 C--   end if momAdvection
       ENDIF
+
+C--   Metric terms for curvilinear grid systems
+c     IF (usingSphericalPolarMTerms) THEN
+C      o Spherical polar grid metric terms
+c      CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,mT,myThid)
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
+c        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
+c       ENDDO
+c      ENDDO
+c      CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,mT,myThid)
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
+c        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
+c       ENDDO
+c      ENDDO
+c     ENDIF
 
 C--   Set du/dt & dv/dt on boundaries to zero
       DO j=jMin,jMax
@@ -580,19 +648,20 @@ C--   Set du/dt & dv/dt on boundaries to zero
 
       IF ( writeDiag ) THEN
         IF (snapshot_mdsio) THEN
-          CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,
-     &         myThid)
-          CALL WRITE_LOCAL_RL('Du','I10',1,guDiss,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('Dv','I10',1,gvDiss,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
-          CALL WRITE_LOCAL_RL('D','I10',1,hDiv,bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('W3','I10',1,omega3, bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('KE','I10',1,KE,     bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('D', 'I10',1,hDiv,   bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('Du','I10',1,guDiss, bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('Dv','I10',1,gvDiss, bi,bj,k,myIter,myThid)
         ENDIF
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Ds',strain,
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'W3',omega3,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'KE',KE,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'D', hDiv,
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Dt',tension,
      &          offsets, myThid)
@@ -600,33 +669,23 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Dv',gvDiss,
      &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Z3',vort3,
-     &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'W3',omega3,
-     &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'KE',KE,
-     &          offsets, myThid)
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'D', hDiv,
-     &          offsets, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(hDiv,  'momHDiv ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(vort3, 'momVort3',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
-     &                               'Um_Advec',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
-     &                               'Vm_Advec',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
-        CALL DIAGNOSTICS_FILL(strain,'Strain  ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gvDiss,'Vm_Diss ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(guDiss, 'Um_Diss ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gvDiss, 'Vm_Diss ',k,1,2,bi,bj,myThid)
        ENDIF
+        CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
+     &                                'Um_Advec',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
+     &                                'Vm_Advec',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
