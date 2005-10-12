@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.28 2005/09/27 13:38:21 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.29 2005/10/12 01:10:10 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -145,6 +145,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  ArDvdrFac
       _RL  fvFac
       _RL  mtFacV
+      _RL  sideMaskFac
       LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
 CEOP
 
@@ -193,6 +194,14 @@ C     o V momentum equation
         ArDvdrFac  = 0.
       ENDIF
 
+C note: using standard stencil (no mask) results in under-estimating
+C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
+      IF ( no_slip_sides ) THEN
+        sideMaskFac = sideDragFactor
+      ELSE
+        sideMaskFac = 0. _d 0
+      ENDIF
+
       IF (     no_slip_bottom
      &    .OR. bottomDragQuadratic.NE.0.
      &    .OR. bottomDragLinear.NE.0.) THEN
@@ -232,10 +241,28 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
       ENDDO
 
       CALL MOM_CALC_KE(bi,bj,k,2,uFld,vFld,KE,myThid)
-      CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
-      CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
-      CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
-      CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
+      IF ( momViscosity) THEN
+        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
+        CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
+        CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
+        CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           IF ( hFacZ(i,j).EQ.0. ) THEN
+             vort3(i,j)  = sideMaskFac*vort3(i,j)
+             strain(i,j) = sideMaskFac*strain(i,j)
+           ENDIF
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif
+      ENDIF
 
 C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
@@ -701,10 +728,6 @@ C--   Set du/dt & dv/dt on boundaries to zero
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(KE,    'momKE   ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(hDiv,  'momHDiv ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(vort3, 'momVort3',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(strain,'Strain  ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gU(1-Olx,1-Oly,k,bi,bj),
      &                               'Um_Advec',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gV(1-Olx,1-Oly,k,bi,bj),
