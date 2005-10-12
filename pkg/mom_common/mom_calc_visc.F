@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.19 2005/10/10 19:49:48 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.20 2005/10/12 20:24:22 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -99,6 +99,8 @@ C     == Local variables ==
       _RL Uscl,U4scl
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vrtDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vrtDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -207,14 +209,19 @@ C     == Local variables ==
 C     - Viscosity
       IF (useVariableViscosity) THEN
 
-C      horizontal gradient of horizontal divergence:
+C-     Initialise to zero gradient of vorticity & divergence:
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
           divDx(i,j) = 0.
           divDy(i,j) = 0.
+          vrtDx(i,j) = 0.
+          vrtDy(i,j) = 0.
         ENDDO
        ENDDO
+
        IF (calcleith) THEN
+C      horizontal gradient of horizontal divergence:
+
 C-       gradient in x direction:
 #ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
@@ -240,6 +247,25 @@ C        to compute d/dy(hDiv), fill corners with appropriate values:
             divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)
           ENDDO
          ENDDO
+
+C      horizontal gradient of vertical vorticity:
+C-       gradient in x direction:
+         DO j=2-Oly,sNy+Oly
+          DO i=2-Olx,sNx+Olx-1
+            vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
+     &                  *recip_DXG(i,j,bi,bj)
+     &                  *maskS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+C-       gradient in y direction:
+         DO j=2-Oly,sNy+Oly-1
+          DO i=2-Olx,sNx+Olx
+            vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
+     &                  *recip_DYG(i,j,bi,bj)
+     &                  *maskW(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+
        ENDIF
 
        DO j=2-Oly,sNy+Oly-1
@@ -281,13 +307,10 @@ C Velocity Reynolds Scale
 
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
-          grdVrt=0.25 _d 0*(
-     &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
-     &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
-     &     +((vort3(i+1,j+1)-vort3(i,j+1))
-     &               *recip_DXG(i,j+1,bi,bj))**2
-     &     +((vort3(i+1,j+1)-vort3(i+1,j))
-     &               *recip_DYG(i+1,j,bi,bj))**2)
+          grdVrt=0.25 _d 0*( (vrtDx(i,j+1)*vrtDx(i,j+1)
+     &                        + vrtDx(i,j)*vrtDx(i,j) )
+     &                     + (vrtDy(i+1,j)*vrtDy(i+1,j)
+     &                        + vrtDy(i,j)*vrtDy(i,j) )  )
 
 C This is the vector magnitude of grad (div.v) squared
 C Using it in Leith serves to damp instabilities in w.
@@ -307,19 +330,15 @@ C Using it in Leith serves to damp instabilities in w.
          ELSEIF (calcleith) THEN
 C but this approximation will work on cube
 c (and differs by as much as 4X)
-          grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj)))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
+          grdVrt=max( abs(vrtDx(i,j+1)), abs(vrtDx(i,j)) ) 
+          grdVrt=max( grdVrt, abs(vrtDy(i+1,j)) )
+          grdVrt=max( grdVrt, abs(vrtDy(i,j))   )
 
+c This approximation is good to the same order as above...
           grdDiv=max( abs(divDx(i+1,j)), abs(divDx(i,j)) ) 
           grdDiv=max( grdDiv, abs(divDy(i,j+1)) )
           grdDiv=max( grdDiv, abs(divDy(i,j))   )
 
-c This approximation is good to the same order as above...
           viscAh_Dlth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
           viscA4_Dlth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
           viscAh_DlthD(i,j)=((leithD2fac*grdDiv))*L3
@@ -398,11 +417,10 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN
-          grdVrt=0.25 _d 0*(
-     &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
-     &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
-     &     +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
-     &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2)
+          grdVrt=0.25 _d 0*( (vrtDx(i-1,j)*vrtDx(i-1,j)
+     &                        + vrtDx(i,j)*vrtDx(i,j) )
+     &                     + (vrtDy(i,j-1)*vrtDy(i,j-1)
+     &                        + vrtDy(i,j)*vrtDy(i,j) )  )
 
 C This is the vector magnitude of grad(div.v) squared
           grdDiv=0.25 _d 0*( (divDx(i,j-1)*divDx(i,j-1)
@@ -421,13 +439,9 @@ C This is the vector magnitude of grad(div.v) squared
 
          ELSEIF (calcleith) THEN
 C but this approximation will work on cube (and differs by 4X)
-          grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj)))
-          grdVrt=max(grdVrt,
-     &     abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
+          grdVrt=max( abs(vrtDx(i-1,j)), abs(vrtDx(i,j)) ) 
+          grdVrt=max( grdVrt, abs(vrtDy(i,j-1)) )
+          grdVrt=max( grdVrt, abs(vrtDy(i,j))   )
 
           grdDiv=max( abs(divDx(i,j)), abs(divDx(i,j-1)) ) 
           grdDiv=max( grdDiv, abs(divDy(i,j))   )
