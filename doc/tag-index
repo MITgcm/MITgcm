@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.568 2005/10/11 13:18:17 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.569 2005/10/12 02:13:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o vorticity & strain are now computed without masking, to account for 
+  no-slip-side BC in variable viscosity calculation ; mask is applied
+  anyway later on, before computing advection/coriolis terms.
 o modify exp4 to test new obcs support reading from external files
   and for passive tracers
 o fix behavior of ptracers_monitor when monitor output is written to a 
