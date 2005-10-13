@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.3 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.4 2005/10/13 16:25:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -45,6 +45,10 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( silica1,myThid )
       CALL LEF_ZERO( ice0,myThid )
       CALL LEF_ZERO( ice1,myThid )
+#ifdef READ_PAR
+      CALL LEF_ZERO( par0,myThid )
+      CALL LEF_ZERO( par1,myThid )
+#endif
 # ifdef ALLOW_FE
       CALL LEF_ZERO( feinput0,myThid )
       CALL LEF_ZERO( feinput1,myThid )
@@ -58,6 +62,10 @@ C First call requires that we initialize everything to zero for safety
        _EXCH_XY_R4(silica1, myThid )
        _EXCH_XY_R4(ice0, myThid )
        _EXCH_XY_R4(ice1, myThid )
+#ifdef READ_PAR
+       _EXCH_XY_R4(par0, myThid )
+       _EXCH_XY_R4(par1, myThid )
+#endif
 # ifdef ALLOW_FE
        _EXCH_XY_R4(feinput0, myThid )
        _EXCH_XY_R4(feinput1, myThid )

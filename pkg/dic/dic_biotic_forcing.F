@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.9 2005/08/25 22:32:44 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.10 2005/10/13 16:25:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -234,6 +234,15 @@ C update
           ENDDO
          ENDDO
        ENDDO
+
+#ifdef ALLOW_FE
+#ifdef MINFE
+c find free iron and get rid of insoluble part
+       call fe_chem(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
+     &                myIter, mythid)
+#endif 
+#endif
+
 
 #ifdef ALLOW_TIMEAVE 
 c save averages

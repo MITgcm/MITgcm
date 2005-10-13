@@ -58,6 +58,7 @@ cn parameters for light/nutrient limited bioac
        Kfe = 1.2e-7     ! half saturation fe constant (mol/m3)
 c iron chemisty values
        alpfe = 0.01    ! solubility of aeolian fe
+       freefemax = 3.e-7   ! max solubility of free iron (mol/m3)
 c      KScav =  0.19/(360.*86400.)  ! scavenging rate QQ
 c      ligand_stab= 1.d8  ! ligand-fre iron stability constant (m3/mol)
 c      ligand_tot = 0.000001  ! total free ligand  (mol/m3)

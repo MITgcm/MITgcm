@@ -56,7 +56,9 @@ C  i,j,k                  :: loop indices
       _RL sfac(1-OLy:sNy+OLy)
       _RL lit, atten
 CEOP
+#ifndef READ_PAR
         call insol(myTime,sfac,bj)
+#endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 C Fortran-90
@@ -65,7 +67,11 @@ C FORTRAN-77 dynamic memory uses adstore adresto
 CRG C$TAF INIT bio_export = memory
 C FORTRAN-77 with know max of nlev
 C$TAF INIT bio_export = static, 10
+#ifdef READ_PAR
+           lit=PAR(i,j,bi,bj)
+#else
            lit=sfac(j)
+#endif
            DO k=1,nlev
 C$TAF STORE lit = bio_export
              atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5)

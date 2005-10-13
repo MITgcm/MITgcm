@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.2 2004/09/02 19:47:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.3 2005/10/13 16:25:12 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -6,6 +6,9 @@ C $Name:  $
       COMMON /dic_load/
      &    wspeed0, wspeed1, ice0, ice1, atmosp0,
      &    atmosp1, silica0, silica1
+#ifdef READ_PAR
+     &    ,par0, par1
+#endif
 #ifdef ALLOW_FE
      &    ,feinput0,feinput1
 #endif
@@ -18,6 +21,10 @@ C $Name:  $
 	      _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS silica0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS silica1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef READ_PAR
+              _RS par0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+              _RS par1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef ALLOW_FE
 	      _RS feinput0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS feinput1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

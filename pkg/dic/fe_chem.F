@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.5 2004/10/18 16:01:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.6 2005/10/13 16:25:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -70,6 +70,10 @@ C   Ligand,FeL,Fe calculation
  
               FeL = ligand_tot-lig
               freefe(i,j,k,bi,bj) = fe (i,j,k,bi,bj)-FeL
+#ifdef MINFE
+              freefe(i,j,k,bi,bj) = min(freefe(i,j,k,bi,bj),freefemax)
+              fe(i,j,k,bi,bj) = FeL+freefe(i,j,k,bi,bj)
+#endif
           END IF  
          ENDDO
         ENDDO
