@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.7 2005/04/20 15:53:06 spk Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.8 2005/10/13 19:43:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,7 +10,7 @@ C     !INTERFACE:
       SUBROUTINE TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE TRACERS_CORRECTION_STEP                            
+C     | SUBROUTINE TRACERS_CORRECTION_STEP
 C     *==========================================================*
 C     |1rst Part : Update T,S.
 C     |
@@ -22,7 +22,7 @@ C     |part1: update T,S
 C     |  T* (contained in gT) is copied to T (theta)           
 C     |  S* (contained in gS) is copied to S (salt)            
 C     |                                                           
-C     |part2: Adjustments & Diagnostics                                        
+C     |part2: Adjustments & Diagnostics
 C     |   o Filter  T,S (Shapiro Filter, Zonal_Filter)        
 C     |   o Convective Adjustment                                 
 C     |   o Diagmnostic of state variables (Time average)         
@@ -95,14 +95,18 @@ C       convective adjusted where statically unstable.
 C--   Filter (and exchange)
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT) THEN
+        CALL TIMER_START('SHAP_FILT_TS       [TRC_CORR_STEP]',myThid)
         CALL SHAP_FILT_APPLY_TS( theta,salt, myTime, myIter, myThid )
+        CALL TIMER_STOP ('SHAP_FILT_TS       [TRC_CORR_STEP]',myThid)
       ENDIF
-#endif 
+#endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT) THEN
-        CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )  
+        CALL TIMER_START('ZONAL_FILT_TS      [TRC_CORR_STEP]',myThid)
+        CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_TS      [TRC_CORR_STEP]',myThid)
       ENDIF
-#endif 
+#endif
 
 #ifndef ALLOW_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)

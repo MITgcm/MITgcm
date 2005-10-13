@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.121 2005/09/14 18:32:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.122 2005/10/13 19:43:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -476,7 +476,7 @@ C-    update also CG2D matrix (and preconditioner)
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
-        CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
+        CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
         IF (implicDiv2Dflow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
@@ -484,19 +484,19 @@ C      => Filtering of uVel,vVel is necessary
      &                             myTime, myIter, myThid )
         ENDIF
         CALL SHAP_FILT_APPLY_UV( gU,gV,myTime,myIter,myThid)
-        CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
+        CALL TIMER_STOP ('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
-        CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+        CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
         IF (implicDiv2Dflow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
         ENDIF
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
-        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+        CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
       ENDIF
 #endif  
 
@@ -514,18 +514,18 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
 C--   Correct divergence in flow field and cycle time-stepping momentum
 c     IF ( momStepping ) THEN
 #ifndef ALLOW_OFFLINE
-        CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
-        CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #endif
 c     ENDIF
 
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
 C--   Update etaH(n+1) :
-        CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+        CALL TIMER_START('UPDATE_ETAH         [FORWARD_STEP]',mythid)
         CALL UPDATE_ETAH( myTime, myIter, myThid )
-        CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+        CALL TIMER_STOP ('UPDATE_ETAH         [FORWARD_STEP]',mythid)
       ENDIF
 #endif /* EXACT_CONSERV */ 
 
@@ -579,9 +579,9 @@ cph find_rho which may use pressure()
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
 #endif
 C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
-        CALL TIMER_START('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_START('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
-        CALL TIMER_STOP ('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TIMER_STOP ('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_GCHEM
 C     Add separate timestepping of chemical/biological/forcing

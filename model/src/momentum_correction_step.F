@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.1 2004/07/06 01:01:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.2 2005/10/13 19:43:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,7 +10,7 @@ C     !INTERFACE:
       SUBROUTINE MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE MOMENTUM_CORRECTION_STEP                            
+C     | SUBROUTINE MOMENTUM_CORRECTION_STEP
 C     *==========================================================*
 C     |1rst Part : Update U,V.
 C     |
@@ -41,7 +41,7 @@ C     == Global variables ===
 #ifdef ALLOW_SHAP_FILT
 #include "SHAP_FILT.h"
 #endif
-#ifdef ALLOW_ZONAL_FILT   
+#ifdef ALLOW_ZONAL_FILT
 #include "ZONAL_FILT.h"
 #endif
 
@@ -117,16 +117,22 @@ C--- 2nd Part : Adjustment.
 C--   Filter (and exchange)
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT) THEN
-       IF ( .NOT.shap_filt_uvStar )
-     &  CALL SHAP_FILT_APPLY_UV( uVel, vVel, myTime, myIter, myThid )
+       IF ( .NOT.shap_filt_uvStar ) THEN
+        CALL TIMER_START('SHAP_FILT_UV       [MOM_CORR_STEP]',myThid)
+        CALL SHAP_FILT_APPLY_UV( uVel, vVel, myTime, myIter, myThid )
+        CALL TIMER_STOP ('SHAP_FILT_UV       [MOM_CORR_STEP]',myThid)
+       ENDIF
       ENDIF
-#endif 
+#endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT) THEN
-       IF ( .NOT.zonal_filt_uvStar )
-     &  CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
+       IF ( .NOT.zonal_filt_uvStar ) THEN
+        CALL TIMER_START('ZONAL_FILT_UV      [MOM_CORR_STEP]',myThid)
+        CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_UV      [MOM_CORR_STEP]',myThid)
+       ENDIF
       ENDIF
-#endif 
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
