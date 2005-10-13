@@ -10,6 +10,7 @@
 #  ph: use ifort compiler options -convert big_endian -assume byterecl
 
 FC=ifort
+F90C=ifort
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort -static'
 CPP='cpp  -traditional -P'
