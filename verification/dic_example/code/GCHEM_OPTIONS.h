@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dic_example/code/Attic/GCHEM_OPTIONS.h,v 1.4 2005/07/21 19:01:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dic_example/code/Attic/GCHEM_OPTIONS.h,v 1.5 2005/10/13 16:26:23 stephd Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -20,6 +20,8 @@ CEOP
 #define DIC_BIOTIC
 #undef  ALLOW_CFC
 #undef  ALLOW_FE
+#undef READ_PAR
+#undef MINFE
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */
