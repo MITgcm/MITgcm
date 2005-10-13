@@ -59,7 +59,7 @@ c                  function contributions.
       common /cost_state_final_r/
      &                objf_state_final
 cph      _RL  objf_state_final (snx,sny,nsx,nsy)
-      _RL  objf_state_final (snx,sny,nsx,nsy,2)
+      _RL  objf_state_final (snx,sny,nsx,nsy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
@@ -74,7 +74,12 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &                    mult_tracer,
      &                    mult_entropy,
      &                    mult_t_misfit,
-     &                    mult_eflux
+     &                    mult_eflux,
+     &                    multTheta,
+     &                    multSalt,
+     &                    multUvel,
+     &                    multVvel,
+     &                    multEtan
 
       _RL  mult_atl
       _RL  mult_test
@@ -82,6 +87,11 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
       _RL  mult_entropy
       _RL  mult_t_misfit
       _RL  mult_eflux
+      _RL  multTheta
+      _RL  multSalt
+      _RL  multUvel
+      _RL  multVvel
+      _RL  multEtan
 
 #ifdef ALLOW_COST_TEST
       common /cost_test_i/
