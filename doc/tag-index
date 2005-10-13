@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.570 2005/10/12 16:08:16 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.571 2005/10/13 01:28:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,11 @@ $Name:  $
 o remove all the files from the cfc_offline test since they are now
   incorporated into tutorial_cfc_offline which has been producing
   identical results for a few days of testing
+o add new parameter: sideDragFactor to enable half-slip-side BC
+  and change side-drag S/R to use viscosity from mom_calc_visc
+  (can switch back by setting sideDragFactor=0.); affects results at 
+  truncation level; regenerate output for exp.: global_ocean.cs32x10(x3), 
+   global_ocean_ebm, global_ocean_pressure, matrix_example & MLAdjust(x5).
 o vorticity & strain are now computed without masking, to account for 
   no-slip-side BC in variable viscosity calculation ; mask is applied
   anyway later on, before computing advection/coriolis terms.
