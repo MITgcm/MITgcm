@@ -14,9 +14,9 @@
  viscAh=0.0E0,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
-#- a trick to recover old version:
- sideDragFactor=0.,
-#- 
+#- a trick to recover old version of side-drag:
+#sideDragFactor=0.,
+#-
  bottomDragQuadratic=2.E-3,
  viscA4=0.E12,
  viscC4Leith=1.458198138065,
