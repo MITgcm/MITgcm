@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.571 2005/10/13 01:28:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.572 2005/10/13 16:35:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57v_post
+o change dome exp. to use variable viscosity in side-drag terms.
 o remove all the files from the cfc_offline test since they are now
   incorporated into tutorial_cfc_offline which has been producing
   identical results for a few days of testing
