@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.12 2005/10/12 03:06:38 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.13 2005/10/13 15:44:33 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1868,8 +1868,8 @@ printf 'H_SRC_FILES = '   > hsrclist.tmp
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
-    sfiles=`( cd $d; echo *.[h,c,F])`
-    sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
+    sfiles=`( cd $d; echo *.[h,c,F] | grep -v _cb2m)`
+    sfiles=`( echo $sfiles; cd $d; echo *.F90 | grep -v _cb2m)`
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
@@ -2234,18 +2234,19 @@ ctrl_weights \
 optim \
 grdchk 
 
-adAll: adDepend \$(EXE_AD)
 .PHONY: adAll
+adAll: adDepend \$(EXE_AD)
 
 CANON_F90_SRC_FILES= \
-\$(addsuffix _mod.F90, \$(CANON_F90_SRC_NAMES)) \
+\$(addsuffix _mod.F90, \$(CANON_F90_SRC_NAMES))
+CANON_F77_SRC_FILES= \
 \$(F77_SRC_FILES:.F=_cb2m.F)
 
-adDepend: \$(ALL_LINKED_FILES) \$(CANON_F90_SRC_FILES)
-	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
+.PHONY: adDepend
+adDepend: \$(ALL_LINKED_FILES) \$(CANON_F77_SRC_FILES) \$(CANON_F90_SRC_FILES)
+	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CANON_F77_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
-.PHONY: adDepend
 
 OPENAD_SUPPORT_SRC_NAMES =      \
 w2f__types          \
@@ -2267,7 +2268,7 @@ openad: ad_input_code.w2f.canon.xb.x2w.w2f.pp.f
 .PHONY: openad
 
 CB2MFILES= cb2m1.csh cb2m1.awk cb2m2.bash 
-\$(CANON_F90_SRC_FILES): \$(ALL_LINKED_FILES) \$(CB2MFILES) 
+\$(CANON_F90_SRC_FILES) \$(CANON_F77_SRC_FILES): \$(ALL_LINKED_FILES) \$(CB2MFILES) 
 	./cb2m1.csh \$(CANON_F90_SRC_NAMES)
 	./cb2m2.bash
 
@@ -2299,7 +2300,7 @@ ad_input_code.$FS: \$(CANON_AD_FILES)
 # strip all comments and blanks to reduce 
 # the file size in order to reduce perl's memory requirements 
 ad_input_code_sf.f : ad_input_code.f 
-	cat \$^ | sed -f ../code_ad/strip.sed > \$@
+	cat \$^ | sed -f ../code_ad/strip.sed | sed -f ../code_ad/stop2print.sed > \$@
 
 # mfef90 preprocessing
 # expand statement functions 
@@ -2325,7 +2326,7 @@ ad_input_code_sf.w2f.canon.xaif : ad_input_code_sf.w2f.canon.B whirl2xaif
 
 # XAIF -> XAIF'
 ad_input_code_sf.w2f.canon.xb.xaif : ad_input_code_sf.w2f.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
-	./openad_adm -i \$< -c ${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I
+	./openad_adm -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.w2f.canon.xb.x2w.B : ad_input_code_sf.w2f.canon.xb.xaif xaif2whirl
