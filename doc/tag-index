@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.572 2005/10/13 16:35:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.573 2005/10/14 12:45:43 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o PTRACERS: added namelist parameter PTRACERS_ref in analogy to tRef
+  and sRef for convenience, handy, when you want to initialize
+  ptracers in a large domain with a constant non-zero value. Also,
+  untangle ptracers_init.F a little.
 
 checkpoint57v_post
 o change dome exp. to use variable viscosity in side-drag terms.
@@ -17,7 +22,7 @@ o add new parameter: sideDragFactor to enable half-slip-side BC
 o vorticity & strain are now computed without masking, to account for 
   no-slip-side BC in variable viscosity calculation ; mask is applied
   anyway later on, before computing advection/coriolis terms.
-o modify exp4 to test new obcs support reading from external files
+o modify exp4 to test new obcs support for reading from external files
   and for passive tracers
 o fix behavior of ptracers_monitor when monitor output is written to a 
   netcdf-file; still not independent of monitor.F (writes in the same
