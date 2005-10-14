@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.11 2005/05/14 22:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.12 2005/10/14 12:45:05 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -40,76 +40,74 @@ CEOP
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_num
 
-C       Loop over tiles
-        DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-
-C           Initialize arrays in common blocks :
-            DO k=1,Nr
-              DO j=1-Oly,sNy+OLy
-                DO i=1-Olx,sNx+Olx
-                  pTracer(i,j,k,bi,bj,iTracer) = 0. _d 0
-                  gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
-                  gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
-                ENDDO
-              ENDDO
-            ENDDO
-            DO j=1-Oly,sNy+OLy
-              DO i=1-Olx,sNx+Olx
-                surfaceForcingPtr(i,j,bi,bj,iTracer) = 0. _d 0
-              ENDDO
-            ENDDO
-
-C           end bi,bj loops
+C     Loop over tiles
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         
+C     Initialize arrays in common blocks :
+         DO k=1,Nr
+          DO j=1-Oly,sNy+OLy
+           DO i=1-Olx,sNx+Olx
+            pTracer(i,j,k,bi,bj,iTracer) = PTRACERS_ref(k,iTracer)
+            gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
+            gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
+           ENDDO
           ENDDO
+         ENDDO
+         DO j=1-Oly,sNy+OLy
+          DO i=1-Olx,sNx+Olx
+           surfaceForcingPtr(i,j,bi,bj,iTracer) = 0. _d 0
+          ENDDO
+         ENDDO
+         
+C     end bi,bj loops
         ENDDO
+       ENDDO
 
-C       end of Tracer loop
+C     end of Tracer loop
       ENDDO
 
 C     Now read initial conditions and always exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
-        DO iTracer = 1, PTRACERS_numInUse
-          IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
-            _BEGIN_MASTER( myThid )
-            CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
-     &           pTracer(1-Olx,1-Oly,1,1,1,iTracer) ,0,myThid)
-            _END_MASTER(myThid)
-
-C           Apply mask
-            DO bj = myByLo(myThid), myByHi(myThid)
-              DO bi = myBxLo(myThid), myBxHi(myThid)
-                DO K=1,Nr
-                  DO J=1,sNy
-                    DO I=1,sNx
-                      IF(hFacC(I,J,K,bi,bj).EQ.0)
-     &                     pTracer(i,j,k,bi,bj,iTracer)=0.
-                    ENDDO
-                  ENDDO
-                ENDDO
-              ENDDO
-            ENDDO
-
-          ELSE
-cswdptr -- add ---
-cswdptr -- end add ---
-          ENDIF
-      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-        ENDDO
+       DO iTracer = 1, PTRACERS_numInUse
+        IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
+         _BEGIN_MASTER( myThid )
+         CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
+     &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),0,myThid)
+         _END_MASTER(myThid)                  
+         _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+        ENDIF
+       ENDDO
       ENDIF
 
+C     Apply mask
+      DO iTracer = 1, PTRACERS_numInUse
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K=1,Nr
+          DO J=1,sNy
+           DO I=1,sNx
+            IF(hFacC(I,J,K,bi,bj).EQ.0)
+     &           pTracer(i,j,k,bi,bj,iTracer)=0.
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      
 C Read from a pickup file if needed
       IF (nIter0.GT.PTRACERS_Iter0) THEN
-C       Suffix for pickup files
-        IF (pickupSuff.EQ.' ') THEN
-          WRITE(suff,'(I10.10)') nIter0
-        ELSE
-          WRITE(suff,'(A10)') pickupSuff
-        ENDIF
-        CALL PTRACERS_READ_CHECKPOINT( nIter0,myThid )
+C     Suffix for pickup files
+       IF (pickupSuff.EQ.' ') THEN
+        WRITE(suff,'(I10.10)') nIter0
+       ELSE
+        WRITE(suff,'(A10)') pickupSuff
+       ENDIF
+       CALL PTRACERS_READ_CHECKPOINT( nIter0,myThid )
       ENDIF
-
+      
 #endif /* ALLOW_PTRACERS */
-
+      
       RETURN
       END

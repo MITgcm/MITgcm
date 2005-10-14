@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.22 2005/10/11 08:35:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.23 2005/10/14 12:45:05 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -52,6 +52,7 @@ C                          are written to post-processing files.
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKr,
      &     PTRACERS_diffKrNr,
+     &     PTRACERS_ref,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,
      &     PTRACERS_Iter0,
@@ -85,6 +86,7 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_diffKr(iTracer)=UNSET_RL
         DO k=1,Nr
           PTRACERS_diffKrNr(k,iTracer)=diffKrNrS(k)
+          PTRACERS_ref     (k,iTracer)=0. _d 0
         ENDDO
         PTRACERS_useGMRedi(iTracer)=useGMRedi
         PTRACERS_useKPP(iTracer)=useKPP
