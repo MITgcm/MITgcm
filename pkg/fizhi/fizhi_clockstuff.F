@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.24 2005/07/13 14:06:25 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.25 2005/10/14 16:55:04 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -752,7 +752,8 @@ C***********************************************************************
       NTIME  = NSEC-NSEC0                                      
       IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE
       NALARM2 = NTIME                                           
-      IF(MHMS.NE.0) THEN
+      IF(MHMS.NE.0)NALARM2 = MOD( NALARM2,NSECF(MHMS) )
+      IF(MHMS.GE.1000000) THEN
        testnymd=nymd0
        testnhms=nhms0
        NMMDD = MHMS / 1000000
