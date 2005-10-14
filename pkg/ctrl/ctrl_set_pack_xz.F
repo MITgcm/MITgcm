@@ -146,7 +146,7 @@ cgg   differently. Probably introduce new variable.
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-                           weightfldxz(i,bi,ip,bj,jp,k,iobcs) = wbaro
+cph                           weightfldxz(i,bi,ip,bj,jp,k,iobcs) = wbaro
                         enddo
                      enddo
                   enddo
