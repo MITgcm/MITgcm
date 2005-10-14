@@ -681,6 +681,9 @@ c     velerrfile            - representation error
      &                salterrfile,
      &                temperrfile,
      &                velerrfile,
+     &                salt0errfile,
+     &                temp0errfile,
+     &                vel0errfile,
      &                atemp_errfile,
      &                aqh_errfile,
      &                precip_errfile,
@@ -710,6 +713,9 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) salterrfile
       character*(MAX_LEN_FNAM) temperrfile
       character*(MAX_LEN_FNAM) velerrfile
+      character*(MAX_LEN_FNAM) salt0errfile
+      character*(MAX_LEN_FNAM) temp0errfile
+      character*(MAX_LEN_FNAM) vel0errfile
       character*(MAX_LEN_FNAM) atemp_errfile
       character*(MAX_LEN_FNAM) aqh_errfile
       character*(MAX_LEN_FNAM) precip_errfile
