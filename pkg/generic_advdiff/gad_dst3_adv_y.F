@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.5 2005/04/03 16:05:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.6 2005/10/14 21:51:05 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -40,7 +40,7 @@ C     vFld    :: velocity [m/s], meridional component
       _RL psiP,psiM,thetaP,thetaM
       _RL vFld
       _RL smallNo
-      _RL Rjjm,Rjjp
+c     _RL Rjjm,Rjjp
 
       IF (inAdMode) THEN
        smallNo = 1.0D-20
@@ -65,6 +65,9 @@ c       vFld = vVel(i,j,k,bi,bj)
         cfl=abs(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
+#ifdef ALLOW_MATRIX
+        IF (.NOT.useMATRIX) THEN
+#endif /* ALLOW_MATRIX */
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
@@ -86,6 +89,15 @@ c       vFld = vVel(i,j,k,bi,bj)
      &      *( Tracer(i,j-1) + psiP*Rj )
      &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
+#ifdef ALLOW_MATRIX
+        ELSE     
+          vT(i,j)=
+     &     0.5*(vTrans(i,j)+abs(vTrans(i,j)))
+     &        *( Tracer(i,j-1) + (d0*Rj+d1*Rjm) )
+     &    +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
+     &        *( Tracer(i, j ) - (d0*Rj+d1*Rjp) )
+        ENDIF
+#endif /* ALLOW_MATRIX */     
 
        ENDDO
       ENDDO

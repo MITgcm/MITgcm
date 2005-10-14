@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.4 2005/04/03 16:05:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.5 2005/10/14 21:51:05 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -39,7 +39,7 @@ C     wFld     :: velocity, vertical component
       _RL psiP,psiM,thetaP,thetaM
       _RL wFld
       _RL smallNo
-      _RL Rjjm,Rjjp
+c     _RL Rjjm,Rjjp
 
       IF (.NOT. multiDimAdvection) THEN
 C      If using the standard time-stepping/advection schemes (ie. AB-II)
@@ -78,6 +78,9 @@ c       wFld = wVel(i,j,k,bi_arg,bj_arg)
         cfl=abs(wFld*dTarg*recip_drC(k))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
+#ifdef ALLOW_MATRIX
+        IF (.NOT.useMATRIX) THEN
+#endif /* ALLOW_MATRIX */        
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
@@ -99,6 +102,16 @@ c       wFld = wVel(i,j,k,bi_arg,bj_arg)
      &       *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
      &   +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
      &       *( Tracer(i,j,km1,bi,bj) - psiP*Rj )
+#ifdef ALLOW_MATRIX
+        ELSE
+          wT(i,j)=
+     &     0.5*(rTrans(i,j)+abs(rTrans(i,j)))
+     &        *( Tracer(i,j, k ,bi,bj) + (d0*Rj+d1*Rjp) )
+     &    +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
+     &        *( Tracer(i,j,km1,bi,bj) - (d0*Rj+d1*Rjm) )
+        ENDIF
+#endif /* ALLOW_MATRIX */
+
        ENDDO
       ENDDO
 
