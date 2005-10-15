@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.6 2005/09/02 16:14:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.7 2005/10/15 18:27:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -26,6 +26,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
@@ -72,6 +73,8 @@ c     == local variables ==
       logical ladinit
 
       character*(MAX_LEN_MBUF) msgbuf
+
+      _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 c     == external functions ==
 
@@ -207,34 +210,65 @@ c--       Loop over the model layers
           fctilet = 0. _d 0
           
           do k = 1,nr
-
-c--         Compute model misfit and cost function term for
-c           the temperature field.
             do j = jmin,jmax
              do i = imin,imax
               if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                      fctiles = fctiles +
-     &                  (wsalt(k,bi,bj)*cosphi(i,j,bi,bj)/
+     &                  (wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
      &          ((nfmin*errsannurescal)**2)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf))
 c
-                     fctilet = fctilet +
-     &                  (wtheta(k,bi,bj)*cosphi(i,j,bi,bj)/
-     &          ((nfmin*errtannurescal)**2)*
-     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
-     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
-                     if ( wtheta(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
-     &                 num_tdrift(bi,bj) = num_tdrift(bi,bj) + 1. _d 0
-                     if ( wsalt(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+                     diagnosfld3d(i,j,k,bi,bj) = 
+     &                  (wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
+     &          ((nfmin*errsannurescal)**2)*
+     &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
+     &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf))
+c
+                     if ( wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
+     &                 .ne. 0. )
      &                 num_sdrift(bi,bj) = num_sdrift(bi,bj) + 1. _d 0
+              else
+                     diagnosfld3d(i,j,k,bi,bj) = 0.
               endif
              enddo
             enddo
-
           enddo
-c--       End of loop over layers.
 
+          call mdswritefield( 'DiagnosCost_DriftSalt',
+     &         writeBinaryPrec, globalfiles, 'RL', Nr,
+     &         diagnosfld3d, 1, optimcycle, mythid )
+
+          do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+              if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
+                     fctilet = fctilet +
+     &                  (wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
+     &          ((nfmin*errtannurescal)**2)*
+     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
+     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
+c
+                     diagnosfld3d(i,j,k,bi,bj) = 
+     &                  (wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
+     &          ((nfmin*errtannurescal)**2)*
+     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
+     &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
+c
+                     if ( wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj) 
+     &                 .ne. 0. )
+     &                 num_tdrift(bi,bj) = num_tdrift(bi,bj) + 1. _d 0
+              else
+                     diagnosfld3d(i,j,k,bi,bj) = 0.
+              endif
+             enddo
+            enddo
+          enddo
+
+          call mdswritefield( 'DiagnosCost_DriftTheta',
+     &         writeBinaryPrec, globalfiles, 'RL', Nr,
+     &         diagnosfld3d, 1, optimcycle, mythid )
+          
           fcthread_tdrift    = fcthread_tdrift    + fctilet
           fcthread_tdrifs    = fcthread_tdrifs    + fctiles
           objf_tdrift(bi,bj) = objf_tdrift(bi,bj) + fctilet

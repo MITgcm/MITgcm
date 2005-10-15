@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.3 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.4 2005/10/15 18:27:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -116,12 +116,12 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
-                  if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
 		  fctile = fctile
-     &                 + wsalt(k,bi,bj)*cosphi(i,j,bi,bj)
+     &                 + wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
-                  if ( wsalt(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+                  if ( wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj).ne.0. )
      &                 num_salt0(bi,bj) = num_salt0(bi,bj) + 1. _d 0
                 endif
               enddo
@@ -167,29 +167,6 @@ c--     Print cost function for all tiles.
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-#endif
-
-#else
-c--   Do not enter the calculation of the salinity increment 
-c--   contribution to the final cost function.
-
-      fctile   = 0. _d 0
-      fcthread = 0. _d 0
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_salt0 : no contribution of the I.C. in temp. ',
-     &                    ' to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
 #endif

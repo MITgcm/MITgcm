@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.7 2005/09/02 16:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.8 2005/10/15 18:27:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -32,6 +32,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
@@ -77,6 +78,9 @@ c     == local variables ==
 #ifdef GENERIC_BAR_MONTH
       integer mrec, nyears, iyear
 #endif      
+
+      _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -188,17 +192,27 @@ c             the salinity field.
                 do i = imin,imax
                   if ( _hFacC(i,j,k,bi,bj) .ne. 0. ) then
                      fctile = fctile +
-     &                    (wsalt(k,bi,bj)*cmask(i,j)*
+     &                    (wsaltLev(i,j,k,bi,bj)*cmask(i,j)*
      &                    (sbar(i,j,k,bi,bj) - sdat(i,j,k,bi,bj))*
      &                    (sbar(i,j,k,bi,bj) - sdat(i,j,k,bi,bj))   )
-                     if ( wsalt(k,bi,bj)*cmask(i,j) .ne. 0. )
+                     if ( wsaltLev(i,j,k,bi,bj)*cmask(i,j) .ne. 0. )
      &                    num_salt(bi,bj) = num_salt(bi,bj) + 1. _d 0
+                     diagnosfld3d(i,j,k,bi,bj) =
+     &                    (wsaltLev(i,j,k,bi,bj)*cmask(i,j)*
+     &                    (sbar(i,j,k,bi,bj) - sdat(i,j,k,bi,bj))*
+     &                    (sbar(i,j,k,bi,bj) - sdat(i,j,k,bi,bj))   )
+                  else
+                     diagnosfld3d(i,j,k,bi,bj) = 0.
                   endif
                 enddo
               enddo
 
             enddo
 c--         End of loop over layers.
+
+            call mdswritefield( 'DiagnosCost_ClimSalt',
+     &           writeBinaryPrec, globalfiles, 'RL', Nr,
+     &           diagnosfld3d, irec, optimcycle, mythid )
 
             fcthread         = fcthread         + fctile
             objf_salt(bi,bj) = objf_salt(bi,bj) + fctile

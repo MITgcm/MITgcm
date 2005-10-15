@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.7 2005/09/02 16:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.8 2005/10/15 18:27:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -32,6 +32,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
@@ -76,6 +77,9 @@ c     == local variables ==
 #ifdef GENERIC_BAR_MONTH
       integer mrec, nyears, iyear
 #endif      
+
+      _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      
 c     == external functions ==
 
       integer  ilnblnk
@@ -187,17 +191,27 @@ c             the temperature field.
                 do i = imin,imax
                   if ( _hFacC(i,j,k,bi,bj) .ne. 0. ) then
                      fctile = fctile +
-     &                    (wtheta(k,bi,bj)*cmask(i,j)*
+     &                    (wthetaLev(i,j,k,bi,bj)*cmask(i,j)*
      &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj))*
      &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj)) )
-                     if ( wtheta(k,bi,bj)*cmask(i,j) .ne. 0. )
+                     if ( wthetaLev(i,j,k,bi,bj)*cmask(i,j) .ne. 0. )
      &                    num_temp(bi,bj) = num_temp(bi,bj) + 1. _d 0
+                     diagnosfld3d(i,j,k,bi,bj) = 
+     &                    (wthetaLev(i,j,k,bi,bj)*cmask(i,j)*
+     &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj))*
+     &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj)) )
+                  else
+                     diagnosfld3d(i,j,k,bi,bj) = 0.
                   endif
                 enddo
               enddo
 
             enddo
 c--         End of loop over layers.
+
+            call mdswritefield( 'DiagnosCost_ClimTheta',
+     &           writeBinaryPrec, globalfiles, 'RL', Nr,
+     &           diagnosfld3d, irec, optimcycle, mythid )
 
             fcthread         = fcthread         + fctile
             objf_temp(bi,bj) = objf_temp(bi,bj) + fctile
