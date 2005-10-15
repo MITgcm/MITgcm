@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.132 2005/09/16 00:50:49 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.133 2005/10/15 00:35:36 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -791,19 +791,19 @@ EOF
 EOF
     echo "Executing:" > genmake_tnc.log
     echo "  $CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS" \
-	> genmake_tnc.log
+	>> genmake_tnc.log
     RET_CPP=f
     $CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS 2>/dev/null  \
 	&&  RET_CPP=t
     if test "x$RET_CPP" = xf ; then
 	echo "  WARNING: CPP failed to pre-process the netcdf test." \
-	    > genmake_tnc.log
+	    >> genmake_tnc.log
 	echo "    Please check that \$INCLUDES is properly set." \
-	    > genmake_tnc.log
+	    >> genmake_tnc.log
     fi
     echo "Executing:" > genmake_tnc.log
-    echo "  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS" > genmake_tnc.log
-    echo "  $LINK -o genmake_tnc.o $LIBS" > genmake_tnc.log
+    echo "  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS" >> genmake_tnc.log
+    echo "  $LINK -o genmake_tnc.o $LIBS" >> genmake_tnc.log
     $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
@@ -819,6 +819,9 @@ EOF
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
+	echo "$CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS \ " >> genmake_tnc.log
+	echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
+	echo " &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
 	$CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS 2>/dev/null  \
 	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	    &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
@@ -827,6 +830,9 @@ EOF
 	    LIBS="$LIBS -lnetcdf"
 	    HAVE_NETCDF=t
 	else
+	    echo "===  genmake_tnc.F  ===" >> genmake_warnings
+	    cat genmake_tnc.F >> genmake_warnings
+	    echo "===  genmake_tnc.F  ===" >> genmake_warnings
 	    cat genmake_tnc.log >> genmake_warnings
 	fi
     fi
