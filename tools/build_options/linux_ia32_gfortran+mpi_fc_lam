@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.3 2005/10/16 06:35:31 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran+mpi_fc_lam,v 1.1 2005/10/16 06:35:31 edhill Exp $
 #  $Name:  $
 #
 
@@ -13,9 +13,13 @@
 #
 #  which results in run-time errors.
 
+#  This optfile is nearly identical to linux_ia32_gfortran since it 
+#  just invokes the LAM compiler-wrappers as shipped with LAM for 
+#  Fedora Core 4 which, in spite of its "mpif77" name, is actually 
+#  a wrapper for gfortran.
 
-FC=gfortran
-CC=gcc
+FC=mpif77
+CC=mpicc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
