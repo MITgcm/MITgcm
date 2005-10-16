@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.12 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.13 2005/10/16 18:38:55 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -117,7 +117,7 @@ C--    Select diagnostics list that uses instantaneous output
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
          write(tagname,'(A,I2.2)')'diagStg',n
-         time4SnapShot = alarm2(tagname)
+         time4SnapShot = alarm2next(tagname,deltaT)
         endif
 #endif
 
