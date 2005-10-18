@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.4 2002/03/06 01:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.5 2005/10/18 16:03:55 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -38,6 +38,8 @@ C     wFld     :: velocity, vertical component
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
       _RL wFld
+      _RL thetaMax
+      PARAMETER( thetaMax = 1.D+20 )
 
       IF (.NOT. multiDimAdvection) THEN
 C      If using the standard time-stepping/advection schemes (ie. AB-II)
@@ -68,20 +70,37 @@ C      for maskC(...) and wVel(...)
 c       wFld = wVel(i,j,k,bi_arg,bj_arg)
         wFld = rTrans(i,j)*recip_rA(i,j,bi_arg,bj_arg)
         cfl=abs(wFld*dTarg*recip_drC(k))
-        d0=(2.D0-cfl)*(1.-cfl)*oneSixth
-        d1=(1.D0-cfl*cfl)*oneSixth
+        d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
+        d1=(1. _d 0 -cfl*cfl)*oneSixth
+
+C-      the old version: can produce overflow, division by zero,
+C       and is wrong for tracer with low concentration:
+c       thetaP=Rjm/(1.D-20+Rj)
+c       thetaM=Rjp/(1.D-20+Rj)
+C-      the right expression, but not bounded:
 c       thetaP=0.D0
-c       IF (Rj.NE.0.D0) thetaP=Rjm/Rj
-        thetaP=Rjm/(1.D-20+Rj)
-        psiP=d0+d1*thetaP
-        psiP=max(0.D0,min(min(1.D0,psiP),
-     &       (1.D0-cfl)/(1.D-20+cfl)*thetaP))
-        thetaM=Rjp/(1.D-20+Rj)
 c       thetaM=0.D0
+c       IF (Rj.NE.0.D0) thetaP=Rjm/Rj
 c       IF (Rj.NE.0.D0) thetaM=Rjp/Rj
+C-      prevent |thetaP,M| to reach too big value:
+        IF ( ABS(Rj)*thetaMax .LE. ABS(Rjm) ) THEN
+          thetaP=SIGN(thetaMax,Rjm*Rj)
+        ELSE
+          thetaP=Rjm/Rj
+        ENDIF
+        IF ( ABS(Rj)*thetaMax .LE. ABS(Rjp) ) THEN
+          thetaM=SIGN(thetaMax,Rjp*Rj)
+        ELSE
+          thetaM=Rjp/Rj
+        ENDIF
+
+        psiP=d0+d1*thetaP
+        psiP=MAX(0. _d 0,MIN(MIN(1. _d 0,psiP),
+     &                       thetaP*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
         psiM=d0+d1*thetaM
-        psiM=max(0.D0,min(min(1.D0,psiM),
-     &       (1.D0-cfl)/(1.D-20+cfl)*thetaM))
+        psiM=MAX(0. _d 0,MIN(MIN(1. _d 0,psiM),
+     &                       thetaM*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
+
         wT(i,j)=
      &   0.5*(rTrans(i,j)+abs(rTrans(i,j)))
      &      *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
