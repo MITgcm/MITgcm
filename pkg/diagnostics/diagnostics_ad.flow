@@ -1,9 +1,11 @@
 
 C----------------------------------------
-C subroutine  diagnostics_SWITCH_ONOFF
+C subroutine  diagnostics_switch_onoff
 C----------------------------------------
-CADJ SUBROUTINE diagnostics_SWITCH_ONOFF INPUT  = 1,2,3
-CADJ SUBROUTINE diagnostics_SWITCH_ONOFF OUTPUT =
+CADJ SUBROUTINE diagnostics_switch_onoff INPUT  = 1,2,3
+CADJ SUBROUTINE diagnostics_switch_onoff OUTPUT =
+CADJ SUBROUTINE diagnostics_switch_onoff  DEPEND = 1,2,3
+CADJ SUBROUTINE diagnostics_switch_onoff  REQUIRED
 
 C----------------------------------------
 C subroutine  diagnostics_count
