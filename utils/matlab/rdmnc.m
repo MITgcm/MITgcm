@@ -27,7 +27,7 @@ function [S] = rdmnc_mod2(varargin)
 %   >> S=rdmnd('state.*','XC','YC','T');
 %   >> imagesc( S.XC, S.YC, S.T(:,:,1)' );
 %
-%  Original Author:  Alistair Adcroft
+%  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
 % Initializations
@@ -82,7 +82,9 @@ if isempty(iters)
     for ieachfile=1:length(files)
         eachfile = [filepaths{ieachfile},files{ieachfile}];
         nc=netcdf(char(eachfile),'read');
-        iters = [iters,nc{'iter'}(:)];
+        nciters = nc{'iter'}(:);
+        if isempty(nciters), nciters = nc{'T'}(:); end
+        iters = [iters,nciters];
         close(nc);
     end
     iters = unique(iters);
@@ -131,18 +133,20 @@ function [i0,j0,fn] = findTileOffset(S);
 function [S] = rdmnc_local(nc,varlist,iters,S)
 
     fiter = nc{'iter'}(:);                               % File iterations present
+    if isempty(fiter), fiter = nc{'T'}(:); end
     [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
     dii = dii(find(dii ~= 0));                           % Data interation index
-
+    
     % No variables specified? Default to all
     if isempty(varlist), varlist=ncnames(var(nc)); end
-
+    
     % Attributes for structure
     if iters>0; S.iters_read_from_file=iters; end
     S.attributes.global=read_att(nc);
-
+    
 	% Read variable data
-	for ivar=1:size(varlist,2);
+	for ivar=1:size(varlist,2)
+        
         cvar=char(varlist{ivar});
         if isempty(nc{cvar})
             disp(['No such variable ''',cvar,''' in MNC file ',name(nc)]);
@@ -159,7 +163,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
             tmpdata=nc{cvar}(:);
             it = 0;
         end
-	
+        
         tmpdata=squeeze(permute(tmpdata,[9:-1:1]));
         [ni nj nk nm nn no np]=size(tmpdata);
         [ni nj nk nm nn no np];
