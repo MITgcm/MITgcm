@@ -64,12 +64,12 @@ elseif ismember(fln,{'Bol','Psi','Res'})
     if isequal(flu,'A'),     delM = - 1000*drF ./ g;
     elseif isequal(flu,'O'), delM = drF;             end
     if ismember(fln,{'Psi','Res'})
-        U = LocalLoad([dad,fil,'.*'],uFld,itr,ddf,nc,DataIn);
-        V = LocalLoad([dad,fil,'.*'],vFld,itr,ddf,nc,DataIn);
         if isequal(ddf,'MDS')
-            % Eventually, trim according to index!
-            % U = 
-            % V = 
+            U = LocalLoad([dad,uFld,'.*'],uFld,itr,ddf,nc,DataIn);
+            V = LocalLoad([dad,vFld,'.*'],vFld,itr,ddf,nc,DataIn);
+        elseif isequal(ddf,'MNC')
+            U = LocalLoad([dad,fil,'.*'],uFld,itr,ddf,nc,DataIn);
+            V = LocalLoad([dad,fil,'.*'],vFld,itr,ddf,nc,DataIn);
         end
         U = GraphixAverage(U,fln,avg,months,ddf,Dim);
         V = GraphixAverage(V,fln,avg,months,ddf,Dim);
