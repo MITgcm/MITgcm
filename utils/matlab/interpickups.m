@@ -1,5 +1,5 @@
-%function interpicks(dirin,dirout,varargin)
-% function interpicks(dirin,dirout,snap)
+function interpickups(dirin,dirout,varargin)
+% function interpickups(dirin,dirout,snap)
 %
 % This function interpolates the data in 
 % a set of mnc pickup files and grid files from the MITgcm 
@@ -15,12 +15,14 @@
 %
 % Snap is an optional argument if there is more than one timestep
 % in the file.  The default is 1.
+%
+% May be fishy near boundaries if grid is not uniform...
 
-%if nargin==2
+if nargin==2
   snap=1
-%else
-%  snap=varargin{1}
-%endif
+else
+  snap=varargin{1}
+endif
 
 if (strcmp(dirin,dirout))
   error('dir','You cant use the same input and output directories!')
