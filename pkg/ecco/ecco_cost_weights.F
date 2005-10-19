@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.15 2005/10/14 20:09:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.16 2005/10/19 03:30:19 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -614,14 +614,16 @@ c--           Test for missing values.
       enddo
 #endif
 
-#if (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
+#if (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
       nnz   =   1
 ce      irec  =   2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wtauu, irec, mythid )
+      if ( tauu_errfile .NE. ' ' ) then
+         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz, 
+     &        wtauu, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -644,7 +646,7 @@ cph)
         enddo
       enddo
 
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION))
+#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
 
       nnz   =   1
 ce      irec  =   2
@@ -652,8 +654,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( uwind_errfile .NE. ' ' ) then
-         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wuwind, irec, mythid )
+         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz,
+     &        wuwind, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -676,15 +678,17 @@ c--           Test for missing values.
 #endif
 
 c--   Read meridional wind stress variance.
-#if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION))
+#if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) || defined (ALLOW_VSTRESS_CONTROL))
       nnz   =   1
 ce      irec  =   2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
 
-      call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wtauv, irec, mythid )
+      if ( tauv_errfile .NE. ' ' ) then
+         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz, 
+     &        wtauv, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -706,7 +710,7 @@ cph)
         enddo
       enddo
 
-#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
+#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
 
       nnz   =   1
 ce      irec  =   2
@@ -715,8 +719,8 @@ ce(   due to Patrick's processing:
 ce)
 
       if ( vwind_errfile .NE. ' ' ) then
-         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wvwind, irec, mythid )
+         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz,
+     &        wvwind, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -737,7 +741,7 @@ c--           Test for missing values.
       enddo
 #endif
 
-#if (defined (ALLOW_HFLUX_COST_CONTRIBUTION))
+#if (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
 c--   Read heat flux flux variance.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -746,8 +750,10 @@ ce      irec  =  2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   whflux, irec, mythid )
+      if ( hflux_errfile .NE. ' ' ) then
+         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz,
+     &        whflux, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -770,7 +776,7 @@ cph)
           enddo
         enddo
       enddo
-#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION))
+#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) || defined (ALLOW_ATEMP_CONTROL))
 c--   Read atmos. temp. variance.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -780,8 +786,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( atemp_errfile .NE. ' ' ) then
-         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   watemp, irec, mythid )
+         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz,
+     &        watemp, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -804,7 +810,7 @@ c--           Data are in units of W/m**2.
 
 #endif
 
-#if (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
+#if (defined (ALLOW_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SFLUX_CONTROL))
 c--   Read salt flux variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -813,8 +819,10 @@ ce      irec  =  2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wsflux, irec, mythid )
+      if ( sflux_errfile .NE. ' ' ) then
+         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz,
+     &        wsflux, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -837,7 +845,7 @@ cph)
           enddo
         enddo
       enddo
-#elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
+#elif (defined (ALLOW_AQH_COST_CONTRIBUTION) || defined (ALLOW_AQH_CONTROL))
 c--   Secific humid. variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -848,7 +856,7 @@ ce(   due to Patrick's processing:
 ce)
       if ( aqh_errfile .NE. ' ' ) then
          call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   waqh, irec, mythid )
+     &        waqh, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -869,7 +877,7 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
-#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
+#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) || defined (ALLOW_PRECIP_CONTROL))
 c--   Atmos. precipitation variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -880,7 +888,7 @@ ce(   due to Patrick's processing:
 ce)
       if ( precip_errfile .NE. ' ' ) then
         call mdsreadfield( precip_errfile, cost_iprec, cost_yftype, nnz,
-     &                     wprecip, irec, mythid )
+     &        wprecip, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -901,7 +909,7 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
-#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
+#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) || defined (ALLOW_SWFLUX_CONTROL))
 c--   Atmos. swfluxitation variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -912,7 +920,7 @@ ce(   due to Patrick's processing:
 ce)
       if ( swflux_errfile .NE. ' ' ) then
         call mdsreadfield( swflux_errfile, cost_iprec, cost_yftype, nnz,
-     &                     wswflux, irec, mythid )
+     &        wswflux, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -933,7 +941,7 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
-#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION))
+#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) || defined (ALLOW_SWDOWN_CONTROL))
 c--   Atmos. swdownitation variance. Second read: data in units of m/s.
       nnz   =  1
 c--   First  record in data file:  mean field.
@@ -944,7 +952,7 @@ ce(   due to Patrick's processing:
 ce)
       if ( swdown_errfile .NE. ' ' ) then
         call mdsreadfield( swdown_errfile, cost_iprec, cost_yftype, nnz,
-     &                     wswdown, irec, mythid )
+     &        wswdown, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1185,52 +1193,52 @@ c
       call active_write_xyz_loc( 'maskCtrlS', maskS, 
      &     1, 0, mythid, dummy)
 
-#if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION))
+#if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
       call active_write_xy_loc( 'whflux', whflux, 1, 0, mythid, dummy)
       call active_write_xy_loc( 'whflux2', whflux2, 1, 0, mythid, dummy)
-#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION))
+#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) || defined (ALLOW_ATEMP_CONTROL))
       call active_write_xy_loc( 'watemp', watemp, 1, 0, mythid, dummy)
 #endif
 
-#if   (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
+#if   (defined (ALLOW_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SFLUX_CONTROL))
       call active_write_xy_loc( 'wsflux', wsflux, 1, 0, mythid, dummy)
       call active_write_xy_loc( 'wsflux2', wsflux2, 1, 0, mythid, dummy)
-#elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
+#elif (defined (ALLOW_AQH_COST_CONTRIBUTION) || defined (ALLOW_AQH_CONTROL))
       call active_write_xy_loc( 'waqh', waqh, 1, 0, mythid, dummy)
 #endif
 
-#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION))
+#if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) || defined (ALLOW_PRECIP_CONTROL))
       call active_write_xy_loc( 'wprecip', wprecip, 1, 0, mythid, dummy)
 #endif
 
-#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION))
+#if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) || defined (ALLOW_SWFLUX_CONTROL))
       call active_write_xy_loc( 'wswflux', wswflux, 1, 0, mythid, dummy)
 #endif
 
-#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION))
+#if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) || defined (ALLOW_SWDOWN_CONTROL))
       call active_write_xy_loc( 'wswdown', wswdown, 1, 0, mythid, dummy)
 #endif
 
-#if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
+#if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
       call active_write_xy_loc( 'wtauu', wtauu,   1, 0, mythid, dummy)
       call active_write_xy_loc( 'wtauu2', wtauu2,   1, 0, mythid, dummy)
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION))
+#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
       call active_write_xy_loc( 'wuwind', wuwind, 1, 0, mythid, dummy)
 #endif
 
-#if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION))
+#if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) || defined (ALLOW_VSTRESS_CONTROL))
       call active_write_xy_loc( 'wtauv', wtauv,   1, 0, mythid, dummy)
       call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
-#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
+#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
       call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
 #endif
 
-#if (defined (ALLOW_SST_COST_CONTRIBUTION))
+#if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
       call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
 #endif
 
-#if (defined (ALLOW_SSS_COST_CONTRIBUTION))
-      call active_write_xy_loc( 'wsss', wsst, 1, 0, mythid, dummy)
+#if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
+      call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
 #endif
 
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
