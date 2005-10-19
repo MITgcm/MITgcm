@@ -198,10 +198,10 @@ else
     elseif ~isempty(find([1,2]==Vector))
         if isequal(ddf,'MDS')
             data = LocalLoad([dad,fil,'.*'],fln ,itr,ddf,nc,DataIn);
-            if     isequal(Dim,2), data1 = squeeze(data(:,Index,:));
-                                   data2 = squeeze(data(:, Mate,:));
-            elseif isequal(Dim,3), data1 = squeeze(data(:,:,Index,:));
-                                   data2 = squeeze(data(:,:, Mate,:)); end
+            if     isequal(Dim,2), data1 = squeeze(data(:,:,Index,:));
+                                   data2 = squeeze(data(:,:, Mate,:));
+            elseif isequal(Dim,3), data1 = squeeze(data(:,:,:,Index,:));
+                                   data2 = squeeze(data(:,:,:, Mate,:)); end
         elseif isequal(ddf,'MNC')
             data1 = LocalLoad([dad,fil,'.*'],fln ,itr,ddf,nc,DataIn);
             data2 = LocalLoad([dad,fil,'.*'],Mate,itr,ddf,nc,DataIn);
