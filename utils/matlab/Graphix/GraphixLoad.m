@@ -37,15 +37,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load grid information.
-[nc,dim,XC,XG,YC,YG,Ylat,ZC,ZF,RAC,drC,drF,HFacC,...
- HFacW,HFacS,dxG,dyG,dxC,dyC,AngleCS,AngleSN] = ...
-    GraphixLoadGridData(LoadGridData,grd,gdf,flu,GridSuffix,ZcordFile);
+if ~isequal(dat,'Gra')
+    [nc,dim,XC,XG,YC,YG,Ylat,ZC,ZF,RAC,drC,drF,HFacC,...
+     HFacW,HFacS,dxG,dyG,dxC,dyC,AngleCS,AngleSN] = ...
+        GraphixLoadGridData(LoadGridData,grd,gdf,flu,GridSuffix,ZcordFile);
+end
 
 % Load GRADS data
-if ~isequal(Grads,0)
+if isequal(dat,'Gra')
     if GraphixDebug, disp(['  Debug -- Loading GRADS field.']); end
     [data,xax,yax,zax,months,time,dim] = ...
-        GraphixLoadGradsData(Grads,dad,fln,GraphixDebug);
+        GraphixLoadGradsData(fil,dad,fln,GraphixDebug);
     GraphixDebug_Local(GraphixDebug,'data','load',data);
     data = GraphixAverage(data,fln,avg,months,ddf,dim);
     GraphixDebug_Local(GraphixDebug,'data','average',data);
@@ -65,11 +67,11 @@ elseif ismember(fln,{'Bol','Psi','Res'})
     elseif isequal(flu,'O'), delM = drF;             end
     if ismember(fln,{'Psi','Res'})
         if isequal(ddf,'MDS')
-            U = LocalLoad([dad,uFld,'.*'],uFld,itr,ddf,nc,DataIn);
-            V = LocalLoad([dad,vFld,'.*'],vFld,itr,ddf,nc,DataIn);
+            U = LocalLoad([dad,'/',uFld],uFld,itr,ddf,nc,DataIn);
+            V = LocalLoad([dad,'/',vFld],vFld,itr,ddf,nc,DataIn);
         elseif isequal(ddf,'MNC')
-            U = LocalLoad([dad,fil,'.*'],uFld,itr,ddf,nc,DataIn);
-            V = LocalLoad([dad,fil,'.*'],vFld,itr,ddf,nc,DataIn);
+            U = LocalLoad([dad,'/',fil],uFld,itr,ddf,nc,DataIn);
+            V = LocalLoad([dad,'/',fil],vFld,itr,ddf,nc,DataIn);
         end
         U = GraphixAverage(U,fln,avg,months,ddf,Dim);
         V = GraphixAverage(V,fln,avg,months,ddf,Dim);
@@ -77,11 +79,11 @@ elseif ismember(fln,{'Bol','Psi','Res'})
     end
     if ismember(fln,{'Bol','Res'})
         try
-            kwx = LocalLoad([dad,gmfile,'.*'],KwxFld,itr,ddf,nc,DataIn);
-            kwy = LocalLoad([dad,gmfile,'.*'],KwyFld,itr,ddf,nc,DataIn);
+            kwx = LocalLoad([dad,'/',gmfile],KwxFld,itr,ddf,nc,DataIn);
+            kwy = LocalLoad([dad,'/',gmfile],KwyFld,itr,ddf,nc,DataIn);
         catch
-            kwx = LocalLoad([dad,'GM_Kwx-T'],'',itr,'MDS',nc,DataIn);
-            kwy = LocalLoad([dad,'GM_Kwy-T'],'',itr,'MDS',nc,DataIn);
+            kwx = LocalLoad([dad,'/GM_Kwx-T'],'',itr,'MDS',nc,DataIn);
+            kwy = LocalLoad([dad,'/GM_Kwy-T'],'',itr,'MDS',nc,DataIn);
         end
         kwx = GraphixAverage(kwx,fln,avg,months,ddf,Dim);
         kwy = GraphixAverage(kwy,fln,avg,months,ddf,Dim);
@@ -106,7 +108,7 @@ elseif isequal(fln,'ETAstd')
     data = GraphixAverage(data,fln,avg,months,ddf,Dim);
     [data,xax,yax,pltslc] = ...
         GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld);
+                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
 elseif ismember(fln,{'Tstd','ActTstd'})
     T  = LocalLoad(dad,'T' ,itr,ddf,nc,DataIn);
     TT = LocalLoad(dad,'TT',itr,ddf,nc,DataIn);
@@ -121,7 +123,7 @@ elseif ismember(fln,{'Tstd','ActTstd'})
     end
     [data,xax,yax,pltslc] = ...
         GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld);
+                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
 elseif isequal(fln,'KEpri')
     U  = LocalLoad(dad,'uVel',itr,ddf,nc,DataIn);
     V  = LocalLoad(dad,'vVel',itr,ddf,nc,DataIn);
@@ -155,9 +157,9 @@ elseif isequal(fln,'KEpri')
     data = sqrt((UU + VV)-(U.*U + V.*V));
     [data,xax,yax,pltslc] = ...
         GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld);
+                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
 
-           
+
 % General reader.
 else
     if isequal(Vector,0)
@@ -167,9 +169,9 @@ else
         end
         for ii = 1:2:length(Index)
             if isequal(ddf,'MNC')
-                d = LocalLoad([dad,fil,'.*'],Index{ii+1},itr,ddf,nc,DataIn);
+                d = LocalLoad([dad,'/',fil],Index{ii+1},itr,ddf,nc,DataIn);
             elseif isequal(ddf,'MDS')
-                d = LocalLoad([dad,fil],fln,itr,ddf,nc,DataIn);
+                d = LocalLoad([dad,'/',fil],fln,itr,ddf,nc,DataIn);
                 if ~isequal(Index{ii+1},'')
                     if     isequal(Dim,2)
                         d=squeeze(d(:,:,Index{ii+1},:));            
@@ -197,14 +199,20 @@ else
         end
     elseif ~isempty(find([1,2]==Vector))
         if isequal(ddf,'MDS')
-            data = LocalLoad([dad,fil,'.*'],fln ,itr,ddf,nc,DataIn);
-            if     isequal(Dim,2), data1 = squeeze(data(:,:,Index,:));
-                                   data2 = squeeze(data(:,:, Mate,:));
-            elseif isequal(Dim,3), data1 = squeeze(data(:,:,:,Index,:));
-                                   data2 = squeeze(data(:,:,:, Mate,:)); end
+            data = LocalLoad([dad,'/',fil],fln,itr,ddf,nc,DataIn);
+            if ~isempty(Index)
+                if     isequal(Dim,2), data1 = squeeze(data(:,Index,:));
+                                       data2 = squeeze(data(:, Mate,:));
+                elseif isequal(Dim,3), data1 = squeeze(data(:,:,Index,:));
+                                       data2 = squeeze(data(:,:, Mate,:));
+                end
+            else
+                data1 = data;
+                data2 = LocalLoad([dad,'/',Mate],fln,itr,ddf,nc,DataIn);
+            end
         elseif isequal(ddf,'MNC')
-            data1 = LocalLoad([dad,fil,'.*'],fln ,itr,ddf,nc,DataIn);
-            data2 = LocalLoad([dad,fil,'.*'],Mate,itr,ddf,nc,DataIn);
+            data1 = LocalLoad([dad,'/',fil],fln ,itr,ddf,nc,DataIn);
+            data2 = LocalLoad([dad,'/',fil],Mate,itr,ddf,nc,DataIn);
         end
         if     isequal(Vector,1), U = data1; V = data2;
         elseif isequal(Vector,2), U = data2; V = data1; end
@@ -220,11 +228,11 @@ else
         elseif isequal(Vector,2), data = vN; end
         GraphixDebug_Local(GraphixDebug,'data','vector manipulation',data);
     end
-    
+
     [data,xax,yax,pltslc] = ...
         GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,...
                      slc,pst,Dim,LoadGridData,GridSuffix,ZcordFile,...
-                     Vector,PlotFld);
+                     Vector,PlotFld,XL,YL);
     GraphixDebug_Local(GraphixDebug,'data','slice',data);
     GraphixDebug_Local(GraphixDebug,'xax' ,'slice',xax);
     GraphixDebug_Local(GraphixDebug,'yax' ,'slice',yax);
@@ -242,7 +250,7 @@ function data = LocalLoad(fil,fln,itr,dfm,nc,DataIn)
     if isempty(DataIn)
         if isempty(dir([fil,'*'])), ls([fil,'*']); end
         if isequal(dfm,'MDS'),     data = rdmds(fil,itr);
-        elseif isequal(dfm,'MNC'), data = rdmnc(fil,fln,itr);
+        elseif isequal(dfm,'MNC'), data = rdmnc([fil,'.*'],fln,itr);
         else error(['Unrecognized data type:  ',dfm]); end
     else
         data = DataIn;

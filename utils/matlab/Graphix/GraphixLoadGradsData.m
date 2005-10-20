@@ -20,7 +20,7 @@ file = textread(tablfile,'%s','delimiter','\n','whitespace','');
 % blocks of code parse the information according to different identifiers.
 for iline = 1:length(file)
     rem = file{iline}; tokens = {}; itoken = 0;
-    while isstr(rem)
+    while ~isempty(rem)
         [token,rem] = strtok(rem); itoken = itoken + 1;
         if ~isempty(token), tokens{itoken} = token; end
     end

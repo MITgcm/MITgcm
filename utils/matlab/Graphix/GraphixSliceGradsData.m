@@ -1,7 +1,7 @@
 function [data,xax,yax,pltslc] = ...
-    DiagSliceGradsData(fln,flu,slc,data,xaxin,yaxin,zaxin);
+    GraphixSliceGradsData(fln,flu,slc,data,xaxin,yaxin,zaxin);
 
-% Function: DiagSliceGradsData
+% Function: GraphixSliceGradsData
 % Author:   Daniel Enderton
 %
 % Input Fields:
@@ -16,10 +16,10 @@ function [data,xax,yax,pltslc] = ...
 %   -----------------------------------------------------------------------
 %   data        array       Sliced data.
 
-DiagFieldParamA;
-DiagFieldParamO;
-DiagFieldParamC;
-DiagFieldParamI;
+GraphixFieldParamA;
+GraphixFieldParamO;
+GraphixFieldParamC;
+GraphixFieldParamI;
 
 if isequal(slc,'Sur')
     data = data';

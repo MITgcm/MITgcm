@@ -28,7 +28,7 @@ if LoadGridData
  		HFacC = rdmds([grd,'/','hFacC']);
 		HFacS = rdmds([grd,'/','hFacS']);
 		HFacW = rdmds([grd,'/','hFacW']);
-        dim = size(data.XC); nc  = dim(2);
+        dim = size(XC); nc  = dim(2);
         
         % Information for z-axis.
         if isequal(ZcordFile,'')
