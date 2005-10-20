@@ -13,7 +13,7 @@ grdfile = [grd,'/GridData',flu,GridSuffix,'.mat'];
 if LoadGridData
     
     % Load y-axis for CS zonal average calculation.
-    load('ZonAvgLat');
+    Ylat = [-90+180/128:180/64:90];
 
 	if isequal(gdf,'MDS')
 		XC  = rdmds([grd,'/','XC' ]);
@@ -28,6 +28,7 @@ if LoadGridData
  		HFacC = rdmds([grd,'/','hFacC']);
 		HFacS = rdmds([grd,'/','hFacS']);
 		HFacW = rdmds([grd,'/','hFacW']);
+        dim = size(data.XC); nc  = dim(2);
         
         % Information for z-axis.
         if isequal(ZcordFile,'')
