@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.16 2005/09/17 03:17:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.17 2005/10/20 20:23:15 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,10 @@ C             Total fluid column thickness (r_unit) :
         ENDDO
       ENDDO
 
+#ifdef ALLOW_MNC
+      IF ( (.NOT. useMNC) .OR. (outputTypesInclusive) ) THEN
+#endif /* ALLOW_MNC */
+
       _BEGIN_MASTER( myThid )
 
 C     Write horizontal grid arrays
@@ -89,8 +93,9 @@ C     Write 3D geometry arrays
       _END_MASTER(myThid)
 
 #ifdef ALLOW_MNC
-      _BEGIN_MASTER( myThid )
-      IF (useMNC) THEN
+      ELSE
+
+        _BEGIN_MASTER( myThid )
         bfname='grid'
         
 C       Write the GRID.h variables to a file
@@ -135,9 +140,9 @@ c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacC',HFacC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacW',HFacW,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacS',HFacS,myThid)
+        _END_MASTER(myThid)
 
       ENDIF
-      _END_MASTER(myThid)
 #endif /* ALLOW_MNC */
 
       RETURN
