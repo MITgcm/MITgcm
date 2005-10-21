@@ -1,0 +1,22 @@
+#  -*- mode: text -*-
+#  $Id: README,v 1.1 2005/10/21 18:09:54 edhill Exp $
+#  $Name:  $
+
+
+   =======   gmt:  General MITgcm Tiles/Topologies   =======
+
+This directory contains MatLAB and shell utilities for post-processing
+data on generalized MITgcm tiles and topologies.  It is meant to work
+with the input and output from the latest version of the "mnc" package
+(the MITgcm netCDF interface) for all kinds of MITgcm domains
+including:
+
+ - "traditional" exch1 topologies
+ - exch2 cubes
+ - more general topologies
+
+and the available tools are:
+
+  rdnctiles.m  ::  reads data from collections of netCDF tiles
+
+
