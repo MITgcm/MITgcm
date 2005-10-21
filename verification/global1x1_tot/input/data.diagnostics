@@ -11,59 +11,154 @@
 #--------------------------------------------------------------------
 #
  &diagnostics_list
-  frequency(1) = 2635200.0,
-   levels(1,1) = 1.,
+#
+   dumpatlast = .TRUE.,
+#
+#---
+  frequency(1) = 2626560.0,
    fields(1,1) = 'ETAN    ',
-   filename(1) = 'DiaDyn2d',
+   filename(1) = 'DDetan  ',
 #---
-  frequency(2) = 2635200.0,
-   fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ',
-                 'THETA   ','SALT    ','RHOAnoma',
-   filename(2) = 'DiaDyn3d',
+  frequency(2) = 2626560.0,
+   fields(1,2) = 'PHIBOT  ',
+   filename(2) = 'DDphibot',
 #---
-  frequency(3) = 2635200.0,
-   fields(1,3) = 'ADVx_TH ','DIFx_TH ',
-   filename(3) = 'DiaFluXt',
+  frequency(3) = 2626560.0,
+   fields(1,3) = 'UVEL    ',
+   filename(3) = 'DDuvel  ',
 #---
-  frequency(4) = 2635200.0,
-   fields(1,4) = 'ADVx_SLT','DIFx_SLT',
-   filename(4) = 'DiaFluXs',
+  frequency(4) = 2626560.0,
+   fields(1,4) = 'VVEL    ',
+   filename(4) = 'DDvvel  ',
 #---
-  frequency(5) = 2635200.0,
-   fields(1,5) = 'ADVy_TH ','DIFy_TH ',
-   filename(5) = 'DiaFluYt',
+  frequency(5) = 2626560.0,
+   fields(1,5) = 'WVEL    ',
+   filename(5) = 'DDwvel  ',
 #---
-  frequency(6) = 2635200.0,
-   fields(1,6) = 'ADVy_SLT','DIFy_SLT',
-   filename(6) = 'DiaFluYs',
+  frequency(6) = 2626560.0,
+   fields(1,6) = 'THETA   ',
+   filename(6) = 'DDtheta ',
 #---
-#  frequency(5) = 2635200.0,
-#   fields(1,5) = 'ADVr_TH ','DFrE_TH ','DFrI_TH ',
-#   filename(5) = 'DiaFluR ',
+  frequency(7) = 2626560.0,
+   fields(1,7) = 'SALT    ',
+   filename(7) = 'DDsalt  ',
 #---
-  frequency(7) = 2635200.0,
-   fields(1,7) = 'GM_PsiX ','GM_PsiY ',
-                 'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
-   filename(7) = 'DiaGM3d ',
+  frequency(8) = 409878000.0,
+   fields(1,8) = 'RHOAnoma',
+   filename(8) = 'DDrhoan ',
 #---
-  frequency(8) = 2635200.0,
-   fields(1,8) = 'KPPviscA','KPPdiffS','KPPdiffT',
-   filename(8) = 'DiaKPP3d',
+  frequency(9) = 409878000.0,
+   fields(1,9) = 'DRHODR  ',
+   filename(9) = 'DDdrhodr',
 #---
-  frequency(9) = 2635200.0,
-   levels(1,9) = 1.,
-   fields(1,9) = 'KPPhbl  ','KPPmld  ',
-   filename(9) = 'DiaKPP2d',
-#
-  frequency(10) = 2635200.0,
-   levels(1,10) = 1.,
-   fields(1,10) = 'TAUX    ','TAUY    ',
-                  'TFLUX   ','SFLUX   ','SWFLUX  ',
-   filename(10) = 'DiaForci',
-#
-  frequency(11) = 409708800.0,
-   fields(1,11) = 'KPPBrVaF',
-   filename(11) = 'DiaBrVaF',
+  frequency(10) = 409878000.0,
+   fields(1,10) = 'PHIHYD  ',
+   filename(10) = 'DDphihyd',
+#---
+  frequency(11) = 2626560.0,
+   fields(1,11) = 'ADVx_TH ',
+   filename(11) = 'DTRadvxt',
+#---
+  frequency(12) = 2626560.0,
+   fields(1,12) = 'DIFx_TH ',
+   filename(12) = 'DTRdifxt',
+#---
+  frequency(13) = 2626560.0,
+   fields(1,13) = 'ADVx_SLT',
+   filename(13) = 'DTRadvxs',
+#---
+  frequency(14) = 2626560.0,
+   fields(1,14) = 'DIFx_SLT',
+   filename(14) = 'DTRdifxs',
+#---
+  frequency(15) = 2626560.0,
+   fields(1,15) = 'ADVy_TH ',
+   filename(15) = 'DTRadvyt',
+#---
+  frequency(16) = 2626560.0,
+   fields(1,16) = 'DIFy_TH ',
+   filename(16) = 'DTRdifyt',
+#---
+  frequency(17) = 2626560.0,
+   fields(1,17) = 'ADVy_SLT',
+   filename(17) = 'DTRadvys',
+#---
+  frequency(18) = 2626560.0,
+   fields(1,18) = 'DIFy_SLT',
+   filename(18) = 'DTRdifys',
+#---
+  frequency(19) = 2626560.0,
+   fields(1,19) = 'GM_PsiX ',
+   filename(19) = 'DGMpsix ',
+#---
+  frequency(20) = 2626560.0,
+   fields(1,20) = 'GM_PsiY ',
+   filename(20) = 'DGMpsiy ',
+#---
+  frequency(21) = 2626560.0,
+   fields(1,21) = 'GM_Kwx  ',
+   filename(21) = 'DGMkwx  ',
+#---
+  frequency(22) = 2626560.0,
+   fields(1,22) = 'GM_Kwy  ',
+   filename(22) = 'DGMkwy  ',
+#---
+  frequency(23) = 2626560.0,
+   fields(1,23) = 'GM_Kwz  ',
+   filename(23) = 'DGMkwz  ',
+#---
+  frequency(24) = 2626560.0,
+   fields(1,24) = 'KPPviscA',
+   filename(24) = 'DKPPvisc',
+#---
+  frequency(25) = 2626560.0,
+   fields(1,25) = 'KPPdiffT',
+   filename(25) = 'DKPPdift',
+#---
+  frequency(26) = 2626560.0,
+   fields(1,26) = 'KPPdiffS',
+   filename(26) = 'DKPPdifs',
+#---
+  frequency(27) = 2626560.0,
+   fields(1,27) = 'KPPhbl  ',
+   filename(27) = 'DKPPhbl ',
+#---
+  frequency(28) = 2626560.0,
+   fields(1,28) = 'KPPmld  ',
+   filename(28) = 'DKPPmld ',
+#---
+  frequency(29) = 2626560.0,
+   fields(1,29) = 'TAUX    ',
+   filename(29) = 'DFOtaux ',
+#---
+  frequency(30) = 2626560.0,
+   fields(1,30) = 'TAUY    ',
+   filename(30) = 'DFOtauy ',
+#---
+  frequency(31) = 2626560.0,
+   fields(1,31) = 'TFLUX   ',
+   filename(31) = 'DFOtflux',
+#---
+  frequency(32) = 2626560.0,
+   fields(1,32) = 'SFLUX   ',
+   filename(32) = 'DFOsflux',
+#---
+  frequency(33) = 2626560.0,
+   fields(1,33) = 'SWFLUX  ',
+   filename(33) = 'DFOswrad',
+#---
+  frequency(34) = 2626560.0,
+   fields(1,34) = 'CONVADJ ',
+   filename(34) = 'DDconvad',
+#---
+###  frequency(34) = 2626560.0,
+###   fields(1,34) = 'KPPalpha',
+###   filename(34) = 'DKPPalph',
+#---
+###  frequency(35) = 2626560.0,
+###   fields(1,35) = 'KPPbeta ',
+###   filename(35) = 'DKPPbeta',
+#---
 #
  &end
 #
