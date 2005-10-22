@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.573 2005/10/14 12:45:43 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.574 2005/10/22 22:42:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tracer advection scheme: 
+  add DST-2 (=Lax-Wendroff) & 1rst order upwind schemes (the way to get 
+   those 2 schemes before, changing GAD_FLUX_LIMITER.h + to recompile, 
+   was not very convenient).
+  add implicit version for DST-3 & DST3_Flux_Limit vertical advection;  
+   (further tests needed for the implicit DST & Flux-Limiter schemes).
 o PTRACERS: added namelist parameter PTRACERS_ref in analogy to tRef
   and sRef for convenience, handy, when you want to initialize
   ptracers in a large domain with a constant non-zero value. Also,
