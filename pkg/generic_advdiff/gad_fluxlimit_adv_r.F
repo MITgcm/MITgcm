@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.8 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.9 2005/10/22 20:12:23 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_FLUXLIMIT_ADV_R
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_R( 
-     I           bi_arg,bj_arg,k,dTarg,
+     I           bi,bj,k,dTarg,
      I           rTrans, wVel,
      I           tracer,
      O           wT,
@@ -35,17 +35,17 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi_arg,bj_arg      :: tile indices
+C  bi,bj              :: tile indices
 C  k                  :: vertical level
 C  rTrans             :: vertical volume transport
 C  wVel               :: vertical flow
 C  tracer             :: tracer field
 C  myThid             :: thread number
-      INTEGER bi_arg,bj_arg,k
+      INTEGER bi,bj,k
       _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -61,25 +61,12 @@ C  bi,bj              :: tile indices or (1,1) depending on use
 C  Cr                 :: slope ratio
 C  Rjm,Rj,Rjp         :: differences at i-1,i,i+1
 C  wFld               :: velocity, vertical component
-      INTEGER i,j,kp1,km1,km2,bi,bj
+      INTEGER i,j,kp1,km1,km2
       _RL Cr,Rjm,Rj,Rjp
       _RL wFld
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
-
-      IF (.NOT. multiDimAdvection) THEN
-C      If using the standard time-stepping/advection schemes (ie. AB-II)
-C      then the data-structures are all global arrays
-       bi=bi_arg
-       bj=bj_arg
-      ELSE
-C      otherwise if using the multi-dimensional advection schemes
-C      then the data-structures are all local arrays except
-C      for maskC(...) and wVel(...)
-       bi=1
-       bj=1
-      ENDIF
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -95,13 +82,13 @@ C      for maskC(...) and wVel(...)
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
 
-c        wFld = wVel(i,j,k,bi_arg,bj_arg)
-         wFld = rTrans(i,j)*recip_rA(i,j,bi_arg,bj_arg)
-         Rjp=(tracer(i,j,kp1,bi,bj)-tracer(i,j,k,bi,bj))
-     &        *maskC(i,j,kp1,bi_arg,bj_arg)
-         Rj=(tracer(i,j,k,bi,bj)-tracer(i,j,kM1,bi,bj))
-         Rjm=(tracer(i,j,km1,bi,bj)-tracer(i,j,kM2,bi,bj))
-     &        *maskC(i,j,km2,bi_arg,bj_arg)
+c        wFld = wVel(i,j,k,bi,bj)
+         wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
+         Rjp=(tracer(i,j,kp1)-tracer(i,j,k))
+     &        *maskC(i,j,kp1,bi,bj)
+         Rj= (tracer(i,j,k)  -tracer(i,j,kM1))
+         Rjm=(tracer(i,j,km1)-tracer(i,j,kM2))
+     &        *maskC(i,j,km2,bi,bj)
 
          IF (Rj.NE.0.) THEN
           IF (rTrans(i,j).LT.0.) THEN
@@ -117,9 +104,9 @@ c        wFld = wVel(i,j,k,bi_arg,bj_arg)
           ENDIF
          ENDIF
          Cr=Limiter(Cr)
-         wT(i,j) = maskC(i,j,kM1,bi_arg,bj_arg)*(
+         wT(i,j) = maskC(i,j,kM1,bi,bj)*(
      &     rTrans(i,j)*
-     &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
+     &        (tracer(i,j,k)+tracer(i,j,kM1))*0.5 _d 0
      &    +(ABS(rTrans(i,j))*(1-Cr)
      &      +rTrans(i,j)*wFld*dTarg*recip_drC(k)
      &                  *Cr

@@ -1,58 +1,63 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.5 2005/10/18 16:03:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.6 2005/10/22 20:12:23 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_DST3FL_ADV_R
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST3FL_ADV_R( 
-     I           bi_arg,bj_arg,k,dTarg,
+     I           bi,bj,k,dTarg,
      I           rTrans, wVel,
      I           tracer,
      O           wT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_DST3_ADV_R                                |
-C     | o Compute Vertical advective Flux of Tracer using        |
-C     |   3rd Order DST Sceheme with flux limiting               |
-C     |==========================================================|
+
+C !DESCRIPTION:
+C  Calculates the area integrated vertical flux due to advection of a tracer
+C  using 3rd Order DST Scheme with flux limiting
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "GRID.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "GAD.h"
 
 C     == Routine arguments ==
-      INTEGER bi_arg,bj_arg,k
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  deltaTloc         :: local time-step (s)
+C  rTrans            :: vertical volume transport
+C  wVel              :: vertical flow
+C  tracer            :: tracer field
+C  myThid            :: thread number
+      INTEGER bi,bj,k
       _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
+C !OUTPUT PARAMETERS: ==================================================
+C  wT                :: vertical advective flux
+      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
 C     == Local variables ==
-C     wFld     :: velocity, vertical component
-      INTEGER i,j,kp1,km1,km2,bi,bj
+C !LOCAL VARIABLES: ====================================================
+C  i,j               :: loop indices
+C  km1               :: =max( k-1 , 1 )
+C  wFld              :: velocity, vertical component
+C  wCFL              :: Courant-Friedrich-Levy number
+      INTEGER i,j,kp1,km1,km2
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
       _RL wFld
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
-
-      IF (.NOT. multiDimAdvection) THEN
-C      If using the standard time-stepping/advection schemes (ie. AB-II)
-C      then the data-structures are all global arrays
-       bi=bi_arg
-       bj=bj_arg
-      ELSE
-C      otherwise if using the multi-dimensional advection schemes
-C      then the data-structures are all local arrays except
-C      for maskC(...) and wVel(...)
-       bi=1
-       bj=1
-      ENDIF
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -60,15 +65,15 @@ C      for maskC(...) and wVel(...)
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        Rjp=(tracer(i,j,k,bi,bj)-tracer(i,j,kp1,bi,bj))
-     &         *maskC(i,j,kp1,bi_arg,bj_arg)
-        Rj =(tracer(i,j,km1,bi,bj)-tracer(i,j,k,bi,bj))
-     &         *maskC(i,j,k,bi_arg,bj_arg)*maskC(i,j,km1,bi_arg,bj_arg)
-        Rjm=(tracer(i,j,km2,bi,bj)-tracer(i,j,km1,bi,bj))
-     &         *maskC(i,j,km1,bi_arg,bj_arg)
+        Rjp=(tracer(i,j,k)-tracer(i,j,kp1))
+     &         *maskC(i,j,kp1,bi,bj)
+        Rj =(tracer(i,j,km1)-tracer(i,j,k))
+     &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+        Rjm=(tracer(i,j,km2)-tracer(i,j,km1))
+     &         *maskC(i,j,km1,bi,bj)
 
-c       wFld = wVel(i,j,k,bi_arg,bj_arg)
-        wFld = rTrans(i,j)*recip_rA(i,j,bi_arg,bj_arg)
+c       wFld = wVel(i,j,k,bi,bj)
+        wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
         cfl=abs(wFld*dTarg*recip_drC(k))
         d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
         d1=(1. _d 0 -cfl*cfl)*oneSixth
@@ -103,9 +108,9 @@ C-      prevent |thetaP,M| to reach too big value:
 
         wT(i,j)=
      &   0.5*(rTrans(i,j)+abs(rTrans(i,j)))
-     &      *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
+     &      *( tracer(i,j, k ) + psiM*Rj )
      &  +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
-     &      *( Tracer(i,j,km1,bi,bj) - psiP*Rj )
+     &      *( tracer(i,j,km1) - psiP*Rj )
 
        ENDDO
       ENDDO
