@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.7 2004/12/16 22:28:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.8 2005/10/22 20:20:21 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -28,6 +28,7 @@ CEOP
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER   minOlSize
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -116,6 +117,34 @@ C-- Print out GAD parameters :
 
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check size of the overlap :
+      IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
+C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
+        minOlSize = 2
+        IF ( tempMultiDimAdvec ) THEN
+          IF ( tempAdvScheme.EQ.ENUM_FLUX_LIMIT .OR.
+     &         tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT .OR.
+     &         tempAdvScheme.EQ.ENUM_DST3 ) minOlSize = 4
+        ENDIF
+        IF ( saltMultiDimAdvec ) THEN
+          IF ( saltAdvScheme.EQ.ENUM_FLUX_LIMIT .OR.
+     &         saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT .OR.
+     &         saltAdvScheme.EQ.ENUM_DST3 ) minOlSize = 4
+        ENDIF
+        IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
+          WRITE(msgBuf,'(A)')
+     &     'GAD_INIT: Multi-Dim Advection with 5-points stencil'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          WRITE(msgBuf,'(A,I2)')
+     &     'GAD_INIT: advection scheme needs at least Olx,Oly=', 
+     &      minOlSize
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R GAD_INIT'
+        ENDIF
+      ENDIF
 
       _END_MASTER(myThid)
       _BARRIER

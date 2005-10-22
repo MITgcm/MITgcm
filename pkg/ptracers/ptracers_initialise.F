@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_initialise.F,v 1.5 2005/07/30 23:53:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_initialise.F,v 1.6 2005/10/22 20:20:37 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -30,7 +30,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     iTracer  :: tracer index
+C     msgBuf      - Informational/error meesage buffer
       INTEGER iTracer
+      INTEGER minOlSize
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
         
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_numInUse
@@ -46,6 +49,28 @@ c         PTRACERS_multiDimAdv(iTracer) = .TRUE.
 
 C       end of Tracer loop
       ENDDO
+
+C--   Check size of the overlap :
+      IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
+C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
+        minOlSize = 2
+        DO iTracer = 1, PTRACERS_numInUse
+         IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_FLUX_LIMIT .OR.
+     &        PTRACERS_advScheme(iTracer).EQ.ENUM_DST3_FLUX_LIMIT .OR.
+     &        PTRACERS_advScheme(iTracer).EQ.ENUM_DST3 ) minOlSize = 4
+        ENDDO
+        IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INITIALISE: ',
+     &     'Multi-Dim Advection with 5-points stencil'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          WRITE(msgBuf,'(2A,I2)') 'PTRACERS_INITIALISE: ',
+     &     'advection scheme needs at least Olx,Oly=', minOlSize
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R PTRACERS_INITIALISE'
+        ENDIF
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
