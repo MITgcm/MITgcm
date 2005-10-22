@@ -22,7 +22,7 @@ function [tlist] = rdnctiles(fpat,vnames,times, dblev)
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
 %   
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.1 2005/10/21 18:09:54 edhill Exp $
+%  $Id: rdnctiles.m,v 1.2 2005/10/22 02:07:36 edhill Exp $
 
 dlev = 0;
 if nargin < 1
@@ -38,21 +38,7 @@ if nargin > 3
   dlev = dblev;
 end
 
-%  Find files
-files = {};
-if ischar(fpat)
-  tmp = fpat;
-  fpat = {};
-  fpat = { tmp };
-end
-for ip = 1:length(fpat)
-  d = dir(fpat{ip});
-  for i = 1:length(d)
-    files{end+1} = d(i).name;
-  end
-end
-fall = unique(files);
-clear files;
+fall = find_files_grid_first(fpat);
 if isempty(fall)
   error(['No files matching could be found!']);
 end
@@ -72,7 +58,7 @@ elseif ischar(vnames)
   vnames = {};
   vnames = { tmp };
 else
-  error(['The "vnames" must be a cell array or a string!']);
+  error(['"vnames" must be a cell array or a string!']);
 end
 
 %  Get iterations or model times
@@ -98,7 +84,8 @@ elseif isvector(times)
   times.model = [];
 end
 
-tlist = struct('gtn',[],'tile',{});
+% tlist = struct('gtn',[],'att',{},'var',{});
+tlist = struct('gtn',{});
 for fi = 1:length(fall)
   if dlev > 10
     disp(['  Opening : ' char(fall{fi}) ]);
@@ -112,6 +99,9 @@ for fi = 1:length(fall)
   end
   gti = nc.tile_number(:);
   it = find([tlist(:).gtn] == gti);
+  % tlist
+  % [tlist(:).gtn]
+  % pause
   if isempty(it)
     it = length(tlist) + 1;
     tlist(it).gtn = gti;
@@ -119,9 +109,16 @@ for fi = 1:length(fall)
 
   %  Get all the global attributes
   allatt = ncnames(att(nc));
+  if not(isfield(tlist(it),'att'))
+    tlist(it).att = {};
+  end
   if ~isempty(allatt)
     for attr = allatt;
-      tlist(it).tile.att.(char(attr)) = nc.(char(attr))(:);
+      %  Don't get the attribute again if we already have it from
+      %  reading a previous tile
+      if not(isfield(tlist(it).att,(char(attr))))
+        tlist(it).att.(char(attr)) = nc.(char(attr))(:);
+      end
     end
   end
   
@@ -150,7 +147,7 @@ for fi = 1:length(fall)
     tmpv =  nc{vread{iv}}(:);
     sz = size(tmpv);
     nd = length(sz);
-    tlist(it).tile.var.(char(vread{iv})) = permute(tmpv,[nd:-1:1]);
+    tlist(it).var.(char(vread{iv})) = permute(tmpv,[nd:-1:1]);
   end
   
   nc = close(nc);
