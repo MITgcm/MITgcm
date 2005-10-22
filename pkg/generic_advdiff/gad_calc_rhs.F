@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.36 2005/06/22 00:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.37 2005/10/22 20:09:52 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -157,7 +157,7 @@ C--   Set diagnostic suffix for the current tracer
 C--   Make local copy of tracer array
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        localT(i,j)=tracer(i,j,k,bi,bj)
+        localT(i,j)=Tracer(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -190,6 +190,11 @@ C-    Advective flux in X
       IF (calcAdvection) THEN
         IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
           CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
+        ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST 
+     &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, 
+     I            dTtracerLev(k), uTrans, uVel, localT,
+     O            af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
      I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
@@ -285,6 +290,11 @@ C-    Advective flux in Y
       IF (calcAdvection) THEN
         IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
           CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
+        ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST 
+     &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, 
+     I            dTtracerLev(k), vTrans, vVel, localT,
+     O            af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
      I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
@@ -381,27 +391,36 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #endif
 C-    Compute vertical advective flux in the interior:
         IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
-          CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+          CALL GAD_C2_ADV_R(bi,bj,k,rTrans,Tracer,af,myThid)
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST 
+     &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
+          CALL GAD_DST2U1_ADV_R( bi,bj,k, vertAdvecScheme, 
+     I         dTtracerLev(k),rTrans,wVel,Tracer(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_R(
-     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+          CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k,
+     I         dTtracerLev(k),rTrans,wVel,Tracer(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
-          CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+          CALL GAD_U3_ADV_R(bi,bj,k,rTrans,Tracer,af,myThid)
         ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
-          CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+          CALL GAD_C4_ADV_R(bi,bj,k,rTrans,Tracer,af,myThid)
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_R(
-     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+          CALL GAD_DST3_ADV_R( bi,bj,k,
+     I         dTtracerLev(k),rTrans,wVel,Tracer(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
 cph This block is to trick the adjoint:
 cph IF inAdExact=.FALSE., we want to use DST3 
 cph with limiters in forward, but without limiters in reverse.
           IF ( inAdMode ) THEN
-           CALL GAD_DST3_ADV_R(
-     &        bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+           CALL GAD_DST3_ADV_R( bi,bj,k,
+     I         dTtracerLev(k),rTrans,wVel,Tracer(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
           ELSE
-           CALL GAD_DST3FL_ADV_R(
-     &        bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+           CALL GAD_DST3FL_ADV_R( bi,bj,k,
+     I         dTtracerLev(k),rTrans,wVel,Tracer(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
           ENDIF
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
@@ -433,7 +452,7 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
-       CALL GAD_DIFF_R(bi,bj,k,KappaR,tracer,df,myThid)
+       CALL GAD_DIFF_R(bi,bj,k,KappaR,Tracer,df,myThid)
       ENDIF
 
 #ifdef ALLOW_GMREDI
