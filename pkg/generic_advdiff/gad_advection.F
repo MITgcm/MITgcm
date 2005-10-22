@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.36 2005/10/10 05:53:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.37 2005/10/22 19:59:45 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -343,7 +343,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
+     &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme,
+     I                           dTtracerLev(k),uTrans,uVel,localTij,
+     O                           af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
      I                              uTrans, uVel, maskLocW, localTij,
      O                              af, myThid )
@@ -485,7 +490,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
+     &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme,
+     I                           dTtracerLev(k),vTrans,vVel,localTij,
+     O                           af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
      I                              vTrans, vVel, maskLocS, localTij,
      O                              af, myThid )
@@ -697,8 +707,12 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Compute vertical advective flux in the interior:
-         IF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
+     &      .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+           CALL GAD_DST2U1_ADV_R( bi,bj,k, advectionScheme,
+     I                            dTtracerLev(k),rTrans,wVel,localTijk,
+     O                            fVerT(1-Olx,1-Oly,kUp), myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, dTtracerLev(k),
      I                               rTrans, wVel, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
