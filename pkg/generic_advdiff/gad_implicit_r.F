@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.10 2005/06/22 00:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.11 2005/10/22 20:17:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -223,20 +223,34 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
           CALL GAD_C2_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
      I                        dTtracerLev, rTrans,
      U                        b5d, c5d, d5d,
-     I                        myThid)
-         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+     I                        myThid )
+         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
+     &       .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
+          diagonalNumber = 3
+          CALL GAD_DST2U1_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
+     I                        advectionScheme, dTtracerLev, rTrans,
+     U                        b5d, c5d, d5d,
+     I                        myThid )
+         ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           diagonalNumber = 3
           CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
      I                        dTtracerLev, rTrans, localTijk,
      U                        b5d, c5d, d5d,
-     I                        myThid)
-         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
-     &           advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+     I                        myThid )
+         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD
+     &       .OR. advectionScheme.EQ.ENUM_CENTERED_4TH
+     &       .OR. advectionScheme.EQ.ENUM_DST3 ) THEN
           diagonalNumber = 5
           CALL GAD_U3C4_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
      I                        advectionScheme, dTtracerLev, rTrans,
      U                        a5d, b5d, c5d, d5d, e5d,
-     I                        myThid)
+     I                        myThid )
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          diagonalNumber = 5
+          CALL GAD_DST3FL_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
+     I                        dTtracerLev, rTrans, localTijk,
+     U                        a5d, b5d, c5d, d5d, e5d,
+     I                        myThid )
          ELSE
           STOP 'GAD_IMPLICIT_R: Adv.Scheme in Impl form not yet coded'
          ENDIF
