@@ -38,7 +38,8 @@ if LoadGridData
         end	
         
 	elseif isequal(gdf,'MNC')
-        data = rdmnc_mod2([grd,'/grid.*']);
+        if isempty(dir([grd,'/grid.*'])), ls([grd,'/grid.*']); end
+        data = rdmnc([grd,'/grid.*']);
         dim = size(data.XC); nc  = dim(2);
         RAC = data.rA;
 		XC  = data.XC(1:6.*nc,1:nc); dxC = data.dxC(1:6.*nc,1:nc);
