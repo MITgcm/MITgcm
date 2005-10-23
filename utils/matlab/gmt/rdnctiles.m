@@ -1,6 +1,6 @@
-function [tlist] = rdnctiles(fpat,vnames,times, dblev)
+function [res,att] = rdnctiles(fpat,vnames,times, flag,dblev)
 
-% Function [tlist] = rdnctiles(fpat,vnames,times, dblev)
+% Function [res,att] = rdnctiles(fpat,vnames,times, flag,dblev)
 %
 % INPUTS
 %   fpat     either a string containing a file pattern
@@ -10,20 +10,26 @@ function [tlist] = rdnctiles(fpat,vnames,times, dblev)
 %   times    vector of iteration values or struct of either 
 %              iterations values or model times
 %
+%   flag     one of:  'oldflat' [def]
+%                     'compact' 'bytile' 'byface'
 %   dblev    debug level [def: 0]
 %
 % OUTPUTS
-%   tlist    cell array of tile structs
+%   res      results
+%   att      attribute values
 %
 % EXAMPLES
 %   tlist = rdnctiles('state.*',[1000:100:2000]);
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
 %   t.iter = [1000:100:2000];
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
+%   tl = rdnctiles({'state.*.nc' 'grid*'},[],[],'bytile',20)
 %   
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.2 2005/10/22 02:07:36 edhill Exp $
+%  $Id: rdnctiles.m,v 1.3 2005/10/23 06:21:57 edhill Exp $
 
+
+%  Set defaults
 dlev = 0;
 if nargin < 1
   error('There must be at least one argument!');
@@ -34,8 +40,23 @@ end
 if nargin < 3
   times = {};
 end
-if nargin > 3
+if nargin < 4 || isempty(flag)
+  flag = 'oldflat'
+end
+if nargin > 4
   dlev = dblev;
+end
+
+switch lower(flag)
+ case 'oldflat'
+  error(['the ''oldflat'' format is not yet implemented.']);
+ case 'compact'
+  error(['the ''compact'' format is not yet implemented.']);
+ case 'bytile'
+ case 'byface'
+  error(['the ''byface'' format is not yet implemented.']);
+ otherwise
+  error(['the flag ''' flag ''' is unknown']);
 end
 
 fall = find_files_grid_first(fpat);
@@ -65,91 +86,36 @@ end
 if isstruct(times) 
   if isfield(times,'iter')
     %  times.iter = iter.iter;
-  elseif isfield(times,'model')
-    %  times.model = iter.model;
+  elseif isfield(times,'time')
+    %  times.time = iter.time;
   else
     error(['If times is a struct, either "iter" or ' ...
-           '"model" must be members']);
+           '"time" must be members']);
   end
   if not(isfield(times,'iter'))
     times.iter = [];
   end
-    if not(isfield(times,'model'))
-    times.model = [];
+    if not(isfield(times,'time'))
+    times.time = [];
   end
 elseif isvector(times)
   tmp = times;
   clear times;
   times.iter = tmp;
-  times.model = [];
+  times.time = [];
 end
 
-% tlist = struct('gtn',[],'att',{},'var',{});
-tlist = struct('gtn',{});
-for fi = 1:length(fall)
-  if dlev > 10
-    disp(['  Opening : ' char(fall{fi}) ]);
-  end
-  nc = netcdf(fall{fi},'read');
-
-  %  Get the global tile number
-  if isempty(nc.tile_number) || not(isscalar(nc.tile_number(:)))
-    error(['No scalar "tile_number" global attribute was found' ...
-           ' in file "' fall{fi} '"']);
-  end
-  gti = nc.tile_number(:);
-  it = find([tlist(:).gtn] == gti);
-  % tlist
-  % [tlist(:).gtn]
-  % pause
-  if isempty(it)
-    it = length(tlist) + 1;
-    tlist(it).gtn = gti;
-  end
-
-  %  Get all the global attributes
-  allatt = ncnames(att(nc));
-  if not(isfield(tlist(it),'att'))
-    tlist(it).att = {};
-  end
-  if ~isempty(allatt)
-    for attr = allatt;
-      %  Don't get the attribute again if we already have it from
-      %  reading a previous tile
-      if not(isfield(tlist(it).att,(char(attr))))
-        tlist(it).att.(char(attr)) = nc.(char(attr))(:);
-      end
-    end
-  end
+res = [];
+switch lower(flag)
+ case 'oldflat'
+  res = rdnctiles_oldflat(fall,vnames,times,dlev);
+ 
+ case 'compact'
   
-  %  Get all the variables
-  if isempty(vnames)
-    vread = ncnames(var(nc));
-  else
-    vread = vnames;
-  end
-  if dlev > 10
-    mess = sprintf('    Variables to read :');
-    for i = 1:length(vread)
-      mess = [ mess ' ' vread{i}];
-    end
-    disp(mess);
-  end
-  for iv = 1:length(vread)
-    if dlev > 10
-      disp(['    reading : ' char(vread{iv}) ]);
-    end
-    if isempty(nc{char(vread{i})})
-      disp(['    warning: no var "',vread{iv},'" in "',fall{fi},'"']);
-      continue
-    end
-    
-    tmpv =  nc{vread{iv}}(:);
-    sz = size(tmpv);
-    nd = length(sz);
-    tlist(it).var.(char(vread{iv})) = permute(tmpv,[nd:-1:1]);
-  end
+ case 'bytile'
+  res = rdnctiles_bytile(fall,vnames,times,dlev);
+ 
+ case 'byface'
   
-  nc = close(nc);
 end
 
