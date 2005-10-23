@@ -42,6 +42,9 @@ GraphixRunDefaults;
 % Read in list of possible run parameters.
 grphxrunparam  = ReadVariables('GraphixRunDefaults.m');
 grphxplotparam = ReadVariables('GraphixPlotDefaults.m');
+grphxplotparam{end+1} = 'contint';
+grphxplotparam{end+1} = 'units';
+grphxplotparam{end+1} = 'range';
 
 % Rudimentary checks to make sure that the page and pagemane fields are
 % there and that they are the correct classes.
