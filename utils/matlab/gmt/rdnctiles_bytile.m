@@ -18,7 +18,7 @@ function [tlist] = rdnctiles_bytile(fall,vnames,tvals,dlev)
 %  called by a wrapper function that ensures proper inputs.
 %
 %  Ed Hill
-%  $Id: rdnctiles_bytile.m,v 1.1 2005/10/23 06:21:57 edhill Exp $
+%  $Id: rdnctiles_bytile.m,v 1.2 2005/10/23 06:50:03 edhill Exp $
 
 
 tlist = struct('gtn',{});
@@ -51,12 +51,12 @@ for fi = 1:length(fall)
   if isfield(tvals,'iters') ...
         &&  not(isempty( intersect(fvars,{'iter'}) ))
     fiters = nc{'iter'}(:);
-    [v,fit,git] = intersect(fiters,tvals.iters)
+    [v,fit,git] = intersect(fiters,tvals.iters);
   end
   if isfield(tvals,'times') ...
         &&  not(isempty( intersect(fvars,{'T'}) ))
     ftimes = nc{'T'}(:);
-    [v,fit,git]  = intersect(ftimes,tvals.times)
+    [v,fit,git]  = intersect(ftimes,tvals.times);
   end
   %  allit = union(inti,intt);
 
@@ -119,20 +119,21 @@ for fi = 1:length(fall)
          indstr = [ indstr ',' ];
       end
       if i == tind
-        indstr = [ indstr 'it' ];
+        indstr = [ indstr 'kt' ];
       else
         indstr = [ indstr ':' ];
       end
       end
       rindstr = fliplr(indstr);
       for jj = 1:length(fit)
-        it = fit(jj);
+        kt = fit(jj);
         eval([ 'tmpv =  nc{vread{iv}}(' indstr ');' ]);
         sz = size(tmpv);
         nd = length(sz);
-        it = git(jj);
-        eval([ 'tlist(it).var.(char(vread{iv}))(' ...
-               rindstr ') = permute(tmpv,[nd:-1:1]);' ]);
+        tk = git(jj);
+        comm = [ 'tlist(it).var.(char(vread{iv}))(' ...
+                 rindstr ') = permute(tmpv,[nd:-1:1]);' ];
+        eval(comm);
       end
     end
   end

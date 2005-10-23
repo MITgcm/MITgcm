@@ -1,13 +1,13 @@
-function [res,att] = rdnctiles(fpat,vnames,times, flag,dblev)
+function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 
-% Function [res,att] = rdnctiles(fpat,vnames,times, flag,dblev)
+% Function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %
 % INPUTS
 %   fpat     either a string containing a file pattern
 %              (eg. 'state.*.nc) or a cell array of file patterns
 %   vnames   either a single variable name as a string or a
 %              cell array of variable names
-%   times    vector of iteration values or struct of either 
+%   tlev    vector of iteration values or struct of either 
 %              iterations values or model times
 %
 %   flag     one of:  'oldflat' [def]
@@ -24,9 +24,10 @@ function [res,att] = rdnctiles(fpat,vnames,times, flag,dblev)
 %   t.iter = [1000:100:2000];
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
 %   tl = rdnctiles({'state.*.nc' 'grid*'},[],[],'bytile',20)
-%   
+%
+%
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.3 2005/10/23 06:21:57 edhill Exp $
+%  $Id: rdnctiles.m,v 1.4 2005/10/23 06:50:03 edhill Exp $
 
 
 %  Set defaults
@@ -38,7 +39,7 @@ if nargin < 2
   vnames = {};
 end
 if nargin < 3
-  times = {};
+  tlev = {};
 end
 if nargin < 4 || isempty(flag)
   flag = 'oldflat'
@@ -83,37 +84,39 @@ else
 end
 
 %  Get iterations or model times
-if isstruct(times) 
-  if isfield(times,'iter')
-    %  times.iter = iter.iter;
-  elseif isfield(times,'time')
-    %  times.time = iter.time;
+if isempty(tlev)
+  tlev = find_all_iters(fall);
+elseif isstruct(tlev) 
+  if isfield(tlev,'iter')
+    %  tlev.iter = iter.iter;
+  elseif isfield(tlev,'time')
+    %  tlev.time = iter.time;
   else
-    error(['If times is a struct, either "iter" or ' ...
+    error(['If tlev is a struct, either "iter" or ' ...
            '"time" must be members']);
   end
-  if not(isfield(times,'iter'))
-    times.iter = [];
+  if not(isfield(tlev,'iter'))
+    tlev.iter = [];
   end
-    if not(isfield(times,'time'))
-    times.time = [];
+    if not(isfield(tlev,'time'))
+    tlev.time = [];
   end
-elseif isvector(times)
-  tmp = times;
-  clear times;
-  times.iter = tmp;
-  times.time = [];
+elseif isvector(tlev)
+  tmp = tlev;
+  clear tlev;
+  tlev.iter = tmp;
+  tlev.time = [];
 end
 
 res = [];
 switch lower(flag)
  case 'oldflat'
-  res = rdnctiles_oldflat(fall,vnames,times,dlev);
+  res = rdnctiles_oldflat(fall,vnames,tlev,dlev);
  
  case 'compact'
   
  case 'bytile'
-  res = rdnctiles_bytile(fall,vnames,times,dlev);
+  res = rdnctiles_bytile(fall,vnames,tlev,dlev);
  
  case 'byface'
   
