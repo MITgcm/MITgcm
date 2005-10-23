@@ -24,7 +24,7 @@ else
 end
 time = months/12;
 
-if Dim == 0
+if Dim == 0 & ~isequal(dat,'Mon')
     if ismember(PlotFld,fields2D) | ismember(fln,fields2D), Dim = 2; end
     if ismember(PlotFld,fields3D) | ismember(fln,fields3D), Dim = 3; end
     if Dim == 0
@@ -56,7 +56,7 @@ if isequal(dat,'Gra')
     GraphixDebug_Local(GraphixDebug,'data','slice',data);
 
 % Load monitor data -- can be cleaned up.
-elseif isequal(dat(1:2),'Mn') | isequal(dat,'Mon')
+elseif isequal(dat,'Mon')
     [data,time] = ...
         GraphixLoadMonitor(fln,fil,dad,itr,tst,SecPerYear,GraphixDebug);
     xax = time; yax = NaN; pltslc = 'timfld';
@@ -222,7 +222,7 @@ else
         V = GraphixAverage(V,fln,avg,months,ddf,Dim);
         GraphixDebug_Local(GraphixDebug,'U-dir vector','average',U);
         GraphixDebug_Local(GraphixDebug,'V-dir vector','average',V);
-        [uE,vN] = cubeuv2uvEN_C(U,V,AngleCS,AngleSN,XG,YG);
+        [uE,vN] = rotate_uv2uvEN(U,V,AngleCS,AngleSN,'C');
         %[U,V]=uvcube2latlon(XC,YC,U,V,XL,YL);
         if     isequal(Vector,1), data = uE;
         elseif isequal(Vector,2), data = vN; end
