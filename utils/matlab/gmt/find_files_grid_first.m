@@ -11,7 +11,7 @@ function [flist] = find_files_grid_first(fpat)
 %
 %
 %  Ed Hill
-%  $Id: find_files_grid_first.m,v 1.1 2005/10/22 02:07:36 edhill Exp $
+%  $Id: find_files_grid_first.m,v 1.2 2005/10/23 20:45:09 edhill Exp $
 
 files = {};
 if ischar(fpat)
@@ -31,7 +31,7 @@ fall = sort(unique(files));
 m = regexp(fall, 'grid.+', 'match');
 grid_files = {};
 data_files = {};
-fordered = {}
+fordered = {};
 for i = 1:length(m)
   if not(isempty(m{i}))
     fordered{end+1} = fall{i};

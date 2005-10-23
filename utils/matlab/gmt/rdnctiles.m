@@ -7,8 +7,10 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %              (eg. 'state.*.nc) or a cell array of file patterns
 %   vnames   either a single variable name as a string or a
 %              cell array of variable names
-%   tlev    vector of iteration values or struct of either 
-%              iterations values or model times
+%   tlev     empty or a struct specifying:
+%              tdname :  name of the "time" dimension
+%              tvname :  name of the "time" coord variable
+%              tvals  :  vector of "time" values 
 %
 %   flag     one of:  'oldflat' [def]
 %                     'compact' 'bytile' 'byface'
@@ -21,13 +23,16 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 % EXAMPLES
 %   tlist = rdnctiles('state.*',[1000:100:2000]);
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
-%   t.iter = [1000:100:2000];
+%
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
+%   fpat   = {'state.*.nc' 'grid*'}
+%   vnames = {};
+%   tlev   = [];
 %   tl = rdnctiles({'state.*.nc' 'grid*'},[],[],'bytile',20)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.4 2005/10/23 06:50:03 edhill Exp $
+%  $Id: rdnctiles.m,v 1.5 2005/10/23 20:45:09 edhill Exp $
 
 
 %  Set defaults
@@ -60,6 +65,7 @@ switch lower(flag)
   error(['the flag ''' flag ''' is unknown']);
 end
 
+% Get all the files
 fall = find_files_grid_first(fpat);
 if isempty(fall)
   error(['No files matching could be found!']);
@@ -71,41 +77,46 @@ if dlev > 2
   end
 end
 
-%  Get variable names
+%  Set defaults and do basic sanity checks for vnames
 if isempty(vnames)
-  clear vnames;
   vnames = {};
 elseif ischar(vnames)
   tmp = vnames;
-  vnames = {};
   vnames = { tmp };
+elseif iscell(vnames)
 else
   error(['"vnames" must be a cell array or a string!']);
 end
 
-%  Get iterations or model times
+%  Set defaults and do basic sanity checks for tlev
 if isempty(tlev)
-  tlev = find_all_iters(fall);
-elseif isstruct(tlev) 
-  if isfield(tlev,'iter')
-    %  tlev.iter = iter.iter;
-  elseif isfield(tlev,'time')
-    %  tlev.time = iter.time;
+  vit = find_all_iters_per_var(fall,vnames,[]);
+elseif isstruct(tlev)
+  if isfield(tlev,'tdname')
+    vit.tdname = tlev.tdname;
+  end
+  if isfield(tlev,'tvname')
+    vit.tvname = tlev.tvname;
+  end
+  if isfield(tlev,'tvals')
+    if isvector(tlev.tvals)
+      %  check that all time levels exist
+      %tlev.tvals;
+      error(['checking that all desired times exist is not ' ...
+             'yet implemented'])
+    else
+      error(['if tlev.tvals is defined, it *must* be a vector ' ...
+             'of time values']);
+    end
   else
-    error(['If tlev is a struct, either "iter" or ' ...
-           '"time" must be members']);
-  end
-  if not(isfield(tlev,'iter'))
-    tlev.iter = [];
-  end
-    if not(isfield(tlev,'time'))
-    tlev.time = [];
+      vit = find_all_iters_per_var(fall,vnames,vit);
   end
 elseif isvector(tlev)
-  tmp = tlev;
-  clear tlev;
-  tlev.iter = tmp;
-  tlev.time = [];
+  %  check that all time levels exist
+  error(['checking that all desired times exist is not ' ...
+         'yet implemented'])
+else
+  error(['the "tlev" input is not in the right format']);
 end
 
 res = [];
@@ -116,7 +127,7 @@ switch lower(flag)
  case 'compact'
   
  case 'bytile'
-  res = rdnctiles_bytile(fall,vnames,tlev,dlev);
+  res = rdnctiles_bytile(fall,vit,dlev);
  
  case 'byface'
   

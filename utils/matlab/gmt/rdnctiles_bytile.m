@@ -1,24 +1,25 @@
-function [tlist] = rdnctiles_bytile(fall,vnames,tvals,dlev)
+function [tlist] = rdnctiles_bytile(fall,vit, dlev)
 
-% Function [tlist] = rdnctiles_bytile(fall,vnames,tvals,dlev)
+% Function [tlist] = rdnctiles_bytile(fall,vit, dlev)
 %
 % INPUTS
-%   fpat     cell array of file names
-%   vnames   cell array of variable names
-%   tvals    struct of iteration values or model times
-%              tvals.iters 
-%              tvals.times 
-%   dlev     debug level
+%   fpat   cell array of file names
+%   vit    struct containing variable and time information
+%            vit.tdname : "time" dim name (DEF: 'T')
+%            vit.tdname : "time" coord var name (DEF: 'iter')
+%            vit.vars.(vname) : "time" values for each var
+%
+%   dlev   debug level
 %
 % OUTPUTS
-%   tlist    struct array of tile data
+%   tlist  struct array of tile data
 %
 %
-%  This function has no input checking since it is meant to be
+%  This function has minimal input checking since it is meant to be
 %  called by a wrapper function that ensures proper inputs.
 %
 %  Ed Hill
-%  $Id: rdnctiles_bytile.m,v 1.2 2005/10/23 06:50:03 edhill Exp $
+%  $Id: rdnctiles_bytile.m,v 1.3 2005/10/23 20:45:09 edhill Exp $
 
 
 tlist = struct('gtn',{});
@@ -34,104 +35,81 @@ for fi = 1:length(fall)
            ' in file "' fall{fi} '"']);
   end
   gti = nc.tile_number(:);
-  it = find([tlist(:).gtn] == gti);
+  itile = find([tlist(:).gtn] == gti);
   % tlist
   % [tlist(:).gtn]
   % pause
-  if isempty(it)
-    it = length(tlist) + 1;
-    tlist(it).gtn = gti;
-  end
-  
-  % Get all valid times based upon either the model iteration numbers or
-  % the model time values.
-  fit = [];
-  git = [];
-  fvars = ncnames(var(nc));
-  if isfield(tvals,'iters') ...
-        &&  not(isempty( intersect(fvars,{'iter'}) ))
-    fiters = nc{'iter'}(:);
-    [v,fit,git] = intersect(fiters,tvals.iters);
-  end
-  if isfield(tvals,'times') ...
-        &&  not(isempty( intersect(fvars,{'T'}) ))
-    ftimes = nc{'T'}(:);
-    [v,fit,git]  = intersect(ftimes,tvals.times);
-  end
-  %  allit = union(inti,intt);
-
-  % Get all the global attributes
-  allatt = ncnames(att(nc));
-  if not(isfield(tlist(it),'att'))
-    tlist(it).att = {};
-  end
-  if ~isempty(allatt)
-    for attr = allatt;
-      % Don't get the attribute again if we already have it from reading a
-      % previous tile
-      if not(isfield(tlist(it).att,(char(attr))))
-        tlist(it).att.(char(attr)) = nc.(char(attr))(:);
-      end
-    end
+  if isempty(itile)
+    itile = length(tlist) + 1;
+    tlist(itile).gtn = gti;
   end
   
   %  Get all the variables
-  if isempty(vnames)
-    vread = ncnames(var(nc));
-  else
-    vread = vnames;
-  end
   if dlev > 10
     fprintf(1,'    reading : ');
   end
+  vread = fields(vit.vars);
   for iv = 1:length(vread)
+    if isempty(nc{char(vread{iv})})
+      % disp(['    warning: no var "',vread{iv},'" in "',fall{fi},'"']);
+      continue
+    end
     if dlev > 10
       fprintf(1,[' ' char(vread{iv}) ]);
     end
-    if isempty(nc{char(vread{iv})})
-      disp(['\n    warning: no var "',vread{iv},'" in "',fall{fi},'"']);
-      continue
-    end
     
-    if isempty(fit) || isempty(git)
-      % Read all of the variable at once including all time levels
+    if isempty(vit.vars.(vread{iv}))
+      % Read all of the variable at once since no time levels are used
       tmpv =  nc{vread{iv}}(:);
       sz = size(tmpv);
       nd = length(sz);
-      tlist(it).var.(char(vread{iv})) = permute(tmpv,[nd:-1:1]);
+      tlist(itile).var.(char(vread{iv})) = permute(tmpv,[nd:-1:1]);
     else
-      % Get the rank of the time dimension (if used) and then only
-      % read the desired time values
-      tind = 0;
+      % Get the rank of the time dimension 
+      trank = 0;
       dnames = ncnames(dim(nc{vread{iv}}));
-      if strcmp( ncnames(recdim(nc)), 'T' )
-        m = regexp(dnames, '^T$');
+      if strcmp( ncnames(recdim(nc)), vit.tdname )
+        m = regexp(dnames, [ '^' vit.tdname '$'] );
         for i = 1:length(m)
           if not(isempty(m{i}))
-            tind = i;
+            trank = i;
             break
           end
         end
       end
+      if trank == 0
+        error(['no time dim was found for variable ''' ...
+               vread{iv} '''']);
+      end
+      
+      % get the corresponding file-local indicies and global-assembly
+      % indicies along the time dimension
+      loc_times = nc{vit.tvname}(:);
+      [v,ilocal,iglobal] = ...
+          intersect( vit.vars.(vread{iv}), loc_times );
+
+      % only read the desired time values based on:
+      %   the local  "kt" indicies and
+      %   the global "tk" indicies
       indstr = '';
       for i = 1:length(dnames)
         if i > 1
          indstr = [ indstr ',' ];
-      end
-      if i == tind
-        indstr = [ indstr 'kt' ];
-      else
-        indstr = [ indstr ':' ];
-      end
+        end
+        if i == trank
+          indstr = [ indstr 'kt' ];
+        else
+          indstr = [ indstr ':' ];
+        end
       end
       rindstr = fliplr(indstr);
-      for jj = 1:length(fit)
-        kt = fit(jj);
+      for jj = 1:length(ilocal)
+        kt = ilocal(jj);
         eval([ 'tmpv =  nc{vread{iv}}(' indstr ');' ]);
         sz = size(tmpv);
         nd = length(sz);
-        tk = git(jj);
-        comm = [ 'tlist(it).var.(char(vread{iv}))(' ...
+        tk = iglobal(jj);
+        comm = [ 'tlist(itile).var.(char(vread{iv}))(' ...
                  rindstr ') = permute(tmpv,[nd:-1:1]);' ];
         eval(comm);
       end
