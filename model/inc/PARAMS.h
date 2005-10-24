@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.169 2005/10/11 21:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.170 2005/10/24 22:38:49 jmc Exp $
 C $Name:  $
 C
 
@@ -260,8 +260,10 @@ C     saltImplVertAdv :: Turns on implicit vertical advection for Salinity
 C     momImplVertAdv  :: Turns on implicit vertical advection for Momentum
 C     multiDimAdvection :: Flag that enable multi-dimension advection
 C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
-C     forcing_In_AB :: if False, put forcing (Temp,Salt,Tracers) contribution
-C                      out off Adams-Bashforth time stepping.
+C     forcing_In_AB     :: if False, put forcing (Temp,Salt,Tracers) contribution
+C                          out off Adams-Bashforth time stepping.
+C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
+C                          apply AB on tracer tendencies (rather than on Tracer) 
 C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup 
 C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
@@ -321,7 +323,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & useAbsVorticity, upwindShear,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & multiDimAdvection, useMultiDimAdvec, forcing_In_AB,
+     & multiDimAdvection, useMultiDimAdvec, 
+     & forcing_In_AB, doAB_onGtGs,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & fluidIsAir, fluidIsWater,
@@ -386,6 +389,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL multiDimAdvection
       LOGICAL useMultiDimAdvec
       LOGICAL forcing_In_AB
+      LOGICAL doAB_onGtGs
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
       LOGICAL doTr1ClimRelax
