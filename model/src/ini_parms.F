@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.172 2005/10/11 21:27:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.173 2005/10/24 22:40:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -196,7 +196,8 @@ C--   Time stepping parammeters
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
      & deltaT, deltaTClock, deltaTmom, 
      & deltaTtracer, dTtracerLev, deltaTfreesurf,
-     & forcing_In_AB, abEps, alph_AB, beta_AB, startFromPickupAB2, 
+     & forcing_In_AB, doAB_onGtGs,
+     & abEps, alph_AB, beta_AB, startFromPickupAB2, 
      & tauCD, rCD,
      & baseTime, startTime, endTime, chkPtFreq,
      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
