@@ -12,9 +12,9 @@ gad_del2.f
 gad_diff_r.f
 gad_diff_x.f
 gad_diff_y.f
-gad_dst2u1_adv_r.F
-gad_dst2u1_adv_x.F
-gad_dst2u1_adv_y.F
+gad_dst2u1_adv_r.f
+gad_dst2u1_adv_x.f
+gad_dst2u1_adv_y.f
 gad_dst3_adv_x.f
 gad_dst3_adv_y.f
 gad_dst3_adv_r.f
