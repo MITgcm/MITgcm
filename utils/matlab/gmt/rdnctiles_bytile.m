@@ -19,7 +19,7 @@ function [tlist] = rdnctiles_bytile(fall,vit, dlev)
 %  called by a wrapper function that ensures proper inputs.
 %
 %  Ed Hill
-%  $Id: rdnctiles_bytile.m,v 1.4 2005/10/24 03:39:42 edhill Exp $
+%  $Id: rdnctiles_bytile.m,v 1.5 2005/10/24 04:54:13 edhill Exp $
 
 
 tlist = struct('gtn',{});
@@ -85,8 +85,7 @@ for fi = 1:length(fall)
       % get the corresponding file-local indicies and global-assembly
       % indicies along the time dimension
       loc_times = nc{vit.tvname}(:);
-      [v,ilocal,iglobal] = ...
-          intersect( vit.vars.(vread{iv}), loc_times );
+      [v,ind1,ind2] = intersect( vit.vars.(vread{iv}), loc_times );
 
       % only read the desired time values based on:
       %   the local  "kt" indicies and
@@ -103,12 +102,12 @@ for fi = 1:length(fall)
         end
       end
       rindstr = fliplr(indstr);
-      for jj = 1:length(ilocal)
-        kt = ilocal(jj);
+      for jj = 1:length(ind1)
+        kt = ind2(jj);
         eval([ 'tmpv =  nc{vread{iv}}(' indstr ');' ]);
         sz = size(tmpv);
         nd = length(sz);
-        tk = iglobal(jj);
+        tk = ind1(jj);
         comm = [ 'tlist(itile).var.(char(vread{iv}))(' ...
                  rindstr ') = permute(tmpv,[nd:-1:1]);' ];
         eval(comm);

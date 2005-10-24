@@ -25,14 +25,15 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
 %
 %   tlist = rdnctiles('state.*.nc','Temp','S',[1000:100:2000]);
-%   fpat   = {'state.*.nc' 'grid*'}
-%   vnames = {};
-%   tlev   = [];
+%
+%   tl = rdnctiles({'state.*.nc' 'grid*'},[],[],[],20)
 %   tl = rdnctiles({'state.*.nc' 'grid*'},[],[],'bytile',20)
+%   tl = rdnctiles({'state.*.nc' 'grid*'},[],[24 72],[],20)
+%   tl = rdnctiles({'state.*.nc' 'grid*'},[],[24 72],'bytile',20)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.6 2005/10/24 03:39:42 edhill Exp $
+%  $Id: rdnctiles.m,v 1.7 2005/10/24 04:54:13 edhill Exp $
 
 
 %  Set defaults
@@ -89,6 +90,11 @@ else
 end
 
 %  Set defaults and do basic sanity checks for tlev
+if isvector(tlev)
+  tmp = tlev;
+  clear tlev;
+  tlev.tvals = tmp;
+end
 if isempty(tlev)
   vit = find_all_iters_per_var(fall,vnames,[]);
 elseif isstruct(tlev)
@@ -100,21 +106,34 @@ elseif isstruct(tlev)
   end
   if isfield(tlev,'tvals')
     if isvector(tlev.tvals)
-      %  check that all time levels exist
-      %tlev.tvals;
-      error(['checking that all desired times exist is not ' ...
-             'yet implemented'])
+      vit = find_all_iters_per_var(fall,vnames,tlev);
+      allvars = fieldnames(vit.vars);
+      insufft = {};
+      for i = 1:length(allvars)
+        if isempty(vit.vars.(allvars{i}))
+          continue
+        end
+        v = intersect(vit.vars.(allvars{i}),tlev.tvals);
+        if length(v) < length(tlev.tvals)
+          insufft{end+1} = allvars{i};
+        end
+        vit.vars.(allvars{i}) = tlev.tvals;
+      end
+      if not(isempty(insufft))
+        disp(['WARNING: some of the specified times are not ' ...
+              'available for the following variables :']);
+        fprintf(1,['   ']);
+        for i = 1:length(insufft)
+          fprintf(1,[' ' insufft{i} ]);
+        end
+      end
     else
       error(['if tlev.tvals is defined, it *must* be a vector ' ...
              'of time values']);
     end
   else
-      vit = find_all_iters_per_var(fall,vnames,vit);
+      vit = find_all_iters_per_var(fall,vnames,[]);
   end
-elseif isvector(tlev)
-  %  check that all time levels exist
-  error(['checking that all desired times exist is not ' ...
-         'yet implemented'])
 else
   error(['the "tlev" input is not in the right format']);
 end
