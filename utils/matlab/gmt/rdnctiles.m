@@ -32,7 +32,7 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.5 2005/10/23 20:45:09 edhill Exp $
+%  $Id: rdnctiles.m,v 1.6 2005/10/24 03:39:42 edhill Exp $
 
 
 %  Set defaults
@@ -47,7 +47,7 @@ if nargin < 3
   tlev = {};
 end
 if nargin < 4 || isempty(flag)
-  flag = 'oldflat'
+  flag = 'oldflat';
 end
 if nargin > 4
   dlev = dblev;
@@ -55,7 +55,7 @@ end
 
 switch lower(flag)
  case 'oldflat'
-  error(['the ''oldflat'' format is not yet implemented.']);
+  % error(['the ''oldflat'' format is not yet implemented.']);
  case 'compact'
   error(['the ''compact'' format is not yet implemented.']);
  case 'bytile'
@@ -122,7 +122,7 @@ end
 res = [];
 switch lower(flag)
  case 'oldflat'
-  res = rdnctiles_oldflat(fall,vnames,tlev,dlev);
+  res = rdnctiles_oldflat(fall,vit,dlev);
  
  case 'compact'
   
