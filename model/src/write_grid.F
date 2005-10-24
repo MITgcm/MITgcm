@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.17 2005/10/20 20:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.18 2005/10/24 18:16:07 jmc Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -36,13 +36,16 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-      character*(4) bfname
 C     tmpfld  - Temporary array used to compute & write Total Depth
 C               has to be in common for multi threading
 C     ?aja: not sure why the COMMON block is necessary - should ask JMC?
 c     COMMON / LOCAL_INI_MASKS_ETC / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,bi,bj
+      LOGICAL writegrid_mdsio
+#ifdef ALLOW_MNC
+      CHARACTER*(4) bfname
+#endif
 CEOP
 
 C     Calculate the fluid thickness in R coordinates as seen by the
@@ -59,41 +62,48 @@ C             Total fluid column thickness (r_unit) :
         ENDDO
       ENDDO
 
+      writegrid_mdsio = .TRUE.
 #ifdef ALLOW_MNC
-      IF ( (.NOT. useMNC) .OR. (outputTypesInclusive) ) THEN
+      IF ( useMNC ) THEN
+        writegrid_mdsio = outputTypesInclusive .OR. .NOT.writegrid_mnc
+      ENDIF
 #endif /* ALLOW_MNC */
 
-      _BEGIN_MASTER( myThid )
+      IF ( writegrid_mdsio ) THEN
+
+        _BEGIN_MASTER( myThid )
 
 C     Write horizontal grid arrays
-      CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAZ',' ',rAz,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
-      IF ( usingCurvilinearGrid ) THEN
-        CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,0,myThid)
-      ENDIF
+        CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAZ',' ',rAz,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+        IF ( usingCurvilinearGrid ) THEN
+          CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,0,myThid)
+          CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,0,myThid)
+        ENDIF
 C     Write 3D geometry arrays
-      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
-      IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
+        CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
+        IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
      &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
 
-      _END_MASTER(myThid)
+        _END_MASTER(myThid)
+
+      ENDIF
 
 #ifdef ALLOW_MNC
-      ELSE
+      IF ( useMNC .AND. writegrid_mnc ) THEN
 
         _BEGIN_MASTER( myThid )
         bfname='grid'
