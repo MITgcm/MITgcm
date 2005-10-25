@@ -16,7 +16,7 @@ function [res] = rdnctiles_oldflat(fall,vit,dlev)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles_oldflat.m,v 1.2 2005/10/24 04:54:13 edhill Exp $
+%  $Id: rdnctiles_oldflat.m,v 1.3 2005/10/25 15:54:44 edhill Exp $
 
 
 
@@ -140,8 +140,13 @@ for fi = 1:length(fall)
     kx = [ 1:nc.('sNx')(:) ];
     ky = [ 1:nc.('sNy')(:) ];
     % global X,Y indicies
-    xk = nc.('exch2_txglobalo')(:) - 1 + kx;
-    yk = nc.('exch2_tyglobalo')(:) - 1 + ky;
+    if res.att.exch_ver == 2
+      xk = nc.('exch2_txglobalo')(:) - 1 + kx;
+      yk = nc.('exch2_tyglobalo')(:) - 1 + ky;
+    elseif res.att.exch_ver == 1
+      xk = (nc.('bi')(:) - 1)*nc.('sNx')(:) + kx;
+      yk = (nc.('bj')(:) - 1)*nc.('sNy')(:) + ky;
+    end
     if length(ind1) > 0
       for jj = 1:length(ind1)
         kt = ind2(jj);
