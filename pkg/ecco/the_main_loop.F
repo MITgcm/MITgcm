@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.25 2005/09/18 13:05:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.26 2005/10/25 19:03:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -737,10 +737,10 @@ C--   Calculate float trajectories
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
-C--   State-variables statistics (time-aver, diagnostics ...)
-      CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
-      CALL DO_STATEVARS_DIAGS( myTime, myIter, myThid )
-      CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+C--   State-variables time-averaging
+      CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
+      CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
 
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
