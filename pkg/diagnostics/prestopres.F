@@ -1,4 +1,7 @@
-      subroutine prestopres ( qprs,qinp,pkz,pksrf,ptop,p,im,jm,lm )
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/prestopres.F,v 1.3 2005/10/25 16:27:30 molod Exp $
+C $Name:  $
+#include "DIAG_OPTIONS.h"
+      subroutine prestopres (qprs,qinp,pkz,pksrf,ptop,p,im,jm,lm,myThid)
 C***********************************************************************
 C                                               
 C PURPOSE
@@ -28,15 +31,15 @@ C
 C***********************************************************************
 C    
       implicit none
-      integer  i,l,im,jm,lm
+      integer  i,l,im,jm,lm,myThid
 
-      real  qprs(im,jm)
-      real  qinp(im,jm,lm)
-      real   pkz(im,jm,lm)
-      real pksrf(im,jm)
+      _RL  qprs(im,jm)
+      _RL  qinp(im,jm,lm)
+      _RL   pkz(im,jm,lm)
+      _RL pksrf(im,jm)
 
-      real  ptop,p,undef,kappa,getcon
-      real  pk,pkmin,pkmax,pktop,temp
+      _RL  ptop,p,undef,kappa,getcon
+      _RL  pk,pkmin,pkmax,pktop,temp
 
       undef = getcon('UNDEF')
       kappa = getcon('KAPPA')
