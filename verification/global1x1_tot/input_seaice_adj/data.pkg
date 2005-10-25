@@ -9,5 +9,5 @@
  useSeaice      = .TRUE.,
  useGrdchk      = .FALSE.,
  useECCO        = .TRUE.,
- useDiagnostics = .TRUE.,
+ useDiagnostics = .FALSE.,
  /

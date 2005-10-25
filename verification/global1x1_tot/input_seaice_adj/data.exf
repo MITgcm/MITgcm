@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input_seaice_adj/Attic/data.exf,v 1.2 2005/06/16 15:45:57 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input_seaice_adj/Attic/data.exf,v 1.3 2005/10/25 15:49:18 heimbach Exp $
 #
 # *********************
 # External Forcing Data
@@ -6,7 +6,7 @@
  &EXF_NML
 #
  useExfYearlyFields = .TRUE.,
- useExfCheckRange   = .TRUE.,
+ useExfCheckRange   = .FALSE.,
 #
 # hfluxstartdate1   = 19920101,
 # hfluxstartdate2   = 30000,

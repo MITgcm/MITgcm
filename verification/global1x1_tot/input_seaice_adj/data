@@ -36,7 +36,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.true.,
  eosType='JMD95Z',
-# readBinaryPrec=64,
  readBinaryPrec=32,
  writeBinaryPrec=32,
  saltStepping=.TRUE.,
@@ -50,11 +49,12 @@
  useSingleCpuIO=.TRUE.,
  useCDscheme=.TRUE.,
  useNHMTerms=.TRUE.,
+ exactConserv=.TRUE.,
 ### usePickupBeforeC54=.TRUE.,
  tempAdvScheme = 3,
  saltAdvScheme = 3,
-# hFacMin=0.2,
-# hFacMinDz = 50,
+### hFacMin=0.2,
+### hFacMinDz = 50,
 #ph)
  debugLevel=1, 
  /
@@ -71,9 +71,13 @@
 # Time stepping parameters
 # ************************
  &PARM03
+ calendarDumps=.TRUE.,
+#
  nIter0 = 1,
 # 1 month 31*24
 # nTimeSteps=744,
+# 2 months 30.5*24*2
+# nTimeSteps=1464,
 # 1 year
 # nTimeSteps=8760,
 # 2 years
@@ -86,14 +90,14 @@
  nTimeSteps=113880,
 #
  forcing_In_AB = .FALSE.,
- tauCD=172800.,
+ tauCD=172800.0,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
  cAdjFreq=0.,
  abEps=0.1,
-# pChkptFreq  = 31536000.0,
-# chkptFreq   = 31536000.0,
+# pChkptFreq  = 2635200.0,
+# chkptFreq   = 2635200.0,
 # dumpFreq    = 31536000.0,
  adjDumpFreq = 31536000.0, 
 # taveFreq    = 31536000.0,
@@ -133,7 +137,7 @@
 ### hydrogSaltFile  = 'LEVITUS_1x1_salt_NEW_corK',
 ### hydrogThetaFile = 'wghc_ptmp_corK',
 ### hydrogSaltFile  = 'wghc_salt_corK',
- hydrogThetaFile = 'LEV_wghc_ptmp_r3',
- hydrogSaltFile  = 'LEV_wghc_salt_r3',
+ hydrogThetaFile = 'LEV_wghc_ptmp_r4',
+ hydrogSaltFile  = 'LEV_wghc_salt_r4',
  /
 

@@ -126,7 +126,7 @@ c       >>> Make sure that ALLOW_OBCS is defined!
 #  define ALLOW_OBCS_COST_CONTRIBUTION
 # endif
 
-# undef ALLOW_COST_ATLANTIC
+# define ALLOW_SEAICE_COST_SMR_AREA
 c
 #endif /* ALLOW_COST */
 
