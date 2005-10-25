@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.1 2005/08/25 21:54:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.2 2005/10/25 16:11:20 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,19 +66,28 @@ C     i,j,k :: loop indices
       _RL qtmp2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
       _RL getcon
       EXTERNAL getcon
-      integer nplevs
-      parameter(nplevs = 16)
-      _RL plevs1(nplevs)
+      integer nplevs1, nplevs2, nplevs3
+      parameter(nplevs1 = 16)
+      parameter(nplevs2 = 16)
+      parameter(nplevs3 = 17)
+      _RL plevs1(nplevs1)
       data plevs1/ 1000.0 _d 2, 925.0 _d 2, 850.0 _d 2, 700.0 _d 2,
      .              600.0 _d 2, 500.0 _d 2, 400.0 _d 2, 300.0 _d 2,
      .              250.0 _d 2, 200.0 _d 2, 150.0 _d 2, 100.0 _d 2,
      .               70.0 _d 2,  50.0 _d 2,  30.0 _d 2,  20.0 _d 2/
-      _RL plevs2(nplevs)
+      _RL plevs2(nplevs2)
       data plevs2/ 1000.0 _d 2, 950.0 _d 2, 900.0 _d 2, 850.0 _d 2,
      .              800.0 _d 2, 750.0 _d 2, 700.0 _d 2, 600.0 _d 2,
      .              500.0 _d 2, 400.0 _d 2, 300.0 _d 2, 250.0 _d 2,
      .              200.0 _d 2, 150.0 _d 2, 100.0 _d 2,  50.0 _d 2/
-      _RL qprs(sNx,sNy,nplevs)
+      _RL plevs3(nplevs3)
+      data plevs3/ 1000.0 _d 2, 925.0 _d 2, 850.0 _d 2, 700.0 _d 2,
+     .              600.0 _d 2, 500.0 _d 2, 400.0 _d 2, 300.0 _d 2,
+     .              250.0 _d 2, 200.0 _d 2, 150.0 _d 2, 100.0 _d 2,
+     .               70.0 _d 2,  50.0 _d 2,  30.0 _d 2,  20.0 _d 2,
+     .               10.0 _d 2/
+C Use the biggest of nplevs 1-3 (or any others) for the size of qprs
+      _RL qprs(sNx,sNy,nplevs3)
       _RL qinp(sNx,sNy,Nr+Nrphys)
       _RL pkz(sNx,sNy,Nr+Nrphys)
       _RL pksrf(sNx,sNy)
@@ -111,7 +120,11 @@ C if fizhi is being  used, may need to get physics grid pressures
      .                                                           myThid)
            endif
 #endif
-           if( jpoint1.ne.0 .and. jpoint2.ne.0) foundp = .true.
+           if( jpoint1.ne.0 .and. jpoint2.ne.0) then
+            foundp = .true.
+           else
+            foundp = .false.
+           endif
 
            if(.not. foundp) then
             WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_INTERP_VERT: ',
@@ -158,7 +171,6 @@ C If nonlinear free surf is off, get pressures from rC and rF arrays
           ENDDO
 #endif
 C Load p to the kappa into a temporary array
-          nlevsout = nplevs
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j = 1,sNy
@@ -180,15 +192,28 @@ C Load p to the kappa into a temporary array
              ENDDO
             ENDDO
 
-            DO k = 1,nplevs
-             if(fflags(listId)(3:3).eq.'1') then
+            if(fflags(listId)(3:3).eq.'1') then
+             nlevsout = nplevs1
+             DO k = 1,nplevs1
               p = plevs1(k)
-             elseif(fflags(listId)(3:3).eq.'2')then
-              p = plevs2(k)
-             endif
-             call prestopres(qprs(1,1,k),qinp,pkz,pksrf,0.,p,sNx,sNy,
+              call prestopres(qprs(1,1,k),qinp,pkz,pksrf,0.,p,sNx,sNy,
      .                                                 nlevels(listId) )
-            ENDDO
+             ENDDO
+            elseif(fflags(listId)(3:3).eq.'2')then
+             nlevsout = nplevs2
+             DO k = 1,nplevs2
+              p = plevs2(k)
+              call prestopres(qprs(1,1,k),qinp,pkz,pksrf,0.,p,sNx,sNy,
+     .                                                 nlevels(listId) )
+             ENDDO
+            elseif(fflags(listId)(3:3).eq.'3')then
+             nlevsout = nplevs3
+             DO k = 1,nplevs3
+              p = plevs3(k)
+              call prestopres(qprs(1,1,k),qinp,pkz,pksrf,0.,p,sNx,sNy,
+     .                                                 nlevels(listId) )
+             ENDDO
+            endif
 
             DO j = 1,sNy
              DO i = 1,sNx
