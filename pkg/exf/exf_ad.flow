@@ -16,3 +16,5 @@ C subroutine exf_diagnostics_fill
 C----------------------------------------
 CADJ SUBROUTINE exf_diagnostics_fill  INPUT  = 1,2,3
 CADJ SUBROUTINE exf_diagnostics_fill  OUTPUT =
+CADJ SUBROUTINE exf_diagnostics_fill  DEPEND = 1,2,3
+CADJ SUBROUTINE exf_diagnostics_fill  REQUIRED
