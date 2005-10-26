@@ -36,24 +36,24 @@ C subroutine  diags_rho
 C----------------------------------------
 CADJ SUBROUTINE diags_rho INPUT  = 1,2,3,4,5,6,7,8
 CADJ SUBROUTINE diags_rho OUTPUT =
+CADJ SUBROUTINE diags_rho DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE diags_rho REQUIRED
 
 C----------------------------------------
 C subroutine  diagnostics_fill
 C----------------------------------------
 CADJ SUBROUTINE diagnostics_fill INPUT  = 1,2,3,4,5,6,7,8
 CADJ SUBROUTINE diagnostics_fill OUTPUT =
-
-C----------------------------------------
-C subroutine  diagnostics_fill_surf_flux
-C----------------------------------------
-CADJ SUBROUTINE diagnostics_fill_surf_flux INPUT  = 1
-CADJ SUBROUTINE diagnostics_fill_surf_flux OUTPUT =
+cphCADJ SUBROUTINE diagnostics_fill DEPEND = 1,2,3,4,5,6,7,8
+cphCADJ SUBROUTINE diagnostics_fill REQUIRED
 
 C----------------------------------------
 C subroutine  DIAGS_OCEANIC_SURF_FLUX
 C----------------------------------------
 CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX INPUT  = 1,2,3
 CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX OUTPUT =
+CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX DEPEND = 1,2,3
+CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX REQUIRED
 
 C----------------------------------------
 C subroutine  
