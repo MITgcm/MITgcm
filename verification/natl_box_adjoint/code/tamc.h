@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/tamc.h,v 1.7 2005/09/01 05:46:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/tamc.h,v 1.8 2005/10/26 23:00:47 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,11 +61,11 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =   24 )
+      parameter( nchklev_1      =   48 )
       integer    nchklev_2
-      parameter( nchklev_2      =   31 )
+      parameter( nchklev_2      =   62 )
       integer    nchklev_3
-      parameter( nchklev_3      =    3 )
+      parameter( nchklev_3      =    1 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
