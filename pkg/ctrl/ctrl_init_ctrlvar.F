@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.4 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.5 2005/10/26 21:39:10 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -38,6 +38,9 @@ c     == global variables ==
 #include "GRID.h"
 #include "ctrl.h"
 #include "optim.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_fname
@@ -96,6 +99,20 @@ c     == local variables ==
          else
             STOP 'whichxyz option not implemented'
          end if
+
+      ELSE
+
+c-- for DIVA, avoid rorward-related output in adjoint part
+         taveFreq   = 0.
+         dumpFreq   = 0.
+         pChkptFreq = 0.
+         monitorFreq = 0.
+         useDiagnostics = .FALSE.
+#ifdef ALLOW_MNC
+         monitor_mnc=.FALSE.
+         snapshot_mnc=.FALSE.
+         timeave_mnc=.FALSE.
+#endif
 
       ENDIF
 
