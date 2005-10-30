@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.18 2005/10/24 18:16:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.19 2005/10/30 21:17:27 jmc Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -74,29 +74,41 @@ C             Total fluid column thickness (r_unit) :
         _BEGIN_MASTER( myThid )
 
 C     Write horizontal grid arrays
-        CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAZ',' ',rAz,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'XC',' ',XC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'YC',' ',YC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'XG',' ',XG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'YG',' ',YG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'RAZ',' ',rAz,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,-1,myThid)
         IF ( usingCurvilinearGrid ) THEN
-          CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,0,myThid)
-          CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,0,myThid)
+          CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,-1,myThid)
+          CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,-1,myThid)
         ENDIF
 C     Write 3D geometry arrays
-        CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
+        CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,-1,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC, 0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW, 0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS, 0,myThid)
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
-     &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
+     &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
+
+#ifdef ALLOW_MDSIO
+C     Write vertical grid arrays
+        CALL MDSWRITEVEC_LOC_RS('RC', writeBinaryPrec, Nr, rC,
+     &                                0,0, 1, -1, myThid)
+        CALL MDSWRITEVEC_LOC_RS('RF', writeBinaryPrec,1+Nr, rF,
+     &                                0,0, 1, -1, myThid)
+        CALL MDSWRITEVEC_LOC_RS('DRC',writeBinaryPrec, Nr, drC,
+     &                                0,0, 1, -1, myThid)
+        CALL MDSWRITEVEC_LOC_RS('DRF',writeBinaryPrec, Nr, drF,
+     &                                0,0, 1, -1, myThid)
+#endif /* ALLOW_MDSIO */
 
         _END_MASTER(myThid)
 
