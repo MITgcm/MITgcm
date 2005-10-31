@@ -2,9 +2,9 @@
 #
 # tested on columbia using:
 # module purge
-# module load modules scsl.1.5.0.0 intel-comp.8.0.070 mpt.1.11-85
+# module load modules scsl.1.5.0.0 intel-comp.8.0.070 mpt.1.2.0.0
 #
-# module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.11-85
+# module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.2.0.0
 
 CPP='/lib/cpp  -traditional -P'
 
@@ -13,13 +13,13 @@ CPP='/lib/cpp  -traditional -P'
 FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
 
 FOPTIM='-O3 -align'
-#LIBS='-L/opt/sgi/mpt/1.11-85/lib -lmpi  -L/u/menemenl/software/netcdf-3.5.0/lib -lnetcdf'
-LIBS='-L/opt/sgi/mpt/1.11-85/lib -lmpi -L/u/edhill/pkg/netcdf-3.6.0/ifort/lib -lnetcdf'
+#LIBS='-L/opt/sgi/mpt/1.2.0.0/lib -lmpi  -L/u/menemenl/software/netcdf-3.5.0/lib -lnetcdf'
+LIBS='-L/opt/sgi/mpt/1.2.0.0/lib -lmpi -L/u/edhill/pkg/netcdf-3.6.0/ifort/lib -lnetcdf'
 
 FC=ifort
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 
-# INCLUDES='-I/opt/sgi/mpt/1.11-85/include  -I/u/menemenl/software/netcdf-3.5.0/include'
-INCLUDES='-I/opt/sgi/mpt/1.11-85/include -I/u/edhill/pkg/netcdf-3.6.0/ifort/include'
-INCLUDEDIRS='/opt/sgi/mpt/1.11-85/include'
+# INCLUDES='-I/opt/sgi/mpt/1.2.0.0/include  -I/u/menemenl/software/netcdf-3.5.0/include'
+INCLUDES='-I/opt/sgi/mpt/1.2.0.0/include -I/u/edhill/pkg/netcdf-3.6.0/ifort/include'
+INCLUDEDIRS='/opt/sgi/mpt/1.2.0.0/include'
