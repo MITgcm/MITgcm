@@ -158,9 +158,11 @@ c--   Only the master thread will do I/O.
      &        Nr, globfld3d, irec, mythid)
          do k = 1, Nr
          irectrue = (irec-1)*nr + k
+#ifndef ALLOW_ADMTLM
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
          write(cunit) 1
+#endif
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -190,6 +192,10 @@ cph)
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
+#ifdef ALLOW_ADMTLM
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
                   endif
                  enddo
                 enddo
@@ -199,8 +205,10 @@ cph)
             enddo
 c           --> check cbuffindex.
            if ( cbuffindex .gt. 0) then
+#ifndef ALLOW_ADMTLM
                write(cunit) cbuffindex
                write(cunit) 1
+#endif
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
 c
@@ -219,9 +227,11 @@ c     -- end of irec loop --
          call MDSREADFIELD_2D_GL( fname, ctrlprec, 'RL',
      &        1, globfld3d(1,1,1,1,1,1,1), irec, mythid)
 
+#ifndef ALLOW_ADMTLM
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
          write(cunit) 1
+#endif
          do k = 1, 1
             irectrue = irec
             cbuffindex = 0
@@ -254,7 +264,8 @@ cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
 #ifdef ALLOW_ADMTLM
-                     cbuffGlobal(cbuffindex) = cbuff(cbuffindex)
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
 #endif
                   endif
                  enddo
@@ -265,8 +276,10 @@ cph)
             enddo
 c           --> check cbuffindex.
             if ( cbuffindex .gt. 0) then
+#ifndef ALLOW_ADMTLM
                write(cunit) cbuffindex
                write(cunit) k
+#endif
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
 c
@@ -275,13 +288,6 @@ c
                write(cunit3,rec=irectrue) globfldtmp3
             endif
 c
-#ifdef ALLOW_ADMTLM
-            write(fnameGlobal(1:80),'(a)') ' '
-            write(fnameGlobal,'(a,i4.4)') 
-     &           'admtlm_vector.it', optimcycle
-            call mdswritevector( fnameGlobal, 64, .false., 'RL',
-     &           admtlmrec, cbuffGlobal, 1, 1, nbuffGlobal, 0, mythid )
-#endif
          enddo
 c
 c     -- end of irec loop --

@@ -166,9 +166,11 @@ c--   Only the master thread will do I/O.
          call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
      &        Nr, globfld3d, irec, mythid)
 
+#ifndef ALLOW_ADMTLM
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
          write(cunit) 1
+#endif
          do k = 1, nr
          irectrue = (irec-1)*nr + k
             if ( doZscalePack ) then
@@ -214,6 +216,10 @@ cph)
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
+#ifdef ALLOW_ADMTLM
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
                   endif
                  enddo
                 enddo
@@ -223,8 +229,10 @@ cph)
             enddo
 c           --> check cbuffindex.
             if ( cbuffindex .gt. 0) then
+#ifndef ALLOW_ADMTLM
                write(cunit) cbuffindex
                write(cunit) k
+#endif
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
 c

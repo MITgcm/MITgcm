@@ -157,6 +157,7 @@ c--   Only the master thread will do I/O.
       do irec = 1, nrec_nl
          do k = 1,Nr
          irectrue = (irec-1)*nr + k
+#ifndef ALLOW_ADMTLM
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &        then
@@ -166,8 +167,10 @@ c--   Only the master thread will do I/O.
          endif
          read(cunit) filej
          read(cunit) filei
+#endif /* ndef ALLOW_ADMTLM */
             cbuffindex = nwetglobal(1)
             if ( cbuffindex .gt. 0 ) then
+#ifndef ALLOW_ADMTLM
                read(cunit) filencbuffindex
                if (filencbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
@@ -180,8 +183,10 @@ c--   Only the master thread will do I/O.
      &                 filek, 1
                   STOP 'in S/R ctrl_unpack'
                endif
+#endif /* ndef ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+c
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -195,6 +200,10 @@ c--   Only the master thread will do I/O.
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
+#ifdef ALLOW_ADMTLM
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
@@ -244,12 +253,12 @@ cph)
          endif
          read(cunit) filej
          read(cunit) filei
-#endif /* ndef ALLOW_ADMTLM */
+#endif /* ALLOW_ADMTLM */
          do k = 1,1
             irectrue = irec
             cbuffindex = nwetglobal(k)
-#ifndef ALLOW_ADMTLM
             if ( cbuffindex .gt. 0 ) then
+#ifndef ALLOW_ADMTLM
                read(cunit) filencbuffindex
                if (filencbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
@@ -262,18 +271,10 @@ cph)
      &                 filek, k
                   STOP 'in S/R ctrl_unpack'
                endif
+#endif /* ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
-#else ALLOW_ADMTLM
-            write(fnameGlobal(1:80),'(a)') ' '
-            write(fnameGlobal,'(a,i4.4)') 
-     &           'admtlm_vector.it', optimcycle
-            call mdsreadvector( fnameGlobal, 64, 'RL',
-     &           admtlmrec, cbuffGlobal, 1, 1, nbuffGlobal, mythid )
-            do ii = 1, cbuffindex
-               cbuff(ii) = cbuffGlobal(ii)
-            enddo
-#endif
+c
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -287,6 +288,10 @@ cph)
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
+#ifdef ALLOW_ADMTLM
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) = 

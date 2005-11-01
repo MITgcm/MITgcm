@@ -170,6 +170,7 @@ c--   Only the master thread will do I/O.
      &     Nr, globmsk, 1, mythid)
 
       do irec = 1, ncvarrecs(ivartype)
+#ifndef ALLOW_ADMTLM
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &        then
@@ -179,6 +180,7 @@ c--   Only the master thread will do I/O.
          endif
          read(cunit) filej
          read(cunit) filei
+#endif /* ALLOW_ADMTLM */
          do k = 1, Nr
          irectrue = (irec-1)*nr + k
             if ( doZscaleUnpack ) then
@@ -189,6 +191,7 @@ cph               delZnorm = SQRT(delR(1)/delR(k))
             endif
             cbuffindex = nwetglobal(k)
             if ( cbuffindex .gt. 0 ) then
+#ifndef ALLOW_ADMTLM
                read(cunit) filencbuffindex
                if (filencbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
@@ -201,8 +204,10 @@ cph               delZnorm = SQRT(delR(1)/delR(k))
      &                 filek, k
                   STOP 'in S/R ctrl_unpack'
                endif
+#endif /* ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+c
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -216,6 +221,10 @@ cph               delZnorm = SQRT(delR(1)/delR(k))
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
+#ifdef ALLOW_ADMTLM
+                     nveccount = nveccount + 1
+                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+#endif
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) = delZnorm

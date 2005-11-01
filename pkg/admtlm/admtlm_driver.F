@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.4 2005/04/29 10:36:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.5 2005/11/01 04:09:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,14 +52,7 @@ CEOP
       myCurrentIter = nIter0
       yadprefix = 'g_'
 
-      IF (optimcycle .GT. 0 ) THEN
-cph         _BEGIN_MASTER( mythid )
-cph         IF ( myProcId .eq. 0 ) THEN
-cph            CALL CTRL_UNPACK( .false., mythid )
-cph         ENDIF
-cph         _END_MASTER( mythid )
-         CALL ADMTLM_UPXX( mythid )
-      ENDIF
+      CALL CTRL_INIT( mythid )
 c
       CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
       CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
@@ -77,12 +70,6 @@ c
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
       CALL ADTHE_MAIN_LOOP (  myCurrentTime, myCurrentIter, mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
-c
-cph      _BEGIN_MASTER( mythid )
-cph      IF ( myProcId .eq. 0 ) THEN
-cph         call CTRL_PACK( .FALSE., mythid )
-cph      ENDIF
-cph      _END_MASTER( mythid )
 c
 #endif
 

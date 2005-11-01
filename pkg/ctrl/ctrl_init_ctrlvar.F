@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.5 2005/10/26 21:39:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.6 2005/11/01 04:09:46 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -79,22 +79,22 @@ c     == local variables ==
          if ( whichxyz .EQ. '3d') then
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
-            if ( doInitXX .AND. optimcycle.eq.0 )
+            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
-            if ( doInitXX .AND. optimcycle.eq.0 )
+            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
-            if ( doInitXX .AND. optimcycle.eq.0 )
+            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
      &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
-            if ( doInitXX .AND. optimcycle.eq.0 )
+            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
          else
             STOP 'whichxyz option not implemented'

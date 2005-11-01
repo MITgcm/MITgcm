@@ -699,6 +699,18 @@ c                         control part.
       character*( 80)   fname_relaxsst(2)
       character*( 80)   fname_relaxsss(2)
 
+#ifdef ALLOW_ADMTLM
+      integer          maxm, maxn
+      parameter       ( maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1) )
+
+      common /admtlm_i/ nveccount
+      integer nveccount
+
+      common /admtlm_r/ phtmpadmtlm
+      double precision phtmpadmtlm(maxn)
+#endif
+
+
 c     ==================================================================
 c     END OF HEADER CONTROLVARS
 c     ==================================================================

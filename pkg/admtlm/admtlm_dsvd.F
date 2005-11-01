@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.4 2005/04/29 10:36:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.5 2005/11/01 04:09:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -156,11 +156,9 @@ C     == Routine arguments ==
       INTEGER mythid
 
 C     == PARAMETERS ==
-      integer          maxm, maxn, maxnev, maxncv, ldv, ldu
+      integer          maxnev, maxncv, ldv, ldu
 cph(
-      parameter       (maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1), 
-     &                maxnev=15, maxncv=30, 
-     &                ldu = maxm, ldv=maxn )
+      parameter       ( maxnev=15, maxncv=30, ldu = maxm, ldv=maxn )
       character*(80)   fnameGlobal
 cph)
 c
@@ -401,13 +399,12 @@ c        | either convergence is indicated or maxitr   |
 c        | has been exceeded.                          |
 c        %---------------------------------------------%
 c
-cph(
-cph         if ( iphcount .GT. 3 ) then
-cph         endif
-cph)
+ctest(
          CALL DSAUPD ( ido, bmat, n, which, nev, tol, resid, 
      &                 ncv, v, ldv, iparam, ipntr, workd, workl,
      &                 lworkl, info )
+ctest         ido = -1
+ctest)
 c
 cph(
          print *, 'ph-count: optimcycle, ido, info, ipntr(1) ', 
@@ -437,36 +434,34 @@ c     &              workd(ipntr(1)+l), workd(ipntr(2)+l), workd(l)
 c            enddo
 cph)
             do l = 1, n
-               phtmpin(l) = workd(ipntr(1)+l)
+               phtmpadmtlm(l) = workd(ipntr(1)+l)
             enddo
 
-            if (optimcycle .GT. 0 ) then
-ccc               write(fnameGlobal(1:80),'(a)') ' '
-ccc               write(fnameGlobal,'(a,i4.4)') 
-ccc     &              'admtlm_vector.it', optimcycle
-ccc               call mdswritevector( fnameGlobal, 64, .false., 'RL',
-ccc     &              2*admtlmrec, phtmpin, 1, 1, 1, 0, mythid )
-              call admtlm_dsvd2model( phtmpin, mythid )
-            endif
+            IF (optimcycle .GT. 0 ) THEN
+               _BEGIN_MASTER( mythid )
+               IF ( myProcId .eq. 0 ) THEN
+                  call admtlm_dsvd2model( .FALSE., mythid )
+               ENDIF
+               _END_MASTER( mythid )
+cph               CALL ADMTLM_UPXX( mythid )
+            ENDIF
 
-c--          MWMWMWMWMWMWMW
+c--         MWMWMWMWMWMWMW
             CALL ADMTLM_DRIVER( mythid )
-cph            call box_main( phtmpin, phtmpout, metricLoc, ldoadjoint )
-c--          MWMWMWMWMWMWMW
+c--         MWMWMWMWMWMWMW
 
-ccc            write(fnameGlobal(1:80),'(a)') ' '
-ccc            write(fnameGlobal,'(a,i4.4)') 
-ccc     &           'admtlm_vector.it', optimcycle
-ccc            call mdsreadvector( fnameGlobal, 64, 'RL',
-ccc     &           2*admtlmrec, phtmpout, 1, 1, 1, mythid )
-            call admtlm_model2dsvd( phtmpout, mythid )
+            _BEGIN_MASTER( mythid )
+            IF ( myProcId .eq. 0 ) THEN
+               call admtlm_model2dsvd( .FALSE., mythid )
+            ENDIF
+            _END_MASTER( mythid )
 
             do l = 1, n
-               workd(ipntr(2)+l) = phtmpout(l)
+               workd(ipntr(2)+l) = phtmpadmtlm(l)
             enddo
 c
 
-            if (optimcycle .EQ. 8)
+            if (optimcycle .EQ. 4)
      &           STOP 'in ADMTLM_DSVD after the_model_main'
 
 cph(
