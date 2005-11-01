@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.6 2005/08/25 21:55:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.7 2005/11/01 01:53:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -259,18 +259,25 @@ C           Copy the data into a temporary with the necessary shape
               stmp(1,j+1) = statGlob(ist,0,j)
             ENDDO
           
-            IF ((fflags(listId)(1:1) .EQ. ' ')
-     &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
-              
-              CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
-     &             tnam, stmp, myThid)
-              
-            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
+C-jmc: fflags is not for Statistics-Diagnostics, can be unset, and since
+C-     size of the output file will not be an issue here: Always write real*8
+c           IF ((fflags(listId)(1:1) .EQ. ' ')
+c    &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
+c             
+c             CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
+c    &             tnam, stmp, myThid)
+c             
+c           ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
               
               CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
             
-            ENDIF
+c           else
+c             write(0,*) myIter, ndId, listId
+c             write(0,'(3A)') '>',cdiag(ndId),'<'
+c             write(0,'(3A)') '>',fflags(listId),'<'
+c             STOP ' in DIAGSTATS_MNC_OUT'
+c           ENDIF
             
             CALL MNC_CW_DEL_VNAME(tnam, myThid)
             
@@ -296,19 +303,10 @@ C           Copy the data into a temporary with the necessary shape
               ENDDO
             ENDDO
           
-            IF ((fflags(listId)(1:1) .EQ. ' ')
-     &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
-            
-              CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
-     &             tnam, stmp, myThid)
-            
-            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
-            
+C-jmc: Always write real*8 (size of the output file will not be an issue here)
               CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
             
-            ENDIF
-
             CALL MNC_CW_DEL_VNAME(tnam, myThid)
           
           ENDIF
