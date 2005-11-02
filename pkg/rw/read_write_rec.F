@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.7 2005/08/22 23:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/Attic/read_write_rec.F,v 1.1 2005/11/02 15:37:54 jmc Exp $
 C $Name:  $
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.
 C--   Contents

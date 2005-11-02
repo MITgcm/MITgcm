@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_myfield.F,v 1.4 2005/05/15 03:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/Attic/write_myfield.F,v 1.1 2005/11/02 15:37:54 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "RW_OPTIONS.h"
 
 #undef  MULTIPLE_RECORD_STATE_FILES
 
@@ -31,9 +30,6 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h" 
-#include "EOS.h"
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
