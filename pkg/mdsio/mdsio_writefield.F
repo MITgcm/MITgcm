@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.8 2004/03/01 20:47:38 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.9 2005/11/02 14:39:46 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -26,17 +26,17 @@ C irecord	integer	record number to read
 C myIter	integer	time step number
 C myThid	integer thread identifier
 C
-C Routine now calls mdswritefield_new, just a way to add an extra argument
-C to the argument list. The new argument is to make the difference between
+C Routine now calls mdswritefield_new, just a way to add 2 extra arguments
+C to the argument list. The 1rst new argument is to make the difference between
 C the vertical dimension (3rd dimension) of an array and the number of levels
 C the output routine should process. This routine assumes they are the same.
+C The 2nd new argument (useCurrentDir=.FALSE.) allows to write files to
+C the "mdsioLocalDir" (if it is set) directory.
 
       implicit none
 C Global variables / common blocks
 #include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "PARAMS.h"
+c #include "EEPARAMS.h"
 
 C Routine arguments
       character*(*) fName
@@ -44,13 +44,15 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+      _RL     arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
       integer irecord
       integer myIter
       integer myThid
 C     ------------------------------------------------------------------
-            CALL MDSWRITEFIELD_NEW(fName,filePrec,globalFile,arrType,
-     .   nNz,nNz,arr,irecord,myIter,myThid )
+      CALL MDSWRITEFIELD_NEW(
+     I                        fName,filePrec,globalFile,.FALSE.,
+     I                        arrType,nNz,nNz,arr,irecord,
+     I                        myIter,myThid )
 C     ------------------------------------------------------------------
       return
       end

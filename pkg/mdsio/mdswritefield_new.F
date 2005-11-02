@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.8 2005/02/11 03:06:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.9 2005/11/02 14:39:46 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -7,6 +7,7 @@ C $Name:  $
      I   fName,
      I   filePrec,
      I   globalFile,
+     I   useCurrentDir,
      I   arrType,
      I   nNzdim,nNz,
      I   arr,
@@ -19,9 +20,11 @@ C
 C fName		string	base name for file to written
 C filePrec	integer	number of bits per word in file (32 or 64)
 C globalFile	logical	selects between writing a global or tiled file
+C useCurrentDir logical	always write to the current directory (even if
+C			"mdsioLocalDir" is set)
 C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNzdim        integer	size of third dimension: normally either 1 or Nr
-C nNz		number of vertical levels to be written
+C nNzdim	integer	size of third dimension: normally either 1 or Nr
+C nNz		integer	number of vertical levels to be written
 C arr		RS/RL	array to write, arr(:,:,nNzdim,:,:)
 C irecord	integer	record number to read
 C myIter	integer	time step number
@@ -72,6 +75,7 @@ C Routine arguments
       character*(*) fName
       integer filePrec
       logical globalFile
+      logical useCurrentDir
       character*(2) arrType
       integer nNzdim, nNz
 cph(
@@ -85,8 +89,8 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName,pfName
-      character*(max_len_mbuf) msgbuf
+      character*(MAX_LEN_FNAM) dataFName,metaFName,pfName
+      character*(MAX_LEN_MBUF) msgbuf
       logical fileIsOpen
       integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       integer dimList(3,3),ndims
@@ -137,11 +141,11 @@ C Assume nothing
       pIL = ILNBLNK( mdsioLocalDir )
 
 C Assign special directory
-      if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
-      else
-       pFname= fName
-      endif
+      IF ( useCurrentDir .OR. pIL.EQ.0 ) THEN
+       pfName = fName
+      ELSE
+       WRITE(pfName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      ENDIF
       pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
@@ -156,7 +160,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
-         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         write(dataFName,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -261,7 +265,7 @@ C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
-         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=x_size
          dimList(2,1)=1
          dimList(3,1)=x_size
@@ -286,7 +290,7 @@ C To be safe, make other processes wait for I/O completion
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFName,'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
         length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -380,7 +384,7 @@ C If we are writing to a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFName,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
@@ -462,7 +466,7 @@ C Create meta-file for each tile if we are tiling
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
          tn = W2_myTileList(bi)
@@ -532,7 +536,7 @@ C at the cost of "safe" distributed I/O.
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
        _BARRIER
-       write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+       write(metaFName,'(2a)') fName(1:IL),'.meta'
        dimList(1,1)=x_size
        dimList(2,1)=1
        dimList(3,1)=x_size
