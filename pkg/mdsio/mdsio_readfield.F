@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.21 2005/02/11 03:04:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.22 2005/11/02 14:49:12 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -62,7 +62,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,pfName
+      character*(MAX_LEN_FNAM) dataFName,pfName
       character*(max_len_mbuf) msgbuf
       logical exst
       logical globalFile,fileIsOpen
@@ -112,10 +112,10 @@ C Assume nothing
       pIL = ILNBLNK( mdsioLocalDir )
 
 C Assign special directory
-      if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      if ( pIL.EQ.0 ) then
+       pfName= fName
       else
-       pFname= fName
+       write(pfName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
       endif
       pIL=ILNBLNK( pfName )
 
@@ -126,11 +126,11 @@ C Assign a free unit number as the I/O channel for this routine
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
-      inquire( file=dataFname, exist=exst )
+      inquire( file=dataFName, exist=exst )
       if (exst) then
        if ( debugLevel .GE. debLevA ) then
         write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD: opening global file: ',dataFName
+     &   ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
         call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
        endif
@@ -139,12 +139,12 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
-       inquire( file=dataFname, exist=exst )
+       write(dataFName,'(2a)') fName(1:IL),'.data'
+       inquire( file=dataFName, exist=exst )
        if (exst) then
         if ( debugLevel .GE. debLevA ) then
          write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName(1:IL+5)
          call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         endif
@@ -259,15 +259,15 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFName,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
-         inquire( file=dataFname, exist=exst )
+         inquire( file=dataFName, exist=exst )
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD: opening file: ',dataFName
+     &      ' MDSREADFIELD: opening file: ',dataFName(1:pIL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -277,13 +277,13 @@ C (This is a place-holder for the active/passive mechanism
           fileIsOpen=.TRUE.
          else
           fileIsOpen=.FALSE.
-          write(msgbuf,'(3a)')
-     &      ' MDSREADFIELD: filename: ',dataFName, pfName
+          write(msgbuf,'(4a)') ' MDSREADFIELD: filename: ',
+     &             fName(1:IL),' , ', dataFName(1:pIL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
           write(msgbuf,'(a)')
-     &      ' MDSREADFIELD: File does not exist'
+     &      ' MDSREADFIELD: Files do not exist'
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -381,13 +381,13 @@ C master thread of process 0, only, opens a global file
 
 C Check first for global file with simple name (ie. fName)
          dataFName = fName
-         inquire( file=dataFname, exist=exst )
+         inquire( file=dataFName, exist=exst )
          if (exst) globalFile = .TRUE.
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
-          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
-          inquire( file=dataFname, exist=exst )
+          write(dataFName,'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFName, exist=exst )
           if (exst) globalFile = .TRUE.
          endif
 
@@ -398,7 +398,8 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          write(msgbuf,'(2a)') 
+     &      ' MDSREADFIELD: filename: ', dataFName(1:IL+5)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )

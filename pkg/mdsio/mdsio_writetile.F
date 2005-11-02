@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writetile.F,v 1.1 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writetile.F,v 1.2 2005/11/02 14:49:12 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -73,7 +73,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
+      character*(MAX_LEN_FNAM) dataFName,metaFName
       integer iG,jG,irec,j,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
@@ -107,7 +107,7 @@ C Assign a free unit number as the I/O channel for this routine
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFname,'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
         length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status='unknown',
@@ -128,7 +128,7 @@ C If we are writing to a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
@@ -210,7 +210,7 @@ C Create meta-file for each tile if we are tiling
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
@@ -263,7 +263,7 @@ C at the cost of "safe" distributed I/O.
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
        _BARRIER
-       write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+       write(metaFName,'(2a)') fName(1:IL),'.meta'
        dimList(1,1)=Nx
        dimList(2,1)=1
        dimList(3,1)=Nx

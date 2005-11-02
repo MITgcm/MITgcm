@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield_loc.F,v 1.3 2004/11/17 03:04:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield_loc.F,v 1.4 2005/11/02 14:49:12 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -57,7 +57,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer iG,jG,irec,bi,bj,j,k,dUnit,IL
       logical exst
       Real*4 r4seg(sNx)
@@ -92,11 +92,11 @@ C Assign a free unit number as the I/O channel for this routine
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
-      inquire( file=dataFname, exist=exst )
+      inquire( file=dataFName, exist=exst )
       if (exst) then
        if ( debugLevel .GE. debLevA ) then
         write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD: opening global file: ',dataFName
+     &   ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
         call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
        endif
@@ -105,12 +105,12 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
-       inquire( file=dataFname, exist=exst )
+       write(dataFName,'(2a)') fName(1:IL),'.data'
+       inquire( file=dataFName, exist=exst )
        if (exst) then
         if ( debugLevel .GE. debLevA ) then
          write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName(1:IL+5)
          call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         endif
@@ -133,15 +133,15 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFName,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
-         inquire( file=dataFname, exist=exst )
+         inquire( file=dataFName, exist=exst )
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD: opening file: ',dataFName
+     &      ' MDSREADFIELD: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -152,7 +152,7 @@ C (This is a place-holder for the active/passive mechanism
          else
           fileIsOpen=.FALSE.
           write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD: filename: ',dataFName
+     &      ' MDSREADFIELD: filename: ',dataFName(1:IL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
