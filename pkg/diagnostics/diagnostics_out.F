@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.22 2005/09/29 16:44:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.23 2005/11/02 14:42:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -301,18 +301,18 @@ C-        Do vertical interpolation:
 #ifdef ALLOW_MDSIO
 C         Prepare for mdsio optionality
           IF (diag_mdsio) THEN
-            IF (fflags(listId)(1:1) .EQ. ' ') THEN
-C             This is the old default behavior
-              CALL MDSWRITEFIELD_NEW(fn,writeBinaryPrec,glf,'RL',
-     &             Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
-            ELSEIF (fflags(listId)(1:1) .EQ. 'R') THEN
+            IF (fflags(listId)(1:1) .EQ. 'R') THEN
 C             Force it to be 32-bit precision
-              CALL MDSWRITEFIELD_NEW(fn,precFloat32,glf,'RL',
-     &             Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+              CALL MDSWRITEFIELD_NEW(fn,precFloat32,glf,.FALSE.,
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
             ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
 C             Force it to be 64-bit precision
-              CALL MDSWRITEFIELD_NEW(fn,precFloat64,glf,'RL',
-     &             Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+              CALL MDSWRITEFIELD_NEW(fn,precFloat64,glf,.FALSE.,
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+            ELSE
+C             This is the old default behavior
+              CALL MDSWRITEFIELD_NEW(fn,writeBinaryPrec,glf,.FALSE.,
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
             ENDIF
           ENDIF
 #endif /*  ALLOW_MDSIO  */
