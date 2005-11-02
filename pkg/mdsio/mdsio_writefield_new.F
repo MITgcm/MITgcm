@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.9 2005/11/02 14:39:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.1 2005/11/02 14:56:52 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
