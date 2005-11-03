@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.42 2005/09/06 02:16:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.43 2005/11/03 16:20:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,9 +33,11 @@ C      |-- PACKAGES_BOOT
 C      |
 C      |-- PACKAGES_READPARMS
 C      | |
-C      | | - MNC_INIT + MNC_CW_INIT + INI_MNC_VARS
+C      | | - MNC_INIT + MNC_CW_INIT
 C      | |
 C      | | - ${PKG}_READPARMS
+C      |
+C      |-- INI_MODEL_IO
 C      |
 C      |-- MON_INIT
 C      |
@@ -62,8 +64,6 @@ C      |
 C      |-- CONFIG_CHECK
 C      |
 C      |-- CONFIG_SUMMARY
-C      |
-C      |-- INI_MODEL_IO
 C      |
 C      |-- WRITE_GRID
 C      |
@@ -92,6 +92,10 @@ C--   Configure packages
 
 C--   Read configuration parameters for packages
       CALL PACKAGES_READPARMS( myThid )
+
+C--   Write units/set precision/etc for I/O of variables/arrays belonging
+C     to the core dynamical model
+      CALL INI_MODEL_IO( myThid )
 
 #ifdef ALLOW_MONITOR
 C--   Initialise MONITOR I/O streams so we can report config. info
@@ -144,12 +148,8 @@ C--   Check parameters and model cofiguration
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )
 
-C--   Write units/set precision/etc for I/O of variables/arrays belonging
-C     to the core dynamical model
-      CALL INI_MODEL_IO( myThid )
-
 C--   Write grid data and geometry arrays
-      IF ( debugLevel.GE.debLevA .OR. 
+      IF ( debugLevel.GE.debLevA .OR.
      &     startTime.EQ.baseTime ) CALL WRITE_GRID( myThid )
 
 #ifdef COMPONENT_MODULE
