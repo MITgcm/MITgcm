@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.1 2005/11/02 14:56:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.2 2005/11/03 16:09:32 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -174,15 +174,17 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
        DO k=1,nNz
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-            local(I,J,bi,bj) = arr(I,J,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+C-      copy from arr(level=k) to 2-D "local":
+        IF ( arrType.EQ.'RS' ) THEN
+          CALL MDS_PASStoRS( local, arr, k, nNzdim, .FALSE., myThid )
+        ELSEIF ( arrType.EQ.'RL' ) THEN
+          CALL MDS_PASStoRL( local, arr, k, nNzdim, .FALSE., myThid )
+        ELSE
+          WRITE(msgbuf,'(A)')
+     &         ' MDSWRITEFIELD: illegal value for arrType'
+          CALL PRINT_ERROR( msgbuf, mythid )
+          STOP 'ABNORMAL END: S/R MDSWRITEFIELD'
+        ENDIF
         CALL GATHER_2D( global, local, myThid )
         _BEGIN_MASTER( myThid )
          IF( mpiMyId .EQ. 0 ) THEN
