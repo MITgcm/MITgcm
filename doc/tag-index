@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.576 2005/11/03 17:34:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.577 2005/11/03 19:06:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57w_post
 o pkg/mdsio: use MAX_LEN_FNAM (instead of hard coded 80) for file-names
              fix the singleCpuIO RS version of MDSWRITEFIELD
    and add a WARNING if using globalFiles=T with multi-processors.
