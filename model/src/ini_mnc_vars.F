@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.2 2005/09/27 02:45:56 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.3 2005/11/03 16:23:33 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -400,10 +400,6 @@ C     Define variables from FFIELDS.h
       CALL MNC_CW_ADD_VATTR_TEXT('SSS','description',
      &     'Sea surface salinity for relaxation', myThid)
 
-
-#ifdef ALLOW_AUTODIFF_MONITOR
-      CALL AUTODIFF_INI_MODEL_IO( myThid )
-#endif
 
       ENDIF
 #endif
