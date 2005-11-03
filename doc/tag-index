@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.575 2005/10/24 18:20:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.576 2005/11/03 17:34:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio: use MAX_LEN_FNAM (instead of hard coded 80) for file-names
+             fix the singleCpuIO RS version of MDSWRITEFIELD
+   and add a WARNING if using globalFiles=T with multi-processors.
 o write grid-file(s) in only one format (MDS or MNC): default=MNC (if
   using MNC); can force MDS output by setting writegrid_mnc=F in data.mnc
-o tracer advection scheme: 
+o tracer advection scheme:
   add DST-2 (=Lax-Wendroff) & 1rst order upwind schemes (the way to get 
    those 2 schemes before, changing GAD_FLUX_LIMITER.h + to recompile, 
    was not very convenient).
