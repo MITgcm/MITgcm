@@ -1,6 +1,6 @@
 bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.15 2005/11/03 16:30:27 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.16 2005/11/03 22:20:34 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1842,6 +1842,7 @@ for i in $SOURCEDIRS ; do
 	cat $i/$j >> ad_files
     done
 done
+
 if test ! "x"$FS = "x.f" ; then
     cat ad_files | sed -e "s/\.f/.$FS/g" > ad_files_f
     mv -f ad_files_f ad_files
@@ -1862,6 +1863,7 @@ mkdir .links.tmp
 echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
 printf 'F77_SRC_FILES = ' > F77srclist.tmp
+printf 'NON_AD_F77_SRC_FILES = ' > nonADF77srclist.tmp
 printf 'C_SRC_FILES = '   > csrclist.tmp
 printf 'F90_SRC_FILES = ' > F90srclist.tmp
 printf 'H_SRC_FILES = '   > hsrclist.tmp
@@ -1892,6 +1894,12 @@ for d in $alldirs ; do
 		    F)
 			echo    " \\"  >> F77srclist.tmp
 			printf " $sf" >> F77srclist.tmp
+			basename=${sf%%.F}
+			isAD=`grep $basename ad_files`
+			if test -z "$isAD" ; then 
+			  echo    " \\"  >> nonADF77srclist.tmp
+			  printf " $sf" >> nonADF77srclist.tmp
+ 			fi
 			;;
 		    F90)
 			echo    " \\"  >> F90srclist.tmp
@@ -1920,6 +1928,7 @@ for d in $alldirs ; do
 done
 rm -rf .links.tmp
 echo "" >> F77srclist.tmp
+echo "" >> nonADF77srclist.tmp
 echo "" >> csrclist.tmp
 echo "" >> F90srclist.tmp
 echo "" >> hsrclist.tmp
@@ -2033,12 +2042,13 @@ MAKEFILE=${MAKEFILE}
 
 EOF
 
-cat F77srclist.tmp >> $MAKEFILE
-cat csrclist.tmp   >> $MAKEFILE
-cat F90srclist.tmp >> $MAKEFILE
-cat hsrclist.tmp   >> $MAKEFILE
+cat F77srclist.tmp      >> $MAKEFILE
+cat nonADF77srclist.tmp >> $MAKEFILE
+cat csrclist.tmp        >> $MAKEFILE
+cat F90srclist.tmp      >> $MAKEFILE
+cat hsrclist.tmp        >> $MAKEFILE
 
-rm -f F77srclist.tmp csrclist.tmp hsrclist.tmp flist.tmp clist.tmp F90srclist.tmp
+rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp hsrclist.tmp flist.tmp clist.tmp F90srclist.tmp
 
 echo >> $MAKEFILE
 
@@ -2146,7 +2156,7 @@ Clean: clean cleanlinks
 	-rm -f genmake_state genmake_*optfile genmake_warnings make.log run.log *.bak
 
 clean:
-	-rm -rf *.o *.$FS *.p *.f$FS90 *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template *_mod.h *_mod.F90 *.mod-whirl ad_input*
+	-rm -rf *.o *.$FS *.p *.f$FS90 *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template *_mod.h *_mod.F90 *.FF90 *.mod-whirl ad_input*
 	-rm -rf script.sed reslice.dat
 
 cleanlinks:
@@ -2267,11 +2277,11 @@ OpenAD_tape.f90
 OPENAD_SUPPORT_C_SRC_FILES = \
 iaddr.c
 
-AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.f90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.o 
+AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.f90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.o \$(NON_AD_F77_SRC_FILES:.FF90=.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
 
 \$(EXE_AD): \$(AD_OBJ_FILES)
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$* \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$^ \$(LIBS)
 
 # makefile debug rule
 openad: ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f
@@ -2290,9 +2300,9 @@ CB2MFILES= cb2m1.csh cb2m1.awk cb2m2.bash
 small_f: \$(CB2M_F77_PP_SRC_FILES) \$(CB2M_F90_PP_SRC_FILES)
 .PHONY: small_f
 
-ad_output.txt: \$(AD_EXE)
+ad_output.txt: \$(EXE_AD)
 	@printf 'running ... '
-	@\$(AD_EXE) > \$@
+	@\$(EXE_AD) > \$@
 
 CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.ff90)
 ad_input_code.$FS: \$(CB2M_AD_FILES) 
