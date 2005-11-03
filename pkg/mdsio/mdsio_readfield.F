@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.22 2005/11/02 14:49:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.23 2005/11/03 16:06:57 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -382,13 +382,29 @@ C master thread of process 0, only, opens a global file
 C Check first for global file with simple name (ie. fName)
          dataFName = fName
          inquire( file=dataFName, exist=exst )
-         if (exst) globalFile = .TRUE.
+         if (exst) then 
+           if ( debugLevel .GE. debLevA ) then
+             write(msgbuf,'(a,a)')
+     &        ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
+             call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+           endif
+           globalFile = .TRUE.
+         endif
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
           write(dataFName,'(2a)') fName(1:IL),'.data'
           inquire( file=dataFName, exist=exst )
-          if (exst) globalFile = .TRUE.
+          if (exst) then 
+            if ( debugLevel .GE. debLevA ) then
+             write(msgbuf,'(a,a)')
+     &        ' MDSREADFIELD: opening global file: ',dataFName(1:IL+5)
+             call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+            endif
+            globalFile = .TRUE.
+          endif
          endif
 
 C If global file is visible to process 0, then open it here.
@@ -487,9 +503,9 @@ C Otherwise stop program.
         _END_MASTER( myThid )
         CALL SCATTER_2D(global,local,mythid)
         if (arrType .eq. 'RS') then
-           call PASStoRS( local,arr,k,nNz,mythid )
+           CALL MDS_PASStoRS( local,arr,k,nNz, .TRUE., mythid )
         elseif (arrType .eq. 'RL') then
-           call PASStoRL( local,arr,k,nNz,mythid )
+           CALL MDS_PASStoRL( local,arr,k,nNz, .TRUE., mythid )
         else
            write(msgbuf,'(a)')
      &          ' MDSREADFIELD: illegal value for arrType'
@@ -507,48 +523,5 @@ c      ENDDO k=1,nNz
       endif
 c     endif ( useSingleCPUIO )
 
-      return
-      end
-
-
-C     ==================================================================
-
-      subroutine passToRS(local,arr,k,nNz,mythid)
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-      _RL local(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-      integer i,j,k,bi,bj,nNz
-      _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy) 
-      integer mythid
-      DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO J=1-Oly,sNy+Oly
-               DO I=1-Olx,sNx+Olx
-                  arr(I,J,k,bi,bj) = local(I,J,bi,bj)
-               ENDDO
-            ENDDO
-         ENDDO
-      ENDDO
-      return
-      end
-
-      subroutine passToRL(local,arr,k,nNz,mythid)
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-      _RL local(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-      integer i,j,k,bi,bj,nNz
-      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
-      integer mythid
-      DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO J=1-Oly,sNy+Oly
-               DO I=1-Olx,sNx+Olx
-                  arr(I,J,k,bi,bj) = local(I,J,bi,bj)
-               ENDDO
-            ENDDO
-         ENDDO
-      ENDDO
       return
       end
