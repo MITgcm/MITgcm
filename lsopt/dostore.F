@@ -3,8 +3,8 @@ c
 c         arguments
 c
       integer n, j
-cph      double precision    x(n)
-      real*4 x(n) 
+      double precision    x(n)
+cgf      real*4 x(n) 
       logical store
 
       common /xxstore/ itape, ntape, isize
