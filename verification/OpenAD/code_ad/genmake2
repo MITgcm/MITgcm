@@ -1,6 +1,6 @@
 xshebin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.18 2005/11/04 17:39:22 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.19 2005/11/04 20:04:40 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2205,7 +2205,7 @@ for i in $AD_FILES ; do
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-#rm -f ad_files
+rm -f ad_files
 
 cat >>$MAKEFILE <<EOF
 
