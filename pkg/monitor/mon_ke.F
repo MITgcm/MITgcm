@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.13 2005/01/27 16:38:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.14 2005/11/04 01:33:05 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -29,7 +29,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
-      _RL numPnts,theVol,tmpVal,tmpVol
+      _RL numPnts,theVol,tmpVal
       _RL theMax,theMean,theVolMean,potEnMean
       _RL meanTile, volMeanTile, potEnMnTile, volTile
 

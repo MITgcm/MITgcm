@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.34 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.35 2005/11/04 01:33:06 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -39,7 +39,10 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       _RL dT
       _RL statsTemp(6)
-      INTEGER time_as_int, i
+c     INTEGER time_as_int
+#ifdef ALLOW_MNC
+      INTEGER i
+#endif
 
       dT=deltaTclock
 

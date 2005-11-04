@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.8 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.9 2005/11/04 01:33:05 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -25,8 +25,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER i
-      character*(MAX_LEN_MBUF) msgbuf
+c     CHARACTER*(MAX_LEN_MBUF) msgbuf
 
 C     Since monitor does not have a "data" file of its own, all its
 C     output flags are set in "model/src/ini_parms.F".  Please see the

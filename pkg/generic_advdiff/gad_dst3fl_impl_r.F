@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.1 2005/10/22 20:17:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.2 2005/11/04 01:31:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -68,7 +68,6 @@ C     highFac         :: high order term factor
 C     rCenter         :: centered contribution
 C     rUpwind         :: upwind   contribution
 C     rC4km, rC4kp    :: high order contributions
-      LOGICAL flagC4
       INTEGER i,j,kp1,km2
       _RL wCFL, rCenter, rUpwind
       _RL lowFac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

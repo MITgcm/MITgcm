@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.10 2005/07/06 21:18:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.11 2005/11/04 01:34:35 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,13 +44,15 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 mon_var
       CHARACTER*2 mon_sufx(0:2)
-      INTEGER k
       _RS yBand(2), locDr(1)
       _RL theMin(2), theMax(2)
       _RL theMean(2), theVar(2), theVol(2)
-      _RL theMeanG, theVarG, theVolG
-      _RL theMean0, theMean1, theMean2, theEnergy
+      _RL theMeanG, theVolG
+      _RL theMean1, theMean2, theEnergy
       _RL theMin0, theMax0, theSD, theDel2
+#ifdef ALLOW_MNC
+      INTEGER k
+#endif
 
       DATA yBand / 0. , 0. /
       DATA locDr / 1. /

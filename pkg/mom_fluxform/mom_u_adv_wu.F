@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.8 2004/10/19 02:43:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.9 2005/11/04 01:31:59 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -47,7 +47,6 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER I,J
 CEOP
-      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( k.EQ.Nr+1 .AND.
      &     useRealFreshWaterFlux .AND. usingPCoords ) THEN

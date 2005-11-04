@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.32 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.33 2005/11/04 01:35:33 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -44,15 +44,18 @@ C     suff         :: Hold suffix part of a filename
 C     TimeAve      :: total time over average
 C     useVariableK :: T when vertical diffusion is not constant
       LOGICAL useVariableK
-      INTEGER prevPrec
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER bi,bj,k
+      INTEGER bi,bj
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER thisdate(4), prevdate(4)
       LOGICAL dumpFiles
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif
+#ifdef ALLOW_CAL
+      INTEGER thisdate(4), prevdate(4)
+#endif
 
 C     Final Time Averages and Dump Files if needed
       dumpFiles = .FALSE.
@@ -147,8 +150,6 @@ C         Set IO "context" for writing state
 #endif
 C         Read IO error counter
           beginIOErrCount = IO_ERRCOUNT(myThid)
-c         prevPrec = writeBinaryPrec
-c         writeBinaryPrec = precFloat32
           CALL WRITE_FLD_XY_RL('ETAtave.' ,suff,etatave  ,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
@@ -206,7 +207,6 @@ C         CALL WRITE_FLD_XYZ_RL('hFacWtave.',suff,hFacWtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacStave.',suff,hFacStave,myIter,myThid)
 #endif /* NONLIN_FRSURF */ 
           
-C         writeBinaryPrec = prevPrec
 C         Reread IO error counter
           endIOErrCount = IO_ERRCOUNT(myThid)
 

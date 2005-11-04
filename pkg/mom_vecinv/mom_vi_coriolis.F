@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.7 2005/10/01 19:17:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.8 2005/11/04 01:31:59 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -32,7 +32,7 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER I,J
-      _RL vBarXY,uBarXY,vort3u,vort3v
+      _RL vBarXY,uBarXY
       _RS epsil
       epsil = 1. _d -9
 

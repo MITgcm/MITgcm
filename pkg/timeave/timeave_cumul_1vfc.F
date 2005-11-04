@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_1vfc.F,v 1.4 2005/08/19 22:50:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_1vfc.F,v 1.5 2005/11/04 01:35:33 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -24,7 +24,7 @@ C     fldtave - time averaged Field
 C     fld1  - Input Field
 C     fld2  - Input Factor
 C     Ksize - 3rd dimension of local arrays (Input and Output fields)
-      INTEGER Ksize, dir
+      INTEGER Ksize
       _RL fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RS fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)

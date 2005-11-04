@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.3 2004/06/24 23:46:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.4 2005/11/04 01:34:35 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,8 +49,10 @@ CEOP
 
 C     == Local variables ==
 C     i,j          :: Loop counters
-      _RL dtFac, dtFacR, fwFac, heatFac, locTemp
-      _RL oceTfreez
+      _RL dtFac, fwFac, heatFac
+#ifdef ALLOW_AIM
+      _RL oceTfreez, locTemp, dtFacR
+#endif
       INTEGER i,j
 
       IF ( .NOT.stepFwd_oceMxL ) RETURN

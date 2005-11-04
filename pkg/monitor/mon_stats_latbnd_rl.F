@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.5 2004/04/03 04:57:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.6 2005/11/04 01:33:05 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -48,9 +48,8 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k,n
       INTEGER km, k1, k2
-      INTEGER numPnts
       LOGICAL noPnts(Ny)
-      _RL tmpVal,rNumPnts
+      _RL tmpVal
       _RL tmpVol
 
 C-    set k index range [k1,k2]

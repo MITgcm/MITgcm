@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.7 2004/11/21 15:57:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.8 2005/11/04 01:31:36 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -55,9 +55,7 @@ CEndOfInterface
 #ifdef GM_BOLUS_ADVEC
 
 C     == Local variables ==
-      _RL gradSmod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL  SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL f1,Smod,f2,Rnondim
       _RL maxSlopeSqr
       _RL slopeCutoff

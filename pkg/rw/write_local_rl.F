@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.3 2005/08/22 23:00:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.4 2005/11/04 01:33:50 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -27,7 +27,6 @@ C Common
       LOGICAL globalFile
 C Local
       CHARACTER*(2) fType
-      INTEGER nNz
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
       CHARACTER*(80) fullName
 

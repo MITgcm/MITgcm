@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xyz_rx.template,v 1.6 2005/07/24 01:35:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xyz_rx.template,v 1.7 2005/11/04 01:31:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -48,8 +48,10 @@ C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
-      INTEGER bi, bj, myTile, k, i, j
-
+      INTEGER bi, bj, myTile, k, j
+#ifdef W2_FILL_NULL_REGIONS
+      INTEGER i
+#endif
 CEOP
 
       OLw        = OLx
