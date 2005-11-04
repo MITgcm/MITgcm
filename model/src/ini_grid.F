@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.25 2005/07/31 22:07:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.26 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,7 +35,9 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf - Used for informational I/O.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_MNC
       INTEGER i
+#endif
 
 C     load grid spacing (vector) from files
       CALL LOAD_GRID_SPACING( myThid )

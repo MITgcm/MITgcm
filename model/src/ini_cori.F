@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.21 2005/01/26 00:45:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.22 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,7 +35,7 @@ C     bi,bj  - Loop counters
 C     I,J,K
 C     facGrid - Factor for grid to meter conversion
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I, J
       _RL facGrid
 
 C     Initialise coriolis parameter
@@ -43,7 +43,6 @@ C     Initialise coriolis parameter
 C       Constant F case
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=f0
@@ -51,7 +50,6 @@ c           DO K=1,Nr
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-c           ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useBetaPlaneF ) THEN
@@ -60,7 +58,6 @@ C       Beta plane case
         IF ( usingSphericalPolarGrid ) facGrid = deg2rad*rSphere
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=f0+beta*_yC(i,j,bi,bj)*facGrid
@@ -68,7 +65,6 @@ c           DO K=1,Nr
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-c           ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useSphereF ) THEN
@@ -76,7 +72,6 @@ C       Spherical case
 C       Note in this case we assume yC is in degrees.
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=
@@ -87,7 +82,6 @@ c           DO K=1,Nr
      &                 2. _d 0*omega*cos(_yC(i,j,bi,bj)*deg2rad)
                 ENDDO
               ENDDO
-c           ENDDO
           ENDDO
         ENDDO
 c       CALL WRITE_FLD_XY_RL('fCoriC',' ',fCori ,  0,myThid)
@@ -97,7 +91,6 @@ c       CALL WRITE_FLD_XY_RL('fCorCs',' ',fCoriCos,0,myThid)
 C       Special custom form
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=0.
@@ -105,7 +98,6 @@ c           DO K=1,Nr
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-c           ENDDO
           ENDDO
         ENDDO
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )

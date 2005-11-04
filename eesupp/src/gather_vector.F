@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_vector.F,v 1.1 2005/07/20 20:01:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_vector.F,v 1.2 2005/11/04 01:20:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -17,7 +17,7 @@ C     global,local - working arrays used to transfer 2-D fields
       Real*8  global(length*nPx*nPy)
       _RL     local(length)
 
-      INTEGER iG,jG,lG, i, j, l
+      INTEGER iG,jG,lG, l
 #ifdef ALLOW_USE_MPI
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)

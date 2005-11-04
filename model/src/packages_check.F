@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.30 2005/10/01 18:29:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.31 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,7 +36,7 @@ C     myThid ::  Number of this instances
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf      :: Informational/error meesage buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_RUNCLOCK

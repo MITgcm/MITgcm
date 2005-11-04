@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.6 2005/05/23 19:31:39 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.7 2005/11/04 01:19:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,13 +33,14 @@ C     myThid - Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables
 C     bi, bj
+#ifdef ALLOW_AIM
       INTEGER bi, bj
-
-CEOP
+#endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 

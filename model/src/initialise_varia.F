@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.44 2005/06/19 21:36:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.45 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,7 @@ C     == Routine arguments ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi,bj,K,iMin,iMax,jMin,jMax
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
 CEOP
 
 #ifdef ALLOW_DEBUG

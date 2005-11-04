@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.3 2004/12/03 15:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.4 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,9 +62,11 @@ C     i, j, k    :: Loop counters
 C     iTr        :: passive tracer index
 C     msgBuf     :: message buffer
       INTEGER i,j,k
-      INTEGER iTr
       _RL KbryanLewis79
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_PTRACERS
+      INTEGER iTr
+#endif
 CEOP
 
       IF ( trIdentity.EQ.GAD_TEMPERATURE) THEN

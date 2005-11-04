@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.43 2005/02/09 21:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.44 2005/11/04 01:19:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,14 +92,6 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       _RL    sumRHS,sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
-
-      INTEGER OLw
-      INTEGER OLe
-      INTEGER OLn
-      INTEGER OLs
-      INTEGER exchWidthX
-      INTEGER exchWidthY
-      INTEGER myNz
 CEOP
 
 

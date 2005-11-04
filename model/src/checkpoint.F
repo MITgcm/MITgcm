@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.57 2005/09/17 03:17:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.58 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,10 +77,16 @@ C     !LOCAL VARIABLES:
 C     oldPrec :: Temp. for hold I/O precision information
 C     prec    
 C     fn      :: Temp. for building file name.
-      INTEGER oldPrec, prec
-      INTEGER i, j, nj
+      INTEGER prec
+      INTEGER i, nj
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
+#ifdef OLD_STYLE_WITH_MANY_FILES
+      INTEGER oldPrec
+#endif
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER j
+#endif
 
 C     Suffix for pickup files
       DO i = 1,MAX_LEN_FNAM
@@ -369,7 +375,9 @@ C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
 C                       checkpoint (that will be permanent if permCheckPoint=T)
       LOGICAL permCheckPoint, tempCheckPoint  
+#ifdef ALLOW_CAL
       INTEGER thisdate(4), prevdate(4)
+#endif
 
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
@@ -467,7 +475,10 @@ C     !LOCAL VARIABLES:
 C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
-      INTEGER oldPrec, prec
+#ifdef OLD_STYLE_WITH_MANY_FILES
+      INTEGER oldPrec
+#endif
+      INTEGER prec
       INTEGER i, nj
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf

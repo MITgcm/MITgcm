@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xy_rx.template,v 1.6 2004/11/19 02:32:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xy_rx.template,v 1.7 2005/11/04 01:20:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,13 +40,13 @@ C     == Argument list variables ==
       INTEGER myThid
 
 C     == Local variables ==
-C     i,j,L,bi,bj  are do indices.
+C     i,j,bi,bj  are do indices.
 C     OL[wens] - Overlap extents in west, east, north, south.
 C     exchWidth[XY] - Extent of regions that will be exchanged.
 C     dummy[12] - copies of the vector components with haloes filled.
 C     b[nsew] - indices of the [nswe] neighboring faces for each face.
 
-      integer i,j,L,bi,bj
+      integer i,j,bi,bj
       integer OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
       _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)

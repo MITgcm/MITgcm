@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.31 2005/10/11 00:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.32 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -801,7 +801,7 @@ C     k    :: Level of Theta/Salt slice
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j, localWarning
-      character*(max_len_mbuf) msgbuf
+c     character*(max_len_mbuf) msgbuf
 CEOP
 
       localWarning = 0

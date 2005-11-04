@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.8 2005/09/30 15:14:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.9 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,11 +48,13 @@ C     i,j,k,bi,bj  :: loop counter
 C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,k,bi,bj
-      INTEGER ii,jj
       INTEGER numbWrite, numbWrMax
       _RL tmpfldW, tmpfldS
 c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
+#ifdef W2_FILL_NULL_REGIONS
+      INTEGER ii,jj
+#endif
       DATA numbWrite / 0 /
       numbWrMax = Nx*Ny
 

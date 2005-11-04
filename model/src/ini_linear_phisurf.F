@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.9 2003/02/26 03:11:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.10 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,7 +44,6 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  - Loop counters
 C     I,J,K
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER I, J, K
       _RL     rhoLoc

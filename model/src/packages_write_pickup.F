@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.18 2005/09/17 03:17:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.19 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,9 @@ C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint  
+#ifdef ALLOW_CAL
       INTEGER thisdate(4), prevdate(4)
+#endif
 CEOP
 
       permCheckPoint = .FALSE.

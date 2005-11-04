@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.5 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,8 +38,8 @@ C     myThid - Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 #ifdef NONLIN_FRSURF
 C     Local variables
-C     i,j,k,bi,bj - loop counter
-      INTEGER i,j,k,bi,bj
+C     i,j,bi,bj - loop counter
+      INTEGER i,j,bi,bj
       INTEGER ks
 CEOP
 

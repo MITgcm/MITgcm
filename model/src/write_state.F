@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.56 2005/09/29 01:54:17 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.57 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,8 +71,10 @@ C     myTime - Current time of simulation ( s )
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) suff
-      CHARACTER*(1) pf
       INTEGER iRec
+#ifdef ALLOW_MNC
+      CHARACTER*(1) pf
+#endif
 CEOP
 
       IF ( 

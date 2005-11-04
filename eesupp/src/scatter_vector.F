@@ -13,7 +13,7 @@ C     global,local - working arrays used to transfer 2-D fields
       Real*8  global(length*nPx*nPy)
       _RL     local(length)
 
-      INTEGER iG,jG,lG, i, j, l
+      INTEGER iG,jG,lG, l
 #ifdef ALLOW_USE_MPI
       COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
       INTEGER mpi_myXGlobalLo(nPx*nPy)

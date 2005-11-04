@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.2 2005/07/31 22:07:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.3 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,6 @@ C     I,J,K
       INTEGER bi, bj
       INTEGER  I,  J
       _RL dtheta, thisRad, xG0, yG0
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     "Long" real for temporary coordinate calculation
 C      NOTICE the extended range of indices!!

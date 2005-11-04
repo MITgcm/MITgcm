@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.3 2003/01/26 21:06:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.4 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,7 +31,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
       INTEGER bi,bj,k
       _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER myIter, myThid
+      INTEGER myThid
 #ifdef NONLIN_FRSURF
 C     == Local variables ==
       INTEGER i,j

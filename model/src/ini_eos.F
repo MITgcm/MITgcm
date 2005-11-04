@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.12 2005/01/19 01:18:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.13 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,10 +33,8 @@ C     myThid -  Number of this instance of INI_CORI
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
-      INTEGER bi, bj
-      INTEGER  I,  J,  K
+C     I,K    - Loop counters
+      INTEGER  I,  K
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       
       IF ( .NOT.fluidIsWater ) RETURN

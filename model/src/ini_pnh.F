@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.3 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.4 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,12 +35,12 @@ C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_PSURF 
       INTEGER myThid
 
+#ifdef ALLOW_NONHYDROSTATIC
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,I,J,K
 CEOP
 
-#ifdef ALLOW_NONHYDROSTATIC
 ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C--   Initialise surface position anomaly to zero

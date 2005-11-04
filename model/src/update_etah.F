@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.6 2004/07/07 01:28:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.7 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,8 +41,8 @@ C     !LOCAL VARIABLES:
 C     Local variables in common block
 
 C     Local variables
-C     i,j,k,bi,bj  :: Loop counters
-      INTEGER i,j,k,bi,bj
+C     i,j,bi,bj  :: Loop counters
+      INTEGER i,j,bi,bj
 CEOP
 
 

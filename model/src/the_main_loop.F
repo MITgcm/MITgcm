@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.63 2005/08/10 03:34:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.64 2005/11/04 01:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,11 +111,13 @@ C     myThid - thread number for this instance of the routine.
 
 C     !FUNCTIONS:
 C     == Functions ==
+#ifdef ALLOW_RUNCLOCK
       LOGICAL RUNCLOCK_CONTINUE
+      LOGICAL RC_CONT
+#endif
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      LOGICAL RC_CONT
       integer iloop
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ilev_1
