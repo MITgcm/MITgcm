@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.2 2005/05/23 01:58:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.3 2005/11/04 01:30:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,7 +41,6 @@ C     !LOCAL VARIABLES:
       INTEGER im, ix, iv
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
       INTEGER i, j, k, klev, nUnit 
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.4 2005/07/11 19:02:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.5 2005/11/04 01:30:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -392,7 +392,6 @@ C     myThid      :: my Thread Id number
       INTEGER power
       LOGICAL useFract
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL specialVal
       LOGICAL exclSpVal

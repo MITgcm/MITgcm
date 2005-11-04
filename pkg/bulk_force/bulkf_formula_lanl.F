@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.5 2004/04/07 23:42:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.6 2005/11/04 01:28:39 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -62,8 +62,6 @@ c local variables
       _RL tstar
       _RL qstar
       _RL huol
-      _RL htol
-      _RL hqol
       _RL xsq
       _RL x
       _RL re
@@ -72,15 +70,13 @@ c local variables
       _RL psimh
       _RL psixh
       _RL rd
-      _RL uzn
-      _RL shn
       _RL aln
       _RL cdalton
       _RL dflhdT             ! derivative of latent heat with respect to T
       _RL dfshdT             ! derivative of sensible heat with respect to T
       _RL dflwupdT           ! derivative of long wave with respect to T
-      _RL mixratio
-      _RL ea
+c     _RL mixratio
+c     _RL ea
       _RL psim_fac
       _RL umin
       _RL lath

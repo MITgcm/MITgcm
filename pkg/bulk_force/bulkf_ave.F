@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.6 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.7 2005/11/04 01:28:38 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -30,7 +30,7 @@ c     == routine arguments ==
 #ifdef ALLOW_BULK_FORCE
 #ifdef ALLOW_TIMEAVE
 
-      integer i,j,k
+      integer i,j
 
 C--     Time-average
           do j = 1,sny
