@@ -11,7 +11,7 @@
 
 FC=ifort
 F90C=ifort
-F90FIXEDFORMAT=-fixed
+F90FIXEDFORMAT='-fixed -Tf' 
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort -static'
 CPP='cpp  -traditional -P'
