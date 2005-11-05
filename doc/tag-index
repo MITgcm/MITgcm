@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.577 2005/11/03 19:06:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.578 2005/11/05 01:10:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o move local commom bloc /GlobalLo/ (used for singleCpuIO) in EESUPPORT.h 
+o remove some unused variables (reduces number of compiler warnings)
 
 checkpoint57w_post
 o pkg/mdsio: use MAX_LEN_FNAM (instead of hard coded 80) for file-names
