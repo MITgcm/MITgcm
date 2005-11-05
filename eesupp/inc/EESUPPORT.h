@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.8 2004/05/04 18:04:27 afe Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.9 2005/11/05 00:49:47 jmc Exp $
 C $Name:  $
 CBOP
-C     !ROUTINE: EESUPPORT.h 
+C     !ROUTINE: EESUPPORT.h
 C     !INTERFACE:
 C     include "EESUPPORT.h"
 C
@@ -285,8 +285,18 @@ C                     threads.
       INTEGER mpiTagN
       INTEGER mpiTagS
 
+C--   COMMON /MPI_FULLMAP_I/ holds integer arrays of the full list of MPI process
+C     mpi_myXGlobalLo :: List of all processors bottom-left X-index in global domain
+C     mpi_myYGlobalLo :: List of all processors bottom-left Y-index in global domain
+C                        Note: needed for mpi gather/scatter routines & singleCpuIO.
+      COMMON /MPI_FULLMAP_I/
+     &        mpi_myXGlobalLo, mpi_myYGlobalLo
+      INTEGER mpi_myXGlobalLo(nPx*nPy)
+      INTEGER mpi_myYGlobalLo(nPx*nPy)
+
 C MPI communicator describing this model realization
       COMMON /MPI_COMMS/
      &        MPI_COMM_MODEL
       INTEGER MPI_COMM_MODEL
+
 #endif /* ALLOW_USE_MPI */
