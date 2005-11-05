@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.1 2004/09/24 16:48:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.2 2005/11/05 01:07:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,11 +54,13 @@ C     == Local variables ==
 C      i,j           :: loop indices
 C      myTile        :: tile number
       INTEGER i,j
-      INTEGER myTile
       LOGICAL southWestCorner
       LOGICAL southEastCorner
       LOGICAL northWestCorner
       LOGICAL northEastCorner
+#ifdef ALLOW_EXCH2
+      INTEGER myTile
+#endif
 CEOP
 
       IF (useCubedSphereExchange) THEN
