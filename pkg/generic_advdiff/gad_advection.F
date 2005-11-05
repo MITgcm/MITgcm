@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.37 2005/10/22 19:59:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.38 2005/11/05 01:01:51 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -138,8 +138,11 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       LOGICAL interiorOnly, overlapOnly
       INTEGER nipass,ipass
-      INTEGER myTile, nCFace
+      INTEGER nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
+#ifdef ALLOW_EXCH2
+      INTEGER myTile
+#endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 GAD_DIAG_SUFX, diagSufx
@@ -215,6 +218,7 @@ C--   Set tile-specific parameters for horizontal fluxes
 #endif
       ELSE
        nipass=2
+       nCFace = bi
        N_edge = .FALSE.
        S_edge = .FALSE.
        E_edge = .FALSE.

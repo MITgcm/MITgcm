@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.24 2005/09/28 01:43:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.25 2005/11/05 01:00:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,20 +52,23 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj, myIter
       INTEGER I,J
-      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
-#ifdef ALLOW_EXCH2
+#ifndef OLD_GRID_IO
+# ifdef ALLOW_EXCH2
       _RL buf(sNx*nSx*nPx+1)
       INTEGER myTile
-#else
+# else
       _RL buf(sNx+1,sNy+1)
-#endif
+# endif
       INTEGER iG, iL, iLen
-      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
+      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) tmpBuf
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+#endif
 CEOP
 
 C--   Set everything to zero everywhere

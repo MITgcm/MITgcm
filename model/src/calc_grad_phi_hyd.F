@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.6 2003/08/04 13:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.7 2005/11/05 01:00:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,9 +59,11 @@ C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j
       _RL varLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#ifdef NONLIN_FRSURF
       _RL factorZ, factorP, conv_theta2T
       _RL factPI
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
 #ifdef NONLIN_FRSURF

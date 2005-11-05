@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.10 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.11 2005/11/05 01:01:51 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -46,7 +46,10 @@ C     !LOCAL VARIABLES:
 #endif
       LOGICAL northWestCorner, northEastCorner 
       LOGICAL southWestCorner, southEastCorner 
-      INTEGER myTile, iG
+      INTEGER iG
+#ifdef ALLOW_EXCH2
+      INTEGER myTile
+#endif
 
       theMin = 1. _d 20
       theMax =-1. _d 20
