@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.23 2005/11/03 16:06:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.24 2005/11/05 00:52:19 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -67,8 +67,9 @@ C Local variables
       logical exst
       logical globalFile,fileIsOpen
       integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
-      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      integer x_size,y_size,length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      integer iG_IO,jG_IO,npe
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
       PARAMETER ( y_size = exch2_domain_nyt * sNy )
 #else
@@ -84,11 +85,14 @@ C Local variables
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tgy,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
-      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
-      INTEGER mpi_myXGlobalLo(nPx*nPy)
-      INTEGER mpi_myYGlobalLo(nPx*nPy)
 
 C     ------------------------------------------------------------------
+
+C Assume nothing
+      globalFile = .FALSE.
+      fileIsOpen = .FALSE.
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
 
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
@@ -104,12 +108,6 @@ C Record number must be >= 1
        call print_error( msgbuf, mythid )
        stop 'ABNORMAL END: S/R MDSREADFIELD'
       endif
-
-C Assume nothing
-      globalFile = .FALSE.
-      fileIsOpen = .FALSE.
-      IL  = ILNBLNK( fName )
-      pIL = ILNBLNK( mdsioLocalDir )
 
 C Assign special directory
       if ( pIL.EQ.0 ) then
@@ -450,8 +448,13 @@ C Otherwise stop program.
             DO bi=1,nSx
              DO J=1,sNy
               DO I=1,sNx
+#ifdef ALLOW_USE_MPI
                iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
                jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+#else
+               iG= myXGlobalLo-1+(bi-1)*sNx+i
+               jG= myYGlobalLo-1+(bj-1)*sNy+j
+#endif /* ALLOW_USE_MPI */
                iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
                jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
                global(iG,jG) = xy_buffer_r4(iG_IO,jG_IO)
@@ -477,8 +480,13 @@ C Otherwise stop program.
             DO bi=1,nSx
              DO J=1,sNy
               DO I=1,sNx
+#ifdef ALLOW_USE_MPI
                iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
                jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+#else
+               iG= myXGlobalLo-1+(bi-1)*sNx+i
+               jG= myYGlobalLo-1+(bj-1)*sNy+j
+#endif /* ALLOW_USE_MPI */
                iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
                jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
                global(iG,jG) = xy_buffer_r8(iG_IO,jG_IO)

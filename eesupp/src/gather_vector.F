@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_vector.F,v 1.2 2005/11/04 01:20:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_vector.F,v 1.3 2005/11/05 00:51:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,10 +19,6 @@ C     global,local - working arrays used to transfer 2-D fields
 
       INTEGER iG,jG,lG, l
 #ifdef ALLOW_USE_MPI
-      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
-      INTEGER mpi_myXGlobalLo(nPx*nPy)
-      INTEGER mpi_myYGlobalLo(nPx*nPy)
-
       _RL     temp(length)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, npe, ready_to_receive

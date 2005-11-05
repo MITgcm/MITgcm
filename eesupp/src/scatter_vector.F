@@ -15,10 +15,6 @@ C     global,local - working arrays used to transfer 2-D fields
 
       INTEGER iG,jG,lG, l
 #ifdef ALLOW_USE_MPI
-      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
-      INTEGER mpi_myXGlobalLo(nPx*nPy)
-      INTEGER mpi_myYGlobalLo(nPx*nPy)
-
       _RL     temp(length)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER isource, itag, npe

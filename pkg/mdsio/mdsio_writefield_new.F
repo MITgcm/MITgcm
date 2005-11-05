@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.3 2005/11/04 01:31:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.4 2005/11/05 00:52:19 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -110,9 +110,6 @@ C Local variables
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
       _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
-      INTEGER mpi_myXGlobalLo(nPx*nPy)
-      INTEGER mpi_myYGlobalLo(nPx*nPy)
 #endif
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tgy,tgx,tny,tnx,tn

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.4 2003/11/06 22:00:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.5 2005/11/05 00:51:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -17,10 +17,6 @@ C     global,local - working arrays used to transfer 2-D fields
 
       INTEGER iG,jG, i, j, bi, bj
 #ifdef ALLOW_USE_MPI
-      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
-      INTEGER mpi_myXGlobalLo(nPx*nPy)
-      INTEGER mpi_myYGlobalLo(nPx*nPy)
-
       _RL     temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, npe, ready_to_receive
