@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_write_pickup.F,v 1.3 2005/09/17 03:17:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_write_pickup.F,v 1.4 2005/11/05 00:57:00 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -25,10 +25,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-
-C     == Common blocks ==
-      COMMON /PCKP_GBLFLS/ globalFile
-      LOGICAL globalFile
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
