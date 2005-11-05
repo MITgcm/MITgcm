@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.5 2005/08/19 18:01:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.6 2005/11/05 01:05:14 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -62,7 +62,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(128) dataFName,metaFName,pfName
+      character*(MAX_LEN_FNAM) dataFName,metaFName,pfName
       integer iG,jG,irec,dUnit,IL,pIL
       logical fileIsOpen
       integer dimList(3,3),ndims
@@ -72,11 +72,11 @@ C Local variables
 cph(
 cph Deal with useSingleCpuIO
 cph Not implemented here for EXCH2
-      logical lprint
-      INTEGER K,L
       INTEGER nNz
       INTEGER vec_size
 #ifdef ALLOW_USE_MPI
+      logical lprint
+      INTEGER K,L
       INTEGER iG_IO,jG_IO,npe
       Real*4 xy_buffer_r4(narr*nPx*nPy)
       Real*8 xy_buffer_r8(narr*nPx*nPy)
@@ -112,7 +112,7 @@ C Assume nothing
 
 C Assign special directory
       if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:128),'(2a)') 
+       write(pFname,'(2a)') 
      &  mdsioLocalDir(1:pIL), fName(1:IL)
       else
        pFname= fName
@@ -131,7 +131,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
-         write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
+         write(dataFname,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,vec_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -198,7 +198,7 @@ C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
-         write(metaFName(1:128),'(2a)') fName(1:IL),'.meta'
+         write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=vec_size
          dimList(2,1)=1
          dimList(3,1)=vec_size
@@ -223,7 +223,7 @@ C To be safe, make other processes wait for I/O completion
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
-       write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
+       write(dataFname,'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
         length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -244,7 +244,7 @@ C If we are writing to a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:128),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
@@ -294,7 +294,7 @@ C Create meta-file for each tile file
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(metaFname(1:128),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
          dimList(1,1) = nPx*nSx*narr
          dimList(2,1) = ((myXGlobalLo-1)/sNx + (bi-1))*narr + 1
@@ -321,7 +321,7 @@ C If global file was opened then close it
 
 C Create meta-file for global file
       if (globalFile) then
-       write(metaFName(1:128),'(2a)') fName(1:IL),'.meta'
+       write(metaFName,'(2a)') fName(1:IL),'.meta'
        dimList(1,1) = nPx*nSx*narr
        dimList(2,1) = 1
        dimList(3,1) = nPx*nSx*narr

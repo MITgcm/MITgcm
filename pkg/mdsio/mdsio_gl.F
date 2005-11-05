@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.12 2005/08/19 18:27:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.13 2005/11/05 01:05:14 jmc Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -82,7 +82,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,Nr,nSx,nSy)
@@ -93,13 +93,14 @@ C Local variables
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,npe
+c     integer iG_IO,jG_IO,npe
+      integer x_size,y_size
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
-      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 cph-usesingle)
 
 C     ------------------------------------------------------------------
@@ -142,7 +143,7 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
-          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          write(dataFname,'(2a)') fName(1:IL),'.data'
           inquire( file=dataFname, exist=exst )
           if (exst) globalFile = .TRUE.
          endif
@@ -154,7 +155,8 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          write(msgbuf,'(2a)') 
+     &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -177,18 +179,18 @@ C Check first for global file with simple name (ie. fName)
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
        endif
 
 C If negative check for global file with MDS name (ie. fName.data)
        if (.NOT. globalFile) then
-        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+        write(dataFname,'(2a)') fName(1:IL),'.data'
         inquire( file=dataFname, exist=exst )
         if (exst) then
          write(msgbuf,'(a,a)')
-     &     ' MDSREADFIELD_GL: opening global file: ',dataFName
+     &     ' MDSREADFIELD_GL: opening global file: ',dataFName(1:IL+5)
          call print_message( msgbuf, standardmessageunit,
      &                       SQUEEZE_RIGHT , mythid)
          globalFile = .TRUE.
@@ -220,7 +222,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
@@ -228,7 +230,7 @@ C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_GL: opening file: ',dataFName
+     &      ' MDSREADFIELD_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -239,7 +241,7 @@ C (This is a place-holder for the active/passive mechanism
          else
           fileIsOpen=.FALSE.
           write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_GL: filename: ',dataFName
+     &      ' MDSREADFIELD_GL: filename: ',dataFName(1:IL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -469,7 +471,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
+      character*(MAX_LEN_FNAM) dataFName,metaFName
       integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
@@ -479,6 +481,7 @@ C Local variables
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
+#ifdef ALLOW_USE_MPI
       integer ii,jj
       integer x_size,y_size,iG_IO,jG_IO,npe
       PARAMETER ( x_size = Nx )
@@ -486,6 +489,7 @@ cph-usesingle(
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
+#endif
 cph-usesingle)
 
 C     ------------------------------------------------------------------
@@ -522,7 +526,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
-         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         write(dataFname,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -589,7 +593,7 @@ C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
-         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=1
          dimList(3,1)=Nx
@@ -622,7 +626,7 @@ C Loop over all tiles
 C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
@@ -638,8 +642,8 @@ C If we are writing to a tiled MDS file then we open each one here
         if (fileIsOpen) then
          do k=1,Nr
           do j=1,sNy
-             do ii=1,sNx
-                arr(ii,j,k,bi,bj)=arr_gl(ii,bi,ip,j,bj,jp,k)
+             do i=1,sNx
+                arr(i,j,k,bi,bj)=arr_gl(i,bi,ip,j,bj,jp,k)
              enddo
             iG = 0
             jG = 0
@@ -698,7 +702,7 @@ C If we were writing to a tiled MDS file then we close it here
 C Create meta-file for each tile if we are tiling
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=((ip-1)*nSx+(bi-1))*sNx+1
@@ -791,7 +795,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nLocz,nSx,nSy)
@@ -802,13 +806,14 @@ C Local variables
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,npe
+c     integer iG_IO,jG_IO,npe
+      integer x_size,y_size
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
-      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 cph-usesingle)
 
 C     ------------------------------------------------------------------
@@ -852,7 +857,7 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
-          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          write(dataFname,'(2a)') fName(1:IL),'.data'
           inquire( file=dataFname, exist=exst )
           if (exst) globalFile = .TRUE.
          endif
@@ -864,7 +869,8 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          write(msgbuf,'(2a)') 
+     &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -886,18 +892,18 @@ C Check first for global file with simple name (ie. fName)
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
        endif
 
 C If negative check for global file with MDS name (ie. fName.data)
        if (.NOT. globalFile) then
-        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+        write(dataFname,'(2a)') fName(1:IL),'.data'
         inquire( file=dataFname, exist=exst )
         if (exst) then
          write(msgbuf,'(a,a)')
-     &     ' MDSREADFIELD_GL: opening global file: ',dataFName
+     &     ' MDSREADFIELD_GL: opening global file: ',dataFName(1:IL+5)
          call print_message( msgbuf, standardmessageunit,
      &                       SQUEEZE_RIGHT , mythid)
          globalFile = .TRUE.
@@ -929,7 +935,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
@@ -937,7 +943,7 @@ C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_GL: opening file: ',dataFName
+     &      ' MDSREADFIELD_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -948,7 +954,7 @@ C (This is a place-holder for the active/passive mechanism
          else
           fileIsOpen=.FALSE.
           write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_GL: filename: ',dataFName
+     &      ' MDSREADFIELD_GL: filename: ',dataFName(1:IL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -1179,7 +1185,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
+      character*(MAX_LEN_FNAM) dataFName,metaFName
       integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
@@ -1189,6 +1195,7 @@ C Local variables
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
 cph-usesingle(
+#ifdef ALLOW_USE_MPI
       integer ii,jj
       integer x_size,y_size,iG_IO,jG_IO,npe
       PARAMETER ( x_size = Nx )
@@ -1196,6 +1203,7 @@ cph-usesingle(
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
+#endif
 cph-usesingle)
 
 C     ------------------------------------------------------------------
@@ -1233,7 +1241,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
-         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         write(dataFname,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -1300,7 +1308,7 @@ C Close data-file and create meta-file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
-         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=1
          dimList(3,1)=Nx
@@ -1333,7 +1341,7 @@ C Loop over all tiles
 C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
@@ -1349,8 +1357,8 @@ C If we are writing to a tiled MDS file then we open each one here
         if (fileIsOpen) then
          do k=1,nLocz
           do j=1,sNy
-             do ii=1,sNx
-                arr(ii,j,k,bi,bj)=arr_gl(ii,bi,ip,j,bj,jp,k)
+             do i=1,sNx
+                arr(i,j,k,bi,bj)=arr_gl(i,bi,ip,j,bj,jp,k)
              enddo
             iG = 0
             jG = 0
@@ -1409,7 +1417,7 @@ C If we were writing to a tiled MDS file then we close it here
 C Create meta-file for each tile if we are tiling
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=((ip-1)*nSx+(bi-1))*sNx+1

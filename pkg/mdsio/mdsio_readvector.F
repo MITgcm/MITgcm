@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.7 2005/08/19 18:01:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.8 2005/11/05 01:05:14 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -55,7 +55,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(128) dataFName,pfName
+      character*(MAX_LEN_FNAM) dataFName,pfName
       integer iG,jG,irec,dUnit,IL,pIL
       logical exst
       logical globalFile,fileIsOpen
@@ -101,7 +101,7 @@ C Assume nothing
 
 C Assign special directory
       if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:128),'(2a)') 
+       write(pFname,'(2a)') 
      &  mdsioLocalDir(1:pIL), fName(1:IL)
       else
        pFname= fName
@@ -119,7 +119,7 @@ C Check first for global file with simple name (ie. fName)
       if (exst) then
        if ( debugLevel .GE. debLevB ) then
         write(msgbuf,'(a,a)')
-     &   ' MDSREADVECTOR: opening global file: ',dataFName
+     &   ' MDSREADVECTOR: opening global file: ',dataFName(1:IL)
         call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
        endif
@@ -128,12 +128,12 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
+       write(dataFname,'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
         if ( debugLevel .GE. debLevB ) then
          write(msgbuf,'(a,a)')
-     &     ' MDSREADVECTOR: opening global file: ',dataFName
+     &     ' MDSREADVECTOR: opening global file: ',dataFName(1:IL+5)
          call print_message( msgbuf, standardmessageunit,
      &                       SQUEEZE_RIGHT , mythid)
         endif
@@ -156,7 +156,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:128),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
@@ -164,7 +164,7 @@ C (This is a place-holder for the active/passive mechanism)
          if (exst) then
           if ( debugLevel .GE. debLevB ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADVECTOR: opening file: ',dataFName
+     &      ' MDSREADVECTOR: opening file: ',dataFName(1:pIL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -174,8 +174,9 @@ C (This is a place-holder for the active/passive mechanism)
           fileIsOpen=.TRUE.
          else
           fileIsOpen=.FALSE.
-          write(msgbuf,'(3a)')
-     &      ' MDSREADVECTOR: opening file: ',dataFName,pfName
+          write(msgbuf,'(4a)')
+     &      ' MDSREADVECTOR: opening file: ',fName(1:IL),
+     &                                 ' , ',dataFName(1:pIL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a)')
@@ -246,7 +247,7 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
          if (.NOT. globalFile) then
-          write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
+          write(dataFname,'(2a)') fName(1:IL),'.data'
           inquire( file=dataFname, exist=exst )
           if (exst) globalFile = .TRUE.
          endif
@@ -258,7 +259,8 @@ C Otherwise stop program.
           open( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          else
-          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          write(msgbuf,'(2a)') 
+     &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           call print_error( msgbuf, mythid )
@@ -349,9 +351,11 @@ C     ==================================================================
 
       integer narr
       _RL local(narr)
-      integer i,j,k,l,bi,bj,nNz
-      _RS arr(narr) 
+      _RS arr(narr)
+      integer k,nNz
       integer mythid
+
+      integer L
 
       DO L=1,narr
          arr(L) = local(L)
@@ -367,9 +371,11 @@ C     ==================================================================
 
       integer narr
       _RL local(narr)
-      integer i,j,k,l,bi,bj,nNz
-      _RL arr(narr)
+      _RS arr(narr)
+      integer k,nNz
       integer mythid
+
+      integer L
 
       DO L=1,narr
          arr(L) = local(L)

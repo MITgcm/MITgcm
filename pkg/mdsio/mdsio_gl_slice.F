@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.8 2005/08/19 18:27:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.9 2005/11/05 01:05:14 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -82,7 +82,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer ip,jp,iG,jG,irec,bi,bj,ii,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,Nr,nSx,nSy)
@@ -121,18 +121,18 @@ C Check first for global file with simple name (ie. fName)
       inquire( file=dataFname, exist=exst )
       if (exst) then
        write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD: opening global file: ',dataFName
+     &   ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
        call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
       endif
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFname,'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD_XZ_GL: opening global file: ',dataFName
+     &   ' MDSREADFIELD_XZ_GL: opening global file: ',dataFName(1:IL+5)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
@@ -149,7 +149,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
@@ -157,7 +157,7 @@ C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_XZ_GL: opening file: ',dataFName
+     &      ' MDSREADFIELD_XZ_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -168,7 +168,7 @@ C (This is a place-holder for the active/passive mechanism
          else
           fileIsOpen=.FALSE.
           write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_XZ_GL: filename: ',dataFName
+     &      ' MDSREADFIELD_XZ_GL: filename: ',dataFName(1:IL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a)')
@@ -305,7 +305,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer ip,jp,iG,jG,irec,bi,bj,jj,k,dUnit,IL
       logical exst
       _RL arr(1-oLy:sNy+oLy,Nr,nSx,nSy)
@@ -344,18 +344,18 @@ C Check first for global file with simple name (ie. fName)
       inquire( file=dataFname, exist=exst )
       if (exst) then
        write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD_YZ: opening global file: ',dataFName
+     &  ' MDSREADFIELD_YZ: opening global file: ',dataFName(1:IL)
        call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
       endif
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFname,'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD_YZ_GL: opening global file: ',dataFName
+     &   ' MDSREADFIELD_YZ_GL: opening global file: ',dataFName(1:IL+5)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
@@ -371,7 +371,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
@@ -379,7 +379,7 @@ C (This is a place-holder for the active/passive mechanism
          if (exst) then
           if ( debugLevel .GE. debLevA ) then
            write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_YZ_GL: opening file: ',dataFName
+     &      ' MDSREADFIELD_YZ_GL: opening file: ',dataFName(1:IL+13)
            call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           endif
@@ -390,7 +390,7 @@ C (This is a place-holder for the active/passive mechanism
          else
           fileIsOpen=.FALSE.
           write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD_YZ_GL: filename: ',dataFName
+     &      ' MDSREADFIELD_YZ_GL: filename: ',dataFName(1:IL+13)
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a)')
@@ -541,7 +541,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
+      character*(MAX_LEN_FNAM) dataFName,metaFName
       integer ip,jp,iG,jG,irec,bi,bj,ii,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
@@ -584,7 +584,7 @@ C Loop over all tiles
 C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
@@ -657,7 +657,7 @@ C If we were writing to a tiled MDS file then we close it here
 C Create meta-file for each tile if we are tiling
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=((ip-1)*nSx+(bi-1))*sNx+1
@@ -756,7 +756,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
+      character*(MAX_LEN_FNAM) dataFName,metaFName
       integer ip,jp,iG,jG,irec,bi,bj,jj,k,dUnit,IL
       Real*4 r4seg(sNy)
       Real*8 r8seg(sNy)
@@ -799,7 +799,7 @@ C Loop over all tiles
 C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
@@ -872,7 +872,7 @@ C If we were writing to a tiled MDS file then we close it here
 C Create meta-file for each tile if we are tiling
          iG=bi+(ip-1)*nsx ! Kludge until unstructered tiles
          jG=bj+(jp-1)*nsy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=(ip-1)*nSx+bi
