@@ -307,7 +307,8 @@ C $OpenAD$ END DECLS
                 do cp_loop_variable_3=lbound(x,3),ubound(x,3)
           call cp_store_real_vector(x(cp_loop_variable_1,
      +cp_loop_variable_2, cp_loop_variable_3),
-     +size(x(cp_loop_variable_1,cp_loop_variable_2, cp_loop_variable_3)),
+     +size(x(cp_loop_variable_1,cp_loop_variable_2, 
+     +cp_loop_variable_3)),
      +theArgFStack,
      +theArgFStackoffset,
      +theArgFStackSize)
@@ -317,8 +318,9 @@ C $OpenAD$ END DECLS
         end subroutine 
 
 
-        subroutine cp_arg_restore_real_four_tensor_a(x,cp_loop_variable_1,
-     +cp_loop_variable_2,cp_loop_variable_3,cp_loop_variable_4)
+        subroutine cp_arg_restore_real_four_tensor_a(x,
+     +cp_loop_variable_1,cp_loop_variable_2,cp_loop_variable_3,
+     +cp_loop_variable_4)
 C $OpenAD$ INLINE DECLS
           implicit none
           double precision, dimension(::) :: x
@@ -349,7 +351,9 @@ C $OpenAD$ END DECLS
                 do cp_loop_variable_3=lbound(x,3),ubound(x,3)
           call cp_store_real_vector(x(cp_loop_variable_1,
      +cp_loop_variable_2, cp_loop_variable_3),
-     +size(x(cp_loop_variable_1,cp_loop_variable_2, cp_loop_variable_3)),
+     +size(x(cp_loop_variable_1,
+     +cp_loop_variable_2, 
+     +cp_loop_variable_3)),
      +theResFStack,
      +theResFStackoffset,
      +theResFStackSize)
@@ -359,8 +363,9 @@ C $OpenAD$ END DECLS
         end subroutine 
 
 
-        subroutine cp_res_restore_real_four_tensor_a(x,cp_loop_variable_1,
-     +cp_loop_variable_2,cp_loop_variable_3,cp_loop_variable_4)
+        subroutine cp_res_restore_real_four_tensor_a(x,
+     +cp_loop_variable_1, +cp_loop_variable_2,cp_loop_variable_3,
+     +cp_loop_variable_4)
 C $OpenAD$ INLINE DECLS
           implicit none
           double precision, dimension(:) :: x
@@ -541,7 +546,8 @@ C $OpenAD$ END DECLS
                 do cp_loop_variable_2=lbound(x,2),ubound(x,2)
           call cp_store_p_real_vector(x(:,cp_loop_variable_2,
      +cp_loop_variable_3, cp_loop_variable_4),
-     +size(x(:,cp_loop_variable_2,cp_loop_variable_3, cp_loop_variable_4)),
+     +size(x(:,cp_loop_variable_2,cp_loop_variable_3, 
+     +cp_loop_variable_4)),
      +theArgFStack,
      +theArgFStackoffset,
      +theArgFStackSize)
@@ -583,7 +589,8 @@ C $OpenAD$ END DECLS
                 do cp_loop_variable_2=lbound(x,2),ubound(x,2)
           call cp_store_p_real_vector(x(:,cp_loop_variable_2,
      +cp_loop_variable_3, cp_loop_variable_4),
-     +size(x(:,cp_loop_variable_2,cp_loop_variable_3, cp_loop_variable_4)),
+     +size(x(:,cp_loop_variable_2,cp_loop_variable_3, 
+     +cp_loop_variable_4)),
      +theResFStack,
      +theResFStackoffset,
      +theResFStackSize)
@@ -703,7 +710,7 @@ C $OpenAD$ INLINE DECLS
           implicit none
           logical :: b
 C $OpenAD$ END DECLS
-          call cp_store_bool_scalar(s,theArgBStack,
+          call cp_store_bool_scalar(b,theArgBStack,
      +theArgBStackoffset, theArgBStackSize)
         end subroutine 
 
