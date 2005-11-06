@@ -27,7 +27,8 @@
  hFacMin=0.2,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
- globalFiles=.TRUE.,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
  &
 
 # Elliptic solver parameters
