@@ -26,7 +26,8 @@
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
- globalfiles=.TRUE.
+#- not safe to use globalFiles in multi-processors runs
+#globalfiles=.TRUE.
  usesinglecpuio=.TRUE.
  &
 
