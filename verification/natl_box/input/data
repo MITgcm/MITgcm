@@ -53,7 +53,8 @@
  no_slip_bottom     = .TRUE.,
  no_slip_sides      = .FALSE.,
  readBinaryPrec     = 32,
- globalFiles        = .TRUE.
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles        = .TRUE.
  &
 
 # Elliptic solver parameters
