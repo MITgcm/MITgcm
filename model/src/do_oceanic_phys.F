@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.19 2005/09/15 14:55:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.20 2005/11/06 22:20:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -464,6 +467,16 @@ C--     Compute GGL90 mixing coefficients
      I                  bi, bj, myTime, myThid )
         ENDIF
 #endif /* ALLOW_GGL90 */
+
+#ifdef ALLOW_TIMEAVE
+        IF ( taveFreq.GT. 0. _d 0 .AND. fluidIsWater ) THEN
+          CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
+        ENDIF
+        IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
+          CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
+     I                           Nr, deltaTclock, bi, bj, myThid)
+        ENDIF
+#endif /* ALLOW_TIMEAVE */
 
 C--   end bi,bj loops.
        ENDDO
