@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.4 2005/11/05 00:52:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.5 2005/11/06 01:36:34 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -92,10 +92,12 @@ C Local variables
       character*(MAX_LEN_FNAM) dataFName,metaFName,pfName
       character*(MAX_LEN_MBUF) msgbuf
       logical fileIsOpen
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL,pIL
+      LOGICAL iAmDoingIO
+      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       integer dimList(3,3),ndims
       integer x_size,y_size,length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      INTEGER iG_IO,jG_IO,npe
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
       PARAMETER ( y_size = exch2_domain_nyt * sNy )
 #else
@@ -104,21 +106,30 @@ C Local variables
 #endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-#ifdef ALLOW_USE_MPI
-      INTEGER iG_IO,jG_IO,npe,i
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
       _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tgy,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
 
 C     ------------------------------------------------------------------
 
+C Assume nothing
+      iAmDoingIO = .FALSE.
+      fileIsOpen = .FALSE.
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
+
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+      iAmDoingIO = .TRUE.
+
+C useSingleCpuIO: Only do I/O if I am Master thread of mpi process 0:
+#ifdef ALLOW_USE_MPI
+      IF (useSingleCpuIO) iAmDoingIO = mpiMyId.EQ.0
+#endif
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
@@ -132,11 +143,6 @@ C Record number must be >= 1
        stop 'ABNORMAL END: S/R MDSWRITEFIELD'
       endif
 
-C Assume nothing
-      fileIsOpen=.FALSE.
-      IL  = ILNBLNK( fName )
-      pIL = ILNBLNK( mdsioLocalDir )
-
 C Assign special directory
       IF ( useCurrentDir .OR. pIL.EQ.0 ) THEN
        pfName = fName
@@ -148,15 +154,14 @@ C Assign special directory
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
-#ifdef ALLOW_USE_MPI
       _END_MASTER( myThid )
+
 C If option globalFile is desired but does not work or if
 C globalFile is too slow, then try using single-CPU I/O.
-      if (useSingleCpuIO) then
+      IF (useSingleCpuIO) THEN
 
 C Master thread of process 0, only, opens a global file
-       _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+       IF ( iAmDoingIO ) THEN
          write(dataFName,'(2a)') fName(1:IL),'.data'
          length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
@@ -166,8 +171,7 @@ C Master thread of process 0, only, opens a global file
           open( dUnit, file=dataFName, status=_OLD_STATUS,
      &        access='direct', recl=length_of_rec )
          endif
-        ENDIF
-       _END_MASTER( myThid )
+       ENDIF
 
 C Gather array and write it to file, one vertical level at a time
        DO k=1,nNz
@@ -183,8 +187,8 @@ C-      copy from arr(level=k) to 2-D "local":
           STOP 'ABNORMAL END: S/R MDSWRITEFIELD'
         ENDIF
         CALL GATHER_2D( global, local, myThid )
-        _BEGIN_MASTER( myThid )
-         IF( mpiMyId .EQ. 0 ) THEN
+
+        IF ( iAmDoingIO ) THEN
           irec=k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
@@ -198,8 +202,13 @@ C-      copy from arr(level=k) to 2-D "local":
             DO bi=1,nSx
              DO J=1,sNy
               DO I=1,sNx
+#ifdef ALLOW_USE_MPI
                iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
                jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+#else
+               iG= myXGlobalLo-1+(bi-1)*sNx+i
+               jG= myYGlobalLo-1+(bj-1)*sNy+j
+#endif /* ALLOW_USE_MPI */
                iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
                jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
                xy_buffer_r4(iG_IO,jG_IO) = global(iG,jG)
@@ -230,8 +239,13 @@ C-      copy from arr(level=k) to 2-D "local":
             DO bi=1,nSx
              DO J=1,sNy
               DO I=1,sNx
+#ifdef ALLOW_USE_MPI
                iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
                jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+#else
+               iG= myXGlobalLo-1+(bi-1)*sNx+i
+               jG= myYGlobalLo-1+(bj-1)*sNy+j
+#endif /* ALLOW_USE_MPI */
                iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
                jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
                xy_buffer_r8(iG_IO,jG_IO) = global(iG,jG)
@@ -256,13 +270,11 @@ C-      copy from arr(level=k) to 2-D "local":
            call print_error( msgbuf, mythid )
            stop 'ABNORMAL END: S/R MDSWRITEFIELD'
           endif
-         ENDIF
-        _END_MASTER( myThid )
+        ENDIF
        ENDDO
 
 C Close data-file and create meta-file
-       _BEGIN_MASTER( myThid )
-        IF( mpiMyId .EQ. 0 ) THEN
+       IF ( iAmDoingIO ) THEN
          close( dUnit )
          write(metaFName,'(2a)') fName(1:IL),'.meta'
          dimList(1,1)=x_size
@@ -278,14 +290,12 @@ C Close data-file and create meta-file
          if (nNz .EQ. 1) ndims=2
          call MDSWRITEMETA( metaFName, dataFName,
      &     filePrec, ndims, dimList, irecord, myIter, mythid )
-        ENDIF
-       _END_MASTER( myThid )
+       ENDIF
 C To be safe, make other processes wait for I/O completion
        _BARRIER
 
-      elseif ( .NOT. useSingleCpuIO ) then
+      ELSEIF ( .NOT. useSingleCpuIO ) THEN
       _BEGIN_MASTER( myThid )
-#endif /* ALLOW_USE_MPI */
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
@@ -496,7 +506,6 @@ C       to stay consistent with global file structure
 C End of bi,bj loops
        enddo
       enddo
-c#endif /* ALLOW_EXCH2 */
 
 #ifdef ALLOW_EXCH2
       endif ! global fle
@@ -554,10 +563,8 @@ C writing their data before we update the meta-file
 
       _END_MASTER( myThid )
 
-#ifdef ALLOW_USE_MPI
 C endif useSingleCpuIO
-      endif
-#endif /* ALLOW_USE_MPI */
+      ENDIF
 
 C     ------------------------------------------------------------------
       return
