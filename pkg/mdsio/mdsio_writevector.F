@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.6 2005/11/05 01:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.7 2005/11/06 01:25:13 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -77,7 +77,7 @@ cph Not implemented here for EXCH2
 #ifdef ALLOW_USE_MPI
       logical lprint
       INTEGER K,L
-      INTEGER iG_IO,jG_IO,npe
+c     INTEGER iG_IO,jG_IO,npe
       Real*4 xy_buffer_r4(narr*nPx*nPy)
       Real*8 xy_buffer_r8(narr*nPx*nPy)
       Real*8 global(narr*nPx*nPy)

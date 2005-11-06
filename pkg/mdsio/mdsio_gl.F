@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.13 2005/11/05 01:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.14 2005/11/06 01:25:13 jmc Exp $
+C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -483,7 +484,8 @@ C Local variables
 cph-usesingle(
 #ifdef ALLOW_USE_MPI
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,npe
+c     integer iG_IO,jG_IO,npe
+      integer x_size,y_size
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)
@@ -1197,7 +1199,8 @@ C Local variables
 cph-usesingle(
 #ifdef ALLOW_USE_MPI
       integer ii,jj
-      integer x_size,y_size,iG_IO,jG_IO,npe
+c     integer iG_IO,jG_IO,npe
+      integer x_size,y_size
       PARAMETER ( x_size = Nx )
       PARAMETER ( y_size = Ny )
       Real*4 xy_buffer_r4(x_size,y_size)

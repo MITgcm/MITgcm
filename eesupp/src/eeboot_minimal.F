@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.14 2004/11/07 23:23:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.15 2005/11/06 01:24:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -49,7 +49,9 @@ C     msgBuffer        :: Used to build messages for printing.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
       INTEGER mpiRC
       INTEGER nptmp
+#ifdef COMPONENT_MODULE
       INTEGER mpiMyWid
+#endif
 #endif /* ALLOW_USE_MPI */
 CEOP
 
