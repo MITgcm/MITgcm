@@ -30,7 +30,8 @@
  eosType='LINEAR',
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
- globalFiles=.TRUE.,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
  writeBinaryPrec=64,
  writeStatePrec=64,
  saltStepping=.FALSE.,
