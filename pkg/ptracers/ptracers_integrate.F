@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.26 2005/11/06 22:17:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.27 2005/11/06 22:52:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -63,12 +63,12 @@ C  none
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j,k,bi,bj,iTracer  :: loop indices
+C  iTracer              :: tracer index
 C  iMin,iMax,jMin,jMax  :: loop ranges
 C  kUp,kDown            :: toggle indices for even/odd level fluxes
 C  km1                  :: =min(1,k-1)
 C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
-      INTEGER i,j,iTracer
+      INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER kUp,kDown,km1
       INTEGER GAD_TR
@@ -121,7 +121,7 @@ C External forcing term(s)
      I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
 
-C If using Adams-Bashforth II, then extrapolate tendancies
+C If using Adams-Bashforth II, then extrapolate tendencies
 C gPtr is now the tracer tendency for explicit advection/diffusion
       IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
      & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
