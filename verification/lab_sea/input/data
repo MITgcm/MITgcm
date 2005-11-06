@@ -57,7 +57,9 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
- globalFiles=.TRUE.,
+#globalFiles=.TRUE.,
+#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
+ useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0
  gravity         = 9.8156,
