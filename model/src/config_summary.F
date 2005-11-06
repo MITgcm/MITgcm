@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.83 2005/10/30 21:13:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.84 2005/11/06 01:16:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -344,6 +344,14 @@ C     zcoord ::
      &                '/* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
+      CALL WRITE_0D_I( readBinaryPrec, INDEX_NONE, ' readBinaryPrec =',
+     &  ' /* Precision used for reading binary files */')
+      CALL WRITE_0D_I(writeBinaryPrec, INDEX_NONE, 'writeBinaryPrec =',
+     &  ' /* Precision used for writing binary files */')
+      CALL WRITE_0D_L( globalFiles,  INDEX_NONE,
+     & ' globalFiles =',' /* write "global" (=not per tile) files */')
+      CALL WRITE_0D_L( useSingleCpuIO,  INDEX_NONE,
+     & ' useSingleCpuIO =', ' /* only master MPI process does I/O */')
       CALL WRITE_0D_L( debugMode,  INDEX_NONE,
      & ' debugMode  =', '  /* Debug Mode on/off flag */')
       CALL WRITE_0D_I( debLevA, INDEX_NONE,
