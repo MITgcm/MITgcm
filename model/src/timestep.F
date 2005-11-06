@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.41 2005/09/30 00:22:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.42 2005/11/06 22:19:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,6 +51,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       LOGICAL momForcing_In_AB
       LOGICAL momDissip_In_AB
+      LOGICAL momStartAB
       INTEGER i,j
       _RL ab15,ab05
       _RL phxFac,phyFac, psFac
@@ -71,6 +72,7 @@ C    Allow diagnosis of external forcing
 CEOP
 
 C     Adams-Bashforth timestepping weights
+      momStartAB = nIter0.EQ.0
       IF (myIter .EQ. 0) THEN
        ab15=1.0
        ab05=0.0
@@ -170,13 +172,22 @@ C--   Forcing term inside the Adams-Bashforth:
       ENDIF
 
       IF (useCDscheme) THEN
-C-     for CD-scheme, store gU,Vtmp = gU,V^n + forcing 
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gUtmp(i,j) = gU(i,j,k,bi,bj)
-          gVtmp(i,j) = gV(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
+C-     for CD-scheme, store gU,Vtmp = gU,V^n + dissip. + forcing 
+        IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            gUtmp(i,j) = gU(i,j,k,bi,bj) + guDissip(i,j)
+            gVtmp(i,j) = gV(i,j,k,bi,bj) + gvDissip(i,j)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            gUtmp(i,j) = gU(i,j,k,bi,bj)
+            gVtmp(i,j) = gV(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
       ENDIF
 
 C-    Compute effective gU,gV_[n+1/2] terms (including Adams-Bashforth weights)
@@ -185,11 +196,11 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gU, guNm,
-     I                        myIter, myThid )
+     I                        momStartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gV, gvNm,
-     I                        myIter, myThid )
+     I                        momStartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,

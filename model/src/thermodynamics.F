@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.94 2005/08/24 23:13:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.95 2005/11/06 22:19:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -107,10 +107,6 @@ C     == Global variables ===
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_MATRIX
-# include "MATRIX.h"
-#endif /* ALLOW_MATRIX */
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time in simulation
@@ -163,14 +159,20 @@ C                      index into fVerTerm.
       _RL kappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
 #endif
       _RL kappaRk (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL kp1Msk
-      LOGICAL useVariableK
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, km1, kup, kDown
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER iterNb, m1, m2
+#endif
+#ifdef ALLOW_TIMEAVE
+      LOGICAL useVariableK
+#endif
+#ifdef ALLOW_PTRACERS
       INTEGER iTracer, ip
+#endif
 
 CEOP
 
@@ -261,6 +263,24 @@ C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
           ENDDO
          ENDDO
         ENDDO
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+C-      Apply AB on T,S :
+        iterNb = myIter
+        IF (staggerTimeStep) iterNb = myIter - 1
+        m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+C       compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
+        IF ( AdamsBashforth_T ) CALL ADAMS_BASHFORTH3(
+     I                                  bi, bj, 0,
+     U                                  theta, gtNm,
+     I                                  tempStartAB, iterNb, myThid )
+C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
+        IF ( AdamsBashforth_S ) CALL ADAMS_BASHFORTH3(
+     I                                  bi, bj, 0,
+     U                                  salt, gsNm,
+     I                                  saltStartAB, iterNb, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 c       iMin = 1-OLx
 c       iMax = sNx+OLx
@@ -368,13 +388,19 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMin = 1-OLy
           jMax = sNy+OLy
 
-          kp1Msk=1.
-          IF (k.EQ.Nr) kp1Msk=0.
+          IF (k.EQ.Nr) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+             rTransKp1(i,j) = 0. _d 0
             ENDDO
            ENDDO
+          ELSE
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             rTransKp1(i,j) = rTrans(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rTransKp1(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
@@ -451,10 +477,23 @@ C        and step forward storing result in gT, gS, etc.
      I         kappaRT,
      U         fVerT,
      I         myTime,myIter,myThid)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          IF ( AdamsBashforth_T ) THEN
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
-     I         theta, gT,
+     I         gtNm(1-Olx,1-Oly,1,1,1,m2), 
+     U         gT,
      I         myIter, myThid)
+          ELSE
+#endif
+           CALL TIMESTEP_TRACER(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
+     I         theta, 
+     U         gT,
+     I         myIter, myThid)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          ENDIF
+#endif
          ENDIF
 #endif
 
@@ -466,10 +505,23 @@ C        and step forward storing result in gT, gS, etc.
      I         kappaRS,
      U         fVerS,
      I         myTime,myIter,myThid)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          IF ( AdamsBashforth_S ) THEN
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
-     I         salt, gS,
+     I         gsNm(1-Olx,1-Oly,1,1,1,m2), 
+     U         gS,
      I         myIter, myThid)
+          ELSE
+#endif
+           CALL TIMESTEP_TRACER(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
+     I         salt, 
+     U         gS,
+     I         myIter, myThid)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          ENDIF
+#endif
          ENDIF
 #endif
 #ifdef ALLOW_PTRACERS
@@ -630,16 +682,6 @@ C--      Apply open boundary conditions
            ENDDO
         ENDIF
 #endif   /* ALLOW_OBCS */
-
-#ifdef ALLOW_TIMEAVE
-        IF ( taveFreq.GT. 0. _d 0 .AND. fluidIsWater ) THEN
-          CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
-        ENDIF
-        IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
-          CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
-     I                           Nr, deltaTclock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */ 
 
 #endif /* SINGLE_LAYER_MODE */
 

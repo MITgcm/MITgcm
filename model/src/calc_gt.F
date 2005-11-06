@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.44 2005/04/15 14:18:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.45 2005/11/06 22:19:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,6 +86,9 @@ CEOP
 C     === Local variables ===
       LOGICAL calcAdvection
       INTEGER iterNb
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER m1, m2
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverT is set in this subroutine
@@ -93,16 +96,40 @@ C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       calcAdvection = tempAdvection .AND. .NOT.tempMultiDimAdvec
-      CALL GAD_CALC_RHS(
+      iterNb = myIter
+      IF (staggerTimeStep) iterNb = myIter -1
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      IF ( AdamsBashforth_T ) THEN
+        m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+        CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
-     I           diffKhT, diffK4T, KappaRT, theta,
+     I           diffKhT, diffK4T, KappaRT,
+     I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
+      ELSE
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+        CALL GAD_CALC_RHS(
+     I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I           uVel, vVel, wVel,
+     I           diffKhT, diffK4T, KappaRT, theta, theta,
+     I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
+     I           calcAdvection, tempImplVertAdv,
+     U           fVerT, gT,
+     I           myTime, myIter, myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      ENDIF
+#endif
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
       IF ( tempForcing .AND. forcing_In_AB )
@@ -110,14 +137,12 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
 
-      IF ( tempAdamsBashforth ) THEN
-        iterNb = myIter
-        IF (staggerTimeStep) iterNb = myIter - 1
+      IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gT, gtNm,
-     I                        iterNb, myThid )
+     I                        tempStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
@@ -138,7 +163,7 @@ C--   External thermal forcing term(s) outside Adams-Bashforth:
      I                          bi, bj, k,
      U                          gT,
      I                          myThid )
-        IF ( tempAdamsBashforth ) THEN
+        IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, k,

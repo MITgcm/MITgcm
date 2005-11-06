@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.40 2005/04/15 14:18:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.41 2005/11/06 22:19:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,7 +48,6 @@ C     == GLobal variables ==
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PACKAGES_CONFIG.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
 #endif
@@ -88,6 +87,9 @@ CEOP
 C     === Local variables ===
       LOGICAL calcAdvection
       INTEGER iterNb
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER m1, m2
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverS is set in this subroutine
@@ -95,16 +97,40 @@ C--   the kDown is still required
       fVerS(1,1,kDown) = fVerS(1,1,kDown)
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       calcAdvection = saltAdvection .AND. .NOT.saltMultiDimAdvec
-      CALL GAD_CALC_RHS(
+      iterNb = myIter
+      IF (staggerTimeStep) iterNb = myIter - 1
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      IF ( AdamsBashforth_S ) THEN
+        m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+        CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
-     I           diffKhS, diffK4S, KappaRS, Salt,
+     I           diffKhS, diffK4S, KappaRS,
+     I           gsNm(1-Olx,1-Oly,1,1,1,m2), salt,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv,
      U           fVerS, gS,
      I           myTime, myIter, myThid )
+      ELSE
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+        CALL GAD_CALC_RHS(
+     I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I           uVel, vVel, wVel,
+     I           diffKhS, diffK4S, KappaRS, salt, salt,
+     I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
+     I           calcAdvection, saltImplVertAdv,
+     U           fVerS, gS,
+     I           myTime, myIter, myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      ENDIF
+#endif
 
 C--   External salinity forcing term(s) inside Adams-Bashforth:
       IF ( saltForcing .AND. forcing_In_AB )
@@ -112,14 +138,12 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
 
-      IF ( saltAdamsBashforth ) THEN
-        iterNb = myIter
-        IF (staggerTimeStep) iterNb = myIter - 1
+      IF ( AdamsBashforthGs ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gS, gsNm,
-     I                        iterNb, myThid )
+     I                        saltStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
@@ -140,7 +164,7 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
      I                          bi, bj, k,
      U                          gS,
      I                          myThid )
-        IF ( saltAdamsBashforth ) THEN
+        IF ( AdamsBashforthGs ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, k,
