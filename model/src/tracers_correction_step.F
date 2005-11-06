@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.8 2005/10/13 19:43:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.9 2005/11/06 22:01:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,12 +46,13 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER iMin,iMax
       INTEGER jMin,jMax
       INTEGER bi,bj
-      INTEGER k,i,j
+      INTEGER k
 
 CEOP
 
@@ -139,7 +140,9 @@ C--     Convectively adjust new fields to be statically stable
 C--    End of 2nd bi,bj loop
        ENDDO
       ENDDO
-#endif
+#endif /* ALLOW_OFFLINE */
+
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END
