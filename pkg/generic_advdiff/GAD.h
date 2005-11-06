@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.13 2005/10/22 19:56:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.14 2005/11/06 22:14:02 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -75,15 +75,25 @@ CEOP
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
 C tempMultiDimAdvec :: set to T if using multi-dim advection for Temp
 C saltMultiDimAdvec :: set to T if using multi-dim advection for Salt
-C tempAdamsBashforth :: set to T if using Adams-Bashforth stepping for Temp
-C saltAdamsBashforth :: set to T if using Adams-Bashforth stepping for Salt
+C AdamsBashforthGt  :: apply Adams-Bashforth extrapolation on T tendency (=Gt)
+C AdamsBashforthGs  :: apply Adams-Bashforth extrapolation on S tendency (=Gs)
+C AdamsBashforth_T  :: apply Adams-Bashforth extrapolation on Pot.Temp.
+C AdamsBashforth_S  :: apply Adams-Bashforth extrapolation on Salinity
+C tempStartAB       :: start this run (or restart) without previous gT/Temp
+C saltStartAB       :: start this run (or restart) without previous gS/Salt
       LOGICAL tempMultiDimAdvec
       LOGICAL saltMultiDimAdvec
-      LOGICAL tempAdamsBashforth
-      LOGICAL saltAdamsBashforth
+      LOGICAL AdamsBashforthGt
+      LOGICAL AdamsBashforthGs
+      LOGICAL AdamsBashforth_T
+      LOGICAL AdamsBashforth_S
+      LOGICAL tempStartAB
+      LOGICAL saltStartAB
       COMMON /GAD_PARM_L/
-     & tempMultiDimAdvec , saltMultiDimAdvec ,
-     & tempAdamsBashforth, saltAdamsBashforth
+     & tempMultiDimAdvec, saltMultiDimAdvec,
+     & AdamsBashforthGt, AdamsBashforthGs,
+     & AdamsBashforth_T, AdamsBashforth_S,
+     & tempStartAB, saltStartAB
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.8 2005/10/22 20:20:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.9 2005/11/06 22:14:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -38,12 +38,12 @@ C-- Set Temp & Salt multi-Dim Advec. flag according to advection scheme used
       IF ( tempAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.tempAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.tempAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
-           tempMultiDimAdvec = .FALSE. 
+           tempMultiDimAdvec = .FALSE.
       ENDIF
       IF ( saltAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.saltAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
-           saltMultiDimAdvec = .FALSE. 
+           saltMultiDimAdvec = .FALSE.
       ENDIF
 
 C-- Set general multi-Dim Advec. flag when at least 1 tracer use multi-Dim Advec.
@@ -52,18 +52,36 @@ C-- Set general multi-Dim Advec. flag when at least 1 tracer use multi-Dim Advec
       useMultiDimAdvec = useMultiDimAdvec.OR.saltMultiDimAdvec
 
 C-- Set Temp & Salt Adams-Bashforth flag according to advection scheme used
-      tempAdamsBashforth = .FALSE.
-      saltAdamsBashforth = .FALSE.
+      AdamsBashforthGt = .FALSE.
+      AdamsBashforthGs = .FALSE.
+      AdamsBashforth_T = .FALSE.
+      AdamsBashforth_S = .FALSE.
       IF ( tempAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.tempAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.tempAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
-           tempAdamsBashforth = .TRUE.
+           AdamsBashforthGt = tempStepping
       ENDIF
       IF ( saltAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.saltAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
-           saltAdamsBashforth = .TRUE.
+           AdamsBashforthGs = saltStepping
       ENDIF
+#ifdef ALLOW_ADAMSBASHFORTH_3
+C-    For now, A-B on T,S is only implemented in AB-3 code, and not working
+C     with synchronous time-step, which would require to do also AB(u,v,w)
+      IF ( .NOT.doAB_onGtGs .AND. staggerTimeStep ) THEN
+        AdamsBashforth_T = AdamsBashforthGt
+        AdamsBashforth_S = AdamsBashforthGs
+        AdamsBashforthGt = .FALSE.
+        AdamsBashforthGs = .FALSE.
+      ENDIF
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+
+C-     Initialize AB starting flags for T & S:
+C      notes: those could be modified when reading a pickup that does
+C             correspond to what is actually needed.
+       tempStartAB = nIter0.EQ.0
+       saltStartAB = nIter0.EQ.0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -91,29 +109,35 @@ C-- Print out GAD parameters :
 
       CALL WRITE_0D_I( tempAdvScheme, INDEX_NONE,
      & 'tempAdvScheme =',
-     & '   /* Temp. Horiz.Advection scheme selector */') 
+     & '   /* Temp. Horiz.Advection scheme selector */')
       CALL WRITE_0D_I( tempVertAdvScheme, INDEX_NONE,
      & 'tempVertAdvScheme =',
-     & '   /* Temp. Vert. Advection scheme selector */') 
+     & '   /* Temp. Vert. Advection scheme selector */')
       CALL WRITE_0D_L( tempMultiDimAdvec, INDEX_NONE,
      & 'tempMultiDimAdvec =',
      & '   /* use Muti-Dim Advec method for Temp */')
-      CALL WRITE_0D_L( tempAdamsBashforth, INDEX_NONE,
-     & 'tempAdamsBashforth =',
-     & '   /* use Adams-Bashforth time-stepping for Temp */')
+      CALL WRITE_0D_L( AdamsBashforthGt, INDEX_NONE,
+     & 'AdamsBashforthGt =',
+     & '   /* apply Adams-Bashforth extrapolation on Gt */')
+      CALL WRITE_0D_L( AdamsBashforth_T, INDEX_NONE,
+     & 'AdamsBashforth_T =',
+     & '   /* apply Adams-Bashforth extrapolation on Temp */')
 
       CALL WRITE_0D_I( saltAdvScheme, INDEX_NONE,
      & 'saltAdvScheme =',
-     & '   /* Salt. Horiz.advection scheme selector */') 
+     & '   /* Salt. Horiz.advection scheme selector */')
       CALL WRITE_0D_I( saltVertAdvScheme, INDEX_NONE,
      & 'saltVertAdvScheme =',
-     & '   /* Salt. Vert. Advection scheme selector */') 
+     & '   /* Salt. Vert. Advection scheme selector */')
       CALL WRITE_0D_L( saltMultiDimAdvec, INDEX_NONE,
      & 'saltMultiDimAdvec =',
      & '   /* use Muti-Dim Advec method for Salt */')
-      CALL WRITE_0D_L( saltAdamsBashforth, INDEX_NONE,
-     & 'saltAdamsBashforth =',
-     & '   /* use Adams-Bashforth time-stepping for Salt */')
+      CALL WRITE_0D_L( AdamsBashforthGs, INDEX_NONE,
+     & 'AdamsBashforthGs =',
+     & '   /* apply Adams-Bashforth extrapolation on Gs */')
+      CALL WRITE_0D_L( AdamsBashforth_S, INDEX_NONE,
+     & 'AdamsBashforth_S =',
+     & '   /* apply Adams-Bashforth extrapolation on Salt */')
 
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -139,7 +163,7 @@ C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
      &     'GAD_INIT: Multi-Dim Advection with 5-points stencil'
           CALL PRINT_ERROR( msgBuf , myThid)
           WRITE(msgBuf,'(A,I2)')
-     &     'GAD_INIT: advection scheme needs at least Olx,Oly=', 
+     &     'GAD_INIT: advection scheme needs at least Olx,Oly=',
      &      minOlSize
           CALL PRINT_ERROR( msgBuf , myThid)
           STOP 'ABNORMAL END: S/R GAD_INIT'
