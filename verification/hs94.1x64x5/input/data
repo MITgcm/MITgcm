@@ -24,10 +24,12 @@
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
+ staggerTimestep=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- globalFiles=.TRUE.,
- staggerTimestep=.TRUE.,
+#globalFiles=.TRUE.,
+#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
