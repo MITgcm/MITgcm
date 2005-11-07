@@ -11,3 +11,4 @@ exch2_z_xy_r4.F
 exch2_z_xy_r8.F
 exch2_z_xy_rl.F
 exch2_z_xy_rs.F
+exch2_s3d_*.F
