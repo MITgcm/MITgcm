@@ -14,4 +14,5 @@ exch_r[ls48]_recv_get_[xy].F
 exch_r[ls48]_recv_put_[xy].F
 exch_uv_agrid_xy_r[ls48].F
 exch_uv_agrid_xyz_r[ls48].F
+exch_s3d_*.F
 
