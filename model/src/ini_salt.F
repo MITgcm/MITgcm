@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.15 2005/04/15 22:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.16 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,6 +59,7 @@ C--   Initialise salinity field to the vertical reference profile
         ENDDO
        ENDDO
       ENDDO
+      _BARRIER
 
       IF ( hydrogSaltFile .NE. ' ' ) THEN
        _BEGIN_MASTER( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.31 2005/06/22 00:18:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.32 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -96,6 +96,7 @@ C-            ocean : R_low = Bottom
         ENDDO
        ENDDO
       ELSE
+        _BARRIER
         _BEGIN_MASTER( myThid )
 C Read the bathymetry using the mid-level I/O pacakage read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
@@ -107,7 +108,7 @@ C Read the bathymetry using the low-level I/O package
 c       CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 c    &                     'RS', 1, R_low, 1, myThid )
         _END_MASTER(myThid)
-
+        _BARRIER
       ENDIF
 C- end setup R_low in the interior
 

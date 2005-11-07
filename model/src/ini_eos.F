@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.13 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.14 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,6 +67,7 @@ C     I,K    - Loop counters
          if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.  _d -4
          if ( sBeta  .eq. UNSET_RL ) sBeta  = 7.4 _d -4
       elseif ( equationOfState .eq. 'POLY3' ) then
+         _BEGIN_MASTER( myThid )
          OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
          READ(37,*) I
          IF (I.NE.Nr) THEN
@@ -83,6 +84,8 @@ C     I,K    - Loop counters
             READ(37,*) (eosC(I,K),I=1,9)
          ENDDO
          CLOSE(37)
+         _END_MASTER( myThid )
+         _BARRIER
 
       elseif ( equationOfState(1:5) .eq. 'JMD95' 
      &         .or. equationOfState .eq. 'UNESCO' ) then

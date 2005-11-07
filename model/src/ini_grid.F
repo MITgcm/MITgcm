@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.26 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.27 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,7 +40,9 @@ C     msgBuf - Used for informational I/O.
 #endif
 
 C     load grid spacing (vector) from files
+      _BARRIER
       CALL LOAD_GRID_SPACING( myThid )
+      _BARRIER
 
 C     Set up vertical grid and coordinate system
       CALL INI_VERTICAL_GRID( myThid )

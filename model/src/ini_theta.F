@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.21 2005/04/15 22:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.22 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,6 +60,7 @@ C--   Initialise temperature field to the vertical reference profile
         ENDDO
        ENDDO
       ENDDO
+      _BARRIER
 
       IF ( hydrogThetaFile .NE. ' ' ) THEN
        _BEGIN_MASTER( myThid )

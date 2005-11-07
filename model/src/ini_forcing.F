@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.38 2005/04/06 20:18:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.39 2005/11/07 18:26:02 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,6 +111,7 @@ C
        ENDDO
       ENDDO
 C
+      _BARRIER
       _BEGIN_MASTER(myThid)
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
