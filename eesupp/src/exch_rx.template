@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx.template,v 1.4 2002/04/30 22:48:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx.template,v 1.5 2005/11/07 18:21:11 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -95,6 +95,8 @@ C      I,J,K,bi,bj       :: Loop counters
        INTEGER theCornerMode
        INTEGER I,J,K,bi,bj
 CEOP
+
+       _BARRIER
 
        theSimulationMode = simulationMode
        theCornerMode     = cornerMode
