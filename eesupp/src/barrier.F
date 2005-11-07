@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.11 2004/03/27 03:51:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.12 2005/11/07 18:16:08 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -39,6 +39,7 @@ CEOP
        door1     = SHUT
        door2     = SHUT
        door3     = SHUT
+       bCount(I) = 0
       ENDDO
 
       RETURN
@@ -112,6 +113,25 @@ CEOP
 CcnhDebugStarts
 C      WRITE(myThid,*) ' Barrier entered '
 CcnhDebugEnds
+
+#ifdef USE_OMP_THREADING
+C$OMP BARRIER
+      bCount(myThid) = bCount(myThid) + 1
+Cdbg C$OMP BARRIER
+Cdbg       DO I=2, nThreads
+Cdbg        IF (bCount(I) .NE. bCount(1) ) THEN
+Cdbg          PRINT *, bCount(1:nThreads)
+Cdbg          CALL SYSTEM('sleep 1')
+Cdbg          PRINT *, bCount(1:nThreads)
+Cdbg          PRINT *, bCount(1:nThreads)
+Cdbg          PRINT *, bCount(1:nThreads)
+Cdbg          PRINT *, bCount(1:nThreads)
+Cdbg          STOP ' barrier out of sync '
+Cdbg        ENDIF
+Cdbg       ENDDO
+Cdbg C$OMP BARRIER
+      RETURN
+#endif
 
 C--   Check that thread number is expected range
       IF ( myThid .LT. 1 .OR. myThid .GT. nThreads ) THEN

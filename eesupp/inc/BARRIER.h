@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/BARRIER.h,v 1.5 2004/03/27 03:51:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/BARRIER.h,v 1.6 2005/11/07 18:16:07 cnh Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: BARRIER.h
@@ -37,7 +37,8 @@ C     |     need to check this.
 C     *==========================================================*
 CEOP
       COMMON / BARRIER_COMMON / key1,  key2,  key3, 
-     &                          door1, door2, door3
+     &                          door1, door2, door3,
+     &                          bCount
       INTEGER key1(lShare4,MAX_NO_THREADS)
       INTEGER key2(lShare4,MAX_NO_THREADS)
       INTEGER key3(lShare4,MAX_NO_THREADS)
@@ -52,3 +53,4 @@ CEOP
       PARAMETER ( OPEN = 1 )
       INTEGER SHUT
       PARAMETER ( SHUT = 0 )
+      INTEGER bCount(MAX_NO_THREADS)
