@@ -1,39 +1,39 @@
-# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.6 2004/04/03 04:57:11 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.7 2005/11/07 02:14:50 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
 # Why do we do this?  Answer: saves typing!
 
-RL_FILES = exch_xy_rl.F  exch_uv_xy_rl.F  exch_z_xy_rl.F  \
-           exch_xyz_rl.F exch_uv_xyz_rl.F exch_z_xyz_rl.F \
-           exch_xy_rl.F exch_xyz_rl.F \
+RL_FILES = exch_xy_rl.F exch_xyz_rl.F exch_s3d_rl.F \
+           exch_uv_xy_rl.F exch_uv_xyz_rl.F \
+           exch_z_xy_rl.F exch_z_xyz_rl.F \
            exch_rl.F \
            exch_rl_cube.F exch_uv_rl_cube.F exch_z_rl_cube.F \
            exch_rl_recv_get_x.F exch_rl_recv_get_y.F \
            exch_rl_send_put_x.F exch_rl_send_put_y.F \
            exch_uv_agrid_xyz_rl.F exch_uv_agrid_xy_rl.F
 
-RS_FILES = exch_xy_rs.F  exch_uv_xy_rs.F  exch_z_xy_rs.F  \
-           exch_xyz_rs.F exch_uv_xyz_rs.F exch_z_xyz_rs.F \
-           exch_xy_rs.F exch_xyz_rs.F \
+RS_FILES = exch_xy_rs.F exch_xyz_rs.F exch_s3d_rs.F \
+           exch_uv_xy_rs.F exch_uv_xyz_rs.F \
+           exch_z_xy_rs.F exch_z_xyz_rs.F \
            exch_rs.F \
            exch_rs_cube.F exch_uv_rs_cube.F exch_z_rs_cube.F \
            exch_rs_recv_get_x.F exch_rs_recv_get_y.F \
            exch_rs_send_put_x.F exch_rs_send_put_y.F \
            exch_uv_agrid_xyz_rs.F exch_uv_agrid_xy_rs.F
 
-R4_FILES = exch_xy_r4.F  exch_uv_xy_r4.F  exch_z_xy_r4.F  \
-           exch_xyz_r4.F exch_uv_xyz_r4.F exch_z_xyz_r4.F \
-           exch_xy_r4.F exch_xyz_r4.F \
+R4_FILES = exch_xy_r4.F exch_xyz_r4.F exch_s3d_r4.F \
+           exch_uv_xy_r4.F exch_uv_xyz_r4.F \
+           exch_z_xy_r4.F exch_z_xyz_r4.F \
            exch_r4.F \
            exch_r4_cube.F exch_uv_r4_cube.F exch_z_r4_cube.F \
            exch_r4_recv_get_x.F exch_r4_recv_get_y.F \
            exch_r4_send_put_x.F exch_r4_send_put_y.F \
            exch_uv_agrid_xyz_r4.F exch_uv_agrid_xy_r4.F
 
-R8_FILES = exch_xy_r8.F  exch_uv_xy_r8.F  exch_z_xy_r8.F  \
-           exch_xyz_r8.F exch_uv_xyz_r8.F exch_z_xyz_r8.F \
-           exch_xy_r8.F exch_xyz_r8.F \
+R8_FILES = exch_xy_r8.F exch_xyz_r8.F exch_s3d_r8.F \
+           exch_uv_xy_r8.F exch_uv_xyz_r8.F \
+           exch_z_xy_r8.F exch_z_xyz_r8.F \
            exch_r8.F \
            exch_r8_cube.F exch_uv_r8_cube.F exch_z_r8_cube.F \
            exch_r8_recv_get_x.F exch_r8_recv_get_y.F \
@@ -58,6 +58,12 @@ exch_xyz_rl.F: exch_xyz_rx.template
 exch_xyz_rs.F: exch_xyz_rx.template
 	sed 's/RX/RS/g' exch_xyz_rx.template > $@
 
+# exch_s3d_rx
+exch_s3d_rl.F: exch_s3d_rx.template
+	sed 's/RX/RL/g' exch_s3d_rx.template > $@
+exch_s3d_rs.F: exch_s3d_rx.template
+	sed 's/RX/RS/g' exch_s3d_rx.template > $@
+
 # exch_uv_xy_rx
 exch_uv_xy_rl.F: exch_uv_xy_rx.template
 	sed 's/RX/RL/g' exch_uv_xy_rx.template > $@
@@ -70,7 +76,7 @@ exch_uv_xyz_rl.F: exch_uv_xyz_rx.template
 exch_uv_xyz_rs.F: exch_uv_xyz_rx.template
 	sed 's/RX/RS/g' exch_uv_xyz_rx.template > $@
 
-# exch_x_xy_rx
+# exch_z_xy_rx
 exch_z_xy_rl.F: exch_z_xy_rx.template
 	sed 's/RX/RL/g' exch_z_xy_rx.template > $@
 exch_z_xy_rs.F: exch_z_xy_rx.template
@@ -153,6 +159,12 @@ exch_xyz_r8.F: exch_xyz_rx.template
 	sed 's/RX/R8/g' exch_xyz_rx.template > $@
 exch_xyz_r4.F: exch_xyz_rx.template
 	sed 's/RX/R4/g' exch_xyz_rx.template > $@
+
+# exch_s3d_rx
+exch_s3d_r8.F: exch_s3d_rx.template
+	sed 's/RX/R8/g' exch_s3d_rx.template > $@
+exch_s3d_r4.F: exch_s3d_rx.template
+	sed 's/RX/R4/g' exch_s3d_rx.template > $@
 
 # exch_uv_xy_rx
 exch_uv_xy_r8.F: exch_uv_xy_rx.template
