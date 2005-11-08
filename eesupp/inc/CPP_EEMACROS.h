@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.12 2005/02/18 19:43:27 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.13 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 CBOP
@@ -81,8 +81,26 @@ C--   Define the mapping for the BEGIN_MASTER_SECTION() and
 C     END_MASTER_SECTION() macros. These are generally implemented by
 C     simply choosing a particular thread to be "the master" and have
 C     it alone execute the BEGIN_MASTER..., END_MASTER.. sections.
-#define _BEGIN_MASTER(a)  IF ( a .EQ. 1 ) THEN
-#define _END_MASTER(a)    ENDIF
+
+#define _BEGIN_MASTER(a) IF ( a .EQ. 1 ) THEN
+#define _END_MASTER(a)   ENDIF
+CcnhDebugStarts
+C      Alternate form to the above macros that increments (decrements) a counter each
+C      time a MASTER section is entered (exited). This counter can then be checked in barrier
+C      to try and detect calls to BARRIER within single threaded sections.
+C      Using these macros requires two changes to Makefile - these changes are written
+C      below.
+C      1 - add a filter to the CPP command to kill off commented _MASTER lines
+C      2 - add a filter to the CPP output the converts the string N EWLINE to an actual newline.
+C      The N EWLINE needs to be changes to have no space when this macro and Makefile changes
+C      are used. Its in here with a space to stop it getting parsed by the CPP stage in these
+C      comments.
+C      #define _BEGIN_MASTER(a)  IF ( a .EQ. 1 ) THEN  N EWLINE      CALL BARRIER_MS(a)
+C      #define _END_MASTER(a)    CALL BARRIER_MU(a) N EWLINE        ENDIF
+C      'CPP = cat $< | $(TOOLSDIR)/set64bitConst.sh |  grep -v '^[cC].*_MASTER' | cpp  -traditional -P'
+C      .F.f:
+C	        $(CPP) $(DEFINES) $(INCLUDES) |  sed 's/N EWLINE/\n/' > $@
+CcnhDebugEnds
 
 C--   Control storage of floating point operands
 C     On many systems it improves performance only to use

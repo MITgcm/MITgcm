@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.5 2005/11/06 01:36:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_new.F,v 1.6 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -522,28 +522,28 @@ C Create meta-file for the global-file
 C We can not do this operation using threads (yet) because of the
 C "barrier" at the next step. The barrier could be removed but
 C at the cost of "safe" distributed I/O.
-       if (nThreads.NE.1) then
-        write(msgbuf,'(a,a)')
-     &    ' MDSWRITEFIELD: A threads version of this routine',
-     &    ' does not exist.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)')
-     &    ' MDSWRITEFIELD: This needs to be fixed...'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i3.2)')
-     &    ' MDSWRITEFIELD: nThreads = ',nThreads
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)')
-     &    ' MDSWRITEFIELD: Stopping because you are using threads'
-        call print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MDSWRITEFIELD'
-       endif
+Ccnh       if (nThreads.NE.1) then
+Ccnh        write(msgbuf,'(a,a)')
+Ccnh     &    ' MDSWRITEFIELD: A threads version of this routine',
+Ccnh     &    ' does not exist.'
+Ccnh        call print_message( msgbuf, standardmessageunit,
+Ccnh     &                      SQUEEZE_RIGHT , mythid)
+Ccnh        write(msgbuf,'(a)')
+Ccnh     &    ' MDSWRITEFIELD: This needs to be fixed...'
+Ccnh        call print_message( msgbuf, standardmessageunit,
+Ccnh     &                      SQUEEZE_RIGHT , mythid)
+Ccnh        write(msgbuf,'(a,i3.2)')
+Ccnh     &    ' MDSWRITEFIELD: nThreads = ',nThreads
+Ccnh        call print_message( msgbuf, standardmessageunit,
+Ccnh     &                      SQUEEZE_RIGHT , mythid)
+Ccnh        write(msgbuf,'(a)')
+Ccnh     &    ' MDSWRITEFIELD: Stopping because you are using threads'
+Ccnh        call print_error( msgbuf, mythid )
+Ccnh        stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+Ccnh       endif
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
-       _BARRIER
+Ccnh       _BARRIER
        write(metaFName,'(2a)') fName(1:IL),'.meta'
        dimList(1,1)=x_size
        dimList(2,1)=1

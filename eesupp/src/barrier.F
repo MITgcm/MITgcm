@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.12 2005/11/07 18:16:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.13 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -40,6 +40,7 @@ CEOP
        door2     = SHUT
        door3     = SHUT
        bCount(I) = 0
+       masterSet(I) = 0
       ENDDO
 
       RETURN
@@ -117,6 +118,10 @@ CcnhDebugEnds
 #ifdef USE_OMP_THREADING
 C$OMP BARRIER
       bCount(myThid) = bCount(myThid) + 1
+      IF ( masterSet(myThid) .NE. 0 ) THEN
+       PRINT *, 'BARRIER called for master reg myThid == ', 
+     &   myThid, masterSet(myThid)
+      ENDIF
 Cdbg C$OMP BARRIER
 Cdbg       DO I=2, nThreads
 Cdbg        IF (bCount(I) .NE. bCount(1) ) THEN
@@ -262,5 +267,37 @@ CcnhDebugStarts
 C      WRITE(myThid,*) ' Barrier exited '
 CcnhDebugEnds
      
+      RETURN
+      END
+
+CBOP
+      SUBROUTINE BARRIER_MS( myThid )
+      IMPLICIT NONE
+
+C     !USES:
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "BARRIER.h"
+      INTEGER myThid
+
+      masterSet(myThid) = masterSet(myThid) + 1
+
+      RETURN
+      END
+      SUBROUTINE BARRIER_MU( myThid )
+      IMPLICIT NONE
+
+C     !USES:
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "BARRIER.h"
+      INTEGER myThid
+
+      masterSet(myThid) = masterSet(myThid) - 1
+
       RETURN
       END

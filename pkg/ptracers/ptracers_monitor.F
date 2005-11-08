@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.9 2005/10/11 08:35:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.10 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,6 +60,7 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        mon_write_stdout = .FALSE.
        mon_write_mnc    = .FALSE.
+       _BARRIER
 
 C     Ptracers field monitor start 
        _BEGIN_MASTER(myThid)
@@ -101,13 +102,16 @@ C     for ptracers as for the dynamics variables.
 C       Print the basic statistics of ptracer variables
        CALL MON_SET_PREF('trcstat_',myThid)
        DO ip = 1, PTRACERS_numInUse
+         _BEGIN_MASTER(myThid)
          WRITE(suff,'(A7,I2.2)') 'ptracer',ip
+         _END_MASTER(myThid)
+         _BARRIER
          CALL MON_PRINTSTATS_RL(
      &        Nr, ptracer(1-Olx,1-Oly,1,1,1,ip),
      &        suff, maskC,hFacC,rA ,drF,myThid)
        ENDDO
 
-       IF (mon_write_stdout) THEN
+       IF (PTRACERS_monitor_stdio) THEN
 C     Ptracers field monitor finish
         _BEGIN_MASTER(myThid)
 #ifdef ALLOW_USE_MPI

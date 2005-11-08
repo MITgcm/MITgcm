@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.12 2005/10/14 12:45:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.13 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -67,6 +67,8 @@ C     end bi,bj loops
 C     end of Tracer loop
       ENDDO
 
+      _BARRIER
+
 C     Now read initial conditions and always exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
        DO iTracer = 1, PTRACERS_numInUse
@@ -95,6 +97,8 @@ C     Apply mask
         ENDDO
        ENDDO
       ENDDO
+
+      _BARRIER
       
 C Read from a pickup file if needed
       IF (nIter0.GT.PTRACERS_Iter0) THEN

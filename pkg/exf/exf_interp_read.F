@@ -64,7 +64,7 @@ C local variables
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       real*4   global(nx_in,ny_in)
 
-      _BEGIN_MASTER( myThid )
+C     _BEGIN_MASTER( myThid )
 
 C check input arguments
        if ( .NOT. (filePrec .EQ. 32) )
@@ -113,6 +113,6 @@ C broadcast to all processes
        call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
 #endif /* _BYTESWAPIO */
 
-      _END_MASTER( myThid )
+C     _END_MASTER( myThid )
 
       END

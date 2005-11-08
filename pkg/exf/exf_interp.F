@@ -89,8 +89,9 @@ C local variables
      I   lon_0, lon_inc,
      I   lat_0, lat_inc,
      I   nx_in, ny_in, method, mythid)
+      _BARRIER
 
-      _BEGIN_MASTER( myThid )
+C     _BEGIN_MASTER( myThid )
 
 C setup input grid
        do i=-1,nx_in+2
@@ -119,7 +120,7 @@ C enlarge boundary
         arrayin(i,ny_in+2) = arrayin(i,ny_in) 
        enddo
 
-      _END_MASTER( myThid )
+C     _END_MASTER( myThid )
 
       do bj = mybylo(mythid), mybyhi(mythid)
        do bi = mybxlo(mythid), mybxhi(mythid)

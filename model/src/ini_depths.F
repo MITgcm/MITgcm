@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.32 2005/11/07 18:26:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.33 2005/11/08 15:53:41 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -97,7 +97,7 @@ C-            ocean : R_low = Bottom
        ENDDO
       ELSE
         _BARRIER
-        _BEGIN_MASTER( myThid )
+C       _BEGIN_MASTER( myThid )
 C Read the bathymetry using the mid-level I/O pacakage read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
         CALL READ_REC_XY_RS( bathyFile, R_low, 1, 0, myThid )
@@ -107,7 +107,7 @@ c       CALL READ_FLD_XY_RS( bathyFile, ' ', R_low, 0, myThid )
 C Read the bathymetry using the low-level I/O package
 c       CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 c    &                     'RS', 1, R_low, 1, myThid )
-        _END_MASTER(myThid)
+C       _END_MASTER(myThid)
         _BARRIER
       ENDIF
 C- end setup R_low in the interior
@@ -115,7 +115,8 @@ C- end setup R_low in the interior
 C- fill in the overlap :
       _EXCH_XY_R4(R_low, myThid )
 
-c     CALL PLOT_FIELD_XYRS(R_low,'Bottom depths (ini_depths)',1,myThid)
+      PRINT *, ' Calling plot field', myThid
+      CALL PLOT_FIELD_XYRS(R_low,'Bottom depths (ini_depths)',1,myThid)
 c     _BEGIN_MASTER( myThid )
 c     CALL WRITE_FLD_XY_RS( 'R_low' ,' ', R_low, 0,myThid)
 c     _END_MASTER(myThid)
