@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.59 2005/11/08 02:14:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.60 2005/11/08 23:01:10 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -100,7 +100,7 @@ C     Suffix for pickup files
       
 C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
-      _BEGIN_MASTER( myThid )
+C     _BEGIN_MASTER( myThid )
 
       IF (pickup_read_mdsio) THEN
       
@@ -276,7 +276,7 @@ C#endif
       ENDIF
 #endif /*  ALLOW_MNC  */
 
-      _END_MASTER( myThid )
+C     _END_MASTER( myThid )
       _BARRIER
       
 C     Fill in edge regions
@@ -494,7 +494,7 @@ C     Write model fields
           
 C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
-      _BEGIN_MASTER( myThid )
+C     _BEGIN_MASTER( myThid )
       
       IF (pickup_write_mdsio) THEN
 
@@ -663,7 +663,7 @@ C     Write suffix for stdout information
         nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
       ENDIF
       
-      _END_MASTER(myThid)
+C     _END_MASTER(myThid)
       _BARRIER
       
 C     Write information to stdout so there is a record that the

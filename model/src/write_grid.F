@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.19 2005/10/30 21:17:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.20 2005/11/08 23:01:10 cnh Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -71,7 +71,7 @@ C             Total fluid column thickness (r_unit) :
 
       IF ( writegrid_mdsio ) THEN
 
-        _BEGIN_MASTER( myThid )
+C       _BEGIN_MASTER( myThid )
 
 C     Write horizontal grid arrays
         CALL WRITE_FLD_XY_RS( 'XC',' ',XC,-1,myThid)
@@ -110,7 +110,7 @@ C     Write vertical grid arrays
      &                                0,0, 1, -1, myThid)
 #endif /* ALLOW_MDSIO */
 
-        _END_MASTER(myThid)
+C       _END_MASTER(myThid)
 
       ENDIF
 

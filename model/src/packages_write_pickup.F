@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.19 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.20 2005/11/08 23:01:10 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,7 +159,7 @@ CEOP
 
 C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
-      _BEGIN_MASTER( myThid )
+C     _BEGIN_MASTER( myThid )
 
       prec = precFloat64
       lgf = globalFile
@@ -246,7 +246,7 @@ C     Write pickup file for diagnostics package
       ENDIF
 #endif  /* ALLOW_GGL90 */
 
-      _END_MASTER( myThid )
+C     _END_MASTER( myThid )
       _BARRIER
 
 #ifdef ALLOW_PTRACERS

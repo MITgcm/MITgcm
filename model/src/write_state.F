@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.58 2005/11/08 02:14:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.59 2005/11/08 23:01:10 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -92,7 +92,7 @@ CEOP
          
 C       Going to really do some IO. Make everyone except master thread wait.
         _BARRIER
-        _BEGIN_MASTER( myThid )
+C       _BEGIN_MASTER( myThid )
 
 C       Write model fields
         IF (snapshot_mdsio) THEN
@@ -151,7 +151,7 @@ c         CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 
         ENDIF
         
-        _END_MASTER( myThid )
+C       _END_MASTER( myThid )
         _BARRIER
 
 #ifdef ALLOW_MNC
