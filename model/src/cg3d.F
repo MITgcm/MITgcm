@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.15 2005/02/04 19:30:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.16 2005/11/08 06:18:10 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-
-#define VERBOSE
 
 CBOP
 C     !ROUTINE: CG3D
@@ -98,18 +95,8 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       _RL    sumRHS, sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
-
-      INTEGER OLw
-      INTEGER OLe
-      INTEGER OLn
-      INTEGER OLs
-      INTEGER exchWidthX
-      INTEGER exchWidthY
-      INTEGER myNz
-      _RL     topLevTerm
+      _RL    topLevTerm
 CEOP
-
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 
 C--   Initialise inverter
@@ -146,7 +133,7 @@ C--   Normalise RHS
       ENDDO
 
 C--   Update overlaps
-      _EXCH_XYZ_R8( cg3d_b, myThid )
+c     _EXCH_XYZ_R8( cg3d_b, myThid )
       _EXCH_XYZ_R8( cg3d_x, myThid )
 
 C--   Initial residual calculation (with free-Surface term)
@@ -166,7 +153,6 @@ C--   Initial residual calculation (with free-Surface term)
      &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
          DO J=1,sNy
           DO I=1,sNx
-           cg3d_s(I,J,K,bi,bj) = 0.
            cg3d_r(I,J,K,bi,bj) = cg3d_b(I,J,K,bi,bj) -( 0.
      &     +aW3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I-1,J  ,K  ,bi,bj)
      &     +aW3d(I+1,J  ,K  ,bi,bj)*cg3d_x(I+1,J  ,K  ,bi,bj)
@@ -188,41 +174,26 @@ C--   Initial residual calculation (with free-Surface term)
      &     +cg3d_b(I,J,K,bi,bj)
           ENDDO
          ENDDO
+         DO J=1-1,sNy+1
+          DO I=1-1,sNx+1
+           cg3d_s(I,J,K,bi,bj) = 0.
+          ENDDO
+         ENDDO
         ENDDO
         err    = err    + errTile
         sumRHS = sumRHS + sumRHStile
        ENDDO
       ENDDO
 C     _EXCH_XYZ_R8( cg3d_r, myThid )
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = Nr
-       CALL EXCH_RL( cg3d_r,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+       CALL EXCH_S3D_RL( cg3d_r, myThid )
 C     _EXCH_XYZ_R8( cg3d_s, myThid )
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = Nr
-       CALL EXCH_RL( cg3d_s,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+c      CALL EXCH_S3D_RL( cg3d_s, myThid )
       _GLOBAL_SUM_R8( sumRHS, myThid )
       _GLOBAL_SUM_R8( err   , myThid )
       
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
-        write(*,'(A,1P2E22.14)')
+        write(standardmessageunit,'(A,1P2E22.14)')
      &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -240,11 +211,9 @@ C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it3d=1, cg3dMaxIters
 
 CcnhDebugStarts
-#ifdef VERBOSE
 c      IF ( mod(it3d-1,10).EQ.0)
 c    &   WRITE(*,*) ' CG3D: Iteration ',it3d-1,
 c    &      ' residual = ',actualResidual
-#endif
 CcnhDebugEnds
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
@@ -479,17 +448,7 @@ C      Now compute "interior" points.
        actualResidual = err
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
 C      _EXCH_XYZ_R8(cg3d_r, myThid )
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = Nr
-       CALL EXCH_RL( cg3d_r,
-     I             OLw, OLe, OLs, OLn, myNz,
-     I             exchWidthX, exchWidthY,
-     I             FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+       CALL EXCH_S3D_RL( cg3d_r, myThid )
 
    10 CONTINUE
    11 CONTINUE
