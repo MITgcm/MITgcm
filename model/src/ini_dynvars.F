@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.15 2005/04/15 14:02:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.16 2005/11/08 02:10:49 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,9 +25,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -75,12 +72,6 @@ C-      3D arrays
            gvNm1(I,J,K,bi,bj) =0. _d 0
            gtNm1(I,J,K,bi,bj) =0. _d 0
            gsNm1(I,J,K,bi,bj) =0. _d 0
-#endif
-
-#ifdef ALLOW_NONHYDROSTATIC
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
-           gW(I,J,K,bi,bj)=0. _d 0
-           gWnm1(I,J,K,bi,bj)=0. _d 0
 #endif
 
            totPhiHyd(I,J,K,bi,bj)=0. _d 0

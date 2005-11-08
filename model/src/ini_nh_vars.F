@@ -1,0 +1,62 @@
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_vars.F,v 1.1 2005/11/08 02:13:17 jmc Exp $
+C $Name:  $
+
+#include "CPP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: INI_NH_VARS
+C     !INTERFACE:
+      SUBROUTINE INI_NH_VARS ( myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_NH_VARS
+C     | o Initialise to zero all NH_VARS.h arrays
+C     *==========================================================*
+C     | Sets all the NH State variables & tendencies to zero.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "NH_VARS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid  ::  My Thread Id number
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_NONHYDROSTATIC
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     bi,bj   :: tile indices
+C     i,j,k   :: loop counters
+      INTEGER bi, bj
+      INTEGER i, j, k
+
+c     IF ( nonHydrostatic ) THEN
+C- Note: comment out this IF so that we are sure that all variables in
+C        common blocs (even if never used later) are always initialised
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+              phi_nh(i,j,k,bi,bj) = 0. _d 0
+              gW   (i,j,k,bi,bj) = 0. _d 0
+              gWnm1(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+c     ENDIF
+
+#endif /* ALLOW_NONHYDROSTATIC */
+
+      RETURN
+      END

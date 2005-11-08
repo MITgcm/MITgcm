@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.45 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.46 2005/11/08 02:13:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,7 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     INITIALISE_VARIA
 C       |
+C #ifdef ALLOW_AUTODIFF_TAMC
 C       |-- INI_LINEAR_PHISURF
 C       |
 C       |-- INI_CORI
@@ -32,10 +33,11 @@ C       |
 C       |-- INI_CG2D
 C       |
 C       |-- INI_CG3D
-C       |
+C #endif
 C       |-- INI_MIXING
 C       |
 C       |-- INI_DYNVARS
+C       |-- INI_NH_VARS
 C       |
 C       |-- INI_FIELDS
 C       |
@@ -140,6 +142,11 @@ C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [alw
       IF (debugMode) CALL DEBUG_CALL('INI_DYNVARS',myThid)
 #endif
       CALL INI_DYNVARS( myThid )
+
+C--   Initialize NH_VARS arrays to zero [always]
+#ifdef ALLOW_NONHYDROSTATIC
+      CALL INI_NH_VARS( myThid )
+#endif
 
 C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms
