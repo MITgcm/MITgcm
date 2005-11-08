@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.21 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.22 2005/11/08 02:14:10 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -9,7 +8,7 @@ C     !ROUTINE: CORRECTION_STEP
 C     !INTERFACE:
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
      I                       K, phiSurfX, phiSurfY,
-     I                       myCurrentTime, myThid )
+     I                       myTime, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R CORRECTION_STEP                                       
@@ -22,12 +21,12 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "NH_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -36,13 +35,13 @@ C     phiSurfX, phiSurfY           - Surface Potential gradient
 C     bi,bj,iMin,iMax,jMin,jMax, K - Loop counters
 C     myThid                       - Instance number for 
 C                                    this call to S/R CORRECTION_STEP
-C     myCurrentTime                - Current simulation time for this instance.
+C     myTime                       - Current simulation time for this instance.
       _RL  phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
       INTEGER myThid
-      _RL myCurrentTime
+      _RL myTime
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -71,7 +70,6 @@ C     Step forward zonal velocity
         uVel(i,j,k,bi,bj)=( gU(i,j,k,bi,bj)
      &       -deltaTmom*hxFac*implicSurfPress*phiSurfX(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
      &       -deltaTmom*hx3dFac*_recip_dxC(i,j,bi,bj)*
      &          (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
 #endif
@@ -85,7 +83,6 @@ C     Step forward meridional velocity
         vVel(i,j,k,bi,bj)=( gV(i,j,k,bi,bj)
      &       -deltaTmom*hyFac*implicSurfPress*phiSurfY(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
      &       -deltaTmom*hy3dFac*_recip_dyC(i,j,bi,bj)*
      &          (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
 #endif

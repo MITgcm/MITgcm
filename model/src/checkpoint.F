@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.58 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.59 2005/11/08 02:14:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,8 +60,7 @@ C     !USES:
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "NH_VARS.h"
 #endif
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
@@ -452,8 +451,7 @@ C     !USES:
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "NH_VARS.h"
 #endif
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT

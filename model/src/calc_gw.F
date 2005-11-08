@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.21 2005/08/16 22:42:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.22 2005/11/08 02:14:10 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -26,12 +26,11 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GW.h"
-#include "CG3D.h"
+#include "DYNVARS.h"
+#include "NH_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -75,8 +74,6 @@ C     i,j,k - Loop counters
       _RL  Half
       PARAMETER(Half=0.5D0)
 CEOP
-
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
       iMin = 1
       iMax = sNx
