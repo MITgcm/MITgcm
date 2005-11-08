@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.579 2005/11/06 23:04:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.580 2005/11/08 06:27:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Non-Hydrostatic:
+ - put all NH variables (formerly in DYNVARS.h & GW.h) in NH_VARS.h
+ - fix exchange calls for CS-grid using the new EXCH_S3D_RL.
 o Allow to apply AB on T,S rather than on AB(gT,gS):
  - implemented within #ifdef ALLOW_ADAMSBASHFORTH_3
  - use the same arrays (gtNm,gsNm) to hold tracer field at previous
