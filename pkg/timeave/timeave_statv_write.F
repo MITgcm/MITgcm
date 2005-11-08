@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.33 2005/11/04 01:35:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.34 2005/11/08 23:05:45 cnh Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -139,7 +139,7 @@ C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
 
 C       Write to files
         _BARRIER
-        _BEGIN_MASTER( myThid )
+C       _BEGIN_MASTER( myThid )
 
         IF (timeave_mdsio) THEN
           
@@ -303,7 +303,7 @@ C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacStave',hFacStave,myThid)
         ENDIF
 #endif /* ALLOW_MNC */
 
-        _END_MASTER( myThid )
+C       _END_MASTER( myThid )
         _BARRIER
         
         DO bj = myByLo(myThid), myByHi(myThid)
