@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.27 2005/04/15 13:28:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.28 2005/11/08 01:57:38 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -65,11 +65,6 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
-
-#ifdef ALLOW_NONHYDROSTATIC
-      COMMON /DYNVARS_NH/ phi_nh
-      _RL  phi_nh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ALLOW_NONHYDROSTATIC */
 
 cph(
 cph the following block will eventually move to a separate
