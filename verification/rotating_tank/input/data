@@ -42,9 +42,9 @@
 # nTimeSteps=36000000,
  deltaT=0.1,
  abEps=0.1,
- pChkptFreq=1.0,
- chkptFreq=1.0,
- dumpFreq=1.0,
+ pChkptFreq=2.0,
+ chkptFreq=2.0,
+ dumpFreq=2.0,
  monitorFreq=0.1,
  outputTypesInclusive=.TRUE.,
  &
