@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/checkpoint.F,v 1.3 2005/05/15 03:08:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/checkpoint.F,v 1.4 2005/11/08 05:21:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,8 +48,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "NH_VARS.h"
 #endif
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
@@ -95,15 +94,6 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
         CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
-#ifdef INCLUDE_CD_CODE
-        CALL READ_REC_XY_RL ('etaNm1', etaNm1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'uVelD', uVelD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vNm1',  vNM1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
-#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -112,6 +102,7 @@ C       Raw fields
 c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
+
 #else /* OLD_STYLE_WITH_MANY_FILES */
 
         prec = precFloat64
@@ -136,16 +127,6 @@ C--     Read model fields
         IF ( nonlinFreeSurf.GE.0)
      &  CALL MDSREADFIELD(fn,prec,'RL',1,etaH,13*Nr+2,myThid)
 #endif
-#ifdef INCLUDE_CD_CODE
-        WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
-#endif /* INCLUDE_CD_CODE */
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -156,18 +137,6 @@ c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
 
-
-
-C Create suffix to pass on to package pickup routines
-        WRITE(fn,'(I10.10)') myIter
-
-C SPK 4/9/01: Open boundary checkpointing
-#ifdef  ALLOW_OBCS
-        IF (useOBCS) THEN
-          CALL OBCS_READ_CHECKPOINT(prec, myIter, myThid)
-        ENDIF
-#endif  /* ALLOW_OBCS */
-
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
 C       Reset default IO precision
@@ -175,13 +144,6 @@ C       Reset default IO precision
 
        _END_MASTER( myThid )
        _BARRIER
-
-#ifdef ALLOW_PTRACERS
-C Write restart file for passive tracers
-       IF (usePTRACERS) THEN
-         CALL PTRACERS_READ_CHECKPOINT(myIter,myThid)
-       ENDIF
-#endif /* ALLOW_PTRACERS */
 
 C--    Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
@@ -202,18 +164,6 @@ c     _EXCH_XYZ_R8(gvNM1 , myThid )
       _EXCH_XY_R8 (etaN, myThid )
       _EXCH_XY_R8( etaH, myThid )
 
-#ifdef INCLUDE_CD_CODE
-c**** CALL EXCH_DUV_XYZ_RL(uVelD,vVelD,.TRUE.,myThid)
-c**** CALL EXCH_DUV_XYZ_RL(guCD,gvCD,.TRUE.,myThid)
-      _EXCH_XYZ_R8( uVelD,    myThid )
-      _EXCH_XYZ_R8( vVelD,    myThid )
-      CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
-c     _EXCH_XYZ_R8( uNM1,     myThid )
-c     _EXCH_XYZ_R8( vNM1,     myThid )
-      _EXCH_XYZ_R8( guCD,     myThid )
-      _EXCH_XYZ_R8( gvCD,     myThid )
-      _EXCH_XY_R8( etaNm1, myThid )
-#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          _EXCH_XYZ_R8(phi_nh, myThid )
@@ -258,8 +208,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "NH_VARS.h"
 #endif
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -340,18 +289,6 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(    'gS',     gS,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1,  1,myIter, myThid)
         CALL WRITE_REC_XY_RL ('etaN', etaN,  1,myIter, myThid)
-#ifdef INCLUDE_CD_CODE
-        CALL WRITE_REC_XY_RL
-     &   ( 'etaNm1', etaNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'uVelD', uVelD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'vVelD', vVelD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'uNM1',  uNM1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'vNM1',  vNM1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
-#endif
-
-
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -391,21 +328,7 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,13*Nr+2,
      &                     myIter,myThid)
 #endif
-#ifdef INCLUDE_CD_CODE
-        IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
-        ELSE
-         WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
-        ENDIF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
-     &                     myIter,myThid)
-#endif /* INCLUDE_CD_CODE */
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          IF ( permCheckPoint ) THEN
@@ -420,28 +343,6 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
 
-C Create suffix to pass on to package pickup routines
-         IF ( permCheckPoint ) THEN
-          WRITE(fn,'(I10.10)') myIter
-         ELSE
-          WRITE(fn,'(A)') checkPtSuff(nCheckLev)
-         ENDIF
-
-#ifdef  ALLOW_OBCS
-C SPK 4/9/01: Open boundary checkpointing
-        IF (useOBCS) THEN
-          CALL OBCS_WRITE_CHECKPOINT(
-     &               prec, lgf, permCheckPoint, myIter, myThid)
-        ENDIF
-#endif  /* ALLOW_OBCS */
-
-#ifdef ALLOW_FLT
-C--     Write restart file for floats
-        IF (useFLT) THEN
-          CALL FLT_RESTART(myTime, myIter, myThid)
-        ENDIF
-#endif
-
         IF ( .NOT. permCheckPoint ) THEN
          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
         ENDIF
@@ -453,13 +354,6 @@ C--     Reset binary precision
 
        _END_MASTER( myThid )
        _BARRIER
-
-#ifdef ALLOW_PTRACERS
-C Write restart file for passive tracers
-       IF (usePTRACERS) THEN
-         CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
-       ENDIF
-#endif /* ALLOW_PTRACERS */
 
       ENDIF
 
