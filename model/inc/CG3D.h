@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.7 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.8 2005/11/08 06:03:21 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -47,12 +47,10 @@ C--   COMMON /CG3D_WK_R/  Work array common block
 C     cg3d_q - Intermediate matrix-vector product term
 C     cg3d_r -   "
 C     cg3d_s -   "
-C     cg3d_x   Solution vector
-C     cg3d_b   Right-hand side vector
       COMMON /CG3D_WK_R/
      & cg3d_q, cg3d_r, cg3d_s
-      _RL  cg3d_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL  cg3d_r(1-1  :sNx+1  ,1-1  :sNy+1  ,nR,nSx,nSy)
-      _RL  cg3d_s(1-1  :sNx+1  ,1-1  :sNy+1  ,nR,nSx,nSy)
+      _RL  cg3d_q(1-1  :sNx+1  ,1-1  :sNy+1  ,Nr,nSx,nSy)
+      _RL  cg3d_r(1-1  :sNx+1  ,1-1  :sNy+1  ,Nr,nSx,nSy)
+      _RL  cg3d_s(1-1  :sNx+1  ,1-1  :sNy+1  ,Nr,nSx,nSy)
 
 #endif /* ALLOW_NONHYDROSTATIC */
