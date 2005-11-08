@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.17 2005/05/31 14:49:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.18 2005/11/08 06:06:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: INI_CG2D
+C     !ROUTINE: INI_CG3D
 C     !INTERFACE:
       SUBROUTINE INI_CG3D( myThid )
 C     !DESCRIPTION: \bv
@@ -25,7 +25,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c_jmc #include "DYNVARS.h"
 #include "CG3D.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #ifdef ALLOW_OBCS
@@ -38,30 +37,59 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     xG, yG - Global coordinate location.
-C     zG
-C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
+C     I,J,K  - Loop counters
 C     faceArea - Temporary used to hold cell face areas.
-C     I,J,K
 C     myNorm - Work variable used in clculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER I,  J, K
       _RL     faceArea
       _RS     myNorm
-      _RL     aCw, aCs
       _RL     theRecip_Dr
       _RL     aU, aL, aW, aE, aN, aS, aC
 CEOP
 
 CcnhDebugStarts
-      _RL    phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL    phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CcnhDebugEnds
+
+C--   Initialise to zero over the full range of indices
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO K=1,Nr
+C-       From common bloc CG3D_R:
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           aW3d(I,J,K,bi,bj) = 0.
+           aS3d(I,J,K,bi,bj) = 0.
+           aV3d(I,J,K,bi,bj) = 0.
+           zMC (I,J,K,bi,bj) = 0.
+           zML (I,J,K,bi,bj) = 0.
+           zMU (I,J,K,bi,bj) = 0.
+          ENDDO
+         ENDDO
+C-       From common bloc CG3D_WK_R:
+         DO J=0,sNy+1
+          DO I=0,sNx+1
+           cg3d_q(I,J,K,bi,bj) = 0.
+           cg3d_r(I,J,K,bi,bj) = 0.
+           cg3d_s(I,J,K,bi,bj) = 0.
+          ENDDO
+         ENDDO
+C-       From common bloc SFP3D_COMMON_R:
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+c          cg3d_x(I,J,K,bi,bj) = 0.
+           cg3d_b(I,J,K,bi,bj) = 0.
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 C--   Initialise laplace operator
 C     aW3d: Ax/dX
@@ -95,17 +123,14 @@ C     aV3d: Ar/dR
         DO K=2,Nr
          DO J=1,sNy
           DO I=1,sNx
-           IF ( _hFacC(i,j,k,bi,bj) .EQ. 0. ) THEN
-            faceArea = 0.
-           ELSE
-            faceArea = _rA(I,J,bi,bj)
-           ENDIF
-           theRecip_Dr = 
-     &      drC(K)
+           faceArea = _rA(I,J,bi,bj)*maskC(I,J, K ,bi,bj)
+     &                              *maskC(I,J,K-1,bi,bj)
+           theRecip_Dr = recip_drC(K)
+c          theRecip_Dr = 
 caja &      drF(K  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
-           IF ( theRecip_Dr .NE. 0. ) 
-     &      theRecip_Dr = 1. _d 0/theRecip_Dr
+c          IF ( theRecip_Dr .NE. 0. ) 
+c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
            aV3d(I,J,K,bi,bj) = faceArea*theRecip_Dr
      &                 *horiVertRatio*horiVertRatio *nh_Am2
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
@@ -113,9 +138,8 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
          ENDDO
         ENDDO
 #ifdef ALLOW_OBCS
-ceh3 needs an IF ( useOBCS ) THEN
-        DO K=1,Nr
-         IF (useOBCS) THEN
+        IF ( useOBCS ) THEN
+         DO K=1,Nr
           DO I=1,sNx
            IF (OB_Jn(I,bi,bj).NE.0) THEN
             aS3d(I,OB_Jn(I,bi,bj),K,bi,bj)=0.
@@ -148,8 +172,8 @@ ceh3 needs an IF ( useOBCS ) THEN
             aV3d(OB_Iw(J,bi,bj),J,K,bi,bj)=0.
            ENDIF
           ENDDO
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
 #endif
        ENDDO
       ENDDO
@@ -184,8 +208,9 @@ CcnhDebugEnds
       ENDDO
       
 C--   Update overlap regions
-      _EXCH_XYZ_R4(aW3d, myThid)
-      _EXCH_XYZ_R4(aS3d, myThid)
+c     _EXCH_XYZ_R4(aW3d, myThid)
+c     _EXCH_XYZ_R4(aS3d, myThid)
+      CALL EXCH_UV_XYZ_RS(aW3d,aS3d,.FALSE.,myThid)
       _EXCH_XYZ_R4(aV3d, myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYZRS( aW3d, 'AW3D INI_CG3D.1' , Nr, 1, myThid )
@@ -296,34 +321,17 @@ C--   Update overlap regions
       _EXCH_XYZ_R4(zMU, myThid)
 
 CcnhDebugStarts
-      DO k=1,nr
-      DO j=1-OLy,sNy+OLy
-      DO i=1-OLx,sNx+OLx
-       phi(i,j,1,1) = zMc(i,j,k,1,1)
-      ENDDO
-      ENDDO
+c     DO k=1,Nr
+c     DO j=1-OLy,sNy+OLy
+c     DO i=1-OLx,sNx+OLx
+c      phi(i,j,1,1) = zMc(i,j,k,1,1)
+c     ENDDO
+c     ENDDO
 C     CALL PLOT_FIELD_XYRS( phi, 'zMC INI_CG3D.1' , 1, myThid )
-      ENDDO
+c     ENDDO
 C     CALL PLOT_FIELD_XYRS( zMU, 'zMU INI_CG3D.1' , Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYRS( zML, 'zML INI_CG3D.1' , Nr, 1, myThid )
 CcnhDebugEnds
-
-C--   Set default values for initial guess and RHS
-      IF ( startTime .EQ. baseTime ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-            cg3d_b(I,J,K,bi,bj) = 0. _d 0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-C--    Update overlap regions
-       _EXCH_XYZ_R8(cg3d_b, myThid)
-      ENDIF
 
 #endif /* ALLOW_NONHYDROSTATIC */
 
