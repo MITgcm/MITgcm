@@ -1,4 +1,7 @@
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_2d.F,v 1.6 2005/11/09 19:52:57 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE SCATTER_2D( global, local, myThid )
 C     Scatter elements of a 2-D array from mpi process 0 to all processes.
@@ -91,7 +94,10 @@ C--   All proceses except 0 receive local array from process 0
       _BARRIER
 
 C--   Fill in edges.
-      _EXCH_XY_R8( local, myThid )
+C jmc: Should not rely on this exchange (wrong if useCubedSphereExchange & 
+C      vector component or Z-point field) ; When scatter_2d is used to read 
+C      a global file, call exchanges afterward anyway.
+c     _EXCH_XY_R8( local, myThid )
 
       RETURN
       END
