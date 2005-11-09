@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.13 2005/11/08 15:53:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.14 2005/11/09 17:22:08 cnh Exp $
 C $Name:  $
 
 CBOP
@@ -46,22 +46,31 @@ C     USE_C90_THREADING      - Takes directives for CRAY/SGI C90
 C                              system F90 compiler.
 #ifdef TARGET_SUN
 #define USE_SOLARIS_THREADING
+#define USING_THREADS
 #endif
 
 #ifdef TARGET_DEC
 #define USE_KAP_THREADING
+#define USING_THREADS
 #endif
 
 #ifdef TARGET_SGI
 #define USE_IRIX_THREADING
+#define USING_THREADS
 #endif
 
 #ifdef TARGET_HP
 #define USE_EXEMPLAR_THREADING
+#define USING_THREADS
 #endif
 
 #ifdef TARGET_CRAY_VECTOR
 #define USE_C90_THREADING
+#define USING_THREADS
+#endif
+
+#ifdef USE_OMP_THREADING
+#define USING_THREADS
 #endif
 
 C--   Define the mapping for the _BARRIER macro

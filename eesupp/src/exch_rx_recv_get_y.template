@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.5 2005/11/07 19:03:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.6 2005/11/09 17:22:08 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -83,34 +83,49 @@ C     mpiStatus                  :: MPI error code
 #endif
 CEOP
 
-#ifdef USE_SINGLE_THREADED_EXCH_COMMS
        INTEGER myBxLoSave(MAX_NO_THREADS)
        INTEGER myBxHiSave(MAX_NO_THREADS)
        INTEGER myByLoSave(MAX_NO_THREADS)
        INTEGER myByHiSave(MAX_NO_THREADS)
-#endif /* SINGLE_THREADED_EXCH_COMMS */
+       LOGICAL doingSingleThreadedComms
 
-#ifdef USE_SINGLE_THREADED_EXCH_COMMS
-      _BARRIER
-      IF ( myThid .EQ. 1 ) THEN
-       DO I=1,nThreads
-        myBxLoSave(I) = myBxLo(I)
-        myBxHiSave(I) = myBxHi(I)
-        myByLoSave(I) = myByLo(I)
-        myByHiSave(I) = myByHi(I)
-        myBxLo(I) = 0
-        myBxHi(I) = -1
-        myByLo(I) = 0
-        myByHi(I) = -1
-       ENDDO
-       myBxLo(1) = 1
-       myBxHi(1) = nSx
-       myByLo(1) = 1
-       myByHi(1) = nSy
+       doingSingleThreadedComms = .FALSE.
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+      IF ( usingMPI ) THEN
+#endif
+C      Set default behavior to have MPI comms done by a single thread.
+C      Most MPI implementations don't support concurrent comms from
+C      several threads.
+       IF ( nThreads .GT. 1 ) THEN
+        _BARRIER
+        _BEGIN_MASTER( myThid )
+         DO I=1,nThreads
+          myBxLoSave(I) = myBxLo(I)
+          myBxHiSave(I) = myBxHi(I)
+          myByLoSave(I) = myByLo(I)
+          myByHiSave(I) = myByHi(I)
+         ENDDO
+C        Comment out loop below and myB[xy][Lo|Hi](1) settings below
+C        if you want to get multi-threaded MPI comms.
+         DO I=1,nThreads
+          myBxLo(I) = 0
+          myBxHi(I) = -1
+          myByLo(I) = 0
+          myByHi(I) = -1
+         ENDDO
+         myBxLo(1) = 1
+         myBxHi(1) = nSx
+         myByLo(1) = 1
+         myByHi(1) = nSy
+         doingSingleThreadedComms = .TRUE.
+        _END_MASTER( myThid )
+        _BARRIER
       ENDIF
-      _BARRIER
-#endif /* SINGLE_THREADED_EXCH_COMMS */
-
+#ifndef ALWAYS_USE_MPI
+      ENDIF
+#endif
+#endif
 C--   Under a "put" scenario we 
 C--     i. set completetion signal for buffer we put into.
 C--    ii. wait for completetion signal indicating data has been put in 
@@ -358,18 +373,20 @@ C--   Read from the buffers
        ENDDO
       ENDDO
 
-#ifdef USE_SINGLE_THREADED_EXCH_COMMS
-      _BARRIER
-      IF ( myThid .EQ. 1 ) THEN
-       DO I=1,nThreads
-        myBxLo(I) = myBxLoSave(I)
-        myBxHi(I) = myBxHiSave(I)
-        myByLo(I) = myByLoSave(I)
-        myByHi(I) = myByHiSave(I)
-       ENDDO
-      ENDIF
-      _BARRIER
-#endif /* USE_SINGLE_THREADED_EXCH_COMMS */
+      IF ( doingSingleThreadedComms ) THEN
+C      Restore saved settings that were stored to allow
+C      single thred comms.
+       _BARRIER
+       _BEGIN_MASTER(myThid)
+        DO I=1,nThreads
+         myBxLo(I) = myBxLoSave(I)
+         myBxHi(I) = myBxHiSave(I)
+         myByLo(I) = myByLoSave(I)
+         myByHi(I) = myByHiSave(I)
+        ENDDO
+       _END_MASTER(myThid)
+       _BARRIER
+      ENDIF                
 
       RETURN
       END

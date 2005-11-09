@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.5 2004/03/17 23:08:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.6 2005/11/09 17:22:08 cnh Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -137,6 +137,10 @@ c         |     |     |     |     | Compute open-water ustress, vstress,
 c         |     |     |     |     | hflux, swflux, and evap.
 c
 c   ====================================================================
+
+#ifdef USING_THREADS
+#define EXF_IREAD_USE_GLOBAL_POINTER
+#endif
 
 #endif /* ALLOW_EXF */
 #endif /* EXF_OPTIONS_H */
