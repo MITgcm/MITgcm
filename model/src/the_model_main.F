@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.89 2005/05/20 07:30:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.90 2005/11/09 19:54:23 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -459,9 +459,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-# include "CG3D.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"

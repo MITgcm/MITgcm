@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.64 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.65 2005/11/09 19:54:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,9 +60,6 @@ c They provide the fields to be stored.
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS.h"
-# endif
-# ifdef ALLOW_NONHYDROSTATIC
-#  include "CG3D.h"
 # endif
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
