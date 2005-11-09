@@ -46,7 +46,7 @@
  chkptFreq=2.0,
  dumpFreq=2.0,
  monitorFreq=0.1,
- outputTypesInclusive=.TRUE.,
+# outputTypesInclusive=.TRUE.,
  &
 
 # Gridding parameters
