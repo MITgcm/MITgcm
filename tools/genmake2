@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.133 2005/10/15 00:35:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.134 2005/11/09 04:31:30 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -601,7 +601,7 @@ EOF
       call tsub( string )
       end
 EOF
-    $FC $FFLAGS $DEFINES -c genmake_tcomp.$FS >> genmake_warnings 2>&1
+    $FC $FFLAGS -c genmake_tcomp.$FS >> genmake_warnings 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
@@ -1372,7 +1372,7 @@ cat > genmake_tcomp.$FS <<EOF
       call system('echo hi')
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
+$FC $FFLAGS -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_SYSTEM=t
@@ -1393,7 +1393,7 @@ cat > genmake_tcomp.$FS <<EOF
       print *, string
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
+$FC $FFLAGS -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_FDATE=t
@@ -1415,7 +1415,7 @@ cat > genmake_tcomp.$FS <<EOF
       print *, tarray
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
+$FC $FFLAGS -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_ETIME=t
