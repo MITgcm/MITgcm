@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.5 2005/11/05 00:51:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.6 2005/11/09 19:50:03 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE GATHER_2D( global, local, myThid )
 C     Gather elements of a 2-D array from all mpi processes to process 0.
