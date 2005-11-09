@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.4 2005/06/17 16:53:16 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_swrad.F,v 1.5 2005/11/09 15:54:52 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -172,7 +172,6 @@ c ---------------------------------------------------------------------
            cldtot(i,j,L)=min(1.0 _d 0,max(cldsw(i,j,L),fccave(i,j,L)/
      $          imstturb))
            cldmxo(i,j,L)=min(1.0 _d 0,cswmo(i,j,L))
-
            swlz(i,j,L)=swlz(i,j,L)+qliqave(i,j,L)/imstturb
         enddo
         enddo
@@ -588,7 +587,7 @@ c ----------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-         alf   =  min( max(( tl(i,j,L)-233.15)/20.,0. _d 0) , 1. _d 0)
+         alf   =  min( max(( tl(i,j,L)-233.15)/20.,0. _d 0), 1. _d 0)
          dp   =  ple(i,j,L+1)-ple(i,j,L)
          tau(i,j,L,1)  = 0.0
          tau(i,j,L,2)  = 0.0
@@ -618,7 +617,7 @@ C Over Land
          if( lwi(i,j).le.10 ) then
             tauh2o = max( 0.0020 _d 0, 0.200*min(200*lz(i,j,L)*1000,
      $           1.0 _d 0) )  
-            tau(i,j,L,3) = fracls*alf*tauh2o*dp
+          tau(i,j,L,3) = fracls*alf*tauh2o*dp
          else
 C Non-Precipitation Clouds Over Ocean
           if( lz(i,j,L).eq.0.0 ) then
@@ -627,8 +626,8 @@ C Non-Precipitation Clouds Over Ocean
           else
 C Over Ocean
              tauh2o = max( 0.0020 _d 0, 0.120*min( 20*lz(i,j,L)*1000,
-     $            1.0 _d 0) )  
-             tau(i,j,L,3) = fracls*alf*tauh2o*dp
+     $            1.0 _d 0) )
+           tau(i,j,L,3) = fracls*alf*tauh2o*dp
           endif
          endif
 

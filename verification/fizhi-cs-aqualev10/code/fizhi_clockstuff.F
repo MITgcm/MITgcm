@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.7 2005/07/05 19:49:06 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/fizhi_clockstuff.F,v 1.8 2005/11/09 15:54:52 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -219,7 +219,7 @@ c      integer  mpi_comm_model,ierror
       do n=1,ntags
       if( tags(n).eq.tag  ) then
           if( freqs(n).eq.0 ) then
-          alarm2 = .false.
+          alarm2 = (dates(n).eq.datein) .and. (times(n).eq.timein)
           else
           alarm2 = ( datein.gt.dates(n) .or.
      .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
@@ -754,7 +754,8 @@ C***********************************************************************
       NTIME  = NSEC-NSEC0                                      
       IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE
       NALARM2 = NTIME                                           
-      IF(MHMS.NE.0) THEN
+      IF(MHMS.NE.0)NALARM2 = MOD( NALARM2,NSECF(MHMS) )
+      IF(MHMS.GE.1000000) THEN
        testnymd=nymd0
        testnhms=nhms0
        NMMDD = MHMS / 1000000
@@ -1118,6 +1119,7 @@ c -------------------------------------------------------------
 C***********************************************************************        
 C  PURPOSE                                                                      
 C     COMPUTES TIME IN SECONDS UNTIL WE REACH THE NEXT MMDD
+C       (ASSUME that the target time is 0Z)
 C                                                                               
 C  ARGUMENTS   DESCRIPTION                                                      
 C     MMDD     FREQUENCY (MMDDHHMMSS)                                      
@@ -1174,7 +1176,7 @@ C***********************************************************************
       daysleft = idaynext - iday
       if(daysleft.lt.0) daysleft = daysleft + 1461
 
-      timeleft = daysleft * nsday
+      timeleft = daysleft * nsday - sec
                                                                                 
       RETURN                                                                    
       END                                                                       
