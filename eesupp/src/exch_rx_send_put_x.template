@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.5 2005/11/09 17:22:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.6 2005/11/11 03:01:26 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -395,10 +395,10 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
+      _BARRIER
       IF ( doingSingleThreadedComms ) THEN
 C      Restore saved settings that were stored to allow
 C      single thred comms.
-       _BARRIER
        _BEGIN_MASTER(myThid)
         DO I=1,nThreads
          myBxLo(I) = myBxLoSave(I)
@@ -407,8 +407,8 @@ C      single thred comms.
          myByHi(I) = myByHiSave(I)
         ENDDO
        _END_MASTER(myThid)
-       _BARRIER
       ENDIF                
+      _BARRIER
 
       RETURN 
       END
