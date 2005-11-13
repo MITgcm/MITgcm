@@ -12,7 +12,8 @@
 echo -n "Setting up modules...  "
 . /opt/modules/default/init/bash
 module purge
-module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.11-85
+### OLD!  module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.11-85
+module load modules scsl.1.5.0.0 intel-comp.9.0.027 mpt.1.12.0.0
 echo "done"
 
 echo -n "Getting MITgcm from cvs perver...  "
@@ -27,7 +28,7 @@ ulimit -s unlimited
 cd MITgcm/verification/
 ./testreport -mpi \
    -of=/nobackup2/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
-   -command '(mpirun -np 2 ./mitgcmuv >& output.txt ; echo -n hi)' \
+   -command '(mpirun -np 2 ./mitgcmuv ; sleep 2 ; cp STDOUT.0000 output.txt)' \
    -j 16 -a edhill@mitgcm.org
 
 # -end of script-
