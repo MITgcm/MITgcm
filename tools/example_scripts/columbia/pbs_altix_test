@@ -1,23 +1,22 @@
 #! /usr/bin/env bash
 
-##REM #PBS -S /bin/bash
-##REM #PBS -NaMITgcm_ifort
-##REM #PBS -l ncpus=2
-##REM # PBS -l mem=7776MB
-##REM #PBS -l walltime=4:00:00
-##REM #PBS -j oe
-##REM # PBS -W group_list=g12345
-##REM # PBS -m e
+#PBS -S /bin/bash
+#PBS -N MITgcm_ifort
+#PBS -l ncpus=2
+## PBS -l mem=7776MB
+#PBS -l walltime=4:00:00
+#PBS -j oe
+#PBS -W group_list=g26167
+## PBS -m e
 
 echo -n "Setting up modules...  "
-. /opt/modules/default/init/bash
+. /usr/share/modules/init/bash
 module purge
-### OLD!  module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.11-85
 module load modules scsl.1.5.0.0 intel-comp.9.0.027 mpt.1.12.0.0
 echo "done"
 
 echo -n "Getting MITgcm from cvs perver...  "
-cd /nobackup2/edhill
+cd /nobackup1/edhill
 test -e MITgcm  &&  rm -rf MITgcm
 export CVSROOT=':pserver:cvsanon@mitgcm.org:/u/gcmpack'
 cvs co MITgcm > /dev/null 2>&1
@@ -27,7 +26,7 @@ ulimit -s unlimited
 
 cd MITgcm/verification/
 ./testreport -mpi \
-   -of=/nobackup2/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
+   -of=/nobackup1/edhill/MITgcm/tools/build_options/linux_ia64_ifort+mpi_altix_nas -pc \
    -command '(mpirun -np 2 ./mitgcmuv ; sleep 2 ; cp STDOUT.0000 output.txt)' \
    -j 16 -a edhill@mitgcm.org
 

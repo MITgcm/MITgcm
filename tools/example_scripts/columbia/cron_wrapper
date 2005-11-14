@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-cd /u/edhill/MITgcm/tools
+cd /u/edhill/bin/MITgcm/tools
 /usr/bin/cvs -q up -d
 
 cd /u/edhill/bin/
-./pbs_altix_test
+/PBS/bin/qsub ./pbs_altix_test
 
