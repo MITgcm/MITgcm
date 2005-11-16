@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.22 2005/09/15 14:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.23 2005/11/16 16:55:21 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -354,6 +354,20 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
       diagTitle = 'Vertical Transp of Salt '
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'UVELPHI '
+      diagTitle = 'Zonal Transp of Geopotential Height (m2/s2.m/s)'
+      diagUnits = 'm^3/s^3         '
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VVELPHI '
+      diagTitle = 'Meridional Transp of Geopotential Height (m2/s2.m/s)'
+      diagUnits = 'm^3/s^3         '
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
