@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Run on seaborg.nersc.gov 147Nov 2005
+#
+# Also had to change "ETIME" to "ETIME_" in timers.F (JP 14Nov05)
+#
+MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR=" /"'
+
+CPP='/lib/cpp -P'
+FC='mpxlf95_r -c'
+LINK='mpxlf95_r $(NETCDF)'
+LIBS=' -lessl'
+
+FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
+FOPTIM='-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1'
+NOOPTFLAGS=' '
+
