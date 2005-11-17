@@ -16,7 +16,7 @@
 #  levels(1,1) = 1.,3.,5.,
    fields(1,1) = 'VISCA4D ',
    filename(1) = 'visc',
- &end
+ &
 
 # Parameter for Diagnostics of per level statistics:
 #-----------------

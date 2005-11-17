@@ -152,7 +152,7 @@
    filename(34) = 'DDconvad',
 #---
 #
- &end
+ &
 #
  &DIAG_STATIS_PARMS
- &end
+ &

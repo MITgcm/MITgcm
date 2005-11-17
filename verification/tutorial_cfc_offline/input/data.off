@@ -10,12 +10,12 @@
   ThetFile= '../input/input_off/Ttave',
 # SFluxFile='../input/input_off/sFluxtave',
 # HFluxFile=' ',
- &end
+ &
 
  &OFFLINE_PARM02
   offlineIter0=4248000,
   deltaToffline=43200.,
   offlineForcingPeriod=2592000.,
   offlineForcingCycle=31104000.,
- &end
+ &
 

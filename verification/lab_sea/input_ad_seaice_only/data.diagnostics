@@ -15,7 +15,7 @@
    levels(1,1) = 1.,
    fields(1,1) = 'THETA     ',
    filename(1) = 'SST_DIAG_OUTPUT',
- &end
+ &
 #
  &DIAG_STATIS_PARMS
- &end
+ &

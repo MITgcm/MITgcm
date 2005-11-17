@@ -6,12 +6,12 @@
   GMwyFile= 'input_off/GM_Kwy-T',
   GMwzFile= 'input_off/GM_Kwz-T',
   ConvFile= 'input_off/Convtave',
- &end
+ &
 
  &OFFLINE_PARM02
   offlineIter0=4248000,
   deltaToffline=43200.,
   offlineForcingPeriod=2592000.,
   offlineForcingCycle=31104000.,
- &end
+ &
 

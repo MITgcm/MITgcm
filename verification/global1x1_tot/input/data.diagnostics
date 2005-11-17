@@ -160,7 +160,7 @@
 ###   filename(35) = 'DKPPbeta',
 #---
 #
- &end
+ &
 #
  &DIAG_STATIS_PARMS
- &end
+ &
