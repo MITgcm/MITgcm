@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.23 2005/11/02 14:42:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.24 2005/11/18 23:46:39 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -364,22 +364,22 @@ C           XY dimensions
             ENDIF
             
 C           Z is special since it varies
-            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listId)
+            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevsout
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'M') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevsout
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'L') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevsout
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'U') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listId)
+              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevsout
             ENDIF
             dim(3) = Nr+Nrphys
             ib(3)  = 1
-            ie(3)  = nlevels(listId)
+            ie(3)  = nlevsout
 
 C           Time dimension
             dn(4)(1:1) = 'T'
