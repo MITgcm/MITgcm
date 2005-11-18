@@ -33,7 +33,7 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.7 2005/10/24 04:54:13 edhill Exp $
+%  $Id: rdnctiles.m,v 1.8 2005/11/18 13:38:38 edhill Exp $
 
 
 %  Set defaults
@@ -139,6 +139,7 @@ else
 end
 
 res = [];
+att = [];
 switch lower(flag)
  case 'oldflat'
   res = rdnctiles_oldflat(fall,vit,dlev);
