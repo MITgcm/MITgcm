@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.4 2005/11/04 01:30:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.5 2005/11/18 20:25:18 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -129,7 +129,7 @@ C if fizhi is being  used, may need to get physics grid pressures
            endif
 
            if(.not. foundp) then
-            WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_INTERP_VERT: ',
+            WRITE(msgBuf,'(4A)') 'DIAGNOSTICS_INTERP_VERT: ',
      .    ' Have asked for pressure interpolation but have not ',
      .    ' Activated surface and 3D pressure diagnostic, ',
      .    ' RSURF and PRESSURE'
