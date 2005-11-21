@@ -64,12 +64,16 @@ if size(X,1)==size(Q,1)
  X(:,end,[2 4 6])=X(:,1,[3 5 1]);
  X(:,end,[1 3 5])=squeeze(X(1,end:-1:1,[3 5 1]));
  X(end,:,[2 4 6])=squeeze(X(end:-1:1,1,[4 6 2]));
+ X(1,end,[1 3 5]) = X(1,1,1);
+ X(end,1,[2 4 6]) = X(end,end,2);
  Y(end+1,:,:)=NaN;
  Y(:,end+1,:)=NaN;
  Y(end,:,[1 3 5])=Y(1,:,[2 4 6]);
  Y(:,end,[2 4 6])=Y(:,1,[3 5 1]);
  Y(:,end,[1 3 5])=squeeze(Y(1,end:-1:1,[3 5 1]));
  Y(end,:,[2 4 6])=squeeze(Y(end:-1:1,1,[4 6 2]));
+ Y(1,end,[1 3 5]) = Y(end,end,1);
+ Y(end,1,[2 4 6]) = Y(1,1,2);
 end
 [nx ny nt]=size(X);
 
