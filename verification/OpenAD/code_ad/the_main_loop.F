@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_main_loop.F,v 1.1 2005/11/15 16:36:32 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_main_loop.F,v 1.2 2005/11/23 23:45:35 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,12 +118,6 @@ C     == Local variables ==
       integer iloop
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ilev_1
-      integer ilev_2
-      integer ilev_3
-      integer ilev_4
-      integer max_lev2
-      integer max_lev3
-      integer max_lev4
 #endif
 CEOP
 
@@ -131,26 +125,10 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-c--   Initialize storage for the cost function evaluation.
-CADJ  INIT dummytape = common, 1
-c--   Initialize storage for the outermost loop.
-CADJ  INIT tapelev_ini_bibj_k   = USER
-CADJ  INIT tapelev_init   = USER
-c
-#if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
-CADJ  INIT tapelev2 = USER
-#elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
-CADJ  INIT tapelev4 = USER
-#else
-CADJ  INIT tapelev3 = USER
-#endif
-
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
       ikey_dynamics = 1
 
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
-#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
@@ -198,194 +176,64 @@ c--   Do the model integration.
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_TAMC_CHECKPOINTING
 
-      max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
-      max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
-      max_lev2=nTimeSteps/nchklev_1+1
-
-c**************************************
-#ifdef ALLOW_DIVIDED_ADJOINT
-CADJ loop = divided
-#endif
-c**************************************
-
-#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
-      do ilev_4 = 1,nchklev_4
-         if(ilev_4.le.max_lev4) then
-c**************************************
-#include "checkpoint_lev4_directives.h"
-c**************************************
-c--     Initialise storage for the middle loop.
-CADJ    INIT tapelev3 = USER
-#endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
-
-#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
-      do ilev_3 = 1,nchklev_3
-         if(ilev_3.le.max_lev3) then
-c**************************************
-#include "checkpoint_lev3_directives.h"
-c**************************************
-c--     Initialise storage for the middle loop.
-CADJ    INIT tapelev2 = USER
-#endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
-
-        do ilev_2 = 1,nchklev_2
-         if(ilev_2.le.max_lev2) then
-c**************************************
-#include "checkpoint_lev2_directives.h"
-c**************************************
-
-c**************************************
-#ifdef ALLOW_AUTODIFF_TAMC
-c--       Initialize storage for the innermost loop.
-c--       Always check common block sizes for the checkpointing!
-c--
-CADJ INIT comlev1        = COMMON,nchklev_1
-CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
-CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
-c--
-#ifdef ALLOW_KPP
-CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
-CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nsx*nsy*nr
-#endif /* ALLOW_KPP */
-c--
-#ifdef ALLOW_GMREDI
-CADJ INIT comlev1_gmredi_k_gad
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
-#endif /* ALLOW_GMREDI */
-c--
-#ifdef ALLOW_PTRACERS
-CADJ INIT comlev1_bibj_ptracers = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num
-#endif /* ALLOW_PTRACERS */
-c--
-#ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_k_gad
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
-CADJ INIT comlev1_bibj_k_gad_pass
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
-#endif /* DISABLE_MULTIDIM_ADVECTION */
-c--
-#if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
-CADJ INIT comlev1_exf_1
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-CADJ INIT comlev1_exf_2
-CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-#endif /* ALLOW_BULKFORMULAE */
-c--
-#ifdef ALLOW_SEAICE
-# ifdef SEAICE_ALLOW_DYNAMICS
-CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
-# endif
-#endif /* ALLOW_SEAICE */
-c--
-#endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************
 c$openad INDEPENDENT(xx_theta_dummy)
 c$openad DEPENDENT(xx_salt_dummy)
 
-          do ilev_1 = 1,nchklev_1
+#ifndef ALLOW_TAMC_CHECKPOINTING 
+#error "not set up for undefined ALLOW_TAMC_CHECKPOINTING "
+#endif 
 
-c--         The if-statement below introduces a some flexibility in the
-c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
+#ifndef ALLOW_AUTODIFF_TAMC 
+#error "not set up for undefined ALLOW_AUTODIFF_TAMC "
+#endif 
 
-            iloop = (ilev_2 - 1)*nchklev_1                     + ilev_1
-#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
-     &            + (ilev_3 - 1)*nchklev_2*nchklev_1
-#endif
-#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
-     &            + (ilev_4 - 1)*nchklev_3*nchklev_2*nchklev_1
-#endif
+c we expect to have at least 1 level of checkpointing:
 
-            if ( iloop .le. nTimeSteps ) then
-
-#else /* ALLOW_TAMC_CHECKPOINTING  undefined */
-c--   Initialise storage for reference trajectory without TAMC check-
-c--   pointing.
-CADJ INIT history        = USER
-CADJ INIT comlev1_bibj   = COMMON,nchklev_0*nsx*nsy*nthreads_chkpt
-CADJ INIT comlev1_bibj_k = COMMON,nchklev_0*nsx*nsy*nr*nthreads_chkpt
-CADJ INIT comlev1_kpp    = COMMON,nchklev_0*nsx*nsy
-
-c--   Check the choice of the checkpointing parameters in relation
-c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
-      if (nchklev_0 .lt. nTimeSteps) then
-        print*
-        print*, ' the_main_loop: TAMC checkpointing parameter ',
-     &       'nchklev_0 = ',       nchklev_0
-        print*, '                 not consistent with nTimeSteps = ', 
-     &       nTimeSteps
-        stop    ' ... stopped in the_main_loop.'
-      endif
-
-      DO iloop = 1, nTimeSteps
-
-#endif /* ALLOW_TAMC_CHECKPOINTING */
-
-#else /* ALLOW_AUTODIFF_TAMC  undefined */
-
-c--   Start the main loop of adjoint_Objfunc. Automatic differentiation
-c--   NOT enabled.
-      DO iloop = 1, nTimeSteps
-
-#endif /* ALLOW_AUTODIFF_TAMC */
+      if (nchklev_1 .gt. 0 ) then 
+        do ilev_1 = 1,nchklev_1
 
 c--     >>> Loop body start <<<
+cju not sure what the following two lines are good for:
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        nIter0 = NINT( (startTime-baseTime)/deltaTClock )
-        ikey_dynamics = ilev_1
-        CALL AUTODIFF_INADMODE_UNSET( myThid )
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_UNSET( myThid )
-#endif
+          nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+          ikey_dynamics = ilev_1
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
+          IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_LOOP',myThid)
 #endif
-        CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
-        CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
-        CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_SET( myThid )
-#endif
+          CALL THE_FIRST_LEVEL_LOOP( ilev_1, myTime, myIter, myThid )
 
 #ifdef ALLOW_RUNCLOCK
-        IF (useRunClock) THEN
-         RC_CONT=RUNCLOCK_CONTINUE( myThid )
-         IF (.NOT.RC_CONT) RETURN
-        ENDIF
+          IF (useRunClock) THEN
+             RC_CONT=RUNCLOCK_CONTINUE( myThid )
+             IF (.NOT.RC_CONT) RETURN
+          ENDIF
 #endif /* ALLOW_RUNCLOCK */
 
 c--     >>> Loop body end <<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_SET( myThid )
-#ifdef ALLOW_TAMC_CHECKPOINTING
-            endif
-          enddo
-          endif
-        enddo
-#ifndef AUTODIFF_2_LEVEL_CHECKPOINT
-        endif
-      enddo
-#endif
-#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
-       endif
-      enddo
-#endif
-#else /* ndef ALLOW_TAMC_CHECKPOINTING */
-      enddo
-#endif /* ALLOW_TAMC_CHECKPOINTING */
+       end do
 
-#else /* ndef ALLOW_AUTODIFF_TAMC */
-      enddo
-#endif /* ALLOW_AUTODIFF_TAMC */
+      else
+
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_LOOP',myThid)
+#endif
+
+         CALL THE_FIRST_LEVEL_LOOP( 0, myTime, myIter, myThid )
+
+#ifdef ALLOW_RUNCLOCK
+         IF (useRunClock) THEN
+            RC_CONT=RUNCLOCK_CONTINUE( myThid )
+            IF (.NOT.RC_CONT) RETURN
+         ENDIF
+#endif /* ALLOW_RUNCLOCK */
+         
+      end if 
+      
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.
@@ -404,3 +252,4 @@ c$openad DEPENDENT(fc)
 #endif
 
       END
+
