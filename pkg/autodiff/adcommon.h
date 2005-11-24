@@ -18,23 +18,13 @@ C--   heimbach@mit.edu 11-Jan-2001
 #endif
 
 
-#ifdef EXACT_CONSERV
       common /addynvars_r/
-     &                     adetan, adetah, 
+     &                     adetan,
      &                     aduvel, advvel, adwvel,
      &                     adtheta, adsalt, 
      &                     adgu, adgv, adgt, adgs, 
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
-#else
-      common /addynvars_r/ 
-     &                     adetan,
-     &                     aduvel, advvel, adwvel, 
-     &                     adtheta, adsalt, 
-     &                     adgu, adgv, adgt, adgs, 
-     &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
-#endif
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -48,6 +38,10 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL aduvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
+      common /addynvars_r_2/
+     &                     adetah
+      _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
       common /addynvars_cd/ 

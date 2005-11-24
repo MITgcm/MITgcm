@@ -17,23 +17,13 @@ C--   heimbach@mit.edu 11-Jan-2001
 # include "SEAICE_OPTIONS.h"
 #endif
 
-#ifdef EXACT_CONSERV
-      common /g_dynvars_r/ 
-     &                     g_etan, g_etah,
-     &                     g_uvel, g_vvel, g_wvel, 
-     &                     g_theta, g_salt, 
-     &                     g_gu, g_gv, g_gt, g_gs, 
-     &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
-#else
       common /g_dynvars_r/ 
      &                     g_etan,
      &                     g_uvel, g_vvel, g_wvel, 
      &                     g_theta, g_salt, 
      &                     g_gu, g_gv, g_gt, g_gs, 
      &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
-#endif
       _RL g_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_gs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -47,6 +37,10 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL g_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_wvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
+      common /g_dynvars_r_2/
+     &                     g_etah
+      _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
       common /g_dynvars_cd/ 

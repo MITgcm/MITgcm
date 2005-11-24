@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.28 2005/11/08 01:57:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.29 2005/11/24 03:44:50 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -32,19 +32,18 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
       COMMON /DYNVARS_R/
-     &                   etaN, etaH,
+     &                   etaN,
      &                   uVel,vVel,wVel,theta,salt,
      &                   gU,   gV,   gT,   gS,
      &                   guNm, gvNm, gtNm, gsNm
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
-     &                   etaN, etaH,
+     &                   etaN,
      &                   uVel,vVel,wVel,theta,salt,
      &                   gU,   gV,   gT,   gS,
      &                   guNm1,gvNm1,gtNm1,gsNm1
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -65,6 +64,10 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
+
+      COMMON /DYNVARS_R_2/
+     &                   etaH
+      _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 cph(
 cph the following block will eventually move to a separate
