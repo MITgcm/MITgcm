@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.20 2005/10/12 20:24:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.21 2005/11/24 00:06:37 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -206,8 +206,40 @@ C     == Local variables ==
         leithD4fac=0. _d 0
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+          viscAh_D(i,j)=viscAhD
+          viscAh_Z(i,j)=viscAhZ
+          viscA4_D(i,j)=viscA4D
+          viscA4_Z(i,j)=viscA4Z
+c
+          visca4_zsmg(i,j) = 0. _d 0
+          viscah_zsmg(i,j) = 0. _d 0
+c
+          viscAh_Dlth(i,j) = 0. _d 0
+          viscA4_Dlth(i,j) = 0. _d 0
+          viscAh_DlthD(i,j)= 0. _d 0
+          viscA4_DlthD(i,j)= 0. _d 0
+c
+          viscAh_DSmg(i,j) = 0. _d 0
+          viscA4_DSmg(i,j) = 0. _d 0
+c
+          viscAh_ZLth(i,j) = 0. _d 0
+          viscA4_ZLth(i,j) = 0. _d 0
+          viscAh_ZLthD(i,j)= 0. _d 0
+          viscA4_ZLthD(i,j)= 0. _d 0
+        ENDDO
+       ENDDO
+#endif
+
+
+
 C     - Viscosity
       IF (useVariableViscosity) THEN
+cph(
+#ifndef ALLOW_AUTODIFF_TAMC
+cph)
 
 C-     Initialise to zero gradient of vorticity & divergence:
        DO j=1-Oly,sNy+Oly
@@ -350,6 +382,7 @@ c This approximation is good to the same order as above...
           viscA4_DlthD(i,j)=0. _d 0
          ENDIF
 
+
          IF (calcsmag) THEN
           viscAh_DSmg(i,j)=L2
      &       *sqrt(tension(i,j)**2
@@ -484,6 +517,11 @@ C  BiHarmonic on Zeta points
          viscA4_Z(i,j)=min(viscA4_ZMax(i,j),viscA4_Z(i,j))
         ENDDO
        ENDDO
+cph(
+#else
+       STOP 'useVariableViscosity not implemented for ADJOINT'
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
+cph)
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx

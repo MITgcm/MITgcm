@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.580 2005/11/08 06:27:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.581 2005/11/24 00:07:29 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,10 @@ o Allow to apply AB on T,S rather than on AB(gT,gS):
  - need a "clever" read_pickup to restart from the other AB formulation
 o move local commom bloc /GlobalLo/ (used for singleCpuIO) in EESUPPORT.h 
 o remove some unused variables (reduces number of compiler warnings)
+o adjoint
+  * Disable useVariableViscosity for adjoint for time being
+    (there are a number of extensive recomputations)
+  * Initialize certain variables needed for adjoint
 
 checkpoint57w_post
 o pkg/mdsio: use MAX_LEN_FNAM (instead of hard coded 80) for file-names

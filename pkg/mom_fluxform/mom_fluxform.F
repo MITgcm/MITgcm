@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.29 2005/10/12 01:10:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.30 2005/11/24 00:06:38 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -166,6 +166,11 @@ C     Initialise intermediate terms
         tension(i,j)= 0.
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
+#ifdef ALLOW_AUTODIFF_TAMC
+        vort3(i,j)   = 0. _d 0
+        strain(i,j)  = 0. _d 0
+        tension(i,j) = 0. _d 0
+#endif
        ENDDO
       ENDDO
 
