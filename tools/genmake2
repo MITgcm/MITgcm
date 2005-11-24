@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.135 2005/11/17 20:06:08 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.136 2005/11/24 17:52:15 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -353,10 +353,18 @@ EOF
     else
 	echo "  The possible FORTRAN compilers found in your path are:"
 	echo "   "$p_FC
-	if test "x$FC" = x ; then
-	    FC=`echo $p_FC | $AWK '{print $1}'`
-	    echo "  Setting FORTRAN compiler to: "$FC
-	fi
+    fi
+
+    #  Use the first of the compilers found in the current PATH
+    #  that has a correctly-named optfile
+    if test "x$OPTFILE" = x  -a  "x$FC" = x ; then
+	for i in $p_FC ; do
+	    OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
+	    if test -r $OPTFILE ; then
+		echo "  Setting OPTFILE to: "$OPTFILE
+		break
+	    fi
+	done
     fi
 
     if test "x$OPTFILE" = x ; then
