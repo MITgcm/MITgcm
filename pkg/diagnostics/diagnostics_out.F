@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.24 2005/11/18 23:46:39 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.25 2005/11/25 06:12:31 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -140,6 +140,12 @@ C       written, it will only work with variables defined on a dynamics
 C       grid.  As we start using diagnostics for physics grids, ice
 C       levels, land levels, etc. the different vertical coordinate
 C       dimensions will have to be taken into account.
+
+C       20051021 JMC & EH3 : We need to extend this so that a few
+C       variables each defined on different grids do not have the same
+C       vertical dimension names so we should be using a pattern such
+C       as: Z[uml]td000000 where the 't' is the type as specified by
+C       gdiag(10)
 
 C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
         ctmp(1:5) = 'mul  '
