@@ -1,4 +1,4 @@
-function [nc,dim,XC,XG,YC,YG,Ylat,ZC,ZF,RAC,drC,drF,HFacC,...
+function [nc,dim,XC,XG,YC,YG,ZC,ZF,RAC,drC,drF,HFacC,...
           HFacW,HFacS,dxG,dyG,dxC,dyC,AngleCS,AngleSN] = ...
     DiagLoadGridData(LoadGridData,grd,gdf,flu,GridSuffix,ZcordFile)
 
@@ -11,9 +11,6 @@ grdfile = [grd,'/GridData',flu,GridSuffix,'.mat'];
 % previous loading of the raw data.  The file name (and path) of this file
 % is set in the DiagGenParam file.
 if LoadGridData
-    
-    % Load y-axis for CS zonal average calculation.
-    Ylat = [-90+180/128:180/64:90];
 
 	if isequal(gdf,'MDS')
 		XC  = rdmds([grd,'/','XC' ]);
@@ -57,7 +54,7 @@ if LoadGridData
     
     [AngleCS,AngleSN] = cubeCalcAngle(YG,RAC,dxG,dyG);
     
-    save(grdfile,'XC','XG','YC','YG','Ylat','ZC','ZF','RAC','drC','drF',...
+    save(grdfile,'XC','XG','YC','YG','ZC','ZF','RAC','drC','drF',...
          'HFacC','HFacW','HFacS','dxG','dyG','dxC','dyC','AngleCS',...
          'AngleSN','dim','nc');
      

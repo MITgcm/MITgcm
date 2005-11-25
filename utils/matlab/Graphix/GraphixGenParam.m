@@ -59,12 +59,8 @@ fields3D = {'S','T','U','V','W','RH','Tstd','KEpri','phiHyd',...
             'Psi','Bol','Res','Conv','ActT','ThetaEc','ActTstd'};
 
 
-% Zonal averaging parameters.  Currently the zonal average function is set
-% to compute the grid information everytime.  Though it only needs to do
-% this once (and then access the zonal average grid information file), it
-% takes little time, so it is currently set to do this every time.  To set
-% it to do this only once, specify:  kpr=3; nBas=-2; kwr=0;
-kpr=1; nBas=-2; kwr=1;
+% Zonal averaging parameters.
+ny = 64;
 
 % Constants
 g        = 9.81;        % Acceleration due to gravity [m/s2].

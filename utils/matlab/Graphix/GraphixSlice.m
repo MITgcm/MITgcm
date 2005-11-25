@@ -1,6 +1,7 @@
 function [data,xax,yax,pltslc] = ...
-    GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-              Dim,LoadGridData,GridSuffix,ZcordFile,Vector,FieldName);
+    GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,...
+                 pst,Dim,LoadGridData,GridSuffix,ZcordFile,Vector,...
+                 FieldName,XL,YL);
 
 % Function: GraphixSlice
 % Author:   Daniel Enderton
@@ -38,7 +39,7 @@ GraphixFieldParamA;
 GraphixFieldParamO;
 GraphixFieldParamC;
 GraphixFieldParamI;
-[nc,dim,XC,XG,YC,YG,Ylat,ZC,ZF,RAC,drC,drF,HFacC,...
+[nc,dim,XC,XG,YC,YG,ZC,ZF,RAC,drC,drF,HFacC,...
  HFacW,HFacS,dxG,dyG,dxC,dyC,AngleCS,AngleSN] = ...
     GraphixLoadGridData(LoadGridData,grd,gdf,flu,GridSuffix,ZcordFile);
 datasize = size(data);
@@ -92,8 +93,9 @@ elseif isequal(slc,'Zon')
     if isequal(datasize(1:2),size(XC))
         if isequal(flu,'O'),                nBas = 0; end
         if ismember(flu,{'A','I','C','L'}), nBas = 0; end
-	    [data,dump1,dump2] = ...
-	        calc_ZonAv_CS(data,kpr,kwr,nBas,XC,YC,XG,YG,RAC,dad,HFacC);
+        %ny = 64;
+        [data,maskzon,Ylat,areazon] = ...
+            calcZonalAvgCube(data,ny,YC,RAC,HFacC);
         if isequal(avg,'Tse')
             data=data(:,:,1);  xax=years;  yax=Ylat; pltslc='timlat';
         elseif isequal(avg,'Tyr')

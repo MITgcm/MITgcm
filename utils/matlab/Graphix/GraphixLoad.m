@@ -3,7 +3,8 @@ function [data,xax,yax,time,pltslc] = ...
                 LoadGridData,GraphixDebug,GridSuffix,ZcordFile,Index,...
                 Dim,Vector,Mate,uFld,vFld,gmfile,KwxFld,KwyFld,Grads,...
                 Year0Iter,SecPerYear,Months,PlotFld,XL,YL,ThetaToActT,...
-                ThetaToThetaEc,DataIn);
+                ThetaToThetaEc,DataIn,SecMom,TFld,T2Fld,EtaFld,Eta2Fld,...
+                u2Fld,v2Fld);
 
 % Load parameters.
 GraphixGenParam;
@@ -38,7 +39,7 @@ end
 
 % Load grid information.
 if ~isequal(dat,'Gra')
-    [nc,dim,XC,XG,YC,YG,Ylat,ZC,ZF,RAC,drC,drF,HFacC,...
+    [nc,dim,XC,XG,YC,YG,ZC,ZF,RAC,drC,drF,HFacC,...
      HFacW,HFacS,dxG,dyG,dxC,dyC,AngleCS,AngleSN] = ...
         GraphixLoadGridData(LoadGridData,grd,gdf,flu,GridSuffix,ZcordFile);
 end
@@ -101,63 +102,56 @@ elseif ismember(fln,{'Bol','Psi','Res'})
     xax = ylat; yax = ZF; pltslc = 'lathgt';
               
 % Second moments -- This can eventually be made more elegant.
-elseif isequal(fln,'ETAstd')
-    ETA  = LocalLoad(dad,'ETA' ,itr,ddf,nc,DataIn)./100  ;
-    ETA2 = LocalLoad(dad,'Eta2',itr,ddf,nc,DataIn)./10000;
-    data = sqrt(ETA2-ETA.*ETA);
-    data = GraphixAverage(data,fln,avg,months,ddf,Dim);
-    [data,xax,yax,pltslc] = ...
-        GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
-elseif ismember(fln,{'Tstd','ActTstd'})
-    T  = LocalLoad(dad,'T' ,itr,ddf,nc,DataIn);
-    TT = LocalLoad(dad,'TT',itr,ddf,nc,DataIn);
-    T  = GraphixAverage(T ,fln,avg,months,ddf,Dim);
-    TT = GraphixAverage(TT,fln,avg,months,ddf,Dim);
-    data = TT-T.^2;
-    if isequal(fln,'ActTstd')
-        pres = NaN.*zeros(size(data));
-        for iz=1:length(ZC), pres(:,:,iz)=ZC(iz); end
-        Exner = (pres./presrefA).^(RdA/cpA);
-        data=data.*Exner.^2;
+elseif ~isequal(SecMom,'')
+    if ismember(SecMom,{'T','Eta'})
+        if isequal(SecMom,'Eta')
+            data  = LocalLoad([dad,'/',fil],EtaFld ,itr,ddf,nc,DataIn)./100  ;
+            data2 = LocalLoad([dad,'/',fil],Eta2Fld,itr,ddf,nc,DataIn)./10000;
+        elseif ismember(SecMom,{'T','ActT'})
+            data  = LocalLoad([dad,'/',fil],TFld ,itr,ddf,nc,DataIn);
+            data2 = LocalLoad([dad,'/',fil],T2Fld,itr,ddf,nc,DataIn);
+        end
+        data  = GraphixAverage(data ,fln,avg,months,ddf,Dim);
+        data2 = GraphixAverage(data2,fln,avg,months,ddf,Dim);
+        data = data2-data.^2;
+        if isequal(ThetaToActT,1)
+            pres = NaN.*zeros(size(data));
+            for iz=1:length(ZC), pres(:,:,iz)=ZC(iz); end
+            Exner = (pres./presrefA).^(RdA/cpA);
+            data=data.*Exner.^2;
+        end
+    elseif isequal(SecMom,'KE')
+        U  = LocalLoad([dad,'/',fil],uFld ,itr,ddf,nc,DataIn);
+        V  = LocalLoad([dad,'/',fil],vFld ,itr,ddf,nc,DataIn);
+        UU = LocalLoad([dad,'/',fil],u2Fld,itr,ddf,nc,DataIn);
+        VV = LocalLoad([dad,'/',fil],v2Fld,itr,ddf,nc,DataIn);
+        U  = GraphixAverage(U ,fln,avg,months,ddf,Dim);
+        V  = GraphixAverage(V ,fln,avg,months,ddf,Dim);
+        UU = GraphixAverage(UU,fln,avg,months,ddf,Dim);
+        VV = GraphixAverage(VV,fln,avg,months,ddf,Dim);
+        u_dim = size(U); nz=prod(u_dim(3:end));
+        U  = reshape(U ,[6*nc nc nz]); V  = reshape(V ,[6*nc nc nz]);
+        UU = reshape(UU,[6*nc nc nz]); VV = reshape(VV,[6*nc nc nz]);
+        [U_spl ,V_spl ] = split_UV_cub(U ,V );
+        [UU_spl,VV_spl] = split_UV_cub(UU,VV);
+        U_spl  = reshape(U_spl ,[nc+1 nc nz 6]);
+        V_spl  = reshape(V_spl ,[nc nc+1 nz 6]);
+        UU_spl = reshape(UU_spl,[nc+1 nc nz 6]);
+        VV_spl = reshape(VV_spl,[nc nc+1 nz 6]);
+        U_spl  = (U_spl(1:nc,:,:,:)  +  U_spl(2:nc+1,:,:,:))./2;
+        V_spl  = (V_spl(:,1:nc,:,:)  +  V_spl(:,2:nc+1,:,:))./2;   
+        UU_spl = (UU_spl(1:nc,:,:,:) + UU_spl(2:nc+1,:,:,:))./2;
+        VV_spl = (VV_spl(:,1:nc,:,:) + VV_spl(:,2:nc+1,:,:))./2;
+        U  = reshape(permute(U_spl ,[1 4 2 3]),[6*nc nc nz]);
+        V  = reshape(permute(V_spl ,[1 4 2 3]),[6*nc nc nz]);
+        UU = reshape(permute(UU_spl,[1 4 2 3]),[6*nc nc nz]);
+        VV = reshape(permute(VV_spl,[1 4 2 3]),[6*nc nc nz]);
+        data = sqrt((UU + VV)-(U.*U + V.*V));
     end
     [data,xax,yax,pltslc] = ...
-        GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
-elseif isequal(fln,'KEpri')
-    U  = LocalLoad(dad,'uVel',itr,ddf,nc,DataIn);
-    V  = LocalLoad(dad,'vVel',itr,ddf,nc,DataIn);
-    UU = LocalLoad(dad,'UU'  ,itr,ddf,nc,DataIn);
-    VV = LocalLoad(dad,'VV'  ,itr,ddf,nc,DataIn);
-    U = U(1:dim(1),1:dim(2),:,:); UU = UU(1:dim(1),1:dim(2),:,:);
-    V = V(1:dim(1),1:dim(2),:,:); VV = VV(1:dim(1),1:dim(2),:,:);
-    U  = GraphixAverage(U ,fln,avg,months,ddf,Dim);
-    V  = GraphixAverage(V ,fln,avg,months,ddf,Dim);
-    UU = GraphixAverage(UU,fln,avg,months,ddf,Dim);
-    VV = GraphixAverage(VV,fln,avg,months,ddf,Dim);
-	u_dim = size(U); nz=prod(u_dim(3:end));
-	U  = reshape(U ,[6*nc nc nz]);
-	V  = reshape(V ,[6*nc nc nz]);
-    UU = reshape(UU,[6*nc nc nz]);
-	VV = reshape(VV,[6*nc nc nz]);
-    [U_spl ,V_spl ] = split_UV_cub(U ,V );
-    [UU_spl,VV_spl] = split_UV_cub(UU,VV);
-	U_spl  = reshape(U_spl ,[nc+1 nc nz 6]);
-	V_spl  = reshape(V_spl ,[nc nc+1 nz 6]);
-	UU_spl = reshape(UU_spl,[nc+1 nc nz 6]);
-	VV_spl = reshape(VV_spl,[nc nc+1 nz 6]);
-	U_spl  = (U_spl(1:nc,:,:,:)  +  U_spl(2:nc+1,:,:,:))./2;
-	V_spl  = (V_spl(:,1:nc,:,:)  +  V_spl(:,2:nc+1,:,:))./2;   
-	UU_spl = (UU_spl(1:nc,:,:,:) + UU_spl(2:nc+1,:,:,:))./2;
-	VV_spl = (VV_spl(:,1:nc,:,:) + VV_spl(:,2:nc+1,:,:))./2;
-	U  = reshape(permute(U_spl ,[1 4 2 3]),[6*nc nc nz]);
-	V  = reshape(permute(V_spl ,[1 4 2 3]),[6*nc nc nz]);
-	UU = reshape(permute(UU_spl,[1 4 2 3]),[6*nc nc nz]);
-	VV = reshape(permute(VV_spl,[1 4 2 3]),[6*nc nc nz]);
-    data = sqrt((UU + VV)-(U.*U + V.*V));
-    [data,xax,yax,pltslc] = ...
-        GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
-                  Dim,LoadGridData,GridSuffix,ZcordFile,Vector,PlotFld,XL,YL);
+        GraphixSlice(data,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,...
+                     slc,pst,Dim,LoadGridData,GridSuffix,ZcordFile,...
+                     Vector,PlotFld,XL,YL);
 
 
 % General reader.
