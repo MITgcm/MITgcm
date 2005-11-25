@@ -1,4 +1,5 @@
 function [psi,mskG,ylat]=calc_PsiCube(delM,uu,vv,dxg,dyg,hFacW,hFacS,nBas,dBug);
+
 % [psi,mskG,ylat]=calc_PsiCube(delM,uu,vv,[hFacW,hFacS],[nBas],[dBug]);
 %- IMPORTANT: must multiply (u,v) by hFacW,S BEFORE using this script !
 %   (so that it can be used in r* coordinate with (h*u,hv)_timeAv in input)
@@ -19,28 +20,16 @@ else kfac=1; end;
 if Tprt, TimeT0=clock; end
 
 if krd > 0,
-%rac='/home/jmc/grid_cs32/' ;
- rac='/u/u2/jmc/grid_cs32/' ;
-%-- broken lines file, 1rst version ; 2nd version (including latitude strip):
-
-%- load: bkl_Ylat,bkl_Npts,bkl_Flg,bkl_Iuv,bkl_Juv,bkl_Xsg,bkl_Ysg
-% bk_lineF=[rac,'isoLat_cube32_59'];
-% load(bk_lineF);
-% bkl_IJuv=bkl_Iuv+ncx*(bkl_Juv-1);
-
 %- load: bkl_Ylat, bkl_Npts, bkl_Flg, bkl_IJuv, bkl_Xsg, bkl_Ysg, bkl_Zon
-bk_lineF=[rac,'isoLat_cs32_59.mat'];
 load('isoLat_cs32_59.mat');
-if dBug, fprintf([' load bk_line definition from: ',bk_lineF]); end
 
 %- load the grid dx,dy , convert to 10^6 m :
- %dxg=rdmds([rac,'DXG']);
- dxg=dxg*1.e-6;
- %dyg=rdmds([rac,'DYG']);
- dyg=dyg*1.e-6;
- ncx=size(dxg,1); nc=size(dxg,2);
- dxg=reshape(dxg,ncx*nc,1); dyg=reshape(dyg,ncx*nc,1);
- if dBug, fprintf(' AND dxg,dyg'); end
+dxg=dxg*1.e-6;
+dyg=dyg*1.e-6;
+ncx=size(dxg,1);
+nc=size(dxg,2);
+dxg=reshape(dxg,ncx*nc,1); dyg=reshape(dyg,ncx*nc,1);
+if dBug, fprintf(' AND dxg,dyg'); end
           
 if nBas > 0,
 %- load Ocean Basin mask (& separation line):
