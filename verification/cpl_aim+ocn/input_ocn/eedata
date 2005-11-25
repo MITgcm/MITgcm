@@ -5,7 +5,8 @@
  &EEPARMS
  useCoupler=.TRUE.,
  useCubedSphereExchange=.TRUE.,
- nTx=1,nTy=1
+ nTx=1,
+ nTy=1,
  &
 # Note: Some systems use & as the
 # namelist terminator. Other systems

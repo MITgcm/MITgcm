@@ -72,7 +72,7 @@
 #-----------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+#stat_fields(1:5,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
 #   stat_fname(1)= 'dynStDiag',
 #    stat_freq(1)= -36000.,
 #   stat_phase(1)= 0.,

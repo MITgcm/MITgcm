@@ -5,7 +5,7 @@
    fields(1,1) = 'ETAN   ',
    filename(1) = 'surface',
   frequency(2) = 0.003,
-   levels(1,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
+   levels(1:20,2) = 1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,
    fields(1,2) = 'DPPHYS  ',
    filename(2) = 'fizhidt',
  &
@@ -23,7 +23,7 @@
 #-----------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+#stat_fields(1:5,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
 #   stat_fname(1)= 'dynStDiag',
 #    stat_freq(1)= -864000.,
 #   stat_phase(1)= 0.,

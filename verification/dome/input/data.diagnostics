@@ -13,7 +13,7 @@
  &diagnostics_list
   frequency(1) = 3000.,
 # Omit level(1,1) to diagnose ALL levels otherwise list individual levels here
-#  levels(1,1) = 1.,3.,5.,
+#  levels(1:3,1) = 1.,3.,5.,
    fields(1,1) = 'VISCA4D ',
    filename(1) = 'visc',
  &
@@ -31,7 +31,7 @@
 #-----------------
  &DIAG_STATIS_PARMS
 #- an example just to check the agreement with MONITOR output:
-#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+#stat_fields(1:5,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
 #   stat_fname(1)= 'dynStDiag',
 #    stat_freq(1)= -864000.,
 #   stat_phase(1)= 0.,

@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.581 2005/11/24 00:07:29 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.582 2005/11/25 06:07:19 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o cleanup our namelist syntax in verification:
+  - make it more F95 standards compliant (some work still needed)
+  - allows the vast majority of our tests to work with gfortran
 o Non-Hydrostatic:
  - put all NH variables (formerly in DYNVARS.h & GW.h) in NH_VARS.h
  - fix exchange calls for CS-grid using the new EXCH_S3D_RL.
