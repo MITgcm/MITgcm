@@ -8,11 +8,11 @@ echo ""
 for i in `ls *_mod.h | sed 's/\(.*\)_mod\.h/\1/'`
 do 
   echo -n "replacing: $i " 
-  echo  "s/include *\(\"${i}.h\"\)/include \"${i}_mod.h\"/" > script.sed
+  echo  "s/include *\(\"${i}.h\"\)/include \"${i}_mod.h\"/" > temp.sed
   for j in `egrep -l "include *\"$i" *_cb2m.FF90`
   do 
     echo -n "."
-    cat $j | sed -f script.sed | sed 's/IMPLICIT NONE//' | sed 's/implicit none//' > ${j}.1
+    cat $j | sed -f temp.sed | sed 's/IMPLICIT NONE//' | sed 's/implicit none//' > ${j}.1
     mv ${j}.1 $j	
   done
   echo ""     
