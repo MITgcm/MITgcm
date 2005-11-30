@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_fourth_level_loop.F,v 1.1 2005/11/24 00:19:18 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_fourth_level_loop.F,v 1.2 2005/11/30 21:20:39 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,9 +96,9 @@ C     == Local variables ==
       if ( iloop .le. nTimeSteps ) then
 
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('THE_FORWARD_STEP',myThid)
+         IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
-         CALL THE_FOURTH_LEVEL_LOOP( iLoop, 
+         CALL FORWARD_STEP( iLoop, 
      +mytime, myiter, mythid )
 
       end if
