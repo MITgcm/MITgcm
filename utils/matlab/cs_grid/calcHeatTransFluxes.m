@@ -1,41 +1,49 @@
-function HT = calcHeatTransFluxes(od,ad,sd,og,ag,time,LhVap,aHeat,oHeat,blkFile);
+function HT = calcHeatTransFluxes(varargin);
 
-% HT = CalcHT_Fluxes(od,ad,sd,og,ag,time,LhVap,aHeat,oHeat,blkFile);
-% 
-% Calculate heat transport from fluxes. Using a heat content budget
-% equation that equates the change in heat content of a zonal band with the
-% fluxes in and out of the top and bottom, find the poleward heat transport
-% by integrating from the north pole (HT = 0) southward.  The adjustment to
-% the flux fields required for the heat transport at the south pole to be
-% 0 is also tabulated.  In the atmosphere this adjustment is associated
-% with the frictional damping not coded to increase the temperature.
-%
-% This function is built to be used with cubed-sphere output from the
-% Aim-ocean coupled model of the MITgcm.  The zonal bands are defined by a
-% set of broken lines, the information for which is contain in the broken
-% line file "blkFile".
+% HT = calcHeatTransFluxes(od,ad,sd,og,ag,time,blkFile,[optional]);
+% HT = calcHeatTransFluxes(od,ad,sd,og,ag,time,blkFile,'grav',9.81);
 %
 % Input:
 %   The incoming data must be in a structured array format (which is the
-%   format that comes from rdmnc).  The variables must have the following
-%   fields:
+%   format that comes from rdmnc) having the following fields:
 %       od  [Ocean tave data]  T,Ttave
 %       ad  [Atmos tave data]  T,Ttave
 %       sd  [Aim tave data  ]  T,TSRtave,OLRtave,SSRtave,SLRtave,
-%                                EVAPtave,SHFtave,EnFxPrtave
+%                              EVAPtave,SHFtave,EnFxPrtave
 %       og  [Ocean grid data]  drF,HFacC,rA
 %       ag  [Atmos grid data]  drF,HFacC
-%
-%   Further, "time" is the model time levels over which the heat transport
-%   calcualtions are to be made (minimum of 3), use [] for all.  "LhVap" is
-%   the latent heat of vaporization, "aHeat" is Cp/g for the atmosphere and
-%   "oHeat" is Cp*Rho for the ocean.
+%   Other input parameters:
+%       time     (vec)  Time levels to analyze ([] for all, miminum 3)
+%       blkFile  (str)  Broken line file (eg 'isoLat_cs32_59.mat')
+%   Optional parameters:
+%       'grav'   (num, default 9.81)  Acceleration due to gravity
+%       'LhVap'  (num, default 2501)  Latent heat of vaporization
+%       'CpO'    (num, default 3994)  Specific heat capacity of water
+%       'RhoO'   (num, default 1035)  Density of sea water
+%       'CpA'    (num, default 1004)  Specific heat capacity of water
 %
 % Output:
 %   HT is a structured array with the oceanic, atmpspheric, and total heat
 %   transport at time(2:end-1) in PW, the calculated adjustments, heat
 %   content (and its change) in the bands, and appropriate axis
 %   information.
+%
+% Description:
+%   Calculate heat transport from fluxes. Using a heat content budget
+%   equation that equates the change in heat content of a zonal band with
+%   the fluxes in and out of the top and bottom, find the poleward heat
+%   transport by integrating from the north pole (HT = 0) southward.  The
+%   adjustment to the flux fields required for the heat transport at the
+%   south pole to be 0 is also tabulated.  In the atmosphere this
+%   adjustment is associated with the frictional damping not coded to
+%   increase the temperature.
+% 
+%   This function is built to be used with cubed-sphere output from the
+%   Aim-ocean coupled model of the MITgcm.  The zonal bands are defined by
+%   a set of broken lines, the information for which is contain in the
+%   broken line file "blkFile".
+%
+% Original Author:  Daniel Enderton
 %
 % Usage:
 % 
@@ -54,6 +62,28 @@ function HT = calcHeatTransFluxes(od,ad,sd,og,ag,time,LhVap,aHeat,oHeat,blkFile)
 %   >> plot(HT.ylatHT,HT.HTocn(:,1),'g',...
 %           HT.ylatHT,HT.HTatm(:,1),'b',...
 %           HT.ylatHT,HT.HTtot(:,1),'r'); grid on;
+
+% Default constants (can be overriden).
+LhVap = 2501;
+grav = 9.81;
+CpO = 3994;
+RhoO = 1035;
+CpA = 1004;
+
+% Read input parameters.
+od = varargin{1};
+ad = varargin{2};
+sd = varargin{3};
+og = varargin{4};
+ag = varargin{5};
+time = varargin{6};
+blkFile = varargin{7};
+for ii = 8:2:length(varargin)
+    temp = varargin{ii+1}; eval([varargin{ii},' = temp;']);
+end
+
+aHeat = CpA./grav;
+oHeat = RhoO.*CpO;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

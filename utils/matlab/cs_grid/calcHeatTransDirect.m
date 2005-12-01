@@ -1,30 +1,79 @@
-function HT_Out = ...
-	calcHeatTransDirect(d,g,time,HeatCst,DiffKh,blkFile,nBas,nlfs,nout,flu)
-      
+function HT = calcHeatTransDirect(varargin)
+
+% HT = calcHeatTransDirect(d,g,time,flu,blkFile,[optional]);
+% HT = calcHeatTransDirect(d,g,time,flu,blkFile,'grav',9.81);
+%
+% Input arguements:  
+%   The incoming field data (d) and grid data (g) must be in a structured
+%   array format (which is the format that comes from rdmnc):
+%       d  [Field data]  hUtave,hVtave,uVeltave,vVeltave,Ttave,UTtave,
+%                        VTtave,(Stave,UStave,VStave for atm)
+%       g  [Grid data ]  drF,dxG,dyG,dxC,dyC,HFacW,HFacS,rA
+%   Other input parameters:
+%       time     (vec)  Time levels to analyze ([] for all)
+%       flu      (str)  'O' or 'A' for ocean or atmosphere
+%       blkFile  (str)  Broken line file (eg 'isoLat_cs32_59.mat')
+%   Optional parameters:
+%       'grav'   (num, default 9.81)  Acceleration due to gravity
+%       'LhVap'  (num, default 2501)  Latent heat of vaporization
+%       'CpO'    (num, default 3994)  Specific heat capacity of water
+%       'RhoO'   (num, default 1035)  Density of sea water
+%       'CpA'    (num, default 1004)  Specific heat capacity of water
+%       'DiffKh' (num, default 800)   Horizontal diffusivity
+%
 % Output:
-%   HT(latitude,basin,field)
-%       latitude:   Latitude index of heat transport
-%       basin:      Basin (1 = global)
-%       field:      Field (1 = Eulerian circulation HT       )
-%                         (2 = HT by mean circulation        )
-%                         (3 = Residual [3=1-2]              )
-%                         (4 = HT by zonal mean circulation  )
-%                         (5 = Residual [5=2-4]              )
-%                         (6 = HT by horizontal diffusion    )
-%                         (7 = Integrated surface heat flux  )
-%                         (8-14 = Implied heating from fields)
+%   HT_Out is a structured array with the following fields:
+%       time    ([nt,1])              Time axis
+%       ylatHT  ([ny,1])              Heat transport latitude axis
+%       ylatSF  ([ny-1,1])            Implied heating latitude axis
+%       AreaZon ([ny,1])              Area in zonal bands
+%       SenHT   ([ny,nBas,nt,nFld])   Sensible heat transport 
+%       SenSF   ([ny-1,nBas,nt,nFld]) Implied heating above
+%       LatHT   ([ny,nBas,nt,nFld])   Latent heat transport (atm only)
+%       LatSF   ([ny-1,nBas,nt,nFld]) Implied heating from aboce (atm only)
+%   Currently, the routine is only configured to handle the global basin,
+%   so nBas = 1 for the output.  ny is defined by the broken line file used
+%   for the cube calculation.  nFld is the heat transport component:
+%       nFld = 1 = Eulerian circulation HT
+%       nFld = 2 = HT by mean circulation
+%       nFld = 3 = Residual [3=1-2]
+%       nFld = 4 = HT by zonal mean circulation
+%       nFld = 5 = Residual [5=2-4]
+%       nFld = 6 = HT by horizontal diffusion (ocn only)
 %
 % Description:
 %   Calculation heat transport, and to degree possible, decomposition.
-%   Heat transport is given in Watts and the implied surface heating/flux
+%   Heat transport is given in PW and the implied surface heating/flux
 %   in W/m^2.  The incoming data arrays are all assumed to be of the
-%   dimensions [6*nc,nc,nr].
+%   dimensions [6*nc,nc,nr,nt].
+%
+% Original Author:  Jean-Michel Campin
+% Modifications:  Daniel Enderton
 
-% Error checking
+% Default constants (can be overriden).
+LhVap = 2501;
+grav = 9.81;
+CpO = 3994;
+RhoO = 1035;
+CpA = 1004;
+DiffKh = 800;
+
+% Read input parameters.
+d = varargin{1};
+g = varargin{2};
+time = varargin{3};
+flu = varargin{4};
+blkFile = varargin{5};
+for ii = 6:2:length(varargin)
+    temp = varargin{ii+1}; eval([varargin{ii},' = temp;']);
+end
+
+nBas = 0;
+nlfs = 1;
+if isequal(flu,'A'), nout = 5; end
+if isequal(flu,'O'), nout = 6; end
 if nlfs ~= 1, error('Not ready to handle non-nonlinear free surface!'); end
 if nBas ~= 0, error('Not ready to handle multiple basins'); end
-
-MakePlots = 0;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,8 +83,6 @@ MakePlots = 0;
 % Determine time indecies.
 if isempty(time), time = d.T; i_time = 1:length(time);  
 else [dump,i_time] = ismember(time,d.T); end
-
-% i_time = 1;
 
 nc = size(g.HFacC,2);
 nr = size(g.HFacC,3);
@@ -60,7 +107,6 @@ hu = reshape(d.hUtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 hv = reshape(d.hVtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 t  = d.Ttave(1:6*nc,1:nc,:,i_time);
 q  = d.Stave(1:6*nc,1:nc,:,i_time);
-if nout > 6, tf = reshape(d.tFluxtave(1:6*nc,1:nc,i_time),[6*nc*nc,nt]); end
 
 % Load broken line information.  Compute (tracer point) cell area between
 % broken lines for each basin.  There are nbkl broken lines and nbkl+1
@@ -166,26 +212,19 @@ end
 % It is currently hard-coded, but could eventually be an input parameters
 % to set which output fields are desired if some of then become
 % computationally expensive.
-%   HT    = Heat transport
-%   SF    = Implied surface flux
-%   divFx = Integrated surface heat flux
+%   SenHT = Sensible heat transport
+%   SenSF = Sensible implied surface flux
 %   IntV  = Integrated volume transport
 %   IntT  = Integrated temperature
-%
-% ??? utz0/vtz0 What do you use this for?
 SenHT  = zeros(ydim+2,1+nBas,nt,nout);
 SenSF  = zeros(ydim+1,1+nBas,nt,nout);
-divFx  = zeros(ydim+1,1+nBas,nt,nout);
 IntV   = zeros(ydim,nr,1+nBas,nt);
 IntT   = zeros(ydim,nr,1+nBas,nt);
 IntM   = zeros(ydim,nr,1+nBas,nt);
-utz0   = zeros(6*nc*nc,nt);
-vtz0   = zeros(6*nc*nc,nt);
-divHfx = zeros(6*nc,nc,nt);
 if isequal(flu,'A')
-    LatHT  = zeros(ydim+2,1+nBas,nt,nout);
-    LatSF  = zeros(ydim+1,1+nBas,nt,nout);
-    IntQ   = zeros(ydim,nr,1+nBas,nt);
+    LatHT = zeros(ydim+2,1+nBas,nt,nout);
+    LatSF = zeros(ydim+1,1+nBas,nt,nout);
+    IntQ  = zeros(ydim,nr,1+nBas,nt);
 end
 
 
@@ -221,15 +260,14 @@ for it = 1:length(time)
     vtz1 = sum(ArS.*vt(:,:,it),2);
     utz2 = sum(ArW.*hu(:,:,it).*tbi(:,:,it),2);
     vtz2 = sum(ArS.*hv(:,:,it).*tbj(:,:,it),2);
-    dtx1 = sum(ArW_Dif.*tdi(:,:,it),2);
-    dty1 = sum(ArS_Dif.*tdj(:,:,it),2);
     if isequal(flu,'A')
         uqz1 = sum(ArW.*uq(:,:,it),2);
         vqz1 = sum(ArS.*vq(:,:,it),2);
         uqz2 = sum(ArW.*hu(:,:,it).*qbi(:,:,it),2);
         vqz2 = sum(ArS.*hv(:,:,it).*qbj(:,:,it),2);
     end
-    
+    dtx1 = sum(ArW_Dif.*tdi(:,:,it),2);
+    dty1 = sum(ArS_Dif.*tdj(:,:,it),2);
     
     % Preparation for calculation of zonal average temperature.  The
     % tempereature multiplied by the appropriate length scale ("tbi_temp",
@@ -246,21 +284,22 @@ for it = 1:length(time)
     % Block 1:
     % With the vertical integral of heat transport calculated across cell
     % edges, the zonal integral (along the broken line) is computed to
-    % determine the total northward heat transport.  The first for loop is over
-    % the individual broken lines (determining the northward HT at the
-    % representative latitude).  The second loop is over the basins.  The third
-    % loop is over the individual edges along a specific broken line.  Note
-    % that an individual cell can have two edges (u and v) that have a HT
-    % contributions.  Hence the variable containing indecies of cells with
-    % edges along the broken lines, "bkl_IJuv", has some repeats.  Note that
-    % the variable "bkl_Npts" is the number of edges along a given broken line.
-    % Note also that the latitude axis starts at 2 because heat transport at
-    % extremes (latitute =  -90/90) is zero by definition.  Recall that index
-    % (1) is total Eulerian transport, (2) is from the mean circulations, and
-    % (3) is from the horizontal diffusion.
+    % determine the total northward heat transport.  The first for loop is
+    % over the individual broken lines (determining the northward HT at the
+    % representative latitude).  The second loop is over the basins.  The
+    % third loop is over the individual edges along a specific broken line.
+    % Note that an individual cell can have two edges (u and v) that have a
+    % HT contributions.  Hence the variable containing indecies of cells
+    % with edges along the broken lines, "bkl_IJuv", has some repeats.
+    % Note that the variable "bkl_Npts" is the number of edges along a
+    % given broken line.  Note also that the latitude axis starts at 2
+    % because heat transport at extremes (latitute =  -90/90) is zero by
+    % definition.  Recall that index (1) is total Eulerian transport, (2)
+    % is from the mean circulations, and (3) is from the horizontal
+    % diffusion.
     %
     % Block 2:
-    % Here the heat transport associated mean zonal average circulation is
+    % Here zonal average circulation and temperature / moisture is
     % calculated.  The zonal average volume transport v (IntV) and t
     % (IntT/IntM) are computed first and are multiplied together at the
     % end.
@@ -269,6 +308,7 @@ for it = 1:length(time)
         for b=1:1+nBas
             for ii=1:ie
                 ij=bkl_IJuv(ii,jl);
+                % Block 1:
                 SenHT(1+jl,b,it,1) = SenHT(1+jl,b,it,1) ...
                                      + ufac(ii,jl,b)*utz1(ij) ...
                                      + vfac(ii,jl,b)*vtz1(ij);
@@ -288,6 +328,7 @@ for it = 1:length(time)
                                       + ufac(ii,jl,b)*dtx1(ij) ...
                                       + vfac(ii,jl,b)*dty1(ij);
                 end
+                % Block 2:
                 for k=1:nr
                     IntV(jl,k,b,it) = IntV(jl,k,b,it) ...
                                       + ufac(ii,jl,b).*uz(ij,k) ...
@@ -308,66 +349,31 @@ for it = 1:length(time)
         end
     end
 
-    % Prepare HT output, including muliplication of HeatCst.
+    % Prepare HT output:  Calculate HT by zonal flows and tabulate
+    % residuals.  Also, the multipliative constants (Cp,rho,grav,LhVap) are
+    % applied here to put moisture and potential temperature fluxes in
+    % terms of heat transports.
     SenHT(2:ydim+1,:,it,4) = sum(    IntV(:,:,:,it) ...
-                               .* IntT(:,:,:,it) ...
-                               ./ IntM(:,:,:,it),2);
+                                  .* IntT(:,:,:,it) ...
+                                  ./ IntM(:,:,:,it),2);
     SenHT(:,:,it,3) = SenHT(:,:,it,1) - SenHT(:,:,it,2);
     SenHT(:,:,it,5) = SenHT(:,:,it,2) - SenHT(:,:,it,4);
-    if nout >= 6, SenHT(:,:,it,6) = DiffKh.*SenHT(:,:,it,6); end
-    SenHT(:,:,it,:)=HeatCst*SenHT(:,:,it,:);
-    if isequal(flu,'A')
+    if isequal(flu,'O')
+        SenHT(:,:,it,6) = DiffKh.*SenHT(:,:,it,6);
+        SenHT(:,:,it,:) = (CpO*RhoO)*SenHT(:,:,it,:);
+    elseif isequal(flu,'A')
+        SenHT(:,:,it,:) = (CpA./grav).*SenHT(:,:,it,:);
         LatHT(2:ydim+1,:,it,4) = sum(    IntV(:,:,:,it) ...
-                                      .* IntT(:,:,:,it) ...
+                                      .* IntQ(:,:,:,it) ...
                                       ./ IntM(:,:,:,it),2);
         LatHT(:,:,it,3) = LatHT(:,:,it,1) - LatHT(:,:,it,2);
         LatHT(:,:,it,5) = LatHT(:,:,it,2) - LatHT(:,:,it,4);
-        LatHT(:,:,it,:) = (2501./9.81)*LatHT(:,:,it,:);
+        LatHT(:,:,it,:) = (LhVap./grav).*LatHT(:,:,it,:);
     end
-    
-    % Integrated heat flux in zones calculated from tFlux.
-    if nout > 6
-        for j = 1:ydim+1
-            I = find(bkl_Zon == j-1);
-            var = ac.*tf(:,it);
-            divFx(j,1,it,nout) = sum(var(I));
-            % for b=1:nBas
-            %     tmp=var.*mskBc(:,b);
-            %     divFx(j,1+b,nout)=sum(tmp(I));
-            % end
-        end
-        SenSF(:,:,it,nout) = divFx(:,:,it,nout)./AreaZon;
-        SenHT([2:(ydim+2)],:,it,nout) = cumsum(divFx(:,:,it,nout));
-    end
-
-    % % Masking for different basin.
-    % mskZ = ones(ydim+2,1+nBas);
-    % mskZ([2:ydim+1],:) = mskG([1:ydim],:) + mskG([2:ydim+1],:);
-    % mskZ = reshape(min(mskZ,1),(ydim+2)*(1+nBas),1);
-    % I = find(mskZ == 0);
-    % mskZ = reshape(mskZ,(ydim+2),1+nBas);
-    % for n=1:min(6,nout)
-    %     var=SenHT(:,:,n); 
-    %     var=reshape(var,(ydim+2)*(1+nBas),1);  var(I) = NaN;
-    %     var=reshape(var,(ydim+2),1+nBas);  SenHT(:,:,n) = var;
-    % end
-
-    % Horizontal divergence of vertically integrated heat transport.  Recall
-    % that "utz1" and "vtz1" are the vertically integrated Eulerian sensible
-    % heat transport through edges.
-    uT = reshape(utz1,6*nc,nc);
-    vT = reshape(vtz1,6*nc,nc);
-    [u6t,v6t] = split_UV_cub(uT,vT);
-    temp = u6t([2:nc+1],:,:) - u6t([1:nc],:,:) + ...
-           v6t(:,[2:nc+1],:) - v6t(:,[1:nc],:);
-    divHfx(:,:,it) =    reshape(permute(temp,[1 3 2]),[6*nc,nc]) ...
-                     ./ reshape(ac,[6*nc,nc]);
-    % ??? What exactly are you measuring with this metric?  Is this not
-    %     supposed to give the implied surface heat flux?  The result looks
-    %     slightly off; both for the scale and for the corners.
-    % merccube(xg,yg,divHfx); colorbar;
 
     % Implied surface heat flux from heat transports (implied heating).
+    % Tabulated as the difference in heat transports between two broken
+    % lines divided by the zonal band area.
     mskG = reshape(mskG,(ydim+1)*(1+nBas),1);
     I = find(mskG==0);
     mskG = reshape(mskG,ydim+1,1+nBas);
@@ -378,53 +384,36 @@ for it = 1:length(time)
         varT = reshape(varT,(ydim+1)*(1+nBas),1); varT(I)=NaN; 
         varT = reshape(varT,ydim+1,1+nBas);
         SenSF([1:ydim+1],:,it,n) = varT./AreaZon;
-    end
-    if isequal(flu,'A')
-        for n=1:min(nout,6),
-            varQ =   LatHT([2:ydim+2],:,it,n) ...
-                   - LatHT([1:ydim+1],:,it,n);
-            varQ = reshape(varQ,(ydim+1)*(1+nBas),1); varQ(I)=NaN; 
-            varQ = reshape(varQ,ydim+1,1+nBas);
-            LatSF([1:ydim+1],:,it,n) = varQ./AreaZon;
+        if isequal(flu,'A')
+            for n=1:min(nout,6)
+                varQ =   LatHT([2:ydim+2],:,it,n) ...
+                       - LatHT([1:ydim+1],:,it,n);
+                varQ = reshape(varQ,(ydim+1)*(1+nBas),1); varQ(I)=NaN; 
+                varQ = reshape(varQ,ydim+1,1+nBas);
+                LatSF([1:ydim+1],:,it,n) = varQ./AreaZon;
+            end
         end
     end
-    
 end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                             Assign outputs                              %
+%                    Assign outputs, put in units of PW                   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SenHT = SenHT*1e-15;
 
-HT_Out.time = time;
-HT_Out.SenHT = SenHT;
-HT_Out.SenSF = SenSF;
-HT_Out.ylatHT = ylatHT;
-HT_Out.ylatSF = ylatSF;
-HT_Out.AreaZon = AreaZon;
-
-try HT_Out.SenHTbyEulerCirc                = SenHT(:,:,:,1); catch, end
-try HT_Out.SenHTbyMeanCirc                 = SenHT(:,:,:,2); catch, end
-try HT_Out.SenHTbyEulerCircMinusMeanCirc   = SenHT(:,:,:,3); catch, end
-try HT_Out.SenHTbyZonMeanCirc              = SenHT(:,:,:,4); catch, end
-try HT_Out.SenHTbyMeanCircMinusZonMeanCirc = SenHT(:,:,:,5); catch, end
-try HT_Out.SenHTbyHorizDiff                = SenHT(:,:,:,6); catch, end
-% HT_Out.SenHTbyIntegSurfHeatFlux = SenHT(:,:,7);
-
-try HT_Out.SenSFbyEulerCirc                = SenSF(:,:,:,1); catch, end
-try HT_Out.SenSFbyMeanCirc                 = SenSF(:,:,:,2); catch, end
-try HT_Out.SenSFbyEulerCircMinusMeanCirc   = SenSF(:,:,:,3); catch, end
-try HT_Out.SenSFbyZonMeanCirc              = SenSF(:,:,:,4); catch, end
-try HT_Out.SenSFbyMeanCircMinusZonMeanCirc = SenSF(:,:,:,5); catch, end
-try HT_Out.SenSFbyHorizDiff                = SenSF(:,:,:,6); catch, end
-% HT_Out.SFbyIntegSurfHeatFlux = SenSF(:,7);
+HT.time = time;
+HT.SenHT = SenHT;
+HT.SenSF = SenSF;
+HT.ylatHT = ylatHT;
+HT.ylatSF = ylatSF;
+HT.AreaZon = AreaZon;
 
 if isequal(flu,'A')
     LatHT = LatHT*1e-15;
-    HT_Out.LatHT = LatHT;
-    HT_Out.LatSF = LatSF;
+    HT.LatHT = LatHT;
+    HT.LatSF = LatSF;
 end
 
 
@@ -472,32 +461,20 @@ end
 %     end
 % end
 
+% % Masking for different basin.
+% mskZ = ones(ydim+2,1+nBas);
+% mskZ([2:ydim+1],:) = mskG([1:ydim],:) + mskG([2:ydim+1],:);
+% mskZ = reshape(min(mskZ,1),(ydim+2)*(1+nBas),1);
+% I = find(mskZ == 0);
+% mskZ = reshape(mskZ,(ydim+2),1+nBas);
+% for n=1:min(6,nout)
+%     var=SenHT(:,:,n); 
+%     var=reshape(var,(ydim+2)*(1+nBas),1);  var(I) = NaN;
+%     var=reshape(var,(ydim+2),1+nBas);  SenHT(:,:,n) = var;
+% end
+
 % Makes sure that there are no zeros in area AreaZon:
 % - set AreaZon to 1 if = zero
 % AreaZon=reshape(AreaZon,(ydim+1)*(1+nBas),1);
 % [I]=find(AreaZon==0); AreaZon(I)=1; 
 % AreaZon=reshape(AreaZon,ydim+1,1+nBas);
-
-% if kgr >= 3 & nBas > 1
-%     figure(nf+2);clf;
-%     subplot(211); yax=ylat2;
-%     plot(yax,mskZ(:,1),'r-',yax,mskZ(:,nb),'b-'); 
-%     % hold on; plot(yax,mskZ(:,3),'k-'); hold off
-%     grid; axis([-90 90 -.2 1.2]);
-%     legend('Global',['bas=',int2str(nb)]);
-%     title('Mask for Tranp.Heat')
-%     subplot(212); yax=ylat1;
-%     plot(yax,mskG(:,1),'r-',yax,mskG(:,nb),'b-');
-%     % hold on; plot(yax,mskG(:,3),'k-'); hold off
-%     grid; axis([-90 90 -.2 1.2]);
-%     legend('Global',['bas=',int2str(nb)]);
-%     title('Mask for Implied Heat Forcing')
-% end
-
-% if kgr >= 2
-%     figure(nf+1);clf;
-%     psi=zeros(ydim,nr+1);
-%     for k=nr:-1:1, psi(:,k)=psi(:,k+1)-IntV(:,k);end
-%     subplot(211); imagesc(ylat,[1:nr+1],psi');colorbar
-%     subplot(212); plot(ylat,psi(:,1),'k-'); grid;
-% end
