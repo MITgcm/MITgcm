@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.29 2005/08/13 20:50:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.30 2005/12/01 19:28:22 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -63,9 +63,9 @@ c-----------------------------------------------------------------------
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      if ( useDiagnostics ) then
+       if ( useDiagnostics ) then
         call fizhi_diagnostics_init( myThid )
-      endif
+       endif
 #endif
 
        call fizhi_alarms(nymdb,nhmsb,deltaTClock)
