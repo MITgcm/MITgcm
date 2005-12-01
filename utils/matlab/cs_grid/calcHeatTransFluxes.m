@@ -140,13 +140,8 @@ ylatSF = ( ylatHT(2:ydim+2) + ylatHT(1:ydim+1) )./2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Top of atmosphere and surface fluxes.
-% ??? Evaporation/precipitation correctly tabulated?  The energy leaving a
-%     band (between broken lines) is given by the evaporation (times the
-%     latent heat of vaporization), but is all the incoming energy given by
-%     the energy flux associated with precipitation?  What about runoff or
-%     land processes?
 Ft = toaSW-toaLW;
-Fs = srfSW-srfLW-LhVap.*srfEvp-srfSH+srfEFP;
+Fs = srfSW-srfLW-LhVap.*srfEvp-srfSH-srfEFP;
 
 % Loop over bands and calculate (per band) (1) surface area, (2) top of
 % atmpsphere and surface fluxes, and (3) oceanic and atmospheric heat
