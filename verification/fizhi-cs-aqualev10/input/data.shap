@@ -5,10 +5,12 @@
  Shap_funct=2,
  nShapT=4,
  nShapUV=4,
- nShapTrPhys=0,
- nShapUVPhys=0,
+ nShapTrPhys=4,
+ nShapUVPhys=4,
 #Shap_TrLength=115000.,
 #Shap_uvLength=110000.,
+#-- here is the new value to add:
+ Shap_uvLength=-1.,
  Shap_Trtau=5400.,
  Shap_uvtau=1800.,
  &

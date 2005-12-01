@@ -37,6 +37,10 @@
  select_rStar=2,
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
+#- here are the new things:
+ useAbsVorticity=.TRUE.,
+ SadournyCoriolis=.TRUE.,
+ selectKEscheme=3,
  &
 
 # Elliptic solver parameters
@@ -55,12 +59,12 @@
  forcing_In_AB=.FALSE.,
  abEps=0.1,
  cAdjFreq=0.,
- pChkptFreq=2678400.0,
- ChkptFreq=2678400.0,
- dumpFreq=86400.0,
- monitorFreq=300.,
+ pChkptFreq=0.0,
+ ChkptFreq=0.0,
+ dumpFreq=0.0,
+ monitorFreq=267840.,
 #monitorFreq=2678400.,
- taveFreq=86400.0,
+ taveFreq=0.0,
  tave_lastiter=1.,
  &
 
@@ -69,9 +73,10 @@
  usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
- delR=10*1.0E4,
- Ro_SeaLevel=1.E5,
- rSphere=6370.E3,
+# Parameters to match the APE sea level
+ delR=10*10108.,
+ Ro_SeaLevel=101080.,
+ rSphere=6371.E3,
  &
 
 # Input datasets
