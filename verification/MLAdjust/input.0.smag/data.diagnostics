@@ -13,11 +13,11 @@
  &diagnostics_list
   diag_mnc=.TRUE.,
   frequency(1) = 7200.,
-  fields(1:5,1) = 'momKE   ','momHDiv ','momVort3',
+  fields(1,1) = 'momKE   ','momHDiv ','momVort3',
                 'Strain  ','Tension ',
   filename(1) = 'mom',
   frequency(2) = 7200.,
-  fields(1:24,2) = 'VISCAHD ','VISCA4D ','VISCAHZ ','VISCA4Z ',
+  fields(1,2) = 'VISCAHD ','VISCA4D ','VISCAHZ ','VISCA4Z ',
                 'VAHDMAX ','VA4DMAX ','VAHZMAX ','VA4ZMAX ',
                 'VAHDMIN ','VA4DMIN ','VAHZMIN ','VA4ZMIN ',
                 'VAHDLTH ','VA4DLTH ','VAHZLTH ','VA4ZLTH ',
