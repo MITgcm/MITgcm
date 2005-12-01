@@ -1,5 +1,5 @@
 function HT_Out = ...
-	calcHeatTransDirect(d,g,time,HeatCst,DiffKh,blkFile,nBas,nlfs,nout)
+	calcHeatTransDirect(d,g,time,HeatCst,DiffKh,blkFile,nBas,nlfs,nout,flu)
       
 % Output:
 %   HT(latitude,basin,field)
@@ -54,10 +54,13 @@ u  = reshape(d.uVeltave(1:6*nc,1:nc,:,i_time),[6*nc*nc,nr,nt]);
 v  = reshape(d.vVeltave(1:6*nc,1:nc,:,i_time),[6*nc*nc,nr,nt]);
 ut = reshape(d.UTtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 vt = reshape(d.VTtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
+uq = reshape(d.UStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
+vq = reshape(d.VStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 hu = reshape(d.hUtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 hv = reshape(d.hVtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
-if nout > 6, tf = reshape(d.tFluxtave(1:6*nc,1:nc,i_time),[6*nc*nc,nt]); end
 t  = d.Ttave(1:6*nc,1:nc,:,i_time);
+q  = d.Stave(1:6*nc,1:nc,:,i_time);
+if nout > 6, tf = reshape(d.tFluxtave(1:6*nc,1:nc,i_time),[6*nc*nc,nt]); end
 
 % Load broken line information.  Compute (tracer point) cell area between
 % broken lines for each basin.  There are nbkl broken lines and nbkl+1
@@ -134,8 +137,8 @@ ArS_Dif=hs.*((dxg./dyc)*reshape(drf,[1,length(drf)]));
 % first row/column of the tile matries.  This, when the differences and
 % gradients are computed and cropped, the off indecies are selected from
 % [2:nc+1] rather than [1:nc].  (This was a bit mystifying to me).
-t6bi=zeros(nc,nc+1,nr,nt,6); t6di=t6bi;
-t6bj=zeros(nc+1,nc,nr,nt,6); t6dj=t6bj;
+t6bi=zeros(nc,nc+1,nr,nt,6); t6di=t6bi; q6bi=t6bi;
+t6bj=zeros(nc+1,nc,nr,nt,6); t6dj=t6bj; q6bj=t6bj;
 t6t=split_C_cub(t);
 t6bi([1:nc],:,:,:,:) = ( t6t([1:nc],:,:,:,:) + t6t([2:nc+1],:,:,:,:) )./2;
 t6bj(:,[1:nc],:,:,:) = ( t6t(:,[1:nc],:,:,:) + t6t(:,[2:nc+1],:,:,:) )./2;
@@ -149,6 +152,15 @@ tbi=reshape(permute(tbi,[1,5,2,3,4]),[6*nc*nc,nr,nt]);
 tbj=reshape(permute(tbj,[1,5,2,3,4]),[6*nc*nc,nr,nt]); 
 tdi=reshape(permute(tdi,[1,5,2,3,4]),[6*nc*nc,nr,nt]);
 tdj=reshape(permute(tdj,[1,5,2,3,4]),[6*nc*nc,nr,nt]);
+if isequal(flu,'A')
+    q6t=split_C_cub(q);
+    q6bi([1:nc],:,:,:,:) = (q6t([1:nc],:,:,:,:)+q6t([2:nc+1],:,:,:,:))./2;
+    q6bj(:,[1:nc],:,:,:) = (q6t(:,[1:nc],:,:,:)+q6t(:,[2:nc+1],:,:,:))./2;
+    qbi = q6bi([1:nc],[2:nc+1],:,:,:);
+    qbj = q6bj([2:nc+1],[1:nc],:,:,:);
+    qbi=reshape(permute(qbi,[1,5,2,3,4]),[6*nc*nc,nr,nt]); 
+    qbj=reshape(permute(qbj,[1,5,2,3,4]),[6*nc*nc,nr,nt]); 
+end
 
 % Prepare output arrays.  "nout" is the number of transport output fields.
 % It is currently hard-coded, but could eventually be an input parameters
@@ -161,8 +173,8 @@ tdj=reshape(permute(tdj,[1,5,2,3,4]),[6*nc*nc,nr,nt]);
 %   IntT  = Integrated temperature
 %
 % ??? utz0/vtz0 What do you use this for?
-HT     = zeros(ydim+2,1+nBas,nt,nout);
-SF     = zeros(ydim+1,1+nBas,nt,nout);
+SenHT  = zeros(ydim+2,1+nBas,nt,nout);
+SenSF  = zeros(ydim+1,1+nBas,nt,nout);
 divFx  = zeros(ydim+1,1+nBas,nt,nout);
 IntV   = zeros(ydim,nr,1+nBas,nt);
 IntT   = zeros(ydim,nr,1+nBas,nt);
@@ -170,6 +182,11 @@ IntM   = zeros(ydim,nr,1+nBas,nt);
 utz0   = zeros(6*nc*nc,nt);
 vtz0   = zeros(6*nc*nc,nt);
 divHfx = zeros(6*nc,nc,nt);
+if isequal(flu,'A')
+    LatHT  = zeros(ydim+2,1+nBas,nt,nout);
+    LatSF  = zeros(ydim+1,1+nBas,nt,nout);
+    IntQ   = zeros(ydim,nr,1+nBas,nt);
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,10 +207,6 @@ end
 
 for it = 1:length(time)
     
-    % ??? Again, what do you use this for?
-    utz0 = ut(:,it)*drf;
-    vtz0 = vt(:,it)*drf;
-    
     %  uz / vz  = Volume transport though cell faces (velocity times area).
     %             Used for zonal mean volume transport (4).
     % utz1/vtz1 = Eulerian sensible heat transport through cell faces (1).
@@ -210,6 +223,13 @@ for it = 1:length(time)
     vtz2 = sum(ArS.*hv(:,:,it).*tbj(:,:,it),2);
     dtx1 = sum(ArW_Dif.*tdi(:,:,it),2);
     dty1 = sum(ArS_Dif.*tdj(:,:,it),2);
+    if isequal(flu,'A')
+        uqz1 = sum(ArW.*uq(:,:,it),2);
+        vqz1 = sum(ArS.*vq(:,:,it),2);
+        uqz2 = sum(ArW.*hu(:,:,it).*qbi(:,:,it),2);
+        vqz2 = sum(ArS.*hv(:,:,it).*qbj(:,:,it),2);
+    end
+    
     
     % Preparation for calculation of zonal average temperature.  The
     % tempereature multiplied by the appropriate length scale ("tbi_temp",
@@ -218,6 +238,10 @@ for it = 1:length(time)
     % "hs_temp").
     tbi_temp = hw_temp.*tbi(:,:,it);
     tbj_temp = hs_temp.*tbj(:,:,it);
+    if isequal(flu,'A')
+        qbi_temp = hw_temp.*qbi(:,:,it);
+        qbj_temp = hs_temp.*qbj(:,:,it);
+    end
 
     % Block 1:
     % With the vertical integral of heat transport calculated across cell
@@ -245,14 +269,22 @@ for it = 1:length(time)
         for b=1:1+nBas
             for ii=1:ie
                 ij=bkl_IJuv(ii,jl);
-                HT(1+jl,b,it,1) = HT(1+jl,b,it,1) ...
-                                  + ufac(ii,jl,b)*utz1(ij) ...
-                                  + vfac(ii,jl,b)*vtz1(ij);
-                HT(1+jl,b,it,2) = HT(1+jl,b,it,2) ...
-                                  + ufac(ii,jl,b)*utz2(ij) ...
-                                  + vfac(ii,jl,b)*vtz2(ij);
+                SenHT(1+jl,b,it,1) = SenHT(1+jl,b,it,1) ...
+                                     + ufac(ii,jl,b)*utz1(ij) ...
+                                     + vfac(ii,jl,b)*vtz1(ij);
+                SenHT(1+jl,b,it,2) = SenHT(1+jl,b,it,2) ...
+                                     + ufac(ii,jl,b)*utz2(ij) ...
+                                     + vfac(ii,jl,b)*vtz2(ij);
+                if isequal(flu,'A')
+                	LatHT(1+jl,b,it,1) = LatHT(1+jl,b,it,1) ...
+                                         + ufac(ii,jl,b)*uqz1(ij) ...
+                                         + vfac(ii,jl,b)*vqz1(ij);
+                    LatHT(1+jl,b,it,2) = LatHT(1+jl,b,it,2) ...
+                                         + ufac(ii,jl,b)*uqz2(ij) ...
+                                         + vfac(ii,jl,b)*vqz2(ij);
+                end
                 if nout >= 6
-                    HT(1+jl,b,it,6) = HT(1+jl,b,it,6) ...
+                    SenHT(1+jl,b,it,6) = SenHT(1+jl,b,it,6) ...
                                       + ufac(ii,jl,b)*dtx1(ij) ...
                                       + vfac(ii,jl,b)*dty1(ij);
                 end
@@ -266,19 +298,32 @@ for it = 1:length(time)
                     IntM(jl,k,b,it) = IntM(jl,k,b,it) ...
                                       + ufacabs(ii,jl,b).*hw_temp(ij,k) ...
                                       + vfacabs(ii,jl,b).*hs_temp(ij,k);
+                    if isequal(flu,'A')
+                        IntQ(jl,k,b,it) = IntQ(jl,k,b,it) ...
+                                          + ufacabs(ii,jl,b).*qbi_temp(ij,k) ...
+                                          + vfacabs(ii,jl,b).*qbj_temp(ij,k);                         
+                    end
                 end
             end
         end
     end
 
     % Prepare HT output, including muliplication of HeatCst.
-    HT(2:ydim+1,:,it,4) = sum(    IntV(:,:,:,it) ...
+    SenHT(2:ydim+1,:,it,4) = sum(    IntV(:,:,:,it) ...
                                .* IntT(:,:,:,it) ...
                                ./ IntM(:,:,:,it),2);
-    HT(:,:,it,3) = HT(:,:,it,1) - HT(:,:,it,2);
-    HT(:,:,it,5) = HT(:,:,it,2) - HT(:,:,it,4);
-    if nout >= 6, HT(:,:,it,6) = DiffKh.*HT(:,:,it,6); end
-    HT(:,:,it,:)=HeatCst*HT(:,:,it,:);
+    SenHT(:,:,it,3) = SenHT(:,:,it,1) - SenHT(:,:,it,2);
+    SenHT(:,:,it,5) = SenHT(:,:,it,2) - SenHT(:,:,it,4);
+    if nout >= 6, SenHT(:,:,it,6) = DiffKh.*SenHT(:,:,it,6); end
+    SenHT(:,:,it,:)=HeatCst*SenHT(:,:,it,:);
+    if isequal(flu,'A')
+        LatHT(2:ydim+1,:,it,4) = sum(    IntV(:,:,:,it) ...
+                                      .* IntT(:,:,:,it) ...
+                                      ./ IntM(:,:,:,it),2);
+        LatHT(:,:,it,3) = LatHT(:,:,it,1) - LatHT(:,:,it,2);
+        LatHT(:,:,it,5) = LatHT(:,:,it,2) - LatHT(:,:,it,4);
+        LatHT(:,:,it,:) = (2501./9.81)*LatHT(:,:,it,:);
+    end
     
     % Integrated heat flux in zones calculated from tFlux.
     if nout > 6
@@ -291,8 +336,8 @@ for it = 1:length(time)
             %     divFx(j,1+b,nout)=sum(tmp(I));
             % end
         end
-        SF(:,:,it,nout) = divFx(:,:,it,nout)./AreaZon;
-        HT([2:(ydim+2)],:,it,nout) = cumsum(divFx(:,:,it,nout));
+        SenSF(:,:,it,nout) = divFx(:,:,it,nout)./AreaZon;
+        SenHT([2:(ydim+2)],:,it,nout) = cumsum(divFx(:,:,it,nout));
     end
 
     % % Masking for different basin.
@@ -302,9 +347,9 @@ for it = 1:length(time)
     % I = find(mskZ == 0);
     % mskZ = reshape(mskZ,(ydim+2),1+nBas);
     % for n=1:min(6,nout)
-    %     var=HT(:,:,n); 
+    %     var=SenHT(:,:,n); 
     %     var=reshape(var,(ydim+2)*(1+nBas),1);  var(I) = NaN;
-    %     var=reshape(var,(ydim+2),1+nBas);  HT(:,:,n) = var;
+    %     var=reshape(var,(ydim+2),1+nBas);  SenHT(:,:,n) = var;
     % end
 
     % Horizontal divergence of vertically integrated heat transport.  Recall
@@ -328,11 +373,20 @@ for it = 1:length(time)
     mskG = reshape(mskG,ydim+1,1+nBas);
     var = zeros(ydim+1,1+nBas); 
     for n=1:min(nout,6),
-        var =   HT([2:ydim+2],:,it,n) ...
-              - HT([1:ydim+1],:,it,n);
-        var = reshape(var,(ydim+1)*(1+nBas),1); var(I)=NaN; 
-        var = reshape(var,ydim+1,1+nBas);
-        SF([1:ydim+1],:,it,n) = var./AreaZon;
+        varT =   SenHT([2:ydim+2],:,it,n) ...
+               - SenHT([1:ydim+1],:,it,n);
+        varT = reshape(varT,(ydim+1)*(1+nBas),1); varT(I)=NaN; 
+        varT = reshape(varT,ydim+1,1+nBas);
+        SenSF([1:ydim+1],:,it,n) = varT./AreaZon;
+    end
+    if isequal(flu,'A')
+        for n=1:min(nout,6),
+            varQ =   LatHT([2:ydim+2],:,it,n) ...
+                   - LatHT([1:ydim+1],:,it,n);
+            varQ = reshape(varQ,(ydim+1)*(1+nBas),1); varQ(I)=NaN; 
+            varQ = reshape(varQ,ydim+1,1+nBas);
+            LatSF([1:ydim+1],:,it,n) = varQ./AreaZon;
+        end
     end
     
 end
@@ -342,32 +396,36 @@ end
 %                             Assign outputs                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-HT = HT*1e-15;
+SenHT = SenHT*1e-15;
 
 HT_Out.time = time;
-HT_Out.HT = HT;
-HT_Out.SF = SF;
+HT_Out.SenHT = SenHT;
+HT_Out.SenSF = SenSF;
 HT_Out.ylatHT = ylatHT;
 HT_Out.ylatSF = ylatSF;
 HT_Out.AreaZon = AreaZon;
 
-try HT_Out.HTbyEulerCirc                = HT(:,:,:,1); catch, end
-try HT_Out.HTbyMeanCirc                 = HT(:,:,:,2); catch, end
-try HT_Out.HTbyEulerCircMinusMeanCirc   = HT(:,:,:,3); catch, end
-try HT_Out.HTbyZonMeanCirc              = HT(:,:,:,4); catch, end
-try HT_Out.HTbyMeanCircMinusZonMeanCirc = HT(:,:,:,5); catch, end
-try HT_Out.HTbyHorizDiff                = HT(:,:,:,6); catch, end
-% HT_Out.HTbyIntegSurfHeatFlux = HT(:,:,7);
+try HT_Out.SenHTbyEulerCirc                = SenHT(:,:,:,1); catch, end
+try HT_Out.SenHTbyMeanCirc                 = SenHT(:,:,:,2); catch, end
+try HT_Out.SenHTbyEulerCircMinusMeanCirc   = SenHT(:,:,:,3); catch, end
+try HT_Out.SenHTbyZonMeanCirc              = SenHT(:,:,:,4); catch, end
+try HT_Out.SenHTbyMeanCircMinusZonMeanCirc = SenHT(:,:,:,5); catch, end
+try HT_Out.SenHTbyHorizDiff                = SenHT(:,:,:,6); catch, end
+% HT_Out.SenHTbyIntegSurfHeatFlux = SenHT(:,:,7);
 
-try HT_Out.SFbyEulerCirc                = SF(:,:,:,1); catch, end
-try HT_Out.SFbyMeanCirc                 = SF(:,:,:,2); catch, end
-try HT_Out.SFbyEulerCircMinusMeanCirc   = SF(:,:,:,3); catch, end
-try HT_Out.SFbyZonMeanCirc              = SF(:,:,:,4); catch, end
-try HT_Out.SFbyMeanCircMinusZonMeanCirc = SF(:,:,:,5); catch, end
-try HT_Out.SFbyHorizDiff                = SF(:,:,:,6); catch, end
-% HT_Out.SFbyIntegSurfHeatFlux = SF(:,7);
+try HT_Out.SenSFbyEulerCirc                = SenSF(:,:,:,1); catch, end
+try HT_Out.SenSFbyMeanCirc                 = SenSF(:,:,:,2); catch, end
+try HT_Out.SenSFbyEulerCircMinusMeanCirc   = SenSF(:,:,:,3); catch, end
+try HT_Out.SenSFbyZonMeanCirc              = SenSF(:,:,:,4); catch, end
+try HT_Out.SenSFbyMeanCircMinusZonMeanCirc = SenSF(:,:,:,5); catch, end
+try HT_Out.SenSFbyHorizDiff                = SenSF(:,:,:,6); catch, end
+% HT_Out.SFbyIntegSurfHeatFlux = SenSF(:,7);
 
-% Output other fields?  utz0,vtz0,divHfx
+if isequal(flu,'A')
+    LatHT = LatHT*1e-15;
+    HT_Out.LatHT = LatHT;
+    HT_Out.LatSF = LatSF;
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
