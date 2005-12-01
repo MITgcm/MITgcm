@@ -1,10 +1,31 @@
 function [psiH,xv,yv,psiH_cubeC] = calcHorizPsiCube(d,g,rstar,psiLineF);
-%function [psiH]=calc_psiH_CS(u3d,v3d,hFacW,hFacS);
-% [psi,mskZ,ylat]=calc_PsiH_CS(u3d,v3d,[hFacW,hFacS]);
 
-%- Units: dx,dy /1e6 ; delR [m] ; psiH in Sv [10^12 m3/s]
-
-% rstar = 0;
+% [psiH,xv,yv,psiH_cubeC] = calcHorizPsiCube(d,g,rstar,psiLineF);
+%
+% Input arguements:  
+%   The incoming field data (d) and grid data (g) must be in a structured
+%   array format (which is the format that comes from rdmnc):
+%       d  [Field data]  hUtave,hVtave (rstar=1) OR uVeltave,vVeltave (=0)
+%       g  [Grid data ]  drF,dxG,dyG,HFacW,HFacS
+%   Other input parameters:
+%       rstar    (str)  0 or 1 if you are using r* coordinates or not
+%       psiLineF (str)  File ('psiLine_N2S_cs32')
+%
+% Output fields:
+%   psiH        Barotropic streamfunction, vector points (eg [6146,nt])
+%   xv          Longitude of vector points (eg [6146,nt])
+%   yv          Latitude of vector points (eg [6146,nt])
+%   psiH_cubeC  'psiH' interpolated to cell center points (eg [192,32,nt])
+%
+% Description:
+%   Caculates barotropic stream function (psi).  Data should be in
+%   z-coordinates and the output is the volume transport psi [10^6 m^3/s =
+%   Sv].  If the rstar parameters is on, hu and hv are used, if off, the
+%   hfacw*.u and hfacs*.v are used (the multiplication being done inside
+%   the function).
+%
+% Original Author:  Jean-Michel Campin
+% Modifications:  Daniel Enderton
 
 nc = size(g.XC,2);
 nr = length(g.drF);
@@ -32,8 +53,7 @@ else
     end
 end
 
-%- load : 'psi_N','psi_C','psi_P','psiUV','psi_T' :
-%psiLineF='psiLine_N2S_cs32';
+% Load: 'psi_N','psi_C','psi_P','psiUV','psi_T'
 load(psiLineF);
 
 
