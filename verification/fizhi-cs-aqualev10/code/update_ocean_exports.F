@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.2 2005/06/14 23:08:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.3 2005/12/01 16:18:23 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -240,48 +240,110 @@ C Maximum number of dates in one year for the data
       parameter (ndmax = 370)
       integer nymdbc(ndmax),nhmsbc(ndmax)
 
-      _RL getcon, deg2rad, sinarg, cosarg1, cosarg2
+      _RL getcon 
+      _RL pi,pio2,pio3,mpio3,pio36,deg2rad,sinarg,factor,cosarg1,cosarg2
 
       integer i,j
 
       deg2rad = getcon('DEG2RAD')
+      pi = getcon('PI')
+      pio2 = pi / 2. _d 0
+      pio3 = pi / 3. _d 0
+      pio36 = pi / 36. _d 0
+      mpio3 = -1. _d 0 * pi / 3. _d 0
 
       do j = jm1,jm2
       do i = im1,im2
 C Control - max sst on equator, zonally symmetric
-       if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. 1.047 ) then
+       if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
         sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
         sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
        else
         sst(i,j,bi,bj) = 273.16
        endif
-C Experiment 4 - max sst at 5N, zonally symmetric
-c      if( (yc(i,j,bi,bj)*deg2rad  .lt. 1.047 ) .and.
-c    .     (yc(i,j,bi,bj)*deg2rad  .gt. 0.087 ) ) then
-c       sinarg = (90./55.)*(yc(i,j,bi,bj)*deg2rad-0.087)
-c       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
-c      elseif ( (yc(i,j,bi,bj)*deg2rad  .le. 0.087 ) .and.
-c    .     (yc(i,j,bi,bj)*deg2rad  .gt. -1.047 ) ) then
-c       sinarg = (90./65.)*(yc(i,j,bi,bj)*deg2rad-0.087)
-c       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
-c      else
-c       sst(i,j,bi,bj) = 273.16
-c      endif
-C Experiment 6 - max sst at equator, +/- anomaly centered at greenwich
-c   first set the control sst profile
-c      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. 1.047 ) then
-c       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
-c       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
-c      else
-c       sst(i,j,bi,bj) = 0.
-c      endif
-c   and now add the anomaly
-c      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. 0.523 ) then
-c       cosarg1 = xc(i,j,bi,bj)*deg2rad - 1.57
-c       cosarg2 = 1.57*yc(i,j,bi,bj)*deg2rad/0.523
-c       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
-c    .             3.*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
-c      endif
+C Experiment 2 - Peaked
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       factor = 3.*abs(yc(i,j,bi,bj))*deg2rad/pi
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-factor)
+C      else
+C       sst(i,j,bi,bj) = 273.16
+C      endif
+C Experiment 3 - Flat
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
+C       sst(i,j,bi,bj) = 273.16 + 
+C    .        27.*(1.-(sin(sinarg)*sin(sinarg)*sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 273.16
+C      endif
+C Experiment 4 - Qobs - average of control and exp 3
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
+C       sst(i,j,bi,bj) = 273.16 + 0.5*27*
+C    .   (2.- (sin(sinarg)*sin(sinarg)) - 
+C    .        (sin(sinarg)*sin(sinarg)*sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 273.16
+C      endif
+C Experiment 5 - max sst at 5N, zonally symmetric
+C      if( (yc(i,j,bi,bj)*deg2rad  .lt. pio3 ) .and.
+C    .     (yc(i,j,bi,bj)*deg2rad  .gt. pio36 ) ) then
+C       sinarg = (90./55.)*(yc(i,j,bi,bj)*deg2rad-pio36)
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
+C      elseif ( (yc(i,j,bi,bj)*deg2rad  .le. pio36 ) .and.
+C    .     (yc(i,j,bi,bj)*deg2rad  .gt. mpio3 ) ) then
+C       sinarg = (90./65.)*(yc(i,j,bi,bj)*deg2rad-pio36)
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 273.16
+C      endif
+C Experiment 6 - 1KEQ max sst at equator, + anomaly centered at greenwich
+C   first set the control sst profile
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 0.
+C      endif
+C   and now add the anomaly
+C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
+C    .     (abs(xc(i,j,bi,bj)) .lt. 30. _d 0) ) then
+C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)*deg2rad
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)*deg2rad
+C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
+C    .     cos(cosarg1)*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
+C      endif
+C Experiment 7 - 3KEQ max sst at equator, + anomaly centered at greenwich
+C   first set the control sst profile
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 0.
+C      endif
+C   and now add the anomaly
+C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
+C    .     (abs(xc(i,j,bi,bj)) .lt. 30. _d 0) ) then
+C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)*deg2rad
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)*deg2rad
+C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
+C    .     3.*cos(cosarg1)*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
+C      endif
+C Experiment 8 - 3KW1 max sst at equator, +/- anomaly centered at greenwich
+C   first set the control sst profile
+C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
+C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
+C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
+C      else
+C       sst(i,j,bi,bj) = 0.
+C      endif
+C   and now add the anomaly
+C      if( abs(yc(i,j,bi,bj))  .lt. 30.0 _d 0 ) then
+C       cosarg1 = (xc(i,j,bi,bj))*deg2rad
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/30.0 _d 0)*deg2rad
+C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
+C    .             3.*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
+C      endif
       enddo
       enddo
 
