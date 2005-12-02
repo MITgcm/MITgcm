@@ -141,7 +141,7 @@ ylatSF = ( ylatHT(2:ydim+2) + ylatHT(1:ydim+1) )./2;
 
 % Top of atmosphere and surface fluxes.
 Ft = toaSW-toaLW;
-Fs = srfSW-srfLW-LhVap.*srfEvp-srfSH-srfEFP;
+Fs = srfSW-srfLW-LhVap.*srfEvp-srfSH+srfEFP;
 
 % Loop over bands and calculate (per band) (1) surface area, (2) top of
 % atmpsphere and surface fluxes, and (3) oceanic and atmospheric heat
