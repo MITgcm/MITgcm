@@ -1,18 +1,24 @@
-function [rv] = plot_tiles_3D(tdat,vname,tvals, fignum,tilenums,tvname,dblev)
+function [rv] = plot_tiles_3D(tdat,vname,tvals,iz, opts)
 
-% Function [rv] = rdnctiles(res,vname, tilenums,dblev)
+% Function [rv] = rdnctiles(res,vname,tvals,iz, opts)
 %
 % INPUTS
 %   tdat       tile data as a struct array where:
 %                tdat.gtn is the global tile number
 %                tdat.var is the per-tile variable information
 %   vname      string with variable name
+%   tvals      vector of time ('T') values or [] for all
+%   iz         depth index
 %
-%   fignum     figure number (DEF: net)
-%   tilenums   vector of global tile numbers to be plotted 
-%                (empty = all)
-%   tvname     name for the time variable [def='T']
-%   dblev      debug level [def: 0]
+%   opts       struct with the following optional fields
+%      { 'fignum'      'figure' }  ...
+%      { 'tilenums'    '[]'     }  ...
+%      { 'tvname'      '''T'''  }  ...
+%      { 'dblev'       '0'      }  ...
+%      { 'delay'       '0'      }  ...
+%      { 'radius'      '1'      }  ...
+%      { 'caxis'       '[]'     }  ...
+%      { 'colorbar'    '1'      }
 %
 % OUTPUTS
 %   rv         return value (= number of tiles plotted)
@@ -24,7 +30,7 @@ function [rv] = plot_tiles_3D(tdat,vname,tvals, fignum,tilenums,tvname,dblev)
 %
 %
 %  Ed Hill
-%  $Id: plot_tiles_3D.m,v 1.1 2005/11/27 03:12:40 edhill Exp $
+%  $Id: plot_tiles_3D.m,v 1.2 2005/12/02 02:19:51 edhill Exp $
 
 
 %  For debugging:
@@ -39,20 +45,30 @@ end
 %====================================================================
 %  Set defaults
 dlev = 0;
-if nargin < 3
-  error('There must be at least three arguments!');
+if nargin < 4
+  error('There must be at least four arguments!');
 end
-if nargin < 4 || isempty(fignum)
-  fignum = figure;
+if nargin < 5 || isempty(opts)
+  opts = struct();
 end
-if nargin < 5
-  tilenums = [];
+
+if not(isstruct(opts))
+  error('The "opts" argument must be a struct!');
 end
-if nargin < 5
-  tvname = 'T';
-end
-if nargin > 5
-  dlev = dblev;
+opts_content = { ...
+    { 'fignum'      'figure' }  ...
+    { 'tilenums'    '[]'     }  ...
+    { 'tvname'      '''T'''  }  ...
+    { 'dblev'       '0'      }  ...
+    { 'delay'       '0'      }  ...
+    { 'radius'      '1'      }  ...
+    { 'caxis'       '[]'     }  ...
+    { 'colorbar'    '1'      }  };
+for i = 1:size(opts_content,2)
+  if not(isfield(opts,opts_content{i}{1}))
+    eval(sprintf( 'opts.%s = %s;',...
+                  opts_content{i}{1}, opts_content{i}{2} ));
+  end
 end
 
 %====================================================================
@@ -65,18 +81,18 @@ if not(isstruct(tdat))  ...
   error(['"tdat" must be a struct array with fields ' ...
          '"gtn" and "var"'])
 end
-if not(isempty(tilenums)) && not(isvector(tilenums))
-  error(['"tilenums" must be empty or a vector of global' ...
+if not(isempty(opts.tilenums)) && not(isvector(opts.tilenums))
+  error(['"opts.tilenums" must be empty or a vector of global' ...
          ' tile numbers']);
 end
 %  Get the valid tile numbers
-if isempty(tilenums)
+if isempty(opts.tilenums)
   tnall = [ tdat.gtn ];
 else
-  tnall = intersect(tilenums,[ tdat.gtn ]);
+  tnall = intersect(opts.tilenums,[ tdat.gtn ]);
   if isempty(tnall)
     error(['none of the global tile numbers match the' ...
-           ' specified "tilenums" values']);
+           ' specified "opts.tilenums" values']);
   end
 end
 %  Get the valid time values
@@ -87,14 +103,14 @@ if not(isempty(tvals)) && not(isvector(tvals))
 end
 alltimes = [];
 for itile = 1:tnall
-  if isfield(tdat(itile).var,tvname)
+  if isfield(tdat(itile).var,opts.tvname)
     have_times = 1;
-    alltimes = union(alltimes,tdat(1).var.(tvname));
+    alltimes = union(alltimes,tdat(1).var.(opts.tvname));
   end
 end
 
 if isvector(tvals) && not(isempty(alltimes))
-  timelist = intersection(tvals,alltimes);
+  timelist = intersect(tvals,alltimes);
 else
   if isvector(tvals) && isempty(alltimes)
     error(['none of the specified "tvals" values ' ...
@@ -108,20 +124,47 @@ end
 
 %====================================================================
 %  Plot the tiles one-at-a-time in 3D
-alltimes
-tnall
-figure(fignum)
-for it = 1:tnall
 
-  fac = pi/180;
-  corn = zeros([ size(tdat(it).var.XG) 3 ]);
-  [ corn(:,:,1), corn(:,:,2), corn(:,:,3) ] = ...
-      sph2cart( fac*tdat(it).var.XG, fac*tdat(it).var.YG, 1 );
-  %  plot3( corn(:,:,1), corn(:,:,2), corn(:,:,3) ), axis equal
-  if it > 1
-    hold on
+alltimes
+tvals
+tnall
+itime = 1;
+figure(opts.fignum)
+for tval = [ timelist ]
+  for itile = [ tnall ]
+    
+    itime = find(tval == tdat(itile).var.(opts.tvname));
+
+    fac = pi/180;
+    corn = zeros([ size(tdat(itile).var.XG) 3 ]);
+    [ corn(:,:,1), corn(:,:,2), corn(:,:,3) ] = ...
+        sph2cart( fac*tdat(itile).var.YG, fac*tdat(itile).var.XG, 1 );
+    %  plot3( corn(:,:,1), corn(:,:,2), corn(:,:,3), '-o' ), axis equal
+    %  plot( tdat(itile).var.XG, tdat(itile).var.YG, '-o' )
+    
+    cen = zeros([ size(tdat(itile).var.XC) 3 ]);
+    [ cen(:,:,1), cen(:,:,2), cen(:,:,3) ] = ...
+        sph2cart( fac*tdat(itile).var.XC, fac*tdat(itile).var.YC, 1 );
+    
+    surf( cen(:,:,1), cen(:,:,2), cen(:,:,3), ...
+          squeeze(tdat(itile).var.Temp(:,:,1,itime)) )
+    if itile == 1
+      hold on
+      axis equal
+      r = opts.radius;
+      axis([ -r r -r r -r r ]);
+      if not(isempty(opts.caxis))
+        caxis(opts.caxis);
+      end
+      if opts.colorbar ~= 0
+        colorbar;
+      end
+    end
+    
   end
-  plot3()
-  
+  % disp(sprintf('  plotting tile %d',itile));
+  pause(opts.delay);
+
 end
 hold off
+
