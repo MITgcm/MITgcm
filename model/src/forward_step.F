@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.124 2005/11/09 19:54:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.125 2005/12/03 08:30:32 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,6 +44,10 @@ C     == Global variables ==
 #include "MNC_PARAMS.h"
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
+#endif
+
+#ifdef HAVE_SIGREG
+#include "SIGREG.h"
 #endif
 
 #ifdef ALLOW_SHAP_FILT
@@ -664,6 +668,20 @@ C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+#endif
+
+#ifdef HAVE_SIGREG
+      IF ( useSIGREG ) THEN
+        IF ( i_got_signal .GT. 0 ) THEN
+          CALL PACKAGES_WRITE_PICKUP(
+     I         .TRUE., myTime, myIter, myThid )
+#ifndef ALLOW_OFFLINE
+          CALL WRITE_CHECKPOINT(
+     I         .TRUE., myTime, myIter, myThid )   
+#endif
+          STOP 'Checkpoint completed -- killed by signal handler'
+        ENDIF
+      ENDIF
 #endif
 
 C--   Save state for restarts

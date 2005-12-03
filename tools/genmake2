@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.136 2005/11/24 17:52:15 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.137 2005/12/03 08:30:32 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -692,6 +692,63 @@ EOF
     if test "x$RETVAL" = x0 ; then
 	HAVE_CLOC=t
 	DEFINES="$DEFINES -DHAVE_CLOC"
+    fi
+    rm -f genmake_tc*
+}
+
+
+check_HAVE_SIGREG()  {
+    get_fortran_c_namemangling
+    cat <<EOF > genmake_tc_1.c
+$FC_NAMEMANGLE
+#include <stdlib.h>
+#include <stdio.h>
+#include <signal.h>
+#include <errno.h>
+#include <ucontext.h>
+
+int * ip;
+
+static void killhandler(
+    unsigned int sn, siginfo_t  si, struct ucontext *sc )
+{
+    *ip = *ip + 1;
+    return;
+}
+
+void FC_NAMEMANGLE(sigreg) (int * aip)
+{
+    ip = aip;
+    struct sigaction s;
+    s.sa_flags = SA_SIGINFO;
+    s.sa_sigaction = (void *)killhandler;
+    if(sigaction (SIGTERM,&s,(struct sigaction *)NULL)) {
+	printf("Sigaction returned error = %d\n", errno);
+	exit(0);
+    }
+    return;
+}
+EOF
+    make genmake_tc_1.o >> genmake_warnings 2>&1
+    RET_C=$?
+    cat <<EOF > genmake_tc_2.$FS
+      program hello
+      integer anint
+      common /iv/ anint
+      external sigreg
+      call sigreg(anint)
+      end
+EOF
+    echo >> genmake_warnings
+    echo "running: check_HAVE_SIGREG()" >> genmake_warnings
+    cat genmake_tc_2.$FS >> genmake_warnings
+    COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_warnings 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	HAVE_SIGREG=t
+	DEFINES="$DEFINES -DHAVE_SIGREG"
     fi
     rm -f genmake_tc*
 }
@@ -1452,6 +1509,15 @@ rm -f genmake_t*
 printf "  Can we unlimit the stack size using $FC...  "
 check_HAVE_SETRLSTK
 if test "x$HAVE_SETRLSTK" != x ; then
+    echo "yes"
+else
+    echo "no"
+fi
+rm -f genmake_t*
+
+printf "  Can we register a signal handler using $FC...  "
+check_HAVE_SIGREG
+if test "x$HAVE_SIGREG" != x ; then
     echo "yes"
 else
     echo "no"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.18 2005/11/07 18:16:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.19 2005/12/03 08:30:32 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -110,6 +110,9 @@ C     necessary but doing this is the safest method.
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
+#ifdef HAVE_SIGREG
+#include "SIGREG.h"
+#endif
 
 C     !LOCAL VARIABLES:
 C--   Local variables
@@ -138,6 +141,13 @@ C--   Trap errors
 #ifdef HAVE_SETRLSTK
       IF (useSETRLSTK) THEN
         CALL setrlstk
+      ENDIF
+#endif
+
+#ifdef HAVE_SIGREG
+      IF (useSIGREG) THEN
+        i_got_signal = 0
+        CALL sigreg( i_got_signal )
       ENDIF
 #endif
 
