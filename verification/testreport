@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.72 2005/08/16 17:50:31 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.73 2005/12/03 23:23:41 jmc Exp $
 #  $Name:  $
 #
 
@@ -991,7 +991,7 @@ for dir in $TESTDIRS ; do
     echo "Experiment:  $dir"
     echo
     unset genmake makedepend make run
-    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
 
     #  Create an output dir for each OPTFILE/tdir combination
     rel_CDIR=$DRESULTS"/"$dir
@@ -1023,6 +1023,12 @@ for dir in $TESTDIRS ; do
 	echo "tdir='$dir'" >> $CDIR"/summary.txt"
 
 	for ex in $extra_runs ; do
+	    unset run
+	    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+	    #  Create an output dir for each OPTFILE/tdir.ex combination
+	    rel_CDIR=$DRESULTS"/"$dir"."$ex
+	    mkdir $rel_CDIR
+	    CDIR=`pwd`"/$rel_CDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
 	    for ldir in input.$ex input ; do
 		(
@@ -1066,7 +1072,7 @@ for dir in $TESTDIRS ; do
 	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-	    echo "tdir='$dir'" >> $CDIR"/summary.txt"
+	    echo "tdir='$dir.$ex'" >> $CDIR"/summary.txt"
 	done
     else
 	fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
