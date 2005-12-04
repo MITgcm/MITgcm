@@ -25,7 +25,6 @@ c we may need these for the checkpointing
       use GLOBAL_MAX_mod
       use GLOBAL_SUM_mod
       use GRID_mod
-      use GW_mod
       use MPI_INFO_mod
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
@@ -43,7 +42,7 @@ c we may need these for the checkpointing
 !$TEMPLATE_PRAGMA_DECLARATIONS
 
       integer :: cp_loop_variable_1,cp_loop_variable_2,
-     +     cp_loop_variable_3,cp_loop_variable_4
+     +     cp_loop_variable_3,cp_loop_variable_4,cp_loop_variable_5
 
       type(modeType) :: our_orig_mode
 
