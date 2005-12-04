@@ -317,6 +317,208 @@ C $OpenAD$ END DECLS
       end do
       end subroutine 
 
+      subroutine cp_arg_store_real_three_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do while (cp_double_size .lt. 
+     +cp_double_pointer+ubound(x,3)-lbound(x,3))  
+               allocate(cp_double_tmp(cp_double_size))
+               cp_double_tmp=cp_double
+               deallocate(cp_double)
+               allocate(cp_double(cp_double_size*2))
+               print *,'CPD+'
+               cp_double(1:cp_double_size) = cp_double_tmp
+               deallocate(cp_double_tmp)
+               cp_double_size=cp_double_size*2
+            end do
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               cp_double_pointer=cp_double_pointer+1
+               cp_double(cp_double_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3
+     +  )
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_real_three_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               x(
+     +           cp_loop_variable_1,
+     +           cp_loop_variable_2,
+     +           cp_loop_variable_3
+     +          )=
+     +cp_double(cp_double_pointer)
+               cp_double_pointer=cp_double_pointer-1
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_store_real_four_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               do while (cp_double_size .lt. 
+     +cp_double_pointer+ubound(x,4)-lbound(x,4))  
+                  allocate(cp_double_tmp(cp_double_size))
+                  cp_double_tmp=cp_double
+                  deallocate(cp_double)
+                  allocate(cp_double(cp_double_size*2))
+                  print *,'CPD+'
+                  cp_double(1:cp_double_size) = cp_double_tmp
+                  deallocate(cp_double_tmp)
+                  cp_double_size=cp_double_size*2
+               end do
+               do cp_loop_variable_4=lbound(x,4),ubound(x,4)
+                  cp_double_pointer=cp_double_pointer+1
+                  cp_double(cp_double_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3,
+     +  cp_loop_variable_4
+     +  )
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_real_four_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               do cp_loop_variable_4=ubound(x,4),lbound(x,4),-1
+                  x(
+     +              cp_loop_variable_1,
+     +              cp_loop_variable_2,
+     +              cp_loop_variable_3,
+     +              cp_loop_variable_4
+     +              )=
+     +cp_double(cp_double_pointer)
+                  cp_double_pointer=cp_double_pointer-1
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_store_real_five_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4,
+     +cp_loop_variable_5
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               do cp_loop_variable_4=lbound(x,4),ubound(x,4)
+                  do while (cp_double_size .lt. 
+     +cp_double_pointer+ubound(x,5)-lbound(x,5))  
+                     allocate(cp_double_tmp(cp_double_size))
+                     cp_double_tmp=cp_double
+                     deallocate(cp_double)
+                     allocate(cp_double(cp_double_size*2))
+                     print *,'CPD+'
+                     cp_double(1:cp_double_size) = cp_double_tmp
+                     deallocate(cp_double_tmp)
+                     cp_double_size=cp_double_size*2
+                  end do
+                  do cp_loop_variable_5=lbound(x,5),ubound(x,5)
+                     cp_double_pointer=cp_double_pointer+1
+                     cp_double(cp_double_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3,
+     +  cp_loop_variable_4,
+     +  cp_loop_variable_5
+     +  )
+                  end do
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_real_five_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4,
+     +cp_loop_variable_5
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      double precision, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               do cp_loop_variable_4=ubound(x,4),lbound(x,4),-1
+                  do cp_loop_variable_5=ubound(x,5),lbound(x,5),-1
+                     x(
+     +                 cp_loop_variable_1,
+     +                 cp_loop_variable_2,
+     +                 cp_loop_variable_3,
+     +                 cp_loop_variable_4,
+     +                 cp_loop_variable_5
+     +                 )=
+     +cp_double(cp_double_pointer)
+                     cp_double_pointer=cp_double_pointer-1
+                  end do
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+
 C integers -----------------------------------------------------
       subroutine cp_arg_store_integer_scalar(i)
 C $OpenAD$ INLINE DECLS
@@ -344,6 +546,241 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       i=cp_integer(cp_integer_pointer)
       cp_integer_pointer=cp_integer_pointer-1
+      end subroutine 
+
+      subroutine cp_arg_store_integer_vector(x,cp_loop_variable_1)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(:) :: x
+C $OpenAD$ END DECLS
+      do while (cp_integer_size .lt. 
+     +cp_integer_pointer+ubound(x,1)-lbound(x,1))  
+         allocate(cp_integer_tmp(cp_integer_size))
+         cp_integer_tmp=cp_integer
+         deallocate(cp_integer)
+         allocate(cp_integer(cp_integer_size*2))
+         print *,'CPI+'
+         cp_integer(1:cp_integer_size) = cp_integer_tmp
+         deallocate(cp_integer_tmp)
+         cp_integer_size=cp_integer_size*2
+      end do
+      do cp_loop_variable_1=lbound(x,1), ubound(x,1), 1 
+         cp_integer_pointer=cp_integer_pointer+1
+         cp_integer(cp_integer_pointer)=
+     +x(cp_loop_variable_1)
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_integer_vector(x,cp_loop_variable_1)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(:) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         x(cp_loop_variable_1)=cp_integer(cp_integer_pointer)
+         cp_integer_pointer=cp_integer_pointer-1
+      end do
+      end subroutine 
+
+      subroutine cp_arg_store_integer_three_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do while (cp_integer_size .lt. 
+     +cp_integer_pointer+ubound(x,3)-lbound(x,3))  
+               allocate(cp_integer_tmp(cp_integer_size))
+               cp_integer_tmp=cp_integer
+               deallocate(cp_integer)
+               allocate(cp_integer(cp_integer_size*2))
+               print *,'CPD+'
+               cp_integer(1:cp_integer_size) = cp_integer_tmp
+               deallocate(cp_integer_tmp)
+               cp_integer_size=cp_integer_size*2
+            end do
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               cp_integer_pointer=cp_integer_pointer+1
+               cp_integer(cp_integer_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3
+     +  )
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_integer_three_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               x(
+     +           cp_loop_variable_1,
+     +           cp_loop_variable_2,
+     +           cp_loop_variable_3
+     +          )=
+     +cp_integer(cp_integer_pointer)
+               cp_integer_pointer=cp_integer_pointer-1
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_store_integer_four_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               do while (cp_integer_size .lt. 
+     +cp_integer_pointer+ubound(x,4)-lbound(x,4))  
+                  allocate(cp_integer_tmp(cp_integer_size))
+                  cp_integer_tmp=cp_integer
+                  deallocate(cp_integer)
+                  allocate(cp_integer(cp_integer_size*2))
+                  print *,'CPD+'
+                  cp_integer(1:cp_integer_size) = cp_integer_tmp
+                  deallocate(cp_integer_tmp)
+                  cp_integer_size=cp_integer_size*2
+               end do
+               do cp_loop_variable_4=lbound(x,4),ubound(x,4)
+                  cp_integer_pointer=cp_integer_pointer+1
+                  cp_integer(cp_integer_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3,
+     +  cp_loop_variable_4
+     +  )
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_integer_four_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               do cp_loop_variable_4=ubound(x,4),lbound(x,4),-1
+                  x(
+     +              cp_loop_variable_1,
+     +              cp_loop_variable_2,
+     +              cp_loop_variable_3,
+     +              cp_loop_variable_4
+     +              )=
+     +cp_integer(cp_integer_pointer)
+                  cp_integer_pointer=cp_integer_pointer-1
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_store_integer_five_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4,
+     +cp_loop_variable_5
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=lbound(x,1),ubound(x,1)
+         do cp_loop_variable_2=lbound(x,2),ubound(x,2)
+            do cp_loop_variable_3=lbound(x,3),ubound(x,3)
+               do cp_loop_variable_4=lbound(x,4),ubound(x,4)
+                  do while (cp_integer_size .lt. 
+     +cp_integer_pointer+ubound(x,5)-lbound(x,5))  
+                     allocate(cp_integer_tmp(cp_integer_size))
+                     cp_integer_tmp=cp_integer
+                     deallocate(cp_integer)
+                     allocate(cp_integer(cp_integer_size*2))
+                     print *,'CPD+'
+                     cp_integer(1:cp_integer_size) = cp_integer_tmp
+                     deallocate(cp_integer_tmp)
+                     cp_integer_size=cp_integer_size*2
+                  end do
+                  do cp_loop_variable_5=lbound(x,5),ubound(x,5)
+                     cp_integer_pointer=cp_integer_pointer+1
+                     cp_integer(cp_integer_pointer)=
+     +x(
+     +  cp_loop_variable_1,
+     +  cp_loop_variable_2,
+     +  cp_loop_variable_3,
+     +  cp_loop_variable_4,
+     +  cp_loop_variable_5
+     +  )
+                  end do
+               end do
+            end do
+         end do
+      end do
+      end subroutine 
+
+      subroutine cp_arg_restore_integer_five_tensor(x,
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4,
+     +cp_loop_variable_5
+     +)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(::) :: x
+C $OpenAD$ END DECLS
+      do cp_loop_variable_1=ubound(x,1),lbound(x,1),-1
+         do cp_loop_variable_2=ubound(x,2),lbound(x,2),-1
+            do cp_loop_variable_3=ubound(x,3),lbound(x,3),-1
+               do cp_loop_variable_4=ubound(x,4),lbound(x,4),-1
+                  do cp_loop_variable_5=ubound(x,5),lbound(x,5),-1
+                     x(
+     +                 cp_loop_variable_1,
+     +                 cp_loop_variable_2,
+     +                 cp_loop_variable_3,
+     +                 cp_loop_variable_4,
+     +                 cp_loop_variable_5
+     +                 )=
+     +cp_integer(cp_integer_pointer)
+                     cp_integer_pointer=cp_integer_pointer-1
+                  end do
+               end do
+            end do
+         end do
+      end do
       end subroutine 
 
 C strings  -----------------------------------------------------
