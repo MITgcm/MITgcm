@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.137 2005/12/03 08:30:32 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.138 2005/12/04 13:57:08 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -718,8 +718,8 @@ static void killhandler(
 
 void FC_NAMEMANGLE(sigreg) (int * aip)
 {
-    ip = aip;
     struct sigaction s;
+    ip = aip;
     s.sa_flags = SA_SIGINFO;
     s.sa_sigaction = (void *)killhandler;
     if(sigaction (SIGTERM,&s,(struct sigaction *)NULL)) {

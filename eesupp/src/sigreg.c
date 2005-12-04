@@ -1,5 +1,5 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.1 2005/12/03 08:30:32 edhill Exp $
+ * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.2 2005/12/04 13:57:08 edhill Exp $
  * $Name:  $
 
 //BOP
@@ -37,8 +37,8 @@ static void killhandler(
 /* int main( int argc, char ** argv ) */
 void FC_NAMEMANGLE(sigreg) (int * aip)
 {
-    ip = aip;
     struct sigaction s;
+    ip = aip;
     s.sa_flags = SA_SIGINFO;
     s.sa_sigaction = (void *)killhandler;
     if(sigaction (SIGTERM,&s,(struct sigaction *)NULL)) {
