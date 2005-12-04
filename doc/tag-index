@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.582 2005/11/25 06:07:19 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.583 2005/12/04 22:14:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57x_post
+o fix testreport Pb in multiple test experiment.
 o cleanup our namelist syntax in verification:
   - make it more F95 standards compliant (some work still needed)
   - allows the vast majority of our tests to work with gfortran
