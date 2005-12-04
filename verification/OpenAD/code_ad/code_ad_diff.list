@@ -25,7 +25,6 @@ GLOBAL_MAX_mod.ff90
 GLOBAL_SUM_mod.ff90
 grdchk_mod.ff90
 GRID_mod.ff90
-GW_mod.ff90
 MPI_INFO_mod.ff90
 optim_mod.ff90
 SOLVE_FOR_PRESSURE3D_mod.ff90
@@ -33,3 +32,5 @@ SOLVE_FOR_PRESSURE_mod.ff90
 SURFACE_mod.ff90
 tamc_keys_mod.ff90
 tamc_mod.ff90
+mds_reclen.f
+utils.f
