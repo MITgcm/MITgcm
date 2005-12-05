@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.1 2005/12/04 06:39:18 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.2 2005/12/05 15:19:42 utke Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -108,6 +108,38 @@ C
         L=L+1
       end do
       IFNBLNK = L
+      END
+
+CBOP
+C     !ROUTINE: IFNBLNK
+
+C     !INTERFACE:
+      subroutine ad_s_IFNBLNK( string, index )
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION IFNBLNK                                         |
+C     | o Find first non-blank in character string.              |
+C     *==========================================================*
+C
+C     !INPUT PARAMETERS:
+C     string :: String to find first non-blank in.
+      CHARACTER*(*) string
+      integer index
+
+C     !LOCAL VARIABLES:
+C     L, LS :: Temps for string locations
+      INTEGER L, LS
+CEOP
+C
+      LS     = LEN(string)
+      index = 0
+      L=1
+      DO while ((L.le.LS).and.(string(L:L) .ne. ' '))
+        L=L+1
+      end do
+      index = L
       END
 
 CBOP
