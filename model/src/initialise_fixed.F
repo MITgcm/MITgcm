@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.43 2005/11/03 16:20:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.44 2005/12/05 14:37:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,9 +43,11 @@ C      |-- MON_INIT
 C      |
 C      |-- INI_GRID
 C      |
-C      |-- INI_DEPTHS
-C      |
 C      |-- INI_EOS
+C      |
+C      |-- INI_PHIREF
+C      |
+C      |-- INI_DEPTHS
 C      |
 C      |-- INI_MASKS_ETC
 C      |
@@ -110,6 +112,10 @@ C     Variables defining model grid spacing are defined.
 
 C--   Set equation of state parameters.
       CALL INI_EOS( myThid )
+      _BARRIER
+
+C--   Set pressure/geopotential reference profile
+      CALL INI_PHIREF( myThid )
       _BARRIER
 
 C--   Initialise map of depths
