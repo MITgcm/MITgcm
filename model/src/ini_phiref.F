@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.1 2005/12/05 14:37:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.2 2005/12/05 22:13:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,7 +91,7 @@ C------
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C- Write to check :
-       WRITE(msgBuf,'(A)')
+       WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)') 
      &  'INI_PHIREF: PhiRef/g [m] at level Center (integer)'
