@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.170 2005/10/24 22:38:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.171 2005/12/05 14:31:19 jmc Exp $
 C $Name:  $
 C
 
@@ -451,6 +451,7 @@ C     rhoConst  :: Vertically constant reference density
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     tRef      :: reference vertical profile for potential temperature
 C     sRef      :: reference vertical profile for salinity/specific humidity 
+C     phiRef    :: reference potential (pressure/rho, geopotential) profile 
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
@@ -617,7 +618,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, 
-     & rhoConstFresh, convertEmP2rUnit, tRef, sRef,
+     & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef,
      & baseTime, startTime, endTime, 
      & chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -710,6 +711,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
+      _RL phiRef(2*Nr+1)
       _RL baseTime
       _RL startTime
       _RL endTime
