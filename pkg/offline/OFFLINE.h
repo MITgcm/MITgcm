@@ -13,7 +13,8 @@ c   Forcing files
      &       HfluxFile, SfluxFile,
      &       KPP_DiffSFile, KPP_ghatFile,
      &       deltaToffline,
-     &       offlineIter0, offlineForcingPeriod, offlineForcingCycle   
+     &       offlineIter0, offlineOffsetIter,
+     &       offlineForcingPeriod, offlineForcingCycle   
       _RS  ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) UvelFile
       CHARACTER*(MAX_LEN_FNAM) VvelFile
@@ -29,6 +30,7 @@ c   Forcing files
       CHARACTER*(MAX_LEN_FNAM) KPP_DiffSFile
       CHARACTER*(MAX_LEN_FNAM) KPP_ghatFile
       INTEGER offlineIter0
+      INTEGER offlineOffsetIter
       _RL deltaToffline
       _RL offlineForcingPeriod
       _RL offlineForcingCycle

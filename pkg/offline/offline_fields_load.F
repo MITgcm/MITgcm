@@ -149,9 +149,9 @@ C First call requires that we initialize everything to zero for safety
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
-      rdt=1. _d 0 / deltaTclock
+      rdt=1. _d 0 / deltaToffline
       nForcingPeriods=int(offlineForcingCycle/offlineForcingPeriod+0.5)
-      Imytm=int(myTime*rdt+0.5)
+      Imytm=int(myTime*rdt-offlineOffsetIter+0.5)
       Ifprd=int(offlineForcingPeriod*rdt+0.5)
       Ifcyc=int(offlineForcingCycle*rdt+0.5)
       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
@@ -186,10 +186,12 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
+c       print*,'OFFLINE READ', fn
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
+c       print*,'OFFLINE READ', fn
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel1,   1,myThid)
        ENDIF
 c      
@@ -198,10 +200,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel1,   1,myThid)
        ENDIF
 c      
@@ -210,10 +212,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel1,   1,myThid)
        ENDIF
 
@@ -222,10 +224,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave1,   1,myThid)
        ENDIF
 
@@ -234,10 +236,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save1,   1,myThid)
        ENDIF
 
@@ -246,10 +248,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv1,   1,myThid)
        ENDIF
 c
@@ -260,10 +262,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx1,   1,myThid)
        ENDIF
 
@@ -272,10 +274,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky1,   1,myThid)
        ENDIF
 c
@@ -284,10 +286,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz1,   1,myThid)
        ENDIF
 #endif
@@ -297,10 +299,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,hflx0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,hflx1,   1,myThid)
        ENDIF
 c
@@ -309,10 +311,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,sflx0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',1,sflx1,   1,myThid)
        ENDIF
 c
@@ -322,10 +324,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,kdfs0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,kdfs1,   1,myThid)
        ENDIF
 c
@@ -334,10 +336,10 @@ c
         I1=IFNBLNK(fn2)
         I2=ILNBLNK(fn2)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime0*Ifprd+offlineIter0
+     &        intime0*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,kght0,   1,myThid)
         WRITE(fn,'(A,A,I10.10)') fn2(I1:I2),'.',
-     &        intime1*Ifprd+offlineIter0
+     &        intime1*Ifprd +offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,kght1,   1,myThid)
        ENDIF
 #endif

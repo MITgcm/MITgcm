@@ -32,7 +32,8 @@ C--   Bulk Formula parameter
      &         KPP_ghatFile
 
       NAMELIST /OFFLINE_PARM02/
-     &         offlineIter0, deltaToffline, offlineForcingPeriod, 
+     &         offlineIter0, offlineOffsetIter,
+     &         deltaToffline, offlineForcingPeriod, 
      &         offlineForcingCycle
 
 C     === Local variables ===
@@ -72,7 +73,8 @@ C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM01)
 
       deltaToffline=deltaTclock
-      offlineIter0=nIter0
+      offlineIter0=nIter0       !initial offline field timestep
+      offlineOffsetIter=0        !offset
       offlineForcingPeriod=2592000.
       offlineForcingCycle=31104000.
 
