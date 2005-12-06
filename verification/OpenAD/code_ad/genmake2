@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.24 2005/12/04 06:42:39 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.25 2005/12/06 06:55:17 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2048,7 +2048,7 @@ cat csrclist.tmp        >> $MAKEFILE
 cat F90srclist.tmp      >> $MAKEFILE
 cat hsrclist.tmp        >> $MAKEFILE
 
-#rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp hsrclist.tmp flist.tmp clist.tmp F90srclist.tmp
+rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp hsrclist.tmp flist.tmp clist.tmp F90srclist.tmp
 
 echo >> $MAKEFILE
 
@@ -2205,7 +2205,7 @@ for i in $AD_FILES ; do
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-# rm -f adSrcFiles.tmp
+rm -f adSrcFiles.tmp
 
 cat >>$MAKEFILE <<EOF
 
@@ -2259,6 +2259,8 @@ CB2M_F77_TO_FF90_SRC_FILES=\$(F77_SRC_FILES:.F=_cb2m.FF90)
 CB2M_F90_SRC_FILES=\$(addsuffix _mod.FF90, \$(CB2M_F90_SRC_NAMES))
 CB2M_F90_PP_SRC_FILES=\$(addsuffix _mod.f$FS90, \$(CB2M_F90_SRC_NAMES))
 
+.PRECIOUS: \$(CB2M_F90_PP_SRC_FILES) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.ff90)
+
 .PHONY: adDepend
 #this file is included at the bottom
 adDepend: \$(ALL_LINKED_FILES) \$(CB2M_F90_SRC_FILES) \$(CB2M_F77_TO_FF90_SRC_FILES) 
@@ -2302,8 +2304,11 @@ small_f: \$(CB2M_F77_PP_SRC_FILES) \$(CB2M_F90_PP_SRC_FILES)
 .PHONY: small_f
 
 ad_output.txt: \$(EXE_AD)
+	@printf 'linking data files ... '
+	\$(LN) ../input/* .
+	\$(LN) ../../global_ocean.90x40x15/input/*.bin .
 	@printf 'running ... '
-	@\$(EXE_AD) > \$@
+	@./\$(EXE_AD) > \$@
 
 CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.ff90)
 ad_input_code.$FS: \$(CB2M_AD_FILES) 
