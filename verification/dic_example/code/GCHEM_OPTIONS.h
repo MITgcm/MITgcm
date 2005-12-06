@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dic_example/code/Attic/GCHEM_OPTIONS.h,v 1.5 2005/10/13 16:26:23 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dic_example/code/Attic/GCHEM_OPTIONS.h,v 1.6 2005/12/06 16:52:36 stephd Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -17,11 +17,16 @@ c options for biogeochemistry package
 CEOP
 
 #define GCHEM_SEPARATE_FORCING
+
+c------------------------------------
+c specifics for dic pkg
 #define DIC_BIOTIC
-#undef  ALLOW_CFC
 #undef  ALLOW_FE
 #undef READ_PAR
 #undef MINFE
+c -------------------------------------
+
+#undef  ALLOW_CFC
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */
