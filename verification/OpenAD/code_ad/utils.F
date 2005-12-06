@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.2 2005/12/05 15:19:42 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.3 2005/12/06 06:56:00 utke Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -165,14 +165,12 @@ C     L, LS :: Temps. used in scanning string
 CEOP
 C
       LS      = LEN(string)
-c     ILNBLNK = LS
       ILNBLNK = 0
       L=LS
-      DO while ((L.gt.0).and.(string(L:L) .ne. ' '))
+      DO while ((L.gt.0).and.(string(L:L) .eq. ' '))
         L=L-1
       end do
-      IFNBLNK = L
-      RETURN
+      ILNBLNK = L
       END
 
 CBOP
@@ -201,7 +199,7 @@ C
       LS      = LEN(string)
       index = 0
       L=LS
-      DO while ((L.gt.0).and.(string(L:L) .ne. ' '))
+      DO while ((L.gt.0).and.(string(L:L) .eq. ' '))
         L=L-1
       end do
       index = L
