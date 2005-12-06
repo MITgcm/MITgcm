@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.583 2005/12/04 22:14:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.584 2005/12/06 17:57:40 stephd Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add new offset feature to offline pkg (plus minor cleanup)
+o cfc fixes for final year of integration
+o clean up GCHEM_OPTIONS.h/DIC_OPTIONS.h (all options should
+  be in GCHEM_OPTIONS).
 
 checkpoint57x_post
 o fix testreport Pb in multiple test experiment.
