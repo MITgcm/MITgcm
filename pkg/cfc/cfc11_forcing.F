@@ -77,7 +77,7 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
      &                + ACFC11(thisYear,2)*aWght
        else
          ACFC11north = ACFC11(maxYear,1)
-         ACFC11south = ACFC11(maxYear,1)
+         ACFC11south = ACFC11(maxYear,2)
        endif
 c      print*,'ACFC11north,ACFC11south', ACFC11north,ACFC11south,
 c    &                                   lastYear,thisYear

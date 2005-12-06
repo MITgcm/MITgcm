@@ -51,7 +51,7 @@ C     msgBuf     :: message buffer
 c
 C read in CFC atmospheric timeseries data
       cfc_yearbeg = 31
-      cfc_yearend = 98
+      cfc_yearend = 98 + 1
       nTimePnts=cfc_yearend-cfc_yearbeg
       Iunit=28
       OPEN(Iunit,FILE='cfc1112.atm',STATUS='old')
