@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.25 2005/12/06 06:55:17 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.26 2005/12/07 04:16:01 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2305,7 +2305,7 @@ small_f: \$(CB2M_F77_PP_SRC_FILES) \$(CB2M_F90_PP_SRC_FILES)
 
 ad_output.txt: \$(EXE_AD)
 	@printf 'linking data files ... '
-	\$(LN) ../input/* .
+	\$(LN) ../input_ad/data* ../input_ad/eedata .
 	\$(LN) ../../global_ocean.90x40x15/input/*.bin .
 	@printf 'running ... '
 	@./\$(EXE_AD) > \$@
@@ -2374,6 +2374,8 @@ ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f: ad_input_code_sf.w2f.canon.xb.x2w.w2
 # postprocess F'
 ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f multi-pp.pl ../code_ad/ad_inline.f ../code_ad/ad_template.checkpoint.f ../code_ad/ad_template.split.f
 	perl multi-pp.pl -inline=../code_ad/ad_inline.f \$<
+	cat \$@ | sed 's/RETURN//' > \$@.1
+	mv \$@.1 \$@
 
 # extract all transformed modules 
 all_mods.xb.x2w.w2f.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f
