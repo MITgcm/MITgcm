@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.3 2004/09/20 23:22:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.4 2005/12/07 23:55:15 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -26,7 +26,27 @@ C     == Routine Arguments ==
 
 C     == Local variables ==
       INTEGER I,J,I_obc,J_obc
+#ifdef ALLOW_NONHYDROSTATIC
       _RL obc_mask
+#endif
+
+C     Set model variable to zero at the Open Boundaries
+      DO I=1-Olx,sNx+Olx
+C Northern boundary
+        J_obc = OB_Jn(I,bi,bj)
+        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
+C Southern boundary
+        J_obc = OB_Js(I,bi,bj)
+        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
+      ENDDO
+      DO J=1-Oly,sNy+Oly
+C Eastern boundary
+        I_obc = OB_Ie(J,bi,bj)
+        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
+C Western boundary
+        I_obc = OB_Iw(J,bi,bj)
+        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
+      ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
 
@@ -74,8 +94,8 @@ C Western boundary
       ENDDO
 #endif
 
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
 
-#endif
+#endif /* ALLOW_OBCS */
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.2 2005/06/22 00:20:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.3 2005/12/07 23:55:16 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,48 +23,65 @@ C     == Routine Arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_OBCS
-#ifdef NONLIN_FRSURF
-
 C     == Local variables ==
-      INTEGER I,J,I_obc,J_obc,K
-      _RL obc_mask
+      INTEGER i,j,i_obc,j_obc
 
-      K = 1 
-      IF (usingPCoords) K = Nr
-
-C     Set model variables to OB values on North/South Boundaries
-      DO I=1-Olx,sNx+Olx
+C     Set model variable to zero at the Open Boundaries
+      DO i=1-Olx,sNx+Olx
 C Northern boundary
-       J_obc = OB_Jn(I,bi,bj)
-       IF (J_obc.NE.0) THEN
-        obc_mask = _maskS(I,J_obc,K,bi,bj)
-        etaFld(I,J_obc,bi,bj)=OBNeta(I,bi,bj)*obc_mask
-       ENDIF
+        j_obc = OB_Jn(i,bi,bj)
+        IF (j_obc.NE.0) etaFld(i,j_obc,bi,bj) = 0. _d 0
 C Southern boundary
-       J_obc = OB_Js(I,bi,bj)
-       IF (J_obc.NE.0) THEN
-        obc_mask = _maskS(I,J_obc+1,K,bi,bj)
-        etaFld(I,J_obc,bi,bj)=OBSeta(I,bi,bj)*obc_mask
-       ENDIF
+        j_obc = OB_Js(i,bi,bj)
+        IF (j_obc.NE.0) etaFld(i,j_obc,bi,bj) = 0. _d 0
       ENDDO
+      DO j=1-Oly,sNy+Oly
+C Eastern boundary
+        i_obc = OB_Ie(j,bi,bj)
+        IF (i_obc.NE.0) etaFld(i_obc,j,bi,bj) = 0. _d 0
+C Western boundary
+        i_obc = OB_Iw(j,bi,bj)
+        IF (i_obc.NE.0) etaFld(i_obc,j,bi,bj) = 0. _d 0
+      ENDDO
+
+#ifdef NONLIN_FRSURF
+      IF ( nonlinFreeSurf.GT.0 ) THEN
+
+C     Set model variable to OB values on North/South Boundaries
+        DO i=1-Olx,sNx+Olx
+C Northern boundary
+          j_obc = OB_Jn(i,bi,bj)
+          IF (j_obc.NE.0) THEN
+            IF ( ksurfS(i,j_obc,bi,bj).LE.Nr )
+     &        etaFld(i,j_obc,bi,bj) = OBNeta(i,bi,bj)
+          ENDIF
+C Southern boundary
+          j_obc = OB_Js(i,bi,bj)
+          IF (j_obc.NE.0) THEN
+            IF ( ksurfS(i,j_obc+1,bi,bj).LE.Nr )
+     &        etaFld(i,j_obc,bi,bj) = OBSeta(i,bi,bj)
+          ENDIF
+        ENDDO
 
 C     Set model variables to OB values on East/West Boundaries
-      DO J=1-Oly,sNy+Oly
+        DO j=1-Oly,sNy+Oly
 C Eastern boundary
-       I_obc = OB_Ie(J,bi,bj)
-       IF (I_obc.NE.0) THEN
-        obc_mask = _maskW(I_obc,J,K,bi,bj)
-        etaFld(I_obc,J,bi,bj)=OBEeta(J,bi,bj)*obc_mask
-       ENDIF
+          i_obc = OB_Ie(j,bi,bj)
+          IF (i_obc.NE.0) THEN
+            IF ( ksurfW(i_obc,j,bi,bj).LE.Nr )
+     &        etaFld(i_obc,j,bi,bj) = OBEeta(j,bi,bj)
+          ENDIF
 C Western boundary
-       I_obc=OB_Iw(J,bi,bj)
-       IF (I_obc.NE.0) THEN
-        obc_mask = _maskW(I_obc+1,J,K,bi,bj)
-        etaFld(I_obc,J,bi,bj)=OBWeta(J,bi,bj)*obc_mask
-       ENDIF
-      ENDDO
+          i_obc=OB_Iw(j,bi,bj)
+          IF (i_obc.NE.0) THEN
+            IF ( ksurfW(i_obc+1,j,bi,bj).LE.Nr )
+     &        etaFld(i_obc,j,bi,bj) = OBEeta(j,bi,bj)
+          ENDIF
+        ENDDO
 
+      ENDIF
 #endif /* NONLIN_FRSURF */
+
 #endif /* ALLOW_OBCS */
       RETURN
       END

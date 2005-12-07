@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.14 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.15 2005/12/07 23:57:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -166,8 +166,8 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
        ENDIF
 
 #ifdef ALLOW_OBCS
-       IF ( useOBCS )
-     &    CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
+C--    Apply OBC to etaN if NonLin-FreeSurf, reset to zero otherwise:
+       IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
 #endif /* ALLOW_OBCS */            
 
       ENDIF
@@ -211,12 +211,8 @@ C--    Integrate continuity vertically for vertical velocity
 #endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_OBCS
-#ifdef ALLOW_NONHYDROSTATIC
-C--    Apply OBC to W if in N-H mode
-       IF (useOBCS.AND.nonHydrostatic) THEN
-          CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
-        ENDIF
-#endif /* ALLOW_NONHYDROSTATIC */
+C--    Apply OBC to W if in N-H mode, reset to zero otherwise:
+       IF ( useOBCS ) CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
 #endif /* ALLOW_OBCS */            
 
 C-    End DO k=Nr,1,-1
