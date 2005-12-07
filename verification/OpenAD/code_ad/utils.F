@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.3 2005/12/06 06:56:00 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/utils.F,v 1.4 2005/12/07 04:15:05 utke Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -104,7 +104,7 @@ C
       LS     = LEN(string)
       IFNBLNK = 0
       L=1
-      DO while ((L.le.LS).and.(string(L:L) .ne. ' '))
+      DO while ((L.le.LS).and.(string(L:L) .eq. ' '))
         L=L+1
       end do
       IFNBLNK = L
@@ -136,7 +136,7 @@ C
       LS     = LEN(string)
       index = 0
       L=1
-      DO while ((L.le.LS).and.(string(L:L) .ne. ' '))
+      DO while ((L.le.LS).and.(string(L:L) .eq. ' '))
         L=L+1
       end do
       index = L
