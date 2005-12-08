@@ -24,6 +24,7 @@ if test "x$IEEE" = x ; then
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    F90FLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
 else
     FOPTIM='-O0 -noalign'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
