@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.585 2005/12/08 00:18:08 stephd Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.586 2005/12/08 15:09:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o obcs: always reset wVel & eta (to zero or prescribe it) at the OBs.
 o add new package rbcs (for relaxing ptracers at boundaries/depth/surface etc)
 o add new offset feature to offline pkg (plus minor cleanup)
 o cfc fixes for final year of integration
