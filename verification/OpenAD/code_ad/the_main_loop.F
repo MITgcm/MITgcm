@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_main_loop.F,v 1.2 2005/11/23 23:45:35 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_main_loop.F,v 1.3 2005/12/08 18:03:06 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,11 +115,16 @@ C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer iloop
-#ifdef ALLOW_AUTODIFF_TAMC
+      integer leftOvers
+      integer  uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4
+
       integer ilev_1
-#endif
 CEOP
+
+      uCheckLev1=0
+      uCheckLev2=0
+      uCheckLev3=0
+      uCheckLev4=0
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
@@ -188,42 +193,86 @@ c$openad DEPENDENT(xx_salt_dummy)
 #ifndef ALLOW_AUTODIFF_TAMC 
 #error "not set up for undefined ALLOW_AUTODIFF_TAMC "
 #endif 
+      
+cju compute the actual checkpoint counts: 
+      leftOvers = nTimeSteps
+      if (leftOvers .lt. nchklev_1 ) then 
+         uCheckLev1=leftOvers
+      else
+         uCheckLev1 = nchklev_1
+      end if
+      leftOvers = leftOvers - uCheckLev1
 
-c we expect to have at least 1 level of checkpointing:
+      if ((leftOvers/uCheckLev1) .lt. nchklev_2 ) then 
+         uCheckLev2=(leftOvers/uCheckLev1)
+      else
+         uCheckLev2 = nchklev_2
+      end if
+      leftOvers = leftOvers - uCheckLev1*uCheckLev2
 
-      if (nchklev_1 .gt. 0 ) then 
-        do ilev_1 = 1,nchklev_1
+      if ((leftOvers/(uCheckLev1*uCkeckLev2)) .lt. nchklev_3 ) then 
+         uCheckLev3=(leftOvers/(uCheckLev1*uCkeckLev2))
+      else
+         uCheckLev3 = nchklev_3
+      end if
+      leftOvers = leftOvers - uCheckLev1*uCheckLev2*uCheckLev3
+
+      if ((leftOvers/(uCheckLev1*uCkeckLev2*uCkeckLev3)) 
+     &.lt. nchklev_4 ) then 
+         uCheckLev4=
+     &(leftOvers/(uCheckLev1*uCkeckLev2*uCkeckLev3))
+      else
+         uCheckLev4 = nchklev_4
+      end if
+      leftOvers = leftOvers-uCheckLev1*uCheckLev2*uCheckLev3*uCheckLev4
+      if (leftOvers .gt. 0) then 
+         print *, 'error, not enough checkpoints allowed'
+      end if
+
+      print* ,'main_loop: ',uCheckLev1, uCheckLev2, 
+     +uCheckLev3, uCheckLev4
+
+      if (uCheckLev4 .gt. 0 ) then 
+         do ilev_1 = 0, uCheckLev4-1
 
 c--     >>> Loop body start <<<
 cju not sure what the following two lines are good for:
 
-          nIter0 = NINT( (startTime-baseTime)/deltaTClock )
-          ikey_dynamics = ilev_1
+            nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+            ikey_dynamics = ilev_1
 
 #ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_LOOP',myThid)
+            IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_LOOP',myThid)
 #endif
 
-          CALL THE_FIRST_LEVEL_LOOP( ilev_1, myTime, myIter, myThid )
+            CALL THE_FOURTH_LEVEL_LOOP( ilev_4, 
+     +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
+     +myTime, myIter, myThid )
 
 #ifdef ALLOW_RUNCLOCK
-          IF (useRunClock) THEN
-             RC_CONT=RUNCLOCK_CONTINUE( myThid )
-             IF (.NOT.RC_CONT) RETURN
-          ENDIF
+            IF (useRunClock) THEN
+               RC_CONT=RUNCLOCK_CONTINUE( myThid )
+               IF (.NOT.RC_CONT) RETURN
+            ENDIF
 #endif /* ALLOW_RUNCLOCK */
 
 c--     >>> Loop body end <<<
 
-       end do
-
+         end do
       else
+c--     >>> Loop body start <<
+cju not sure what the following two lines are good for:
+
+         nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+         ikey_dynamics = ilev_1
 
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_LOOP',myThid)
+         IF (debugMode) CALL DEBUG_CALL('THE_FIRST_LEVEL_PLAIN',myThid)
 #endif
 
-         CALL THE_FIRST_LEVEL_LOOP( 0, myTime, myIter, myThid )
+         CALL THE_FOURTH_LEVEL_PLAIN( 
+     +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
+     +myTime, myIter, myThid )
 
 #ifdef ALLOW_RUNCLOCK
          IF (useRunClock) THEN
@@ -231,9 +280,10 @@ c--     >>> Loop body end <<<
             IF (.NOT.RC_CONT) RETURN
          ENDIF
 #endif /* ALLOW_RUNCLOCK */
-         
-      end if 
-      
+
+c--     >>> Loop body end <<<
+
+      end if
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.
