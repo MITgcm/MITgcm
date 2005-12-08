@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.171 2005/12/05 14:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.172 2005/12/08 00:15:05 stephd Exp $
 C $Name:  $
 C
 
@@ -797,6 +797,7 @@ C Logical flags for selecting packages
       LOGICAL useFLT
       LOGICAL usePTRACERS
       LOGICAL useGCHEM
+      LOGICAL useRBCS
       LOGICAL useSBO
       LOGICAL useSEAICE
       LOGICAL useBulkForce
@@ -811,7 +812,7 @@ C Logical flags for selecting packages
       COMMON /PARM_PACKAGES/
      &        useKPP, useGMRedi, useOBCS, useAIM, useLand, useECCO, 
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
-     &        usePTRACERS, useGCHEM,
+     &        usePTRACERS, useGCHEM, useRBCS,
      &        useSBO, useSEAICE, useThSIce, useBulkForce, 
      &        usefizhi, usegridalt, usediagnostics, useEBM, useMNC,
      &        usePP81, useMY82, useOPPS, useGGL90, useMATRIX,
