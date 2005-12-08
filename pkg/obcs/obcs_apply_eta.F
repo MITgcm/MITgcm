@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.3 2005/12/07 23:55:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.4 2005/12/08 02:21:25 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -15,6 +15,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "OBCS.h"
 
 C     == Routine Arguments ==
