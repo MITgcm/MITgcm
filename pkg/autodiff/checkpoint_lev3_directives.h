@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.25 2005/01/19 16:13:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.26 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
@@ -32,6 +32,18 @@ cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 #endif /* ALLOW_PASSIVE_TRACER */
+
+#ifdef NONLIN_FRSURF
+CADJ STORE hfac_surfc    = tapelev3, key = ilev_3
+CADJ STORE hfac_surfs    = tapelev3, key = ilev_3
+CADJ STORE hfac_surfw    = tapelev3, key = ilev_3
+CADJ STORE hfacc         = tapelev3, key = ilev_3
+CADJ STORE hfacs         = tapelev3, key = ilev_3
+CADJ STORE hfacw         = tapelev3, key = ilev_3
+CADJ STORE recip_hfacc   = tapelev3, key = ilev_3
+CADJ STORE recip_hfacs   = tapelev3, key = ilev_3
+CADJ STORE recip_hfacw   = tapelev3, key = ilev_3
+#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_CD_CODE
 # include "cd_code_ad_check_lev3_dir.h"

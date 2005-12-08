@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.125 2005/09/16 21:40:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.126 2005/12/08 15:44:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -368,6 +368,39 @@ CADJ STORE theta (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt  (:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE  phiHydC (:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  phiHydF (:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  gudissip (:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  gvdissip (:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  fVerU (:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  fVerV (:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gu(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gv(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gunm1(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gvnm1(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#  ifdef ALLOW_CD_CODE
+CADJ STORE unm1(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE vnm1(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE uVelD(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE vVelD(:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 
@@ -391,12 +424,24 @@ C        and step forward storing the result in gU, gV, etc...
      I         myTime, myIter, myThid)
 #endif
 #ifdef ALLOW_MOM_VECINV
-           IF (vectorInvariantMomentum) CALL MOM_VECINV(
+           IF (vectorInvariantMomentum) THEN
+C
+# ifdef ALLOW_AUTODIFF_TAMC 
+#  ifdef NONLIN_FRSURF
+CADJ STORE fVerU(:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fVerV(:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
+C
+             CALL MOM_VECINV(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         KappaRU, KappaRV,
      U         fVerU, fVerV,
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
+           ENDIF
 #endif
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,

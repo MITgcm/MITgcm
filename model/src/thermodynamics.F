@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.95 2005/11/06 22:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.96 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -301,6 +301,11 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #ifdef ALLOW_PTRACERS
 cph-- moved to forward_step to avoid key computation
 cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
@@ -471,6 +476,12 @@ C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gT, gS, etc.
 #ifndef ALLOW_OFFLINE
          IF ( tempStepping ) THEN
+#ifdef NONLIN_FRSURF
+# ifdef ALLOW_AUTODIFF_TAMC 
+cph-test 
+CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
+#endif
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
@@ -499,6 +510,12 @@ C        and step forward storing result in gT, gS, etc.
 
 #ifndef ALLOW_OFFLINE
          IF ( saltStepping ) THEN
+#ifdef NONLIN_FRSURF
+# ifdef ALLOW_AUTODIFF_TAMC
+cph-test 
+CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
+#endif
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,

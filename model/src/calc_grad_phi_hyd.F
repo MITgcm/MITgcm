@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.7 2005/11/05 01:00:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.8 2005/12/08 15:44:33 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -68,6 +68,7 @@ CEOP
 
 #ifdef NONLIN_FRSURF
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
+# ifndef DISABLE_RSTAR_CODE
 C-    Integral of b.dr = rStarFac * Integral of b.dr* :
 C      and will add later (select_rStar=2) the contribution of 
 C      the slope of the r* coordinate.
@@ -126,6 +127,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
          ENDDO
         ENDDO
        ENDIF
+# endif /* DISABLE_RSTAR_CODE */
       ELSE
 #else /* NONLIN_FRSURF */
       IF (.TRUE.) THEN

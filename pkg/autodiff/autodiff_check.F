@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.3 2005/08/10 03:34:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.4 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -59,6 +59,10 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
         stop    ' ... stopped in autodiff_check'
       endif
 #endif
+
+      IF ( select_rStar.NE.0 ) THEN
+        STOP 'in autodiff_check: adjoint not implemented for rStar'
+      ENDIF
 
 #endif
 

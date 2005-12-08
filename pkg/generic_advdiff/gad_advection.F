@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.38 2005/11/05 01:01:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.39 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -193,6 +193,9 @@ C     uninitialised but inert locations.
         fVerT(i,j,1) = 0. _d 0
         fVerT(i,j,2) = 0. _d 0
         rTransKp1(i,j)= 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+        localTij(i,j) = 0. _d 0
+#endif
        ENDDO
       ENDDO
 
@@ -314,6 +317,21 @@ C-    not CubedSphere
  
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
+C-     Advective flux in X
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          af(i,j) = 0.
+         ENDDO
+        ENDDO
+C
+#ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE localTij(:,:)  = 
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ STORE af(:,:)  = 
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C
       IF (calc_fluxes_X) THEN
 
 C-     Do not compute fluxes if
@@ -333,18 +351,11 @@ C-     Internal exchange for calculations in X
         ENDIF
 #endif
 
-C-     Advective flux in X
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          af(i,j) = 0.
-         ENDDO
-        ENDDO
-
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifndef DISABLE_MULTIDIM_ADVECTION
+# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  = 
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
-#endif
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
@@ -461,6 +472,22 @@ C--   End of X direction
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
+cph-test
+C-     Advective flux in Y
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          af(i,j) = 0.
+         ENDDO
+        ENDDO
+C
+#ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE localTij(:,:)  = 
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ STORE af(:,:)  = 
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C
       IF (calc_fluxes_Y) THEN
 
 C-     Do not compute fluxes if

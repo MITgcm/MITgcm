@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.3 2004/10/19 02:43:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.4 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -105,6 +105,7 @@ C-    Calculate vertical transports above U & V points (West & South face):
 #ifdef NONLIN_FRSURF
 C---  Modify rTransU & rTransV when using r* coordinate:
       IF ( select_rStar.NE.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
 
        IF ( k.EQ.1) THEN
 C-    Initialise dWtrans :
@@ -155,7 +156,9 @@ C-    Modify rTransU & rTransV :
 
        ENDIF
 
+# endif /* DISABLE_RSTAR_CODE */
       ENDIF
+
 #endif /* NONLIN_FRSURF */
 
       RETURN

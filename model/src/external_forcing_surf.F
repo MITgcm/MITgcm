@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.31 2005/07/11 19:30:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.32 2005/12/08 15:44:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -102,6 +102,7 @@ C-    T,S surface forcing will be applied (thermodynamics) after the update
 C     of surf.thickness (hFac): account for change in surf.thickness
        IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
         IF (select_rStar.GT.0) THEN
+# ifndef DISABLE_RSTAR_CODE
          DO j=jMin,jMax
           DO i=iMin,iMax
             surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
@@ -110,6 +111,7 @@ C     of surf.thickness (hFac): account for change in surf.thickness
      &                                  * rStarExpC(i,j,bi,bj)
           ENDDO
          ENDDO
+# endif /* DISABLE_RSTAR_CODE */
         ELSE
          DO j=jMin,jMax
           DO i=iMin,iMax

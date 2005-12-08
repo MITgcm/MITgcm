@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.126 2005/12/08 00:15:52 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.127 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,9 @@ C     == Global variables ==
 # include "ctrl_dummy.h"
 # include "cost.h"
 # include "EOS.h"
+# ifdef NONLIN_FRSURF
+#  include "GRID.h"
+# endif
 # ifdef ALLOW_EXF
 #  include "exf_fields.h"
 #  include "exf_clim_fields.h"
@@ -316,6 +319,16 @@ CADJ STORE vvel               = comlev1, key = ikey_dynamics
 CADJ STORE empmr              = comlev1, key = ikey_dynamics
 CADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
+CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics
+CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics
+CADJ STORE hFacC, hFacS, hFacW
+CADJ &     = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
+CADJ &     = comlev1, key = ikey_dynamics
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef ALLOW_OFFLINE
@@ -386,6 +399,17 @@ CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
 CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
 CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics
 CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
+# endif
+c
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE etaN               = comlev1, key = ikey_dynamics
+CADJ STORE etaH               = comlev1, key = ikey_dynamics
+CADJ STORE uVel               = comlev1, key = ikey_dynamics
+CADJ STORE vVel               = comlev1, key = ikey_dynamics
+#  ifdef ALLOW_CD_CODE
+CADJ STORE etanm1             = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -464,10 +488,17 @@ C--   Update geometric factors:
 C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
         CALL UPDATE_R_STAR( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
+# endif /* DISABLE_RSTAR_CODE */
        ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW 
+CADJ &     = comlev1, key = ikey_dynamics
+#endif
         CALL TIMER_START('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
@@ -479,7 +510,7 @@ C-    update also CG2D matrix (and preconditioner)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_CG2D        [FORWARD_STEP]',myThid)
       ENDIF
-#endif
+#endif /* NONLIN_FRSURF */
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
@@ -539,12 +570,17 @@ C--   Update etaH(n+1) :
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
+# ifndef DISABLE_RSTAR_CODE
 C--   r* : compute the future level thickness according to etaH(n+1) 
         CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
         CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
         CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
+# endif /* DISABLE_RSTAR_CODE */
       ELSEIF ( nonlinFreeSurf.GT.0) THEN
 C--   compute the future surface level thickness according to etaH(n+1) 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE etaH          = comlev1, key = ikey_dynamics
+#endif
         CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
         CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
         CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)

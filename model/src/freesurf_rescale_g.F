@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.4 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.5 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,12 +41,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (nonlinFreeSurf.GT.0) THEN
        IF (select_rStar.GT.0) THEN
+#ifndef DISABLE_RSTAR_CODE
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
      &                          /rStarExpC(i,j,bi,bj)
          ENDDO
         ENDDO
+#endif /* DISABLE_RSTAR_CODE */
        ELSE
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx

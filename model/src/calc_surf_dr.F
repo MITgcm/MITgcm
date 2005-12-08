@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.9 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.10 2005/12/08 15:44:33 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,11 +40,6 @@ C     etaFld :: current eta field used to update the hFactor
 #ifdef NONLIN_FRSURF
 
 C     !LOCAL VARIABLES:
-C     Local variables in common block
-C     Rmin_surf :: minimum r_value of the free surface position 
-C                  that satisfy  the hFacInf criteria
-      COMMON /LOCAL_CALC_SURF_DR/ Rmin_surf
-      _RL Rmin_surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
 C     rSurftmp     :: free surface r-position that is used to compute hFac_surf
@@ -61,58 +56,6 @@ C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
 CEOP
       DATA numbWrite / 0 /
       numbWrMax = Nx*Ny
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      IF (myIter.EQ.-1) THEN
-
-       hFacInfMOM = hFacInf
-
-       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
-
-C-- Initialise arrays :
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx 
-           hFac_surfC(i,j,bi,bj) = 0.
-           hFac_surfW(i,j,bi,bj) = 0.
-           hFac_surfS(i,j,bi,bj) = 0.
-           PmEpR(i,j,bi,bj) = 0.
-           Rmin_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
-          ENDDO
-         ENDDO
-
-C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
-         DO j=1,sNy
-          DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
-           IF (ks.LE.Nr) THEN
-             Rmin_tmp = rF(ks+1)
-             IF ( ks.EQ.ksurfW(i,j,bi,bj))
-     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i-1,j,bi,bj))
-             IF ( ks.EQ.ksurfW(i+1,j,bi,bj)) 
-     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i+1,j,bi,bj))
-             IF ( ks.EQ.ksurfS(i,j,bi,bj))
-     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j-1,bi,bj))
-             IF ( ks.EQ.ksurfS(i,j+1,bi,bj))
-     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j+1,bi,bj))
-
-             Rmin_surf(i,j,bi,bj) =
-     &        MAX( MAX(rF(ks+1),R_low(i,j,bi,bj)) + hFacInf*drF(ks),  
-     &                                Rmin_tmp + hFacInfMOM*drF(ks)
-     &           )
-           ENDIF
-          ENDDO
-         ENDDO
-
-C-    end bi,bj loop.
-        ENDDO
-       ENDDO
-
-       _EXCH_XY_R8( Rmin_surf, myThid ) 
-
-C-    end of initialization block
-      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

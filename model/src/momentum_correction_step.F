@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.2 2005/10/13 19:43:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.3 2005/12/08 15:44:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,6 +43,9 @@ C     == Global variables ===
 #endif
 #ifdef ALLOW_ZONAL_FILT
 #include "ZONAL_FILT.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -134,6 +137,12 @@ C--   Filter (and exchange)
       ENDIF
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics
+# endif
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 

@@ -9,7 +9,8 @@ calc_grad_phi_surf.f
 calc_gs.f	
 calc_gt.f	
 calc_ivdc.f	
-calc_phi_hyd.f	
+calc_phi_hyd.f
+calc_surf_dr.f
 calc_viscosity.f	
 convect.f	
 convective_adjustment.f
@@ -30,12 +31,14 @@ external_forcing.f
 external_forcing_surf.f
 find_alpha.f	
 find_rho.f	
-forward_step.f	
+forward_step.f
+freesurf_rescale_g.f
 freeze.f
 freeze_surface.f
 grad_sigma.f	
 impldiff.f	
 ini_autodiff.f	
+ini_surf_dr.f
 ini_cartesian_grid.f
 ini_cg2d.f	
 ini_cori.f	
@@ -52,6 +55,7 @@ ini_p_ground.f
 ini_pressure.f	
 ini_pnh.f	
 ini_psurf.f	
+ini_r_star.f
 ini_salt.f	
 ini_spherical_polar_grid.f
 ini_theta.f	
@@ -77,4 +81,6 @@ thermodynamics.f
 timestep_tracer.f
 tracers_correction_step.f
 update_etah.f	
+update_surf_dr.f
+update_cg2d.f
 swfrac.f
