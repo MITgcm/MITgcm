@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.125 2005/12/03 08:30:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.126 2005/12/08 00:15:52 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -262,6 +262,12 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
         ENDIF
 # endif
+#endif
+
+#ifdef ALLOW_RBCS
+        IF ( useRBCS ) THEN
+         CALL RBCS_FIELDS_LOAD( mytime, myiter, mythid )
+        ENDIF
 #endif
 
 #ifdef COMPONENT_MODULE

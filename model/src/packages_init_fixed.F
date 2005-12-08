@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.44 2005/09/04 19:24:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.45 2005/12/08 00:15:52 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -241,6 +241,11 @@ C--   Initialise the control variables
 C     IF (useDIC)
       CALL DIC_INIT_FIXED(mythid)
 #endif
+
+#ifdef ALLOW_RBCS
+      IF (useRBCS) CALL RBCS_INIT_FIXED(mythid)
+#endif
+
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
