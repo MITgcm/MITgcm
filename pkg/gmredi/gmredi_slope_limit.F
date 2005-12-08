@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.22 2004/11/21 15:55:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.23 2005/12/08 21:40:16 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -18,7 +18,7 @@ C     |==========================================================|
 C     | On entry:                                                |
 C     |            dSigmaDr     contains the d/dz Sigma          |
 C     |            dSigmaDx/Dy  contains X/Y gradients of sigma  |
-C     |            depthZ       contains the height (m) of level |
+C     |            depthZ       contains the depth (< 0 !) [m]   |
 C     | On exit:                                                 |
 C     |            dSigmaDr     contains the effective dSig/dz   |
 C     |            SlopeX/Y     contains X/Y slopes              |
@@ -184,7 +184,7 @@ C         but still neglect Kxy & Kyx (assumed to be zero)
      &                      + dSigmaDr(i,j)*dSigmaDr(i,j)
           taperFct(i,j) = 1. _d 0
 c
-          IF (dRdSigmaLtd(i,j).NE.0.) then
+          IF (dRdSigmaLtd(i,j).NE.0.) THEN
              dRdSigmaLtd(i,j)=1. _d 0
      &            / ( dRdSigmaLtd(i,j) )
              SlopeSqr(i,j)=(dSigmaDx(i,j)*dSigmaDx(i,j)
@@ -340,11 +340,15 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 
           IF (SlopeSqr(i,j) .EQ. 0.) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+          ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            Smod=sqrt(SlopeSqr(i,j))
            f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-           Rnondim=depthZ/(Lrho(i,j)*Smod)
-           f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
+           Rnondim= -depthZ/(Lrho(i,j)*Smod)
+           IF ( Rnondim.GE.1. _d 0 ) THEN
+             f2 = 1. _d 0
+           ELSE
+             f2 = op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5) ))
+           ENDIF
            taperFct(i,j)=f1*f2
           ENDIF
 
@@ -358,7 +362,6 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 #endif /* GM_EXCLUDE_TAPERING */
 
       ENDIF
-
 
 #endif /* ALLOW_GMREDI */
 

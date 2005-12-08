@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.8 2005/11/04 01:31:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.9 2005/12/08 21:40:16 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -17,7 +17,7 @@ C     |==========================================================|
 C     | On entry:                                                |
 C     |            dSigmaDrW,S  contains the d/dz Sigma          |
 C     |            SlopeX/Y     contains X/Y gradients of sigma  |
-C     |            depthZ       contains the height (m) of level |
+C     |            depthZ       contains the depth (< 0 !) [m]   |
 C     | On exit:                                                 |
 C     |            dSigmaDrW,S  contains the effective dSig/dz   |
 C     |            SlopeX/Y     contains X/Y slopes              |
@@ -47,7 +47,7 @@ C
       _RL dSigmaDrS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL depthZ
+      _RS depthZ
       INTEGER K,bi,bj,myThid
 CEndOfInterface
 
@@ -124,7 +124,7 @@ CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
-          taperX(i,j)=1. _d 0
+          taperX(i,j) = 1. _d 0
          ENDDO
         ENDDO
 
@@ -159,7 +159,7 @@ CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx,sNx+Olx
           SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
-          taperY(i,j)=1. _d 0
+          taperY(i,j) = 1. _d 0
          ENDDO
         ENDDO
 
@@ -192,7 +192,7 @@ CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
-          taperX(i,j)= 1. _d 0
+          taperX(i,j) = 1. _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -224,7 +224,7 @@ CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx,sNx+Olx
           SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
-          taperY(i,j)=1. _d 0
+          taperY(i,j) = 1. _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -311,14 +311,18 @@ C-      Large, Danabasoglu and Doney, JPO 1997
          DO i=1-Olx+1,sNx+Olx
           Smod = ABS(SlopeX(i,j))
           IF ( Smod .LT. slopeCutoff ) THEN
-          f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
-          IF (Smod.NE.0.) THEN
-            Rnondim=depthZ/(LrhoW(i,j)*Smod)
-          ELSE
-            Rnondim=0.
-          ENDIF
-          f2=op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5)))
-          taperX(i,j)=f1*f2
+            f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
+            IF (Smod.NE.0.) THEN
+              Rnondim = -depthZ/(LrhoW(i,j)*Smod)
+            ELSE
+              Rnondim = 1.
+            ENDIF
+            IF ( Rnondim.GE.1. _d 0 ) THEN
+              f2 = 1. _d 0
+            ELSE
+              f2 = op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5) ))
+            ENDIF
+            taperX(i,j)=f1*f2
           ENDIF
          ENDDO
         ENDDO
@@ -327,14 +331,18 @@ C-      Large, Danabasoglu and Doney, JPO 1997
          DO i=1-Olx,sNx+Olx
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .LT. slopeCutoff ) THEN
-          f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
-          IF (Smod.NE.0.) THEN
-            Rnondim=depthZ/(LrhoS(i,j)*Smod)
-          ELSE
-            Rnondim=0.
-          ENDIF
-          f2=op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5)))
-          taperY(i,j)=f1*f2
+            f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
+            IF (Smod.NE.0.) THEN
+              Rnondim = -depthZ/(LrhoS(i,j)*Smod)
+            ELSE
+              Rnondim = 1.
+            ENDIF
+            IF ( Rnondim.GE.1. _d 0 ) THEN
+              f2 = 1. _d 0
+            ELSE
+              f2 = op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5) ))
+            ENDIF
+            taperY(i,j)=f1*f2
           ENDIF
          ENDDO
         ENDDO
