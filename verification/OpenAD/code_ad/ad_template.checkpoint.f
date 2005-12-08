@@ -54,22 +54,22 @@ c we may need these for the checkpointing
 
       our_indent=our_indent+1
 
-      write(*,'(A,A,L,L,L,L,L)') 
-     +indentation(1:our_indent), "enter __SRNAME__:",
-     +our_rev_mode%arg_store,
-     +our_rev_mode%arg_restore,
-     +our_rev_mode%plain,
-     +our_rev_mode%tape,
-     +our_rev_mode%adjoint
+c      write(*,'(A,A,L,L,L,L,L)') 
+c     +indentation(1:our_indent), "enter __SRNAME__:",
+c     +our_rev_mode%arg_store,
+c     +our_rev_mode%arg_restore,
+c     +our_rev_mode%plain,
+c     +our_rev_mode%tape,
+c     +our_rev_mode%adjoint
 
-      write(*,'(A,A,A,I6,A,I6,A,I6,A,I6,A,I8,A,I8)')
-     +indentation(1:our_indent), "enter __SRNAME__:",
-     +" CD:",cp_double_pointer, 
-     +" CI:",cp_integer_pointer, 
-     +" CB:",cp_boolean_pointer, 
-     +" CS:",cp_string_pointer, 
-     +" TD:",double_tape_pointer, 
-     +" TI:",integer_tape_pointer
+c      write(*,'(A,A,A,I6,A,I6,A,I6,A,I6,A,I8,A,I8)')
+c     +indentation(1:our_indent), "enter __SRNAME__:",
+c     +" CD:",cp_double_pointer, 
+c     +" CI:",cp_integer_pointer, 
+c     +" CB:",cp_boolean_pointer, 
+c     +" CS:",cp_string_pointer, 
+c     +" TD:",double_tape_pointer, 
+c     +" TI:",integer_tape_pointer
 
       if (our_rev_mode%arg_store) then 
          write(*,'(A,A)') 
@@ -114,22 +114,22 @@ c we may need these for the checkpointing
          our_rev_mode=our_orig_mode
       end if 
 
-          write(*,'(A,A,A,I6,A,I6,A,I6,A,I6,A,I8,A,I8)')
-     +indentation(1:our_indent), "leave __SRNAME__:",
-     +" CD:",cp_double_pointer, 
-     +" CI:",cp_integer_pointer, 
-     +" CB:",cp_boolean_pointer, 
-     +" CS:",cp_string_pointer, 
-     +" TD:",double_tape_pointer, 
-     +" TI:",integer_tape_pointer
+c          write(*,'(A,A,A,I6,A,I6,A,I6,A,I6,A,I8,A,I8)')
+c     +indentation(1:our_indent), "leave __SRNAME__:",
+c     +" CD:",cp_double_pointer, 
+c     +" CI:",cp_integer_pointer, 
+c     +" CB:",cp_boolean_pointer, 
+c     +" CS:",cp_string_pointer, 
+c     +" TD:",double_tape_pointer, 
+c     +" TI:",integer_tape_pointer
 
-      write(*,'(A,A,L,L,L,L,L)') 
-     +indentation(1:our_indent), "leave __SRNAME__:",
-     +our_rev_mode%arg_store,
-     +our_rev_mode%arg_restore,
-     +our_rev_mode%plain,
-     +our_rev_mode%tape,
-     +our_rev_mode%adjoint
+c      write(*,'(A,A,L,L,L,L,L)') 
+c     +indentation(1:our_indent), "leave __SRNAME__:",
+c     +our_rev_mode%arg_store,
+c     +our_rev_mode%arg_restore,
+c     +our_rev_mode%plain,
+c     +our_rev_mode%tape,
+c     +our_rev_mode%adjoint
 
       our_indent=our_indent-1
 
