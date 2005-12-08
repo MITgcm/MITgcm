@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.584 2005/12/06 17:57:40 stephd Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.585 2005/12/08 00:18:08 stephd Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add new package rbcs (for relaxing ptracers at boundaries/depth/surface etc)
 o add new offset feature to offline pkg (plus minor cleanup)
 o cfc fixes for final year of integration
 o clean up GCHEM_OPTIONS.h/DIC_OPTIONS.h (all options should
