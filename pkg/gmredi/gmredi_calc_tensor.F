@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.21 2005/10/26 20:53:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.22 2005/12/08 03:29:32 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -62,6 +62,15 @@ C     == Local variables ==
       _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
 
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  doDiagRediFlx
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      INTEGER  km1
+      _RL dTdz
+      _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -77,6 +86,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_DIAGNOSTICS
+      doDiagRediFlx = .FALSE.
+      IF ( useDiagnostics ) THEN
+        doDiagRediFlx = DIAGNOSTICS_IS_ON('GM_KuzTz', myThid )
+        doDiagRediFlx = doDiagRediFlx .OR. 
+     &                  DIAGNOSTICS_IS_ON('GM_KvzTz', myThid )
+      ENDIF
+#endif
+     
 #ifdef GM_VISBECK_VARIABLE_K
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
@@ -406,6 +424,43 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
       ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF (doDiagRediFlx) THEN
+        km1 = MAX(k-1,1)
+        DO j=1,sNy
+         DO i=1,sNx+1
+C         store in tmp1k Kuz_Redi
+          tmp1k(i,j) = ( GM_isopycK
+#ifdef GM_VISBECK_VARIABLE_K
+     &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
+#endif
+     &                 )*SlopeX(i,j)*taperFct(i,j)
+         ENDDO
+        ENDDO
+        DO j=1,sNy
+         DO i=1,sNx+1
+C-        Vertical gradients interpolated to U points
+          dTdz = (
+     &     +recip_drC(k)*
+     &       ( maskC(i-1,j,k,bi,bj)*
+     &           (theta(i-1,j,km1,bi,bj)-theta(i-1,j,k,bi,bj))
+     &        +maskC( i ,j,k,bi,bj)*
+     &           (theta( i ,j,km1,bi,bj)-theta( i ,j,k,bi,bj))
+     &       )
+     &     +recip_drC(kp1)*
+     &       ( maskC(i-1,j,kp1,bi,bj)*
+     &           (theta(i-1,j,k,bi,bj)-theta(i-1,j,kp1,bi,bj))
+     &        +maskC( i ,j,kp1,bi,bj)*
+     &           (theta( i ,j,k,bi,bj)-theta( i ,j,kp1,bi,bj))
+     &       )      ) * 0.25 _d 0
+           tmp1k(i,j) = dyG(i,j,bi,bj)*drF(k)*hFacW(i,j,k,bi,bj)
+     &                * tmp1k(i,j) * dTdz
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmp1k, 'GM_KuzTz', k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C     Gradient of Sigma at V points
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
@@ -486,6 +541,43 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
       ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (doDiagRediFlx) THEN
+c       km1 = MAX(k-1,1)
+        DO j=1,sNy+1
+         DO i=1,sNx
+C         store in tmp1k Kvz_Redi
+          tmp1k(i,j) = ( GM_isopycK
+#ifdef GM_VISBECK_VARIABLE_K
+     &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
+#endif
+     &                 )*SlopeY(i,j)*taperFct(i,j)
+         ENDDO
+        ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx
+C-        Vertical gradients interpolated to U points
+          dTdz = (
+     &     +recip_drC(k)*
+     &       ( maskC(i,j-1,k,bi,bj)*
+     &           (theta(i,j-1,km1,bi,bj)-theta(i,j-1,k,bi,bj))
+     &        +maskC(i, j ,k,bi,bj)*
+     &           (theta(i, j ,km1,bi,bj)-theta(i, j ,k,bi,bj))
+     &       )
+     &     +recip_drC(kp1)*
+     &       ( maskC(i,j-1,kp1,bi,bj)*
+     &           (theta(i,j-1,k,bi,bj)-theta(i,j-1,kp1,bi,bj))
+     &        +maskC(i, j ,kp1,bi,bj)*
+     &           (theta(i, j ,k,bi,bj)-theta(i, j ,kp1,bi,bj))
+     &       )      ) * 0.25 _d 0
+           tmp1k(i,j) = dxG(i,j,bi,bj)*drF(k)*hFacS(i,j,k,bi,bj)
+     &                * tmp1k(i,j) * dTdz
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmp1k, 'GM_KvzTz', k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
 

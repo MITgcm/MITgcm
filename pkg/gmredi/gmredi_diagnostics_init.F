@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.1 2005/01/04 00:19:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.2 2005/12/08 03:29:31 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -117,6 +117,20 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 'GM Bolus transport stream-function : Y component'
         diagUnits = 'm^2/s           '
         WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'LR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_KuzTz'
+        diagTitle = 'Redi Off-diagonal Tempetature flux: X component'
+        diagUnits = 'degC.m^3/s      '
+        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_KvzTz'
+        diagTitle = 'Redi Off-diagonal Tempetature flux: Y component'
+        diagUnits = 'degC.m^3/s      '
+        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
