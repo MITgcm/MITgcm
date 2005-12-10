@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.29 2005/12/09 16:41:09 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.30 2005/12/10 17:43:15 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2350,7 +2350,7 @@ ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f mfef90
 
 # WHIRL -> XAIF
 ad_input_code_sf.w2f.canon.xaif : ad_input_code_sf.w2f.canon.B whirl2xaif
-	./whirl2xaif -o \$@ \$<
+	./whirl2xaif --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
 ad_input_code_sf.w2f.canon.xb.xaif : ad_input_code_sf.w2f.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
