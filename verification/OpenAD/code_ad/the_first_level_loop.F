@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_first_level_loop.F,v 1.2 2005/12/08 18:03:06 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_first_level_loop.F,v 1.3 2005/12/10 17:44:23 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,9 +84,7 @@ C     == Local variables ==
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_FIRST_LEVEL_LOOP',myThid)
 #endif
-      print *, 'THE_FIRST_LEVEL_LOOP(',iLoop,')'
-
-      print *, 'THE_FIRST_LEVEL_LOOP: iloop=',iLoop,' of ',nTimeSteps
+      print *, 'JU: THE_FIRST_LEVEL_LOOP: iloop=',iLoop,' of ',nTimeSteps
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)

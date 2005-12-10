@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_second_level_loop.F,v 1.2 2005/12/08 18:03:06 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_second_level_loop.F,v 1.3 2005/12/10 17:44:23 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,7 +90,7 @@ C     == Local variables ==
       IF (debugMode) CALL DEBUG_ENTER('THE_SECOND_LEVEL_LOOP',myThid)
 #endif
 
-      print *, 'THE_SECOND_LEVEL_LOOP(',iLev_4,',',iLev_3,',',iLev_2,')'
+      print *, 'JU: THE_SECOND_LEVEL_LOOP(',iLev_4,',',iLev_3,',',iLev_2,')'
       do ilev_1 = 0,uChkLev1-1
          iloop = ilev_1 
      &        + (ilev_2)*uCheckLev1 
@@ -186,7 +186,7 @@ C     == Local variables ==
       IF (debugMode) CALL DEBUG_ENTER('THE_SECOND_LEVEL_PLAIN',myThid)
 #endif
 
-      print *, 'THE_SECOND_LEVEL_PLAIN(',iLev_4,',',iLev_3,')'
+      print *, 'JU: THE_SECOND_LEVEL_PLAIN(',iLev_4,',',iLev_3,')'
       do ilev_1 = 0,uChkLev1-1
          iloop = ilev_1 
      &        + (ilev_3)*uCheckLev2*uCheckLev1

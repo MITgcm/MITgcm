@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_third_level_loop.F,v 1.2 2005/12/08 18:03:06 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/the_third_level_loop.F,v 1.3 2005/12/10 17:44:23 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,7 +88,7 @@ C     == Local variables ==
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_THIRD_LEVEL_LOOP',myThid)
 #endif
-      print *, 'THE_THIRD_LEVEL_LOOP(',iLev_4,',',iLev_3,')'
+      print *, 'JU: THE_THIRD_LEVEL_LOOP(',iLev_4,',',iLev_3,')'
       if (uCheckLev2 .gt. 0 ) then 
          do ilev_2 = 0,uCheckLev2 - 1
 #ifdef ALLOW_DEBUG
@@ -184,7 +184,7 @@ C     == Local variables ==
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_THIRD_LEVEL_PLAIN',myThid)
 #endif
-      print *, 'THE_THIRD_LEVEL_PLAIN(',iLev_4,')'
+      print *, 'JU: THE_THIRD_LEVEL_PLAIN(',iLev_4,')'
       if (uCheckLev2 .gt. 0 ) then 
          do ilev_2 = 0,uCheckLev2 - 1
 #ifdef ALLOW_DEBUG
