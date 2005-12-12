@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.48 2005/11/08 02:14:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.49 2005/12/12 15:50:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,10 @@ C     == Local variables ==
       LOGICAL putPmEinXvector
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_NONHYDROSTATIC
+      INTEGER ks
+      LOGICAL zeroPsNH
+#endif
 CEOP
 
 #ifdef TIME_PER_TIMESTEP
@@ -71,6 +75,11 @@ C     !TIMING VARIABLES
 C     == Timing variables ==
       REAL*8 utnew, utold, stnew, stold, wtnew, wtold
       COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
+#endif
+
+#ifdef ALLOW_NONHYDROSTATIC
+c       zeroPsNH = .FALSE.
+        zeroPsNH = exactConserv
 #endif
 
 C--   Initialise the Vector solution with etaN + deltaT*Global_mean_PmE
@@ -154,7 +163,18 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( nonHydrostatic .AND. zeroPsNH ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &         * etaH(i,j,bi,bj)
+           cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
+     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &         * etaH(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSEIF ( nonHydrostatic ) THEN
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
@@ -215,7 +235,8 @@ C Western boundary
           ENDIF
          ENDDO
         ENDIF
-#endif
+#endif /* ALLOW_OBCS */
+C-    end bi,bj loops
        ENDDO
       ENDDO
 
@@ -313,16 +334,16 @@ C Western boundary
           ENDIF
           ENDDO
          ENDIF
-#endif
+#endif /* ALLOW_OBCS */
 
          K=1
          DO j=1,sNy
           DO i=1,sNx
            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +dRF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -dRF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +dRF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -dRF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( freeSurfFac*etaN(i,j,bi,bj)/deltaTMom
      &          -wVel(i,j,k+1,bi,bj)
      &        )*_rA(i,j,bi,bj)/deltaTmom
@@ -332,10 +353,10 @@ C Western boundary
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +dRF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -dRF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +dRF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -dRF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( wVel(i,j,k  ,bi,bj)
      &         -wVel(i,j,k+1,bi,bj)
      &        )*_rA(i,j,bi,bj)/deltaTmom
@@ -347,10 +368,10 @@ C Western boundary
          DO j=1,sNy
           DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +dRF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -dRF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +dRF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -dRF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( wVel(i,j,k  ,bi,bj)
      &        )*_rA(i,j,bi,bj)/deltaTmom
 
@@ -382,14 +403,14 @@ C Western boundary
           ENDDO
           ENDDO
          ENDIF
-#endif
-
-        ENDDO ! bi
-       ENDDO ! bj
+#endif /* ALLOW_OBCS */
+C-    end bi,bj loops
+        ENDDO
+       ENDDO
 
       firstResidual=0.
       lastResidual=0.
-      numIters=cg2dMaxIters
+      numIters=cg3dMaxIters
       CALL CG3D(
      U           cg3d_b,
      U           phi_nh,
@@ -413,8 +434,51 @@ C Western boundary
        ENDIF
       ENDIF
 
+C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
+      IF ( zeroPsNH ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+         IF ( usingZCoords ) THEN
+C-       Z coordinate: assume surface @ level k=1
+          DO k=2,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             phi_nh(i,j,k,bi,bj) = phi_nh(i,j,k,bi,bj)
+     &                           - phi_nh(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)
+     &                       *(cg2d_x(i,j,bi,bj) + phi_nh(i,j,1,bi,bj))
+             phi_nh(i,j,1,bi,bj) = 0.
+           ENDDO
+          ENDDO
+         ELSE
+C-       Other than Z coordinate: no assumption on surface level index
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            ks = ksurfC(i,j,bi,bj)
+            IF ( ks.LE.Nr ) THEN
+             etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)
+     &                       *(cg2d_x(i,j,bi,bj) + phi_nh(i,j,ks,bi,bj))
+             DO k=Nr,1,-1
+              phi_nh(i,j,k,bi,bj) = phi_nh(i,j,k,bi,bj)
+     &                            - phi_nh(i,j,ks,bi,bj)
+             ENDDO
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+
+        ENDDO
+       ENDDO
       ENDIF
-#endif
+
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef TIME_PER_TIMESTEP
 CCE107 Time per timestep information
