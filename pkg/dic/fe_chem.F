@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.6 2005/10/13 16:25:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.7 2005/12/12 19:07:36 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -55,8 +55,8 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
 C ligand balance in surface layer
 C in surface layer
 
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO k=1,nR
           IF(hFacC(i,j,k,bi,bj) .gt. 0.0)THEN
 

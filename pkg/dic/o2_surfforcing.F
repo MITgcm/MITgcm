@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.7 2005/08/25 22:32:44 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.8 2005/12/12 19:07:36 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -73,8 +73,8 @@ CEOP
       K=1
 
 C calculate SCHMIDT NO. for O2
-        DO j=jMin,jMax
-          DO i=iMin,iMax
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             IF (hFacC(i,j,k,bi,bj).NE.0.) THEN
               SchmidtNoO2(i,j) = 
      &            sox1 
@@ -127,8 +127,8 @@ cQQ PTR_O2?
         END DO
 
 C update surface tendencies      
-        DO j=jMin,jMax
-          DO i=iMin,iMax
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            SGO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)
      &         *recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
           ENDDO

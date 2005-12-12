@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.5 2005/08/18 18:24:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.6 2005/12/12 19:07:36 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -690,8 +690,8 @@ C "Handbook of Methods C for the Analysis of the Various Parameters of
 C the Carbon Dioxide System in Seawater", DOE, 1994 (SOP No. 3, p25-26). 
 C....................................................................
 
-        do i=imin,imax
-         do j=jmin,jmax
+        do i=1-OLx,sNx+OLx
+         do j=1-OLy,sNy+OLy
           if (hFacC(i,j,1,bi,bj).gt.0.d0) then
            t = ttemp(i,j,1,bi,bj)
            s = stemp(i,j,1,bi,bj)
@@ -959,8 +959,8 @@ cmick....................................................
 
 
 
-        do i=imin,imax
-         do j=jmin,jmax
+        do i=1-OLx,sNx+OLx
+         do j=1-OLy,sNy+OLy
           if (hFacC(i,j,Klevel,bi,bj).gt.0.d0) then
            t = ttemp(i,j,Klevel,bi,bj)
            s = stemp(i,j,Klevel,bi,bj)
