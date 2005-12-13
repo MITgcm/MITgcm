@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.42 2005/11/06 22:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.43 2005/12/13 21:07:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,6 @@ C     == Local variables ==
       LOGICAL momDissip_In_AB
       LOGICAL momStartAB
       INTEGER i,j
-      _RL ab15,ab05
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -71,15 +70,8 @@ C    Allow diagnosis of external forcing
 #endif
 CEOP
 
-C     Adams-Bashforth timestepping weights
+C     Start AB with low-order timestepping weights
       momStartAB = nIter0.EQ.0
-      IF (myIter .EQ. 0) THEN
-       ab15=1.0
-       ab05=0.0
-      ELSE
-       ab15=1.5+abeps
-       ab05=-0.5-abeps
-      ENDIF
 
 C-- explicit part of the surface potential gradient is added in this S/R
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
