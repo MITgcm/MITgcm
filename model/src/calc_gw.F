@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.22 2005/11/08 02:14:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.23 2005/12/13 23:16:52 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -81,8 +81,13 @@ CEOP
       jMax = sNy
 
 C     Adams-Bashforth timestepping weights
-      ab15 =  1.5 _d 0 + abeps
-      ab05 = -0.5 _d 0 - abeps
+      IF (myIter .EQ. 0) THEN
+       ab15 =  1.0 _d 0
+       ab05 =  0.0 _d 0
+      ELSE
+       ab15 =  1.5 _d 0 + abeps
+       ab05 = -0.5 _d 0 - abeps
+      ENDIF
 
 C     Lateral friction (no-slip, free slip, or half slip):
       IF ( no_slip_sides ) THEN
