@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.30 2005/12/10 17:43:15 utke Exp $
+# $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/genmake2,v 1.31 2005/12/13 17:35:32 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2372,7 +2372,7 @@ ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f: ad_input_code_sf.w2f.canon.xb.x2w.w2
 	rm \$<.1
 
 # postprocess F'
-ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f multi-pp.pl ../code_ad/ad_inline.f ../code_ad/ad_template.checkpoint.f ../code_ad/ad_template.split.f
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f multi-pp.pl ../code_ad/ad_inline.f ../code_ad/ad_template.checkpoint.f ../code_ad/ad_template.plain.f ../code_ad/ad_template.split.f
 	perl multi-pp.pl -inline=../code_ad/ad_inline.f \$<
 	cat \$@ | sed 's/RETURN//' > \$@.1
 	mv \$@.1 \$@
