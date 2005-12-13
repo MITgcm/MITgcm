@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.29 2005/04/06 22:02:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.30 2005/12/13 19:45:19 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -122,6 +122,16 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /edtauFFIELDS/ EddyTaux,EddyTauy
       _RS  EddyTaux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  EddyTauy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+      COMMON /FFIELDS_3d_theta/ thetaStar
+      _RS  thetaStar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
+#ifdef ALLOW_CLIMSALT_RELAXATION
+      COMMON /FFIELDS_3d_salt/ saltStar
+      _RS  saltStar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 #ifndef ALLOW_EXF
