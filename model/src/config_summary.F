@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.84 2005/11/06 01:16:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.85 2005/12/13 16:41:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -317,6 +317,9 @@ C     zcoord ::
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
      & 'momPressureForcing =',  
      & '  /* Momentum pressure term on/off flag */')
+      CALL WRITE_0D_L( implicitIntGravWave, INDEX_NONE,
+     &  'implicitIntGravWave=',
+     &  ' /* Implicit Internal Gravity Wave flag */')
       CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
      &                 'staggerTimeStep =',
      &'   /* Stagger time stepping on/off flag */')

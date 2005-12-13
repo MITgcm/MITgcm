@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.107 2005/10/24 22:40:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.108 2005/12/13 16:41:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,6 +130,7 @@ Cml      sBeta               = 7.4D-4
       buoyancyRelation    = 'OCEANIC'
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
+      implicitIntGravWave = .FALSE.
       staggerTimeStep     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
