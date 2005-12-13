@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.12 2005/06/29 07:11:18 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.13 2005/12/13 19:46:46 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -53,6 +53,7 @@ c     == global variables ==
 #include "exf_param.h"
 #include "exf_constants.h"
 #include "exf_fields.h"
+#include "exf_clim_param.h"
 #include "exf_clim_fields.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -67,7 +68,7 @@ c     mythid - thread number for this instance of the routine.
 c     == local variables ==
 
       integer bi,bj
-      integer i,j
+      integer i,j,k
       integer jtlo
       integer jthi
       integer itlo
@@ -212,6 +213,30 @@ c             Short wave radiative flux.
           enddo
 #endif
 
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+          if ( climtempfile .NE. ' ' ) then
+             do k = 1, Nr
+                do j = jmin,jmax
+                   do i = imin,imax
+                      thetaStar(i,j,k,bi,bj)  = climtemp(i,j,k,bi,bj)
+                   enddo
+                enddo
+             enddo
+          endif
+#endif
+
+#ifdef ALLOW_CLIMSALT_RELAXATION
+          if ( climsaltfile .NE. ' ' ) then
+             do k = 1, Nr
+                do j = jmin,jmax
+                   do i = imin,imax
+                      saltStar(i,j,k,bi,bj)  = climsalt(i,j,k,bi,bj)
+                   enddo
+                enddo
+             enddo
+          endif
+#endif
+
 #ifdef ATMOSPHERIC_LOADING
           do j = jmin,jmax
             do i = imin,imax
@@ -238,6 +263,12 @@ c      _EXCH_XY_R4(    fv, mythid )
 #endif
 #ifdef ALLOW_CLIMSSS_RELAXATION
       _EXCH_XY_R4(   sss, mythid )
+#endif
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+      _EXCH_XYZ_R4( thetaStar, mythid )
+#endif
+#ifdef ALLOW_CLIMSALT_RELAXATION
+      _EXCH_XYZ_R4( saltStar, mythid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_R4( pload, mythid )

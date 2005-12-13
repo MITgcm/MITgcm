@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.9 2004/10/11 16:41:01 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.10 2005/12/13 19:46:46 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -90,11 +90,17 @@ c     get record numbers and interpolation factor for climsalt
      &           , exf_clim_yftype, nr
      &           , climsalt1, count0, mythid
      &           )
-            if (exf_clim_yftype .eq. 'RL') then
-               call exf_filter_rl( climsalt1, climsaltmask, mythid )
-            else
-               call exf_filter_rs( climsalt1, climsaltmask, mythid )
-            end if
+            do k = 1, Nr
+               if (exf_clim_yftype .eq. 'RL') then
+                  call exf_filter_rl( 
+     &                 climsalt1(1-Olx,1-Oly,k,1,1), 
+     &                 climsaltmask, mythid )
+               else
+                  call exf_filter_rs( 
+     &                 climsalt1(1-Olx,1-Oly,k,1,1), 
+     &                 climsaltmask, mythid )
+               end if
+            enddo
          endif
 
          if (( first ) .or. ( changed )) then
@@ -104,11 +110,17 @@ c     get record numbers and interpolation factor for climsalt
      &           , exf_clim_yftype, nr
      &           , climsalt1, count1, mythid
      &           )
-            if (exf_clim_yftype .eq. 'RL') then
-               call exf_filter_rl( climsalt1, climsaltmask, mythid )
-            else
-               call exf_filter_rs( climsalt1, climsaltmask, mythid )
-            end if
+            do k = 1, Nr
+               if (exf_clim_yftype .eq. 'RL') then
+                  call exf_filter_rl( 
+     &                 climsalt1(1-Olx,1-Oly,k,1,1), 
+     &                 climsaltmask, mythid )
+               else
+                  call exf_filter_rs( 
+     &                 climsalt1(1-Olx,1-Oly,k,1,1), 
+     &                 climsaltmask, mythid )
+               end if
+            enddo
          endif
 
 c     Loop over tiles.
@@ -158,6 +170,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 
 #include "exf_fields.h"
 #include "exf_param.h"
@@ -181,7 +194,7 @@ c     == end of interface ==
           do k=1,nr
             do j = 1, sny
               do i = 1, snx
-                 climsalt (i,j,k,bi,bj) = 0. _d 0
+                 climsalt (i,j,k,bi,bj) = sRef(k)
                  climsalt0(i,j,k,bi,bj) = 0. _d 0
                  climsalt1(i,j,k,bi,bj) = 0. _d 0
               enddo

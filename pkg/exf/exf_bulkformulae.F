@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.10 2005/06/28 22:05:49 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.11 2005/12/13 19:46:46 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -7,8 +7,6 @@ c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.10 2005/06/28 22:05:
 c     ==================================================================
 c     SUBROUTINE exf_bulkformulae
 c     ==================================================================
-c
-c     o Read-in atmospheric state and/or surface fluxes from files.
 c
 c     o Use bulk formulae to estimate turbulent and/or radiative
 c       fluxes at the surface.
@@ -246,7 +244,7 @@ CHPF$  INDEPENDENT
 #ifdef ALLOW_DOWNWARD_RADIATION
 c--   Compute net from downward and downward from net longwave and
 c     shortwave radiation, if needed.
-c     lwflux = Stefan-Boltzman constant * emissivity * SST - lwdown
+c     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
 c     swflux = - ( 1 - albedo ) * swdown
 
 #ifdef ALLOW_ATM_TEMP

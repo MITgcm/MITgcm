@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.20 2005/07/28 13:53:32 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.21 2005/12/13 19:46:46 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -11,43 +11,72 @@ C !DATE:
 C !INTRODUCTION: External forcing package
 c \bv
 c * The external forcing package, in conjunction with the
-c   calendar package, enables the handling of realistic forcing
+c   calendar package (cal), enables the handling of realistic forcing
 c   fields of differing temporal forcing patterns.
 c * It comprises climatological restoring and relaxation
 c * Bulk formulae are implemented to convert atmospheric fields
 c   to surface fluxes.
+c * An interpolation routine provides on-the-fly interpolation of
+c   forcing fields an arbitrary grid onto the model grid.
+c * A list of EXF variables and units is in exf_fields.h
 c
 C     !CALLING SEQUENCE:
 c ...
-c  exf_getforcing
+c  exf_getforcing (TOP LEVEL ROUTINE)
 c  |
 c  |-- exf_getclim (get climatological fields used e.g. for relax.)
+c  |   |--- exf_set_climtemp (relax. to 3-D temperature field)
+c  |   |--- exf_set_climsalt (relax. to 3-D salinity field)
+c  |   |--- exf_set_climsst  (relax. to 2-D SST field)
+c  |   |--- exf_set_climsss  (relax. to 2-D SSS field)
+c  |   o
 c  |
 c  |-- exf_getffields <- this one does almost everything
 c  |   |   1. reads in fields, either flux or atmos. state,
-c  |   |      depending on CPP options
-c  |   |   2. If forcing and control is flux, we're already done here
-c  |   |   3. If forcing is atmos. state, then
-c  |   |      (a) if control is atmos. state, then the control variable
-c  |   |          anomalies are read here
+c  |   |      depending on CPP options (for each variable two fields
+c  |   |      consecutive in time are read in and interpolated onto
+c  |   |      current time step).
+c  |   |   2. If forcing is atmos. state and control is atmos. state,
+c  |   |      then the control variable anomalies are read here
 c  |   |          * ctrl_getatemp
 c  |   |          * ctrl_getaqh
 c  |   |          * ctrl_getuwind
 c  |   |          * ctrl_getvwind
-c  |   |   4. flux fields are interpolated on current time
-c  |   |      (b) next the flux fields are computed via bulk formulae
-c  |   |
-c  |   |-- exf_obcs
-c  |       If open boundaries are prescribed externally,
-c  |       OB values for current time step are read here
-c  |       1. for each boundary (north, south, west, east)
-c  |          sliced fields are read for T,S,U,V
-c  |       2. if OB's are part of control vector,
-c  |          control variable anomalies are added to OB values
-c  |          * ctrl_getobcsn
-c  |          * ctrl_getobcss
-c  |          * ctrl_getobcsw
-c  |          * ctrl_getobcse
+c  |   |      If forcing and control are fluxes, then
+c  |   |      controls are added later.
+c  |   o
+c  |
+c  |-- exf_check_range
+c  |   |   1. Check whether read fields are within assumed range
+c  |   |      (may capture mismatches in units)
+c  |   o
+c  |
+c  |-- exf_bulkformulae
+c  |   |   1. Compute net or downwelling radiative fluxes via
+c  |   |      Stefan-Boltzmann law in case only one is known.
+c  |   |   2. Compute air-sea momentum and buoyancy fluxes from
+c  |   |      atmospheric state following Large and Pond, JPO, 1981/82
+c  |   o
+c  |
+c  |-- < add time-mean river runoff here, if available >
+c  |
+c  |-- < update tile edges here >
+c  |
+c  |-- exf_getsurfacefluxes
+c  |   |   1. If forcing and control are fluxes, then
+c  |   |      controls are added here.
+c  |   o
+c  |
+c  |-- < treatment of hflux w.r.t. swflux >
+c  |
+c  |-- exf_diagnostics_fill
+c  |   |   1. Do EXF-related diagnostics output here.
+c  |   o
+c  |
+c  |-- exf_mapfields
+c  |   |   1. Map the EXF variables onto the core MITgcm
+c  |   |      forcing fields.
+c  |   o
 c  |
 c  |-- exf_bulkformulae
 c  |   If ALLOW_BULKFORMULAE, compute fluxes via bulkformulae

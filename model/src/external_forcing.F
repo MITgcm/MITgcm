@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.32 2005/07/17 17:26:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.33 2005/12/13 19:47:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: EXTERNAL_FORCING_U
@@ -311,6 +314,19 @@ c     IF ( usePenetratingSW ) THEN
 c     ENDIF
 #endif
 
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+       IF ( tauThetaClimRelax3Dim .NE. 0. ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
+     &     -1./tauThetaClimRelax3Dim
+     &         *(theta(i,j,klev,bi,bj)-thetaStar(i,j,klev,bi,bj))
+     &         *hFacC(i,j,klev,bi,bj)*recip_hFacC(i,j,kLev,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
+
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
        CALL OBCS_SPONGE_T(
@@ -401,6 +417,19 @@ C     Add fresh-water in top-layer
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_CLIMSALT_RELAXATION
+       IF ( tauSaltClimRelax3Dim .NE. 0. ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          gS(i,j,klev,bi,bj) = gS(i,j,klev,bi,bj)
+     &     -1./tauSaltClimRelax3Dim
+     &         *(salt(i,j,klev,bi,bj)-saltStar(i,j,klev,bi,bj))
+     &         *hFacC(i,j,klev,bi,bj)*recip_hFacC(i,j,kLev,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN

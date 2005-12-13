@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.4 2005/12/13 19:46:46 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -55,14 +55,14 @@ c     == end of interface ==
 c     Get values of climatological temperature fields.
       call exf_set_climtemp ( mytime, myiter, mythid )
 c--   Update the tile edges.
-      _EXCH_XY_R8(climtemp, mythid)
+      _EXCH_XYZ_R8(climtemp, mythid)
 #endif
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
 c     Get values of climatological salinity fields.
       call exf_set_climsalt ( mytime, myiter, mythid )
 c--   Update the tile edges.
-      _EXCH_XY_R8(climsalt, mythid)
+      _EXCH_XYZ_R8(climsalt, mythid)
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
