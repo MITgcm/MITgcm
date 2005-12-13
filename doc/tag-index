@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.590 2005/12/13 19:53:52 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.591 2005/12/13 23:29:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o no AB-2 at the first iteration for Gw (consistant with Gu,Gv,Gt,Gs ...)
+  affect results of NH experiments (but all our NH tests have Gw[it=1]==0 !!)
+o transfert surface NH pressure to eta field (if exactConserv).
 o gmredi: fix bugs in slope tapering ldd97 (depthZ had the wrong sign)
      and update lab_sea output.txt file.
 o completing 3-dim. relaxation code: additional term
