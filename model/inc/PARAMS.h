@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.172 2005/12/08 00:15:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.173 2005/12/13 16:33:43 jmc Exp $
 C $Name:  $
 C
 
@@ -207,7 +207,6 @@ C                               spherical polar frame.
 C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
 C     no_slip_sides :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
-C     staggerTimeStep :: enable a Stagger time stepping T,S Rho then U,V
 C     momViscosity  :: Flag which turns momentum friction terms on and off.
 C     momAdvection  :: Flag which turns advection of momentum on and off.
 C     momForcing    :: Flag which turns external forcing of momentum on
@@ -235,10 +234,12 @@ C     useAreaViscLength :: Set to true to use old scaling for viscous
 C              lengths, e.g., L2=Raz.  May be preferable for cube sphere.
 C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     rigidLid            :: Set to true to use rigid lid
-C     implicitFreeSurface :: Set to true to use implcit free surface
+C     implicitFreeSurface :: Set to true to use implicit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
 C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
 C                           linear relation Phi_surf = Bo_surf*eta
+C     implicitIntGravWave :: treat Internal Gravity Wave implicitly
+C     staggerTimeStep :: enable a Stagger time stepping T,S Rho then U,V
 C     momStepping   :: Turns momentum equation time-stepping off
 C     tempStepping  :: Turns temperature equation time-stepping off
 C     saltStepping  :: Turns salinity equation time-stepping off
@@ -305,7 +306,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
-     & staggerTimeStep,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing, vectorInvariantMomentum,
      & tempAdvection, tempForcing,
@@ -314,6 +314,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & useFullLeith, useStrainTensionVisc,
      & useAreaViscLength,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
+     & implicitIntGravWave, staggerTimeStep,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
@@ -346,7 +347,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useNHMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
-      LOGICAL staggerTimeStep
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
@@ -365,6 +365,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
       LOGICAL uniformLin_PhiSurf
+      LOGICAL implicitIntGravWave
+      LOGICAL staggerTimeStep
       LOGICAL momStepping
       LOGICAL tempStepping
       LOGICAL saltStepping
@@ -452,6 +454,9 @@ C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     tRef      :: reference vertical profile for potential temperature
 C     sRef      :: reference vertical profile for salinity/specific humidity 
 C     phiRef    :: reference potential (pressure/rho, geopotential) profile 
+C     dBdrRef   :: vertical gradient of reference boyancy  [(m/s/r)^2)]:
+C               :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
+C               :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
@@ -618,7 +623,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, 
-     & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef,
+     & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
      & baseTime, startTime, endTime, 
      & chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -712,6 +717,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL tRef(Nr)
       _RL sRef(Nr)
       _RL phiRef(2*Nr+1)
+      _RL dBdrRef(Nr)
       _RL baseTime
       _RL startTime
       _RL endTime
