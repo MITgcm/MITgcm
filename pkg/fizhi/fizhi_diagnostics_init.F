@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.4 2005/08/19 00:30:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.5 2005/12/13 21:24:01 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -492,13 +492,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle  = 'Relative Vorticity  (x10^-4  sec^-1)'
       diagUnits  = '(e-4 sec-1)     '
       diagCode  = 'SM      ML      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName  = 'PSIGDOT '
-      diagTitle  = 'Pi-Weighted Vertical Sigma Velocity  (hPa/day)'
-      diagUnits  = 'hPa/day         '
-      diagCode  = 'SM      LL      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -1595,6 +1588,38 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Pressures for Fizhi (mb)'
       diagUnits = 'mb  (hPa)       '
       diagCode = 'SM      ML      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'CORRDU  '
+      diagTitle  =
+     .  'Zonal Wind Tendency Gridalt Correction Term (m/s/day)'
+      diagUnits  = 'm/s/day         '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'ML      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'CORRDV  '
+      diagTitle  =
+     .  'Meridional Wind Tendency Gridalt Correction Term (m/s/day)'
+      diagUnits  = 'm/s/day         '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'CORRDT  '
+      diagTitle  =
+     .  'Temperature Tendency Gridalt Correction Term (K/day)'
+      diagUnits  = 'K/day           '
+      diagCode  = 'SM      ML      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'CORRDQ  '
+      diagTitle  =
+     .  'Specific Humidity Tendency Gridalt Correction Term (g/kg/day)'
+      diagUnits  = 'gram/kg/day     '
+      diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
