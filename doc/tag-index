@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.589 2005/12/08 22:25:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.590 2005/12/13 19:53:52 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,19 @@ $Name:  $
 
 o gmredi: fix bugs in slope tapering ldd97 (depthZ had the wrong sign)
      and update lab_sea output.txt file.
+o completing 3-dim. relaxation code: additional term
+     1/tau*( theta(i,j,k) - thetaStar(i,j,k) )
+  in S/R EXTERNAL_FORCING_T (file external_forcing.F)
+  * At compile time, in "EXF_OPTIONS.h" set
+      #define  ALLOW_CLIMTEMP_RELAXATION
+      #define  ALLOW_CLIMSALT_RELAXATION
+  * At runtime in "data", under &PARM03 set (e.g., units in seconds)
+      tauThetaClimRelax3Dim = 15552000.0,
+      tauSaltClimRelax3Dim  = 15552000.0,
+  * 3 cases:
+      1) Use a constant-in-time 3-dim. field
+      2) Provide 12 3-dim. fields corresponding to Jan., ... , Dec.
+      3) Real-time relax. to time-evolving prescribed field
 
 checkpoint57y_post
 First step for a NLFS adjoint
