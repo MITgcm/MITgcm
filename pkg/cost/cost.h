@@ -103,7 +103,7 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
       integer kLocOut
 #endif
 
-#ifdef ALLOW_COST_ATLANTIC_HEAT
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
       COMMON /COST_MEAN_R/
      &                     cMeanTheta, cMeanUVel, cMeanVVel
       _RL cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

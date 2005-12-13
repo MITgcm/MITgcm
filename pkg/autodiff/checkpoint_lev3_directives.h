@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.26 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.27 2005/12/13 16:15:32 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
@@ -100,7 +100,7 @@ CADJ STORE empmr = tapelev3, key = ilev_3
 # include "ebm_ad_check_lev3_dir.h"
 #endif /* ALLOW_EBM */
 
-#ifdef ALLOW_COST_ATLANTIC_HEAT
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
 CADJ STORE cMeanTheta = tapelev3, key = ilev_3
 CADJ STORE cMeanUVel  = tapelev3, key = ilev_3
 CADJ STORE cMeanVVel  = tapelev3, key = ilev_3

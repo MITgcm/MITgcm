@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.1 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.2 2005/12/13 16:15:32 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -62,7 +62,7 @@ c--   Initialize the tiled cost function contributions.
           end do
 #endif
 c
-#ifdef ALLOW_COST_ATLANTIC_HEAT
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
           do k=1,nr
             do j=1,sNy
               do i=1,sNx

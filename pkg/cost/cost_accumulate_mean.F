@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.2 2004/12/03 00:43:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.3 2005/12/13 16:15:32 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,7 @@ C     myThid - Thread number for this instance of the routine.
       integer bi, bj
       integer myThid
 
-#ifdef ALLOW_COST_ATLANTIC_HEAT
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
 C     == Local variables
       _RL thetaRef
 
@@ -61,6 +61,6 @@ C--   Calculate cost function on tile of this instance
         end do
       end do
 
-#endif /* ALLOW_COST_ATLANTIC_HEAT */
+#endif
 
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.4 2004/09/27 18:00:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.5 2005/12/13 16:15:32 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,7 +95,7 @@ C--   TAMC need a stmt in front of a HPF directive
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-#ifdef ALLOW_COST_ATLANTIC_HEAT
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
            IF ( myTime .GT. (EndTime - lastinterval) )
      &          CALL COST_ACCUMULATE_MEAN (myThid)
 #endif
