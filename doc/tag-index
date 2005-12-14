@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.591 2005/12/13 23:29:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.592 2005/12/14 16:47:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o no AB-2 at the first iteration for Gw (consistant with Gu,Gv,Gt,Gs ...)
-  affect results of NH experiments (but all our NH tests have Gw[it=1]==0 !!)
-o transfert surface NH pressure to eta field (if exactConserv).
+o fix the pickup behavior for obcs in combination with ptracers
+o fix a bug in ptracers_external_fields_load
+o no AB-2 at the first iteration for Gw (consistent with Gu,Gv,Gt,Gs ...)
+  affects results of NH experiments (but all our NH tests have Gw[it=1]==0 !!)
+o transfered surface NH pressure to eta field (if exactConserv).
 o gmredi: fix bugs in slope tapering ldd97 (depthZ had the wrong sign)
      and update lab_sea output.txt file.
 o completing 3-dim. relaxation code: additional term
