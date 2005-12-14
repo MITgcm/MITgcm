@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.14 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.15 2005/12/14 16:43:19 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -225,38 +225,63 @@ C--   Apply OBCS values to initial conditions for consistancy
        ENDDO
       ENDDO
 
+      IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ' ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) 
-     &     CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
+       IF (debugMode) 
+     &      CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
 #endif
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
-         CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
-#ifdef ALLOW_PTRACERS
-         DO iTracer=1,PTRACERS_numInUse
-          CALL OBCS_APPLY_PTRACER( 
-     I         bi, bj, K, iTracer, 
-     U         ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
-     I         myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K=1,Nr
+          CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
+          CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
          ENDDO
-#endif /* ALLOW_PTRACERS */
         ENDDO
        ENDDO
-      ENDDO
-
-      IF (useOBCSprescribe) THEN
+#ifdef ALLOW_PTRACERS
+C     repeat everything for passive tracers
+       IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) 
+     &       CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
+#endif
+        DO iTracer=1,PTRACERS_numInUse
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            CALL OBCS_APPLY_PTRACER( 
+     I           bi, bj, K, iTracer, 
+     U           ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
+     I           myThid )
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_PTRACERS */
+       IF (useOBCSprescribe) THEN
 C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boudnary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
-      IF (debugMode) 
+        IF (debugMode) 
      &       CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
-       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-       _EXCH_XYZ_R8( theta, myThid )
-       _EXCH_XYZ_R8( salt , myThid )
+        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
+        _EXCH_XYZ_R8( theta, myThid )
+        _EXCH_XYZ_R8( salt , myThid )
+       ENDIF
+#ifdef ALLOW_PTRACERS
+       IF (usePTRACERS) THEN
+C     Loop over passive tracers
+        DO iTracer=1,PTRACERS_numInUse
+         _EXCH_XYZ_R8( pTracer(1-Olx,1-Oly,1,1,1,iTracer), 
+     &        myThid )
+        ENDDO
+       ENDIF
+#endif /* ALLOW_PTRACERS */
+C     endif start from rest
       ENDIF
 
 #endif /* ALLOW_OBCS */
