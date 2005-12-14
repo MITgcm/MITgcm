@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.15 2005/12/14 16:43:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.16 2005/12/14 18:01:49 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -134,45 +134,47 @@ CML      _RL ptracerLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         ENDDO
 
 #ifdef ALLOW_PTRACERS
-        DO iTracer=1,PTRACERS_numInUse
-         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
+        IF ( usePTRACERS ) THEN
+         DO iTracer=1,PTRACERS_numInUse
+          DO K=1,Nr
+           DO I=1-Olx,sNx+Olx
 #ifdef ALLOW_OBCS_NORTH
-           OBNptr (I,K,bi,bj,iTracer)=0. _d 0
+            OBNptr (I,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
-           OBNptr0(I,K,bi,bj,iTracer)=0. _d 0
-           OBNptr1(I,K,bi,bj,iTracer)=0. _d 0
+            OBNptr0(I,K,bi,bj,iTracer)=0. _d 0
+            OBNptr1(I,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_NORTH */
-
+            
 #ifdef ALLOW_OBCS_SOUTH
-           OBSptr (I,K,bi,bj,iTracer)=0. _d 0
+            OBSptr (I,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
-           OBSptr0(I,K,bi,bj,iTracer)=0. _d 0
-           OBSptr1(I,K,bi,bj,iTracer)=0. _d 0
+            OBSptr0(I,K,bi,bj,iTracer)=0. _d 0
+            OBSptr1(I,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_SOUTH */
-          ENDDO
-
-          DO J=1-Oly,sNy+Oly
+           ENDDO
+           
+           DO J=1-Oly,sNy+Oly
 #ifdef ALLOW_OBCS_EAST
-           OBEptr (J,K,bi,bj,iTracer)=0. _d 0
+            OBEptr (J,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
-           OBEptr0(J,K,bi,bj,iTracer)=0. _d 0
-           OBEptr1(J,K,bi,bj,iTracer)=0. _d 0
+            OBEptr0(J,K,bi,bj,iTracer)=0. _d 0
+            OBEptr1(J,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_EAST */
-
+            
 #ifdef ALLOW_OBCS_WEST
-           OBWptr (J,K,bi,bj,iTracer)=0. _d 0
+            OBWptr (J,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
-           OBWptr0(J,K,bi,bj,iTracer)=0. _d 0
-           OBWptr1(J,K,bi,bj,iTracer)=0. _d 0
+            OBWptr0(J,K,bi,bj,iTracer)=0. _d 0
+            OBWptr1(J,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_WEST */
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        ENDIF
 #endif /* ALLOW_PTRACERS */
 
 #ifdef NONLIN_FRSURF
