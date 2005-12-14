@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.16 2005/12/14 18:01:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.17 2005/12/14 22:40:51 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -18,7 +18,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "OBCS.h"
-#ifdef ALLOW_PTRACERS.h
+#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "OBCS_PTRACERS.h"
@@ -216,7 +216,7 @@ c       CALL OBCS_READ_CHECKPOINT(prec, nIter0, suff, myThid)
       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Apply OBCS values to initial conditions for consistancy
+C--   Load/compute OBCS values:
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
@@ -229,6 +229,8 @@ C--   Apply OBCS values to initial conditions for consistancy
 
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
      &     .AND. pickupSuff .EQ. ' ' ) THEN
+C--   Apply OBCS values to initial conditions for consistency
+C      (but initial conditions only)
 #ifdef ALLOW_DEBUG
        IF (debugMode) 
      &      CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
@@ -254,7 +256,7 @@ C     repeat everything for passive tracers
            DO K=1,Nr
             CALL OBCS_APPLY_PTRACER( 
      I           bi, bj, K, iTracer, 
-     U           ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
+     U           pTracer(1-Olx,1-Oly,K,bi,bj,iTracer),
      I           myThid )
            ENDDO
           ENDDO
