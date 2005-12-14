@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.96 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.97 2005/12/14 22:49:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,13 +237,6 @@ C     uninitialised but inert locations.
           fVerS  (i,j,2) = 0. _d 0
           kappaRT(i,j)   = 0. _d 0
           kappaRS(i,j)   = 0. _d 0
-#ifdef ALLOW_PTRACERS
-          DO ip=1,PTRACERS_num
-           fVerP  (i,j,1,ip) = 0. _d 0
-           fVerP  (i,j,2,ip) = 0. _d 0
-           kappaRTr(i,j,ip)  = 0. _d 0
-          ENDDO
-#endif
          ENDDO
         ENDDO
 
@@ -255,14 +248,33 @@ C This is currently also used by IVDC and Diagnostics
 C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
            gT(i,j,k,bi,bj)   = 0. _d 0
            gS(i,j,k,bi,bj)   = 0. _d 0
-# ifdef ALLOW_PTRACERS
-           DO iTracer=1,PTRACERS_numInUse
-            gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
-           ENDDO
-# endif
           ENDDO
          ENDDO
         ENDDO
+
+#ifdef ALLOW_PTRACERS
+        IF ( usePTRACERS ) THEN
+         DO ip=1,PTRACERS_num
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             fVerP  (i,j,1,ip) = 0. _d 0
+             fVerP  (i,j,2,ip) = 0. _d 0
+             kappaRTr(i,j,ip)  = 0. _d 0
+            ENDDO
+           ENDDO
+         ENDDO
+C-      set tracer tendency to zero:
+         DO iTracer=1,PTRACERS_numInUse
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+#endif
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
 C-      Apply AB on T,S :
