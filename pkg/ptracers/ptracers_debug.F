@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.3 2004/07/13 16:47:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.4 2005/12/15 01:12:17 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -33,7 +33,7 @@ C  none
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj,iTracer  :: loop indices
-      INTEGER i,j,iTracer
+      INTEGER iTracer
       CHARACTER*(9) strng
 CEOP
 

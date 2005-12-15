@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.6 2005/12/05 14:37:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.7 2005/12/15 01:11:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,7 +60,7 @@ C     PiLoc, zLoc, dzLoc, yLatLoc, phiLoc :: hold on temporary values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi,bj,i,j,K, Ks
-      _RL ddPI, Po_surf
+      _RL Po_surf
       _RL hRef(2*Nr+1), rHalf(2*Nr+1)
       LOGICAL findPoSurf
 
