@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.17 2005/12/14 22:40:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.18 2005/12/15 14:30:45 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -37,7 +37,6 @@ C     == Local variables ==
       INTEGER prec
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
-CML      _RL ptracerLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_DEBUG
@@ -216,7 +215,8 @@ c       CALL OBCS_READ_CHECKPOINT(prec, nIter0, suff, myThid)
       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Load/compute OBCS values:
+C--   Load/compute OBCS values in all cases, although these values are
+C--   only used for initialisation and never for restart:
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
@@ -243,27 +243,6 @@ C      (but initial conditions only)
          ENDDO
         ENDDO
        ENDDO
-#ifdef ALLOW_PTRACERS
-C     repeat everything for passive tracers
-       IF ( usePTRACERS ) THEN
-#ifdef ALLOW_DEBUG
-        IF (debugMode) 
-     &       CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
-#endif
-        DO iTracer=1,PTRACERS_numInUse
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO K=1,Nr
-            CALL OBCS_APPLY_PTRACER( 
-     I           bi, bj, K, iTracer, 
-     U           pTracer(1-Olx,1-Oly,K,bi,bj,iTracer),
-     I           myThid )
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-#endif /* ALLOW_PTRACERS */
        IF (useOBCSprescribe) THEN
 C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boudnary values have been read
@@ -276,17 +255,49 @@ C     from a file.
         _EXCH_XYZ_R8( theta, myThid )
         _EXCH_XYZ_R8( salt , myThid )
        ENDIF
-#ifdef ALLOW_PTRACERS
-       IF (usePTRACERS) THEN
-C     Loop over passive tracers
-        DO iTracer=1,PTRACERS_numInUse
-         _EXCH_XYZ_R8( pTracer(1-Olx,1-Oly,1,1,1,iTracer), 
-     &        myThid )
-        ENDDO
-       ENDIF
-#endif /* ALLOW_PTRACERS */
 C     endif start from rest
       ENDIF
+#ifdef ALLOW_PTRACERS
+C     repeat everything for passive tracers
+      IF ( usePTRACERS ) THEN
+C     catch the case when we do start from a pickup for dynamics variables
+C     but initialise ptracers differently
+       IF ( nIter0 .EQ. PTRACERS_Iter0 ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) 
+     &       CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
+#endif
+        DO iTracer=1,PTRACERS_numInUse
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            CALL OBCS_APPLY_PTRACER( 
+     I           bi, bj, K, iTracer, 
+     U           ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
+     I           myThid )
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        IF (useOBCSprescribe) THEN
+C     After applying the boundary conditions exchange the 3D-fields.
+C     This is only necessary of the boudnary values have been read
+C     from a file.
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL( 
+     &        'PTRACERS EXCHANGES in OBCS_INIT_VARIABLES',myThid)
+#endif
+C     Loop over passive tracers
+         DO iTracer=1,PTRACERS_numInUse
+          _EXCH_XYZ_R8( pTracer(1-Olx,1-Oly,1,1,1,iTracer), 
+     &         myThid )
+         ENDDO
+        ENDIF
+C     endif start from rest
+       ENDIF
+C     endif usePTRACERS
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_OBCS */
 
