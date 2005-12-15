@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.7 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.8 2005/12/15 00:48:16 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -43,6 +43,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+#ifdef ALLOW_EXF
       logical first, changed
       integer count0, count1
       integer year0, year1
@@ -50,6 +51,7 @@ c     == local variables ==
 #ifdef ALLOW_PTRACERS
       integer iTracer, i,j,k
 #endif /* ALLOW_PTRACERS */
+#endif /* ALLOW_EXF */
 
 c     == end of interface ==
 
