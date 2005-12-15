@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.23 2005/12/13 23:16:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.24 2005/12/15 02:06:06 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -104,7 +104,6 @@ C        slipSideFac = 0. _d 0
         DO K=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           gwNm1(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
            gW(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -317,6 +316,7 @@ caja           and an hFacUS (above V points) too...
      &     +deltatMom*nh_Am2*( ab15*gW(i,j,k,bi,bj)
      &                 +ab05*gwNm1(i,j,k,bi,bj) )
            IF (hFacC(I,J,K,bi,bj).EQ.0.) wVel(i,j,k,bi,bj)=0.
+           gwNm1(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO

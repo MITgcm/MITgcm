@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.60 2005/11/08 23:01:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.61 2005/12/15 02:06:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,8 +129,8 @@ C       Raw fields
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-          CALL READ_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
-c         CALL READ_REC_XYZ_RL( 'gWnm1', gWnm1,1,myIter,myThid)
+c         CALL READ_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
+          CALL READ_REC_XYZ_RL( 'gWnm1', gwNm1,1,myIter,myThid)
         ENDIF
 #endif
 
@@ -224,8 +224,8 @@ C       Read model fields
         IF ( nonHydrostatic ) THEN
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,    gW,2,myThid)
-c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
+c         CALL MDSREADFIELD(fn,prec,'RL',Nr,    gW,2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr, gwNm1,2,myThid)
         ENDIF
 #endif
 
@@ -267,7 +267,8 @@ C#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydrostatic) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
+c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'gWnm1', gwNm1, myThid)
         ENDIF
 #endif
         IF ( useDynP_inEos_Zc ) THEN
@@ -312,8 +313,8 @@ c     _EXCH_XYZ_R8(gs    , myThid )
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( nonHydrostatic ) THEN
         _EXCH_XYZ_R8(phi_nh, myThid )
-        _EXCH_XYZ_R8(gW    , myThid )
-c       _EXCH_XYZ_R8(gWNM1 , myThid )
+c       _EXCH_XYZ_R8(gW    , myThid )
+        _EXCH_XYZ_R8(gwNm1 , myThid )
       ENDIF
 #endif
       
@@ -507,22 +508,22 @@ C       Write model fields
 C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'uVel',   uVel, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(    'gU',     gU, 1,myIter,myThid)
-        CALL WRITE_REC_XYZ_RL( 'gUNm1',  gUNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gUNm1',  guNm1, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(  'vVel',   vVel, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(    'gV',     gV, 1,myIter,myThid)
-        CALL WRITE_REC_XYZ_RL( 'gVNm1',  gVNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gVNm1',  gvNm1, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL( 'theta',  theta, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(    'gT',     gT, 1,myIter,myThid)
-        CALL WRITE_REC_XYZ_RL( 'gTNm1',  gTNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gTNm1',  gtNm1, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(  'salt',   salt, 1,myIter,myThid)
         CALL WRITE_REC_XYZ_RL(    'gS',     gS, 1,myIter,myThid)
-        CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gSNm1',  gsNm1, 1,myIter,myThid)
         CALL WRITE_REC_XY_RL (  'etaN',  etaN,  1,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-          CALL WRITE_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
-C         CALL WRITE_REC_XYZ_RL( 'gWnm1', gWnm1,1,myIter,myThid)
+c         CALL WRITE_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
+          CALL WRITE_REC_XYZ_RL( 'gWnm1', gwNm1,1,myIter,myThid)
         ENDIF
 #endif
 C       Reset binary precision
@@ -594,10 +595,10 @@ C       Reset binary precision
           ENDIF
           CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh, 1,
      &         myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,     2,
+c         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,     2,
+c    &         myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gwNm1,  2,
      &         myIter,myThid)
-C         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,  3,
-C         &    myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
@@ -643,7 +644,8 @@ C       Then set the actual unlimited dimension
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gWnm1', gwNm1, myThid)
         ENDIF
 #endif
         IF ( useDynP_inEos_Zc ) THEN
