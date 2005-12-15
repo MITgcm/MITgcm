@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.126 2005/12/08 15:44:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.127 2005/12/15 21:09:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -544,6 +544,7 @@ C--   Step forward W field in N-H algorithm
 #endif
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW( myTime, myIter, myThid )
+         CALL TIMESTEP_WVEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
       ENDIF
 #endif
