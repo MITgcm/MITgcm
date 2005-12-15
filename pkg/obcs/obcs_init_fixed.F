@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.4 2002/01/30 04:22:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.5 2005/12/15 01:12:58 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,7 +31,10 @@ C     myThid -  Number of this instance of INI_DEPTHS
 C     == Local variables ==
       INTEGER iG, jG, iGm, jGm
       INTEGER bi, bj
-      INTEGER I, J, K
+      INTEGER I, J
+#ifdef NONLIN_FRSURF
+      INTEGER k
+#endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

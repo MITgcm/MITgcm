@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.6 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.7 2005/12/15 01:12:58 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -42,6 +42,7 @@ C     kLev
       INTEGER myThid
 CEndOfInterface
 
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J, Isl, Jsl
@@ -51,7 +52,6 @@ C     Loop counters
       PARAMETER (secondsperday=86400)
 #endif
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 
       IF (useOBCSsponge) THEN
 
@@ -193,7 +193,7 @@ C Western Open Boundary
 
       ENDIF
 
-#endif
+#endif /* ALLOW_OBCS & ALLOW_OBCS_SPONGE */
 
       RETURN
       END
@@ -235,6 +235,8 @@ C     kLev
       _RL myCurrentTime
       INTEGER myThid
 CEndOfInterface
+
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J, Isl, Jsl
@@ -244,7 +246,6 @@ C     Loop counters
       PARAMETER (secondsperday=86400)
 #endif
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 
       IF (useOBCSsponge) THEN
 
@@ -387,7 +388,7 @@ C Western Open Boundary
       
       ENDIF
 
-#endif
+#endif /* ALLOW_OBCS & ALLOW_OBCS_SPONGE */
 
       RETURN
       END
@@ -435,6 +436,7 @@ C     kLev
       INTEGER myThid
 CEndOfInterface
 
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J, Isl, Jsl
@@ -444,7 +446,6 @@ C     Loop counters
       PARAMETER (secondsperday=86400)
 #endif
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 
       IF (useOBCSsponge) THEN
 
@@ -629,7 +630,7 @@ cgg  Needed to fix the coordinate of the tracer open boundary. This is the class
 
       ENDIF
 
-#endif
+#endif /* ALLOW_OBCS & ALLOW_OBCS_SPONGE */
 
       RETURN
       END
@@ -677,6 +678,7 @@ C     kLev
       INTEGER myThid
 CEndOfInterface
 
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J, Isl, Jsl
@@ -686,7 +688,6 @@ C     Loop counters
       PARAMETER (secondsperday=86400)
 #endif
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
 
       IF (useOBCSsponge) THEN
 
@@ -873,7 +874,7 @@ cgg  Fix the tracer o.b. coordinate.
 
       ENDIF
 
-#endif
+#endif /* ALLOW_OBCS & ALLOW_OBCS_SPONGE */
 
       RETURN
       END
