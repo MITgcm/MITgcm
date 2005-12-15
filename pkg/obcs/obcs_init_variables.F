@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.18 2005/12/15 14:30:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.19 2005/12/15 17:15:36 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -287,11 +287,7 @@ C     from a file.
          IF (debugMode) CALL DEBUG_CALL( 
      &        'PTRACERS EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
-C     Loop over passive tracers
-         DO iTracer=1,PTRACERS_numInUse
-          _EXCH_XYZ_R8( pTracer(1-Olx,1-Oly,1,1,1,iTracer), 
-     &         myThid )
-         ENDDO
+         CALL PTRACERS_FIELDS_BLOCKING_EXCH( myThid )
         ENDIF
 C     endif start from rest
        ENDIF
