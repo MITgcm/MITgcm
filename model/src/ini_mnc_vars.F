@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.3 2005/11/03 16:23:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.4 2005/12/15 01:57:27 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -262,7 +262,8 @@ C     Create MNC definitions for DYNVARS.h variables  ----------------
       CALL MNC_CW_ADD_VNAME('phiHyd', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('phiHydLow', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('phi_nh', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__L__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gW',     'Cen_xy_Hn__L__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('gWnm1',  'Cen_xy_Hn__L__t', 4,5, myThid)
 
 C     Write coordinates to "state" file
 C     CALL MNC_CW_SET_UDIM('state', 0, myThid)
