@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.33 2005/12/13 19:47:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.34 2005/12/15 17:47:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_EXF
-# include EXF_OPTIONS.h"
+# include "EXF_OPTIONS.h"
 #endif
 
 CBOP
