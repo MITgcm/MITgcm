@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.10 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.11 2005/12/16 17:50:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,7 +46,7 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER I, J, K
-      _RL     rhoLoc
+      _RL     pLoc, rhoLoc
       _RL     dPIdp
 CEOP
 
@@ -107,9 +107,10 @@ C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0 
      &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
              k = ksurfC(I,J,bi,bj)
+             pLoc = Ro_surf(I,J,bi,bj)
              CALL FIND_RHO_SCALAR( 
-     &            tRef(k), sRef(k), Ro_surf(I,J,bi,bj),
-     &            rhoLoc, myThid )
+     I            tRef(k), sRef(k), pLoc,
+     O            rhoLoc, myThid )
              rhoLoc = rhoLoc + rhoConst
              if ( rhoLoc .eq. 0. _d 0 ) then
               Bo_surf(I,J,bi,bj) = 0. _d 0
