@@ -12,6 +12,7 @@
  momStepping=.FALSE.,
  hFacMin=0.1,
  tempAdvScheme=77,
+ saltAdvScheme=20,
  &
 
 # Elliptic solver parameters
