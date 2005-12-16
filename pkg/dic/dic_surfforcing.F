@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.9 2005/08/25 22:32:44 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.10 2005/12/16 21:07:53 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -75,8 +75,8 @@ C PRE-INDUSTRIAL STEADY STATE pCO2 = 278.0 ppmv
 
 C =================================================================
 C determine inorganic carbon chem coefficients
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j=jmin,jmax
+         DO i=imin,imax
 
 #ifdef DIC_BIOTIC
 cQQQQ check ptracer numbers
@@ -101,9 +101,9 @@ C====================================================================
 
 c pCO2 solver...
 C$TAF LOOP = parallel
-       DO j=1-OLy,sNy+OLy
+       DO j=jmin,jmax
 C$TAF LOOP = parallel
-        DO i=1-OLx,sNx+OLx
+        DO i=imin,imax
 
           IF(maskC(i,j,kLev,bi,bj) .NE. 0.)THEN
             CALL CALC_PCO2_APPROX(
@@ -122,8 +122,8 @@ C$TAF LOOP = parallel
         ENDDO
        ENDDO
 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jmin,jmax
+        DO i=imin,imax
 
             IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
 C calculate SCHMIDT NO. for CO2
@@ -184,8 +184,8 @@ c
          ENDDO
 
 C update tendency      
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+         DO j=jmin,jmax
+          DO i=imin,imax
            GDC(i,j)= maskC(i,j,kLev,bi,bj)*recip_drF(kLev)*
      &                     recip_hFacC(i,j,kLev,bi,bj)*(
      &                    FluxCO2(i,j,bi,bj) + VirtualFlux(i,j)

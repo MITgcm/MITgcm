@@ -77,8 +77,8 @@ c determine calcite saturation state
      I                       k)
 
 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j=jmin,jmax
+         DO i=imin,imax
 
            if(hFacC(i,j,k,bi,bj) .gt. 0.0d0)then
 

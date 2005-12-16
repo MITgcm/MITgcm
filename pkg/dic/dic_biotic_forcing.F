@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.10 2005/10/13 16:25:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.11 2005/12/16 21:07:53 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -92,6 +92,10 @@ c  freefe                 :: iron not bound to ligand
        INTEGER I,J,k
        INTEGER nCALCITEstep
 CEOP
+       jmin=1
+       jmax=sNy
+       imin=1
+       imax=sNx
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -177,8 +181,8 @@ c old OCMIP way
 
 c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+         DO j=jmin,jmax
+          DO i=imin,imax
            bio(i,j,k)=-bioac(i,j,k)+pflux(i,j,k)
      &         + maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
            car(i,j,k)=-bioac(i,j,k)* R_cp*rain_ratio(i,j,bi,bj)*
@@ -215,8 +219,8 @@ c add all tendencies for PO4, DOP, ALK, DIC
 
 C update
        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+         DO j=jmin,jmax
+          DO i=imin,imax
            PTR_DIC(i,j,k)=
      &      PTR_DIC(i,j,k)+GDIC(i,j,k)*dTtracerLev(k)
            PTR_ALK(i,j,k)=
@@ -247,8 +251,8 @@ c find free iron and get rid of insoluble part
 #ifdef ALLOW_TIMEAVE 
 c save averages
       DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+         DO j=jmin,jmax
+          DO i=imin,imax
             BIOave(i,j,k,bi,bj)=BIOave(i,j,k,bi,bj)+
      &                          BIOac(i,j,k)*deltaTclock
             CARave(i,j,k,bi,bj)=CARave(i,j,k,bi,bj)+

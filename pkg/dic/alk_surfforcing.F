@@ -46,8 +46,8 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+        DO j=jmin,jmax
+          DO i=imin,imax
             IF (maskC(i,j,1,bi,bj).NE.0.) THEN
 c calculate virtual flux
 c EminusPforV = dS/dt*(1/Sglob)

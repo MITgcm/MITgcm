@@ -75,8 +75,8 @@ c set some nominal particulate sinking rate
 c try 100m/day
        WsinkPIC = 100/86400.0
 c calculate carbonate flux from base of each nlev
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jmin,jmax
+        DO i=imin,imax
 c        exp_tot=0
          do k=1,nR
             cflux(i,j,k)=0.d0

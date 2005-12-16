@@ -56,8 +56,8 @@ CEOP
 
 c
 c calculate carbonate flux from base of each nlev 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx 
+       DO j=jmin,jmax
+        DO i=imin,imax
          DO k=1,nLev
           if (hFacC(i,j,k,bi,bj).gt.0.d0) then
            caexport(i,j)= R_cp*rain_ratio(i,j,bi,bj)*bioac(i,j,k)*

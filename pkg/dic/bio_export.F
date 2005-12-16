@@ -59,8 +59,8 @@ CEOP
 #ifndef READ_PAR
         call insol(myTime,sfac,bj)
 #endif
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j=jmin,jmax
+         DO i=imin,imax
 C Fortran-90
 CRG C$TAF INIT bio_export = static, nlev
 C FORTRAN-77 dynamic memory uses adstore adresto

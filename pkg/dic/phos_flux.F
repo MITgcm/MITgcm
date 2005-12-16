@@ -58,8 +58,8 @@ CEOP
 
 c
 c calculate PO4 flux from base of each layer
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx 
+       DO j=jmin,jmax
+        DO i=imin,imax
          DO k=1,nlev
           if (hFacC(i,j,k,bi,bj).gt.0.d0) then
 c flux out of layer k
