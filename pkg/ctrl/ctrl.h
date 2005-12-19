@@ -52,12 +52,19 @@ cph Need to put this in namelist at some point!
      &                       doAdmTlm,
      &                       doPackDiag,
      &                       doZscaleUnpack,
-     &                       doZscalePack
+     &                       doZscalePack,
+     &                       doMainUnpack,
+     &                       doMainPack,
+     &                       admtlmBypassAD
+
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag
       logical doZscaleUnpack
       logical doZscalePack
+      logical doMainUnpack
+      logical doMainPack
+      logical admtlmBypassAD
 
       common /controlvars_i/
      &                       nvartype,

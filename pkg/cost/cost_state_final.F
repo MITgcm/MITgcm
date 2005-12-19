@@ -28,16 +28,17 @@ C     ========= Local variables =========================
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-cph        DO k=1,nr
-         DO j=1,sNy
-          DO i=1,sNx
-           objf_state_final(i,j,bi,bj,1) = theta(i,j,1,bi,bj)
-           objf_state_final(i,j,bi,bj,2) = salt(i,j,1,bi,bj)
-cph           objf_state_final(i,j,k,bi,bj,1) = theta(i,j,k,bi,bj)
-cph           objf_state_final(i,j,k,bi,bj,2) = salt(i,j,k,bi,bj)
+        DO j=1,sNy
+         DO i=1,sNx
+          DO k=1,nr
+           objf_state_final(i,j,bi,bj,0*Nr+k) = theta(i,j,k,bi,bj)
+           objf_state_final(i,j,bi,bj,1*Nr+k) = salt(i,j,k,bi,bj)
+           objf_state_final(i,j,bi,bj,2*Nr+k) = uvel(i,j,k,bi,bj)
+           objf_state_final(i,j,bi,bj,3*Nr+k) = vvel(i,j,k,bi,bj)
           END DO
+          objf_state_final(i,j,bi,bj,4*Nr+1) = etan(i,j,bi,bj)
          END DO
-cph        END DO
+        END DO
        END DO
       END DO
 

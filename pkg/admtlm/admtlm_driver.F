@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.5 2005/11/01 04:09:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.6 2005/12/19 23:29:25 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,12 +54,9 @@ CEOP
 
       CALL CTRL_INIT( mythid )
 c
-      CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
+      CALL TIMER_START('ADMTLM_DRIVER             [TANGENT RUN]',mythid)
       CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
-      CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
-c
-      CALL ADMTLM_METRIC ( mythid )
-      CALL ADMTLM_MAP ( mythid )
+      CALL TIMER_STOP ('ADMTLM_DRIVER             [TANGENT RUN]',mythid)
 c
       myCurrentTime = startTime
       myCurrentIter = nIter0
@@ -67,9 +64,22 @@ c
 c
       CALL CTRL_INIT( mythid )
 c
-      CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
-      CALL ADTHE_MAIN_LOOP (  myCurrentTime, myCurrentIter, mythid )
-      CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
+      if ( admtlmBypassAD ) then
+c
+         CALL TIMER_START('ADMTLM_DRIVER             [BYPASSAD]',mythid)
+         CALL ADMTLM_BYPASSAD( mythid )
+         CALL TIMER_STOP ('ADMTLM_DRIVER             [BYPASSAD]',mythid)
+c
+      else
+c
+         CALL ADMTLM_METRIC ( mythid )
+         CALL ADMTLM_MAP ( mythid )
+c
+         CALL TIMER_START('ADMTLM_DRIVER          [ADJOINT RUN]',mythid)
+         CALL ADTHE_MAIN_LOOP (  myCurrentTime, myCurrentIter, mythid )
+         CALL TIMER_STOP ('ADMTLM_DRIVER          [ADJOINT RUN]',mythid)
+c
+      endif
 c
 #endif
 

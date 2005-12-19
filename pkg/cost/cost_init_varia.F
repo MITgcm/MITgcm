@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.2 2005/12/13 16:15:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.3 2005/12/19 23:29:25 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -76,9 +76,11 @@ c
 c
 #ifdef ALLOW_COST_STATE_FINAL
             do j=1,sNy
-              do i=1,sNx
-                objf_state_final(i,j,bi,bj,1) = 0. _d 0
-                objf_state_final(i,j,bi,bj,2) = 0. _d 0
+             do i=1,sNx
+              do k=1,4*Nr
+                objf_state_final(i,j,bi,bj,k) = 0. _d 0
+              enddo
+              objf_state_final(i,j,bi,bj,4*Nr+1) = 0. _d 0
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
               end do
