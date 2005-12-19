@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.9 2005/12/08 00:14:26 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.10 2005/12/19 19:11:28 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -85,10 +85,8 @@ C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
 
 #ifdef ALLOW_RBCS
        if (useRBCptracers) then
-         CALL RBCS_ADD_PTENDENCY(
-     I                        bi,bj,iMin,iMax,jMin,jMax,k,
-     I                        iTracer,
-     I                        myTime,myIter, myThid)
+         CALL RBCS_ADD_TENDENCY(bi,bj,k,iTracer+2,
+     I                        myTime, myThid)
        endif
 #endif
 
