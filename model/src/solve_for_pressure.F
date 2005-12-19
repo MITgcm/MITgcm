@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.49 2005/12/12 15:50:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.50 2005/12/19 21:10:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -253,6 +253,7 @@ C     see CG2D.h for the interface to this routine.
       firstResidual=0.
       lastResidual=0.
       numIters=cg2dMaxIters
+c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
       CALL CG2D(
      U           cg2d_b,
      U           cg2d_x,
@@ -261,6 +262,7 @@ C     see CG2D.h for the interface to this routine.
      U           numIters,
      I           myThid )
       _EXCH_XY_R8(cg2d_x, myThid )
+c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
@@ -411,6 +413,7 @@ C-    end bi,bj loops
       firstResidual=0.
       lastResidual=0.
       numIters=cg3dMaxIters
+      CALL TIMER_START('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
       CALL CG3D(
      U           cg3d_b,
      U           phi_nh,
@@ -419,6 +422,7 @@ C-    end bi,bj loops
      U           numIters,
      I           myThid )
       _EXCH_XYZ_R8(phi_nh, myThid )
+      CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
      &   ) THEN
