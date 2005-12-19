@@ -31,6 +31,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj
+      INTEGER irbc
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif
@@ -43,9 +44,11 @@ C           Initialize arrays in common blocks :
             DO k=1,Nr
               DO j=1-Oly,sNy+OLy
                 DO i=1-Olx,sNx+Olx
-                  RBC_mask(i,j,k,bi,bj) = 0. _d 0
-                  RBCtemp(i,j,k,bi,bj)    = 0. _d 0
-                  RBCsalt(i,j,k,bi,bj) = 0. _d 0
+                 DO irbc=1,maskLEN
+                  RBC_mask(i,j,k,bi,bj,irbc) = 0. _d 0
+                 ENDDO
+                 RBCtemp(i,j,k,bi,bj)    = 0. _d 0
+                 RBCsalt(i,j,k,bi,bj) = 0. _d 0
                 ENDDO
               ENDDO
              ENDDO
@@ -76,17 +79,18 @@ C       end of Tracer loop
 #endif
 
 C read in mask for relaxing
-      IF ( relaxBoundaryFile.NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
-        CALL READ_FLD_XYZ_RS(relaxBoundaryFile,' ', RBC_mask, 0, myThid)
-       _END_MASTER(myThid)
-      ENDIF
+      do irbc=1,maskLEN 
+       IF ( relaxMaskFile(irbc).NE. ' ' ) THEN
+        _BEGIN_MASTER( myThid )
+         CALL READ_FLD_XYZ_RS(relaxMaskFile(irbc),' ',
+     &                RBC_mask(1-Olx,1-Oly,1,1,1,irbc), 0, myThid)
+        _END_MASTER(myThid)
+        _EXCH_XYZ_R8(RBC_mask(1-Olx,1-Oly,1,1,1,irbc), myThid )
+       CALL PLOT_FIELD_XYRS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc), 
+     &          'Boundary Relaxing' ,1, myThid )
+       ENDIF
+      enddo
 C
-      _EXCH_XYZ_R4(RBC_mask, myThid )
-
-      CALL PLOT_FIELD_XYRS( RBC_mask, 'Boundary Relaxing' ,
-     &                       1, myThid )
-
 #endif /* ALLOW_RBCS */
 
       RETURN

@@ -38,12 +38,14 @@ C     iUnit       - Work variable for IO unit number
       INTEGER iUnit
       INTEGER iTracer
       INTEGER ic
+      INTEGER irbc
 CEOP
 
 C--   RBCS parameter
       NAMELIST /RBCS_PARM01/
-     &          tauRelax,
-     &          relaxBoundaryFile,
+     &          tauRelaxT,
+     &          tauRelaxS,
+     &          relaxMaskFile,
      &          relaxTFile,
      &          relaxSFile,
      &          useRBCtemp,
@@ -55,24 +57,28 @@ C--   RBCS parameter
 
 #ifdef ALLOW_PTRACERS
       NAMELIST /RBCS_PARM02/
-     &          useRBCptrnum,
+     &          useRBCptrnum, tauRelaxPTR,
      &          relaxPtracerFile
 #endif
 
 C--   Default values
-      tauRelax =1.
-      relaxBoundaryFile = ' '
+      tauRelaxT =1.
+      tauRelaxS =1.
+      do irbc=1,maskLEN
+        relaxMaskFile(irbc) = ' '
+      enddo
       relaxTFile = ' '
       relaxSFile = ' '
       useRBCtemp=.FALSE.
       useRBCsalt=.FALSE.
       useRBCptracers=.FALSE.
       rbcsIniter=nIter0
-      rbcsForcingPeriod=2592000.
-      rbcsForcingCycle=31104000.
+      rbcsForcingPeriod=0.
+      rbcsForcingCycle=0.
 #ifdef ALLOW_PTRACERS
       DO iTracer=1,PTRACERS_num
         useRBCptrnum(iTracer)=.FALSE.
+        tauRelaxPTR(iTracer)=1.
        DO ic = 1,MAX_LEN_FNAM
            relaxPtracerFile(iTracer)(ic:ic) = ' '
        ENDDO

@@ -82,7 +82,6 @@ C     aWght, bWght :: Interpolation weights
       CALL TIMER_START('RBCS_FIELDS_LOAD      [I/O]', myThid)
       prec = precFloat32
 
-c     IF ( rbcsForcingCycle.GT.0.d0 ) THEN
 
 C First call requires that we initialize everything to zero for safety
       IF ( myIter .EQ. nIter0 ) THEN
@@ -244,24 +243,7 @@ C--   Interpolate
       endif
 #endif
 
-CC-- Diagnostics
-C      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
-C        write(*,'(a,1p5e12.4,3i6,2e12.4)')
-C     &   'time,U,V,W,i0,i1,a,b = ',
-C     &   myTime,
-C     &   Uvel(1,sNy,1,1,1),Vvel(1,sNy,1,1,1),
-C     &   Wvel(1,sNy,1,1,1),
-C     &   intime0,intime1,aWght,bWght
-C        write(*,'(a,1p4e12.4,2e12.4)')
-C     &   'time,uvel0,uvel1,U = ',
-C     &   myTime,
-C     &   uvel0(1,sNy,1,1,1),uvel1(1,sNy,1,1,1),Uvel(1,sNy,1,1,1),
-C     &   aWght,bWght
-C      ENDIF
-
         CALL TIMER_STOP ('RBCS_FIELDS_LOAD      [I/O]', myThid)
-C endif for periodicForcing
-c     ENDIF
 
 #endif   
 c! ALLOW_RBCS
