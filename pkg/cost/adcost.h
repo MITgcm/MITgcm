@@ -21,7 +21,7 @@ c     ==================================================================
       common /adcost_state_final_r/
      &                adobjf_state_final
 cph      _RL  adobjf_state_final (snx,sny,nsx,nsy)
-      _RL  adobjf_state_final (snx,sny,nsx,nsy,2)
+      _RL  adobjf_state_final (snx,sny,nsx,nsy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR

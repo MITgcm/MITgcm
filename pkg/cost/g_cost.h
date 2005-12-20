@@ -21,7 +21,7 @@ c     ==================================================================
       common /g_cost_state_final_r/
      &                g_objf_state_final
 cph      _RL  g_objf_state_final (snx,sny,nsx,nsy)
-      _RL  g_objf_state_final (snx,sny,nsx,nsy,2)
+      _RL  g_objf_state_final (snx,sny,nsx,nsy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
