@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.18 2005/11/08 06:06:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.19 2005/12/20 20:31:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "CG3D.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #ifdef ALLOW_OBCS
@@ -46,7 +47,7 @@ C     faceArea - Temporary used to hold cell face areas.
 C     myNorm - Work variable used in clculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
-      INTEGER I,  J, K
+      INTEGER I,  J, K, ks
       _RL     faceArea
       _RS     myNorm
       _RL     theRecip_Dr
@@ -67,6 +68,7 @@ C-       From common bloc CG3D_R:
            aW3d(I,J,K,bi,bj) = 0.
            aS3d(I,J,K,bi,bj) = 0.
            aV3d(I,J,K,bi,bj) = 0.
+           aC3d(I,J,K,bi,bj) = 0.
            zMC (I,J,K,bi,bj) = 0.
            zML (I,J,K,bi,bj) = 0.
            zMU (I,J,K,bi,bj) = 0.
@@ -83,7 +85,6 @@ C-       From common bloc CG3D_WK_R:
 C-       From common bloc SFP3D_COMMON_R:
          DO J=1-OLy,sNy+OLy
           DO I=1-OLx,sNx+OLx
-c          cg3d_x(I,J,K,bi,bj) = 0.
            cg3d_b(I,J,K,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -100,14 +101,18 @@ C     aV3d: Ar/dR
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO K=1,Nr
          DO J=1,sNy
-          DO I=1,sNx
+          DO I=1,sNx+1
            faceArea = _dyG(I,J,bi,bj)*drF(K)
      &                *_hFacW(I,J,K,bi,bj)
            aW3d(I,J,K,bi,bj) = faceArea*recip_dxC(I,J,bi,bj)
+           myNorm = MAX(ABS(aW3d(I,J,K,bi,bj)),myNorm)
+          ENDDO
+         ENDDO
+         DO J=1,sNy+1
+          DO I=1,sNx
            faceArea = _dxG(I,J,bi,bj)*drF(K)
      &                *_hFacS(I,J,K,bi,bj)
            aS3d(I,J,K,bi,bj) = faceArea*recip_dyC(I,J,bi,bj)
-           myNorm = MAX(ABS(aW3d(I,J,K,bi,bj)),myNorm)
            myNorm = MAX(ABS(aS3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -195,23 +200,55 @@ CcnhDebugEnds
       _END_MASTER( myThid )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    Set solver main diagonal term
+        DO K=1,Nr
+         DO J=1,sNy
+          DO I=1,sNx
+           aW = aW3d(I  ,J,K,bi,bj)
+           aE = aW3d(I+1,J,K,bi,bj)
+           aN = aS3d(I,J+1,K,bi,bj)
+           aS = aS3d(I,J  ,K,bi,bj)
+           aU = aV3d(I,J,K,bi,bj)
+           IF ( K .NE. Nr  ) THEN
+            aL = aV3d(I,J,K+1,bi,bj)
+           ELSE
+            aL = 0.
+           ENDIF
+           aC3d(I,J,K,bi,bj) = -aW-aE-aN-aS-aU-aL
+          ENDDO
+         ENDDO
+        ENDDO
+C-    Add free-surface source term
+        DO J=1,sNy
+         DO I=1,sNx
+           ks = ksurfC(I,J,bi,bj)
+           IF ( ks.LE.Nr ) THEN
+             aC3d(I,J,ks,bi,bj) = aC3d(I,J,ks,bi,bj)
+     &         -freeSurfFac*recip_Bo(I,J,bi,bj)
+     &          *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
+           ENDIF
+         ENDDO
+        ENDDO
+C-    Matrix solver normalisation
         DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            aW3d(I,J,K,bi,bj) = aW3d(I,J,K,bi,bj)*myNorm
            aS3d(I,J,K,bi,bj) = aS3d(I,J,K,bi,bj)*myNorm
            aV3d(I,J,K,bi,bj) = aV3d(I,J,K,bi,bj)*myNorm
+           aC3d(I,J,K,bi,bj) = aC3d(I,J,K,bi,bj)*myNorm
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      
+
 C--   Update overlap regions
 c     _EXCH_XYZ_R4(aW3d, myThid)
 c     _EXCH_XYZ_R4(aS3d, myThid)
       CALL EXCH_UV_XYZ_RS(aW3d,aS3d,.FALSE.,myThid)
       _EXCH_XYZ_R4(aV3d, myThid)
+      _EXCH_XYZ_R4(aC3d, myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYZRS( aW3d, 'AW3D INI_CG3D.1' , Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYZRS( aS3d, 'AS3D INI_CG3D.1' , Nr, 1, myThid )
@@ -224,33 +261,15 @@ C     check for consistency with S/R CG3D before
 C     assuming zML is lower and zMU is upper!
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr  
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
-           aW = aW3d(I  ,J,K,bi,bj)
-           aE = aW3d(I+1,J,K,bi,bj)
-           aN = aS3d(I,J+1,K,bi,bj)
-           aS = aS3d(I,J  ,K,bi,bj)
-           IF ( K .NE. 1 ) THEN
-            aU = aV3d(I,J,K,bi,bj)
-           ELSE
-            aU = 0
-           ENDIF
-           IF ( K .NE. Nr ) THEN
-            aL = aV3d(I,J,K+1,bi,bj)
-           ELSE
-            aL = 0
-           ENDIF
-           aC = -aW-aE-aN-aS-aU-aL
-           IF ( K .EQ. 1 .AND. aC .NE. 0. ) THEN
-            aC = aC
-     &         -freeSurfFac*myNorm*(horiVertRatio/gravity)*
-     &          rA(I,J,bi,bj)/deltaTMom/deltaTMom
-           ENDIF
-           IF ( aC .NE. 0. ) THEN
-            zMC(i,j,k,bi,bj) = aC
-            zMU(i,j,k,bi,bj) = aL
-            zML(i,j,k,bi,bj) = aU
+           IF ( aC3d(I,J,K,bi,bj) .NE. 0. ) THEN
+            zMC(i,j,k,bi,bj) = aC3d(I,J,K,bi,bj)
+            zML(i,j,k,bi,bj) = aV3d(I,J,K,bi,bj)
+            zMU(i,j,k,bi,bj) = 0.
+            IF ( K.NE.Nr )
+     &      zMU(i,j,k,bi,bj) = aV3d(I,J,K+1,bi,bj)
 CcnhDebugStarts
 C           zMC(i,j,k,bi,bj) = 1.
 C           zMU(i,j,k,bi,bj) = 0.
@@ -272,7 +291,7 @@ CcnhDebugEnds
      &     zMU(i,j,1,bi,bj)*zMC(i,j,1,bi,bj)
          ENDDO
         ENDDO
-        DO K=2,Nr  
+        DO K=2,Nr
          DO J=1,sNy
           DO I=1,sNx
            zMC(i,j,k,bi,bj) = 1. _d 0 /
@@ -281,7 +300,7 @@ CcnhDebugEnds
           ENDDO
          ENDDO
         ENDDO
-        DO K=1,Nr  
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            aW = aW3d(I  ,J,K,bi,bj)
@@ -291,12 +310,12 @@ CcnhDebugEnds
            IF ( K .NE. 1 ) THEN
             aU = aV3d(I,J,K-1,bi,bj)
            ELSE
-            aU = 0
+            aU = 0.
            ENDIF
            IF ( K .NE. Nr ) THEN
             aL = aV3d(I,J,K+1,bi,bj)
            ELSE
-            aL = 0
+            aL = 0.
            ENDIF
            aC = -aW-aE-aN-aS-aU-aL
            IF ( aC .EQ. 0. ) THEN

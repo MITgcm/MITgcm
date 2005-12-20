@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.50 2005/12/19 21:10:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.51 2005/12/20 20:31:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,8 @@ C     == Local variables ==
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_NONHYDROSTATIC
-      INTEGER ks
+      INTEGER ks, kp1
+      _RL     maskKp1
       LOGICAL zeroPsNH
 #endif
 CEOP
@@ -166,25 +167,31 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
         IF ( nonHydrostatic .AND. zeroPsNH ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+           ks = ksurfC(i,j,bi,bj)
+           IF ( ks.LE.Nr ) THEN
+            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &         * etaH(i,j,bi,bj)
-           cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
+            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &         * etaH(i,j,bi,bj)
+           ENDIF
           ENDDO
          ENDDO
         ELSEIF ( nonHydrostatic ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+           ks = ksurfC(i,j,bi,bj)
+           IF ( ks.LE.Nr ) THEN
+            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
-     &           +phi_nh(i,j,1,bi,bj)*horiVertRatio/gravity )
-           cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
+     &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
+            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
-     &           +phi_nh(i,j,1,bi,bj)*horiVertRatio/gravity )
+     &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
+           ENDIF
           ENDDO
          ENDDO
         ELSEIF ( exactConserv ) THEN
@@ -338,45 +345,55 @@ C Western boundary
          ENDIF
 #endif /* ALLOW_OBCS */
 
+         IF ( usingZCoords ) THEN 
+C-       Z coordinate: assume surface @ level k=1
+           tmpFac = freeSurfFac
+         ELSE
+C-       Other than Z coordinate: no assumption on surface level index
+           tmpFac = 0. 
+           DO j=1,sNy
+            DO i=1,sNx
+              ks = ksurfC(i,j,bi,bj)
+              IF ( ks.LE.Nr ) THEN
+               cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTfreesurf
+     &                          *_rA(i,j,bi,bj)/deltaTmom
+              ENDIF
+            ENDDO
+           ENDDO
+         ENDIF
          K=1
+         kp1 = MIN(k+1,Nr)
+         maskKp1 = 1.
+         IF (k.GE.Nr) maskKp1 = 0.
          DO j=1,sNy
           DO i=1,sNx
-           cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( freeSurfFac*etaN(i,j,bi,bj)/deltaTMom
-     &          -wVel(i,j,k+1,bi,bj)
+            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
+     &       +drF(K)*dyG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dyG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dxG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dxG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
+     &         -wVel(i,j,kp1,bi,bj)*maskKp1
      &        )*_rA(i,j,bi,bj)/deltaTmom
           ENDDO
          ENDDO
-         DO K=2,Nr-1
+         DO K=2,Nr
+          kp1 = MIN(k+1,Nr)
+          maskKp1 = 1.
+          IF (k.GE.Nr) maskKp1 = 0.
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( wVel(i,j,k  ,bi,bj)
-     &         -wVel(i,j,k+1,bi,bj)
+     &       +drF(K)*dyG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dyG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dxG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dxG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +( wVel(i,j,k  ,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &         -wVel(i,j,kp1,bi,bj)*maskKp1
      &        )*_rA(i,j,bi,bj)/deltaTmom
 
            ENDDO
-          ENDDO
-         ENDDO
-         K=Nr
-         DO j=1,sNy
-          DO i=1,sNx
-            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dYG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( wVel(i,j,k  ,bi,bj)
-     &        )*_rA(i,j,bi,bj)/deltaTmom
-
           ENDDO
          ENDDO
 

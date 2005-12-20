@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.16 2005/11/08 06:18:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.17 2005/12/20 20:31:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,8 +50,8 @@ C     === Global data ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid    - Thread on which I am working.
-C     cg2d_b    - The source term or "right hand side"
-C     cg2d_x    - The solution
+C     cg3d_b    - The source term or "right hand side"
+C     cg3d_x    - The solution
 C     firstResidual - the initial residual before any iterations
 C     lastResidual  - the actual residual reached
 C     numIters  - Entry: the maximum number of iterations allowed
@@ -81,12 +81,13 @@ C                   useful debuggin/trouble shooting diagnostic.
 C                   For neumann problems sumRHS needs to be ~0.
 C                   or they converge at a non-zero residual.
 C     err         - Measure of residual of Ax - b, usually the norm.
-C     I, J, N     - Loop counters ( N counts CG iterations )
+C     I, J, K, N  - Loop counters ( N counts CG iterations )
       INTEGER actualIts
       _RL    actualResidual
       INTEGER bi, bj              
       INTEGER I, J, K, it3d
-      INTEGER KM1, KP1
+      INTEGER Km1, Kp1
+      _RL    maskM1, maskP1
       _RL    err, errTile
       _RL    eta_qrN, eta_qrNtile
       _RL    eta_qrNM1
@@ -95,7 +96,6 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       _RL    sumRHS, sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
-      _RL    topLevTerm
 CEOP
 
 
@@ -110,6 +110,7 @@ C--   Normalise RHS
          DO J=1,sNy
           DO I=1,sNx
            cg3d_b(I,J,K,bi,bj) = cg3d_b(I,J,K,bi,bj)*cg3dNorm
+     &                          * maskC(I,J,K,bi,bj)
            rhsMax = MAX(ABS(cg3d_b(I,J,K,bi,bj)),rhsMax)
           ENDDO
          ENDDO
@@ -144,13 +145,13 @@ C--   Initial residual calculation (with free-Surface term)
         errTile    = 0. _d 0
         sumRHStile = 0. _d 0
         DO K=1,Nr
-         KM1 = K-1
-         IF ( K .EQ. 1 ) KM1 = 1
-         KP1 = K+1
-         IF ( K .EQ. Nr ) KP1 = 1 
-         topLevTerm = 0.
-         IF ( K .EQ. 1) topLevTerm = freeSurfFac*cg3dNorm*
-     &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
+         Km1 = MAX(K-1, 1 )
+         Kp1 = MIN(K+1, Nr)
+         maskM1 = 1. _d 0
+         maskP1 = 1. _d 0
+         IF ( K .EQ. 1 ) maskM1 = 0. _d 0
+         IF ( K .EQ. Nr) maskP1 = 0. _d 0
+           
          DO J=1,sNy
           DO I=1,sNx
            cg3d_r(I,J,K,bi,bj) = cg3d_b(I,J,K,bi,bj) -( 0.
@@ -158,15 +159,9 @@ C--   Initial residual calculation (with free-Surface term)
      &     +aW3d(I+1,J  ,K  ,bi,bj)*cg3d_x(I+1,J  ,K  ,bi,bj)
      &     +aS3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J-1,K  ,bi,bj)
      &     +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_x(I  ,J+1,K  ,bi,bj)
-     &     +aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,KM1,bi,bj)
-     &     +aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,KP1,bi,bj)
-     &     -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -topLevTerm*_rA(I,J,bi,bj)*cg3d_x(I,J,K,bi,bj)
+     &     +aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,Km1,bi,bj)*maskM1
+     &     +aV3d(I  ,J  ,Kp1,bi,bj)*cg3d_x(I  ,J  ,Kp1,bi,bj)*maskP1
+     &     +aC3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
      &     )
            errTile = errTile
      &     +cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
@@ -184,9 +179,7 @@ C--   Initial residual calculation (with free-Surface term)
         sumRHS = sumRHS + sumRHStile
        ENDDO
       ENDDO
-C     _EXCH_XYZ_R8( cg3d_r, myThid )
        CALL EXCH_S3D_RL( cg3d_r, myThid )
-C     _EXCH_XYZ_R8( cg3d_s, myThid )
 c      CALL EXCH_S3D_RL( cg3d_s, myThid )
       _GLOBAL_SUM_R8( sumRHS, myThid )
       _GLOBAL_SUM_R8( err   , myThid )
@@ -208,7 +201,7 @@ c     _END_MASTER( myThid )
       firstResidual=actualResidual
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      DO 10 it3d=1, cg3dMaxIters
+      DO 10 it3d=1, numIters
 
 CcnhDebugStarts
 c      IF ( mod(it3d-1,10).EQ.0)
@@ -320,8 +313,6 @@ CcnhDebugEnds
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
        alpha = 0. _d 0
-       topLevTerm = freeSurfFac*cg3dNorm*
-     &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          alphaTile = 0. _d 0
@@ -335,12 +326,7 @@ C==    q = A.s
      &      +aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J-1,K  ,bi,bj)
      &      +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J+1,K  ,bi,bj)
      &      +aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K+1,bi,bj)
-     &      -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
+     &      +aC3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
              alphaTile = alphaTile
      &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
@@ -355,11 +341,7 @@ C==    q = A.s
      &      +aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I+1,J  ,K  ,bi,bj)
      &      +aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J-1,K  ,bi,bj)
      &      +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J+1,K  ,bi,bj)
-     &      -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
+     &      +aC3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
              alphaTile = alphaTile
      &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
@@ -376,12 +358,7 @@ C==    q = A.s
      &     +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J+1,K  ,bi,bj)
      &     +aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K-1,bi,bj)
      &     +aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K+1,bi,bj)
-     &     -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &     -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
+     &     +aC3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
             alphaTile = alphaTile
      &                +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
            ENDDO
@@ -397,11 +374,7 @@ C==    q = A.s
      &      +aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J-1,K  ,bi,bj)
      &      +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J+1,K  ,bi,bj)
      &      +aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K-1,bi,bj)
-     &      -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
+     &      +aC3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
              alphaTile = alphaTile
      &                 +cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
@@ -433,7 +406,7 @@ C      Now compute "interior" points.
      &            +alpha*cg3d_s(I,J,K,bi,bj)
             cg3d_r(I,J,K,bi,bj)=cg3d_r(I,J,K,bi,bj)
      &            -alpha*cg3d_q(I,J,K,bi,bj)
-           errTile = errTile
+            errTile = errTile
      &             +cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
@@ -447,7 +420,6 @@ C      Now compute "interior" points.
        actualIts      = it3d
        actualResidual = err
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
-C      _EXCH_XYZ_R8(cg3d_r, myThid )
        CALL EXCH_S3D_RL( cg3d_r, myThid )
 
    10 CONTINUE
