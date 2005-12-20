@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.8 2005/11/08 06:03:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.9 2005/12/20 20:08:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -21,23 +21,21 @@ C     \ev
 CEOP
 
 C--   COMMON /CG3D_R/ DEL**2 Laplacian operators
-C     aW3d - East-west operator.
-C     aS3d - North-south operator.
-C     aV3d - Vertical operator.
-C     etaNBuf - Shared buffers for accumulating con. grad vector product.
-C     alphaBuf
-C     errBuf
-C     nrmBuf
+C     aW3d :: East-west operator.
+C     aS3d :: North-south operator.
+C     aV3d :: Vertical operator.
+C     aC3d :: 3D operator main diagonal term.
+C     zMC, zML, zMU :: preconditioner 3D solver
 C     cg3dNorm - A matrix normalisation factor.
       COMMON /CG3D_R/
-     &      aW3d,
-     &      aS3d,
-     &      aV3d,
+     &      aW3d, aS3d, aV3d,
+     &      aC3d,
      &      zMC, zML, zMU,
      &      cg3dNorm
       _RS  aW3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  aS3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  aV3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  aC3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zMC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zML  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zMU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
