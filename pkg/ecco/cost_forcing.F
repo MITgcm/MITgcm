@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.7 2005/09/07 02:44:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.8 2005/12/22 15:57:40 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -61,8 +61,9 @@ c--   Heat flux contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_hflux_file, xx_hflux_dummy, wmean_hflux, whflux,
-     &     num_hflux, num_hfluxm, objf_hflux, objf_hfluxm, maskC,
-     &     mythid )
+     &     num_hflux, num_hfluxm,
+     &     objf_hflux, objf_hfluxm, objf_hfluxsmoo,
+     &     maskC, mythid )
 #elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) && \
        defined (ALLOW_ATEMP_CONTROL))
 c--   Atmos. temp. contribution to the cost function.
@@ -71,8 +72,9 @@ c--   Atmos. temp. contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_atemp_file, xx_atemp_dummy, wmean_atemp, watemp,
-     &     num_atemp, num_atempm, objf_atemp, objf_atempm, maskC,
-     &     mythid )
+     &     num_atemp, num_atempm,
+     &     objf_atemp, objf_atempm, objf_atempsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_SFLUX_COST_CONTRIBUTION) && \
@@ -83,8 +85,9 @@ c--   Salt flux contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_sflux_file, xx_sflux_dummy, wmean_sflux, wsflux,
-     &     num_sflux, num_sfluxm, objf_sflux, objf_sfluxm, maskC,
-     &     mythid )
+     &     num_sflux, num_sfluxm,
+     &     objf_sflux, objf_sfluxm, objf_sfluxsmoo,
+     &     maskC, mythid )
 #elif (defined (ALLOW_AQH_COST_CONTRIBUTION) && \
        defined (ALLOW_AQH_CONTROL))
 c--   Specific humidity contribution to the cost function.
@@ -93,8 +96,9 @@ c--   Specific humidity contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_aqh_file, xx_aqh_dummy, wmean_aqh, waqh,
-     &     num_aqh, num_aqhm, objf_aqh, objf_aqhm, maskC,
-     &     mythid )
+     &     num_aqh, num_aqhm,
+     &     objf_aqh, objf_aqhm, objf_aqhsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_USTRESS_COST_CONTRIBUTION )&& \
@@ -105,8 +109,9 @@ c--   Zonal wind stress contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_tauu_file, xx_tauu_dummy, wmean_tau, wtauu,
-     &     num_tauu, num_tauum, objf_tauu, objf_tauum, maskW,
-     &     mythid )
+     &     num_tauu, num_tauum,
+     &     objf_tauu, objf_tauum, objf_tauusmoo,
+     &     maskW, mythid )
 #elif (defined (ALLOW_UWIND_COST_CONTRIBUTION )&& \
        defined (ALLOW_UWIND_CONTROL))
 c--   Zonal wind speed contribution to the cost function.
@@ -115,8 +120,9 @@ c--   Zonal wind speed contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_uwind_file, xx_uwind_dummy, wmean_wind, wuwind,
-     &     num_uwind, num_uwindm, objf_uwind, objf_uwindm, maskC,
-     &     mythid )
+     &     num_uwind, num_uwindm,
+     &     objf_uwind, objf_uwindm, objf_uwindsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) && \
@@ -127,8 +133,9 @@ c--   Meridional wind stress contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_tauv_file, xx_tauv_dummy, wmean_tau, wtauv,
-     &     num_tauv, num_tauvm, objf_tauv, objf_tauvm, maskS,
-     &     mythid )
+     &     num_tauv, num_tauvm,
+     &     objf_tauv, objf_tauvm, objf_tauvsmoo,
+     &     maskS, mythid )
 #elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) && \
        defined (ALLOW_VWIND_CONTROL))
 c--   Meridional wind speed contribution to the cost function.
@@ -137,8 +144,9 @@ c--   Meridional wind speed contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_vwind_file, xx_vwind_dummy, wmean_wind, wvwind,
-     &     num_vwind, num_vwindm, objf_vwind, objf_vwindm, maskC,
-     &     mythid )
+     &     num_vwind, num_vwindm,
+     &     objf_vwind, objf_vwindm, objf_vwindsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) && \
@@ -149,8 +157,9 @@ c--   Atmos. precip. contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_precip_file, xx_precip_dummy, wmean_precip, wprecip,
-     &     num_precip, num_precipm, objf_precip, objf_precipm, maskC,
-     &     mythid )
+     &     num_precip, num_precipm,
+     &     objf_precip, objf_precipm, objf_precipsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) && \
@@ -161,8 +170,9 @@ c--   Atmos. swflux. contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_swflux_file, xx_swflux_dummy, wmean_swflux, wswflux,
-     &     num_swflux, num_swfluxm, objf_swflux, objf_swfluxm, maskC,
-     &     mythid )
+     &     num_swflux, num_swfluxm,
+     &     objf_swflux, objf_swfluxm, objf_swfluxsmoo,
+     &     maskC, mythid )
 #endif
 
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) && \
@@ -173,8 +183,9 @@ c--   Atmos. swdown. contribution to the cost function.
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_swdown_file, xx_swdown_dummy, wmean_swdown, wswdown,
-     &     num_swdown, num_swdownm, objf_swdown, objf_swdownm, maskC,
-     &     mythid )
+     &     num_swdown, num_swdownm,
+     &     objf_swdown, objf_swdownm, objf_swdownsmoo,
+     &     maskC, mythid )
 #endif
 
       end

@@ -284,13 +284,17 @@ c                  function contributions.
      &                objf_hflux,
      &                objf_hfluxm,
      &                objf_hfluxmm,
+     &                objf_hfluxsmoo,
      &                objf_sflux,
      &                objf_sfluxm,
      &                objf_sfluxmm,
+     &                objf_sfluxsmoo,
      &                objf_tauu,
      &                objf_tauum,
+     &                objf_tauusmoo,
      &                objf_tauv,
      &                objf_tauvm,
+     &                objf_tauvsmoo,
      &                objf_hmean,
      &                objf_h,
      &                objf_temp,
@@ -329,6 +333,13 @@ c                  function contributions.
      &                objf_swdownm,
      &                objf_uwindm,
      &                objf_vwindm,
+     &                objf_atempsmoo,
+     &                objf_aqhsmoo,
+     &                objf_precipsmoo,
+     &                objf_swfluxsmoo,
+     &                objf_swdownsmoo,
+     &                objf_uwindsmoo,
+     &                objf_vwindsmoo,
      &                objf_obcsn,
      &                objf_obcss,
      &                objf_obcsw,
@@ -345,13 +356,17 @@ c                  function contributions.
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
       _RL  objf_hfluxmm(nsx,nsy)
+      _RL  objf_hfluxsmoo  (nsx,nsy)
       _RL  objf_sflux  (nsx,nsy)
       _RL  objf_sfluxm (nsx,nsy)
       _RL  objf_sfluxmm(nsx,nsy)
+      _RL  objf_sfluxsmoo  (nsx,nsy)
       _RL  objf_tauu   (nsx,nsy)
       _RL  objf_tauum  (nsx,nsy)
+      _RL  objf_tauusmoo   (nsx,nsy)
       _RL  objf_tauv   (nsx,nsy)
       _RL  objf_tauvm  (nsx,nsy)
+      _RL  objf_tauvsmoo   (nsx,nsy)
       _RL  objf_hmean
       _RL  objf_h    (nsx,nsy)
       _RL  objf_temp (nsx,nsy)
@@ -390,6 +405,13 @@ c                  function contributions.
       _RL  objf_swdownm(nsx,nsy)
       _RL  objf_uwindm(nsx,nsy)
       _RL  objf_vwindm(nsx,nsy)
+      _RL  objf_atempsmoo(nsx,nsy)
+      _RL  objf_aqhsmoo  (nsx,nsy)
+      _RL  objf_precipsmoo(nsx,nsy)
+      _RL  objf_swfluxsmoo(nsx,nsy)
+      _RL  objf_swdownsmoo(nsx,nsy)
+      _RL  objf_uwindsmoo(nsx,nsy)
+      _RL  objf_vwindsmoo(nsx,nsy)
       _RL  objf_obcsn(nsx,nsy)
       _RL  objf_obcss(nsx,nsy)
       _RL  objf_obcsw(nsx,nsy)
@@ -570,7 +592,8 @@ c                  function contributions.
      &                    mult_kapgm,
      &                    mult_diffkr,
      &                    mult_ini_fin,
-     &                    mult_eddytau
+     &                    mult_eddytau,
+     &                    mult_smooth
 
       _RL  mult_hflux
       _RL  mult_sflux
@@ -616,6 +639,7 @@ c                  function contributions.
       _RL  mult_diffkr
       _RL  mult_ini_fin
       _RL  mult_eddytau
+      _RL  mult_smooth
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================

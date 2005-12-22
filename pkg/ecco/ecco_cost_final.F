@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.14 2005/09/02 23:54:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.15 2005/12/22 15:57:41 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -45,11 +45,17 @@ c     == local variables ==
 
       _RL f_temp0, f_salt0,  f_temp, f_salt 
       _RL f_uwind, f_vwind
-      _RL f_atemp, f_aqh, f_precip, f_swflux, f_swdown
+      _RL f_atemp, f_aqh, f_precip
+      _RL f_swflux, f_swdown
       _RL f_uwindm, f_vwindm
-      _RL f_atempm, f_aqhm, f_precipm, f_swfluxm, f_swdownm
+      _RL f_atempm, f_aqhm, f_precipm
+      _RL f_swfluxm, f_swdownm
+      _RL f_uwindsmoo, f_vwindsmoo
+      _RL f_atempsmoo, f_aqhsmoo, f_precipsmoo
+      _RL f_swfluxsmoo, f_swdownsmoo
       _RL f_tauu, f_tauv, f_hflux, f_sflux 
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
+      _RL f_tauusmoo, f_tauvsmoo, f_hfluxsmoo, f_sfluxsmoo
       _RL f_hfluxmm, f_sfluxmm 
       _RL f_sst, f_tmi, f_sss, f_atl, f_ctdt, f_ctds
       _RL f_drifter, f_xbt, f_tdrift, f_sdrift, f_wdrift
@@ -100,12 +106,16 @@ c     == end of interface ==
       f_salt0 = 0. _d 0 
       f_tauu = 0. _d 0 
       f_tauum = 0. _d 0 
+      f_tauusmoo = 0. _d 0 
       f_tauv = 0. _d 0 
       f_tauvm = 0. _d 0 
+      f_tauvsmoo = 0. _d 0 
       f_hflux = 0. _d 0 
-      f_hfluxm = 0. _d 0 
+      f_hfluxm = 0. _d 0
+      f_hfluxsmoo = 0. _d 0 
       f_hfluxmm = 0. _d 0 
       f_sflux  = 0. _d 0
+      f_sfluxsmoo = 0. _d 0 
       f_sfluxm  = 0. _d 0
       f_sfluxmm  = 0. _d 0
       f_uwind  = 0. _d 0
@@ -122,6 +132,13 @@ c     == end of interface ==
       f_precipm = 0. _d 0
       f_swfluxm = 0. _d 0
       f_swdownm = 0. _d 0
+      f_uwindsmoo  = 0. _d 0
+      f_vwindsmoo  = 0. _d 0
+      f_atempsmoo  = 0. _d 0
+      f_aqhsmoo  = 0. _d 0
+      f_precipsmoo = 0. _d 0
+      f_swfluxsmoo = 0. _d 0
+      f_swdownsmoo = 0. _d 0
       f_ssh = 0. _d 0
       f_sst = 0. _d 0
       f_tmi = 0. _d 0
@@ -217,63 +234,63 @@ c--   Sum up all contributions.
         do bi = itlo,ithi
  
           fc = fc
-     &            + mult_temp    * objf_temp(bi,bj)
-     &            + mult_salt    * objf_salt(bi,bj)
-     &            + mult_temp0   * objf_temp0(bi,bj)
-     &            + mult_salt0   * objf_salt0(bi,bj)
-     &            + mult_sst     * objf_sst(bi,bj) 
-     &            + mult_tmi     * objf_tmi(bi,bj) 
-     &            + mult_sss     * objf_sss(bi,bj) 
-     &            + mult_tauu    * objf_tauu(bi,bj)
-     &            + mult_tauu    * objf_tauum(bi,bj)
-     &            + mult_tauv    * objf_tauv(bi,bj)
-     &            + mult_tauv    * objf_tauvm(bi,bj)
-     &            + mult_hflux   * objf_hflux(bi,bj)  
-     &            + mult_hflux   * objf_hfluxm(bi,bj)  
-     &            + mult_sflux   * objf_sflux(bi,bj)  
-     &            + mult_sflux   * objf_sfluxm(bi,bj)  
-     &            + mult_h       * objf_h(bi,bj)
-     &            + mult_atl     * objf_atl(bi,bj)
-     &            + mult_ctdt    * objf_ctdt(bi,bj)
-     &            + mult_ctds    * objf_ctds(bi,bj)
-     &            + mult_ctdtclim* objf_ctdtclim(bi,bj)
-     &            + mult_ctdsclim* objf_ctdsclim(bi,bj)
-     &            + mult_xbt     * objf_xbt(bi,bj)
-     &            + mult_argot   * objf_argot(bi,bj)
-     &            + mult_argos   * objf_argos(bi,bj)
-     &            + mult_drift   * objf_drift(bi,bj)
-     &            + mult_sdrift  * objf_sdrift(bi,bj)
-     &            + mult_tdrift  * objf_tdrift(bi,bj)
-     &            + mult_wdrift  * objf_wdrift(bi,bj)
-     &            + mult_scatx   * objf_scatx(bi,bj)
-     &            + mult_scaty   * objf_scaty(bi,bj)
-     &            + mult_scatx   * objf_scatxm(bi,bj)
-     &            + mult_scaty   * objf_scatym(bi,bj)
-     &            + mult_uwind   * objf_uwind(bi,bj)
-     &            + mult_vwind   * objf_vwind(bi,bj)
-     &            + mult_atemp   * objf_atemp(bi,bj)  
-     &            + mult_aqh     * objf_aqh(bi,bj)  
-     &            + mult_precip  * objf_precip(bi,bj)  
-     &            + mult_swflux  * objf_swflux(bi,bj)  
-     &            + mult_swdown  * objf_swdown(bi,bj)  
-     &            + mult_uwind   * objf_uwindm(bi,bj)
-     &            + mult_vwind   * objf_vwindm(bi,bj)
-     &            + mult_atemp   * objf_atempm(bi,bj)  
-     &            + mult_aqh     * objf_aqhm(bi,bj)  
-     &            + mult_precip  * objf_precipm(bi,bj)  
-     &            + mult_swflux  * objf_swfluxm(bi,bj)  
-     &            + mult_swdown  * objf_swdownm(bi,bj)  
-     &            + mult_obcsn   * objf_obcsn(bi,bj)  
-     &            + mult_obcss   * objf_obcss(bi,bj)  
-     &            + mult_obcsw   * objf_obcsw(bi,bj)  
-     &            + mult_obcse   * objf_obcse(bi,bj)  
-     &            + mult_curmtr  * objf_curmtr(bi,bj)
-     &            + mult_ageos   * objf_ageos(bi,bj)
-     &            + mult_kapgm   * objf_kapgm(bi,bj)
-     &            + mult_diffkr  * objf_diffkr(bi,bj)
-     &            + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
-     &                             objf_salt_ini_fin(bi,bj))
-     &            + mult_eddytau * objf_eddytau(bi,bj)
+     &         + mult_temp    * objf_temp(bi,bj)
+     &         + mult_salt    * objf_salt(bi,bj)
+     &         + mult_temp0   * objf_temp0(bi,bj)
+     &         + mult_salt0   * objf_salt0(bi,bj)
+     &         + mult_sst     * objf_sst(bi,bj) 
+     &         + mult_tmi     * objf_tmi(bi,bj) 
+     &         + mult_sss     * objf_sss(bi,bj) 
+     &         + mult_tauu    * ( objf_tauu(bi,bj)+objf_tauum(bi,bj)
+     &                            +mult_smooth*objf_tauusmoo(bi,bj) )
+     &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
+     &                            +mult_smooth*objf_tauvsmoo(bi,bj) )
+     &         + mult_hflux   * ( objf_hflux(bi,bj)+objf_hfluxm(bi,bj)
+     &                            +mult_smooth*objf_hfluxsmoo(bi,bj) )
+     &         + mult_sflux   * ( objf_sflux(bi,bj)+objf_sfluxm(bi,bj)
+     &                            +mult_smooth*objf_sfluxsmoo(bi,bj) )
+     &         + mult_h       * objf_h(bi,bj)
+     &         + mult_atl     * objf_atl(bi,bj)
+     &         + mult_ctdt    * objf_ctdt(bi,bj)
+     &         + mult_ctds    * objf_ctds(bi,bj)
+     &         + mult_ctdtclim* objf_ctdtclim(bi,bj)
+     &         + mult_ctdsclim* objf_ctdsclim(bi,bj)
+     &         + mult_xbt     * objf_xbt(bi,bj)
+     &         + mult_argot   * objf_argot(bi,bj)
+     &         + mult_argos   * objf_argos(bi,bj)
+     &         + mult_drift   * objf_drift(bi,bj)
+     &         + mult_sdrift  * objf_sdrift(bi,bj)
+     &         + mult_tdrift  * objf_tdrift(bi,bj)
+     &         + mult_wdrift  * objf_wdrift(bi,bj)
+     &         + mult_scatx   * objf_scatx(bi,bj)
+     &         + mult_scaty   * objf_scaty(bi,bj)
+     &         + mult_scatx   * objf_scatxm(bi,bj)
+     &         + mult_scaty   * objf_scatym(bi,bj)
+     &         + mult_uwind   * ( objf_uwind(bi,bj)+objf_uwindm(bi,bj)
+     &                            +mult_smooth*objf_uwindsmoo(bi,bj) )
+     &         + mult_vwind   * ( objf_vwind(bi,bj)+objf_vwindm(bi,bj)
+     &                            +mult_smooth*objf_vwindsmoo(bi,bj) )
+     &         + mult_atemp   * ( objf_atemp(bi,bj)+objf_atempm(bi,bj)
+     &                            +mult_smooth*objf_atempsmoo(bi,bj) )
+     &         + mult_aqh     * ( objf_aqh(bi,bj)+objf_aqhm(bi,bj)
+     &                            +mult_smooth*objf_aqhsmoo(bi,bj) )
+     &         + mult_precip  * ( objf_precip(bi,bj)+objf_precipm(bi,bj)
+     &                            +mult_smooth*objf_precipsmoo(bi,bj) )
+     &         + mult_swflux  * ( objf_swflux(bi,bj)+objf_swfluxm(bi,bj)
+     &                            +mult_smooth*objf_swfluxsmoo(bi,bj) )
+     &         + mult_swdown  * ( objf_swdown(bi,bj)+objf_swdownm(bi,bj)
+     &                            +mult_smooth*objf_swdownsmoo(bi,bj) )
+     &         + mult_obcsn   * objf_obcsn(bi,bj)  
+     &         + mult_obcss   * objf_obcss(bi,bj)  
+     &         + mult_obcsw   * objf_obcsw(bi,bj)  
+     &         + mult_obcse   * objf_obcse(bi,bj)  
+     &         + mult_curmtr  * objf_curmtr(bi,bj)
+     &         + mult_ageos   * objf_ageos(bi,bj)
+     &         + mult_kapgm   * objf_kapgm(bi,bj)
+     &         + mult_diffkr  * objf_diffkr(bi,bj)
+     &         + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
+     &                          objf_salt_ini_fin(bi,bj))
+     &         + mult_eddytau * objf_eddytau(bi,bj)
 
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
@@ -281,28 +298,39 @@ c--   Sum up all contributions.
           f_salt0 = f_salt0 + objf_salt0(bi,bj) 
           f_tauu = f_tauu + objf_tauu(bi,bj)
           f_tauum  = f_tauum + objf_tauum(bi,bj)
+          f_tauusmoo = f_tauusmoo + objf_tauusmoo(bi,bj)
           f_tauv = f_tauv + objf_tauv(bi,bj)
           f_tauvm  = f_tauvm + objf_tauvm(bi,bj)
-          f_hflux= f_hflux + objf_hflux(bi,bj)   
+          f_tauvsmoo = f_tauvsmoo + objf_tauvsmoo(bi,bj)
+          f_hflux = f_hflux + objf_hflux(bi,bj)   
           f_hfluxm = f_hfluxm + objf_hfluxm(bi,bj)   
           f_hfluxmm = f_hfluxmm + objf_hfluxmm(bi,bj)   
-          f_sflux= f_sflux + objf_sflux(bi,bj)  
+          f_hfluxsmoo = f_hfluxsmoo + objf_hfluxsmoo(bi,bj)   
+          f_sflux = f_sflux + objf_sflux(bi,bj)  
           f_sfluxm = f_sfluxm + objf_sfluxm(bi,bj)  
           f_sfluxmm = f_sfluxmm + objf_sfluxmm(bi,bj)  
-          f_uwind = f_uwind + objf_uwind(bi,bj)
-          f_vwind = f_vwind + objf_vwind(bi,bj)
-          f_atemp = f_atemp + objf_atemp(bi,bj)
-          f_aqh = f_aqh + objf_aqh(bi,bj)
-          f_precip = f_precip + objf_precipm(bi,bj)
-          f_swflux = f_swflux + objf_swfluxm(bi,bj)
-          f_swdown = f_swdown + objf_swdownm(bi,bj)
-          f_uwindm = f_uwindm + objf_uwindm(bi,bj)
-          f_vwindm = f_vwindm + objf_vwindm(bi,bj)
-          f_atempm = f_atempm + objf_atempm(bi,bj)
-          f_aqhm   = f_aqhm   + objf_aqhm(bi,bj)
-          f_precipm = f_precipm + objf_precipm(bi,bj)
-          f_swfluxm = f_swfluxm + objf_swfluxm(bi,bj)
-          f_swdownm = f_swdownm + objf_swdownm(bi,bj)
+          f_sfluxsmoo = f_sfluxsmoo + objf_sfluxsmoo(bi,bj)   
+          f_uwind  = f_uwind + objf_uwind(bi,bj)
+          f_vwind  = f_vwind + objf_vwind(bi,bj)
+          f_atemp  = f_atemp + objf_atemp(bi,bj)
+          f_aqh    = f_aqh + objf_aqh(bi,bj)
+          f_precip = f_precip + objf_precip(bi,bj)
+          f_swflux = f_swflux + objf_swflux(bi,bj)
+          f_swdown = f_swdown + objf_swdown(bi,bj)
+          f_uwindm   = f_uwindm + objf_uwindm(bi,bj)
+          f_vwindm   = f_vwindm + objf_vwindm(bi,bj)
+          f_atempm   = f_atempm + objf_atempm(bi,bj)
+          f_aqhm     = f_aqhm   + objf_aqhm(bi,bj)
+          f_precipm  = f_precipm + objf_precipm(bi,bj)
+          f_swfluxm  = f_swfluxm + objf_swfluxm(bi,bj)
+          f_swdownm  = f_swdownm + objf_swdownm(bi,bj)
+          f_uwindsmoo  = f_uwindsmoo + objf_uwindsmoo(bi,bj)
+          f_vwindsmoo  = f_vwindsmoo + objf_vwindsmoo(bi,bj)
+          f_atempsmoo  = f_atempsmoo + objf_atempsmoo(bi,bj)
+          f_aqhsmoo    = f_aqhsmoo + objf_aqhsmoo(bi,bj)
+          f_precipsmoo = f_precipsmoo + objf_precipsmoo(bi,bj)
+          f_swfluxsmoo = f_swfluxsmoo + objf_swfluxsmoo(bi,bj)
+          f_swdownsmoo = f_swdownsmoo + objf_swdownsmoo(bi,bj)
           f_ssh  = f_ssh + objf_h(bi,bj) 
           f_sst  = f_sst + objf_sst(bi,bj) 
           f_tmi  = f_tmi + objf_tmi(bi,bj) 
@@ -401,16 +429,20 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_salt0, myThid )
       _GLOBAL_SUM_R8( f_tauu , myThid )
       _GLOBAL_SUM_R8( f_tauum , myThid )
+      _GLOBAL_SUM_R8( f_tauusmoo , myThid )
       _GLOBAL_SUM_R8( f_tauv , myThid )
       _GLOBAL_SUM_R8( f_tauvm , myThid )
+      _GLOBAL_SUM_R8( f_tauvsmoo , myThid )
       _GLOBAL_SUM_R8( f_hflux , myThid )
       _GLOBAL_SUM_R8( f_hfluxm , myThid )
       _GLOBAL_SUM_R8( f_hfluxmm , myThid )
        f_hfluxmm = f_hfluxmm*f_hfluxmm/float(npx*npy)
+      _GLOBAL_SUM_R8( f_hfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_sflux , myThid )
       _GLOBAL_SUM_R8( f_sfluxm , myThid )
       _GLOBAL_SUM_R8( f_sfluxmm , myThid )
        f_sfluxmm = f_sfluxmm*f_sfluxmm/float(npx*npy)
+      _GLOBAL_SUM_R8( f_sfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_uwind , myThid )
       _GLOBAL_SUM_R8( f_vwind , myThid )
       _GLOBAL_SUM_R8( f_atemp , myThid )
@@ -425,6 +457,13 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_precipm , myThid )
       _GLOBAL_SUM_R8( f_swfluxm , myThid )
       _GLOBAL_SUM_R8( f_swdownm , myThid )
+      _GLOBAL_SUM_R8( f_uwindsmoo , myThid )
+      _GLOBAL_SUM_R8( f_vwindsmoo , myThid )
+      _GLOBAL_SUM_R8( f_atempsmoo , myThid )
+      _GLOBAL_SUM_R8( f_aqhsmoo , myThid )
+      _GLOBAL_SUM_R8( f_precipsmoo , myThid )
+      _GLOBAL_SUM_R8( f_swfluxsmoo , myThid )
+      _GLOBAL_SUM_R8( f_swdownsmoo , myThid )
       _GLOBAL_SUM_R8( f_ssh , myThid )
       _GLOBAL_SUM_R8( f_sst , myThid )
       _GLOBAL_SUM_R8( f_tmi , myThid )
@@ -536,9 +575,13 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_tauum   =',f_tauum
       write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauusmoo =',f_tauusmoo
+      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_tauv    =',f_tauv
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_tauvm   =',f_tauvm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauvsmoo =',f_tauvsmoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_hflux   =',f_hflux
       write(standardmessageunit,'(A,D22.15)')
@@ -546,11 +589,15 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_hfluxmm =',f_hfluxmm
       write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_hfluxsmoo =',f_hfluxsmoo
+      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sflux   =',f_sflux
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sfluxm  =',f_sfluxm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sfluxmm =',f_sfluxmm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sfluxsmoo =',f_sfluxsmoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_uwind     =',f_uwind
       write(standardmessageunit,'(A,D22.15)')
@@ -579,6 +626,20 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_swfluxm  =',f_swfluxm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swdownm  =',f_swdownm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_uwindsmoo     =',f_uwindsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_vwindsmoo     =',f_vwindsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_atempsmoo     =',f_atempsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_aqhsmoo     =',f_aqhsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_precipsmoo  =',f_precipsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_swfluxsmoo  =',f_swfluxsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_swdownsmoo  =',f_swdownsmoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_atl     =',f_atl
       write(standardmessageunit,'(A,D22.15)')
@@ -653,28 +714,39 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_salt0 =', f_salt0, no_salt0
         write(ifc,*) 'f_tauu =', f_tauu, no_tauu
         write(ifc,*) 'f_tauum =', f_tauum, no_tauum
+        write(ifc,*) 'f_tauusmoo =', f_tauusmoo, no_tauu
         write(ifc,*) 'f_tauv =', f_tauv, no_tauv
         write(ifc,*) 'f_tauvm =', f_tauvm, no_tauvm
+        write(ifc,*) 'f_tauvsmoo =', f_tauvsmoo, no_tauv
         write(ifc,*) 'f_hflux =', f_hflux, no_hflux
         write(ifc,*) 'f_hfluxm =', f_hfluxm, no_hfluxm
         write(ifc,*) 'f_hfluxmm =', f_hfluxmm, no_hfluxmm
+        write(ifc,*) 'f_hfluxsmoo =', f_hfluxsmoo, no_hflux
         write(ifc,*) 'f_sflux =', f_sflux, no_sflux
         write(ifc,*) 'f_sfluxm =', f_sfluxm, no_sfluxm
         write(ifc,*) 'f_sfluxmm =', f_sfluxmm, no_sfluxmm
-        write(ifc,*) 'f_uwind =', f_uwind, no_uwind
-        write(ifc,*) 'f_vwind =', f_vwind, no_vwind
-        write(ifc,*) 'f_atemp =', f_atemp, no_atemp
-        write(ifc,*) 'f_aqh =', f_aqh, no_aqh
+        write(ifc,*) 'f_sfluxsmoo =', f_sfluxsmoo, no_sflux
+        write(ifc,*) 'f_uwind  =', f_uwind, no_uwind
+        write(ifc,*) 'f_vwind  =', f_vwind, no_vwind
+        write(ifc,*) 'f_atemp  =', f_atemp, no_atemp
+        write(ifc,*) 'f_aqh    =', f_aqh, no_aqh
         write(ifc,*) 'f_precip =', f_precip, no_precip
         write(ifc,*) 'f_swflux =', f_swflux, no_swflux
         write(ifc,*) 'f_swdown =', f_swdown, no_swdown
-        write(ifc,*) 'f_uwindm =', f_uwindm, no_uwindm
-        write(ifc,*) 'f_vwindm =', f_vwindm, no_vwindm
-        write(ifc,*) 'f_atempm =', f_atempm, no_atempm
-        write(ifc,*) 'f_aqhm =', f_aqhm, no_aqhm
-        write(ifc,*) 'f_precipm =', f_precipm, no_precipm
-        write(ifc,*) 'f_swfluxm =', f_swfluxm, no_swfluxm
-        write(ifc,*) 'f_swdownm =', f_swdownm, no_swdownm
+        write(ifc,*) 'f_uwindm   =', f_uwindm, no_uwindm
+        write(ifc,*) 'f_vwindm   =', f_vwindm, no_vwindm
+        write(ifc,*) 'f_atempm   =', f_atempm, no_atempm
+        write(ifc,*) 'f_aqhm     =', f_aqhm, no_aqhm
+        write(ifc,*) 'f_precipm  =', f_precipm, no_precipm
+        write(ifc,*) 'f_swfluxm  =', f_swfluxm, no_swfluxm
+        write(ifc,*) 'f_swdownm  =', f_swdownm, no_swdownm
+        write(ifc,*) 'f_uwindsmoo  =', f_uwindsmoo, no_uwind
+        write(ifc,*) 'f_vwindsmoo  =', f_vwindsmoo, no_vwind
+        write(ifc,*) 'f_atempsmoo  =', f_atempsmoo, no_atemp
+        write(ifc,*) 'f_aqhsmoo    =', f_aqhsmoo, no_aqh
+        write(ifc,*) 'f_precipsmoo =', f_precipsmoo, no_precip
+        write(ifc,*) 'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
+        write(ifc,*) 'f_swdownsmoo =', f_swdownsmoo, no_swdown
         write(ifc,*) 'f_ssh =', f_ssh, no_ssh
         write(ifc,*) 'f_sst =', f_sst, no_sst
         write(ifc,*) 'f_tmi =', f_tmi, no_tmi
