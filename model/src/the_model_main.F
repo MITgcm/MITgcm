@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.90 2005/11/09 19:54:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.91 2005/12/22 01:05:26 ce107 Exp $
 C $Name:  $
 
 CBOI
@@ -493,6 +493,9 @@ c--   set default:
       IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
+#ifdef USE_PAPI
+      CALL TIMER_CONTROL('','INIT','THE_MODEL_MAIN',myThid)
+#endif
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
 
