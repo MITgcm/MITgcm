@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.27 2005/12/20 03:53:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.28 2005/12/22 01:08:57 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,6 +164,26 @@ c     == local variables ==
       integer max_lev4
 #endif
 
+#if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef TIME_PER_TIMESTEP
+CCE107 common block for per timestep timing
+C     !TIMING VARIABLES
+C     == Timing variables ==
+      REAL*8 utnew, utold, stnew, stold, wtnew, wtold
+      DATA utnew, utold, stnew, stold, wtnew, wtold /6*0.0D0/
+#endif
+#ifdef USE_PAPI_FLOPS
+CCE107 common block for PAPI summary performance
+#include <fpapi.h>
+      INTEGER*8 flpops
+      DATA flpops /0/
+      INTEGER check
+      REAL real_time, proc_time, mflops
+      DATA real_time, proc_time, mflops /3*0.0D0/
+#endif
+#endif
+
 c--   == end of interface ==
 
 #ifndef DISABLE_DEBUGMODE
@@ -240,6 +260,19 @@ C--   Do IO if needed (Dump for start state).
 
       call timer_stop ('ECCO SPIN-UP', mythid)
       _BARRIER
+
+#ifdef TIME_PER_TIMESTEP
+CCE107 Initial call for timers
+      _BEGIN_MASTER( myThid )
+      CALL TIMER_GET_TIME( utold, stold, wtold )
+      _END_MASTER( myThid )
+#endif
+#ifdef USE_PAPI_FLOPS
+CCE107 Initial call for PAPI
+      _BEGIN_MASTER( myThid )
+      call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
+      _END_MASTER( myThid )
+#endif
 
 c--   Do the model integration.
       call timer_start('ECCO MAIN LOOP',mythid)
@@ -826,6 +859,29 @@ C--   Save state for restarts
      I               .FALSE., myTime, myIter, myThid )   
 #endif
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+
+#ifdef TIME_PER_TIMESTEP
+CCE107 Time per timestep information
+      _BEGIN_MASTER( myThid )
+      CALL TIMER_GET_TIME( utnew, stnew, wtnew )
+      WRITE(msgBuf,'(A34,3F10.6,I8)')
+     $        'User, system and wallclock time:', utnew - utold,
+     $        stnew - stold, wtnew - wtold, iloop
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      utold = utnew
+      stold = stnew
+      wtold = wtnew
+      _END_MASTER( myThid )
+#endif
+#ifdef USE_PAPI_FLOPS
+CCE107 PAPI summary performance
+      _BEGIN_MASTER( myThid )
+      call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
+      WRITE(msgBuf,'(F10.6,A34,I8)')
+     $        mflops, 'Mflop/s during timestep ', iloop
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER( myThid )
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING

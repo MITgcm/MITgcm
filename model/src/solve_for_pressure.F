@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.51 2005/12/20 20:31:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.52 2005/12/22 01:08:57 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,12 +70,20 @@ C     == Local variables ==
 #endif
 CEOP
 
-#ifdef TIME_PER_TIMESTEP
+#ifdef TIME_PER_TIMESTEP_SFP
 CCE107 common block for per timestep timing
 C     !TIMING VARIABLES
 C     == Timing variables ==
       REAL*8 utnew, utold, stnew, stold, wtnew, wtold
       COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
+#endif
+#ifdef USE_PAPI_FLOPS_SFP
+CCE107 common block for PAPI summary performance
+#include <fpapi.h>
+      INTEGER*8 flpops
+      INTEGER check
+      REAL real_time, proc_time, mflops
+      COMMON /papivars/ flpops, real_time, proc_time, mflops, check
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -501,7 +509,7 @@ C-       Other than Z coordinate: no assumption on surface level index
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
-#ifdef TIME_PER_TIMESTEP
+#ifdef TIME_PER_TIMESTEP_SFP
 CCE107 Time per timestep information
       _BEGIN_MASTER( myThid )
       CALL TIMER_GET_TIME( utnew, stnew, wtnew )
@@ -517,11 +525,19 @@ C Only output timing information after the 1st timestep
       wtold = wtnew
       _END_MASTER( myThid )
 #endif
-
+#ifdef USE_PAPI_FLOPS_SFP
+CCE107 PAPI summary performance
+      _BEGIN_MASTER( myThid )
+      call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
+      WRITE(msgBuf,'(A34,F10.6)')
+     $        'Mflop/s during this timestep:', mflops
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER( myThid )
+#endif
       RETURN
       END
 
-#ifdef TIME_PER_TIMESTEP
+#ifdef TIME_PER_TIMESTEP_SFP
 CCE107 Initialization of common block for per timestep timing
       BLOCK DATA settimers
 C     !TIMING VARIABLES
@@ -529,5 +545,15 @@ C     == Timing variables ==
       REAL*8 utnew, utold, stnew, stold, wtnew, wtold
       COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
       DATA utnew, utold, stnew, stold, wtnew, wtold /6*0.0D0/
+      END
+#endif
+#ifdef USE_PAPI_FLOPS_SFP
+CCE107 Initialization of common block for PAPI summary performance
+      BLOCK DATA setpapis
+      INTEGER*8 flpops
+      INTEGER check
+      REAL real_time, proc_time, mflops
+      COMMON /papivars/ flpops, real_time, proc_time, mflops, check
+      DATA flpops, real_time, proc_time, mflops, check /0, 3*0.0E0, 0/
       END
 #endif
