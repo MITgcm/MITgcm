@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.5 2005/12/22 21:13:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.6 2005/12/22 22:46:32 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -112,7 +112,7 @@ c--         Determine the weights to be used.
            
             fctile = 0. _d 0
             do k = 1,nr
-            do j = jmin,jmax
+             do j = jmin,jmax
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
@@ -125,7 +125,7 @@ c--         Determine the weights to be used.
      &                 num_temp0(bi,bj) = num_temp0(bi,bj) + 1. _d 0
                 endif
               enddo
-            enddo
+             enddo
             enddo
 
             objf_temp0(bi,bj) = objf_temp0(bi,bj) + fctile
@@ -147,7 +147,7 @@ c--     Loop over this thread's tiles.
 
             fctile = 0. _d 0
             do k = 1,nr
-            do j = jmin,jmax
+             do j = jmin,jmax
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = 
@@ -167,9 +167,10 @@ c--     Loop over this thread's tiles.
      &                 *tmpx*tmpx
                 endif
               enddo
+             enddo
             enddo
 
-            objf_theta0smoo(bi,bj) = objf_theta0smoo(bi,bj) + fctile
+            objf_temp0smoo(bi,bj) = objf_temp0smoo(bi,bj) + fctile
 
           enddo
         enddo
