@@ -301,6 +301,8 @@ c                  function contributions.
      &                objf_salt,
      &                objf_temp0,
      &                objf_salt0,
+     &                objf_temp0smoo,
+     &                objf_salt0smoo,
      &                objf_sst,
      &                objf_tmi,
      &                objf_sss,
@@ -373,6 +375,8 @@ c                  function contributions.
       _RL  objf_salt (nsx,nsy)
       _RL  objf_temp0(nsx,nsy)
       _RL  objf_salt0(nsx,nsy)
+      _RL  objf_temp0smoo(nsx,nsy)
+      _RL  objf_salt0smoo(nsx,nsy)
       _RL  objf_sst  (nsx,nsy)
       _RL  objf_tmi  (nsx,nsy)
       _RL  objf_sss  (nsx,nsy) 
@@ -593,7 +597,8 @@ c                  function contributions.
      &                    mult_diffkr,
      &                    mult_ini_fin,
      &                    mult_eddytau,
-     &                    mult_smooth
+     &                    mult_smooth_ic,
+     &                    mult_smooth_bc
 
       _RL  mult_hflux
       _RL  mult_sflux
@@ -639,7 +644,8 @@ c                  function contributions.
       _RL  mult_diffkr
       _RL  mult_ini_fin
       _RL  mult_eddytau
-      _RL  mult_smooth
+      _RL  mult_smooth_ic
+      _RL  mult_smooth_bc
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.4 2005/10/15 18:27:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.5 2005/12/22 21:13:21 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -58,8 +58,8 @@ c     == local variables ==
       integer ilfld
 
       _RL fctile
-      _RL fcthread
       _RL tmpx
+      _RL lengthscale
 
       logical doglobalread
       logical ladinit
@@ -84,6 +84,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
+      lengthscale = 1. _d 0
+
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
@@ -97,8 +99,6 @@ c--   Read state record from global file.
         write(fnamefld(1:80),'(2a,i10.10)') 
      &       xx_salt_file(1:ilfld),'.',optimcycle
       endif
-
-      fcthread = 0. _d 0
 
       call active_read_xyz_loc( fnamefld, tmpfld3d, irec, doglobalread,
      &                       ladinit, optimcycle, mythid
@@ -129,44 +129,50 @@ c--         Determine the weights to be used.
             enddo
 
             objf_salt0(bi,bj) = objf_salt0(bi,bj) + fctile
-            fcthread          = fcthread + fctile
 
-#ifdef ECCO_VERBOSE
-c--         Print cost function for each tile in each thread.
-            write(msgbuf,'(a)') ' '
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3)')
-     &        ' cost_salt0: irec,bi,bj          =  ',irec,bi,bj
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,d22.15)')
-     &        '               cost function (dS(0)) = ',
-     &        fctile
-            call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-#endif
           enddo
         enddo
 
-#ifdef ECCO_VERBOSE
-c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread , myThid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_zonstress:                       irec =  ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,d22.15)')
-     &    '                 global cost function value = ',
-     &    fcthread
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+#ifdef ALLOW_SMOOTH_IC_COST_CONTRIBUTION
+
+      call active_read_xyz_loc( 
+     &     fnamefld, tmpfld3d, irec, doglobalread,
+     &     ladinit, optimcycle, mythid, xx_salt_dummy )
+
+        _EXCH_XYZ_R8(tmpfld3d, mythid)
+
+c--     Loop over this thread's tiles.
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+
+            fctile = 0. _d 0
+            do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
+                  tmpx = 
+     &              ( tmpfld3d(i+2,j,k,bi,bj)-tmpfld3d(i+1,j,k,bi,bj) )
+     &                *maskW(i+1,j,k,bi,bj)*maskW(i+2,j,k,bi,bj)
+     &            + ( tmpfld3d(i+1,j,k,bi,bj)-tmpfld3d(i,j,k,bi,bj) )
+     &                *maskW(i+1,j,k,bi,bj)
+     &            + ( tmpfld3d(i,j+2,k,bi,bj)-tmpfld3d(i,j+1,k,bi,bj) )
+     &                *maskS(i,j+1,k,bi,bj)*maskS(i,j+2,k,bi,bj)
+     &            + ( tmpfld3d(i,j+1,k,bi,bj)-tmpfld3d(i,j,k,bi,bj) )
+     &                *maskS(i,j+1,k,bi,bj)
+		  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+                  fctile = fctile
+     &               + wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
+     *                 *0.0161*lengthscale/4.0
+     &                 *tmpx*tmpx
+                endif
+              enddo
+            enddo
+
+            objf_salt0smoo(bi,bj) = objf_salt0smoo(bi,bj) + fctile
+
+          enddo
+        enddo
 #endif
 
 #endif

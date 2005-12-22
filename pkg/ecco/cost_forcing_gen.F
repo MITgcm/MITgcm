@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.2 2005/12/22 15:57:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.3 2005/12/22 21:13:21 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -224,7 +224,7 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
-#ifdef ALLOW_SMOOTH_BOUNDARY_CTRL_COST
+#ifdef ALLOW_SMOOTH_BC_COST_CONTRIBUTION
 
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
@@ -257,7 +257,7 @@ c--         Determine the weights to be used.
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile
-     &                 + wgen(i,j,bi,bj)*cosphi(i,j,bi,bj)
+     &               + wgen(i,j,bi,bj)*cosphi(i,j,bi,bj)
      *                 *0.0161*lengthscale/4.0
      &                 *tmpx*tmpx
                   if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )

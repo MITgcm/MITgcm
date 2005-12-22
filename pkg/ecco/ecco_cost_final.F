@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.15 2005/12/22 15:57:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.16 2005/12/22 21:13:21 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -43,7 +43,8 @@ c     == local variables ==
       integer ifc
       integer totnum
 
-      _RL f_temp0, f_salt0,  f_temp, f_salt 
+      _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
+      _RL f_temp, f_salt 
       _RL f_uwind, f_vwind
       _RL f_atemp, f_aqh, f_precip
       _RL f_swflux, f_swdown
@@ -104,6 +105,8 @@ c     == end of interface ==
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
       f_salt0 = 0. _d 0 
+      f_temp0smoo = 0. _d 0
+      f_salt0smoo = 0. _d 0 
       f_tauu = 0. _d 0 
       f_tauum = 0. _d 0 
       f_tauusmoo = 0. _d 0 
@@ -236,19 +239,21 @@ c--   Sum up all contributions.
           fc = fc
      &         + mult_temp    * objf_temp(bi,bj)
      &         + mult_salt    * objf_salt(bi,bj)
-     &         + mult_temp0   * objf_temp0(bi,bj)
-     &         + mult_salt0   * objf_salt0(bi,bj)
+     &         + mult_temp0   * ( objf_temp0(bi,bj)
+     &                         +mult_smooth_ic*objf_temp0smoo(bi,bj) )
+     &         + mult_salt0   * ( objf_salt0(bi,bj)
+     &                         +mult_smooth_ic*objf_salt0smoo(bi,bj) )
      &         + mult_sst     * objf_sst(bi,bj) 
      &         + mult_tmi     * objf_tmi(bi,bj) 
      &         + mult_sss     * objf_sss(bi,bj) 
      &         + mult_tauu    * ( objf_tauu(bi,bj)+objf_tauum(bi,bj)
-     &                            +mult_smooth*objf_tauusmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_tauusmoo(bi,bj) )
      &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
-     &                            +mult_smooth*objf_tauvsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_tauvsmoo(bi,bj) )
      &         + mult_hflux   * ( objf_hflux(bi,bj)+objf_hfluxm(bi,bj)
-     &                            +mult_smooth*objf_hfluxsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_hfluxsmoo(bi,bj) )
      &         + mult_sflux   * ( objf_sflux(bi,bj)+objf_sfluxm(bi,bj)
-     &                            +mult_smooth*objf_sfluxsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_sfluxsmoo(bi,bj) )
      &         + mult_h       * objf_h(bi,bj)
      &         + mult_atl     * objf_atl(bi,bj)
      &         + mult_ctdt    * objf_ctdt(bi,bj)
@@ -267,19 +272,19 @@ c--   Sum up all contributions.
      &         + mult_scatx   * objf_scatxm(bi,bj)
      &         + mult_scaty   * objf_scatym(bi,bj)
      &         + mult_uwind   * ( objf_uwind(bi,bj)+objf_uwindm(bi,bj)
-     &                            +mult_smooth*objf_uwindsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_uwindsmoo(bi,bj) )
      &         + mult_vwind   * ( objf_vwind(bi,bj)+objf_vwindm(bi,bj)
-     &                            +mult_smooth*objf_vwindsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_vwindsmoo(bi,bj) )
      &         + mult_atemp   * ( objf_atemp(bi,bj)+objf_atempm(bi,bj)
-     &                            +mult_smooth*objf_atempsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_atempsmoo(bi,bj) )
      &         + mult_aqh     * ( objf_aqh(bi,bj)+objf_aqhm(bi,bj)
-     &                            +mult_smooth*objf_aqhsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_aqhsmoo(bi,bj) )
      &         + mult_precip  * ( objf_precip(bi,bj)+objf_precipm(bi,bj)
-     &                            +mult_smooth*objf_precipsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_precipsmoo(bi,bj) )
      &         + mult_swflux  * ( objf_swflux(bi,bj)+objf_swfluxm(bi,bj)
-     &                            +mult_smooth*objf_swfluxsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_swfluxsmoo(bi,bj) )
      &         + mult_swdown  * ( objf_swdown(bi,bj)+objf_swdownm(bi,bj)
-     &                            +mult_smooth*objf_swdownsmoo(bi,bj) )
+     &                         +mult_smooth_bc*objf_swdownsmoo(bi,bj) )
      &         + mult_obcsn   * objf_obcsn(bi,bj)  
      &         + mult_obcss   * objf_obcss(bi,bj)  
      &         + mult_obcsw   * objf_obcsw(bi,bj)  
@@ -296,6 +301,8 @@ c--   Sum up all contributions.
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
           f_salt0 = f_salt0 + objf_salt0(bi,bj) 
+          f_temp0smoo = f_temp0smoo + objf_temp0smoo(bi,bj)
+          f_salt0smoo = f_salt0smoo + objf_salt0smoo(bi,bj) 
           f_tauu = f_tauu + objf_tauu(bi,bj)
           f_tauum  = f_tauum + objf_tauum(bi,bj)
           f_tauusmoo = f_tauusmoo + objf_tauusmoo(bi,bj)
@@ -427,6 +434,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_salt , myThid )
       _GLOBAL_SUM_R8( f_temp0, myThid )
       _GLOBAL_SUM_R8( f_salt0, myThid )
+      _GLOBAL_SUM_R8( f_temp0smoo, myThid )
+      _GLOBAL_SUM_R8( f_salt0smoo, myThid )
       _GLOBAL_SUM_R8( f_tauu , myThid )
       _GLOBAL_SUM_R8( f_tauum , myThid )
       _GLOBAL_SUM_R8( f_tauusmoo , myThid )
@@ -562,6 +571,10 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_temp0   =',f_temp0
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_salt0   =',f_salt0
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_temp0smoo =',f_temp0smoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_salt0smoo =',f_salt0smoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sst     =',f_sst
       write(standardmessageunit,'(A,D22.15)')
@@ -712,6 +725,8 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_salt =', f_salt, no_salt
         write(ifc,*) 'f_temp0 =', f_temp0, no_temp0
         write(ifc,*) 'f_salt0 =', f_salt0, no_salt0
+        write(ifc,*) 'f_temp0smoo =', f_temp0smoo, no_temp0
+        write(ifc,*) 'f_salt0smoo =', f_salt0smoo, no_salt0
         write(ifc,*) 'f_tauu =', f_tauu, no_tauu
         write(ifc,*) 'f_tauum =', f_tauum, no_tauum
         write(ifc,*) 'f_tauusmoo =', f_tauusmoo, no_tauu
