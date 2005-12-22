@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.138 2005/12/04 13:57:08 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.139 2005/12/22 01:22:27 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -537,6 +537,17 @@ Usage: "$0" [OPTIONS]
 
     -ts | --ts
           Produce timing information per timestep
+    -papis | --papis
+          Produce summary MFlop/s with PAPI per timestep
+    -foolad | --foolad
+          Fool the AD code generator
+    -papi | --papi
+          Performance analysis with PAPI
+    -hpmt | --hpmt
+          Performance analysis with the HPM Toolkit
+
+    -gsl | --gsl
+          Use GSL to control floating point rounding and precision
 
     -mpi | --mpi
           Include MPI header files and link to MPI libraries
@@ -950,6 +961,11 @@ NOOPTFLAGS=
 MPI=
 MPIPATH=
 TS=
+PAPIS=
+FOOLAD=
+PAPI=
+HPMT=
+GSL=
 HAVE_TEST_L=
 
 # DEFINES checked by test compilation or command-line
@@ -1007,7 +1023,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE TS MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE TS PAPIS PAPI HPMT GSL MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
@@ -1189,6 +1205,17 @@ for ac_option in "$@" ; do
 
 	-ts | --ts)
 	    TS=true ;;
+	-papis | --papis)
+	    PAPIS=true ;;
+	-foolad | --foolad)
+	    FOOLAD=true ;;
+	-papi | --papi)
+	    PAPI=true ;;
+	-hpmt | --hpmt)
+	    HPMT=true ;;
+
+        -gsl | --gsl)
+	    GSL=true ;;
 
 	-mpi | --mpi)
 	    MPI=true ;;
@@ -1432,7 +1459,53 @@ fi
 
 if test ! "x$TS" = x ; then
       echo "  Turning on timing per timestep"
-      DEFINES="$DEFINES -DTIME_PER_TIMESTEP"
+      if test ! "x$FOOLAD" = x ; then
+            DEFINES="$DEFINES -DTIME_PER_TIMESTEP_SFP"
+      else
+	    DEFINES="$DEFINES -DTIME_PER_TIMESTEP"
+      fi
+fi
+if test ! "x$PAPIS" = x ; then
+      echo "  Turning on PAPI flop summary per timestep"
+      echo "  Please make sure PAPIINC, PAPILIB are defined"
+      if test ! "x$FOOLAD" = x ; then
+	    DEFINES="$DEFINES -DUSE_PAPI_FLOPS_SFP"
+      else
+	    DEFINES="$DEFINES -DUSE_PAPI_FLOPS"
+      fi
+      INCLUDES="$INCLUDES $PAPIINC"
+      LIBS="$LIBS $PAPILIB"
+fi
+if test ! "x$PAPI" = x ; then
+      if test ! "x$PAPIS" = x ; then
+	  echo "  PAPI performance analysis and flop summary per timestep cannot co-exist!"
+	  echo "  Sticking with PAPI flop summary per timestep!"
+      else
+	  echo "  Turning on performance analysis with PAPI"
+          echo "  Please make sure PAPIINC, PAPILIB are defined"
+	  DEFINES="$DEFINES -DUSE_PAPI"
+	  INCLUDES="$INCLUDES $PAPIINC"
+	  LIBS="$LIBS $PAPILIB"
+      fi
+fi
+if test ! "x$HPMT" = x ; then
+      if test ! "x$PAPI" = x ; then
+	  echo "  PAPI and the HPM Toolkit cannot co-exist!"
+	  echo "  Sticking with PAPI!"
+      else
+	  echo "  Turning on performance analysis with the HPM Toolkit"
+          echo "  Please make sure HPMTINC, HPMTLIB are defined"
+	  DEFINES="$DEFINES -DUSE_LIBHPM"
+          INCLUDES="$INCLUDES $HPMTINC"
+	  LIBS="$LIBS $HPMTLIB"
+      fi
+fi
+if test ! "x$GSL" = x ; then
+      echo "  Turning on use of GSL to control floating point calculations"
+      echo "  Please make sure GSLINC, GSLLIB are defined"
+      DEFINES="$DEFINES -DUSE_GSL_IEEE"
+      INCLUDES="$INCLUDES $GSLINC"
+      LIBS="$LIBS $GSLLIB"
 fi
 
 printf "\n===  Checking system libraries  ===\n"
@@ -1993,6 +2066,31 @@ for i in $INCLUDEDIRS ; do
     fi
 done
 
+echo "  Creating the pseudo-MPI include directory"
+if test ! "x$DIVA" = x ; then
+    INCLUDES="-I./mpi_headers $INCLUDES"
+    rm -rf ./mpi_headers
+    mkdir -p ./mpi_headers
+
+    if test "x$MPIINCLUDEDIR" = x ; then
+	if test "x$MPIHOME" = x ; then
+	    MPIHOME='/usr'
+	fi
+	MPIINCLUDEDIR='$MPIHOME/include'
+    fi
+    
+    if test -r $MPIINCLUDEDIR/mpif.h ; then
+	for i in $MPI_HEADER_FILES; do
+	    cp -p $MPIINCLUDEDIR/$i ./mpi_headers
+	done
+
+	perl -i -pe 's/MPI_DISPLACEMENT_CURRENT=-1_8/MPI_DISPLACEMENT_CURRENT=-1/g' mpi_headers/mpif.h
+    else
+	echo " We cannot create a copy of mpif.h!"
+	exit -1
+    fi
+fi
+
 echo "  Determining the list of source and include files"
 rm -rf .links.tmp
 mkdir .links.tmp
@@ -2276,7 +2374,7 @@ cat >>$MAKEFILE <<EOF
 .$FS90.o:
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
-	\$(CC) \$(CFLAGS) -c \$<
+	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 
 # Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
 .F.p:
