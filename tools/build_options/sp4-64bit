@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4-64bit,v 1.1 2005/01/13 00:16:31 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4-64bit,v 1.2 2005/12/22 01:38:05 ce107 Exp $
 #
 
 #  tested on bluesky, ce107 Jan 2005
@@ -14,7 +14,15 @@ CPP='/lib/cpp -P'
 CC='cc_r -q64'
 FC='xlf95_r -q64'
 LINK='mpxlf95_r -q64'
-LIBS='-L/usr/local/apps/mass -lmass'
+LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib64/r4i4'
 FFLAGS='-qfixed=132'
-FOPTIM='-O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -qstrict -Q -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+fi
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
