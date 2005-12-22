@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.4 2005/08/06 11:02:38 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.5 2005/12/22 01:29:45 ce107 Exp $
 #  $Name:  $
 #
 
@@ -12,11 +12,13 @@
 # TAF=~fastopt/bin/taf
 # STAF=staf
 
+DIVA='true'
 TAF=taf
 TAMC=tamc
 
+
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
-AD_TAF_FLAGS="-pure -mpi -include './mpi_headers/mpif_parameters.h ./mpi_headers/mpif.h ./mpi_headers/mpiof.h' -I./mpi_headers/ -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg"
+AD_TAF_FLAGS="-pure -mpi -include '$MPI_HEADER_FILES_INC' -I./mpi_headers/ -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg"
 FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
 FTL_TAF_FLAGS='-forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg'
 SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
