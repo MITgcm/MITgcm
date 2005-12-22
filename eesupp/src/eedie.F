@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.7 2003/12/15 02:02:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.8 2005/12/22 00:56:49 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#ifdef USE_LIBHPM
+# include "f_hpm.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE EEDIE
@@ -58,6 +61,9 @@ C     bug or you may need a different parallel compiler for main.F
        fatalError = .TRUE.
       ENDIF
 
+#ifdef USE_LIBHPM
+      CALL F_HPMTERMINATE(myProcId)
+#endif
 #ifdef ALLOW_USE_MPI
 C--
 C--   MPI style multiple-process termination

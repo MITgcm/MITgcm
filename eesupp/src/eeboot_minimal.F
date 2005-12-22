@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.15 2005/11/06 01:24:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.16 2005/12/22 00:56:49 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -186,6 +186,9 @@ c       WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:4)
 c       OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
 
 #endif /* ALLOW_USE_MPI */
+#ifdef USE_LIBHPM
+        CALL F_HPMINIT(myProcId, "mitgcmuv")
+#endif
 
  999  CONTINUE
 
