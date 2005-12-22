@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.91 2005/12/22 01:05:26 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.92 2005/12/22 16:51:58 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -464,6 +464,7 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "ctrl.h"
 # include "optim.h"
 #endif
 
@@ -522,7 +523,7 @@ c
       IF (myProcId .eq. 0) THEN
          inquire( file='costfinal', exist=exst )
          IF ( .NOT. exst ) THEN
-            IF ( optimcycle.NE.0 ) THEN
+            IF ( optimcycle.NE.0 .AND. doMainUnpack ) THEN
                CALL TIMER_START('CTRL_UNPACK   [THE_MODEL_MAIN]',mythid)
                CALL CTRL_UNPACK( .TRUE. , mythid )
                CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',mythid)
@@ -583,11 +584,12 @@ C--   Call time stepping loop of full model
 
 # ifndef EXCLUDE_CTRL_PACK
       _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0 .AND. lastdiva ) THEN
+      IF ( myProcId .eq. 0 .AND. lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
-         call CTRL_PACK( .FALSE. , mythid )
+         CALL CTRL_PACK( .FALSE. , mythid )
          CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
-         IF ( optimcycle.EQ.0 .AND. mycurrentiter.EQ.niter0 ) THEN
+         IF ( ( optimcycle.EQ.0 .OR. (.NOT. doMainUnpack) )
+     &        .AND. mycurrentiter.EQ.niter0 ) THEN
             CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
             CALL CTRL_PACK( .TRUE. , mythid )
             CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
