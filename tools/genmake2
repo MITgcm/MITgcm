@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.139 2005/12/22 01:22:27 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.140 2005/12/22 01:36:24 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2066,8 +2066,8 @@ for i in $INCLUDEDIRS ; do
     fi
 done
 
-echo "  Creating the pseudo-MPI include directory"
 if test ! "x$DIVA" = x ; then
+    echo "  Creating the pseudo-MPI include directory"
     INCLUDES="-I./mpi_headers $INCLUDES"
     rm -rf ./mpi_headers
     mkdir -p ./mpi_headers
