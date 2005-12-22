@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.19 2005/10/16 06:51:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.20 2005/12/22 01:32:19 ce107 Exp $
 #  $Name:  $
 #
 
@@ -47,4 +47,7 @@ elif test -d /usr/local/netcdf ; then
     INCLUDES='-I/usr/local/netcdf/include'
     LIBS='-L/usr/local/netcdf/lib'
 fi
-
+GSLINC=''
+GSLLIB='-lgsl -lgslcblas'
+PAPIINC='-I/usr/local/pkg/papi/papi-3.0.8.1/p4/include'
+PAPILIB='-L/usr/local/pkg/papi/papi-3.0.8.1/p4/lib -lpapi'
