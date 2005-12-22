@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.593 2005/12/20 20:55:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.594 2005/12/22 16:01:45 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -26,6 +26,11 @@ o completing 3-dim. relaxation code: additional term
       1) Use a constant-in-time 3-dim. field
       2) Provide 12 3-dim. fields corresponding to Jan., ... , Dec.
       3) Real-time relax. to time-evolving prescribed field
+o Adding Laplacian-type smoothness constraint on forcing controls 
+  * enable at compile-time via ALLOW_SMOOTH_BOUNDARY_CTRL_COST
+  * enable at run-time via mult_smooth = 1
+  * Absolute scale somewhat unclear so far
+  * no area weighting was included since no other cost term does so far
 
 checkpoint57y_post
 First step for a NLFS adjoint
