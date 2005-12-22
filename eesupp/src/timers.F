@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.19 2005/06/07 20:52:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.20 2005/12/22 01:03:29 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#ifdef USE_LIBHPM
+# include "f_hpm.h"
+#endif
 
 C--   File utils.F: General purpose support routines
 C--    Contents
@@ -162,7 +165,25 @@ C     nTimers      :: Number of active timers
       PARAMETER ( PRINT = 'PRINT' )
       CHARACTER*(*) PRINTALL
       PARAMETER ( PRINTALL = 'PRINTALL' )
-      INTEGER I
+#ifdef USE_PAPI
+#include <fpapi.h>
+      INTEGER PAPIF_num_counters
+      EXTERNAL PAPIF_num_counters
+      CHARACTER*(*) INIT
+      CHARACTER(13) EventName
+      PARAMETER ( INIT = 'INIT' )
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 18)
+      INTEGER EventCode(nmaxevents)
+      INTEGER*8 values(nmaxevents, maxTimers , MAX_NO_THREADS),
+     $     values1(nmaxevents, maxTimers, MAX_NO_THREADS),
+     $     values2(nmaxevents, maxTimers, MAX_NO_THREADS)
+      COMMON /papivalues/ values, values1, values2
+      INTEGER neventsmax, nevents, Check, EventSet
+      INTEGER papiunit
+      SAVE EventCode, neventsmax, nevents, EventSet
+#endif
+      INTEGER I, J
       Real*8 userTime
       Real*8 systemTime
       Real*8 wallClockTime
@@ -213,10 +234,24 @@ C
           timerStatus(iTimer,myThreadId) = RUNNING
           timerStarts(iTimer,myThreadId) = 
      &       timerStarts(iTimer,myThreadId)+1
+#ifdef USE_PAPI
+CCE107 - Read event counts
+          call PAPIF_read(EventSet, values1(1,iTimer,myThreadId), Check)
+#endif
         ENDIF
+#ifdef USE_LIBHPM
+        CALL f_hpmtstart((myThreadId-1)*100+iTimer,tmpName)
+#endif
       ELSEIF ( tmpAction .EQ. STOP ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
+#ifdef USE_LIBHPM
+        CALL f_hpmtstop((myThreadId-1)*100+iTimer)
+#endif
         IF ( timerStatus(iTimer,myThreadId) .EQ. RUNNING ) THEN
+#ifdef USE_PAPI
+CCE107 PAPI - Read event counts
+          call PAPIF_read(EventSet, values2(1,iTimer,myThreadId), Check)
+#endif
           CALL TIMER_GET_TIME( userTime, systemTime, wallClockTime )
           timerUser(iTimer,myThreadId)    = 
      &       timerUser(iTimer,myThreadId) + 
@@ -230,10 +265,72 @@ C
      &       timerWall(iTimer,myThreadId) + 
      &                           wallClockTime -
      &                           timerT0Wall(iTimer,myThreadId)
+#ifdef USE_PAPI
+          do i=1,nevents
+             values(i,iTimer,myThreadId) = values(i,iTimer,myThreadId) +
+     $       values2(i,iTimer,myThreadId) - values1(i,iTimer,myThreadId)
+          enddo
+#endif
           timerStatus(iTimer,myThreadId)  = STOPPED
           timerStops (iTimer,myThreadId)  = 
      &    timerStops (iTimer,myThreadId)+1
         ENDIF
+#ifdef USE_PAPI
+      ELSEIF ( tmpAction .EQ. INIT ) THEN
+CCE107 PAPI - Check PAPI version, find the maximum number of events and 
+C      initialize the library, read the suggested events and create 
+C      EventSet, prepare counter for use
+         Check = PAPI_VER_CURRENT
+         call PAPIF_library_init(Check)
+         if (Check .NE. PAPI_VER_CURRENT) then
+            WRITE(msgBuffer,*) "PAPI Library Version is out of Date"
+            CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &           SQUEEZE_RIGHT,myThreadId)
+            CALL ABORT
+         endif
+         neventsmax = PAPIF_num_counters(check)
+         if (neventsmax .GT. nmaxevents) then
+            WRITE(msgBuffer,*) "Fix the nmaxevents in the code to ",
+     $           neventsmax 
+            CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &           SQUEEZE_RIGHT,myThreadId)
+            CALL ABORT
+         endif
+         _BEGIN_MASTER(myThreadId)
+         CALL mdsFindUnit (papiunit, myThreadId)
+         OPEN(UNIT=papiunit,FILE='data.papi',STATUS='OLD')
+        read(papiunit,*) nevents
+C       reset to reasonable values
+        if (nevents .gt. neventsmax) then
+           nevents = neventsmax
+           WRITE(msgBuffer,*)
+     $          "resetting the number of PAPI events to the maximum" 
+           CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &           SQUEEZE_RIGHT,myThreadId)
+        endif
+        do i = 1,nevents
+          read(papiunit,*) EventName
+          call PAPIF_event_name_to_code(EventName, EventCode(i), Check)
+        end do
+        close(papiunit)
+        _END_MASTER(myThid)
+        EventSet = PAPI_NULL
+        call PAPIF_create_eventset(EventSet, Check)
+        do i = 1,nevents
+           call PAPIF_add_event(EventSet, EventCode(i), Check)
+           if (Check .NE. PAPI_OK) then
+              CALL PAPIF_event_code_to_name(EventCode(i), EventName,
+     $             Check)
+              WRITE(msgBuffer,*) "Abort After PAPIF_add_event: ",
+     $             EventName
+              CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &             SQUEEZE_RIGHT,myThreadId)
+              CALL ABORT
+           endif
+        enddo
+CCE107 - Start counting events
+        call PAPIF_start(EventSet, Check)
+#endif
       ELSEIF ( tmpAction .EQ. PRINT ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
         WRITE(msgBuffer,*)
@@ -262,6 +359,22 @@ C
      &  timerStops(iTimer,myThreadId)
         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
+#ifdef USE_PAPI
+        do i = 1,nevents
+           call PAPIF_event_code_to_name(EventCode(i), EventName, Check)
+           if ((EventName .ne. 'PAPI_FLOPS   ') .and.
+     $         (EventName .ne. 'PAPI_IPS     ')) then
+               WRITE(msgBuffer,71) Eventname,
+     $         values(i,iTimer,myThreadId)/timerUser(iTimer,myThreadId),
+     $         values(i,iTimer,myThreadId)/timerWall(iTimer,myThreadId), 
+     $         1.D0*values(i,iTimer,myThreadId)
+           else
+               WRITE(msgBuffer,72) Eventname,1.D0*values(j,I,myThreadId)
+           endif
+           CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+        enddo
+#endif
       ELSEIF ( tmpAction .EQ. PRINTALL ) THEN
         DO 10 I = 1, nTimers(myThreadId)
          WRITE(msgBuffer,*) ' Seconds in section "',
@@ -289,6 +402,22 @@ C
      &  timerStops(I,myThreadId)
          CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
+#ifdef USE_PAPI
+        do j = 1,nevents
+           call PAPIF_event_code_to_name(EventCode(j), EventName, Check)
+           if ((EventName .ne. 'PAPI_FLOPS   ') .and.
+     $         (EventName .ne. 'PAPI_IPS     ')) then
+               WRITE(msgBuffer,71) Eventname,
+     $             values(j,I,myThreadId)/timerUser(I,myThreadId),
+     $             values(j,I,myThreadId)/timerWall(I,myThreadId),
+     $             1.D0*values(j,I,myThreadId) 
+           else
+               WRITE(msgBuffer,72) Eventname,1.D0*values(j,I,myThreadId)
+           endif
+           CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+        enddo
+#endif
    10   CONTINUE
       ELSE
         GOTO 903
@@ -435,6 +564,9 @@ C
       CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
+
+ 71   FORMAT(A,' per sec ',D13.7,' ',D13.7,', number ', D13.7)
+ 72   FORMAT(A,D13.7)
       END
 
 CBOP
@@ -585,7 +717,7 @@ CBOP
 C     !ROUTINE: TIMER_STOP
 
 C     !INTERFACE:
-      SUBROUTINE TIMER_STOP  ( string , myThreadId)
+      SUBROUTINE TIMER_STOP  ( string , myThreadId )
       IMPLICIT NONE
 
 C     !DESCRIPTION:
@@ -603,3 +735,22 @@ C
       RETURN
       END
 C***********************************************************************
+
+#ifdef USE_PAPI
+CCE107 Initialization of common block for PAPI timers
+      BLOCK DATA setpapivalues
+#include "EEPARAMS.h"
+      INTEGER maxTimers
+      PARAMETER (maxTimers = 40)
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 18)
+      INTEGER EventCode(nmaxevents)
+      INTEGER size
+      PARAMETER (size = 3*nmaxevents*maxTimers*MAX_NO_THREADS)
+      INTEGER*8 values(nmaxevents, maxTimers , MAX_NO_THREADS),
+     $     values1(nmaxevents, maxTimers, MAX_NO_THREADS),
+     $     values2(nmaxevents, maxTimers, MAX_NO_THREADS)
+      COMMON /papivalues/ values, values1, values2
+      DATA values, values1, values2 /size*0/ 
+      END
+#endif
