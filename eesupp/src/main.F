@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.19 2005/12/03 08:30:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.20 2005/12/22 00:36:51 ce107 Exp $
 C $Name:  $
 
 CBOI
@@ -125,6 +125,10 @@ C--   Local variables
 #endif 
 
 CEOP
+
+#ifdef USE_GSL_IEEE
+      call fgsl_ieee_env_setup ()
+#endif
 
 C--   Set up the execution environment
 C     EEBOOT loads a execution environment parameter file 
