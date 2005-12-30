@@ -35,6 +35,7 @@ chmod a+x $RUNIT
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
+umask 0022
 TDIR="/net/ds-01/scratch-5/edhill/tmp_"$FC
 if test -e $TDIR ; then
     rm -rf $TDIR
@@ -43,6 +44,9 @@ mkdir $TDIR
 cd $TDIR
 cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
 #  cvs co MITgcm
+/usr/bin/find $TDIR -type d | xargs chmod g+rxs
+/usr/bin/find $TDIR -type f | xargs chmod g+r
+
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_itrda"
 # ./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT -a 'edhill@mitgcm.org'
