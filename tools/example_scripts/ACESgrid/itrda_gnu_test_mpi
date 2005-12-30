@@ -2,7 +2,7 @@
 #
 #PBS -q long
 #PBS -N eh3_g77
-#PBS -l nodes=2:ppn=2
+#PBS -l nodes=2:ppn=1
 #PBS -e /home/edhill/test_outp/eh3_gnu.stderr
 #PBS -o /home/edhill/test_outp/eh3_gnu.stdout
 #PBS -V
@@ -18,7 +18,7 @@ cd $HERE
 FC=g77
 RUNIT=$HERE"/runit_"$FC
 MF=$HERE"/mf_"$FC
-cat $PBS_NODEFILE | sort | uniq > $MF
+cat $PBS_NODEFILE > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 
@@ -35,6 +35,7 @@ chmod a+x $RUNIT
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
+umask 0022
 TDIR="/net/ds-01/scratch-5/edhill/tmp_"$FC
 if test -e $TDIR ; then
     rm -rf $TDIR
@@ -43,6 +44,9 @@ mkdir $TDIR
 cd $TDIR
 cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
 #  cvs co MITgcm
+/usr/bin/find $TDIR -type d | xargs chmod g+rxs
+/usr/bin/find $TDIR -type f | xargs chmod g+r
+
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_itrda"
 # ./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT -a 'edhill@mitgcm.org'
