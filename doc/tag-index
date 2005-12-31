@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.595 2005/12/22 21:16:17 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.596 2005/12/31 01:21:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57z_post
 o make CG3D solver compatible with Free-surface at k > 1 (p-coordinate):
   affects output (@ truncation level) of exp. plume_on_slope ; updated.
 o fix the pickup behavior for obcs in combination with ptracers
