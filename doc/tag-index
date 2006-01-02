@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.596 2005/12/31 01:21:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.597 2006/01/02 21:19:06 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o clean up 3-dim. relaxation codes:
+  * Fix I/O inconsistency in pkg/rbcs: replace precFloat32 by readBinaryPrec
+  * Remove 3-dim. relaxation code from pkg/exf (now use only pkg/rbcs)
+  * Thanks to Tom Haine for testing!
 
 checkpoint57z_post
 o make CG3D solver compatible with Free-surface at k > 1 (p-coordinate):
