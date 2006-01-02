@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.6 2005/11/09 17:22:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.7 2006/01/02 21:17:01 heimbach Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -54,14 +54,6 @@ c       If defined, river and glacier runoff can be read-in from files.
 c
 c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
-c
-c   >>> ALLOW_CLIMTEMP_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of potential
-c       temperature, e.g. the Levitus climatology.
-c
-c   >>> ALLOW_CLIMSALT_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of salinity,
-c       e.g. the Levitus climatology.
 c
 c   >>> ALLOW_CLIMSST_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of sea surface

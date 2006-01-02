@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.13 2005/12/13 19:46:46 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.14 2006/01/02 21:17:02 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -211,30 +211,6 @@ c             Short wave radiative flux.
              sss(i,j,bi,bj)  = exf_outscal_sss*climsss(i,j,bi,bj)
             enddo
           enddo
-#endif
-
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-          if ( climtempfile .NE. ' ' ) then
-             do k = 1, Nr
-                do j = jmin,jmax
-                   do i = imin,imax
-                      thetaStar(i,j,k,bi,bj)  = climtemp(i,j,k,bi,bj)
-                   enddo
-                enddo
-             enddo
-          endif
-#endif
-
-#ifdef ALLOW_CLIMSALT_RELAXATION
-          if ( climsaltfile .NE. ' ' ) then
-             do k = 1, Nr
-                do j = jmin,jmax
-                   do i = imin,imax
-                      saltStar(i,j,k,bi,bj)  = climsalt(i,j,k,bi,bj)
-                   enddo
-                enddo
-             enddo
-          endif
 #endif
 
 #ifdef ATMOSPHERIC_LOADING

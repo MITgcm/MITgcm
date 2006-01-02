@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.29 2005/12/12 20:48:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.30 2006/01/02 21:17:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -474,6 +474,21 @@ C- jmc: but ultimately, this block can/will be removed.
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF      
       
+      IF ( tauThetaClimRelax3Dim .NE. 0. .OR.
+     &     tauSaltClimRelax3Dim .NE. 0. ) THEN
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: 3-dim. relaxation code has moved to ',
+     &       'separate pkg/rbcs.' 
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)')
+     &       'tauThetaClimRelax3Dim, tauSaltClimRelax3Dim no longer ',
+     &       'in use.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+C------------------------------------------------------------------------------------------
+
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)

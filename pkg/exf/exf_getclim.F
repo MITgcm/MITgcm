@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.4 2005/12/13 19:46:46 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.5 2006/01/02 21:17:02 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -51,20 +51,6 @@ c     == local variables ==
 
 c     == end of interface ==
 
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-c     Get values of climatological temperature fields.
-      call exf_set_climtemp ( mytime, myiter, mythid )
-c--   Update the tile edges.
-      _EXCH_XYZ_R8(climtemp, mythid)
-#endif
-
-#ifdef ALLOW_CLIMSALT_RELAXATION
-c     Get values of climatological salinity fields.
-      call exf_set_climsalt ( mytime, myiter, mythid )
-c--   Update the tile edges.
-      _EXCH_XYZ_R8(climsalt, mythid)
-#endif
-
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
       call exf_set_climsst ( mytime, myiter, mythid )
@@ -77,6 +63,24 @@ c     Get values of climatological sst fields.
       call exf_set_climsss ( mytime, myiter, mythid )
 c--   Update the tile edges.
       _EXCH_XY_R8(climsss, mythid)
+#endif
+
+cph FOLLOWING CODE OBSOLETE
+cph 3-dim. relaxation code moved to pkg/rbcs
+cph
+
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+c     Get values of climatological temperature fields.
+cph      call exf_set_climtemp ( mytime, myiter, mythid )
+c--   Update the tile edges.
+cph      _EXCH_XYZ_R8(climtemp, mythid)
+#endif
+
+#ifdef ALLOW_CLIMSALT_RELAXATION
+c     Get values of climatological salinity fields.
+cph      call exf_set_climsalt ( mytime, myiter, mythid )
+c--   Update the tile edges.
+cph      _EXCH_XYZ_R8(climsalt, mythid)
 #endif
 
       end

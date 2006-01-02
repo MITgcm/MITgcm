@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.1 2004/10/11 16:41:01 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.2 2006/01/02 21:17:02 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -77,6 +77,13 @@ cph            endif
 cph         endif
       endif
 
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+      STOP 'ALLOW_CLIMTEMP_RELAXATION no longer supported. Use pkg/rbcs'
+#endif
 
+
+#ifdef ALLOW_CLIMSALT_RELAXATION
+      STOP 'ALLOW_CLIMSALT_RELAXATION no longer supported. Use pkg/rbcs'
+#endif
 
       end

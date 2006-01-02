@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.40 2005/12/13 19:47:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.41 2006/01/02 21:17:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,18 +87,6 @@ CEOP
 #endif
          ENDDO
         ENDDO
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-           thetaStar (i,j,k,bi,bj) = 0. _d 0
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-           saltStar  (i,j,k,bi,bj) = 0. _d 0
-#endif
-          ENDDO
-         ENDDO
-        ENDDO
        ENDDO
       ENDDO
 C
@@ -178,18 +166,6 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
        CALL READ_FLD_XY_RS( pLoadFile, ' ', pload, 0, myThid )
       ENDIF
 #endif
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-      IF ( hydrogThetaFile .NE. ' '  ) THEN
-       CALL READ_FLD_XYZ_RS( 
-     &  hydrogThetaFile, ' ', thetaStar, 0, myThid )
-      ENDIF
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-      IF ( hydrogSaltFile .NE. ' '  ) THEN
-       CALL READ_FLD_XYZ_RS( 
-     &  hydrogSaltFile, ' ', saltStar, 0, myThid )
-      ENDIF
-#endif
 
       _END_MASTER(myThid)
 C
@@ -208,12 +184,6 @@ C
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_R4(pload  , myThid )
 C     CALL PLOT_FIELD_XYRS( pload, 'S/R INI_FORCING pload',1,myThid)
-#endif
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-      _EXCH_XYZ_R4(thetaStar , myThid )
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-      _EXCH_XYZ_R4(saltStar , myThid )
 #endif
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)

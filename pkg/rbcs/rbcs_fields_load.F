@@ -80,7 +80,7 @@ C     aWght, bWght :: Interpolation weights
 
 #ifdef ALLOW_RBCS
       CALL TIMER_START('RBCS_FIELDS_LOAD      [I/O]', myThid)
-      prec = precFloat32
+      prec = readBinaryPrec
 
 
 C First call requires that we initialize everything to zero for safety
