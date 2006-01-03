@@ -13,6 +13,8 @@
  hFacMin=0.1,
  tempAdvScheme=77,
  saltAdvScheme=20,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -35,7 +37,6 @@
 
 # Gridding parameters
  &PARM04
- usingSphericalPolarGrid=.FALSE.,
  usingCartesianGrid=.TRUE.,
  delZ=20*10.E3,
  dXspacing=10.E3,
@@ -44,4 +45,7 @@
 
 # Input datasets
  &PARM05
+ bathyFile='bathy_slope.bin',
+ uVelInitFile='Uvel.bin',
+ hydrogThetaFile='Tini_G.bin',
  &
