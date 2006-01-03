@@ -60,7 +60,7 @@ C   for saving storage space
 #endif
 
 C o Include/exclude KPP non/local transport terms
-#undef KPP_GHAT
+#define KPP_GHAT
 
 cph(
 #undef EXCLUDE_KPP_SHEAR_MIX

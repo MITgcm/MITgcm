@@ -136,6 +136,8 @@ C
 #define  CTRL_SET_OLD_MAXCVARS_30
 #define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#define  CTRL_UNPACK_PRECISE
+#define  CTRL_PACK_PRECISE
 
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL

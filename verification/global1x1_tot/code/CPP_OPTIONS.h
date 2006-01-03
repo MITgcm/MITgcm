@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/CPP_OPTIONS.h,v 1.3 2004/10/12 22:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/CPP_OPTIONS.h,v 1.4 2006/01/03 22:44:53 heimbach Exp $
 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -37,7 +37,7 @@ C   instead of the "virtual salt flux"
 #undef  USE_NATURAL_BCS
 
 C o Include/exclude exact volume conservaion
-#undef EXACT_CONSERV
+#define EXACT_CONSERV
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

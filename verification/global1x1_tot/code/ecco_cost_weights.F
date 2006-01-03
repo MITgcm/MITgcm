@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.1 2005/05/27 23:30:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.2 2006/01/03 22:44:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -315,6 +315,84 @@ c--       is no need to add the zonal and meridional directions.
         enddo
       enddo
 
+#ifdef ALLOW_SALT0_COST_CONTRIBUTION
+      if ( salt0errfile .NE. ' ' ) then
+         call mdsreadfield( salt0errfile, 32, 'RL', Nr,
+     &         wsaltLev, 1, mythid)
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if ( wsaltLev(i,j,k,bi,bj).eq.0 ) then
+                 wsaltLev(i,j,k,bi,bj) = 0. _d 0
+              else
+                 wsaltLev(i,j,k,bi,bj)=frame(i,j)/
+     $              ( wsaltLev(i,j,k,bi,bj)*wsaltLev(i,j,k,bi,bj) )
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      else
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+                wsaltLev(i,j,k,bi,bj)=ratio/(wsalt(k,bi,bj)
+     $               *wsalt(k,bi,bj)) *frame(i,j)
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo            
+      endif
+      call active_write_xyz( 'wsaltLev', wsaltLev, 
+     &     1, 0, mythid, dummy)
+#endif
+
+#ifdef ALLOW_THETA0_COST_CONTRIBUTION
+      if ( temp0errfile .NE. ' ' ) then
+         call mdsreadfield( temp0errfile, 32, 'RL', Nr,
+     &         wthetaLev, 1, mythid)
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if ( wthetaLev(i,j,k,bi,bj).eq.0 ) then
+                 wthetaLev(i,j,k,bi,bj) = 0. _d 0
+              else
+                 wthetaLev(i,j,k,bi,bj)=frame(i,j)/
+     $              ( wthetaLev(i,j,k,bi,bj)*wthetaLev(i,j,k,bi,bj) )
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      else
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+                wthetaLev(i,j,k,bi,bj)=ratio/(wtheta(k,bi,bj)
+     $               *wtheta(k,bi,bj)) *frame(i,j)
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo            
+      endif
+      call active_write_xyz( 'wthetaLev', wthetaLev, 
+     &     1, 0, mythid, dummy)
+#endif
+
 #if (defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDS_COST_CONTRIBUTION)|| \
      defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION))
@@ -333,8 +411,8 @@ c--           Test for missing values.
      $            wsalt2(i,j,k,bi,bj).eq.0) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wsalt2(i,j,k,bi,bj)=ratio*frame(i,j)/MAX(
-     $                wsalt(k,bi,bj)*wsalt(k,bi,bj), 
+cph  new weights by G. Forget dont need MAX
+                 wsalt2(i,j,k,bi,bj)=frame(i,j)/(
      $                wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj) )
               endif
              enddo
@@ -376,8 +454,8 @@ c--           Test for missing values.
      $            wtheta2(i,j,k,bi,bj).eq.0) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wtheta2(i,j,k,bi,bj)=ratio*frame(i,j)/MAX(
-     $                wtheta(k,bi,bj)*wtheta(k,bi,bj), 
+cph  new weights by G. Forget dont need MAX
+                 wtheta2(i,j,k,bi,bj)=frame(i,j)/(
      $                wtheta2(i,j,k,bi,bj)*wtheta2(i,j,k,bi,bj) )
               endif
              enddo
@@ -445,6 +523,19 @@ cph                 wp(i,j,bi,bj) = wp(i,j,bi,bj)*10000.
 		 wp(i,j,bi,bj) = 0.
               endif
 cph-indonesian)
+cph-medit(
+              if ( ( xC(i,j,bi,bj) .GT. 355. .AND.
+     &               xC(i,j,bi,bj) .LT. 360. .AND.
+     &               yC(i,j,bi,bj) .GT.  30. .AND.
+     &               yC(i,j,bi,bj) .LT.  48. ) 
+     &             .OR.
+     &             ( xC(i,j,bi,bj) .GT.   0. .AND.
+     &               xC(i,j,bi,bj) .LT.  39. .AND.
+     &               yC(i,j,bi,bj) .GT.  30. .AND.
+     &               yC(i,j,bi,bj) .LT.  48. ) ) then
+                 wp(i,j,bi,bj) = wp(i,j,bi,bj)*10.
+              endif
+cph-medit)
             enddo
           enddo
         enddo
@@ -496,6 +587,20 @@ cph                 wers(i,j,bi,bj) = wers(i,j,bi,bj)*10000.
 		 wers(i,j,bi,bj) = 0.
               endif
 cph-indonesian)
+cph-medit(
+	      if ( ( xC(i,j,bi,bj) .GT. 355. .AND.
+     &               xC(i,j,bi,bj) .LT. 360. .AND.
+     &               yC(i,j,bi,bj) .GT.  30. .AND.
+     &               yC(i,j,bi,bj) .LT.  48. )
+     &             .OR.
+     &             ( xC(i,j,bi,bj) .GT.   0. .AND.
+     &               xC(i,j,bi,bj) .LT.  39. .AND.
+     &               yC(i,j,bi,bj) .GT.  30. .AND.
+     &               yC(i,j,bi,bj) .LT.  48. ) ) then
+                  wtp(i,j,bi,bj)  = wtp(i,j,bi,bj) *10.
+	          wers(i,j,bi,bj) = wers(i,j,bi,bj)*10.
+              endif
+cph-medit)
             enddo
           enddo
         enddo
@@ -897,7 +1002,8 @@ cph)
                 wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
               endif
               if (wtauu(i,j,bi,bj) .ne. 0.) then
-                wtauu(i,j,bi,bj) = 1./wtauu(i,j,bi,bj)/wtauu(i,j,bi,bj)
+                wtauu(i,j,bi,bj) = 
+     &               1./wtauu(i,j,bi,bj)/wtauu(i,j,bi,bj)
               else
                 wtauu(i,j,bi,bj) = 0.0 _d 0
               endif
@@ -914,7 +1020,8 @@ cph)
                 wscatx(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wtauv(i,j,bi,bj) .ne. 0.) then
-                wtauv(i,j,bi,bj) = 1./wtauv(i,j,bi,bj)/wtauv(i,j,bi,bj)
+                wtauv(i,j,bi,bj) = 
+     &               1./wtauv(i,j,bi,bj)/wtauv(i,j,bi,bj)
               else
                 wtauv(i,j,bi,bj) = 0.0 _d 0
               endif
@@ -954,6 +1061,7 @@ cph)
               else
                 wsfluxm(i,j,bi,bj) = 0.0 _d 0
               endif
+cph)
               if (wuwind(i,j,bi,bj) .ne. 0.) then
                 wuwind(i,j,bi,bj) = 
      &                1./wuwind(i,j,bi,bj)/wuwind(i,j,bi,bj)
