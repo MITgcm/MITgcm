@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.2 2006/01/03 22:44:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.3 2006/01/03 23:15:17 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -61,15 +61,9 @@ c     == local variables ==
       _RL wsi(nr)
       _RL wui(nr)
       _RL wvi(nr)
-      _RL whflux0
       _RL whflux0m
-      _RL wsflux0
       _RL wsflux0m
-      _RL wtau0
       _RL wtau0m
-      _RL watemp0
-      _RL waqh0
-      _RL wwind0
       _RL ratio
       _RL dummy
 

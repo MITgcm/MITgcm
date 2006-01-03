@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.4 2005/09/01 05:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.5 2006/01/03 23:15:17 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -39,9 +39,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
-#ifdef ALLOW_DRIFTW_COST_CONTRIBUTION 
-#include "GW.h"
-#endif
 
 #include "optim.h"
 #include "ecco_cost.h"
