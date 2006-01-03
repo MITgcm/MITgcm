@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.17 2005/04/07 23:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.18 2006/01/03 17:10:35 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -108,8 +108,13 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wtheta(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
+#ifdef ALLOW_OPENAD
+                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
+     &                               fac*xx_theta(i,j,k,bi,bj)
+#else
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
+#endif
                 if(theta(i,j,k,bi,bj).lt.-2.0) 
      &               theta(i,j,k,bi,bj)= -2.0 
               enddo
@@ -140,8 +145,13 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wsalt(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
+#ifdef ALLOW_OPENAD
+                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
+     &                               fac*xx_salt(i,j,k,bi,bj)
+#else
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
+#endif
 
               enddo
             enddo

@@ -218,6 +218,15 @@ c     TAMC sees xx_..._dummy
       _RL tmpfld3d 
      &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+#ifdef ALLOW_OPENAD
+      common /controlvars_r_openad/
+     &        xx_theta
+     &      , xx_salt
+      _RL xx_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
+
 cgg  This caused a lot of confusion.
 #ifdef ALLOW_OBCS_CONTROL
       common /controlvars_r_obcs/
