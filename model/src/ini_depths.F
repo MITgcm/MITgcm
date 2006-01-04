@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.33 2005/11/08 15:53:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.34 2006/01/04 12:25:40 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -115,7 +115,7 @@ C- end setup R_low in the interior
 C- fill in the overlap :
       _EXCH_XY_R4(R_low, myThid )
 
-      PRINT *, ' Calling plot field', myThid
+c      PRINT *, ' Calling plot field', myThid
       CALL PLOT_FIELD_XYRS(R_low,'Bottom depths (ini_depths)',1,myThid)
 c     _BEGIN_MASTER( myThid )
 c     CALL WRITE_FLD_XY_RS( 'R_low' ,' ', R_low, 0,myThid)
