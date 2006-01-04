@@ -30,7 +30,7 @@ function [rv] = plot_tiles_3D(tdat,vname,tvals,iz, opts)
 %
 %
 %  Ed Hill
-%  $Id: plot_tiles_3D.m,v 1.2 2005/12/02 02:19:51 edhill Exp $
+%  $Id: plot_tiles_3D.m,v 1.3 2006/01/04 02:47:47 edhill Exp $
 
 
 %  For debugging:
@@ -117,7 +117,7 @@ else
            'exist in "tdat"']);
   end
   if isempty(tvals) && not(isempty(alltimes))
-    tvals = alltimes;
+    timelist = alltimes;
   end
 end
 
