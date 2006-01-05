@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.18 2006/01/03 17:10:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.19 2006/01/05 17:48:01 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -404,8 +404,13 @@ c-- initial zonal velocity
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_OPENAD
                 uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) +
-     &                              tmpfld3d(i,j,k,bi,bj)
+     &                                  fac*xx_uvel(i,j,k,bi,bj)
+#else
+                uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) +
+     &                                  fac*tmpfld3d(i,j,k,bi,bj)
+#endif
               enddo
             enddo
           enddo
@@ -426,8 +431,13 @@ c-- initial merid. velocity
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_OPENAD
                 vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) +
-     &                              tmpfld3d(i,j,k,bi,bj)
+     &                                  fac*xx_vvel(i,j,k,bi,bj)
+#else
+                vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) +
+     &                                  fac*tmpfld3d(i,j,k,bi,bj)
+#endif
               enddo
             enddo
           enddo
@@ -447,7 +457,13 @@ c--   initial Eta.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#ifdef ALLOW_OPENAD
+              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) +
+     &                              fac*xx_etan(i,j,bi,bj)
+#else
+              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + 
+     &                              fac*tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo

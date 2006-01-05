@@ -1,4 +1,4 @@
-
+ 
 
 c     ==================================================================
 c     HEADER CONTROLVARS
@@ -224,6 +224,8 @@ c     Define unit weight as a placeholder
       _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 c     Control variables:
@@ -252,8 +254,14 @@ c     TAMC sees xx_..._dummy
       common /controlvars_r_openad/
      &        xx_theta
      &      , xx_salt
+     &      , xx_uvel
+     &      , xx_vvel
+     &      , xx_etan
       _RL xx_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 
