@@ -193,8 +193,38 @@ cph Need to put this in namelist at some point!
 
 c     Define unit weight as a placeholder
       common /ctrl_weights_unit_r/
-     &                        wunit
-      _RL wunit   ( nr,nsx,nsy )
+     &                        wunit,
+     &                        wareaunit
+      _RL wunit     (nr,nsx,nsy)
+      _RL wareaunit (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#ifndef ALLOW_ECCO
+      common /ctrl_weights_atmos_r/
+     &                      whflux,
+     &                      wsflux,
+     &                      wtauu,
+     &                      wtauv,
+     &                      watemp,
+     &                      waqh,
+     &                      wprecip,
+     &                      wswflux,
+     &                      wswdown,
+     &                      wuwind,
+     &                      wvwind,
+     &                      wsst,
+     &                      wsss
+      _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wsflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wtauu   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wtauv   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL watemp  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL waqh    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wswflux (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
 
 c     Control variables:
 c     ==================

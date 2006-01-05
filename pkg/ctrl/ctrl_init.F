@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.20 2005/08/31 00:03:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.21 2006/01/05 17:05:42 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -82,9 +82,15 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
       integer ntmp
       integer ivar
-
       integer iobcs
       integer il
       integer errio
@@ -104,6 +110,15 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
 
 c--     Set default values.
       do ivar = 1,maxcvars
@@ -746,10 +761,37 @@ c--   Atmos. swdown
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
-c----------------------------------------------------------------------
 
         call ctrl_init_wet( mythid )
-        
+
+c----------------------------------------------------------------------
+c----------------------------------------------------------------------
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              wareaunit (i,j,bi,bj) = 1.0
+#ifndef ALLOW_ECCO
+              whflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wsflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wtauu     (i,j,bi,bj) = maskW(i,j,1,bi,bj)
+              wtauv     (i,j,bi,bj) = maskS(i,j,1,bi,bj)
+              watemp    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              waqh      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wprecip   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wswflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wswdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wuwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wvwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wsst      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wsss      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+#endif
+            enddo
+          enddo
+        enddo
+      enddo
+ 
       return
       end
 

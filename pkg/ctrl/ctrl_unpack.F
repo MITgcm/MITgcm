@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.24 2005/08/31 00:03:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.25 2006/01/05 17:05:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -301,7 +301,7 @@ c----------------------------------------------------------------------
 #ifdef ALLOW_THETA0_CONTROL
           ivartype = 1
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtheta"
+          write(weighttype(1:80),'(a)') "wthetaLev"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_theta(ictrlgrad), "maskCtrlC",
      &         weighttype, wtheta, nwetcglobal, mythid)
@@ -310,7 +310,7 @@ c----------------------------------------------------------------------
 #ifdef ALLOW_SALT0_CONTROL
           ivartype = 2
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsalt"
+          write(weighttype(1:80),'(a)') "wsaltLev"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_salt(ictrlgrad), "maskCtrlC",
      &         weighttype, wsalt, nwetcglobal, mythid)

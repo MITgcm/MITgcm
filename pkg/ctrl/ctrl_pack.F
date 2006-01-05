@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.25 2005/09/07 02:45:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.26 2006/01/05 17:05:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -209,7 +209,7 @@ C     place holder of obsolete variable jG
 #ifdef ALLOW_THETA0_CONTROL
           ivartype = 1
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtheta"
+          write(weighttype(1:80),'(a)') "wthetaLev"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_theta(ictrlgrad), "maskCtrlC",
      &         weighttype, wtheta, lxxadxx, mythid)
@@ -218,7 +218,7 @@ C     place holder of obsolete variable jG
 #ifdef ALLOW_SALT0_CONTROL
           ivartype = 2
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsalt"
+          write(weighttype(1:80),'(a)') "wsaltLev"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_salt(ictrlgrad), "maskCtrlC",
      &         weighttype, wsalt, lxxadxx, mythid)
