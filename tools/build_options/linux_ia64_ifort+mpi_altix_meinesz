@@ -12,14 +12,21 @@ CPP='/lib/cpp  -traditional -P'
 # the '-convert big_endian' is crucial on this platform
 # -D_BYTESWAPIO doesn't work
 # also switch to -DWORDLENGTH=1
+# replace WORDLENGTH=1 by assume byterecl
 #
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=1'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 
 # These paths will likely change to newer versions of ifort
 #
 LIBS='-L/opt/intel_fc_80/lib -lmpi'
 FC=/opt/intel_fc_80/bin/ifort
-FFLAGS='-extend_source -O2 -tpp2 -ftz -fno-alias -fno-fnalias -convert big_endian'
+
+#ph(
+#ph o switching to columbia flags
+#ph o use ifort options -convert big_endian -assume byterecl
+#ph o add -Wl,-ldl flag to (temporarily?) resolve glibc(?) problem
+FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -Wl,-ldl -convert big_endian -assume byterecl'
+###FFLAGS='-extend_source -O2 -tpp2 -ftz -fno-alias -fno-fnalias -convert big_endian -assume byterecl'
 
 # FOPTIM='-O3 -align'
 #
