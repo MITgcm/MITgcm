@@ -93,6 +93,7 @@ C     !USES:
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "ctrl.h"
 #include "optim.h"
 
@@ -121,7 +122,7 @@ c     irec   -  record number to be written.
 C     !LOCAL VARIABLES:
 c     == local variables ==
       character*(7) itername
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
       integer il
       integer bx,by
 
@@ -132,7 +133,7 @@ c     == functions ==
 c     == end of interface ==
 CEOP
 
-      write(fname(1:80),'(a)') ' '
+      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
       write(itername,'(a,i4.4)') '.it',optimcycle
 
       il = ilnblnk( name )
@@ -190,6 +191,7 @@ C     !USES:
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "ctrl.h"
 #include "optim.h"
 
@@ -218,7 +220,7 @@ c     irec   -  record number to be written.
 C     !LOCAL VARIABLES:
 c     == local variables ==
       character*(7) itername
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
       integer il
       integer bx,by
       logical globalfile
@@ -232,7 +234,7 @@ CEOP
 
       globalfile = .false.
       il         = ilnblnk( name )
-      write(fname(1:80),'(a)') ' '
+      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
 
       write(itername,'(a,i4.4)') '.it',optimcycle
 
