@@ -34,23 +34,24 @@ c number of mask to read
       CHARACTER*(MAX_LEN_FNAM) relaxPtracerFile(PTRACERS_num)
 #endif
 
-      
-
-      COMMON /RBCS_PARM01/
+      COMMON /RBCS_PARM01_R/
      &          tauRelaxT,
      &          tauRelaxS,
-     &          relaxMaskFile,
-     &          relaxTFile,
-     &          relaxSFile,
-     &          rbcsIniter,
      &          rbcsForcingPeriod,
      &          rbcsForcingCycle,
      &          RBC_mask,
      &          RBCtemp,
-     &          RBCsalt,
+     &          RBCsalt
+      COMMON /RBCS_PARM01_I/
+     &          rbcsIniter
+      COMMON /RBCS_PARM01_L/
      &          useRBCtemp,
      &          useRBCsalt,
      &          useRBCptracers
+      COMMON /RBCS_PARM01_C/
+     &          relaxMaskFile,
+     &          relaxTFile,
+     &          relaxSFile
 
 #ifdef ALLOW_PTRACERS
       COMMON /RBCS_PARM02/
