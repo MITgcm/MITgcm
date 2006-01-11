@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.597 2006/01/02 21:19:06 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.598 2006/01/11 06:04:11 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add "--embed-source" option to genmake2 which, when the supporting 
+  tools can be compiled (as determined by genmake2) will turn on the 
+  embed_files package which then embeds the entire MITgcm source code 
+  (*.[fFhc] + Makefile) used for the build within the executable
+  - requested by CNH but off by default
+  - adds a paltry <9MB to the mitgcmuv executable in most cases
+  - only writes the output when useEMBEDSRC in eedata is true
 o clean up 3-dim. relaxation codes:
   * Fix I/O inconsistency in pkg/rbcs: replace precFloat32 by readBinaryPrec
   * Remove 3-dim. relaxation code from pkg/exf (now use only pkg/rbcs)
