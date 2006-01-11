@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.140 2005/12/22 01:36:24 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.141 2006/01/11 06:02:31 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -247,6 +247,41 @@ build_cyrus_makedepend()  {
 	return 1
     fi
 }
+
+
+build_embed_encode()
+{
+    printf "  building the embed-encode utility...  "
+    if test ! -e "$ROOTDIR/tools/embed_encode/encode_files" ; then
+        if test ! -d "$ROOTDIR/tools/embed_encode" ; then
+            echo
+            echo "    Error: can't locate \"$ROOTDIR/tools/embed_encode\""
+            echo
+            EMBED_SRC=f
+	    return 1
+        fi
+	clist="cc gcc c89 $CC"
+	for ic in $clist ; do 
+	    comm="$ic -o encode_files encode_files.c"
+	    ( cd $ROOTDIR/tools/embed_encode && $comm ) > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" = x0 ; then
+		echo "OK"
+		DEFINES="$DEFINES -DHAVE_EMBED_SRC"
+		return 0
+	    fi
+	done
+	echo
+	echo "    Error: unable to build $ROOTDIR/embed_encode/encode_files"
+	echo "      so it has been disabled"
+	echo
+	EMBED_SRC=f
+	return 1
+    fi
+    echo "OK"
+    DEFINES="$DEFINES -DHAVE_EMBED_SRC"
+}
+
 
 # Guess possible config options for this host
 find_possible_configs()  {
@@ -555,6 +590,11 @@ Usage: "$0" [OPTIONS]
           Include MPI header files and link to MPI libraries using MPI_ROOT
           set to PATH. i.e. Include files from \$PATH/include, link to libraries
           from \$PATH/lib and use binaries from \$PATH/bin.
+
+    -es | --es | -embed-source | --embed-source
+          Embed a tarball containing the full source code 
+          (including the Makefile, etc.) used to build the 
+          executable [off by default]
 
     -bash NAME
           Explicitly specify the Bourne or BASH shell to use
@@ -990,6 +1030,7 @@ BASH=
 PWD=`pwd`
 test "x$MAKE" = x  &&  MAKE=make
 test "x$AWK" = x   &&  AWK=awk
+EMBED_SRC=
 THISHOST=`hostname`
 THISCWD=`pwd`
 THISDATE=`date`
@@ -1243,6 +1284,9 @@ for ac_option in "$@" ; do
 	
 	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
 	    IGNORE_TIME="-DIGNORE_TIME" ;;
+
+	-es | --es | -embed-source | --embed-source)
+	    EMBED_SRC=t ;;
 
 	-*)
 	    echo "Error: unrecognized option: "$ac_option
@@ -1576,6 +1620,11 @@ if test "x$HAVE_CLOC" != x ; then
     echo "yes"
 else
     echo "no"
+    if test "x$EMBED_SRC" = xt ; then
+	echo "    WARNING: you requested file embedding but it has"
+	echo "      been disabled since C code cannot be called"
+	EMBED_SRC=
+    fi
 fi
 rm -f genmake_t*
 
@@ -1614,6 +1663,14 @@ else
     echo "no"
 fi
 DEFINES="$DEFINES $IGNORE_TIME"
+
+if test "x$EMBED_SRC" = xt ; then
+    build_embed_encode
+fi
+if test "x$EMBED_SRC" = xt ; then
+    ENABLE="$ENABLE embed_files"
+fi
+
 
 printf "\n===  Setting defaults  ===\n"
 printf "  Adding MODS directories:  "
@@ -2112,12 +2169,19 @@ for d in $alldirs ; do
 		ignore_f=f
                 case $d/$sf in
                   ./$PACKAGES_DOT_H)
+			ignore_f=t
 			;;
                   ./AD_CONFIG.h)
+			ignore_f=t
 			;;
                   ./FC_NAMEMANGLE.h)
+			ignore_f=t
 			;;
                   ./BUILD_INFO.h)
+			ignore_f=t
+			;;
+                  ./EMBEDDED_FILES.h)
+			ignore_f=t
 			;;
                   *)
 			#  For the local directory *ONLY*,
@@ -2230,11 +2294,15 @@ DISABLED_PACKAGES = ${DISABLED_PACKAGES}
 
 # These files are created by Makefile
 SPECIAL_FILES = ${PACKAGES_DOT_H} AD_CONFIG.h FC_NAMEMANGLE.h BUILD_INFO.h
-
 EOF
 
-#  Note: figure out some way to add Hyades JAM libraries here
- 
+if test "x$EMBED_SRC" = xt ; then
+    echo "EMBEDDED_FILES = EMBEDDED_FILES.h" >>$MAKEFILE
+else
+    echo "EMBEDDED_FILES = " >>$MAKEFILE
+fi
+
+#  Note: figure out some way to add Hyades JAM libraries here 
 cat >>$MAKEFILE <<EOF
 # Unix ln (link)
 LN = ${LN}
@@ -2296,7 +2364,7 @@ rm -f ad_flow_files.inc
 cat >>$MAKEFILE <<EOF
 
 all: \$(EXECUTABLE)
-\$(EXECUTABLE): \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES)
+\$(EXECUTABLE): \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES) \$(EMBEDDED_FILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
@@ -2357,6 +2425,25 @@ test ! "x$THISVER" = x  && echo "	-echo \"#define THISVER '$THISVER'\" > \$@"   
 test ! "x$THISUSER" = x && echo "	-echo \"#define THISUSER '$THISUSER'\" >> \$@" >> $MAKEFILE
 test ! "x$THISDATE" = x && echo "	-echo \"#define THISDATE '$THISDATE'\" >> \$@" >> $MAKEFILE
 test ! "x$THISHOST" = x && echo "	-echo \"#define THISHOST '$THISHOST'\" >> \$@" >> $MAKEFILE
+
+if test "x$EMBED_SRC" = xt ; then
+    cat >>$MAKEFILE <<EOF
+
+decode_files.o : EMBEDDED_FILES.h
+
+##  \$(F77FILES) 
+all_fF.tar.gz : \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(F77FILES) Makefile
+	@echo Creating \$@ ...
+	-tar -hcf all_fF.tar \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(F77FILES) Makefile
+	-rm -f all_fF.tar.gz
+	-gzip all_fF.tar
+
+EMBEDDED_FILES.h : all_fF.tar.gz
+	@echo Creating \$@ ...
+	-\${ROOTDIR}/tools/embed_encode/encode_files EMBEDDED_FILES.h all_fF.tar.gz
+
+EOF
+fi
 
 cat >>$MAKEFILE <<EOF
 

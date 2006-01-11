@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.20 2005/12/22 00:36:51 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.21 2006/01/11 06:02:31 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -141,6 +141,12 @@ C--   Trap errors
        fatalError = .TRUE.
        GOTO 999
       ENDIF
+
+#ifdef HAVE_EMBED_SRC
+      IF (useEMBEDSRC) THEN
+        CALL embdec
+      ENDIF
+#endif
 
 #ifdef HAVE_SETRLSTK
       IF (useSETRLSTK) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.21 2005/12/03 08:30:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.22 2006/01/11 06:02:31 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -46,7 +46,7 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange,
-     & printMapIncludesZeros, useSETRLSTK, useSIGREG
+     & printMapIncludesZeros, useSETRLSTK, useSIGREG, useEMBEDSRC
 CEOP
 
 
@@ -89,6 +89,9 @@ C
 C     useSETRLSTK is a flag which toggles calling a small C routine 
 C     which sets the stack size to "unlimited" using setrlimit()
 C     
+C     useEMBEDSRC is a flag which allows one or more embedded files
+C     to be written
+
       notUsingXPeriodicity       = .FALSE.
       notUsingYPeriodicity       = .FALSE.
       useCubedSphereExchange     = .FALSE.
@@ -98,6 +101,7 @@ C
       nTy                        = 1
       useSETRLSTK                = .FALSE.
       useSIGREG                  = .FALSE.
+      useEMBEDSRC                = .FALSE.
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
