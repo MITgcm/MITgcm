@@ -9,15 +9,15 @@
 #  need -DWORDLENGTH=1 and not -DWORDLENGTH=4 (which is what ifc 6.0) used to have.
 #  ph: use ifort compiler options -convert big_endian -assume byterecl
 
-FC=ifort
-F90C=ifort
+FC=mpif90
+F90C=mpif90
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort'
 CPP='cpp  -traditional -P'
 #INCLUDES='-I/usr/include/netcdf'
 
-INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/opt/mpich-1.2.7/include'
-LIBS='-L/opt/netcdf-3.6.0-p1/lib -L/opt/mpich-1.2.7/lib -L/usr/local/topspin/lib64  -lmpich -lvapi -lmtl_common -lmosal -lmpga'
+INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich/include'
+LIBS='-L/opt/netcdf-3.6.0-p1/lib -L/usr/local/topspin/mpi/mpich/lib64  -lmpich_i -lpthread'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
@@ -26,20 +26,10 @@ if test "x$IEEE" = x ; then
     FOPTIM=
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-132 -r8 -i4 -w95 -g -convert big_endian -assume byterecl'
+    FFLAGS='-132 -r8 -i4 -w95 -convert big_endian -assume byterecl'
 else
     FOPTIM='-O0 -noalign'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
-
-
-
-#if test "x$IEEE" = x ; then
-#    FFLAGS='-Wimplicit -Wunused -Wuninitialized  -fno-second-underscore'
-#    FOPTIM='-O3 -funroll-loops'
-#else
-#    FFLAGS='-Wimplicit -Wunused -ffloat-store'
-#    FOPTIM='-O0 '
-#fi
 
