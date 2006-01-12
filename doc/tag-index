@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.598 2006/01/11 06:04:11 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.599 2006/01/12 16:49:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58
 o add "--embed-source" option to genmake2 which, when the supporting 
   tools can be compiled (as determined by genmake2) will turn on the 
   embed_files package which then embeds the entire MITgcm source code 
