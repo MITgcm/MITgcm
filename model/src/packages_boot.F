@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.29 2005/12/08 00:15:52 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.30 2006/01/12 03:24:09 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,7 +71,8 @@ C     data.pkg namelists
      &          useEBM,
      &          useMNC,
      &          useRunClock,
-     &          useMATRIX
+     &          useMATRIX,
+     &          useEMBED_FILES
 CEOP
 
       _BEGIN_MASTER(myThid)
