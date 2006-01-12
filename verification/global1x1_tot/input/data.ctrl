@@ -7,8 +7,8 @@
  doInitXX   = .FALSE.,
 #ph(
  doZscalePack = .TRUE.,
-#ph)
  doZscaleUnpack = .FALSE.,
+#ph)
 #
  xx_theta_file='xx_theta',
  xx_salt_file='xx_salt',

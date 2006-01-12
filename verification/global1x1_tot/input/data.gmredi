@@ -15,7 +15,7 @@
 # GM_AdvForm     :	turn on GM Advective form       (default=Skew flux form)
 
  &GM_PARM01 
-  GM_Small_Number    = 1.D-20,
+  GM_Small_Number    = 1.D-12,
   GM_slopeSqCutoff   = 1.D+08,
   GM_AdvForm         = .FALSE.,
   GM_isopycK         = 1.D+3,

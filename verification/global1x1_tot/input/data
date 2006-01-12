@@ -35,8 +35,8 @@
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.true.,
- eosType='POLY3',
-# readBinaryPrec=64,
+### eosType='JMD95Z',
+ eosType='JMD95P', 
  readBinaryPrec=32,
  writeBinaryPrec=32,
  saltStepping=.TRUE.,
@@ -47,12 +47,14 @@
  allowFreezing=.false.,
  globalFiles=.false.,
 #ph(
+ tempAdvScheme = 3,
+ saltAdvScheme = 3,
+ useRealFreshWaterFlux=.FALSE.,
  useSingleCpuIO=.TRUE.,
  useCDscheme=.TRUE.,
  useNHMTerms=.TRUE.,
  usePickupBeforeC54=.TRUE.,
- tempAdvScheme = 3,
- saltAdvScheme = 3,
+ exactConserv = .TRUE.,
 # hFacMin=0.2,
 # hFacMinDz = 50,
 #ph)
@@ -63,14 +65,15 @@
 # Elliptic solver parameters
 # **************************
  &PARM02
- cg2dMaxIters=300,
- cg2dTargetResidual=1.E-7,
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-10,
  &
 
 # ************************
 # Time stepping parameters
 # ************************
  &PARM03
+ calendarDumps=.TRUE.,
  startTime=3600.,
 # 2 months
 # nTimeSteps=1440,
@@ -130,7 +133,7 @@
 ### hydrogSaltFile  = 'LEVITUS_1x1_salt_NEW_corK',
 ### hydrogThetaFile = 'wghc_ptmp_corK',
 ### hydrogSaltFile  = 'wghc_salt_corK',
- hydrogThetaFile = 'wghc_ptmp_r2',
- hydrogSaltFile  = 'wghc_salt_r2',
+ hydrogThetaFile = 'wghc_ptmp_r4',
+ hydrogSaltFile  = 'wghc_salt_r4',
  &
 
