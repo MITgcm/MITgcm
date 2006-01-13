@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.5 2005/12/13 21:24:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.6 2006/01/13 23:18:48 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1623,6 +1623,38 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'DIABUDYN'
+      diagTitle  =
+     .  'Zonal Wind Tend due to Diab Forcing - Dyn Grid (m/s/day)'
+      diagUnits  = 'm/s/day         '
+      WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+ 
+      diagName  = 'DIABVDYN'
+      diagTitle  =
+     .  'Meridional Wind Tend due to Diab Forcing - Dyn Grid (m/s/day)'
+      diagUnits  = 'm/s/day         '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+ 
+      diagName  = 'DIABTDYN'
+      diagTitle  =
+     .  'Temperature Tend due to Diab Forcing - Dyn Grid (K/day)'
+      diagUnits  = 'K/day           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+ 
+      diagName  = 'DIABQDYN'
+      diagTitle  =
+     .  'Specific Hum Tend due to Diab Forcing - Dyn Grid (g/kg/day)'
+      diagUnits  = 'gram/kg/day     '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+ 
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
