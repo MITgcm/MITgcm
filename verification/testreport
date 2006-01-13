@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.73 2005/12/03 23:23:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.74 2006/01/13 16:33:33 edhill Exp $
 #  $Name:  $
 #
 
@@ -1049,9 +1049,11 @@ for dir in $TESTDIRS ; do
 	    ldir=build
 	    (
 		cd "$dir/$ldir" > /dev/null 2>&1
-		ls -1 Makefile *.[fFhco] mitgcmuv  2>/dev/null \
-		    | sed -e 's|^CVS$||g' | sed -e 's|^output.txt$||g'
-	    ) > tr_exrun_links
+		ls -1 2>/dev/null
+	    ) > tr_exrun_tmp
+	    echo "Makefile" > tr_exrun_links
+	    echo "mitgcmuv" >> tr_exrun_links
+	    cat tr_exrun_tmp | grep '\.[fFhco]$' >> tr_exrun_links
 	    (
 		cd "$dir/tr_run.$ex"
 		    cat ../../tr_exrun_links | while read i ; do
@@ -1060,6 +1062,7 @@ for dir in $TESTDIRS ; do
 			fi
 		    done
 	    )
+	    test -e tr_exrun_tmp  &&  rm -f tr_exrun_tmp
 	    test -e tr_exrun_links  &&  rm -f tr_exrun_links
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput $dir tr_run.$ex "."$ex`
