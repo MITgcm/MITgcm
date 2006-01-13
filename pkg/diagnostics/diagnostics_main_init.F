@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.23 2005/11/16 16:55:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.24 2006/01/13 22:38:46 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -522,6 +522,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Surface (Pressure, Height) (Pa,m)'
       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
       diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TOTUTEND'
+      diagTitle = 'Tendency of Zonal Component of Velocity (m/s^2)'
+      diagUnits = 'm/s^2           '
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TOTVTEND'
+      diagTitle = 'Tendency of Meridional Component of Velocity (m/s^2)'
+      diagUnits = 'm/s^2           '
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TOTTEND '
+      diagTitle = 'Tendency of Potential Temperature (degC,K)'
+      diagUnits = 'deg K/sec'
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TOTSTEND'
+      diagTitle = 'Tendency of Salt or Water Vapor mixing ratio'
+      diagUnits = 'kg/kg-sec'
+      diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
