@@ -64,7 +64,7 @@ C subroutine variables
       character*(*) infile
       integer       filePrec, irecord, nx_in, ny_in
       _RL           arrayout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS           xG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS           xG_in      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           lon_0, lon_inc
       _RL           lat_0, lat_inc(ny_in-1)
@@ -80,6 +80,21 @@ C local variables
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
+      _RS      xg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+!     nomalize xg
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do j=1-OLy,sNy+OLy
+         do i=1-OLx,sNx+OLx
+          xg(i,j,bi,bj) = xg_in(i,j,bi,bj)
+          xg(i,j,bi,bj) = mod(xg(i,j,bi,bj),360.)
+          if ( xg(i,j,bi,bj) .lt. 0. )
+     &     xg(i,j,bi,bj) = 360.+xg(i,j,bi,bj)
+         enddo
+        enddo
+       enddo
+      enddo
 
        call exf_interp_read(
      I   infile,
@@ -96,7 +111,11 @@ C     _BEGIN_MASTER( myThid )
 C setup input grid
        do i=-1,nx_in+2
         x_in(i) = lon_0 + (i-1.)*lon_inc
+        x_in(i) = mod(x_in(i),360.)
+        if ( x_in(i) .lt. 0. )
+     &   x_in(i) = 360.+x_in(i)
        enddo
+
        y_in(0) = lat_0 - lat_inc(1)
        y_in(-1)= lat_0 - 2.*lat_inc(1)
        y_in(1) = lat_0

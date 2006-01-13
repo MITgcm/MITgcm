@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.14 2006/01/02 21:17:02 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.15 2006/01/13 16:48:02 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -239,12 +239,6 @@ c      _EXCH_XY_R4(    fv, mythid )
 #endif
 #ifdef ALLOW_CLIMSSS_RELAXATION
       _EXCH_XY_R4(   sss, mythid )
-#endif
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-      _EXCH_XYZ_R4( thetaStar, mythid )
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-      _EXCH_XYZ_R4( saltStar, mythid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_R4( pload, mythid )
