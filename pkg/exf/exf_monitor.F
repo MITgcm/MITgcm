@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.5 2005/04/06 18:39:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.6 2006/01/13 17:19:32 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -90,14 +90,6 @@ C       Print some statistics about input forcing fields
 #ifdef ALLOW_CLIMSSS_RELAXATION
         CALL MON_PRINTSTATS_RL(1,climsss,'_climsss',
      &       maskH,maskH,rA ,drF,myThid)
-#endif
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-        CALL MON_PRINTSTATS_RL(Nr,climtemp,'_climtemp',
-     &       maskC,hFacC,rA ,drF,myThid)
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-        CALL MON_PRINTSTATS_RL(Nr,climsalt,'_rclimsalt',
-     &       maskC,hFacC,rA ,drF,myThid)
 #endif
 
 #endif /* ALLOW_MONITOR */

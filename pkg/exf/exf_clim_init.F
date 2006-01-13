@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_init.F,v 1.6 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_init.F,v 1.7 2006/01/13 17:19:32 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -37,12 +37,7 @@ c     == local variables ==
 c     == end of interface ==
 
 c     initialize climatology fields
-#ifdef ALLOW_CLIMTEMP_RELAXATION
-      call exf_init_climtemp( mythid )
-#endif
-#ifdef ALLOW_CLIMSALT_RELAXATION
-      call exf_init_climsalt( mythid )
-#endif
+
 #ifdef ALLOW_CLIMSST_RELAXATION
       call exf_init_climsst(  mythid )
 #endif
