@@ -36,7 +36,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      I   infile,
      I   filePrec,
      O   arrayout,
-     I   irecord, xG, yG,
+     I   irecord, xG_in, yG,
      I   lon_0, lon_inc,
      I   lat_0, lat_inc,
      I   nx_in, ny_in, method, mythid)
@@ -80,17 +80,21 @@ C local variables
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
-      _RS      xg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS      threeSixtyRS
+      _RL      threeSixtyRL
+      PARAMETER ( threeSixtyRS = 360. )
+      PARAMETER ( threeSixtyRL = 360. )
 
-!     nomalize xg
+!     nomalize xG
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do j=1-OLy,sNy+OLy
          do i=1-OLx,sNx+OLx
-          xg(i,j,bi,bj) = xg_in(i,j,bi,bj)
-          xg(i,j,bi,bj) = mod(xg(i,j,bi,bj),360.)
-          if ( xg(i,j,bi,bj) .lt. 0. )
-     &     xg(i,j,bi,bj) = 360.+xg(i,j,bi,bj)
+          xG(i,j,bi,bj) = xG_in(i,j,bi,bj)
+          xG(i,j,bi,bj) = mod(xG(i,j,bi,bj),threeSixtyRS)
+          if ( xG(i,j,bi,bj) .lt. 0. )
+     &     xG(i,j,bi,bj) = threeSixtyRS+xG(i,j,bi,bj)
          enddo
         enddo
        enddo
@@ -111,9 +115,9 @@ C     _BEGIN_MASTER( myThid )
 C setup input grid
        do i=-1,nx_in+2
         x_in(i) = lon_0 + (i-1.)*lon_inc
-        x_in(i) = mod(x_in(i),360.)
+        x_in(i) = mod(x_in(i),threeSixtyRL)
         if ( x_in(i) .lt. 0. )
-     &   x_in(i) = 360.+x_in(i)
+     &   x_in(i) = threeSixtyRL+x_in(i)
        enddo
 
        y_in(0) = lat_0 - lat_inc(1)
