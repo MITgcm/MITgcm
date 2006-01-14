@@ -71,7 +71,7 @@ C subroutine variables
       integer       method, mythid
 
 C local variables
-      real*8   ne_fac,nw_fac,se_fac,sw_fac
+c     real*8   ne_fac,nw_fac,se_fac,sw_fac
       integer  e_ind(snx,sny),w_ind(snx,sny)
       integer  n_ind(snx,sny),s_ind(snx,sny)
       real*8   px_ind(4), py_ind(4), ew_val(4)
@@ -82,19 +82,16 @@ C local variables
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS      threeSixtyRS
-      _RL      threeSixtyRL
       PARAMETER ( threeSixtyRS = 360. )
-      PARAMETER ( threeSixtyRL = 360. )
 
-!     nomalize xG
+C     put xG in interval [ lon_0 , lon_0+360 [
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do j=1-OLy,sNy+OLy
          do i=1-OLx,sNx+OLx
-          xG(i,j,bi,bj) = xG_in(i,j,bi,bj)
-          xG(i,j,bi,bj) = mod(xG(i,j,bi,bj),threeSixtyRS)
-          if ( xG(i,j,bi,bj) .lt. 0. )
-     &     xG(i,j,bi,bj) = threeSixtyRS+xG(i,j,bi,bj)
+          xG(i,j,bi,bj) = xG_in(i,j,bi,bj)-lon_0
+     &                  + threeSixtyRS*2.
+          xG(i,j,bi,bj) = lon_0+mod(xG(i,j,bi,bj),threeSixtyRS)
          enddo
         enddo
        enddo
@@ -114,10 +111,7 @@ C     _BEGIN_MASTER( myThid )
 
 C setup input grid
        do i=-1,nx_in+2
-        x_in(i) = lon_0 + (i-1.)*lon_inc
-        x_in(i) = mod(x_in(i),threeSixtyRL)
-        if ( x_in(i) .lt. 0. )
-     &   x_in(i) = threeSixtyRL+x_in(i)
+        x_in(i) = lon_0 + (i-1)*lon_inc
        enddo
 
        y_in(0) = lat_0 - lat_inc(1)
