@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/diff_phase_multiple.F,v 1.2 2005/09/27 16:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/diff_phase_multiple.F,v 1.3 2006/01/16 19:04:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -47,7 +47,7 @@ C     o Do easy cases first.
       IF ( freq .NE. 0. ) THEN
         IF ( ABS(step) .GT. ABS(freq) ) THEN
          DIFF_PHASE_MULTIPLE = .TRUE.
-        ELSE
+        ELSEIF ( val1 .GE. phase ) THEN
 
 C         o This case is more complex because of round-off error
           v1 = val1
