@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.28 2005/11/16 16:55:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.29 2006/01/17 16:06:12 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -31,6 +31,7 @@ C     selectVars :: select which group of dianostics variables to fill-in
 C            = 1 :: fill-in diagnostics for tracer   variables only
 C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
+C            = 4 :: fill-in state variable tendency diagnostics the second time
 C     myThid     :: my Thread Id number
       INTEGER selectVars 
       INTEGER myThid 
@@ -51,7 +52,7 @@ C     == Local variables ==
       
       tmpFac = 1. _d 0
 
-      IF ( selectVars .GE. 2 ) THEN
+      IF ( selectVars.EQ.2 .OR. selectVars.EQ.3 ) THEN
 C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(etaN, 'ETAN    ',0, 1,0,1,1,myThid)
@@ -325,6 +326,70 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(tmpMk,'PRESSURE',0,Nr,0,1,1,myThid)
         ENDIF
 
+C First fill sequence for state variable tendency diagnostics: subtract state variable
+C NOTE: send a '0' for the bibjflag and allow counter to be incremented
+C     (next fill for these diagnostics will NOT allow counter to be incremented)
+
+        IF ( DIAGNOSTICS_IS_ON('TOTUTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'TOTUTEND',0,Nr,0,1,1,myThid)
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('TOTVTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = -vVel(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'TOTVTEND',0,Nr,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = -theta(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = -salt(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
+        ENDIF
+
 C--   fill momentum state-var diagnostics: end
       ENDIF
 
@@ -559,6 +624,74 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
       
 C--   fill tracer state-var diagnostics: end
+      ENDIF
+
+      IF ( selectVars.EQ.4 ) THEN
+C Second fill sequence for state variable tendency diagnostics: add state variable
+C NOTE: send a '-1' for the bibjflag and allow counter to be incremented
+C       this means that diag fill is called from inside the bi-bj loop
+
+        IF ( DIAGNOSTICS_IS_ON('TOTUTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTUTEND',0,Nr,-1,bi,bj,myThid)
+          ENDDO
+         ENDDO
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('TOTVTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTVTEND',0,Nr,-1,bi,bj,myThid)
+          ENDDO
+         ENDDO
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = theta(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
+          ENDDO
+         ENDDO
+        ENDIF
+      
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO K=1,Nr
+            DO j = 1,sNy
+             DO i = 1,sNx
+               tmpMk(i,j,K,bi,bj) = salt(i,j,K,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
+          ENDDO
+         ENDDO
+        ENDIF
+
+C--   fill state tendency diagnostics the second time: end
       ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */
