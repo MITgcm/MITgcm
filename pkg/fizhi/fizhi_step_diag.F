@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.17 2005/06/17 01:04:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.18 2006/01/17 15:59:44 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -39,6 +39,7 @@ C***********************************************************************
       _RL dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)
 
       integer  i,j,L
+      _RL getcon, gravity
       _RL pinv(im2,jm2), qbar(im2,jm2),tmpdiag(im2,jm2)
 #ifdef ALLOW_DIAGNOSTICS
       logical  diagnostics_is_on
@@ -426,6 +427,30 @@ c -------------------------------------------------------
        call diagnostics_fill(tmpdiag,'VDTRADSW',0,1,3,bi,bj,myid)
       endif
 
+c Total Precipitable Water (g/cm^2)
+c ---------------------------------------------
+      if(diagnostics_is_on('TPW     ',myid) ) then
+       gravity = getcon('GRAVITY')
+       do j=jm1,jm2
+       do i=im1,im2
+       qbar(i,j) = 0.0
+       enddo
+       enddo
+       do L=1,Nrphys
+       do j=jm1,jm2
+       do i=im1,im2
+       qbar(i,j) = qbar(i,j) + 
+     .             sphy(i,j,L,bi,bj)*dp(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+       do j=jm1,jm2
+       do i=im1,im2
+       tmpdiag(i,j) = qbar(i,j)*10. _d 0 /gravity
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'TPW     ',0,1,3,bi,bj,myid)
+      endif
 #endif
       return
       end
