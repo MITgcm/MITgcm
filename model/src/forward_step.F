@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.127 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.128 2006/01/17 16:08:24 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -651,6 +651,11 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+      IF ( usediagnostics ) THEN
+       CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+       CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
+       CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+      ENDIF
 
 C AMM
 #ifdef ALLOW_GRIDALT

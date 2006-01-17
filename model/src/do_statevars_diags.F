@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.7 2005/02/14 00:46:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.8 2006/01/17 16:08:24 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,6 +34,7 @@ C     myTime  :: Current time of simulation ( s )
 C     seqFlag :: flag that indicate where this S/R is called from:
 C             :: =0 called from the beginning of forward_step
 C             :: =1 called from the middle of forward_step
+C             :: =2 called from the end of forward_step
 C     myIter  :: Iteration number
 C     myThid  :: Thread number for this instance of the routine.
       _RL     myTime
@@ -49,6 +50,7 @@ C     selectVars :: select which group of dianostics variables to fill-in
 C            = 1 :: fill-in diagnostics for tracer   variables only
 C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
+C            = 4 :: fill-in state variable tendency diagnostics the second time 
 C     bi,bj      :: tile indices
       INTEGER selectVars
       INTEGER bi, bj
@@ -66,6 +68,7 @@ C                    and stagger/synchronous TimeStep
         ELSE
           IF ( seqFlag.EQ.0 ) selectVars = 3
         ENDIF
+        IF ( seqFlag.EQ.2 ) selectVars = 4
         CALL DIAGNOSTICS_FILL_STATE(selectVars, myThid)
 
 #ifdef ALLOW_PTRACERS
