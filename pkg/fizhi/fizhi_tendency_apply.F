@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.10 2005/10/03 18:49:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.11 2006/01/17 18:46:27 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -32,8 +32,13 @@ C=======================================================================
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
       _RL rayleighdrag
+      _RL tmpdiag(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       integer i, j
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+#endif
 
       if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        rayleighdrag = 1./(31.*86400.*2.)
@@ -48,6 +53,27 @@ C=======================================================================
      . - rayleighdrag * maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
        enddo
       enddo
+
+      if(diagnostics_is_on('DIABUDYN',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = ( maskW(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj) 
+     .    - rayleighdrag * maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj) ) 
+     .    * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DIABUDYN',kLev,1,2,bi,bj,myThid)
+      endif
+
+      if(diagnostics_is_on('RFU     ',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = -1. _d 0 * rayleighdrag * 
+     .       maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj) * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'RFU     ',kLev,1,2,bi,bj,myThid)
+      endif
 
       return
       end
@@ -81,8 +107,13 @@ C=======================================================================
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
       _RL rayleighdrag
+      _RL tmpdiag(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       integer i, j
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+#endif
 
       if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        rayleighdrag = 1./(31.*86400.*2.)
@@ -97,6 +128,27 @@ C=======================================================================
      . - rayleighdrag * maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
        enddo
       enddo
+
+      if(diagnostics_is_on('DIABVDYN',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = ( maskS(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj) 
+     .    - rayleighdrag * maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj) ) 
+     .    * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DIABVDYN',kLev,1,2,bi,bj,myThid)
+      endif
+
+      if(diagnostics_is_on('RFV     ',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = -1. _d 0 * rayleighdrag * 
+     .       maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj) * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'RFV     ',kLev,1,2,bi,bj,myThid)
+      endif
 
       return
       end
@@ -129,8 +181,13 @@ C=======================================================================
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
       _RL rayleighdrag,getcon,cp,kappa,pNrkappa
+      _RL tmpdiag(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       integer i, j
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+#endif
 
       if(klev.eq.Nr .or. rC(klev).lt.1000.)then
        cp = getcon('CP')
@@ -154,6 +211,39 @@ C=======================================================================
      .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj))
        enddo
       enddo
+
+      if(diagnostics_is_on('DIABTDYN',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = ( maskC(i,j,kLev,bi,bj) * gthphy(i,j,kLev,bi,bj) 
+     . + rayleighdrag * 0.5 *
+     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+ 
+     .  maskW(i+1,j,kLev,bi,bj)*
+     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+ 
+     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
+     .  maskS(i,j+1,kLev,bi,bj)*
+     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)) )
+     .    * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DIABTDYN',kLev,1,2,bi,bj,myThid)
+      endif
+
+      if(diagnostics_is_on('RFT     ',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = rayleighdrag * 0.5 *
+     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+ 
+     .  maskW(i+1,j,kLev,bi,bj)*
+     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+ 
+     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
+     .  maskS(i,j+1,kLev,bi,bj)*
+     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)) )
+     .       * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'RFT     ',kLev,1,2,bi,bj,myThid)
+      endif
 
       return
       end
@@ -185,8 +275,13 @@ C=======================================================================
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
+      _RL tmpdiag(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       integer i, j
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+#endif
 
       do j=jMin,jMax
        do i=iMin,iMax
@@ -194,6 +289,16 @@ C=======================================================================
      .       *( gS(i,j,kLev,bi,bj) + gsphy(i,j,kLev,bi,bj) )
        enddo
       enddo
+
+      if(diagnostics_is_on('DIABQDYN',myThid) ) then
+       do j=jMin,jMax
+       do i=iMin,iMax
+        tmpdiag(i,j) = ( maskC(i,j,kLev,bi,bj) * gsphy(i,j,kLev,bi,bj) )
+     .    * 86400
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'DIABQDYN',kLev,1,2,bi,bj,myThid)
+      endif
 
       return
       end
