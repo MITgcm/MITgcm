@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.11 2006/01/17 18:46:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.12 2006/01/18 19:00:38 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -232,7 +232,7 @@ C=======================================================================
       if(diagnostics_is_on('RFT     ',myThid) ) then
        do j=jMin,jMax
        do i=iMin,iMax
-        tmpdiag(i,j) = rayleighdrag * 0.5 *
+        tmpdiag(i,j) = ( rayleighdrag * 0.5 *
      . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+ 
      .  maskW(i+1,j,kLev,bi,bj)*
      .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+ 
