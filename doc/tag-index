@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.599 2006/01/12 16:49:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.600 2006/01/22 16:49:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/bulk_force:
+ - add option and parameters to use AIM surface-flux formulae.
+ - Change loading part: S/R BULKF_FIELDS_LOAD only take care of bulkf_fields ;
+   others forcing fields (defined in PARM05, parameter file "data") are loaded 
+   from S/R EXTERNAL_FIELDS_LOAD, as usually (with useBulkforce = T or F).
+ - initialise all bulkf_fields in bulkf_init.F ; do in-lining of exf_bulkcdn.F 
+ - use the right EXCH call for uwind,vwind (to work on CS-grid).
+ - re-arrange header files (move parameters from BULKF.h to BULKF_PARAMS.h)
+   and parameters (note: calcWindStress replaces .NOT.readwindstress).
+ - cleaner interface with pkg/thSIce (new S/R THSICE_GET_PRECIP).
 
 checkpoint58
 o add "--embed-source" option to genmake2 which, when the supporting 
