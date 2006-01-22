@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.5 2005/02/11 19:33:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.6 2006/01/22 15:58:39 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,9 +29,6 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#ifdef ALLOW_BULK_FORCE
-#include "BULKF.h"
-#endif
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -130,16 +127,16 @@ C--     Mixed layer thickness: take the 1rst layer
            flxSW (i,j) = 0.
            snowPrc(i,j,bi,bj) = 0. _d 0
            siceAlb(i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_BULK_FORCE
-           prcAtm(i,j) = ( rain(i,j,bi,bj)+runoff(i,j,bi,bj) )*rhofw
-           flxSW (i,j) = solar(i,j,bi,bj)
-           IF ( iceMask(i,j,bi,bj).GT.0. _d 0
-     &       .AND. Tair(i,j,bi,bj).LE.Tf0kel )  THEN
-             snowPrc(i,j,bi,bj) = rain(i,j,bi,bj)*rhofw
-           ENDIF
-#endif
           ENDDO
          ENDDO
+#ifdef ALLOW_BULK_FORCE
+         IF ( useBulkforce ) THEN
+           CALL THSICE_GET_PRECIP(
+     I                  iceMask,
+     O                  prcAtm, snowPrc(1-Olx,1-Oly,bi,bj), flxSW,
+     I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
+         ENDIF
+#endif
 
          CALL THSICE_STEP_FWD( 
      I                     bi, bj, iMin, iMax, jMin, jMax, 
