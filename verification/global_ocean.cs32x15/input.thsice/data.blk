@@ -2,7 +2,6 @@
  Tf0kel = 273.15,
  p0     = 1013.,
  Rgas   = 287.,
-#blk_taveFreq=1.,
  &
 
  &BULKF_PARM01
@@ -19,6 +18,7 @@
  QnetFile=       ' ',
  EmPFile=        ' ',
  CloudFile=      ' ',
+#blk_taveFreq=864000.,
  &
 
  &BULKF_PARM02
