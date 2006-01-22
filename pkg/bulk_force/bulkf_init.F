@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.7 2006/01/22 15:51:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.8 2006/01/22 16:14:54 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -49,7 +49,9 @@ C     set up bulk formula arrays to zero
              uwind (i,j,bi,bj) = 0.
              vwind (i,j,bi,bj) = 0.
              runoff(i,j,bi,bj) = 0.
+#ifdef ALLOW_FORMULA_AIM
              thAir (i,j,bi,bj) = 0.
+#endif
              qnetch(i,j,bi,bj) = 0.
              empch (i,j,bi,bj) = 0.
            ENDDO
