@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.24 2005/08/22 23:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.25 2006/01/22 01:53:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -239,32 +239,111 @@ C
 C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)  
-     &                       +aWght*SST1(i,j,bi,bj)
-          SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
-     &                       +aWght*SSS1(i,j,bi,bj)
-          fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
-     &                       +aWght*taux1(i,j,bi,bj)
-          fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
-     &                       +aWght*tauy1(i,j,bi,bj)
-          Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
-     &                       +aWght*Qnet1(i,j,bi,bj)
-          EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
-     &                       +aWght*EmPmR1(i,j,bi,bj)
-          saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
-     &                        + aWght*saltFlux1(i,j,bi,bj)
+        IF ( thetaClimFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)  
+     &                       + aWght*SST1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( saltClimFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
+     &                       + aWght*SSS1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( zonalWindFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
+     &                       + aWght*taux1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( meridWindFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
+     &                       + aWght*tauy1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( surfQnetFile .NE. ' '
+     &     .OR. surfQFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
+     &                       + aWght*Qnet1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( EmPmRfile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
+     &                       + aWght*EmPmR1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( saltFluxFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
+     &                          + aWght*saltFlux1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 #ifdef SHORTWAVE_HEATING
-          Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
-     &                       +aWght*Qsw1(i,j,bi,bj)
+        IF ( surfQswFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
+     &                       + aWght*Qsw1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 #endif
 #ifdef ATMOSPHERIC_LOADING
-          pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
-     &                      +aWght*pload1(i,j,bi,bj)
+        IF ( pLoadFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
+     &                       + aWght*pload1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 #endif
-         ENDDO
-        ENDDO
+C- jmc: leave the old code commented out (with all fields beeing reset, 
+C       even if they are never loaded)
+c       DO j=1-Oly,sNy+Oly
+c        DO i=1-Olx,sNx+Olx
+c         SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)  
+c    &                       +aWght*SST1(i,j,bi,bj)
+c         SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
+c    &                       +aWght*SSS1(i,j,bi,bj)
+c         fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
+c    &                       +aWght*taux1(i,j,bi,bj)
+c         fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
+c    &                       +aWght*tauy1(i,j,bi,bj)
+c         Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
+c    &                       +aWght*Qnet1(i,j,bi,bj)
+c         EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
+c    &                       +aWght*EmPmR1(i,j,bi,bj)
+c         saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
+c    &                        + aWght*saltFlux1(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
+c         Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
+c    &                       +aWght*Qsw1(i,j,bi,bj)
+#endif
+#ifdef ATMOSPHERIC_LOADING
+c         pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
+c    &                      +aWght*pload1(i,j,bi,bj)
+#endif
+c        ENDDO
+c       ENDDO
        ENDDO
       ENDDO
 
@@ -298,40 +377,6 @@ C      Update AIM bottom boundary data
        CALL AIM_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
 #endif
-
-      RETURN
-      END
-
-CBOP
-C     !ROUTINE: LEF_ZERO
-C     !INTERFACE:
-      SUBROUTINE LEF_ZERO( arr ,myThid )
-C     !DESCRIPTION: \bv
-C     This routine simply sets the argument array to zero
-C     \ev
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Arguments ===
-      _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER myThid
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-      INTEGER i,j,bi,bj
-CEOP
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          arr(i,j,bi,bj)=0.
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
       RETURN
       END
