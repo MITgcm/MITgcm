@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.6 2004/05/04 16:32:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.7 2006/01/22 15:51:35 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -6,18 +6,15 @@ C $Name:  $
 CStartOfInterface
       SUBROUTINE BULKF_INIT( myThid )
 C     /==========================================================\
-C     | SUBROUTINE BULKF_INIT                                      |
-C     | o Set bulk formula parameters                          |
+C     | SUBROUTINE BULKF_INIT
+C     | o Set bulk formula parameters
 C     |==========================================================|
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-c #include "GRID.h"
-c #include "DYNVARS.h"
-#include "FFIELDS.h"
+#include "BULKF_PARAMS.h"
 #include "BULKF.h"
 #include "BULKF_DIAG.h"
 #ifdef CONSERV_BULKF
@@ -35,20 +32,33 @@ C     bi,bj  - Loop counters
 C     I,J
       INTEGER bi, bj
       INTEGER I, J
-c     INTEGER prec
-c     CHARACTER*(MAX_LEN_FNAM) fn
 
       _BARRIER
 
-c     set up bulk formula arrays to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+C     set up bulk formula arrays to zero
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             Tair  (i,j,bi,bj) = 0.
+             Qair  (i,j,bi,bj) = 0.
+             Solar (i,j,bi,bj) = 0.
+             flwdwn(i,j,bi,bj) = 0.
+             cloud (i,j,bi,bj) = 0.
+             wspeed(i,j,bi,bj) = 0.
+             uwind (i,j,bi,bj) = 0.
+             vwind (i,j,bi,bj) = 0.
+             runoff(i,j,bi,bj) = 0.
+             thAir (i,j,bi,bj) = 0.
+             qnetch(i,j,bi,bj) = 0.
+             empch (i,j,bi,bj) = 0.
+           ENDDO
+         ENDDO
 #ifdef ALLOW_TIMEAVE
-          IF (taveFreq.GT.0.) THEN
+         IF (blk_taveFreq.GT.0.) THEN
           BULKF_timeave(1,bi,bj)=0. _d 0
-          DO J=1,sNy
-           DO I=1,sNx
-c             evapora(i,j,bi,bj)=0. _d 0
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
               BULK_Qnet_AVE(i,j,bi,bj)=0. _d 0
               BULK_EmPmR_AVE(i,j,bi,bj)=0. _d 0
               BULK_fu_AVE(i,j,bi,bj)=0. _d 0
@@ -62,31 +72,23 @@ c             evapora(i,j,bi,bj)=0. _d 0
               BULK_ssq_AVE(i,j,bi,bj)=0. _d 0
            ENDDO
           ENDDO
-          ENDIF
+         ENDIF
 #endif /* ALLOW_TIMEAVE */
-          DO J=1,sNy
-           DO I=1,sNx
 #ifdef CONSERV_BULKF
+         DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
               CONS_Qnet(i,j,bi,bj)=0. _d 0
               CONS_EmPmR(i,j,bi,bj)=0. _d 0
-#endif 
-              if (.NOT.readsurface) then
-c if not reading in surface fields, make sure we do not relax
-               SSS(i,j,bi,bj)=0. _d 0
-               SST(i,j,bi,bj)=0. _d 0
-               tauThetaClimRelax=0. _d 0
-               tauSaltClimRelax=0. _d 0
-              endif
            ENDDO
-          ENDDO
-        ENDDO
-        ENDDO
+         ENDDO
+#endif
+       ENDDO
+      ENDDO
 
 #ifdef CONSERV_BULKF
-        constim=0
+        constim=0.
 #endif
 
-c
 #endif /* ALLOW_BULK_FORCE */
 
       RETURN

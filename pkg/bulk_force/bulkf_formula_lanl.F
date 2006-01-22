@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.6 2005/11/04 01:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.7 2006/01/22 15:51:35 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
      I                           uw, vw, us, Ta, Qa, nc, tsf_in,
      O                           flwupa, flha, fsha, df0dT,
      O                           ust, vst, evp, ssq, dEvdT, 
-     I                           iceornot, windread )
+     I                           iceornot, myThid )
 
 c swd -- bulkf formula used in bulkf and ice pkgs
 c taken from exf package 
@@ -31,7 +31,7 @@ c input
       _RL tsf_in             ! surface temperature (either ice or open water)
       _RL nc                 ! fraction cloud cover
       integer iceornot       ! 0=open water, 1=ice cover
-      logical windread       !
+      integer myThid         ! my Thread Id number
 c output
       _RL flwupa             ! upward long wave radiation (>0 upward)
       _RL flha               ! latent heat flux         (>0 downward)
@@ -84,11 +84,12 @@ c     _RL ea
       _RL clha
       _RL zice
       _RL ssq0, ssq1, ssq2   ! constant used in surface specific humidity
+      _RL bulkf_Cdn          ! drag coefficient
       integer niter_bulk, iter
 
 c --- external functions ---
-      _RL       exf_BulkCdn
-      external  exf_BulkCdn
+c     _RL       exf_BulkCdn
+c     external  exf_BulkCdn
 c     _RL       exf_BulkqSat
 c     external  exf_BulkqSat
 c     _RL       exf_BulkRhn
@@ -210,10 +211,14 @@ c total derivative with respect to surface temperature
               df0dT=-dflwupdT+dfshdT+dflhdT
 c
 c wind stress at center points
-              if (.NOT.windread) then
-                 ust = rhoa*exf_BulkCdn(usm)*us*uw
-                 vst = rhoa*exf_BulkCdn(usm)*us*vw
-               endif
+c             if (.NOT.windread) then
+c                ust = rhoa*exf_BulkCdn(usm)*us*uw
+c                vst = rhoa*exf_BulkCdn(usm)*us*vw
+c             endif
+C-  In-lining of function: exf_BulkCdn(umps) = cdrag_1/umps + cdrag_2 + cdrag_3*umps
+              bulkf_Cdn = cdrag_1/usm + cdrag_2 + cdrag_3*usm
+              ust = rhoa*bulkf_Cdn*us*uw
+              vst = rhoa*bulkf_Cdn*us*vw
 #endif /*ALLOW_BULK_FORCE*/
 
       RETURN
