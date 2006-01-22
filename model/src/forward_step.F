@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.128 2006/01/17 16:08:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.129 2006/01/22 15:12:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -154,7 +154,7 @@ C--   State-variables diagnostics
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
 
-C--   Call external forcing package
+C--   Call Bulk-Formulae forcing package
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN
 #ifdef ALLOW_DEBUG
@@ -167,9 +167,10 @@ C-    load all forcing fields at current time
 C-    calculate qnet and empmr (and wind stress)
        CALL BULKF_FORCING( myTime, myIter, myThid )
        CALL TIMER_STOP ('BULKF_FORCING      [FORWARD_STEP]',mythid)
-      ELSE
+      ENDIF
 #endif /* ALLOW_BULK_FORCE */
 
+C--   Call external forcing package
 # ifdef ALLOW_EXF
 #  ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
@@ -197,10 +198,6 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
       ENDIF
 #  endif
 # endif /* ALLOW_EXF */
-#ifdef ALLOW_BULK_FORCE
-C--   end of if/else block useBulfforce --
-      ENDIF
-#endif /* ALLOW_BULK_FORCE */
 
 #ifdef ALLOW_AUTODIFF
 c--   Add control vector for forcing and parameter fields
