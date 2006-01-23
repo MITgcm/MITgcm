@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS_SIZE.h,v 1.3 2005/05/19 03:35:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS_SIZE.h,v 1.4 2006/01/23 22:24:28 jmc Exp $
 C $Name:  $
 
 
@@ -10,6 +10,7 @@ C     numperlist :: maximum number of active diagnostics per list (data.diagnost
 C     numLevels  :: maximum number of levels to write    (data.diagnostics)
 C     numdiags   :: maximum size of the storage array for active 2D/3D diagnostics
 C     nRegions   :: maximum number of regions (statistics-diagnostics)
+C     sizRegMsk  :: maximum size of the regional-mask (statistics-diagnostics)
 C     nStats     :: maximum number of statistics (e.g.: aver,min,max ...)
 C     diagSt_size:: maximum size of the storage array for statistics-diagnostics
 C Note : may need to increase "numdiags" when using several 2D/3D diagnostics,
@@ -17,12 +18,12 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    ndiagMax
       INTEGER    numlists, numperlist, numLevels
       INTEGER    numdiags
-      INTEGER    nRegions, nStats
+      INTEGER    nRegions, sizRegMsk, nStats
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
       PARAMETER( numdiags = 1*Nr )
-      PARAMETER( nRegions = 0 , nStats = 4 )
+      PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
       PARAMETER( diagSt_size = 10*Nr )
 
 

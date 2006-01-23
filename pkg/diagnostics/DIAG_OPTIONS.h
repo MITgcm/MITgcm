@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.4 2005/07/09 17:22:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.5 2006/01/23 22:24:28 jmc Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
@@ -10,7 +10,9 @@ C $Name:  $
 
 CEH3 package-specific options go here
 
-C #define DIAG_DEBUG
+C allow to define specific regions and the corresponding mask ;
+C  used to perform regional statistics over a limited area
+#undef DIAGSTATS_REGION_MASK
 
 C allow to stop & restart at any time (i.e. not at a multiple of 
 C  the diagnostics frequency) reading diagnostics storage arrays 

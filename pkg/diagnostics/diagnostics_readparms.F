@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.14 2005/07/06 02:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.15 2006/01/23 22:24:28 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -20,20 +20,24 @@ C     !USES:
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
+#include "DIAGSTATS_REGIONS.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
-C     ldimLoc :: Max Number of Lists
-C     kdimLoc :: Max Number of Levels
-C     fdimLoc :: Max Number of Fields
+C     ldimLoc :: Max Number of Lists  (in data.diagnostics)
+C     kdimLoc :: Max Number of Levels (in data.diagnostics)
+C     fdimLoc :: Max Number of Fields (in data.diagnostics)
 C     frequency :: Frequency (in s) of Output (ouput every "frequency" second)
 C     timePhase :: phase (in s) within the "frequency" period to write output
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     filename  :: List Output Filename
+C--   for regional-statistics
+C     lev_regMask(n) :: region-mask levels that define the region "n"
+C     val_regMask(n) :: corresponding mask value of region "n" in the region-mask
 C--   per level statistics output:
 C     stat_freq   :: Frequency (in s) of statistics output
 C     stat_phase  :: phase (in s) to write statistics output
@@ -44,7 +48,7 @@ C     stat_fname  :: List of statistics output Filename
       PARAMETER ( ldimLoc = 2*numlists )
       PARAMETER ( kdimLoc = 2*numLevels )
       PARAMETER ( fdimLoc = 2*numperlist )
-      PARAMETER ( rdimLoc = 2*nRegions+1 )
+      PARAMETER ( rdimLoc = nRegions+21 )
       _RL         frequency(ldimLoc), timePhase(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       _RL         stat_freq(ldimLoc), stat_phase(ldimLoc)
@@ -56,6 +60,8 @@ C     stat_fname  :: List of statistics output Filename
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER stat_region(rdimLoc,ldimLoc)
+      INTEGER lev_regMask(rdimLoc)
+      _RS     val_regMask(rdimLoc)
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m
       INTEGER iLen, regionCount
@@ -73,8 +79,9 @@ C--   full level output:
 C--   per level statistics output:
       NAMELIST / DIAG_STATIS_PARMS /
      &     stat_freq, stat_phase, stat_region, stat_fields,
-     &     stat_fname,
-     &     diagSt_mnc
+     &     stat_fname, diagSt_mnc,
+     &     lev_regMask, val_regMask,
+     &     diagSt_regMaskFile, nLevRegMskFile
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -105,6 +112,12 @@ C       eight spaces:        12345678
       diag_pickup_read_mnc  = .FALSE.
       diag_pickup_write_mnc = .FALSE.
 
+      diagSt_regMaskFile = ' '
+      nLevRegMskFile = 0
+      DO k = 1,rdimLoc
+        lev_regMask(k) = 0
+        val_regMask(k) = 0.
+      ENDDO
       DO l = 1,ldimLoc
         stat_freq(l)  = 0.
         stat_phase(l) = UNSET_RL
@@ -259,7 +272,16 @@ c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     Initialise DIAG_STATIS common block (except pointers)
+C-    Initialise DIAG_STATS_REGMASK common block (except the mask)
+      nLevRegMask = 0
+      DO j = 0,nRegions
+        diagSt_kRegMsk(j) = 0
+        diagSt_vRegMsk(j) = 0.
+      ENDDO
+C     Global statistics (region # 0)
+      diagSt_kRegMsk(0) = 1
+
+C-    Initialise DIAG_STATIS common block (except pointers)
       diagSt_nbLists = 0
       DO n = 1,numlists
         diagSt_freq(n) = 0.
@@ -278,6 +300,29 @@ C     Initialise DIAG_STATIS common block (except pointers)
 C     Fill Diagnostics Common Block with Namelist Info
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
 
+C-    Region mask correspondence table:
+C     note: this table should be build when regions are defined ;
+C     for now, simpler just to read it from namelist in data.diagnostics
+      j = 0
+      DO k = 1,rdimLoc
+       IF ( lev_regMask(k).NE.0 .OR. val_regMask(k).NE.0. ) THEN
+         j = j+1
+         IF ( j.LE.nRegions ) THEN
+           diagSt_kRegMsk(j) = lev_regMask(k)
+           diagSt_vRegMsk(j) = val_regMask(k)
+         ENDIF
+       ENDIF
+      ENDDO
+      IF ( j.GT.nRegions ) THEN
+         WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_READPARMS: ',
+     &   'lev_regMask & val_regMask lists assume at least',j,' regions'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_READPARMS: ',
+     &   'Need to increase "nRegions" in DIAGNOSTICS_SIZE.h'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
+      ENDIF
+
       DO l = 1,ldimLoc
        iLen = ILNBLNK(stat_fname(l))
 C-     Only lists with non-empty file name (iLen>0) are considered
@@ -294,8 +339,21 @@ C-     Only lists with non-empty file name (iLen>0) are considered
          DO k=1,rdimLoc
            j = stat_region(k,l)
            IF ( j.NE.UNSET_I .AND. j.GE.0 .AND. j.LE.nRegions ) THEN
+            IF ( diagSt_region(j,n).EQ.0 ) THEN
              diagSt_region(j,n) = 1
              regionCount = regionCount + 1
+            ELSE
+             WRITE(msgBuf,'(2A,I3,2A)')
+     &        'DIAGNOSTICS_READPARMS:',
+     &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                           SQUEEZE_RIGHT , myThid )
+             WRITE(msgBuf,'(A,I3,A)')
+     &        'DIAGNOSTICS_READPARMS: region=',j,
+     &        ' can only be selected once => ignore 2nd selection'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                           SQUEEZE_RIGHT , myThid )
+            ENDIF
            ELSEIF ( j.NE.UNSET_I ) THEN
              WRITE(msgBuf,'(A,I3,A,I3,2A)')
      &       'DIAGNOSTICS_READPARMS: region=',j,
