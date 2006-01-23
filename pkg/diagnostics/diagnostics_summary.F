@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.2 2005/06/29 23:07:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.3 2006/01/23 22:17:20 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -64,6 +64,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         ENDIF
        ENDIF
+      ELSE
+       outpSummary = .FALSE.
       ENDIF
 
       IF ( outpSummary .AND. debugLevel.GE.debLevA ) THEN
