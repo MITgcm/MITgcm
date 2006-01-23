@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.3 2006/01/23 22:28:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -23,6 +23,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
+#include "DIAGSTATS_REGIONS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -36,7 +37,7 @@ C     == Local variables ==
       INTEGER md,ld,nd
       INTEGER mm, mate, nActiveMax
       INTEGER j, k, l
-      LOGICAL found, addMate2List, inList
+      LOGICAL found, addMate2List, inList, regListPb
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 
@@ -139,7 +140,30 @@ C-       add this fields to the active list in case regions are differents:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Set list of regions to write
-C-    Need to check that all selected regions are actually defined
+C-    check that all selected regions are actually defined
+      regListPb = .FALSE.
+      DO l=1,diagSt_nbLists
+       DO j=1,nRegions
+        IF ( diagSt_region(j,l).NE.0 ) THEN
+          IF ( diagSt_kRegMsk(j).LT.1 .OR.
+     &         diagSt_kRegMsk(j).GT.nLevRegMask ) THEN
+            WRITE(msgBuf,'(A,3(A,I3))') 'DIAGSTATS_SET_POINTERS:',
+     &       ' region', j, ' undefined (k=', diagSt_kRegMsk(j),
+     &       ') in list l=', l
+            CALL PRINT_ERROR( msgBuf , myThid )
+            regListPb = .TRUE.
+          ENDIF
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( regListPb ) THEN
+        WRITE(msgBuf,'(2A)') 'DIAGSTATS_SET_POINTERS:',
+     &                       ' Cannot select undefined regions'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R DIAGSTATS_SET_POINTERS'
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         WRITE(msgBuf,'(A)') 'DIAGSTATS_SET_POINTERS: done'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
