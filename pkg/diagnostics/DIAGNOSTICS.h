@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.11 2005/07/09 17:22:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.12 2006/01/23 22:13:53 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -86,6 +86,23 @@ C     fflags(n)  :: character string with per-file flags
      &     flds, fnames, fflags
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C  DIAG_STATIS common block:
+C     iSdiag :: slot number in large diagnostic array
+C     mSdiag :: slot number in large diagnostic array for the mate
+C     jSdiag :: short-list (active diag.) to long-list (available diag.)
+C               pointer
+C     diagSt_region(j,n) :: flag to perform (=1) or not (=0) regional-statistics
+C                           over region # j for output stream # n
+C     diagSt_freq(n)   :: frequency (in s) to write output stream # n
+C     diagSt_phase(n)  :: phase     (in s) to write output stream # n
+C     diagSt_nbFlds(n) :: number of active diagnostics for output stream # n
+C     diagSt_nbActv(n) :: number of active diagnostics (including counters)
+C                         for output stream # n
+C     diagSt_nbLists   :: effective number of output streams
+C     diagSt_ioUnit(n) :: fortran IO unit for output stream # n (ascii output)
+C     diagSt_Flds(:,n) :: list of field names in output stream # n
+C     diagSt_Fname(n)  :: output file name for output stream # n
 
       _RL       diagSt_freq(numlists), diagSt_phase(numlists)
       CHARACTER*8  diagSt_Flds(numperlist,numlists)
