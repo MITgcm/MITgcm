@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.7 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.8 2006/01/23 22:21:16 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -18,6 +18,7 @@ C     Wrapper routine to set the units of an active diagnostic
       
 C     !USES:
        implicit none
+#include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"

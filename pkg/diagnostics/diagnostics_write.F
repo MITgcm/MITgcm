@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.26 2005/09/06 17:45:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.27 2006/01/23 22:21:15 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -16,11 +16,11 @@ C     myIter :: Current Iteration Number
 C     myThid :: my Thread Id number
 C***********************************************************************
        IMPLICIT NONE
+#include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
       _RL     myTime
