@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.1 2006/01/23 22:28:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.2 2006/01/24 02:59:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -65,16 +65,16 @@ C--   Initialize region-mask array to zero:
 
       _BEGIN_MASTER( myThid )
 C--   Check size & parameter first:
-      IF ( (diagSt_regMaskFile.NE.' ' .AND. nLevRegMskFile.EQ.0)
-     & .OR.(diagSt_regMaskFile.EQ.' ' .AND. nLevRegMskFile.GT.0) ) THEN
+      IF ( (diagSt_regMaskFile.NE.' ' .AND. nSetRegMskFile.EQ.0)
+     & .OR.(diagSt_regMaskFile.EQ.' ' .AND. nSetRegMskFile.GT.0) ) THEN
         WRITE(msgBuf,'(2A)') 'DIAGSTATS_SET_REGIONS:',
-     &   ' regMaskFile and nLevRegMskFile Not consistent'
+     &   ' regMaskFile and nSetRegMskFile Not consistent'
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R DIAGSTATS_SET_REGIONS'
       ENDIF
-      IF ( nLevRegMskFile.GT.sizRegMsk ) THEN
+      IF ( nSetRegMskFile.GT.sizRegMsk ) THEN
         WRITE(msgBuf,'(2A,I4,A,I4)') 'DIAGSTATS_SET_REGIONS:',
-     &   ' regMaskFile level number=', nLevRegMskFile,
+     &   ' regMaskFile set-index number=', nSetRegMskFile,
      &   ' exceeds sizRegMsk=', sizRegMsk
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R DIAGSTATS_SET_REGIONS'
@@ -88,14 +88,14 @@ C--   Read region-mask from file
        IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(2A)')
      &   ' DIAGSTATS_SET_REGIONS: start reading region-mask file: ',
      &   diagSt_regMaskFile(1:iLen)
-       DO k=1,nLevRegMskFile
+       DO k=1,nSetRegMskFile
 C       _BEGIN_MASTER( myThid )
          IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(A,I3)')
-     &   ' DIAGSTATS_SET_REGIONS:  reading lev k=',k
+     &   ' DIAGSTATS_SET_REGIONS:  reading set k=',k
          CALL READ_REC_XY_RS( diagSt_regMaskFile, tmpVar, k,
      &                        nIter0, myThid )
          IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(A,I3,A)')
-     &   ' DIAGSTATS_SET_REGIONS:          lev k=',k,' <= done'
+     &   ' DIAGSTATS_SET_REGIONS:          set k=',k,' <= done'
 C       _END_MASTER( myThid )
         _EXCH_XY_RS( tmpVar, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -110,11 +110,11 @@ C       _END_MASTER( myThid )
 C-     end of k loop
        ENDDO
       ENDIF
-      nLevRegMask = nLevRegMskFile
+      nSetRegMask = nSetRegMskFile
 
 C--   Other way to define regions (e.g., latitude bands):
-C      set corresponding levels of the region-mask array,
-C      starting from nLevRegMskFile+1 up to nLevRegMask
+C      set corresponding set-index of the region-mask array,
+C      starting from nSetRegMskFile+1 up to nSetRegMask
 C note: for now, empty !
 
 C--   Region Identificator arrays
@@ -132,7 +132,7 @@ C-      check for valid region-mask index:
           CALL PRINT_ERROR( msgBuf , myThid )
           STOP 'ABNORMAL END: S/R DIAGSTATS_SET_REGIONS'
 C-      check for unset region-mask:
-        ELSEIF ( diagSt_kRegMsk(j).GT.nLevRegMask ) THEN
+        ELSEIF ( diagSt_kRegMsk(j).GT.nSetRegMask ) THEN
           WRITE(msgBuf,'(2A,I3,A,I3,A)') 'DIAGSTATS_SET_REGIONS: ',
      &     'region',j,' , kRegMsk=', diagSt_kRegMsk(j),
      &     ' <- has not been set !'
@@ -204,7 +204,7 @@ C--   Check parameter consitency:
      &              .OR. diagSt_vRegMsk(j).NE.0.
       ENDDO
       iLen = ILNBLNK(diagSt_regMaskFile)
-      IF ( flag .OR. iLen.GE.1 .OR. nLevRegMskFile.NE.0 ) THEN
+      IF ( flag .OR. iLen.GE.1 .OR. nSetRegMskFile.NE.0 ) THEN
         WRITE(msgBuf,'(2A)') 'DIAGSTATS_SET_REGIONS:',
      &   ' #define DIAGSTATS_REGION_MASK missing in DIAG_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf , myThid )

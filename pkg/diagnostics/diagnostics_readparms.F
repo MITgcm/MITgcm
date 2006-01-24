@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.15 2006/01/23 22:24:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.16 2006/01/24 02:59:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -36,7 +36,7 @@ C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     filename  :: List Output Filename
 C--   for regional-statistics
-C     lev_regMask(n) :: region-mask levels that define the region "n"
+C     set_regMask(n) :: region-mask set-index that define the region "n"
 C     val_regMask(n) :: corresponding mask value of region "n" in the region-mask
 C--   per level statistics output:
 C     stat_freq   :: Frequency (in s) of statistics output
@@ -60,7 +60,7 @@ C     stat_fname  :: List of statistics output Filename
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER stat_region(rdimLoc,ldimLoc)
-      INTEGER lev_regMask(rdimLoc)
+      INTEGER set_regMask(rdimLoc)
       _RS     val_regMask(rdimLoc)
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m
@@ -80,8 +80,8 @@ C--   per level statistics output:
       NAMELIST / DIAG_STATIS_PARMS /
      &     stat_freq, stat_phase, stat_region, stat_fields,
      &     stat_fname, diagSt_mnc,
-     &     lev_regMask, val_regMask,
-     &     diagSt_regMaskFile, nLevRegMskFile
+     &     set_regMask, val_regMask,
+     &     diagSt_regMaskFile, nSetRegMskFile
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -113,9 +113,9 @@ C       eight spaces:        12345678
       diag_pickup_write_mnc = .FALSE.
 
       diagSt_regMaskFile = ' '
-      nLevRegMskFile = 0
+      nSetRegMskFile = 0
       DO k = 1,rdimLoc
-        lev_regMask(k) = 0
+        set_regMask(k) = 0
         val_regMask(k) = 0.
       ENDDO
       DO l = 1,ldimLoc
@@ -273,7 +273,7 @@ c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialise DIAG_STATS_REGMASK common block (except the mask)
-      nLevRegMask = 0
+      nSetRegMask = 0
       DO j = 0,nRegions
         diagSt_kRegMsk(j) = 0
         diagSt_vRegMsk(j) = 0.
@@ -305,17 +305,17 @@ C     note: this table should be build when regions are defined ;
 C     for now, simpler just to read it from namelist in data.diagnostics
       j = 0
       DO k = 1,rdimLoc
-       IF ( lev_regMask(k).NE.0 .OR. val_regMask(k).NE.0. ) THEN
+       IF ( set_regMask(k).NE.0 .OR. val_regMask(k).NE.0. ) THEN
          j = j+1
          IF ( j.LE.nRegions ) THEN
-           diagSt_kRegMsk(j) = lev_regMask(k)
+           diagSt_kRegMsk(j) = set_regMask(k)
            diagSt_vRegMsk(j) = val_regMask(k)
          ENDIF
        ENDIF
       ENDDO
       IF ( j.GT.nRegions ) THEN
          WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_READPARMS: ',
-     &   'lev_regMask & val_regMask lists assume at least',j,' regions'
+     &   'set_regMask & val_regMask lists assume at least',j,' regions'
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_READPARMS: ',
      &   'Need to increase "nRegions" in DIAGNOSTICS_SIZE.h'

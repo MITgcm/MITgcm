@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.3 2006/01/23 22:28:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.4 2006/01/24 02:59:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -146,7 +146,7 @@ C-    check that all selected regions are actually defined
        DO j=1,nRegions
         IF ( diagSt_region(j,l).NE.0 ) THEN
           IF ( diagSt_kRegMsk(j).LT.1 .OR.
-     &         diagSt_kRegMsk(j).GT.nLevRegMask ) THEN
+     &         diagSt_kRegMsk(j).GT.nSetRegMask ) THEN
             WRITE(msgBuf,'(A,3(A,I3))') 'DIAGSTATS_SET_POINTERS:',
      &       ' region', j, ' undefined (k=', diagSt_kRegMsk(j),
      &       ') in list l=', l
