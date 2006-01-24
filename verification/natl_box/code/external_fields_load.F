@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.11 2005/05/19 21:46:15 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.12 2006/01/24 02:14:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -246,41 +246,6 @@ C endif for periodicForcing
       ENDIF
 
 #endif /* ALLOW_EXF */
-
-      RETURN
-      END
-
-CBOP
-C     !ROUTINE: LEF_ZERO
-C     !INTERFACE:
-      SUBROUTINE LEF_ZERO( arr ,myThid )
-C     !DESCRIPTION: \bv
-C     This routine simply sets the argument array to zero
-C     Used only by EXTERNAL_FIELDS_LOAD
-C     \ev
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Arguments ===
-      _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER myThid
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-      INTEGER i,j,bi,bj
-CEOP
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          arr(i,j,bi,bj)=0.
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
       RETURN
       END
