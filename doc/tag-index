@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.600 2006/01/22 16:49:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.601 2006/01/24 03:17:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: add options and parameters for regional-statistics 
+   diagnostics ; define regions by reading a region-mask from a file 
+   (might add other options later)
 o pkg/bulk_force:
  - add option and parameters to use AIM surface-flux formulae.
  - Change loading part: S/R BULKF_FIELDS_LOAD only take care of bulkf_fields ;
