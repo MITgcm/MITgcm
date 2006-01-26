@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.9 2005/02/14 00:43:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.10 2006/01/26 00:18:54 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
 CBOP
 C     !ROUTINE: AIM_DO_PHYSICS
 C     !INTERFACE:
-      SUBROUTINE AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid ) 
-                                      
+      SUBROUTINE AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==================================================================*
 C     | S/R AIM_DO_PHYSICS
@@ -114,7 +114,8 @@ c_FM  CALL SOL_OZ (SOLC,TYEAR)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Compute atmospheric-physics tendencies (call the main AIM S/R)
-      CALL PHY_DRIVER( tYear, myTime, myIter, bi, bj, myThid )
+      CALL PHY_DRIVER( tYear, useDiagnostics,
+     I                  bi, bj, myTime, myIter, myThid )
 
       CALL AIM_AIM2DYN( bi, bj, myTime, myIter, myThid )
 

@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.6 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.7 2006/01/26 00:18:54 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-      SUBROUTINE PHY_DRIVER (tYear, myTime, myIter, bi, bj, myThid )   
+      SUBROUTINE PHY_DRIVER( tYear, usePkgDiag,
+     I                       bi, bj, myTime, myIter, myThid )
 
 C------------------------
 C from SPEDDY code: (part of original code left with c_FM)
@@ -29,7 +30,7 @@ C-------
 C     Resolution parameters
 
 C-- size for MITgcm & Physics package :
-#include "AIM_SIZE.h" 
+#include "AIM_SIZE.h"
 #include "EEPARAMS.h"
 
 C-- Physics package
@@ -58,8 +59,11 @@ C     Logical flags
 c_FM  include "com_lflags.h"
 
 C-- Routine arguments:
-      _RL tYear, myTime
-      INTEGER myIter, bi,bj, myThid
+      _RL tYear
+      LOGICAL usePkgDiag
+      INTEGER bi,bj
+      _RL myTime
+      INTEGER myIter, myThid
 
 #ifdef ALLOW_AIM
 
@@ -306,6 +310,13 @@ c_FM &             TS,TSKIN,U0,V0,T0,Q0)
      U             EVAP(1,0,myThid), SLR(1,1,myThid),
      O             ST4S, TS(1,myThid), TSKIN(1,myThid),
      I             bi,bj,myThid)
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( usePkgDiag ) THEN
+        CALL DIAGNOSTICS_FILL( SLR(1,0,myThid),
+     &                        'DWNLWG  ', 1, 1 , 3,bi,bj, myThid )
+      ENDIF
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     3.4 Compute upward longwave fluxes, convert them to tendencies
