@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.32 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.33 2006/01/26 18:57:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,7 +56,7 @@ C     == Local variables ==
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      CHARACTER*(MAX_LEN_MBUF) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -78,7 +78,7 @@ CEOP
 
 C ***NOTE***
 C In the linear EOS, to make the static stability calculation meaningful
-C we alway calculate the perturbation with respect to the surface level.
+C we use reference temp & salt from level kRef ;
 C **********
        refTemp=tRef(kRef)
        refSalt=sRef(kRef)
@@ -195,9 +195,9 @@ cphCADJ STORE rhoDen(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C     
       ELSE
-       WRITE(msgbuf,'(3a)')
+       WRITE(msgBuf,'(3a)')
      &        ' FIND_RHO: equationOfState = "',equationOfState,'"'
-       CALL print_error( msgbuf, mythid )
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R FIND_RHO'
       ENDIF
 
@@ -558,9 +558,9 @@ C     abbreviations
       ENDDO
 
       RETURN 
-      end 
+      END 
 
-      SUBROUTINE find_rho_scalar( 
+      SUBROUTINE FIND_RHO_SCALAR( 
      I     tLoc, sLoc, pLoc,
      O     rhoLoc,
      I     myThid )
@@ -595,7 +595,7 @@ C     == Local variables ==
       _RL rhoNum, rhoDen, den, epsln
       parameter ( epsln = 0. _d 0 )
 
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       rhoLoc  = 0. _d 0
@@ -618,23 +618,33 @@ CEOP
       s1  = sLoc
       IF ( s1 .LT. 0. _d 0 ) THEN
 C     issue a warning
-         WRITE(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+         WRITE(msgBuf,'(A,E13.5)') 
      &        ' FIND_RHO_SCALAR:   WARNING, salinity = ', s1
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
          s1 = 0. _d 0
       ENDIF
 
       IF (equationOfState.EQ.'LINEAR') THEN
 
-         rhoLoc = 0. _d  0
+         rholoc = rhoNil*(
+     &                      sBeta *(sLoc-sRef(1))
+     &                     -tAlpha*(tLoc-tRef(1))
+     &                   ) + (rhoNil-rhoConst)
+c        rhoLoc = 0. _d  0
 
       ELSEIF (equationOfState.EQ.'POLY3') THEN
 
 C     this is not correct, there is a field eosSig0 which should be use here
 C     but I DO not intent to include the reference level in this routine
-         WRITE(*,'(a)') 
+         WRITE(msgBuf,'(A)') 
      &        ' FIND_RHO_SCALAR: for POLY3, the density is not'
-         WRITE(*,'(a)') 
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
+         WRITE(msgBuf,'(A)') 
      &         '                 computed correctly in this routine'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
          rhoLoc = 0. _d 0
 
       ELSEIF ( equationOfState(1:5).EQ.'JMD95'
@@ -751,10 +761,10 @@ C     density of sea water at pressure p
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C     
       ELSE
-       WRITE(msgbuf,'(3A)')
+       WRITE(msgBuf,'(3A)')
      &        ' FIND_RHO_SCALAR : equationOfState = "',
      &        equationOfState,'"'
-       CALL PRINT_ERROR( msgbuf, mythid )
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R FIND_RHO_SCALAR'
       ENDIF
 
@@ -801,7 +811,7 @@ C     k    :: Level of Theta/Salt slice
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j, localWarning
-c     character*(max_len_mbuf) msgbuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       localWarning = 0
