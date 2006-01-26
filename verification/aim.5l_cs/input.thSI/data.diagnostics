@@ -32,7 +32,7 @@
                  'CLDFRC  ', 'CLDPRS  ', 'CLDMAS  ',
                  'DRAG    ', 'WINDS   ', 'TS      ', 'QS      ',
                  'ENPREC  ', 'ALBVISDF', 'DTSIMPL ',
-#                'DWNLWG   ',
+#                'DWNLWG  ',
 #                'TSRCLR  ', 'OLRCLR  ', 'SWGCLR  ', 'LWGCLR  ',
    filename(3) = 'aimDiag',
   frequency(4) = 4500.,
