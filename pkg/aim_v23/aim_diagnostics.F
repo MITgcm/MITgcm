@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.16 2005/09/29 12:19:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.17 2006/01/26 00:14:55 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -13,7 +13,7 @@ C     *==========================================================*
 
 C     === Global variables ===
 C-- size for MITgcm & Physics package :
-#include "AIM_SIZE.h" 
+#include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -67,7 +67,7 @@ C--  mean surf. temp. change:
 
       IF ( DIFFERENT_MULTIPLE(aim_tendFreq,
      &                        myTime+deltaTClock,deltaTClock)
-     &   ) THEN 
+     &   ) THEN
 
        IF ( aim_snapshot_mdsio ) THEN
 
@@ -119,7 +119,7 @@ C--   write clear-sky tendencies to files :
          CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_CNV',QT_CNV,myThid)
          CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_PBL',QT_PBL,myThid)
          CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_LSC',QT_LSC,myThid)
-         
+
        ENDIF
 #endif
 
@@ -127,7 +127,7 @@ C--   write clear-sky tendencies to files :
 
       IF ( DIFFERENT_MULTIPLE(aim_diagFreq,
      &                        myTime+deltaTClock,deltaTClock)
-     &   ) THEN 
+     &   ) THEN
 
        IF ( aim_snapshot_mdsio ) THEN
 
@@ -192,7 +192,7 @@ C--
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. aim_snapshot_mnc ) THEN
-         
+
          WRITE(suff,'(a)') 'aim_state'
          CALL MNC_CW_SET_UDIM(suff, -1, myThid)
          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
@@ -243,7 +243,7 @@ C--
      &        'aim_SSWclr',SSWclr(1,myThid),myThid)
          CALL MNC_CW_RL_W(pf,suff,0,0,
      &        'aim_SLWclr',SLWclr(1,myThid),myThid)
-         
+
        ENDIF
 #endif
 
@@ -327,9 +327,10 @@ C-    Keep record of how much time has been integrated over
 
 #endif /* ALLOW_AIM_TAVE */
 
-#ifdef ALLOW_DIAGNOSTICS
-       IF (usediagnostics) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF (useDiagnostics) THEN
         CALL DIAGNOSTICS_FILL( aim_dTdt,
      &                        'DIABT   ', 0, Nr, 1,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( aim_dSdt,
@@ -353,7 +354,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_FILL( RH(1,1,myThid),
      &                        'RELHUM  ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TSR(1,myThid),
-     &                        'OSR     ', 1, 1 , 3,bi,bj, myThid )
+     &                        'TSR     ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( OLR(1,myThid),
      &                        'OLR     ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( SSR(1,0,myThid),
@@ -372,12 +373,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                        'CLDFRC  ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( CLTOP(1,myThid),
      &                        'CLDPRS  ', 1, 1 , 3,bi,bj, myThid )
-        CALL DIAGNOSTICS_FILL( CLOUDC(1,myThid),
-     &                        'CTPCNT  ', 1, 1 , 3,bi,bj, myThid )
+c       CALL DIAGNOSTICS_FILL( CLOUDC(1,myThid),
+c    &                        'CTPCNT  ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( CBMF(1,myThid),
      &                        'CLDMAS  ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( DRAG(1,0,myThid),
-     &                        'KM      ', 1, 1 , 3,bi,bj, myThid )
+     &                        'DRAG    ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( SPEED0(1,myThid),
      &                        'WINDS   ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( T0(1,myThid),
@@ -397,13 +398,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_FILL( dTsurf(1,1,myThid),
      &                        'DTSIMPL ', 1, 1 , 3,bi,bj, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
-        IF ( aim_clrSkyDiag ) THEN 
+        IF ( aim_clrSkyDiag ) THEN
           CALL DIAGNOSTICS_FILL( TT_SWclr(1,1,myThid),
      &                        'SWCLR   ',-1, Nr, 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( TT_LWclr(1,1,myThid),
      &                        'LWCLR   ',-1, Nr, 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( TSWclr(1,myThid),
-     &                        'OSRCLR  ', 1, 1 , 3,bi,bj, myThid )
+     &                        'TSRCLR  ', 1, 1 , 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( OLWclr(1,myThid),
      &                        'OLRCLR  ', 1, 1 , 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( SSWclr(1,myThid),
