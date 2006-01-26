@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_lscond.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_lscond.F,v 1.2 2006/01/26 01:14:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -76,9 +76,6 @@ c_FM  QSMAX = 50.
 C--   2. Tendencies of temperature and moisture
 C        NB. A maximum heating rate is imposed to avoid 
 C            grid-point-storm instability 
-C-jmc: this breaks heat conservation !!
-C   for checking the heat budget, set a very large QSMAX (e.g. 1.e+9)
-C   or use the simplyfied form below.
 
       DO K=2,NLEV
         SIG2=SIG(K)*SIG(K)
@@ -89,9 +86,11 @@ c_FM    DQMAX = (1.1-RHREF)*QSMAX*SIG2*RTLSC
           DQMAX = (1.1 _d 0-RHREF)*QSMAX*SIG2*RTLSC
           DQLSC(J,K) = MIN(0. _d 0,(RHREF*QSAT(J,K)-QA(J,K)))*RTLSC
 c_FM      DTLSC(J,K) = TFACT*MIN(-DQLSC(J,K),DQMAX*PSA2(J))
-          DTLSC(J,K) = TFACT*MIN(-DQLSC(J,K),DQMAX)
-C-jmc: Heat_Conserve:  
-c         DTLSC(J,K) = -TFACT*DQLSC(J,K)
+c         DTLSC(J,K) = TFACT*MIN(-DQLSC(J,K),DQMAX)
+C-jmc: the threshold on latent heat (above) breaks the energy conservation;
+C      to fix this, apply the threshold directly to the condensation
+          DQLSC(J,K) = MAX(-DQMAX, DQLSC(J,K) )
+          DTLSC(J,K) = -TFACT*DQLSC(J,K)
         ENDDO
       ENDDO
 
