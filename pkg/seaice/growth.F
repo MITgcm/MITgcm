@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.24 2005/09/15 05:13:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.25 2006/01/27 20:18:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,6 +119,9 @@ C        / (density of sea-ice = 910 kg/m^3)
 C     Negative YNEG leads to ice growth.
 C     Positive YNEG leads to ice melting.
           if ( .NOT. inAdMode ) then
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+          TBC = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0
+#endif /* SEAICE_VARIABLE_FREEZING_POINT */
           YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
           else
           YNEG(I,J,bi,bj)= 0.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.12 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.13 2006/01/27 20:18:37 mlosch Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -61,6 +61,14 @@ C     adventurous user who requires ice-modified stress,
 C     following options are available.
 #undef SEAICE_ORIGINAL_BAD_ICE_STRESS
 #undef SEAICE_TEST_ICE_STRESS_1
+
+C--   By default the freezing point of water is set to the value of 
+C     the parameter SEAICE_freeze (=-1.96 by default). To use a
+C     simple linear dependence of the freezing point on salinity, 
+C     set the following flag (pressure is assumed to have no effect,
+C     which is a good assumption for the top 20 meters). With this
+C     option defined the parameter SEAICE_freeze has no effect.
+#undef SEAICE_VARIABLE_FREEZING_POINT
 
 #endif /* SEAICE_OPTIONS_H */
 
