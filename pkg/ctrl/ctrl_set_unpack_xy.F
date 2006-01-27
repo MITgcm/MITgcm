@@ -202,7 +202,12 @@ cph(
 cph)
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
-                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+                     globfld3d(i,bi,ip,j,bj,jp,k) = 
+     &                 phtmpadmtlm(nveccount)
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = 
+     &                 phtmpadmtlm(nveccount)
+cph)
 #endif
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
@@ -290,7 +295,12 @@ cph(
 cph)
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
-                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+                     globfld3d(i,bi,ip,j,bj,jp,k) = 
+     &                 phtmpadmtlm(nveccount)
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = 
+     &                 phtmpadmtlm(nveccount) 
+cph)
 #endif
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
