@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.602 2006/01/26 01:57:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.603 2006/01/27 20:19:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice pkg: add a cpp-flag to include a simple formula for a salinity
+  depend freezing point of sea water at the surface
 o AIM pkg: change threshold on large-scale condensation to conserve Heat.
    update results of aim.5l_LatLon test ; fix title & units of AIM diagnostics
    and  change 3 diagnostics names (OSR,OSRCLR,KM -> TSR,TSRCLR,DRAG)
