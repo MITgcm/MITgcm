@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.26 2006/01/26 04:15:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.27 2006/02/06 21:20:23 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -401,6 +401,8 @@ C           Time dimension
      &             tdiag(ndId),myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'units',
      &             udiag(ndId),myThid)
+            CALL MNC_CW_ADD_VATTR_DBL(cdiag(ndId),'missing_value',
+     &             0.0 _d 0,myThid)
 
             IF ( ( (writeBinaryPrec .EQ. precFloat32)
      &           .AND. (fflags(listId)(1:1) .NE. 'D')
