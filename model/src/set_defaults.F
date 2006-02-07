@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.109 2005/12/13 19:45:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.110 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -284,6 +284,7 @@ C--   Time stepping parameters
 C--   Input files
       bathyFile       = ' '
       topoFile        = ' '
+      shelfIceFile    = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
       zonalWindFile   = ' '

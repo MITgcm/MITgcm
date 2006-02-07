@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.30 2005/07/20 22:31:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.31 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -122,6 +125,35 @@ C      o Impose minimum fraction and/or size (dimensional)
           ENDDO
          ENDDO
         ENDDO
+
+#ifdef ALLOW_SHELFICE
+C--   compute contributions of shelf ice to looping factors
+        IF ( useShelfIce ) THEN
+        DO K=1, Nr
+         hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+C      o Non-dimensional distance between grid boundary and model surface
+           hFacCtmp = (rF(k)-R_shelfIce(I,J,bi,bj))*recip_drF(K)
+C      o Reduce the previous fraction : substract the outside part.
+           hFacCtmp = hFacC(I,J,K,bi,bj) - max( hFacCtmp, 0. _d 0)
+C      o set to zero if empty Column :
+           hFacCtmp = max( hFacCtmp, 0. _d 0)
+C      o Impose minimum fraction and/or size (dimensional)
+           IF (hFacCtmp.LT.hFacMnSz) THEN
+            IF (hFacCtmp.LT.hFacMnSz*0.5) THEN
+             hFacC(I,J,K,bi,bj)=0.
+            ELSE
+             hFacC(I,J,K,bi,bj)=hFacMnSz
+            ENDIF
+           ELSE
+             hFacC(I,J,K,bi,bj)=hFacCtmp
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+        ENDIF
+#endif /* ALLOW_SHELFICE */
 
 C-  Re-calculate Reference surface position, taking into account hFacC
 C   initialize Total column fluid thickness and surface k index

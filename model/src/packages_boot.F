@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.30 2006/01/12 03:24:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.31 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,6 +63,7 @@ C     data.pkg namelists
      &          useRBCS,
      &          useSBO,
      &          useSEAICE,
+     &          useShelfIce,
      &          useBulkForce,
      &          useThSIce,
      &          usefizhi,
@@ -106,6 +107,7 @@ C--   Default package configuration
       useRBCS=.FALSE.
       useSBO=.FALSE.
       useSeaIce=.FALSE.
+      useShelfIce=.FALSE.
       useBulkForce=.FALSE.
       useThSIce=.FALSE.
       usefizhi=.FALSE.

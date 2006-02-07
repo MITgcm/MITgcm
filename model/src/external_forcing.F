@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.36 2006/01/02 21:17:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.37 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -285,6 +285,13 @@ C     Add heat in top-layer
        ENDDO
       ENDIF
 
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce )
+     &     CALL SHELFICE_FORCING_T(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
+#endif /* ALLOW_SHELFICE */
+
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
@@ -408,6 +415,13 @@ C     Add fresh-water in top-layer
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce )
+     &     CALL SHELFICE_FORCING_S(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_RBCS
        if (useRBCS) then

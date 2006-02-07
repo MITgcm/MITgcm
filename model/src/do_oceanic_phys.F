@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.20 2005/11/06 22:20:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.21 2006/02/07 11:47:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,6 +126,22 @@ C       and modify forcing terms including effects from ice
         CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
       ENDIF
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce .AND. fluidIsWater ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
+#endif
+C     compute temperature and (virtual) salt flux at the 
+C     shelf-ice ocean interface
+       CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+       CALL SHELFICE_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 C--   Freeze water at the surface
 #ifdef ALLOW_AUTODIFF_TAMC

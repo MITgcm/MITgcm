@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.31 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.32 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,6 +139,12 @@ CEOP
       IF (useSEAICE) CALL SEAICE_CHECK( myThid )
 #else
       IF (useSEAICE) CALL PACKAGES_CHECK_ERROR('SEAICE', myThid)
+#endif
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) CALL SHELFICE_CHECK( myThid )
+#else
+      IF (useShelfIce) CALL PACKAGES_CHECK_ERROR('SHELFICE', myThid)
 #endif
 
 #ifndef ALLOW_CD_CODE

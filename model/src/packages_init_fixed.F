@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.46 2006/01/12 03:24:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.47 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,8 @@ C       |
 C       |-- DIC_INIT_FIXED
 C       |
 C       |-- THSICE_INIT_FIXED
+C       |
+C       |-- SHELFICE_INIT_FIXED
 C       |
 C       |-- CPL_INIT_FIXED
 C       |
@@ -250,6 +252,10 @@ C     IF (useDIC)
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
 #endif
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) CALL SHELFICE_INIT_FIXED( myThid )
+#endif /* ALLOW_SHELFICE */
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )

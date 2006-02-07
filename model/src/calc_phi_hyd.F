@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.32 2005/01/03 03:04:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.33 2006/02/07 11:47:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,6 +149,17 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
      &                 tFld, sFld,
      &                 alphaRho, myThid)
+#ifdef ALLOW_SHELFICE
+C     mask rho, so that there is no contribution of phiHyd from 
+C     overlying shelfice (whose density we do not know)
+        IF ( useShelfIce ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           alphaRho(i,j) = alphaRho(i,j)*maskC(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics )

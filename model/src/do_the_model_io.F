@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.55 2005/08/24 23:10:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.56 2006/02/07 11:47:48 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,6 +147,12 @@ C     Do SBO diagnostics.
         CALL SEAICE_DO_DIAGS( myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_SEAICE */
+
+#ifdef  ALLOW_SHELFICE
+      IF ( useShelfIce ) THEN
+        CALL SHELFICE_DO_DIAGS( myTime, myIter, myThid )
+      ENDIF
+#endif  /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_BULK_FORCE
 C     Do bulkf diagnostics.
