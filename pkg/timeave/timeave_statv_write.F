@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.35 2006/02/07 12:45:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.36 2006/02/07 12:49:26 mlosch Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -252,7 +252,6 @@ C         CALL MNC_CW_RL_W(pf,'tave',0,0,'Eta2tave',Eta2tave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'uVeltave',uVeltave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'vVeltave',vVeltave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'wVeltave',wVeltave,myThid)
-#ifndef MINIMAL_TAVE_OUTPUT
           CALL MNC_CW_RL_W(pf,'tave',0,0,'UTtave',UTtave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'VTtave',VTtave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'WTtave',WTtave,myThid)
@@ -276,16 +275,13 @@ C         CALL MNC_CW_RL_W(pf,'tave',0,0,'KEtave',KEtave,myThid)
 #endif /* ALLOW_MOM_VECINV */
           CALL MNC_CW_RL_W(pf,'tave',0,0,'PhHytave',
      &         phiHydtave,myThid)
-#endif /* not MINIMAL_TAVE_OUTPUT */
           IF ( fluidIsWater ) THEN
             CALL MNC_CW_RL_W(pf,'tave',0,0,'PHLtave',
      &           phiHydLowtave,myThid)
-#ifndef MINIMAL_TAVE_OUTPUT
             CALL MNC_CW_RL_W(pf,'tave',0,0,'PHL2tave',
      &           phiHydLow2tave,myThid)
             CALL MNC_CW_RL_W(pf,'tave',0,0,'Convtave',
      &           ConvectCountTave,myThid)
-#endif /* not MINIMAL_TAVE_OUTPUT */
             CALL MNC_CW_RL_W(pf,'tave',0,0,'uFluxtave',
      &           uFluxtave,myThid)
             CALL MNC_CW_RL_W(pf,'tave',0,0,'vFluxtave',
