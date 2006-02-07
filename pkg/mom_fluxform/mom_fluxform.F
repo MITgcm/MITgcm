@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.31 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.32 2006/02/07 11:46:18 mlosch Exp $
 C $Name:  $
 
 CBOI
@@ -460,6 +460,17 @@ C-    No-slip BCs impose a drag at bottom
          ENDDO
         ENDIF
 
+#ifdef ALLOW_SHELFICE
+        IF (useShelfIce) THEN
+         CALL SHELFICE_U_DRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_SHELFICE */
+
 C-    endif momViscosity
       ENDIF
 
@@ -624,7 +635,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 #endif
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography 
-      IF (no_slip_sides) THEN
+        IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_V_SIDEDRAG(
      I        bi,bj,k,
@@ -648,6 +659,17 @@ C-    No-slip BCs impose a drag at bottom
           ENDDO
          ENDDO
         ENDIF
+
+#ifdef ALLOW_SHELFICE
+        IF (useShelfIce) THEN
+         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRU,vF,myThid)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_SHELFICE */
 
 C-    endif momViscosity
       ENDIF
