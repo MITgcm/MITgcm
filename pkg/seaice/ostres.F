@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.13 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.14 2006/02/07 08:08:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,6 +32,9 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  SINWIN, COSWIN, SINWAT, COSWAT
+#ifdef SEAICE_TEST_ICE_STRESS_1
+      _RL  fuIce, fvIce
+#endif
 
 C   25 DEG GIVES SIN EQUAL TO 0.4226
       SINWIN=0.4226 _d 0
@@ -112,16 +115,16 @@ C--   Compute ice-affected wind stress
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)*
-     &         (UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))
-          WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)*
-     &         (UICEC(I,J,bi,bj)-GWATX(I,J,bi,bj))
+          fuIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
+     &         ( UICE(I,J,  1,bi,bj)-GWATX(I,J,  bi,bj)
+     &         + UICE(I,J+1,1,bi,bj)-GWATX(I,J+1,bi,bj) )
+          fvIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
+     &         ( VICE(I,  J,1,bi,bj)-GWATY(I,  J,bi,bj)
+     &         + VICE(I+1,J,1,bi,bj)-GWATY(I+1,J,bi,bj) )
           fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
-     &         HALF*AREA(I,J,1,bi,bj)*
-     &         (WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
+     &         AREA(I,J,1,bi,bj)*fuIce
           fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+
-     &         HALF*AREA(I,J,1,bi,bj)*
-     &         (WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
+     &         AREA(I,J,1,bi,bj)*fvIce
          ENDDO
         ENDDO
        ENDDO
