@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.175 2006/01/12 03:24:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.176 2006/02/07 11:47:03 mlosch Exp $
 C $Name:  $
 C
 
@@ -57,6 +57,8 @@ C     bathyFile   :: File containing bathymetry. If not defined bathymetry
 C                   is taken from inline function.
 C     topoFile    :: File containing the topography of the surface (unit=m)
 C                   (mainly used for the atmosphere = ground height).
+C     shelfIceFile:: File containing the topography of the shelfice draught
+C                    (unit=m)
 C     hydrogThetaFile :: File containing initial hydrographic data for potential
 C                       temperature.
 C     hydrogSaltFile  :: File containing initial hydrographic data for salinity.
@@ -83,7 +85,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/ checkPtSuff,
      &                delXFile, delYFile, horizGridFile,
-     &                bathyFile, topoFile,
+     &                bathyFile, topoFile, shelfIceFile,
      &                hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
@@ -100,7 +102,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) delXFile
       CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
-      CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
+      CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile, shelfIceFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
       CHARACTER*(MAX_LEN_FNAM) hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
@@ -808,6 +810,7 @@ C Logical flags for selecting packages
       LOGICAL useRBCS
       LOGICAL useSBO
       LOGICAL useSEAICE
+      LOGICAL useShelfIce
       LOGICAL useBulkForce
       LOGICAL useThSIce
       LOGICAL usefizhi
@@ -822,7 +825,7 @@ C Logical flags for selecting packages
      &        useKPP, useGMRedi, useOBCS, useAIM, useLand, useECCO, 
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS,
-     &        useSBO, useSEAICE, useThSIce, useBulkForce, 
+     &        useSBO, useSEAICE, useShelfIce, useThSIce, useBulkForce, 
      &        usefizhi, usegridalt, usediagnostics, useEBM, useMNC,
      &        usePP81, useMY82, useOPPS, useGGL90, useMATRIX,
      &        useRunClock, useEMBED_FILES
