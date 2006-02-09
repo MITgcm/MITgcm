@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.4 2005/12/08 02:21:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_eta.F,v 1.5 2006/02/09 17:38:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -76,7 +76,7 @@ C Western boundary
           i_obc=OB_Iw(j,bi,bj)
           IF (i_obc.NE.0) THEN
             IF ( ksurfW(i_obc+1,j,bi,bj).LE.Nr )
-     &        etaFld(i_obc,j,bi,bj) = OBEeta(j,bi,bj)
+     &        etaFld(i_obc,j,bi,bj) = OBWeta(j,bi,bj)
           ENDIF
         ENDDO
 
