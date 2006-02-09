@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.21 2006/02/09 20:19:20 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.22 2006/02/09 20:21:54 edhill Exp $
 #  $Name:  $
 #
 
@@ -34,15 +34,11 @@ fi
 
 if test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
-    if test -f /usr/lib/libnetcdf_g77.so ; then
-        LIBS='-lnetcdf_g77'
-    else
-        if test -d /usr/lib/netcdf-3 ; then
-            if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
-                LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
-            else
-                LIBS='-L/usr/lib/netcdf-3'
-            fi
+    if test -d /usr/lib/netcdf-3 ; then
+        if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
+            LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+        else
+            LIBS='-L/usr/lib/netcdf-3'
         fi
     fi
 elif test -d /usr/include/netcdf ; then
@@ -55,3 +51,4 @@ GSLINC=''
 GSLLIB='-lgsl -lgslcblas'
 PAPIINC='-I/usr/local/pkg/papi/papi-3.0.8.1/p4/include'
 PAPILIB='-L/usr/local/pkg/papi/papi-3.0.8.1/p4/lib -lpapi'
+
