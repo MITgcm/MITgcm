@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.141 2006/01/11 06:02:31 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.142 2006/02/09 20:19:20 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2151,6 +2151,24 @@ fi
 echo "  Determining the list of source and include files"
 rm -rf .links.tmp
 mkdir .links.tmp
+touch .links.tmp/foo
+if test ! -r ".links.tmp/foo" ; then
+    echo
+    echo "ERROR : something is wrong with your directory permissions or"
+    echo "   your user file-creation mask (\"umask\") since creating a"
+    echo "   sub-dir, touch-ing a file within it, and then reading it is"
+    echo "   not working.  Please try setting your umask to something"
+    echo "   sane such as:"
+    echo
+    echo "      umask 0002"
+    echo
+    echo "   and please verify that you have the proper permissions for"
+    echo "   creating sub-directories and then reading files created"
+    echo "   within them."
+    echo
+    exit 1
+fi
+rm -f .links.tmp/foo
 echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
 printf 'SRCFILES = '    > srclist.inc

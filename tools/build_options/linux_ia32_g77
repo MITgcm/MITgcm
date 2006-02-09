@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.20 2005/12/22 01:32:19 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.21 2006/02/09 20:19:20 edhill Exp $
 #  $Name:  $
 #
 
@@ -34,11 +34,15 @@ fi
 
 if test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
-    if test -d /usr/lib/netcdf-3 ; then
-        if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
-            LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
-        else
-            LIBS='-L/usr/lib/netcdf-3'
+    if test -f /usr/lib/libnetcdf_g77.so ; then
+        LIBS='-lnetcdf_g77'
+    else
+        if test -d /usr/lib/netcdf-3 ; then
+            if test -f /usr/lib/netcdf-3/libnetcdf_g77.a ; then
+                LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
+            else
+                LIBS='-L/usr/lib/netcdf-3'
+            fi
         fi
     fi
 elif test -d /usr/include/netcdf ; then
