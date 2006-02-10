@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.176 2006/02/07 11:47:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.177 2006/02/10 07:50:37 mlosch Exp $
 C $Name:  $
 C
 
@@ -305,6 +305,10 @@ C                      KPP_taveFreq, and freq in pkg/diagnostics are converted t
 C                      calendar months and years.  Requires pkg/cal.
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0) 
 C                        & Last iteration, in addition multiple of dumpFreq iter.
+C     balanceEmPmR    :: substract global mean of EmPmR at every time step
+C     balanceQnet     :: substract global mean of Qnet at every time step
+C     balancePrintMean:: print substracted global means to STDOUT
+
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -339,7 +343,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & calendarDumps
+     & calendarDumps,
+     & balanceEmPmR, balanceQnet, balancePrintMean
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -421,6 +426,10 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
       LOGICAL calendarDumps
+
+      LOGICAL balanceEmPmR
+      LOGICAL balanceQnet
+      LOGICAL balancePrintMean
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
