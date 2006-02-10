@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.32 2005/12/08 15:44:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.33 2006/02/10 10:00:24 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,9 @@ C     === Global variables ===
 #ifdef ALLOW_SEAICE
 #include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
- 
+#ifdef ALLOW_SHELFICE
+#include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */ 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj  :: tile indices
@@ -303,6 +305,19 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
       ENDIF
 
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef ALLOW_SHELFICE
+      IF ( usingZCoords ) THEN
+       IF ( useSHELFICE) THEN
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj) 
+     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_EBM
 c--    Values for surfaceForcingT, surfaceForcingS
