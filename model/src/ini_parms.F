@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.177 2006/02/10 07:56:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.178 2006/02/10 22:55:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -466,8 +466,10 @@ C--   On/Off flags for each terms of the momentum equation
       useCoriolis  = momStepping .AND. useCoriolis
       useCDscheme  = momStepping .AND. useCDscheme
       momPressureForcing= momStepping .AND. momPressureForcing
+      implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
       momImplVertAdv   = momAdvection .AND. momImplVertAdv
       implicitViscosity= momViscosity .AND. implicitViscosity
+      use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
        vfFacMom = 1.D0
