@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.1 2005/01/04 00:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.2 2006/02/10 00:30:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -95,15 +95,15 @@ c     IF ( useDiagnotics ) THEN
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'SI_Qice1'
-        diagTitle = 'Sea-Ice enthalphy, 1srt layer (mass weighted)'
-        diagUnits = 'J/m^3           '
+        diagTitle = 'Sea-Ice enthalpy, 1srt layer (mass weighted)'
+        diagUnits = 'J/kg            '
         WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numThick, 'M1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'SI_Qice2'
-        diagTitle = 'Sea-Ice enthalphy, 2nd  layer (mass weighted)'
-        diagUnits = 'J/m^3           '
+        diagTitle = 'Sea-Ice enthalpy, 2nd  layer (mass weighted)'
+        diagUnits = 'J/kg            '
         WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numThick, 'M1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )

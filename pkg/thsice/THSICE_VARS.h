@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.3 2005/06/24 04:36:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.4 2006/02/10 00:30:32 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -16,8 +16,8 @@ C   snowHeight:: depth of snow layer       [m]
 C   Tsrf      :: temperature at surface     [oC]
 C   Tice1     :: temperature of ice layer 1 [oC]
 C   Tice2     :: temperature of ice layer 2 [oC]
-C   Qice1     :: enthalphy of ice layer 1  [J/m3]
-C   Qice2     :: enthalphy of ice layer 2  [J/m3]
+C   Qice1     :: enthalpy of ice layer 1  [J/kg]
+C   Qice2     :: enthalpy of ice layer 2  [J/kg]
 C   snowAge   :: snow age                   [s]
       COMMON /THSICE_VARS/
      &       iceMask, iceHeight, snowHeight,

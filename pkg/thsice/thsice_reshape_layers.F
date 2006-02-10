@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_reshape_layers.F,v 1.2 2004/12/17 03:44:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_reshape_layers.F,v 1.3 2006/02/10 00:30:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,7 +29,7 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     qicen  :: ice enthalpy (J m-3)
+C     qicen  :: ice enthalpy (J/kg)
 C     hnew   :: new ice layer thickness (m)
 C     hlyr   :: individual ice layer thickness (m)
 C     myThid :: Number of this instance

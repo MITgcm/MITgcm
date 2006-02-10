@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.2 2004/12/17 03:44:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.3 2006/02/10 00:30:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -37,7 +37,7 @@ C     sst      :: Sea Surf Temp. [oC]
 C     compact  :: fraction of grid area covered in ice
 C     iceThick :: ice height  [m]
 C     snowThick:: snow height [m]
-C     qicen    :: ice enthalpy [J/m3]
+C     qicen    :: ice enthalpy [J/kg]
 C     qleft    :: (additional) heat flux to ocean         [W/m2]
 C     fsalt    :: (additional) salt flux to ocean        [ g/m2/s]
 C     fresh    :: (additional) fresh water flux to ocean [kg/m2/s]
@@ -61,7 +61,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     qicAv    :: mean enthalphy of ice (layer 1 & 2) [J/kg]
+C     qicAv    :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
       _RL deltaTice ! time-step for ice model
       _RL newIce
       _RL newIceFrac
