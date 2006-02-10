@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.605 2006/02/07 11:48:22 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.606 2006/02/10 00:33:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix bug (typo) in obcs_apply_eta.F
 o add a new package shelfice which enables us to model the circulation
   underneath shelf-ice with draughts of hundreds of meters.
  - works
