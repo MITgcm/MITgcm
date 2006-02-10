@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -47,14 +47,16 @@ CEOP
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
-     &     SHELFICE_dump_mnc
+     &     SHELFICE_dump_mnc,
+     &     SHELFICEloadAnomalyFile
 
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
       SHELFICEisON=.TRUE.
 
 C Set defaults values for parameters in SHELFICE.h
-      useISOMIPTD = .TRUE.
+      useISOMIPTD              = .TRUE.
+      SHELFICEloadAnomalyFile  = ' '
       SHELFICElatentHeat       = 334.0 _d 3
       recip_SHELFICElatentHeat = 0. _d 0
       SHELFICEexchangeVelocity = 0. _d 0

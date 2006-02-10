@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_do_diags.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_do_diags.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -86,7 +86,7 @@ C--   Time-cumulations
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          Shelfice_FrshFluxtave(i,j,1,bi,bj)=
+          shelfice_FrshFluxtave(i,j,1,bi,bj)=
      &         shelfice_frshFluxtave(i,j,1,bi,bj)
      &         + shelficeFreshWaterFlux(i,j,bi,bj) *deltaTclock
           shelfice_heatFluxtave(i,j,1,bi,bj) =

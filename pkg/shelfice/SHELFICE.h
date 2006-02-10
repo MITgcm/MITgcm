@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -16,6 +16,7 @@ C     \==========================================================/
 C-----------------------------------------------------------------------
 C
 C--   Constants that can be set in data.shelfice
+C     SHELFICEloadAnomalyFile  - name of shelfice load anomaly file
 C     SHELFICEDragLinear       - linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    - quadratic drag at bottom shelfice (1/m)
 C     SHELFICEexchangeVelocity - scale parameter that determines heat flux
@@ -31,7 +32,13 @@ C     SHELFICE_dumpFreq        - analoguous to dumpFreq (= default)
 C     SHELFICE_taveFreq        - analoguous to taveFreq (= default)
 C
 C--   Fields
-C     ktopC    - index of the top "wet cell" (2D)
+C     ktopC                  - index of the top "wet cell" (2D)
+C     R_shelfIce             - shelfice topography [m]
+C     shelficeLoadAnomaly    - pressure load anomaly of shelfice [Pa]
+C     shelficeHeatFlux       - upward heat flux [W/m^2]
+C     shelficeFreshWaterFlux - upward fresh water flux (virt. salt flux) [m/s]
+C     shelficeForcingT       - analogue of surfaceForcingT
+C     shelficeForcingS       - analogue of surfaceForcingS
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -59,9 +66,11 @@ CEOP
 
       COMMON /SHELFICE_FIELDS_RS/ 
      &     R_shelfIce,
+     &     shelficeLoadAnomaly, 
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       
@@ -82,5 +91,9 @@ CEOP
      &     SHELFICE_tave_mdsio,
      &     SHELFICE_dump_mnc,
      &     SHELFICE_tave_mnc
+
+      CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
+      COMMON /SHELFICE_PARM_C/ 
+     &     SHELFICEloadAnomalyFile
 
 #endif /* ALLOW_SHELFICE */

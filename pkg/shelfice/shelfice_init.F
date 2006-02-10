@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -39,18 +39,28 @@ C-----------------------------------------------------------------------
         DO J = 1-OLy, sNy+OLy
          DO I = 1-OLx, sNx+OLx
           kTopC(i,j,bi,bj) = 0
+C     This is the poor mans solution for the shelfice loading.
+C     It should be computed offline and prescribed.
           DO K = Nr, 1, -1
            IF ( hFacC(I,J,K,bi,bj) .NE. 0. _d 0 ) 
      &          kTopC(I,J,bi,bj) = K
           ENDDO
-          shelficeForcingT(i,j,bi,bj)       = 0. _d 0
-          shelficeForcingS(i,j,bi,bj)       = 0. _d 0
-          shelficeHeatFlux(i,j,bi,bj)       = 0. _d 0
+          shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
+          shelficeForcingT      (i,j,bi,bj) = 0. _d 0
+          shelficeForcingS      (i,j,bi,bj) = 0. _d 0
+          shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
           shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ', 
+     &      shelficeLoadAnomaly, 0, myThid )
+       _END_MASTER(myThid)
+       _EXCH_XY_R4( shelficeLoadAnomaly, myThid )
+      ENDIF
 
 #endif /* ALLOW_SHELFICE */
 

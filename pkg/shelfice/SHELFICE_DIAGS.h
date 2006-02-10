@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/SHELFICE_DIAGS.h,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/SHELFICE_DIAGS.h,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -13,8 +13,10 @@ C     Keep track of time
       COMMON /SHELFICE_TAVE/ SHELFICE_TimeAve
 
 C     Storage arrays for time-averages
-      _RL shelfice_heatFluxtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL shelfice_frshFluxtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL shelfice_heatFluxtave 
+     &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL shelfice_frshFluxtave
+     &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       COMMON /SHELFICE_TAVE_DIAGS/
      &     shelfice_heatFluxtave,
      &     shelfice_frshFluxtave

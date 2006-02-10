@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -29,7 +29,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-CML#include "EOS.h"
 #include "SHELFICE.h"
  
 C     !INPUT/OUTPUT PARAMETERS:
@@ -92,11 +91,15 @@ C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
      &           *recip_Cp*horiVertRatio*recip_rhoConst
-            shelficeForcingS(i,j,bi,bj) = 
-     &           shelfIceFreshWaterFlux(I,J,bi,bj)
-     &           * convertFW2Salt * convertEmP2rUnit
-            surfaceForcingT(i,j,bi,bj) = shelficeForcingT(i,j,bi,bj)
-            surfaceForcingS(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
+            IF (convertFW2Salt .EQ. -1.) THEN
+             shelficeForcingS(i,j,bi,bj) = 
+     &            shelfIceFreshWaterFlux(I,J,bi,bj)
+     &            * salt(I,J,K,bi,bj) * convertEmP2rUnit
+            ELSE
+             shelficeForcingS(i,j,bi,bj) = 
+     &            shelfIceFreshWaterFlux(I,J,bi,bj)
+     &            * convertFW2Salt * convertEmP2rUnit
+            ENDIF
 C--   stress at the ice/water interface is computed in separate
 C     routines that are called from mom_fluxform/mom_vecinv
            ELSE

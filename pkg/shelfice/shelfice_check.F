@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -37,6 +37,19 @@ C     So far, SHELFICE works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
       ENDIF
 
+C     SHELFICE doesmay not work with many other packages
+#ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'Currently SHELFICE and nonHydrostatic cannot be turned'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A)') 'on at the same time'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef ALLOW_KPP
 CMLC     SHELFICE may not work with many other packages
 CML      IF ( useKPP ) THEN
 CML         WRITE(msgBuf,'(A)')
@@ -44,6 +57,19 @@ CML     &      'SHELFICE and KPP cannot be turned on at the same time'
 CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
 CML      ENDIF
+#endif ALLOW_KPP
+
+#ifndef ALLOW_ISOMIP_TD
+      IF ( useISOMIPTD ) THEN
+       WRITE(msgBuf,'(A,A,A)')
+     &      'Run-time control flag useISOMIPTD was used'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A,A,A)') 
+     &      'when CPP flag ALLOW_ISOMIP_TD was unset'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+      ENDIF 
+#endif /* ALLOW_ISOMIP_TD */
 
 #endif /* ALLOW_SHELFICE */
 
