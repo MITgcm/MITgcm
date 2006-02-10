@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.606 2006/02/10 00:33:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.607 2006/02/10 07:56:43 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add code to balance EmPmP and Qnet at the end of do_ocean_physics. Useful
+  if bulk formulae are used in long integration (especially EmPmR). Turn
+  on with balanceEmPmR = .true. or balanceQnet = .true. in data, PARM01
+  if balancePrintMean, the imbalance that is substracted is printed to
+  STDOUT.
 o fix bug (typo) in obcs_apply_eta.F
 o add a new package shelfice which enables us to model the circulation
   underneath shelf-ice with draughts of hundreds of meters.
