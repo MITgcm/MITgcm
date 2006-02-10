@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.4 2004/12/17 03:44:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.5 2006/02/10 00:24:12 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -41,7 +41,7 @@ C     compact  :: fraction of grid area covered in ice
 C     hi       :: ice height
 C     hs       :: snow height
 C     Tsf      :: surface (ice or snow) temperature
-C     qicen    :: ice enthalpy (J m-3)
+C     qicen    :: ice enthalpy (J/kg)
 C     qleft    :: net heat flux to ocean    [W/m2]          (> 0 downward)
 C     fresh    :: Total fresh water flux to ocean [kg/m2/s] (> 0 downward)
 C     fsalt    :: salt flux to ocean        [g/m2/s]        (> 0 downward)
@@ -103,7 +103,7 @@ C     evap           ::  evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
       _RL  dhs           ! change in snow thickness
       _RL  rq            ! rho * q for a layer
       _RL  rqh           ! rho * q * h for a layer
-      _RL  qbot          ! q for new ice at bottom surf (J m-3)
+      _RL  qbot          ! enthalpy for new ice at bottom surf (J/kg)
       _RL  dt            ! timestep
       _RL  esurp         ! surplus energy from melting (J m-2)
       _RL  mwater0       ! fresh water mass gained/lost (kg/m^2)
@@ -134,29 +134,29 @@ C......................................................................
 C.. Compute growth and/or melting at the top and bottom surfaces.......
 C......................................................................
 
-      if (frzmlt.ge. 0. _d 0) then
+      IF (frzmlt.GE. 0. _d 0) THEN
 C     !-----------------------------------------------------------------
 C     ! freezing conditions
 C     !-----------------------------------------------------------------
 C if higher than hihig, use all frzmlt energy to grow extra ice
-        if (hi.gt.hihig.and. compact.le.iceMaskmax) then
+        IF (hi.GT.hihig .AND. compact.LE.iceMaskmax) THEN
           Fbot=0. _d 0
-        else
+        ELSE
           Fbot=frzmlt
-        endif
-      else
+        ENDIF
+      ELSE
 C     !-----------------------------------------------------------------
 C     ! melting conditions
 C     !-----------------------------------------------------------------
          ustar = 5. _d -2        !for no currents
 C frictional velocity between ice and water
-         ustar = sqrt(0.00536 _d 0*oceV2s)
+         ustar = SQRT(0.00536 _d 0*oceV2s)
          ustar=max(5. _d -3,ustar)
          cpchr =cpwater*rhosw*transcoef 
          Fbot = cpchr*(Tf-oceTs)*ustar  ! < 0
          Fbot = max(Fbot,frzmlt)    ! frzmlt < Fbot < 0
          Fbot = min(Fbot,0. _d 0)
-      endif
+      ENDIF
 
 C  mass of fresh water and salt initially present in ice
       mwater0 = rhos*hs + rhoi*hi
@@ -169,49 +169,49 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Compute energy available for melting/growth.
 
-      if (hi.lt.himin0) then
+      IF (hi.LT.himin0) THEN
 C below a certain height, all energy goes to changing ice extent
        frace=1. _d 0
-      else
+      ELSE
        frace=frac_energy
-      endif
-      if (hi.gt.hihig) then
+      ENDIF
+      IF (hi.GT.hihig) THEN
 C above certain height only melt from top
        frace=0. _d 0
-      else
+      ELSE
        frace=frac_energy
-      endif
+      ENDIF
 C force this when no ice fractionation
-      if (frac_energy.eq.0. _d 0) frace=0. _d 0
+      IF (frac_energy.EQ.0. _d 0) frace=0. _d 0
 
-c     if (Tsf .eq. 0. _d 0 .and. sHeating.gt.0. _d 0) then
-      if ( sHeating.gt.0. _d 0 ) then
+c     IF (Tsf .EQ. 0. _d 0 .AND. sHeating.GT.0. _d 0) THEN
+      IF ( sHeating.GT.0. _d 0 ) THEN
           etop = (1. _d 0-frace)*sHeating * dt
           etope = frace*sHeating * dt
-      else
+      ELSE
           etop =  0. _d 0
           etope = 0. _d 0
 C jmc: found few cases where Tsf=0 & sHeating < 0 : add this line to conserv energy:
           esurp = sHeating * dt
-      endif
+      ENDIF
 C--   flux at the base of sea-ice: 
 C     conduction H.flx= flxCnB (+ =down); oceanic turbulent H.flx= Fbot (+ =down).
 C-    ==> energy available(+ => melt)= (flxCnB-Fbot)*dt
-c     if (frzmlt.lt.0. _d 0) then
+c     IF (frzmlt.LT.0. _d 0) THEN
 c         ebot = (1. _d 0-frace)*(flxCnB-Fbot) * dt
 c         ebote = frace*(flxCnB-Fbot) * dt
-c     else
+c     ELSE
 c         ebot = (flxCnB-Fbot) * dt
 c         ebote = 0. _d 0
-c     endif
+c     ENDIF
 C- original formulation(above): Loose energy when flxCnB < Fbot < 0
       ebot = (flxCnB-Fbot) * dt
-      if (ebot.gt.0. _d 0) then
+      IF (ebot.GT.0. _d 0) THEN
          ebote = frace*ebot
          ebot  = ebot-ebote
-      else
+      ELSE
          ebote = 0. _d 0
-      endif
+      ENDIF
       IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: etop,etope,ebot,ebote=',
      &            etop,etope,ebot,ebote
 
@@ -221,52 +221,52 @@ C If they do, then eliminate the layer.  (Dont think this will happen
 C for reasonable values of i0.)
 
       hlyr = hi / rnlyr
-      do k = 1, nlyr
+      DO k = 1, nlyr
          hnew(k) = hlyr
-      enddo
+      ENDDO
 
 C Top melt: snow, then ice.
 
-      if (etop .gt. 0. _d 0) then
-         if (hs. gt. 0. _d 0) then
+      IF (etop .GT. 0. _d 0) THEN
+         IF (hs. gt. 0. _d 0) THEN
             rq =  rhos * qsnow
             rqh = rq * hs
-            if (etop .lt. rqh) then
+            IF (etop .LT. rqh) THEN
                hs = hs - etop/rq
                etop = 0. _d 0
-            else
+            ELSE
                etop = etop - rqh 
                hs = 0. _d 0
-            endif
-         endif
+            ENDIF
+         ENDIF
                   
-         do k = 1, nlyr
-            if (etop .gt. 0. _d 0) then
+         DO k = 1, nlyr
+            IF (etop .GT. 0. _d 0) THEN
                rq =  rhoi * qicen(k)
                rqh = rq * hnew(k)
-               if (etop .lt. rqh) then
+               IF (etop .LT. rqh) THEN
                   hnew(k) = hnew(k) - etop / rq
                   etop = 0. _d 0
-               else
+               ELSE
                   etop = etop - rqh
                   hnew(k) = 0. _d 0
-               endif
-            endif
-         enddo
-      else
+               ENDIF
+            ENDIF
+         ENDDO
+      ELSE
         etop=0. _d 0
-      endif
+      ENDIF
 C If ice is gone and melting energy remains
-c     if (etop .gt. 0. _d 0) then
-c        write (6,*)  'QQ All ice melts from top  ', i,j
+c     IF (etop .GT. 0. _d 0) THEN
+c        WRITE (6,*)  'QQ All ice melts from top  ', i,j
 c        hi=0. _d 0
 c        go to 200
-c     endif
+c     ENDIF
 
 
 C Bottom melt/growth. 
 
-      if (ebot .lt. 0. _d 0) then
+      IF (ebot .LT. 0. _d 0) THEN
 C Compute enthalpy of new ice growing at bottom surface.
          qbot =  -cpice *Tf + Lfresh
          dhi = -ebot / (qbot * rhoi)
@@ -274,65 +274,65 @@ C Compute enthalpy of new ice growing at bottom surface.
          k = nlyr
          qicen(k) = (hnew(k)*qicen(k)+dhi*qbot) / (hnew(k)+dhi)
          hnew(k) = hnew(k) + dhi
-      else               
-         do k = nlyr, 1, -1
-            if (ebot.gt.0. _d 0 .and. hnew(k).gt.0. _d 0) then
+      ELSE               
+         DO k = nlyr, 1, -1
+            IF (ebot.GT.0. _d 0 .AND. hnew(k).GT.0. _d 0) THEN
                rq =  rhoi * qicen(k)
                rqh = rq * hnew(k)
-               if (ebot .lt. rqh) then
+               IF (ebot .LT. rqh) THEN
                   hnew(k) = hnew(k) - ebot / rq
                   ebot = 0. _d 0
-               else
+               ELSE
                   ebot = ebot - rqh
                   hnew(k) = 0. _d 0
-               endif
-            endif
-         enddo
+               ENDIF
+            ENDIF
+         ENDDO
 
 C If ice melts completely and snow is left, remove the snow with 
 C energy from the mixed layer
 
-         if (ebot.gt.0. _d 0 .and. hs.gt.0. _d 0) then
+         IF (ebot.GT.0. _d 0 .AND. hs.GT.0. _d 0) THEN
             rq =  rhos * qsnow
             rqh = rq * hs
-            if (ebot .lt. rqh) then
+            IF (ebot .LT. rqh) THEN
                hs = hs - ebot / rq
                ebot = 0. _d 0
-            else
+            ELSE
                ebot = ebot - rqh
                hs = 0. _d 0
-            endif
-         endif
-c        if (ebot .gt. 0. _d 0) then
+            ENDIF
+         ENDIF
+c        IF (ebot .GT. 0. _d 0) THEN
 c           IF (dBug) WRITE(6,*) 'All ice (& snow) melts from bottom'
 c           hi=0. _d 0
 c           go to 200
-c        endif
-      endif
+c        ENDIF
+      ENDIF
 
 C Compute new total ice thickness.
       hi = 0. _d 0
-      do k = 1, nlyr
+      DO k = 1, nlyr
          hi = hi + hnew(k)
-      enddo
+      ENDDO
       IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH:   etop, ebot, hi, hs =',
      &                                         etop, ebot, hi, hs    
 
 C If hi < himin, melt the ice. 
-      if ( hi.lt.himin .AND. (hi+hs).gt.0. _d 0 ) then
+      IF ( hi.LT.himin .AND. (hi+hs).GT.0. _d 0 ) THEN
          esurp = esurp - rhos*qsnow*hs
-         do k = 1, nlyr
+         DO k = 1, nlyr
             esurp = esurp - rhoi*qicen(k)*hnew(k)
-         enddo
+         ENDDO
          hi = 0. _d 0
          hs = 0. _d 0
          Tsf=0. _d 0
          compact = 0. _d 0
-         do k = 1, nlyr
+         DO k = 1, nlyr
            qicen(k) = 0. _d 0
-         enddo
+         ENDDO
          IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: -1 : esurp=',esurp
-      endif
+      ENDIF
 
 C--   do a mass-budget of sea-ice to compute "fresh" = the fresh-water flux
 C     that is returned to the ocean ; needs to be done before snow/evap
@@ -340,14 +340,15 @@ C     that is returned to the ocean ; needs to be done before snow/evap
 
 C- note : was not supposed to modify snowPr in THSICE_CALC_TH ;
 C         but to reproduce old results, reset to zero if Tsf >= 0
-c     IF ( Tsf.ge.0. _d 0 ) snowPr = 0.
+c     IF ( Tsf.GE.0. _d 0 ) snowPr = 0.
 
       IF ( hi .LE. 0. _d 0 ) THEN 
-C-    return snow to the ocean (account for Latent heat of freezing)
+C-    return  snow to the ocean (account for Latent heat of freezing)
         fresh = fresh + snowPr
         qleft = qleft - snowPr*Lfresh
-        GOTO 200
-      ENDIF
+
+      ELSE
+C-    else: hi > 0
 
 C Let it snow
 
@@ -355,81 +356,85 @@ C Let it snow
 
 C If ice evap is used to sublimate surface snow/ice or
 C if no ice pass on to ocean
-      if (hs.gt.0. _d 0) then
-        if (evap/rhos *dt.gt.hs) then
+       IF (hs.GT.0. _d 0) THEN
+         IF (evap/rhos *dt.GT.hs) THEN
            evap=evap-hs*rhos/dt
            hs=0. _d 0
-        else
+         ELSE
            hs = hs - evap/rhos *dt
            evap=0. _d 0
-        endif
-      endif
-      if (hi.gt.0. _d 0.and.evap.gt.0. _d 0) then
-         do k = 1, nlyr
-            if (evap .gt. 0. _d 0) then
+         ENDIF
+       ENDIF
+       IF (hi.GT.0. _d 0.AND.evap.GT.0. _d 0) THEN
+         DO k = 1, nlyr
+            IF (evap .GT. 0. _d 0) THEN
 C-- original scheme, does not care about ice temp.
 C-  this can produce small error (< 1.W/m2) in the Energy budget
-c              if (evap/rhoi *dt.gt.hnew(k)) then
+c              IF (evap/rhoi *dt.GT.hnew(k)) THEN
 c                evap=evap-hnew(k)*rhoi/dt
 c                hnew(k)=0. _d 0
-c              else
+c              ELSE
 c                hnew(k) = hnew(k) - evap/rhoi *dt
 c                evap=0. _d 0
-c              endif
+c              ENDIF
 C-- modified scheme. taking into account Ice enthalpy
                dhi = evap/rhoi*dt 
-               if (dhi.ge.hnew(k)) then
+               IF (dhi.GE.hnew(k)) THEN
                  evap=evap-hnew(k)*rhoi/dt
                  esurp = esurp - hnew(k)*rhoi*(qicen(k)-Lfresh)
                  hnew(k)=0. _d 0
-               else
+               ELSE
                  hq = hnew(k)*qicen(k)-dhi*Lfresh
                  hnew(k) = hnew(k) - dhi
                  qicen(k)=hq/hnew(k)
                  evap=0. _d 0
-               endif
+               ENDIF
 C-------
-            endif
-         enddo
-      endif
-c     if (evap .gt. 0. _d 0) then
-c           write (6,*)  'BB All ice sublimates', i,j
+            ENDIF
+         ENDDO
+       ENDIF
+c     IF (evap .GT. 0. _d 0) THEN
+c           WRITE (6,*)  'BB All ice sublimates', i,j
 c           hi=0. _d 0
 c           go to 200
-c     endif
+c     ENDIF
 
 C Compute new total ice thickness.
 
-      hi = 0. _d 0
-      do k = 1, nlyr
+       hi = 0. _d 0
+       DO k = 1, nlyr
          hi = hi + hnew(k)
-      enddo
+       ENDDO
 
 C If hi < himin, melt the ice. 
-      if ( hi.gt.0. _d 0 .AND. hi.lt.himin ) then
+       IF ( hi.GT.0. _d 0 .AND. hi.LT.himin ) THEN
          fresh = fresh + (rhos*hs + rhoi*hi)/dt
          esurp = esurp - rhos*qsnow*hs
-         do k = 1, nlyr
+         DO k = 1, nlyr
             esurp = esurp - rhoi*qicen(k)*hnew(k)
-         enddo
+         ENDDO
          hi = 0. _d 0
          hs = 0. _d 0
          Tsf=0. _d 0
          compact = 0. _d 0
-         do k = 1, nlyr
+         DO k = 1, nlyr
            qicen(k) = 0. _d 0
-         enddo
+         ENDDO
          IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: -2 : esurp,fresh=',
      &                   esurp, fresh
-      endif
-      IF ( hi .le. 0. _d 0 ) GOTO 200
+       ENDIF
+
+C-    else hi > 0: end
+      ENDIF
+
+      IF ( hi .GT. 0. _d 0 ) THEN
 
 C If there is enough snow to lower the ice/snow interface below 
 C freeboard, convert enough snow to ice to bring the interface back 
 C to sea-level.  Adjust enthalpy of top ice layer accordingly.
 
-      if ( hs .gt. hi*rhoiw/rhos ) then
-cBB               write (6,*)  'Freeboard adjusts'
+       IF ( hs .GT. hi*rhoiw/rhos ) THEN
+cBB               WRITE (6,*)  'Freeboard adjusts'
          dhi = (hs * rhos - hi * rhoiw) / rhosw
          dhs = dhi * rhoi / rhos
          rqh = rhoi*qicen(1)*hnew(1) + rhos*qsnow*dhs
@@ -437,50 +442,52 @@ cBB               write (6,*)  'Freeboard adjusts'
          qicen(1) = rqh / (rhoi*hnew(1))
          hi = hi + dhi
          hs = hs - dhs
-      end if
+       ENDIF
 
 
 C limit ice height
 C- NOTE: this part does not conserve Energy ;
 C        but surplus of fresh water and salt are taken into account.
-      if (hi.gt.hiMax) then
+       IF (hi.GT.hiMax) THEN
 cBB      print*,'BBerr, hi>hiMax',i,j,hi
          chi=hi-hiMax
-         do k=1,nlyr
+         DO k=1,nlyr
             hnew(k)=hnew(k)-chi/2. _d 0
-         enddo
+         ENDDO
          fresh = fresh + chi*rhoi/dt
-      endif
-      if (hs.gt.hsMax) then
+       ENDIF
+       IF (hs.GT.hsMax) THEN
 c        print*,'BBerr, hs>hsMax',i,j,hs
          chs=hs-hsMax
          hs=hsMax
          fresh = fresh + chs*rhos/dt
-      endif
+       ENDIF
 
 C Compute new total ice thickness.
 
-      hi = 0. _d 0
-      do k = 1, nlyr
+       hi = 0. _d 0
+       DO k = 1, nlyr
          hi = hi + hnew(k)
-      enddo
+       ENDDO
  
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: b-Winton: hnew, qice =',
-     &                                                 hnew, qicen
+       IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: b-Winton: hnew, qice =',
+     &                                                  hnew, qicen
 
        hlyr = hi/rnlyr
        CALL THSICE_RESHAPE_LAYERS(
      U                            qicen,
      I                            hlyr, hnew, myThid )
 
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: compact,hi, qtot, hs =',
+       IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: compact,hi, qtot, hs =',
      &                  compact,hi,(qicen(1)+qicen(2))*0.5, hs
 
-200   continue
+C-    if hi > 0 : end
+      ENDIF
+ 200  CONTINUE
 
 C-  Compute surplus energy left over from melting.
 
-      if (hi.le.0. _d 0) compact=0. _d 0
+      IF (hi.LE.0. _d 0) compact=0. _d 0
 
 C.. heat fluxes left over for ocean
        qleft = qleft + (Fbot+(esurp+etop+ebot)/dt)
@@ -515,27 +522,27 @@ C      and it can only be reduced by lateral melting in the following part:
 
 C calculate extent changes
       extend=etope+ebote
-      if (compact.gt.0. _d 0.and.extend.gt.0. _d 0) then
+      IF (compact.GT.0. _d 0.AND.extend.GT.0. _d 0) THEN
          rq =  rhoi * 0.5 _d 0*(qicen(1)+qicen(2))
          rs =  rhos * qsnow
          rqh = rq * hi + rs * hs
          freshe=(rhos*hs+rhoi*hi)/dt
          salte=(rhoi*hi*saltice)/dt
-         if (extend .lt. rqh) then
+         IF (extend .LT. rqh) THEN
            compact=(1. _d 0-extend/rqh)*compact
            fresh=fresh+extend/rqh*freshe
            fsalt=fsalt+extend/rqh*salte
-         else
+         ELSE
            compact=0. _d 0
            hi=0. _d 0 
            hs=0. _d 0 
            qleft=qleft+(extend-rqh)/dt
            fresh=fresh+freshe
            fsalt=fsalt+salte
-         endif
-      elseif (extend.gt.0. _d 0) then
+         ENDIF
+      ELSEIF (extend.GT.0. _d 0) THEN
          qleft=qleft+extend/dt
-      endif
+      ENDIF
  
 #endif  /* ALLOW_THSICE */
 
