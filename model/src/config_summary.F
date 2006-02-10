@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.85 2005/12/13 16:41:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.86 2006/02/10 22:56:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -91,9 +91,9 @@ C     zcoord ::
       CALL WRITE_0D_L( usingZCoords, INDEX_NONE,
      & 'usingZCoords =', '  /* use z (or z*) vertical coordinate */')
       CALL WRITE_1D_R8( tRef, Nr, INDEX_K,'tRef =',
-     &'   /* Reference temperature profile ( oC or oK ) */')
+     &'   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
-     &'   /* Reference salinity profile ( ppt ) */')
+     &'   /* Reference salinity profile ( psu ) */')
       CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh ) 
@@ -173,13 +173,15 @@ C     zcoord ::
      &'   /* Depth scale for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
      &'   /* Turning depth for Bryan and Lewis 1979 ( m ) */')
-      WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
+c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
+      WRITE(msgBuf,'(4A)') 'Equation of State : ',
+     &                     'eosType = ', eosType, ' ;'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
-     &'   /* Linear EOS thermal expansion coefficient ( 1/degree ) */')
+     &'   /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
       CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
-     &'   /* Linear EOS haline contraction coefficient ( 1/ppt ) */')
+     &'   /* Linear EOS haline contraction coefficient ( 1/psu ) */')
       IF ( eosType .EQ. 'POLY3' ) THEN
         WRITE(msgBuf,'(A)') 
      &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
@@ -278,6 +280,8 @@ C     zcoord ::
      &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
       ENDIF
 
+      CALL WRITE_0D_L( use3Dsolver, INDEX_NONE,
+     & 'use3Dsolver =', ' /* use 3-D pressure solver on/off flag */')
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       CALL WRITE_0D_R8( nh_Am2, INDEX_NONE, 'nh_Am2 =',
@@ -550,6 +554,8 @@ c    &'   /* W spacing ( units of r ) */')
       ENDDO
       CALL WRITE_1D_R8( rcoord, Nr+1, INDEX_K,'rF = ',
      &'   /* W-Interf. R coordinate (  units of r ) */')
+      CALL WRITE_1D_R8( dBdrRef, Nr, INDEX_K,'dBdrRef = ',
+     & ' /* Vertical gradient of reference boyancy [(m/s/r)^2)] */')
 
 C     Grid along selected grid lines
       coordLine = 1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.31 2006/02/10 07:56:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.32 2006/02/10 22:56:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,11 +66,13 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif
 
 #ifndef ALLOW_NONHYDROSTATIC
-      IF (nonHydrostatic) THEN 
+      IF (use3Dsolver) THEN 
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: #undef ALLOW_NONHYDROSTATIC and'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
+       IF ( implicitIntGravWave ) WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: implicitIntGravWave is TRUE'
+       IF ( nonHydrostatic ) WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonHydrostatic is TRUE'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
