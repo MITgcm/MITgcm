@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.21 2006/02/07 11:47:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.22 2006/02/10 07:56:20 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,9 @@ C     == Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
+#endif
+#if defined (ALLOW_BALANCE_FLUXES) && !(defined ALLOW_AUTODIFF_TAMC)
+#include "FFIELDS.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -497,6 +500,16 @@ C--     Compute GGL90 mixing coefficients
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_BALANCE_FLUXES
+C     balance fluxes 
+      if ( balanceEmPmR )
+     &     CALL REMOVE_MEAN_RS( 1, EmPmR, maskH, maskH, rA, drF,
+     &                'EmPmR', myTime, myThid )
+      if ( balanceQnet )
+     &     CALL REMOVE_MEAN_RS( 1, Qnet,  maskH, maskH, rA, drF,
+     &                'Qnet ', myTime, myThid )
+#endif /* ALLOW_BALANCE_FLUXES */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN

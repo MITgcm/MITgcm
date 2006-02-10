@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.110 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.111 2006/02/10 07:56:20 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -196,6 +196,9 @@ C--   Set (free)surface-related parameters
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.
+      balanceEmPmR        = .FALSE.
+      balanceQnet         = .FALSE.
+      balancePrintMean    = .FALSE.
 
 C--   Atmospheric physical parameters (e.g.: EOS)
       celsius2K = 273.16 _d 0

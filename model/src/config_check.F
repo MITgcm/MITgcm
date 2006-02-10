@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.30 2006/01/02 21:17:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.31 2006/02/10 07:56:20 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -240,6 +240,19 @@ C     o If calendarDumps is set, pkg/cal is required
         CALL PRINT_ERROR( msgBuf , 1)
         WRITE(msgBuf,'(A)')
      &  'Re-compile with pkg "cal" in packages.conf'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+#ifndef ALLOW_BALANCE_FLUXES
+      IF (balanceEmPmR .OR. balanceQnet) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: balanceEmPmR/Qnet is set but balance code ',
+     &  'is not compiled.'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with  ALLOW_BALANCE_FLUXES defined'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
