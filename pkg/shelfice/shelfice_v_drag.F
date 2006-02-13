@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.2 2006/02/13 12:49:21 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -47,7 +47,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  vDragTerms           :: drag term
       _RL vDragTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C !LOCAL VARIABLES: ====================================================
+C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
       INTEGER I,J,kUp,kUpC,kTop
@@ -87,11 +87,11 @@ CML        IF (k.EQ.kTop) maskUp=0.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_DIAGNOSTICS
-      IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(vDragTerms,'VBotDrag',k,1,2,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+CML#ifdef ALLOW_DIAGNOSTICS
+CML      IF (useDiagnostics) THEN
+CML        CALL DIAGNOSTICS_FILL(vDragTerms,'VBotDrag',k,1,2,bi,bj,myThid)
+CML      ENDIF
+CML#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
