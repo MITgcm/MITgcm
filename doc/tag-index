@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.608 2006/02/10 10:01:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.609 2006/02/13 13:11:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,7 +12,10 @@ o shelfice:
     done offline. A good approximation of the pressure load anomaly is
     necessary to avoid large initial adjustment processes underneath 
     deep-reaching shelfice.
-  - small fix in shelfice_thermodynamics
+  - small fix in ISOMIP shelfice_thermodynamics
+  - add more sophisticated thermodynamics of Hellmer (1989), this is 
+    now the default
+  - give a few constants more intuitive names
 o add code to balance EmPmP and Qnet at the end of do_ocean_physics. Useful
   if bulk formulae are used in long integration (especially EmPmR). Turn
   on with balanceEmPmR = .true. or balanceQnet = .true. in data, PARM01
