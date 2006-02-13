@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.2 2006/02/10 10:00:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.3 2006/02/13 13:10:38 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -19,8 +19,10 @@ C--   Constants that can be set in data.shelfice
 C     SHELFICEloadAnomalyFile  - name of shelfice load anomaly file
 C     SHELFICEDragLinear       - linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    - quadratic drag at bottom shelfice (1/m)
-C     SHELFICEexchangeVelocity - scale parameter that determines heat flux
-C                                into shelfice (m/s)
+C     SHELFICEheatTransCoeff   - heat transfer coefficient that determines
+C                                 heat flux into shelfice (m/s)
+C     SHELFICEsaltTransCoeff   - salinity transfer coefficient that determines
+C                                salt flux into shelfice (m/s)
 C     SHELFICElatentHeat       - latent heat of fusion (J/kg)
 C     useISOMIPTD              - use simple ISOMIP thermodynamics
 C     no_slip_shelfice         - set slip conditions for shelfice separately,
@@ -48,15 +50,23 @@ CEOP
 
       COMMON /SHELFICE_PARMS_R/ 
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
-     &     SHELFICEexchangeVelocity,
+     &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
+     &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, recip_SHELFICElatentHeat,
+     &     SHELFICEheatCapacity_Cp,
+     &     SHELFICEthetaSurface,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
-      _RL SHELFICEexchangeVelocity
+      _RL SHELFICEheatTransCoeff
+      _RL SHELFICEsaltTransCoeff
       _RL SHELFICElatentHeat
+      _RL SHELFICEheatCapacity_Cp
+      _RL rhoShelfice
+      _RL SHELFICEkappa
       _RL recip_SHELFICElatentHeat
       _RL SHELFICEDragLinear
       _RL SHELFICEDragQuadratic
+      _RL SHELFICEthetaSurface
 
       COMMON /SHELFICE_FIELDS_RL/ 
      &     shelficeForcingT,

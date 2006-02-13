@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.3 2006/02/13 13:10:38 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -39,9 +39,12 @@ C  msgBuf		:: message buffer
 CEOP
 
       NAMELIST /SHELFICE_PARM01/
-     &     SHELFICEexchangeVelocity,
-     &     SHELFICElatentHeat, 
+     &     SHELFICEheatTransCoeff,
+     &     SHELFICEsaltTransCoeff,
+     &     rhoShelfice, SHELFICEkappa,
+     &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
+     &     SHELFICEthetaSurface,
      &     useISOMIPTD, no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
@@ -55,11 +58,16 @@ C internal flag to indicate we are in business
       SHELFICEisON=.TRUE.
 
 C Set defaults values for parameters in SHELFICE.h
-      useISOMIPTD              = .TRUE.
+      useISOMIPTD              = .FALSE.
       SHELFICEloadAnomalyFile  = ' '
-      SHELFICElatentHeat       = 334.0 _d 3
-      recip_SHELFICElatentHeat = 0. _d 0
-      SHELFICEexchangeVelocity = 0. _d 0
+      SHELFICElatentHeat       =  334.0 _d 3
+      SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
+      recip_SHELFICElatentHeat =    0.0 _d 0
+      rhoShelfIce              =  917.0 _d 0
+      SHELFICEheatTransCoeff   =    1.0 _d -04
+      SHELFICEsaltTransCoeff   = UNSET_RL
+      SHELFICEkappa            =   1.54 _d -06
+      SHELFICEthetaSurface     = - 20.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = bottomDragQuadratic
@@ -73,53 +81,6 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICE_tave_mnc = .FALSE.
       SHELFICE_dump_mnc = .FALSE.
 #endif
-CMLC Eingabe der Konstanten
-CMLC gat = turbul. heat exchange coeff. [m/s]
-CMLC gas = turbul. salt exchange coeff. [m/s]
-CMLC HeMW=Heliumgehalt des Schmelzwassers
-CMLC OoFW=Isotopeneintrag beim Frieren
-CMLC OoMW=Isotopeneintrag beim Schmelzen
-CMLc aqui
-CML      a = -0.0575           !
-CML      b = 0.0901                !Freezing point constants
-CML      c = 7.61e-4               !
-CML
-CML      pn    = 13.8              !Prandtl number
-CML      sn    = 2432.             !Schmidt number
-CMLc      appa_t = 1.34e-07          !molecular thermal diffusivity
-CMLc      appa_s = 7.40e-10          !molecular salt diffusivity
-CML      un     = 1.95e-6
-CMLc      pn     = un/appa_t
-CMLc      sn     = un/appa_s
-CML      pn1    = pn**(2./3.)
-CML      sn1    = sn**(2./3.)
-CML      cd     = 2.50e-3
-CML      srcd   = sqrt(cd)
-CML
-CMLc      arma   = 0.4                 ! Karman constant
-CMLc      z0_i   = 0.00005             ! roughness length
-CMLc      srcd   = arma/log(1/z0_i)
-CML
-CML      lhf = 3.33e+5
-CML      cpi = 152.5+7.122*(atk+tob) !Paterson:"The Physics of Glaciers"
-CML
-CML      rhoi=917.
-CML      rho0=1000.
-CML 
-CML      hemw= 4.02*14.
-CML      oomw=-30.
-CML      oofw=-2.5
-CML      SHELFICEnRi        = 2
-CML      SHELFICEviscMin    = 0. _d 0
-CML      SHELFICEdiffMin    = 0. _d 0
-CML      SHELFICEviscMax    = 1. _d 0
-CML      SHELFICEnu0        = 1. _d -02
-CML      SHELFICEalpha      = 5. _d 0
-CML      RiLimit      = UNSET_RL
-CML      SHELFICEdumpFreq   = dumpFreq
-CML      SHELFICEtaveFreq   = taveFreq
-CML      SHELFICEMixingMaps = .FALSE.
-CML      SHELFICEwriteState = .FALSE.
 
 C Open and read the data.shelfice file
       _BEGIN_MASTER(myThid)
@@ -146,6 +107,9 @@ C Everyone else must wait for the parameters to be loaded
 C Now set-up any remaining parameters that result from the input parameters 
       IF ( SHELFICElatentHeat .NE. 0. _d 0 )
      &     recip_SHELFICElatentHeat = 1. _d 0/SHELFICElatentHeat
+      IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
+     &     SHELFICEsaltTransCoeff = 
+     &     5.05 _d -3 *SHELFICEheatTransCoeff
 
 C-    Set Output type flags :
       SHELFICE_tave_mdsio = .TRUE.
