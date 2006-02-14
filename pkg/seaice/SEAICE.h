@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.16 2005/08/31 00:05:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.17 2006/02/14 12:04:03 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -14,11 +14,13 @@ C
 C     UICE  - zonal ice velocity in m/s
 C             at South-West B-grid U point
 C             >0 from West to East
+C     UICEC - average of UICE(1) between last two time steps
 C     VICE  - meridional ice velocity in m/s
 C             at South-West B-grid U point
 C             >0 from South to North
 C             note: the South-West B-grid U and V points are on
 C                the lower, left-hand corner of each grid cell
+C     VICEC - average of VICE(1) between last two time steps
 C     AREA  - fractional ice-covered area in m^2/m^2
 C             at South-West B-grid tracer point
 C             0 is no cover, 1 is 100% cover
