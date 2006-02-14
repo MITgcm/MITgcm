@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.142 2006/02/09 20:19:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.143 2006/02/14 16:21:09 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -569,6 +569,12 @@ Usage: "$0" [OPTIONS]
           Do or don't use IEEE numerics.  Note that this option 
           *only* works if it is supported by the OPTFILE that 
           is being used.
+
+    -ignoretime | -ignore_time | --ignoretime | --ignore_time
+          Ignore all the "wall clock" routines entirely.  This will
+          not in any way hurt the model results -- it simply means 
+          that the code that checks how long the model spends in 
+          various routines will give junk values.
 
     -ts | --ts
           Produce timing information per timestep
