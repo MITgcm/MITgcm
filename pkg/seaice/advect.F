@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.12 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.13 2006/02/14 14:00:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,13 +90,13 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
      &     (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
      &     (HEFF(I+1,J+1,2,bi,bj)+HEFF
      &     (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
-     &     *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
+     &     *(QUART/(DXTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
      &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)
      &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
      &     +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
      &     -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
      &     *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))*CSUICE(I+1,J+1,bi,bj))
-     &     *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj)))
+     &     *(QUART/(DYTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
          ENDDO
         ENDDO
        ENDDO
@@ -131,14 +131,14 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
      &        (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
      &        (HEFF(I+1,J+1,2,bi,bj)+HEFF
      &        (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
-     &        *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
+     &        *(QUART/(DXTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
      &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)
      &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
      &        +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
      &        -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
      &        *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))
      &        *CSUICE(I+1,J+1,bi,bj))
-     &        *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj)))
+     &        *(QUART/(DYTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
             ENDDO
            ENDDO
           ENDDO
