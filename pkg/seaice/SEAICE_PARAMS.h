@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.19 2005/09/15 15:03:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.20 2006/02/15 11:01:57 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -31,9 +31,13 @@ C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
 C                  1 = LEAPFROG,  2 = BACKWARD EULER.
 C     IMAX_TICE  - number of iterations for ice heat budget   10
+C     SEAICEadvScheme - sets the advection scheme for thickness and area
 C
       INTEGER LAD, IMAX_TICE
-      COMMON /SEAICE_PARM_I/ LAD, IMAX_TICE
+      INTEGER SEAICEadvScheme
+      COMMON /SEAICE_PARM_I/ 
+     &     LAD, IMAX_TICE,
+     &     SEAICEadvScheme
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     uwindFile       - File containing uwind
@@ -167,6 +171,9 @@ C--   Constants used by sea-ice model
       parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
       _RL         QUART            , HALF
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
+
+      INTEGER GAD_HEFF, GAD_AREA
+      PARAMETER ( GAD_HEFF = 101, GAD_AREA = 102 )
 
 
 CEH3 ;;; Local Variables: ***
