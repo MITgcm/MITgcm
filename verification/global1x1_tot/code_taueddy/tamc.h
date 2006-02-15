@@ -105,12 +105,6 @@ c     and writing data.
       PARAMETER( isbyte      = 4 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
-      INTEGER    maxpass
-#ifdef ALLOW_PASSIVE_TRACER
-      PARAMETER( maxpass     = 3 )
-#else
-      PARAMETER( maxpass     = 2 )
-#endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
 
