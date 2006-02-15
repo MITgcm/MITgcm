@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.610 2006/02/15 08:59:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.611 2006/02/15 09:06:20 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice:
+  - removed all references to SEAICE_GRID.h fields from 
+    dynsolver, advect, diffus, lsr, without changing the results of lab_sea
+    (cubed-sphere configuration will change a little)
+  - grid computations in seaice_init are obsolete now.
+  - cleaned up code a little so that is easier to read (hopefully).
+  - added new (better?) discretizations of advection and diffusion
+    (still commented out)
+  
 checkpoint58a_post
 o shelfice: 
   - separate shelfice load anomaly from pload (breaks with time 
