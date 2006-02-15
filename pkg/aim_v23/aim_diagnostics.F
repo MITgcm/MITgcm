@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.17 2006/01/26 00:14:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.18 2006/02/15 19:23:33 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -17,6 +17,7 @@ C-- size for MITgcm & Physics package :
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 #include "AIM_PARAMS.h"
 #include "AIM2DYN.h"
@@ -46,6 +47,7 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpVar(NGP)
+      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
       CHARACTER*(1) pf
 
@@ -331,10 +333,28 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
        IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL( aim_dTdt,
-     &                        'DIABT   ', 0, Nr, 1,bi,bj, myThid )
-        CALL DIAGNOSTICS_FILL( aim_dSdt,
-     &                        'DIABQ   ', 0, Nr, 1,bi,bj, myThid )
+        IF ( DIAGNOSTICS_IS_ON('DIABT   ',myThid) ) THEN
+          DO k = 1,Nr           
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmpFld(i,j) = aim_dTdt(i,j,k,bi,bj)*hFacC(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL( tmpFld,
+     &                        'DIABT   ', k,  1, 2,bi,bj, myThid )
+          ENDDO
+        ENDIF
+        IF ( DIAGNOSTICS_IS_ON('DIABQ   ',myThid) ) THEN
+          DO k = 1,Nr           
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmpFld(i,j) = aim_dSdt(i,j,k,bi,bj)*hFacC(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL( tmpFld,
+     &                        'DIABQ   ', k,  1, 2,bi,bj, myThid )
+          ENDDO
+        ENDIF
         CALL DIAGNOSTICS_FILL( TT_RSW(1,1,myThid),
      &                        'RADSW   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_RLW(1,1,myThid),

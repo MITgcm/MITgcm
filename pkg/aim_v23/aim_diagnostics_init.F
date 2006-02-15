@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.3 2006/01/26 00:17:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.4 2006/02/15 19:23:33 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -46,7 +46,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'DIABT   '
       diagTitle =
-     &  'Potential Temp. Tendency from Diabatic processes (K/s)'
+     &  'Pot. Temp.  Tendency (Mass-Weighted) from Diabatic Processes'
       diagUnits = 'K/s             '
       diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -54,7 +54,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'DIABQ   '
       diagTitle =
-     &  'Specific Humidity Tendency from Diabatic Processes (g/kg/s)'
+     &  'Spec.Humid. Tendency (Mass-Weighted) from Diabatic Processes'
       diagUnits = 'g/kg/s          '
       diagCode  = 'SM      ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
