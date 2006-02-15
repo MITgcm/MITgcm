@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.609 2006/02/13 13:11:31 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.610 2006/02/15 08:59:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58a_post
 o shelfice: 
   - separate shelfice load anomaly from pload (breaks with time 
     dependent forcing), => introduce constant field shelficeLoadAnomaly.
