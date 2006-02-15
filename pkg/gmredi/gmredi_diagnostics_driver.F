@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.2 2006/02/15 03:52:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.3 2006/02/15 04:58:47 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -70,7 +70,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 	 DO i = 1, snx
           tmpfld3dloc(i,j,k,bi,bj) =
      &     0.5*rhoConst*fCori(i,j,bi,bj)*
-     &     GM_Kwy(i,j,k,bi,bj)
+     &     Kwy(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -81,7 +81,7 @@ c
 	 DO i = 1, snx
           tmpfld3dloc(i,j,k,bi,bj) =
      &     -0.5*rhoConst*fCoriG(i,j,bi,bj)*
-     &     GM_Kwx(i,j,k,bi,bj)
+     &     Kwx(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ENDDO
