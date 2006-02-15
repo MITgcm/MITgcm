@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.14 2006/02/15 09:04:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.15 2006/02/15 22:26:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,6 +82,7 @@ CADJ STORE heff  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
+      IF ( .NOT. SEAICEuseFluxForm ) THEN
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
@@ -103,26 +104,36 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
      &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
      &         * _dxG(I,J,bi,bj))
      &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
-C--   Use flux form for MITgcm compliance, unfortunately changes results
-CML          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
-CML     &         -DELTT * QUART * (
-CML     &        + _dyG(I+1,J,bi,bj) *
-CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-CML     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
-CML     &        - _dyG(I,J,bi,bj) *
-CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
-CML     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
-CML     &        + _dxG(I  ,J+1,bi,bj) *
-CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-CML     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
-CML     &        - _dxG(I  ,J  ,bi,bj)*
-CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-CML     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
-CML     &        )*recip_rA(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+      ELSE
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+C--   Use flux form for MITgcm compliance, unfortunately changes results
+          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
+     &         -DELTT * QUART * (
+     &        + _dyG(I+1,J,bi,bj) *
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+     &        - _dyG(I,J,bi,bj) *
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+     &        + _dxG(I  ,J+1,bi,bj) *
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &        - _dxG(I  ,J  ,bi,bj)*
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &        )*recip_rA(I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      ENDIF
 
       _BARRIER
       CALL SEAICE_EXCH ( HEFF, myThid )
@@ -144,6 +155,7 @@ C NOW DO BACKWARD EULER CORRECTION
          ENDDO
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
+         IF ( .NOT. SEAICEuseFluxForm ) THEN
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO J=1,sNy
@@ -165,26 +177,36 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
      &            *(  VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
      &            * _dxG(I,J,bi,bj))
      &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
-C--   Use flux form for MITgcm compliance, unfortunately changes results
-CML             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
-CML     &            -DELTT * QUART * (
-CML     &           + _dyG(I+1,J  ,bi,bj) *
-CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-CML     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
-CML     &           - _dyG(I  ,J  ,bi,bj) *
-CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,  J,2,bi,bj))
-CML     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
-CML     &           + _dxG(I  ,J+1,bi,bj) *
-CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-CML     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
-CML     &           - _dxG(I  ,J  ,bi,bj) *
-CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-CML     &            *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
-CML     &            )*recip_rA(I,J,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
+         ELSE
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO J=1,sNy
+            DO I=1,sNx
+C--   Use flux form for MITgcm compliance, unfortunately changes results
+             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
+     &            -DELTT * QUART * (
+     &           + _dyG(I+1,J  ,bi,bj) *
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+     &           - _dyG(I  ,J  ,bi,bj) *
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,  J,2,bi,bj))
+     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+     &           + _dxG(I  ,J+1,bi,bj) *
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &           - _dxG(I  ,J  ,bi,bj) *
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &            *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &            )*recip_rA(I,J,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         ENDIF
 
          _BARRIER
          CALL SEAICE_EXCH( HEFF, myThid )

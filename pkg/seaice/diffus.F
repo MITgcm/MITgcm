@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.10 2006/02/15 09:04:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.11 2006/02/15 22:26:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -16,6 +16,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
+#include "SEAICE_PARAMS.h"
 CML#include "SEAICE_GRID.h"
  
 C     === Routine arguments ===
@@ -43,6 +44,7 @@ C     i,j,bi,bj - Loop counters
          ENDDO
         ENDDO
 
+        IF ( .NOT. SEAICEuseFluxForm ) THEN
 C NOW DO DIFFUSION WITH NUIT CONVERSION
         DO j=1,sNy
          DO i=1,sNx
@@ -61,33 +63,39 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
      &         * _dxG(I+1,J+1,bi,bj)*HEFFM(I,J+1,bi,bj)
      &        -(HEFF(I,J,  3,bi,bj)-HEFF(I,J-1,3,bi,bj))
      &         * _dxG(I+1,J,  bi,bj)*HEFFM(I,J-1,bi,bj))
-C--   Use flux form for MITgcm compliance, unfortunately changes results
-CML          HEFF1(I,J,bi,bj)= 
-CML     &         DELTT*DIFFA(I,J,bi,bj) * recip_rA(I,J,bi,bj) * (
-CMLC     x - compontent
-CML     &        + _dyG(I+1,J,bi,bj) * _recip_dxC(I+1,J,bi,bj)
-CML     &         * (HEFF(I+1,J,3,bi,bj)-HEFF(I,  J,3,bi,bj))
-CML     &         * cosFacU(J,bi,bj) * HEFFM(I+1,J,bi,bj)
-CML     &        - _dyG(I  ,J,bi,bj) * _recip_dxC(I  ,J,bi,bj)
-CML     &         * (HEFF(I,  J,3,bi,bj)-HEFF(I-1,J,3,bi,bj))
-CML     &         * cosFacU(J,bi,bj) * HEFFM(I-1,J,bi,bj)
-CMLC     y - compontent
-CML     &        + _dxG(I,J+1,bi,bj) * _recip_dyC(I,J+1,bi,bj)
-CML     &         * (HEFF(I,J+1,3,bi,bj)-HEFF(I,J,  3,bi,bj))
-CML#ifdef ISOTROPIC_COS_SCALING
-CML     &         * cosFacV(J+1,bi,bj)
-CML#endif 
-CML     &         * HEFFM(I,J+1,bi,bj)
-CML     &        - _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
-CML     &         * (HEFF(I,J,  3,bi,bj)-HEFF(I,J-1,3,bi,bj))
-CML#ifdef ISOTROPIC_COS_SCALING
-CML     &         * cosFacV(J,bi,bj)
-CML#endif 
-CML     &         * HEFFM(I,J-1,bi,bj)
-CMLC     apply mask for safety
-CML     &         ) * HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
+        ELSE
+        DO j=1,sNy
+         DO i=1,sNx
+C--   Use flux form for MITgcm compliance, unfortunately changes results
+          HEFF1(I,J,bi,bj)= 
+     &         DELTT*DIFFA(I,J,bi,bj) * recip_rA(I,J,bi,bj) * (
+C     x - compontent
+     &        + _dyG(I+1,J,bi,bj) * _recip_dxC(I+1,J,bi,bj)
+     &         * (HEFF(I+1,J,3,bi,bj)-HEFF(I,  J,3,bi,bj))
+     &         * cosFacU(J,bi,bj) * HEFFM(I+1,J,bi,bj)
+     &        - _dyG(I  ,J,bi,bj) * _recip_dxC(I  ,J,bi,bj)
+     &         * (HEFF(I,  J,3,bi,bj)-HEFF(I-1,J,3,bi,bj))
+     &         * cosFacU(J,bi,bj) * HEFFM(I-1,J,bi,bj)
+C     y - compontent
+     &        + _dxG(I,J+1,bi,bj) * _recip_dyC(I,J+1,bi,bj)
+     &         * (HEFF(I,J+1,3,bi,bj)-HEFF(I,J,  3,bi,bj))
+#ifdef ISOTROPIC_COS_SCALING
+     &         * cosFacV(J+1,bi,bj)
+#endif 
+     &         * HEFFM(I,J+1,bi,bj)
+     &        - _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
+     &         * (HEFF(I,J,  3,bi,bj)-HEFF(I,J-1,3,bi,bj))
+#ifdef ISOTROPIC_COS_SCALING
+     &         * cosFacV(J,bi,bj)
+#endif 
+     &         * HEFFM(I,J-1,bi,bj)
+C     apply mask for safety
+     &         ) * HEFFM(I,J,bi,bj)
+         ENDDO
+        ENDDO
+        ENDIF
 
        ENDDO
       ENDDO

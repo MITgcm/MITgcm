@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.20 2006/02/15 11:01:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.21 2006/02/15 22:26:11 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -12,6 +12,8 @@ C     SEAICEwriteState  - If true, write sea ice state to file;
 C                         default is false.
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
+C     SEAICEuseFluxForm :: use flux form for advection and diffusion
+C                          of seaice
 C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
 C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
 C     SEAICE_mon_stdio  :: write monitor to std-outp
@@ -19,11 +21,11 @@ C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL 
-     &     SEAICEwriteState, SEAICEuseDYNAMICS,
+     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
-     &     SEAICEwriteState, SEAICEuseDYNAMICS,
+     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
