@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.25 2006/01/27 20:18:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.26 2006/02/15 09:23:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -192,6 +192,8 @@ C NOW CALCULATE CORRECTED GROWTH
           GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J,bi,bj)
           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
           IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
+C     not enough heat to melt all snow:
+C     use up all heat flux FICE
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
 C SNOW CONVERTED INTO WATER AND THEN INTO ICE
 C The factor 0.920 is used to convert m of sea-ice to m of freshwater
@@ -199,7 +201,10 @@ C The factor 0.920 is used to convert m of sea-ice to m of freshwater
      &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            FICE(I,J,bi,bj)=ZERO
           ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
+C     enought heat to melt snow completely:
+C     compute remaining heat flux that will melt ice
            FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/SEAICE_deltaTtherm
+C     convert all snow to melt water (fresh water flux)
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &               -HSNOW(I,J,bi,bj)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            HSNOW(I,J,bi,bj)=0.0
