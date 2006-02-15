@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.16 2006/02/15 09:04:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.17 2006/02/15 20:44:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,7 +44,6 @@ C     i,j,bi,bj - Loop counters
       INTEGER ICOUNT1, ICOUNT2, SOLV_MAX_ITERS, SOLV_NCHECK
       INTEGER phexit
 
-      _RL  RADIUS, RADIUS2
       _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL  AA1, AA2, AA3, AA4, AA5, AA6, S1, S2, S1A, S2A
 
@@ -64,11 +63,6 @@ C     i,j,bi,bj - Loop counters
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL ETAMEAN  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL ZETAMEAN (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CML      _RL DELXY    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CML      _RL DELXR    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CML      _RL DELYR    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CML      _RL DELX2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-CML      _RL DELY2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -78,10 +72,6 @@ CML      _RL DELY2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL uDiffY   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C SET SOME VALUES
-CML      RADIUS=rSphere
-      RADIUS=6370. _d 3
-CML      RADIUS2=recip_rSphere*recip_rSphere
-      RADIUS2=ONE/(RADIUS*RADIUS)
       WFAU1=0.95 _d 0
       WFAV1=0.95 _d 0
       WFAU2=ZERO
@@ -120,11 +110,6 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
      &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*VICE(I,J,2,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)*UVM(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)*UVM(I,J,bi,bj)
-CML          DELX2(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DXUICE(I,J,bi,bj))
-CML          DELY2(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
-CML          DELXY(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
-CML          DELXR(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*RADIUS)
-CML          DELYR(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*RADIUS)
           etaPlusZeta(I,J,bi,bj) = ETA(I,J,bi,bj)+ZETA(I,J,bi,bj)
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA(I,J,bi,bj)
          ENDDO
@@ -156,8 +141,8 @@ CML          DELYR(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*RADIUS)
           AA3=  0.5 _d 0 *(ETA(I-1,J  ,bi,bj)+ETA(I,J  ,bi,bj))
           AA4=  0.5 _d 0 *(ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
           AA5= -(AA3-AA4) * _tanPhiAtV(I,J,bi,bj) 
-     &         * _recip_dyU(I,J,bi,bj)/RADIUS
-          AA6=TWO*ETAMEAN(I,J,bi,bj) *RADIUS2
+     &         * _recip_dyU(I,J,bi,bj)*recip_rSphere
+          AA6=TWO*ETAMEAN(I,J,bi,bj) *recip_rSphere*recip_rSphere
      &          * _tanPhiAtV(I,J,bi,bj)  * _tanPhiAtV(I,J,bi,bj)
           AU(I,J,bi,bj)=-AA2
           CU(I,J,bi,bj)=-AA1
@@ -213,34 +198,34 @@ C     now set up right-hand side
      &         -etaPlusZeta(I-1,J-1,bi,bj)-etaPlusZeta(I-1,J  ,bi,bj))
      &         * VICEC(I,J,bi,bj)
      &            * _tanPhiAtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &
      &         -(ETAMEAN(I,J,bi,bj)+ZETAMEAN(I,J,bi,bj))
      &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
      &            * _tanPhiAtV(I,J,bi,bj)
      &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
-     &         /RADIUS
+     &         *recip_rSphere
      &
      &         -ETAMEAN(I,J,bi,bj)
      &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
      &            *TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
-     &         /RADIUS
+     &         *recip_rSphere
 
           UVRT1(I,J,bi,bj)=
      &         0.5 _d 0 * (ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
      &         * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &         -     ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J-1,bi,bj)
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         + TWO*ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
           UVRT2(I,J,bi,bj)=
      &         0.5 _d 0 * (ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj))
      &         * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &         +     ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J+1,bi,bj)
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         - TWO*ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
          END DO
         END DO
 
@@ -377,26 +362,26 @@ C NOW FOR VICE
           AA5=(zetaMinusEta(I-1,J  ,bi,bj) + zetaMinusEta(I,J  ,bi,bj)
      &        -zetaMinusEta(I-1,J-1,bi,bj) - zetaMinusEta(I,J-1,bi,bj)
      &          )* _tanPhiAtV(I,J,bi,bj) 
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
 
-          AA6=TWO*ETAMEAN(I,J,bi,bj) * RADIUS2
+          AA6=TWO*ETAMEAN(I,J,bi,bj) * recip_rSphere*recip_rSphere
      &         * _tanPhiAtV(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
 
          AV(I,J,bi,bj)=(
      &         - AA2
      &         - (ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
      &          * _tanPhiAtV(I,J-1,bi,bj) 
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         -ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
-     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         )*UVM(I,J,bi,bj)
          CV(I,J,bi,bj)=(
      &         -AA1 
      &        +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
      &         * _tanPhiAtV(I,J+1,bi,bj) 
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &        +ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &        )*UVM(I,J,bi,bj)
           BV(I,J,bi,bj)= (ONE-UVM(I,J,bi,bj))
      &        +( (AA1+AA2) + (AA3+AA4)  + AA5 + AA6
@@ -447,15 +432,15 @@ C     now set up right-hand-side
      &         -ETA(I-1,J-1,bi,bj) - ETA(I-1,J  ,bi,bj))
      &         * UICEC(I,J,bi,bj)
      &         * _tanPhiAtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &        +ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
      &         *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &
      &        +ETAMEAN(I,J,bi,bj)*TWO  * _tanPhiAtV(I,J,bi,bj)
      &        *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
      &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
-     &         /RADIUS
+     &         *recip_rSphere
           UVRT1(I,J,bi,bj)= 0.5 _d 0 * (
      &           ETA(I-1,J-1,bi,bj) * _recip_dxV(I,J,bi,bj)
      &          +ETA(I-1,J  ,bi,bj) * _recip_dxV(I,J,bi,bj)
@@ -507,9 +492,9 @@ C NOW SET U(3)=U(1)
               AA3=( AA2
      &         +( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj) )
      &         * _tanPhiAtV(I,J-1,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere 
      &         + ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS )
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
      &         *VICE(I,J-1,1,bi,bj)*UVM(I,J,bi,bj)
            ELSE IF(J.EQ.sNy) THEN
             AA1= _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
@@ -519,9 +504,9 @@ C NOW SET U(3)=U(1)
             AA3=( AA1
      &         -( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
      &         * _tanPhiAtV(I,J+1,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere 
      &         - ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS )
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
      &         *VICE(I,J+1,1,bi,bj)*UVM(I,J,bi,bj)
            ELSE
             AA3=ZERO

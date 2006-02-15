@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.16 2006/02/15 09:04:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.17 2006/02/15 20:44:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj, kii
       _RL RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
-      _RL ECCEN, ECM2, RADIUS, DELT1, DELT2, PSTAR, AAA
+      _RL ECCEN, ECM2, DELT1, DELT2, PSTAR, AAA
       _RL TEMPVAR, U1, V1
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -63,8 +63,6 @@ C--   FIRST SET UP BASIC CONSTANTS
       RHOAIR=1.3 _d 0
       ECCEN=TWO
       ECM2=ONE/(ECCEN**2)
-      RADIUS=rSphere
-      RADIUS=6370. _d 3
       PSTAR=SEAICE_strength
 
 C--   25 DEG GIVES SIN EQUAL TO 0.4226
@@ -191,8 +189,7 @@ C NOW EVALUATE STRAIN RATES
      &                -QUART*
      &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
      &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J, 1,bi,bj))
-CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS
+     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
           E22(I,J,bi,bj)=HALF* _recip_dyF(I,J,bi,bj) *
      &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
      &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
@@ -205,8 +202,7 @@ CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
      &                +QUART*
      &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
      &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
-CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
-     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS)
+     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4.0 _d 0*ECM2*E12(I,J,bi,bj)**2
@@ -303,8 +299,7 @@ C NOW EVALUATE STRAIN RATES
      &                -QUART*
      &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
      &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J,  1,bi,bj))
-CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS
+     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
           E22(I,J,bi,bj)=HALF * _recip_dyF(I,J,bi,bj) *
      &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
      &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
@@ -317,8 +312,7 @@ CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
      &                +QUART*
      &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
      &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
-CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
-     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS)
+     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4. _d 0*ECM2*E12(I,J,bi,bj)**2
