@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.30 2005/09/15 15:03:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.31 2006/02/15 11:03:05 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,6 +43,7 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
      & LAD, IMAX_TICE,
+     & SEAICEadvScheme,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -97,6 +98,7 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
+      SEAICEadvScheme    = 2
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_dumpFreq    = dumpFreq
