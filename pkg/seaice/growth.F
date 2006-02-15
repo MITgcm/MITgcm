@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.26 2006/02/15 09:23:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.27 2006/02/15 09:26:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,9 +120,10 @@ C     Negative YNEG leads to ice growth.
 C     Positive YNEG leads to ice melting.
           if ( .NOT. inAdMode ) then
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
-          TBC = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0
+          TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
-          YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
+          YNEG(I,J,bi,bj)=(theta(I,J,kSurface,bi,bj)-TBC)
+     &         *dRf(1)/72.0764 _d 0
           else
           YNEG(I,J,bi,bj)= 0.
           endif
@@ -267,7 +268,8 @@ c         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
 c #endif
 C Add YNEG contribution to QNET
           QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
-     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
+     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
+     &         *maskC(I,J,kSurface,bi,bj)
      &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
@@ -291,7 +293,7 @@ c Now add in precip over open water directly into ocean as negative salt
      &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
      &         *SEAICE_deltaTtherm/0.920 _d 0
 C NOW GET FRESH WATER FLUX
-          EmPmR(I,J,bi,bj)= maskC(I,J,1,bi,bj)*(
+          EmPmR(I,J,bi,bj)= maskC(I,J,kSurface,bi,bj)*(
      &         EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
      &         +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/SEAICE_deltaTtherm
      &         )
