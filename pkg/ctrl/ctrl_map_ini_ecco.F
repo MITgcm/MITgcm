@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.3 2005/04/07 23:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.4 2006/02/15 03:52:54 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -66,7 +66,8 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*( 80)   fnamegeneric
+      character*( 80) fnamegeneric
+      character*(MAX_LEN_FNAM) suff
 
 c     == external ==
 
@@ -233,13 +234,17 @@ c-- zonal eddy stress : edtaux
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                Eddytaux(i,j,k,bi,bj) = Eddytaux(i,j,k,bi,bj) +
-     &                                tmpfld3d(i,j,k,bi,bj)
+                eddyTauX(i,j,k,bi,bj) = eddyTauX(i,j,k,bi,bj) +
+     &            fCori(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
+cph(
+      WRITE(suff,'(I10.10)') 0
+      CALL WRITE_FLD_XYZ_RS('GM_edTauX_pXX.',suff,eddyTauX,0,myThid)
+cph)
 #endif
 
 #ifdef ALLOW_EDTAUY_CONTROL
@@ -255,13 +260,17 @@ c-- meridional eddy stress : edtauy
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                Eddytauy(i,j,k,bi,bj) = Eddytauy(i,j,k,bi,bj) +
-     &                                tmpfld3d(i,j,k,bi,bj)
+                eddyTauY(i,j,k,bi,bj) = eddyTauY(i,j,k,bi,bj) +
+     &            fCoriG(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
+cph(
+      WRITE(suff,'(I10.10)') 0
+      CALL WRITE_FLD_XYZ_RS('GM_edTauY_pXX.',suff,eddyTauY,0,myThid)
+cph)
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL
@@ -378,7 +387,7 @@ c--   Update the tile edges.
       _EXCH_XYZ_R8(  salt, mythid )
 #endif
 #if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
-       CALL EXCH_UV_XYZ_RS(Eddytaux,Eddytauy,.TRUE.,myThid)
+       CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
 #elif (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
        STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
 #endif

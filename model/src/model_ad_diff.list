@@ -74,6 +74,8 @@ pressure_for_eos.f
 quasihydrostaticterms.f
 solve_for_pressure.f
 state_summary.f	
+taueddy_external_forcing.f
+taueddy_init_varia.f
 timestep.f	
 the_correction_step.f
 the_main_loop.f	

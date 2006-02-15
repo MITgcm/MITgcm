@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.2 2005/12/08 03:29:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.3 2006/02/15 03:52:54 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -133,6 +133,22 @@ c     IF ( useDiagnotics ) THEN
         WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+#ifdef ALLOW_TAU_EDDY
+        diagName  = 'GMEdTauX'
+        diagTitle = 'eddy-induced stress X-comp. estimated from Kwx'
+        diagUnits = 'N/m^2           '
+        WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GMEdTauY'
+        diagTitle = 'eddy-induced stress Y-comp. estimated from Kwy'
+        diagUnits = 'N/m^2           '
+        WRITE(diagCode,'(A,I3.3,A)') 'VM   ',diagNum+2,'LR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif
 
 c     ENDIF
 
