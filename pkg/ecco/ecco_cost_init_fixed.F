@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.3 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.4 2006/02/15 20:01:51 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -88,6 +88,9 @@ c--     ... T/P data.
 c--     ... ERS data.
         call cal_FullDate( ersstartdate1,   ersstartdate2,
      &                     ersstartdate,    mythid )
+c--     ... GFO data.
+        call cal_FullDate( gfostartdate1,   gfostartdate2,
+     &                     gfostartdate,    mythid )
 c--     ... SCAT data.
         call cal_FullDate( scatstartdate1,  scatstartdate2,
      &                     scatxstartdate,  mythid )

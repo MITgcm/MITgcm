@@ -18,6 +18,7 @@ cost_hyd.f
 cost_mean_heatflux.f            
 cost_mean_saltflux.f            
 cost_readers.f                  
+cost_readgfo.f
 cost_readscatxfields.f          
 cost_readscatyfields.f          
 cost_readtopex.f                

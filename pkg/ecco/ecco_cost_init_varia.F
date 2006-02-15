@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.2 2005/12/22 22:46:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.3 2006/02/15 20:01:51 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -211,6 +211,14 @@ c
                   ersmask(i,j,bi,bj) = 1. _d 0
                endif
                ersobs(i,j,bi,bj)     = 0. _d 0
+#endif
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+                  gfomask(i,j,bi,bj) = 0. _d 0
+               else
+                  gfomask(i,j,bi,bj) = 1. _d 0
+               endif
+               gfoobs(i,j,bi,bj)     = 0. _d 0
 #endif
 #ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
                if (_hFacC(i,j,k,bi,bj) .eq. 0.) then

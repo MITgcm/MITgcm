@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.6 2005/05/27 22:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.7 2006/02/15 20:01:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -67,12 +67,14 @@ c     == local variables ==
 
       _RL offset
       _RL erscost
+      _RL gfocost
       _RL tpcost
       _RL costmean
       _RL offset_sum
       _RL psmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL wwwtp  ( 1-olx:snx+olx, 1-oly:sny+oly           )
       _RL wwwers ( 1-olx:snx+olx, 1-oly:sny+oly           )
+      _RL wwwgfo ( 1-olx:snx+olx, 1-oly:sny+oly           )
       _RL junk
 
       character*(80) fname
@@ -101,6 +103,7 @@ c--   Initialise local variables.
         do i = imin, imax
           wwwtp(i,j)  = 0. _d 0
           wwwers(i,j) = 0. _d 0
+          wwwgfo(i,j) = 0. _d 0
         enddo
       enddo
 
@@ -143,7 +146,7 @@ c--     Compute the mean over all psbar records.
             do j = jmin,jmax
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
-     &                psbar(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)/
+     &                psbar(i,j,bi,bj)/
      &                float(ndaysrec)
               enddo
             enddo
@@ -157,7 +160,7 @@ c--   tiles of this instance.
       offset     = 0. _d 0
       offset_sum = 0. _d 0
 
-c--   Sum over this thread's tiles.
+c--   Sum over this thread tiles.
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = 1,sny
@@ -216,6 +219,7 @@ c--   Anomalies.
 c--   ==========
 
       erscost    = 0. _d 0
+      gfocost    = 0. _d 0
       tpcost     = 0. _d 0
 
 c--   Loop over records for the second time.
@@ -226,16 +230,21 @@ c--   Loop over records for the second time.
      &                       xx_psbar_mean_dummy )
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        call cost_ReadTopex( irec, mythid )
+        call cost_readtopex( irec, mythid )
 #endif
 
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        call cost_ReadERS( irec, mythid )
+        call cost_readers( irec, mythid )
+#endif
+
+#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
+        call cost_readgfo( irec, mythid )
 #endif
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
+            gfocost    = 0. _d 0
             erscost    = 0. _d 0
             tpcost     = 0. _d 0
 
@@ -246,7 +255,7 @@ c--             The array psobs contains SSH anomalies.
                 wwwtp(i,j) = wtp(i,j,bi,bj) *cosphi(i,j,bi,bj)
                 junk       = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         tpobs(i,j,bi,bj))
-     &                         *tpmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &                       *tpmask(i,j,bi,bj)
                 tpcost   = tpcost + junk*junk*wwwtp(i,j)
                 if ( wwwtp(i,j)*junk .ne. 0. )
      &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
@@ -261,41 +270,30 @@ c--             The array ersobs contains SSH anomalies.
                 wwwers(i,j) = wers(i,j,bi,bj)*cosphi(i,j,bi,bj)
                 junk        = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         ersobs(i,j,bi,bj))
-     &                         *ersmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &                        *ersmask(i,j,bi,bj)
                 erscost   = erscost + junk*junk*wwwers(i,j)
                 if ( wwwers(i,j)*junk .ne. 0. )
      &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
               enddo
-
             enddo
 #endif
 
-            objf_h(bi,bj) = objf_h(bi,bj) + tpcost + erscost
-
-#ifdef ECCO_VERBOSE
-            write(msgbuf,'(a)') ' '
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3)')
-     &        ' COST_SSH: irec,bi,bj            =  ',irec,bi,bj
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,d22.15)')
-     &        ' COST_SSH: cost function (TOPEX) = ',tpcost
-            call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,d22.15)')
-     &        ' COST_SSH: cost function (ERS)   = ',erscost
-            call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a,d22.15)')
-     &        ' COST_SSH: cost function (Total) = ',objf_h(bi,bj)
-            call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a)') ' '
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+            do j = jmin,jmax
+              do i = imin,imax
+c--             The array gfoobs contains SSH anomalies.
+                wwwgfo(i,j) = wgfo(i,j,bi,bj)*cosphi(i,j,bi,bj)
+                junk        = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
+     &                         gfoobs(i,j,bi,bj))
+     &                        *gfomask(i,j,bi,bj)
+                gfocost   = gfocost + junk*junk*wwwgfo(i,j)
+                if ( wwwgfo(i,j)*junk .ne. 0. )
+     &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
+              enddo
+            enddo
 #endif
+
+            objf_h(bi,bj) = objf_h(bi,bj) + tpcost + erscost + gfocost 
 
           enddo
         enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.2 2006/02/15 20:01:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -262,6 +262,27 @@ c     == end of interface ==
      &                      SQUEEZE_RIGHT , mythid)
       endif
 #endif /* ALLOW_SSH_ERSANOM_COST_CONTRIBUTION */
+
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+      if (using_gfo) then
+        il = ilnblnk(gfofile)
+        write(msgbuf,'(a,a)')
+     &  '  GFO data are read from:         ',gfofile(1:il)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i10,i8)')
+     &  '  GFO start date is:              ',
+     &                        gfostartdate(1),
+     &                        gfostartdate(2)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,e18.11)')
+     &  '  GFO sampling period is:         ',
+     &                        gfoperiod
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+      endif
+#endif /* ALLOW_SSH_GFOANOM_COST_CONTRIBUTION */
 
       return
       end

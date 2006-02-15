@@ -789,7 +789,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wtheta,wtheta2,wthetaLev,
      &                      wsalt,wsalt2,wsaltLev,
      &                      wsst,wsss,
-     &                      wtp,wers,
+     &                      wtp,wers,wgfo,
      &                      wp,
      &                      wctdt,wctds,
      &                      wudrift,wvdrift,
@@ -828,6 +828,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wers    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wgfo    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wp      (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wctdt   (                            nr,nsx,nsy)
       _RL wctds   (                            nr,nsx,nsy)
@@ -956,6 +957,8 @@ c     vdriftdat  - drifters meridional velocities
      &                     tpmask,
      &                     ersobs,
      &                     ersmask,
+     &                     gfoobs,
+     &                     gfomask,
      &                     ctdtobs,
      &                     ctdsobs,
      &                     xbtobs,
@@ -986,6 +989,8 @@ c     vdriftdat  - drifters meridional velocities
       _RL tpmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL ersobs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL ersmask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL gfoobs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL gfomask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL ctdtobs   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL ctdsobs   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xbtobs    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -1031,6 +1036,7 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     topexmeanfile,
      &                     topexfile,
      &                     ersfile,
+     &                     gfofile,
      &                     ctdtfile,
      &                     ctdsfile,
      &                     ctdtclimfile,
@@ -1053,6 +1059,7 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) topexmeanfile
       character*(MAX_LEN_FNAM) topexfile
       character*(MAX_LEN_FNAM) ersfile
+      character*(MAX_LEN_FNAM) gfofile
       character*(MAX_LEN_FNAM) ctdtfile
       character*(MAX_LEN_FNAM) ctdsfile
       character*(MAX_LEN_FNAM) ctdtclimfile
@@ -1074,9 +1081,11 @@ c     using_ers - flag that indicates the use of ERS data
 
       common /ecco_cost_data_flags/
      &                         using_topex,
-     &                         using_ers
+     &                         using_ers,
+     &                         using_gfo
       logical using_topex
       logical using_ers
+      logical using_gfo
 
 c     Calendar information for the observations:
 c     ==========================================
@@ -1096,7 +1105,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           tmistartdate,
      &                           sssstartdate,
      &                           topexstartdate,
-     &                           ersstartdate
+     &                           ersstartdate,
+     &                           gfostartdate
       integer scatxstartdate(4)
       integer scatystartdate(4)
       integer sststartdate(4)
@@ -1106,6 +1116,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer sssstartdate(4)
       integer topexstartdate(4)
       integer ersstartdate(4)
+      integer gfostartdate(4)
 
       common /ecco_cost_data_aux_i/
      &                           tmistartdate1,
@@ -1122,6 +1133,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           topexstartdate2,
      &                           ersstartdate1,
      &                           ersstartdate2,
+     &                           gfostartdate1,
+     &                           gfostartdate2,
      &                           scatstartdate1,
      &                           scatstartdate2
 
@@ -1139,15 +1152,19 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer topexstartdate2
       integer ersstartdate1
       integer ersstartdate2
+      integer gfostartdate1
+      integer gfostartdate2
       integer scatstartdate1
       integer scatstartdate2
 
       common /ecco_cost_data_times_r/
      &                           topexperiod,
      &                           ersperiod,
+     &                           gfoperiod,
      &                           scatperiod
       _RL topexperiod
       _RL ersperiod
+      _RL gfoperiod
       _RL scatperiod
 
 c     ==================================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.18 2005/12/22 21:13:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.19 2006/02/15 20:01:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -51,6 +51,9 @@ c--   Read the namelist input.
      &                   using_ers,
      &                   ersstartdate1, ersstartdate2,
      &                   ersperiod, ersfile,
+     &                   using_gfo,
+     &                   gfostartdate1, gfostartdate2,
+     &                   gfoperiod, gfofile,
      &                   scatstartdate1, scatstartdate2, 
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
@@ -126,6 +129,11 @@ c--     Set default values.
         ersstartdate2         =      0
         ersperiod             =      0. _d 0
         ersfile               =    ' '
+        using_gfo             = .false.
+        gfostartdate1         =      0
+        gfostartdate2         =      0
+        gfoperiod             =      0. _d 0
+        gfofile               =    ' '
         scatstartdate1        =      0
         scatstartdate2        =      0
         scatperiod            =      0. _d 0
@@ -279,6 +287,9 @@ c--     ... T/P data.
 c--     ... ERS data.
         call cal_FullDate( ersstartdate1,   ersstartdate2,
      &                     ersstartdate,    mythid )
+c--     ... GFO data.
+        call cal_FullDate( gfostartdate1,   gfostartdate2,
+     &                     gfostartdate,    mythid )
 c--     ... SCAT data.
         call cal_FullDate( scatstartdate1,   scatstartdate2,
      &                     scatxstartdate,    mythid )

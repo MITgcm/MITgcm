@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.4 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgfo.F,v 1.1 2006/02/15 20:01:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_readtopex( irec, mythid )
+      subroutine cost_readgfo( irec, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_readtopex
+c     SUBROUTINE cost_readgfo
 c     ==================================================================
 c
-c     o Read a given record of the TOPEX SSH data.
+c     o Read a given record of the GFO SSH data.
 c
 c     started: Christian Eckert eckert@mit.edu 25-May-1999
 c
@@ -19,7 +19,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_readtopex
+c     SUBROUTINE cost_readgfo
 c     ==================================================================
 
       implicit none
@@ -39,7 +39,7 @@ c     == routine arguments ==
       integer irec
       integer mythid
 
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
 c     == local variables ==
 
       integer bi,bj
@@ -91,7 +91,7 @@ cnew(
       dayiter = hoursperday*(irec-1)
       call cal_getdate( dayiter, daytime, daydate, mythid )
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-      ymod = topexstartdate(1)/10000
+      ymod = gfostartdate(1)/10000
 
       if ( ymod .EQ. yday ) then
          middate(1) = modelstartdate(1)
@@ -104,21 +104,23 @@ cnew(
 
       call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
-      sshrec = int(diffsecs/topexperiod) + 1
+      sshrec = int(diffsecs/gfoperiod) + 1
 
-      il=ilnblnk(topexfile)
+      il=ilnblnk(gfofile)
       write(fnametmp(1:80),'(2a,i4)')
-     &     topexfile(1:il), '_', yday
+     &     gfofile(1:il), '_', yday
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') topexfile(1:il)
+         write(fnametmp(1:80),'(a)') gfofile(1:il)
          sshrec = irec
       endif
  
 cnew)
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tpobs, 
+
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, gfoobs, 
      &                   sshrec, mythid )
+
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -126,15 +128,15 @@ cnew)
           do j = jmin,jmax
             do i = imin,imax
               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                tpmask(i,j,bi,bj) = 0. _d 0
+                 gfomask(i,j,bi,bj) = 0. _d 0
               else
-                tpmask(i,j,bi,bj) = 1. _d 0
+                 gfomask(i,j,bi,bj) = 1. _d 0
               endif
-              if (tpobs(i,j,bi,bj) .le. spval) then
-                tpmask(i,j,bi,bj) = 0. _d 0
+              if (gfoobs(i,j,bi,bj) .le. spval) then
+                gfomask(i,j,bi,bj) = 0. _d 0
               endif
-              if (abs(tpobs(i,j,bi,bj)) .lt. 1.d-8 ) then
-                 tpmask(i,j,bi,bj) = 0. _d 0
+              if (abs(gfoobs(i,j,bi,bj)) .lt. 1.d-8 ) then
+                 gfomask(i,j,bi,bj) = 0. _d 0
               endif
 
 cph(
@@ -146,19 +148,19 @@ cph               if ( rC(K) .GT. -1000. ) then
 cph)
 c             set tpmask=0 in areas shallower than 1000m 
               if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
-                tpmask(i,j,bi,bj) = 0. _d 0
+                gfomask(i,j,bi,bj) = 0. _d 0
               endif
 
-              tpmask(i,j,bi,bj) = tpmask(i,j,bi,bj)*frame(i,j)
-              tpobs(i,j,bi,bj)  = tpobs(i,j,bi,bj)*
-     &                            tpmask(i,j,bi,bj)*
-     &                            factor
+              gfomask(i,j,bi,bj) = gfomask(i,j,bi,bj)*frame(i,j)
+              gfoobs(i,j,bi,bj)  = gfoobs(i,j,bi,bj)*
+     *                             gfomask(i,j,bi,bj)*
+     &                             factor
             enddo
           enddo
         enddo
       enddo
 
-#endif /* ALLOW_SSH_TPANOM_COST_CONTRIBUTION */
+#endif
 
       return
       end

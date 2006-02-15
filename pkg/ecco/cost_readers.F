@@ -1,15 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.3 2005/03/28 19:40:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.4 2006/02/15 20:01:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_ReadERS(
-     I                         irec,
-     I                         mythid
-     &                       )
+      subroutine cost_readers( irec, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_ReadERS
+c     SUBROUTINE cost_readers
 c     ==================================================================
 c
 c     o Read a given record of the ERS SSH data.
@@ -22,7 +19,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_ReadERS
+c     SUBROUTINE cost_readers
 c     ==================================================================
 
       implicit none
@@ -52,14 +49,12 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer sshrec
-      integer nobs
       integer difftime(4)
       integer middate(4)
       integer noffset
       _RL diffsecs
       _RL spval
       _RL factor
-      _RL vartile
 
 cnew(
       integer  il
@@ -127,8 +122,6 @@ cnew)
      &                   sshrec, mythid )
 
 
-      nobs = 0
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
           k = 1
@@ -162,31 +155,10 @@ c             set tpmask=0 in areas shallower than 1000m
               ersobs(i,j,bi,bj)  = ersobs(i,j,bi,bj)*
      *                             ersmask(i,j,bi,bj)*
      &                             factor
-              nobs = nobs + int(ersmask(i,j,bi,bj))
             enddo
           enddo
         enddo
       enddo
-
-c--   Calculate the field variance for present subdomain.
-c--   one could of course do a global sum here.
-      vartile = 0. _d 0
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              vartile = vartile + ersobs(i,j,bi,bj)*
-     &                            ersobs(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
-
-      if (nobs .gt. 0) then
-        vartile = vartile/float(nobs)
-      else
-        vartile = spval
-      endif
 
 #endif
 
