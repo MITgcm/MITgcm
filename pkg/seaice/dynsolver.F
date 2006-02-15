@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.15 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.16 2006/02/15 09:04:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,9 +17,10 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
-#include "SEAICE_GRID.h"
+CML#include "SEAICE_GRID.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_FFIELDS.h"
 
@@ -62,6 +63,7 @@ C--   FIRST SET UP BASIC CONSTANTS
       RHOAIR=1.3 _d 0
       ECCEN=TWO
       ECM2=ONE/(ECCEN**2)
+      RADIUS=rSphere
       RADIUS=6370. _d 3
       PSTAR=SEAICE_strength
 
@@ -82,12 +84,10 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          AMASS(I,J,bi,bj)=RHOICE*QUART*(HEFF(i,j,1,bi,bj)
-     &           +HEFF(i-1,j,1,bi,bj)
-     &           +HEFF(i,j-1,1,bi,bj)
-     &           +HEFF(i-1,j-1,1,bi,bj))
-          COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj)
-     &         *TWO*OMEGA*SINEICE(I,J,bi,bj)
+          AMASS(I,J,bi,bj)=RHOICE*QUART*(
+     &          HEFF(i,j  ,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj)
+     &         +HEFF(i,j-1,1,bi,bj) + HEFF(i-1,j-1,1,bi,bj) )
+          COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj) * _fCoriG(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -185,24 +185,28 @@ C NOW DO PREDICTOR TIME STEP
         DO j=1,sNy
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                *(UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
-     &                -UICE(I,J+1,1,bi,bj)-UICE(I,J,1,bi,bj))
-     &                -QUART*(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
-     &                +VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
-     &                *TNGTICE(I,J,bi,bj)/RADIUS
-          E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
-     &                *(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
-     &                -VICE(I+1,J,1,bi,bj)-VICE(I,J,1,bi,bj))
-          E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
-     &                *(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
-     &                -UICE(I+1,J,1,bi,bj)-UICE(I,J,1,bi,bj))
-     &                +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                *(VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
-     &                -VICE(I,J+1,1,bi,bj)-VICE(I,J,1,bi,bj))
-     &                +QUART*(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
-     &                +UICE(I,J,1,bi,bj)+UICE(I+1,J,1,bi,bj))
-     &                *TNGTICE(I,J,bi,bj)/RADIUS)
+          E11(I,J,bi,bj)=HALF* _recip_dxF(I,J,bi,bj) *
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
+     &                -UICE(I,  J+1,1,bi,bj)-UICE(I,  J,1,bi,bj))
+     &                -QUART*
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
+     &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J, 1,bi,bj))
+CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
+     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS
+          E22(I,J,bi,bj)=HALF* _recip_dyF(I,J,bi,bj) *
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
+          E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                -UICE(I+1,J,  1,bi,bj)-UICE(I,J,  1,bi,bj))
+     &                +HALF * _recip_dxF(I,J,bi,bj) *
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
+     &                -VICE(I,  J+1,1,bi,bj)-VICE(I,  J,1,bi,bj))
+     &                +QUART*
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
+     &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
+CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
+     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4.0 _d 0*ECM2*E12(I,J,bi,bj)**2
@@ -255,12 +259,13 @@ C NOW ADD IN CURRENT FORCE
      &                     +COSWAT*GWATY(I,J,bi,bj))
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &          -(QUART/(DXUICE(I,J,bi,bj)*CSUICE(I,J,bi,bj)))
-     &          *(PRESS(I,J,bi,bj)+PRESS(I,J-1,bi,bj)
-     &          -PRESS(I-1,J,bi,bj)-PRESS(I-1,J-1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)-QUART/DYUICE(I,J,bi,bj)
-     &          *(PRESS(I,J,bi,bj)+PRESS(I-1,J,bi,bj)
-     &          -PRESS(I,J-1,bi,bj)-PRESS(I-1,J-1,bi,bj))
+     &          -QUART * _recip_dxV(I,J,bi,bj)
+     &          *(PRESS(I,  J,bi,bj) + PRESS(I,  J-1,bi,bj)
+     &          - PRESS(I-1,J,bi,bj) - PRESS(I-1,J-1,bi,bj))
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) 
+     &         -QUART * _recip_dyU(I,J,bi,bj)
+     &          *(PRESS(I,J,  bi,bj) + PRESS(I-1,J,  bi,bj)
+     &          - PRESS(I,J-1,bi,bj) - PRESS(I-1,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -292,24 +297,28 @@ C NOW DO MODIFIED EULER STEP
         DO j=1,sNy
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                *(UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
-     &                -UICE(I,J+1,1,bi,bj)-UICE(I,J,1,bi,bj))
-     &                -QUART*(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
-     &                +VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
-     &                *TNGTICE(I,J,bi,bj)/RADIUS
-          E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
-     &                *(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
-     &                -VICE(I+1,J,1,bi,bj)-VICE(I,J,1,bi,bj))
-          E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
-     &                *(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
-     &                -UICE(I+1,J,1,bi,bj)-UICE(I,J,1,bi,bj))
-     &                +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                *(VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
-     &                -VICE(I,J+1,1,bi,bj)-VICE(I,J,1,bi,bj))
-     &                +QUART*(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
-     &                +UICE(I,J,1,bi,bj)+UICE(I+1,J,1,bi,bj))
-     &                *TNGTICE(I,J,bi,bj)/RADIUS)
+          E11(I,J,bi,bj)=HALF * _recip_dxF(I,J,bi,bj) *
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
+     &                -UICE(I,  J+1,1,bi,bj)-UICE(I,  J,1,bi,bj))
+     &                -QUART*
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
+     &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J,  1,bi,bj))
+CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
+     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS
+          E22(I,J,bi,bj)=HALF * _recip_dyF(I,J,bi,bj) *
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
+          E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                -UICE(I+1,J,  1,bi,bj)-UICE(I,J,  1,bi,bj))
+     &                +HALF * _recip_dxF(I,J,bi,bj) *
+     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
+     &                -VICE(I,  J+1,1,bi,bj)-VICE(I,  J,1,bi,bj))
+     &                +QUART*
+     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
+     &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
+CML     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
+     &                * _tanPhiAtU(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4. _d 0*ECM2*E12(I,J,bi,bj)**2
@@ -362,12 +371,13 @@ C NOW ADD IN CURRENT FORCE
      &                     +COSWAT*GWATY(I,J,bi,bj))
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &          -(QUART/(DXUICE(I,J,bi,bj)*CSUICE(I,J,bi,bj)))
-     &          *(PRESS(I,J,bi,bj)+PRESS(I,J-1,bi,bj)
-     &          -PRESS(I-1,J,bi,bj)-PRESS(I-1,J-1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)-QUART/DYUICE(I,J,bi,bj)
-     &          *(PRESS(I,J,bi,bj)+PRESS(I-1,J,bi,bj)
-     &          -PRESS(I,J-1,bi,bj)-PRESS(I-1,J-1,bi,bj))
+     &          -QUART * _recip_dxV(I,J,bi,bj)
+     &          *(PRESS(I,  J,bi,bj) + PRESS(I,  J-1,bi,bj)
+     &          - PRESS(I-1,J,bi,bj) - PRESS(I-1,J-1,bi,bj))
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+     &         -QUART * _recip_dyU(I,J,bi,bj)
+     &          *(PRESS(I,J,  bi,bj) + PRESS(I-1,J,  bi,bj)
+     &          - PRESS(I,J-1,bi,bj) - PRESS(I-1,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO

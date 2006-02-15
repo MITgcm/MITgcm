@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.15 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.16 2006/02/15 09:04:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,9 +20,10 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_GRID.h"
+C#include "SEAICE_GRID.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -47,28 +48,39 @@ C     i,j,bi,bj - Loop counters
       _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL  AA1, AA2, AA3, AA4, AA5, AA6, S1, S2, S1A, S2A
 
-      _RL AU   (1:sNx,1:sNy,nSx,nSy), BU   (1:sNx,1:sNy,nSx,nSy)
-     &,   CU   (1:sNx,1:sNy,nSx,nSy)
-      _RL AV   (1:sNx,1:sNy,nSx,nSy), BV   (1:sNx,1:sNy,nSx,nSy)
-     &,   CV   (1:sNx,1:sNy,nSx,nSy)
-      _RL UERR (1:sNx,1:sNy,nSx,nSy)
-      _RL FXY  (1:sNx, 1:sNy,nSx,nSy)
+      _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL CU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL UERR (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL FXY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      _RL URT(1:sNx), VRT(1:sNy), CUU(1:sNx), CVV(1:sNy)
+      _RL URT(1-Olx:sNx+Olx), CUU(1-Olx:sNx+Olx)
+      _RL VRT(1-Oly:sNy+Oly), CVV(1-Oly:sNy+Oly)
 
-      _RL ETAMEAN  (1:sNx,1:sNy,nSx,nSy)
-      _RL ZETAMEAN (1:sNx,1:sNy,nSx,nSy)
-      _RL DELXY    (1:sNx,1:sNy,nSx,nSy)
-      _RL DELXR    (1:sNx,1:sNy,nSx,nSy)
-      _RL DELYR    (1:sNx,1:sNy,nSx,nSy)
-      _RL DELX2    (1:sNx,1:sNy,nSx,nSy)
-      _RL DELY2    (1:sNx,1:sNy,nSx,nSy)
+      _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL ETAMEAN  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL ZETAMEAN (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+CML      _RL DELXY    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+CML      _RL DELXR    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+CML      _RL DELYR    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+CML      _RL DELX2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+CML      _RL DELY2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      _RL UVRT1    (1:sNx,1:sNy,nSx,nSy)
-      _RL UVRT2    (1:sNx,1:sNy,nSx,nSy)
+      _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+
+      _RL vDiffX   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vDiffY   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uDiffY   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C SET SOME VALUES
+CML      RADIUS=rSphere
       RADIUS=6370. _d 3
+CML      RADIUS2=recip_rSphere*recip_rSphere
       RADIUS2=ONE/(RADIUS*RADIUS)
       WFAU1=0.95 _d 0
       WFAV1=0.95 _d 0
@@ -100,24 +112,31 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*UICE(I,J,2,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*VICE(I,J,2,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)*UVM(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)*UVM(I,J,bi,bj)
-          ETAMEAN(I,J,bi,bj) =QUART*(ETA(I,J-1,bi,bj)+ETA(I-1,J-1,bi,bj)
-     &                 +ETA(I,J,bi,bj)+ETA(I-1,J,bi,bj))
-          ZETAMEAN(I,J,bi,bj)=QUART*(ZETA(I,J-1,bi,bj)
-     &                 +ZETA(I-1,J-1,bi,bj)
-     &                 +ZETA(I,J,bi,bj)+ZETA(I-1,J,bi,bj))
-          DELX2(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DXUICE(I,J,bi,bj))
-          DELY2(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
-          DELXY(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
-          DELXR(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*RADIUS)
-          DELYR(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*RADIUS)
+CML          DELX2(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DXUICE(I,J,bi,bj))
+CML          DELY2(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
+CML          DELXY(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*DYUICE(I,J,bi,bj))
+CML          DELXR(I,J,bi,bj)=HALF/(DXUICE(I,J,bi,bj)*RADIUS)
+CML          DELYR(I,J,bi,bj)=HALF/(DYUICE(I,J,bi,bj)*RADIUS)
+          etaPlusZeta(I,J,bi,bj) = ETA(I,J,bi,bj)+ZETA(I,J,bi,bj)
+          zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA(I,J,bi,bj)
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          ETAMEAN(I,J,bi,bj) =QUART*(
+     &          ETA(I,J-1,bi,bj) + ETA(I-1,J-1,bi,bj)
+     &         +ETA(I,J  ,bi,bj) + ETA(I-1,J  ,bi,bj))
+          ZETAMEAN(I,J,bi,bj)=QUART*(
+     &          ZETA(I,J-1,bi,bj) + ZETA(I-1,J-1,bi,bj)
+     &         +ZETA(I,J  ,bi,bj) + ZETA(I-1,J  ,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -128,26 +147,27 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 
         DO J=1,sNy
          DO I=1,sNx
-          AA1=((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj))
-     &           *RECIP_CSTICE(I-1,J-1,bi,bj)
-     &           +(ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
-     &           *RECIP_CSTICE(I-1,J,bi,bj))*RECIP_CSUICE(I,J,bi,bj)
-          AA2=((ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj))
-     &           *RECIP_CSTICE(I-1,J-1,bi,bj)
-     &           +(ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj))
-     &           *RECIP_CSTICE(I-1,J,bi,bj))*RECIP_CSUICE(I,J,bi,bj)
-          AA3=ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
-          AA4=ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj)
-          AA5=-(ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)-ETA(I-1,J-1,bi,bj)
-     &           -ETA(I,J-1,bi,bj))*TNGICE(I,J,bi,bj)
-          AA6=TWO*ETAMEAN(I,J,bi,bj)*TNGICE(I,J,bi,bj)*TNGICE(I,J,bi,bj)
-          AU(I,J,bi,bj)=-AA2*DELX2(I,J,bi,bj)*UVM(I,J,bi,bj)
-          BU(I,J,bi,bj)=((AA1+AA2)*DELX2(I,J,bi,bj)+(AA3+AA4)
-     &           *DELY2(I,J,bi,bj)
-     &           +AA5*DELYR(I,J,bi,bj)+AA6*RADIUS2
-     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn+DRAGS(I,J,bi,bj))
-     &           *UVM(I,J,bi,bj)+(ONE-UVM(I,J,bi,bj))
-          CU(I,J,bi,bj)=-AA1*DELX2(I,J,bi,bj)*UVM(I,J,bi,bj)
+          AA1=( etaPlusZeta(I  ,J-1,bi,bj) * _recip_dxF(I  ,J-1,bi,bj)
+     &         +etaPlusZeta(I  ,J  ,bi,bj) * _recip_dxF(I  ,J  ,bi,bj)
+     &         )*0.5 _d 0 * _recip_dxV(I,J,bi,bj) * UVM(I,J,bi,bj)
+          AA2=( etaPlusZeta(I-1,J-1,bi,bj) * _recip_dxF(I-1,J-1,bi,bj)
+     &         +etaPlusZeta(I-1,J  ,bi,bj) * _recip_dxF(I-1,J  ,bi,bj)
+     &         )*0.5 _d 0 * _recip_dxV(I,J,bi,bj) * UVM(I,J,bi,bj)
+          AA3=  0.5 _d 0 *(ETA(I-1,J  ,bi,bj)+ETA(I,J  ,bi,bj))
+          AA4=  0.5 _d 0 *(ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
+          AA5= -(AA3-AA4) * _tanPhiAtV(I,J,bi,bj) 
+     &         * _recip_dyU(I,J,bi,bj)/RADIUS
+          AA6=TWO*ETAMEAN(I,J,bi,bj) *RADIUS2
+     &          * _tanPhiAtV(I,J,bi,bj)  * _tanPhiAtV(I,J,bi,bj)
+          AU(I,J,bi,bj)=-AA2
+          CU(I,J,bi,bj)=-AA1
+          BU(I,J,bi,bj)=(ONE-UVM(I,J,bi,bj))
+     &         - AU(I,J,bi,bj) - CU(I,J,bi,bj)
+     &         + ((AA3+AA4)*_recip_dyU(I,J,bi,bj)*_recip_dyU(I,J,bi,bj)
+     &           + AA5 + AA6
+     &           + AMASS(I,J,bi,bj)/SEAICE_deltaTdyn
+     &           + DRAGS(I,J,bi,bj)
+     &           )*UVM(I,J,bi,bj)
          END DO
         END DO
 
@@ -157,78 +177,70 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
          CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
         END DO
 
+C     now set up right-hand side
+        DO J=1-Oly,sNy+Oly-1
+         DO I=1-Olx,sNx+Olx-1
+          vDiffY(I,J) = 0.5 _d 0 * (
+     &          VICEC(I+1,J+1,bi,bj) + VICEC(I  ,J+1,bi,bj)
+     &         -VICEC(I+1,J  ,bi,bj) - VICEC(I  ,J  ,bi,bj) )
+          vDiffX(I,J) = 0.5 _d 0 * (
+     &          VICEC(I+1,J+1,bi,bj) + VICEC(I+1,J  ,bi,bj)
+     &         -VICEC(I  ,J+1,bi,bj) - VICEC(I  ,J  ,bi,bj) )
+         ENDDO
+        ENDDO
         DO J=1,sNy
          DO I=1,sNx
           FXY(I,J,bi,bj)=DRAGA(I,J,bi,bj)*VICEC(I,J,bi,bj)
-     3            +FORCEX(I,J,bi,bj)
-     3            +HALF*(ZETA(I,J,bi,bj)*(VICEC(I+1,J+1,bi,bj)
-     3            +VICEC(I,J+1,bi,bj)
-     3            -VICEC(I+1,J,bi,bj)-VICEC(I,J,bi,bj))
-     3            +ZETA(I,J-1,bi,bj)*(VICEC(I+1,J,bi,bj)
-     3            +VICEC(I,J,bi,bj)-VICEC(I+1,J-1,bi,bj)
-     3            -VICEC(I,J-1,bi,bj))+ZETA(I-1,J,bi,bj)
-     3            *(VICEC(I,J,bi,bj)+VICEC(I-1,J,bi,bj)
-     3            -VICEC(I,J+1,bi,bj)-VICEC(I-1,J+1,bi,bj))
-     3            +ZETA(I-1,J-1,bi,bj)*(VICEC(I,J-1,bi,bj)
-     3            +VICEC(I-1,J-1,bi,bj)-VICEC(I,J,bi,bj)
-     3            -VICEC(I-1,J,bi,bj)))*DELXY(I,J,bi,bj)
-     3            *RECIP_CSUICE(I,J,bi,bj)
-     3
-     4            -HALF*(ETA(I,J,bi,bj)*(VICEC(I+1,J+1,bi,bj)
-     4            +VICEC(I,J+1,bi,bj)
-     4            -VICEC(I+1,J,bi,bj)-VICEC(I,J,bi,bj))
-     4            +ETA(I,J-1,bi,bj)*(VICEC(I+1,J,bi,bj)
-     4            +VICEC(I,J,bi,bj)-VICEC(I+1,J-1,bi,bj)
-     4            -VICEC(I,J-1,bi,bj))+ETA(I-1,J,bi,bj)
-     4            *(VICEC(I,J,bi,bj)+VICEC(I-1,J,bi,bj)
-     4            -VICEC(I,J+1,bi,bj)-VICEC(I-1,J+1,bi,bj))
-     4            +ETA(I-1,J-1,bi,bj)*(VICEC(I,J-1,bi,bj)
-     4            +VICEC(I-1,J-1,bi,bj)-VICEC(I,J,bi,bj)
-     4            -VICEC(I-1,J,bi,bj)))*DELXY(I,J,bi,bj)
-     4            *RECIP_CSUICE(I,J,bi,bj)
-     4
-     5            +HALF*(ETA(I,J,bi,bj)*RECIP_CSTICE(I-1,J,bi,bj)
-     5            *(VICEC(I+1,J+1,bi,bj)+VICEC(I+1,J,bi,bj)
-     5            -VICEC(I,J+1,bi,bj)-VICEC(I,J,bi,bj))
-     5            +ETA(I-1,J,bi,bj)*RECIP_CSTICE(I-1,J,bi,bj)
-     5            *(VICEC(I,J+1,bi,bj)
-     5            +VICEC(I,J,bi,bj)-VICEC(I-1,J+1,bi,bj)
-     5            -VICEC(I-1,J,bi,bj))
-     5            +ETA(I,J-1,bi,bj)*RECIP_CSTICE(I-1,J-1,bi,bj)
-     5            *(VICEC(I,J,bi,bj)+VICEC(I,J-1,bi,bj)
-     5            -VICEC(I+1,J,bi,bj)-VICEC(I+1,J-1,bi,bj))
-     5            +ETA(I-1,J-1,bi,bj)*RECIP_CSTICE(I-1,J-1,bi,bj)
-     5            *(VICEC(I-1,J,bi,bj)
-     5            +VICEC(I-1,J-1,bi,bj)-VICEC(I,J,bi,bj)
-     5            -VICEC(I,J-1,bi,bj)))*DELXY(I,J,bi,bj)
-     5
-     6            -((ZETA(I,J,bi,bj)+ZETA(I,J-1,bi,bj)
-     6            -ZETA(I-1,J-1,bi,bj)-ZETA(I-1,J,bi,bj))
-     6            +(ETA(I,J,bi,bj)+ETA(I,J-1,bi,bj)-ETA(I-1,J-1,bi,bj)
-     6            -ETA(I-1,J,bi,bj)))
-     6            *TNGICE(I,J,bi,bj)*VICEC(I,J,bi,bj)*DELXR(I,J,bi,bj)
-     6            *RECIP_CSUICE(I,J,bi,bj)
-     6            -(ETAMEAN(I,J,bi,bj)+ZETAMEAN(I,J,bi,bj))
-     6            *TNGICE(I,J,bi,bj)
-     6            *(VICEC(I+1,J,bi,bj)-VICEC(I-1,J,bi,bj))
-     6            *DELXR(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     6
-     7            -ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)
-     7            *(VICEC(I+1,J,bi,bj)
-     7            -VICEC(I-1,J,bi,bj))*DELXR(I,J,bi,bj)
-     7            *RECIP_CSUICE(I,J,bi,bj)
-          UVRT1(I,J,bi,bj)=(ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
-     &            *DELY2(I,J,bi,bj)
-     &            -ETAMEAN(I,J,bi,bj)*DELYR(I,J,bi,bj)
-     &            *TNGICE(I,J-1,bi,bj)
-     &            +ETAMEAN(I,J,bi,bj)*DELYR(I,J,bi,bj)
-     &            *TWO*TNGICE(I,J,bi,bj)
-          UVRT2(I,J,bi,bj)=(ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj))
-     &            *DELY2(I,J,bi,bj)
-     &            +ETAMEAN(I,J,bi,bj)*DELYR(I,J,bi,bj)
-     &            *TNGICE(I,J+1,bi,bj)
-     &            -ETAMEAN(I,J,bi,bj)*DELYR(I,J,bi,bj)
-     &            *TWO*TNGICE(I,J,bi,bj)
+     &         +FORCEX(I,J,bi,bj)
+     &         + ( zetaMinusEta(I  ,J  ,bi,bj) * vDiffY(I  ,J  )
+     &           + zetaMinusEta(I  ,J-1,bi,bj) * vDiffY(I  ,J-1)
+     &           - zetaMinusEta(I-1,J  ,bi,bj) * vDiffY(I-1,J  )
+     &           - zetaMinusEta(I-1,J-1,bi,bj) * vDiffY(I-1,J-1)
+     &         )* 0.5 _d 0 * 
+     &         _recip_dxV(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &
+     &         + ( ETA         (I  ,J  ,bi,bj) * vDiffX(I  ,J  )
+     &         * _recip_dxF(I  ,J,bi,bj)
+     &           + ETA         (I-1,J  ,bi,bj) * vDiffX(I-1,J  )
+     &         * _recip_dxF(I-1,J,bi,bj)
+     &           - ETA         (I  ,J-1,bi,bj) * vDiffX(I  ,J-1)
+     &         * _recip_dxF(I  ,J-1,bi,bj)
+     &           - ETA         (I-1,J-1,bi,bj) * vDiffX(I-1,J-1)
+     &         * _recip_dxF(I-1,J-1,bi,bj)
+     &         ) * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)
+     &
+     &        -(etaPlusZeta(I  ,J  ,bi,bj)+etaPlusZeta(I  ,J-1,bi,bj)
+     &         -etaPlusZeta(I-1,J-1,bi,bj)-etaPlusZeta(I-1,J  ,bi,bj))
+     &         * VICEC(I,J,bi,bj)
+     &            * _tanPhiAtV(I,J,bi,bj)
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &
+     &         -(ETAMEAN(I,J,bi,bj)+ZETAMEAN(I,J,bi,bj))
+     &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
+     &            * _tanPhiAtV(I,J,bi,bj)
+     &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
+     &         /RADIUS
+     &
+     &         -ETAMEAN(I,J,bi,bj)
+     &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
+     &            *TWO* _tanPhiAtV(I,J,bi,bj)
+     &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
+     &         /RADIUS
+
+          UVRT1(I,J,bi,bj)=
+     &         0.5 _d 0 * (ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
+     &         * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &         -     ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J-1,bi,bj)
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         + TWO*ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+          UVRT2(I,J,bi,bj)=
+     &         0.5 _d 0 * (ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj))
+     &         * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &         +     ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J+1,bi,bj)
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         - TWO*ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
          END DO
         END DO
 
@@ -263,17 +275,15 @@ C NOW SET U(3)=U(1)
         DO 1200 J=1,sNy
          DO I=1,sNx
           IF(I.EQ.1) THEN
-           AA2=((ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj))
-     &            *RECIP_CSTICE(I-1,J-1,bi,bj)
-     &            +(ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj))
-     &            *RECIP_CSTICE(I-1,J,bi,bj))*RECIP_CSUICE(I,J,bi,bj)
-           AA3=AA2*DELX2(I,J,bi,bj)*UICE(I-1,J,1,bi,bj)*UVM(I,J,bi,bj)
+           AA2=(etaPlusZeta(I-1,J-1,bi,bj) * _recip_dxF(I-1,J-1,bi,bj)
+     &         +etaPlusZeta(I-1,J  ,bi,bj) * _recip_dxF(I-1,J  ,bi,bj)
+     &          )*0.5 _d 0 * _recip_dxV(I,J,bi,bj)
+           AA3=AA2*UICE(I-1,J,1,bi,bj)*UVM(I,J,bi,bj)
           ELSE IF(I.EQ.sNx) THEN
-           AA1=((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj))
-     &            *RECIP_CSTICE(I-1,J-1,bi,bj)
-     &            +(ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
-     &            *RECIP_CSTICE(I-1,J,bi,bj))*RECIP_CSUICE(I,J,bi,bj)
-           AA3=AA1*DELX2(I,J,bi,bj)*UICE(I+1,J,1,bi,bj)*UVM(I,J,bi,bj)
+           AA1=(etaPlusZeta(I  ,J-1,bi,bj) * _recip_dxF(I  ,J-1,bi,bj)
+     &         +etaPlusZeta(I  ,J  ,bi,bj) * _recip_dxF(I  ,J  ,bi,bj)
+     &          )*0.5 _d 0 * _recip_dxV(I,J,bi,bj)
+           AA3=AA1*UICE(I+1,J,1,bi,bj)*UVM(I,J,bi,bj)
           ELSE
            AA3=ZERO
           END IF
@@ -355,36 +365,43 @@ C NOW FOR VICE
 
         DO J=1,sNy
          DO I=1,sNx
-          AA1=ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
-     &          +ZETA(I,J,bi,bj)
-          AA2=ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj)
-     &          +ZETA(I,J-1,bi,bj)
-          AA3=(ETA(I,J-1,bi,bj)*RECIP_CSUICE(I,J,bi,bj)+ETA(I,J,bi,bj)
-     &          *RECIP_CSUICE(I,J,bi,bj))*RECIP_CSUICE(I,J,bi,bj)
-          AA4=(ETA(I-1,J-1,bi,bj)+ETA(I-1,J,bi,bj))
-     &          *RECIP_CSUICE(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-          AA5=((ZETA(I-1,J,bi,bj)-ETA(I-1,J,bi,bj))
-     &          +(ZETA(I,J,bi,bj)-ETA(I,J,bi,bj))
-     &          -(ZETA(I-1,J-1,bi,bj)-ETA(I-1,J-1,bi,bj))
-     &          -(ZETA(I,J-1,bi,bj)
-     &          -ETA(I,J-1,bi,bj)))*TNGICE(I,J,bi,bj)
-          AA6=TWO*ETAMEAN(I,J,bi,bj)*TNGICE(I,J,bi,bj)*TNGICE(I,J,bi,bj)
+          AA1=0.5 _d 0 * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &         * (etaPlusZeta(I-1,J  ,bi,bj) + etaPlusZeta(I,J  ,bi,bj))
+          AA2=0.5 _d 0 * _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &         * (etaPlusZeta(I-1,J-1,bi,bj) + etaPlusZeta(I,J-1,bi,bj))
+          AA3= (ETA(I  ,J-1,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &         +ETA(I  ,J  ,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &         )* 0.5 _d 0 * _recip_dxV(I,J,bi,bj)
+          AA4= (ETA(I-1,J-1,bi,bj)+ETA(I-1,J,bi,bj))*0.5 _d 0
+     &          *_recip_dxV(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+          AA5=(zetaMinusEta(I-1,J  ,bi,bj) + zetaMinusEta(I,J  ,bi,bj)
+     &        -zetaMinusEta(I-1,J-1,bi,bj) - zetaMinusEta(I,J-1,bi,bj)
+     &          )* _tanPhiAtV(I,J,bi,bj) 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
 
-          AV(I,J,bi,bj)=(-AA2*DELY2(I,J,bi,bj)
-     &     -(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &     *TNGICE(I,J-1,bi,bj)*DELYR(I,J,bi,bj)
-     &     -ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)*DELYR(I,J,bi,bj))
-     &     *UVM(I,J,bi,bj)
-          BV(I,J,bi,bj)=((AA1+AA2)*DELY2(I,J,bi,bj)
-     &     +(AA3+AA4)*DELX2(I,J,bi,bj)
-     &     +AA5*DELYR(I,J,bi,bj)+AA6*RADIUS2
-     &     +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn+DRAGS(I,J,bi,bj))
-     &     *UVM(I,J,bi,bj)+(ONE-UVM(I,J,bi,bj))
-          CV(I,J,bi,bj)=(-AA1*DELY2(I,J,bi,bj)
-     &     +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &     *TNGICE(I,J+1,bi,bj)*DELYR(I,J,bi,bj)
-     &     +ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)*DELYR(I,J,bi,bj))
-     &     *UVM(I,J,bi,bj)
+          AA6=TWO*ETAMEAN(I,J,bi,bj) * RADIUS2
+     &         * _tanPhiAtV(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
+
+         AV(I,J,bi,bj)=(
+     &         - AA2
+     &         - (ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
+     &          * _tanPhiAtV(I,J-1,bi,bj) 
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         -ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
+     &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &         )*UVM(I,J,bi,bj)
+         CV(I,J,bi,bj)=(
+     &         -AA1 
+     &        +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
+     &         * _tanPhiAtV(I,J+1,bi,bj) 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &        +ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS
+     &        )*UVM(I,J,bi,bj)
+          BV(I,J,bi,bj)= (ONE-UVM(I,J,bi,bj))
+     &        +( (AA1+AA2) + (AA3+AA4)  + AA5 + AA6
+     &        +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn+DRAGS(I,J,bi,bj))
+     &        *UVM(I,J,bi,bj)
          END DO
         END DO
 
@@ -394,58 +411,59 @@ C NOW FOR VICE
          CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
         END DO
 
+C     now set up right-hand-side
+        DO J=1-Oly,sNy+Oly-1
+         DO I=1-Olx,sNx+Olx-1
+          uDiffY(I,J) = 0.5 _d 0 * (
+     &          UICEC(I+1,J+1,bi,bj) + UICEC(I ,J+1,bi,bj)
+     5         -UICEC(I+1,J  ,bi,bj) - UICEC(I ,J  ,bi,bj) )
+         ENDDO
+        ENDDO
         DO J=1,sNy
          DO I=1,sNx
            FXY(I,J,bi,bj)=-DRAGA(I,J,bi,bj)*UICEC(I,J,bi,bj)
-     2        +FORCEY(I,J,bi,bj)
-     3        +(HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     3        *(ZETA(I-1,J,bi,bj)+ZETA(I,J,bi,bj)
-     3        -ZETA(I-1,J-1,bi,bj)-ZETA(I,J-1,bi,bj))*DELXY(I,J,bi,bj)
-     3        *RECIP_CSUICE(I,J,bi,bj)+HALF*ZETAMEAN(I,J,bi,bj)
-     3        *((UICEC(I+1,J+1,bi,bj)
-     3        -UICEC(I-1,J+1,bi,bj))*RECIP_CSUICE(I,J+1,bi,bj)
-     3        -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
-     3        *RECIP_CSUICE(I,J-1,bi,bj))*DELXY(I,J,bi,bj))
-     3
-     4        -(HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     4        *(ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
-     4        -ETA(I-1,J-1,bi,bj)-ETA(I,J-1,bi,bj))*DELXY(I,J,bi,bj)
-     4        *RECIP_CSUICE(I,J,bi,bj)
-     4        +HALF*ETAMEAN(I,J,bi,bj)*((UICEC(I+1,J+1,bi,bj)
-     4        -UICEC(I-1,J+1,bi,bj))*RECIP_CSUICE(I,J+1,bi,bj)
-     4        -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
-     4        *RECIP_CSUICE(I,J-1,bi,bj))*DELXY(I,J,bi,bj))
-     4
-     5        +HALF*(ETA(I,J,bi,bj)*(UICEC(I+1,J+1,bi,bj)
-     5        +UICEC(I,J+1,bi,bj)
-     5        -UICEC(I+1,J,bi,bj)-UICEC(I,J,bi,bj))+ETA(I,J-1,bi,bj)
-     5        *(UICEC(I+1,J,bi,bj)
-     5        +UICEC(I,J,bi,bj)-UICEC(I+1,J-1,bi,bj)
-     5        -UICEC(I,J-1,bi,bj))+ETA(I-1,J,bi,bj)
-     5        *(UICEC(I,J,bi,bj)+UICEC(I-1,J,bi,bj)-UICEC(I,J+1,bi,bj)
-     5        -UICEC(I-1,J+1,bi,bj))
-     5        +ETA(I-1,J-1,bi,bj)*(UICEC(I,J-1,bi,bj)
-     5        +UICEC(I-1,J-1,bi,bj)
-     5        -UICEC(I,J,bi,bj)-UICEC(I-1,J,bi,bj)))
-     5        *DELXY(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     5
-     6        +(ETA(I,J,bi,bj)+ETA(I,J-1,bi,bj)-ETA(I-1,J-1,bi,bj)
-     6        -ETA(I-1,J,bi,bj))
-     6        *TNGICE(I,J,bi,bj)*UICEC(I,J,bi,bj)
-     6        *DELXR(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     6        +ETAMEAN(I,J,bi,bj)*TNGICE(I,J,bi,bj)
-     6        *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     6        *DELXR(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     6
-     7        +ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)
-     7        *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     7       *DELXR(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-          UVRT1(I,J,bi,bj)=(ETA(I-1,J-1,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     &            +ETA(I-1,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj))
-     &            *DELX2(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-          UVRT2(I,J,bi,bj)=(ETA(I,J-1,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
-     &            +ETA(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj))
-     &            *DELX2(I,J,bi,bj)*RECIP_CSUICE(I,J,bi,bj)
+     &        +FORCEY(I,J,bi,bj)
+     &     
+     &        + HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+     &        *(zetaMinusEta(I-1,J  ,bi,bj)+zetaMinusEta(I,J  ,bi,bj)
+     &         -zetaMinusEta(I-1,J-1,bi,bj)-zetaMinusEta(I,J-1,bi,bj))
+     &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
+     &         * _recip_dyU(I,J,bi,bj)
+     &         
+     &         +HALF*(ZETAMEAN(I,J,bi,bj) - ETAMEAN(I,J,bi,bj))
+     &         *((UICEC(I+1,J+1,bi,bj) - UICEC(I-1,J+1,bi,bj))
+     &         * 2. _d 0 /( _dxG(I,J+1,bi,bj) + _dxG(I-1,J+1,bi,bj))
+     &          -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
+     &         * 2. _d 0 /( _dxG(I,J-1,bi,bj) + _dxG(I-1,J-1,bi,bj)))
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)
+     &
+     &        +(ETA(I  ,J  ,bi,bj) * uDiffY(I  ,J  )
+     &         +ETA(I  ,J-1,bi,bj) * uDiffY(I  ,J-1)
+     &         -ETA(I-1,J  ,bi,bj) * uDiffY(I-1,J  )
+     &         -ETA(I-1,J-1,bi,bj) * uDiffY(I-1,J-1)
+     &         )*0.5 _d 0* _recip_dxV(I,J,bi,bj)* _recip_dyU(I,J,bi,bj)
+     &
+     &        +(ETA(I  ,J  ,bi,bj) + ETA(I  ,J-1,bi,bj)
+     &         -ETA(I-1,J-1,bi,bj) - ETA(I-1,J  ,bi,bj))
+     &         * UICEC(I,J,bi,bj)
+     &         * _tanPhiAtV(I,J,bi,bj)
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &        +ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
+     &         *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+     &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)/RADIUS
+     &
+     &        +ETAMEAN(I,J,bi,bj)*TWO  * _tanPhiAtV(I,J,bi,bj)
+     &        *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+     &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
+     &         /RADIUS
+          UVRT1(I,J,bi,bj)= 0.5 _d 0 * (
+     &           ETA(I-1,J-1,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &          +ETA(I-1,J  ,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &          ) * _recip_dxV(I,J,bi,bj)
+          UVRT2(I,J,bi,bj)= 0.5 _d 0 * (
+     &          ETA(I  ,J-1,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &         +ETA(I  ,J  ,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &         ) * _recip_dxV(I,J,bi,bj)
 
          END DO
         END DO
@@ -482,22 +500,28 @@ C NOW SET U(3)=U(1)
         DO I=1,sNx
          DO J=1,sNy
            IF(J.EQ.1) THEN
-            AA2=ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj)
-     &         +ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj)
-            AA3=(AA2*DELY2(I,J,bi,bj)
-     &         +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &         *TNGICE(I,J-1,bi,bj)*DELYR(I,J,bi,bj)
-     &         +ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)
-     &         *DELYR(I,J,bi,bj))
+            AA2= _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &           * 0.5 _d 0 *( 
+     &           etaPlusZeta(I-1,J-1,bi,bj) + etaPlusZeta(I,J-1,bi,bj)
+     &           )
+              AA3=( AA2
+     &         +( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj) )
+     &         * _tanPhiAtV(I,J-1,bi,bj)
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS 
+     &         + ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS )
      &         *VICE(I,J-1,1,bi,bj)*UVM(I,J,bi,bj)
            ELSE IF(J.EQ.sNy) THEN
-            AA1=ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
-     &         +ZETA(I,J,bi,bj)
-            AA3=(AA1*DELY2(I,J,bi,bj)
-     &         -(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &         *TNGICE(I,J+1,bi,bj)*DELYR(I,J,bi,bj)
-     &         -ETAMEAN(I,J,bi,bj)*TWO*TNGICE(I,J,bi,bj)
-     &         *DELYR(I,J,bi,bj))
+            AA1= _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &           * 0.5 _d 0 * (
+     &           etaPlusZeta(I-1,J,bi,bj) + etaPlusZeta(I,J,bi,bj)
+     &            )
+            AA3=( AA1
+     &         -( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
+     &         * _tanPhiAtV(I,J+1,bi,bj)
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS 
+     &         - ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)/RADIUS )
      &         *VICE(I,J+1,1,bi,bj)*UVM(I,J,bi,bj)
            ELSE
             AA3=ZERO

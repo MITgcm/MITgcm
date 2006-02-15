@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.13 2006/02/14 14:00:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.14 2006/02/15 09:04:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -16,8 +16,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_GRID.h"
+CML#include "SEAICE_GRID.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -83,20 +84,41 @@ CADJ STORE heff  = comlev1, key = ikey_dynamics
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=0,sNy-1
-         DO I=0,sNx-1
-          HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,K3,bi,bj)
-     &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
-     &     (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
-     &     *(QUART/(DXTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
-     &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
-     &     +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
-     &     -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &     *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))*CSUICE(I+1,J+1,bi,bj))
-     &     *(QUART/(DYTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
+        DO J=1,sNy
+         DO I=1,sNx
+CML   This formulation gives the same result as the original code on a
+CML   lat-lon-grid, but may not be accurate on irregular grids
+          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
+     &         -DELTT*(
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))-
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj)))
+     &     *(QUART * _recip_dxF(I,J,bi,bj))
+     &         -DELTT*(
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &         * _dxG(I  ,J+1,bi,bj) -
+     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &         * _dxG(I,J,bi,bj))
+     &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
+C--   Use flux form for MITgcm compliance, unfortunately changes results
+CML          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
+CML     &         -DELTT * QUART * (
+CML     &        + _dyG(I+1,J,bi,bj) *
+CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+CML     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+CML     &        - _dyG(I,J,bi,bj) *
+CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+CML     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+CML     &        + _dxG(I  ,J+1,bi,bj) *
+CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+CML     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+CML     &        - _dxG(I  ,J  ,bi,bj)*
+CML     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+CML     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+CML     &        )*recip_rA(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -115,7 +137,7 @@ C NOW DO BACKWARD EULER CORRECTION
             DO i=1-OLx,sNx+OLx
              HEFF(I,J,3,bi,bj)=HEFF(I,J,2,bi,bj)
              HEFF(I,J,2,bi,bj)=HALF*(HEFF(I,J,1,bi,bj)
-     &                             +HEFF(I,J,2,bi,bj))
+     &                              +HEFF(I,J,2,bi,bj))
             ENDDO
            ENDDO
           ENDDO
@@ -124,21 +146,41 @@ C NOW DO BACKWARD EULER CORRECTION
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO J=0,sNy-1
-            DO I=0,sNx-1
-             HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,3,bi,bj)
-     &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
-     &        (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
-     &        *(QUART/(DXTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
-     &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
-     &        +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
-     &        -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &        *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))
-     &        *CSUICE(I+1,J+1,bi,bj))
-     &        *(QUART/(DYTICE(I+1,J+1,bi,bj)*CSTICE(I+1,J+1,bi,bj)))
+           DO J=1,sNy
+            DO I=1,sNx
+CML   This formulation gives the same result as the original code on a
+CML   lat-lon-grid, but may not be accurate on irregular grids
+             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
+     &            -DELTT*(
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))-
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj)))
+     &     *(QUART * _recip_dxF(I,J,bi,bj))
+     &            -DELTT*(
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &            * _dxG(I,J+1,bi,bj)
+     &            -(HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &            *(  VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &            * _dxG(I,J,bi,bj))
+     &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
+C--   Use flux form for MITgcm compliance, unfortunately changes results
+CML             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
+CML     &            -DELTT * QUART * (
+CML     &           + _dyG(I+1,J  ,bi,bj) *
+CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+CML     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+CML     &           - _dyG(I  ,J  ,bi,bj) *
+CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,  J,2,bi,bj))
+CML     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+CML     &           + _dxG(I  ,J+1,bi,bj) *
+CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+CML     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+CML     &           - _dxG(I  ,J  ,bi,bj) *
+CML     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+CML     &            *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+CML     &            )*recip_rA(I,J,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -167,8 +209,8 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          DIFFA(I,J,bi,bj)=DIFF1*MIN(DXTICE(I,J,bi,bj)
-     &                    *CSTICE(I,J,bi,bj),DYTICE(I,J,bi,bj))
+          DIFFA(I,J,bi,bj)=
+     &         DIFF1*MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -191,8 +233,8 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          DIFFA(I,J,bi,bj)=-(MIN(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj)
-     &                    ,DYTICE(I,J,bi,bj)))**2/DELTT
+          DIFFA(I,J,bi,bj)=
+     &         -(MIN( _dxF(I,J,bi,bj),  _dyF(I,J,bi,bj)))**2/DELTT
          ENDDO
         ENDDO
        ENDDO
