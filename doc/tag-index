@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.611 2006/02/15 09:06:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.612 2006/02/15 09:25:25 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,9 @@ o seaice:
     (still commented out)
   
 checkpoint58a_post
+o seaice:
+  - bug fix in advect.F
+  - replace 1 in 3d global fields by kSurface in growth.F
 o shelfice: 
   - separate shelfice load anomaly from pload (breaks with time 
     dependent forcing), => introduce constant field shelficeLoadAnomaly.
