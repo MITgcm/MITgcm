@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.3 2006/01/03 23:15:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.4 2006/02/15 20:56:07 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -122,6 +122,7 @@ c--   Initialize variance (weight) fields.
               wsss    (i,j,bi,bj) = 0. _d 0
               wtp     (i,j,bi,bj) = 0. _d 0
               wers    (i,j,bi,bj) = 0. _d 0
+              wgfo    (i,j,bi,bj) = 0. _d 0
               wp      (i,j,bi,bj) = 0. _d 0
               wudrift (i,j,bi,bj) = 0. _d 0
               wvdrift (i,j,bi,bj) = 0. _d 0
@@ -563,22 +564,23 @@ c--           T/P error + 5cm
               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
                 wtp (i,j,bi,bj) = 0. _d 0
                 wers(i,j,bi,bj) = 0. _d 0
+                wgfo(i,j,bi,bj) = 0. _d 0
               else
                 wtp (i,j,bi,bj) = ( wtp(i,j,bi,bj) * 0.01 * 0.5 )
      &                            *frame(i,j)
-                if ( wtp(i,j,bi,bj) .ne. 0. )
-     &             wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
-     &                               *frame(i,j)
+                wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
+     &                            *frame(i,j)
+                wgfo(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
+     &                            *frame(i,j)
               endif
 cph-indonesian(
               if ( xC(i,j,bi,bj) .GT. 115. .AND.
      &             xC(i,j,bi,bj) .LT. 130. .AND.
      &             yC(i,j,bi,bj) .GT. -10. .AND.
      &             yC(i,j,bi,bj) .LT.  10. ) then
-cph                 wtp(i,j,bi,bj)  = wtp(i,j,bi,bj)*10000.
-cph                 wers(i,j,bi,bj) = wers(i,j,bi,bj)*10000.
 		 wtp(i,j,bi,bj)  = 0.
 		 wers(i,j,bi,bj) = 0.
+		 wgfo(i,j,bi,bj) = 0.
               endif
 cph-indonesian)
 cph-medit(
@@ -593,6 +595,7 @@ cph-medit(
      &               yC(i,j,bi,bj) .LT.  48. ) ) then
                   wtp(i,j,bi,bj)  = wtp(i,j,bi,bj) *10.
 	          wers(i,j,bi,bj) = wers(i,j,bi,bj)*10.
+	          wgfo(i,j,bi,bj) = wgfo(i,j,bi,bj)*10.
               endif
 cph-medit)
             enddo
@@ -982,6 +985,9 @@ c--   Units have to be checked!
               endif
               if (wers(i,j,bi,bj) .ne. 0.) then
                 wers(i,j,bi,bj) = 1./wers(i,j,bi,bj)/wers(i,j,bi,bj)
+              endif
+              if (wgfo(i,j,bi,bj) .ne. 0.) then
+                wgfo(i,j,bi,bj) = 1./wgfo(i,j,bi,bj)/wgfo(i,j,bi,bj)
               endif
 cph(
 cph sst, sss: reduce weights by factor 2
