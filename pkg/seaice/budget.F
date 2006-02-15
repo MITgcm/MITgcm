@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.14 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.15 2006/02/15 09:24:24 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,6 +19,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_FFIELDS.h"
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+#include "DYNVARS.h"
+#endif /* SEAICE_VARIABLE_FREEZING_POINT */
 
 C     Subset of variables from SEAICE.h
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
@@ -189,6 +192,10 @@ cdm          TICE
      &             -D3*(TICE(I,J,bi,bj)**4)
             B(I,J)=XKS/(HSNOW(I,J,bi,bj)/HICE(I,J)+XKS/XKI)/HICE(I,J)
             A3(I,J)=4.0 _d +00*D3*(TICE(I,J,bi,bj)**3)+B(I,J)+D1*UG(I,J)
+#ifdef SEAICE_VARIABLE_FREEZING_POINT
+            TB = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0 
+     &           + 273.15 _d 0
+#endif /* SEAICE_VARIABLE_FREEZING_POINT */
             B(I,J)=B(I,J)*(TB-TICE(I,J,bi,bj))
 cdm
 cdm   if(TICE(I,J,bi,bj).le.206.)
