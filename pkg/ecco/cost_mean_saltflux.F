@@ -128,75 +128,9 @@ c--     Read time averages and the monthly mean data.
             objf_sfluxmm(bi,bj) = fctilemm
             fcthreadmm          = fcthreadmm + fctilemm
 
-#ifdef ECCO_VERBOSE
-c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthreadmm , myThid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_saltflux:                       irec =  ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,d22.15)')
-     &    '                 global cost function value = ',
-     &    fcthreadmm
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-#endif
-
           enddo
         enddo
 
-
-#ifdef ECCO_VERBOSE
-c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthreadmm       , myThid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_: irec = ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,d22.15)')
-     &    ' global cost function value',
-     &    ' (        ) = ',fcthreadmm    
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-#endif
-
-#else
-c--   Do not enter the calculation of the temperature contribution to
-c--   the final cost function.
-
-      fctilemm         = 0. _d 0
-      fcthreadmm       = 0. _d 0
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_: no contribution of temperature field ',
-     &                 'to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return

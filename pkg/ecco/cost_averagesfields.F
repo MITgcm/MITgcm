@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.5 2006/01/03 23:15:17 heimbach Exp $
+errC $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.6 2006/02/16 21:48:56 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -39,6 +39,9 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
+# include "GW.h"
+#endif
 
 #include "optim.h"
 #include "ecco_cost.h"
@@ -176,7 +179,7 @@ c--   Get the time flags and record numbers for the time averaging.
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
-cph   There's a mismatch between the cost_drifer and the
+cph   There is a mismatch between the cost_drifer and the
 cph   cost_obcs usage of ubar, vbar.
 cph   cost_obcs refers to monthly means, cost_drifer to total mean.
 cph   Needs to be updated for cost_obcs!!!.
@@ -329,9 +332,6 @@ c--   Next, do the averages for velocitty.
               do j = jmin,jmax
                 do i =  imin,imax
                   hfluxbar(i,j,bi,bj)=hflux(i,j,bi,bj)
-#ifdef SHORTWAVE_HEATING
-     $                  +swflux(i,j,bi,bj)
-#endif
                 enddo
               enddo
           enddo
@@ -341,12 +341,9 @@ c--   Next, do the averages for velocitty.
           do bi = itlo,ithi
               do j = jmin,jmax
                 do i = imin,imax
-                  hfluxbar(i,j,bi,bj)  = (hfluxbar (i,j,bi,bj) +
-     &                              hflux(i,j,bi,bj)
-#ifdef SHORTWAVE_HEATING
-     &                              +swflux(i,j,bi,bj)
-#endif
-     &                              )/float(nTimeSteps)
+                  hfluxbar(i,j,bi,bj)  = 
+     &              ( hfluxbar (i,j,bi,bj) + hflux(i,j,bi,bj) )
+     &              /float(nTimeSteps)
                 enddo
               enddo
           enddo
@@ -369,11 +366,8 @@ c--     Accumulate ubar and vbar.
           do bi = itlo,ithi
               do j = jmin,jmax
                 do i =  imin,imax
-                  hfluxbar(i,j,bi,bj) = hfluxbar (i,j,bi,bj)
-     &                  + hflux(i,j,bi,bj)
-#ifdef SHORTWAVE_HEATING
-     &                  + swflux(i,j,bi,bj)
-#endif
+                  hfluxbar(i,j,bi,bj) = 
+     &              hfluxbar(i,j,bi,bj) + hflux(i,j,bi,bj)
                 enddo
             enddo
           enddo 
