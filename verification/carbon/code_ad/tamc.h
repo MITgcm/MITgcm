@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad/Attic/tamc.h,v 1.7 2005/08/10 03:37:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad/Attic/tamc.h,v 1.8 2006/02/16 15:39:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,7 +124,7 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, ikppkey, iptrkey
+     &        itdkey, idynkey, igmkey, ikppkey
 
 c     ================================================================
 c     END OF HEADER TAMC
