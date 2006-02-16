@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.27 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.28 2006/02/16 10:41:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,13 +125,12 @@ CADJ STORE uice  = comlev1, key = ikey_dynamics
 CADJ STORE vice  = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-C NOW DO ADVECTION
-      CALL ADVECT( UICE, VICE, HEFF, HEFFM, myThid )
-      CALL ADVECT( UICE, VICE, AREA, HEFFM, myThid )
+C NOW DO ADVECTION and DIFFUSION
+      CALL SEAICE_ADVDIFF( myTime, myIter, myThid ) 
 
 C NOW DO GROWTH
 C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
-      CALL GROWTH( myTime, myIter, myThid)
+      CALL GROWTH( myTime, myIter, myThid )
 
 C--   Update overlap regions for a bunch of stuff
       _BARRIER
