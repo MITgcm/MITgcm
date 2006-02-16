@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.29 2006/01/17 16:06:12 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.30 2006/02/16 23:03:16 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -336,7 +336,8 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
            DO K=1,Nr
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)
+               tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)*
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -352,6 +353,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = -vVel(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -367,6 +369,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = -theta(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -382,6 +385,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = -salt(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -638,6 +642,7 @@ C       this means that diag fill is called from inside the bi-bj loop
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -653,6 +658,7 @@ C       this means that diag fill is called from inside the bi-bj loop
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -668,6 +674,7 @@ C       this means that diag fill is called from inside the bi-bj loop
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = theta(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
@@ -683,6 +690,7 @@ C       this means that diag fill is called from inside the bi-bj loop
             DO j = 1,sNy
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = salt(i,j,K,bi,bj)
+     .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
            ENDDO
