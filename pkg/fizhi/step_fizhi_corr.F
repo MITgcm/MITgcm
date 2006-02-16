@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.13 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.14 2006/02/16 23:03:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-       subroutine step_fizhi_corr (myTime, myIter, myThid)
+       subroutine step_fizhi_corr (myTime, myIter, myThid, dt)
 c----------------------------------------------------------------------
 c  Subroutine step_fizhi_corr - 'Wrapper' routine to advance
 c        the physics state and make the new value. 
@@ -28,9 +28,16 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "EEPARAMS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_DIAGNOSTICS
+#include "fizhi_SHP.h"
+#endif
 
        integer myIter, myThid
        _RL myTime
+#ifdef ALLOW_DIAGNOSTICS
+      logical  diagnostics_is_on
+      external diagnostics_is_on
+#endif
 
 c pe on dynamics and physics grid refers to bottom edge
        _RL pephy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
@@ -51,6 +58,7 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL dt
 
        _RL tempij(sNx,sNy)
+       _RL dtfake
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -60,7 +68,7 @@ c pe on dynamics and physics grid refers to bottom edge
        idim2 = sNx
        jdim1 = 1
        jdim2 = sNy
-       dt = 1.
+       dtfake = 1.
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
@@ -245,64 +253,71 @@ C Note: correction term is now bottom up - needed in top down arrays
 c    Last: Increment physics state by the correction term
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-        call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
+        call step_physics(uphy,vphy,thphy,sphy,dtfake,im1,im2,jm1,jm2,
      .   Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,
      .                            uphytemp,vphytemp,thphytemp,sphytemp)
-
-      if(2.eq.1 )then
-      print *,' In step fizhi corr, new fizhi fields ',bi,' dt= ',dt
-      do L = 1,Nrphys
-       do j = jdim1,jdim2
-       do i = idim1,idim2
-        tempij(i,j) = uphy(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' uphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jdim1,jdim2
-       do i = idim1,idim2
-        tempij(i,j) = vphy(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' vphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jdim1,jdim2
-       do i = idim1,idim2
-        tempij(i,j) = thphy(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' thphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jdim1,jdim2
-       do i = idim1,idim2
-        tempij(i,j) = sphy(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' sphy at level ',l,' ',tempij
-      enddo
-      endif
 
         call qcheck (im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,idim1,idim2,
      .         jdim1,jdim2,bi,bj,dpphys,sphy)
 
-      if(2.eq.1 )then
-      print *,' In step fizhi corr after qcheck ',bi
-      do L = 1,Nrphys
-       do j = jdim1,jdim2
-       do i = idim1,idim2
-        tempij(i,j) = sphy(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' sphy after qcheck at level ',l,' ',tempij
+
+      do bj = myByLo(myThid), myByHi(myThid)
+      do bi = myBxLo(myThid), myBxHi(myThid)
+      do L=1,Nrphys
+
+c Total Tendency on Fizhi Grid for U (m/sec/day)
+c -----------------------------------------------
+       if(diagnostics_is_on('TENDUFIZ',myThid) ) then
+        do j=jm1,jm2
+        do i=im1,im2
+         tempij(i,j) = (uphy (i,j,L,bi,bj)-ubef(i,j,L,bi,bj) )
+     .                     * 86400. / dt
+        enddo
+        enddo
+        call diagnostics_fill(tempij,'TENDUFIZ',L,1,3,bi,bj,myThid)
+       endif
+
+c Total Tendency on Fizhi Grid for V (m/sec/day)
+c -----------------------------------------------
+       if(diagnostics_is_on('TENDVFIZ',myThid) ) then
+        do j=jm1,jm2
+        do i=im1,im2
+         tempij(i,j) = (vphy (i,j,L,bi,bj)-vbef(i,j,L,bi,bj) )
+     .                     * 86400. / dt
+        enddo
+        enddo
+        call diagnostics_fill(tempij,'TENDVFIZ',L,1,3,bi,bj,myThid)
+       endif
+
+c Total Tendency on Fizhi Grid for U (m/sec/day)
+c -----------------------------------------------
+       if(diagnostics_is_on('TENDTFIZ',myThid) ) then
+        do j=jm1,jm2
+        do i=im1,im2
+         tempij(i,j) = (thphy (i,j,L,bi,bj)-thbef(i,j,L,bi,bj) )
+     .                     * 86400. / dt
+        enddo
+        enddo
+        call diagnostics_fill(tempij,'TENDTFIZ',L,1,3,bi,bj,myThid)
+       endif
+
+c Total Tendency on Fizhi Grid for U (m/sec/day)
+c -----------------------------------------------
+       if(diagnostics_is_on('TENDQFIZ',myThid) ) then
+        do j=jm1,jm2
+        do i=im1,im2
+         tempij(i,j) = (sphy (i,j,L,bi,bj)-sbef(i,j,L,bi,bj) )
+     .                     * 86400. / dt
+        enddo
+        enddo
+        call diagnostics_fill(tempij,'TENDQFIZ',L,1,3,bi,bj,myThid)
+       endif
+
       enddo
-      endif
+      enddo
+      enddo
 
-
-       enddo
-       enddo
-
-       return
-       end
+      return
+      end

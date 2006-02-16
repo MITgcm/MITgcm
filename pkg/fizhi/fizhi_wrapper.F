@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.28 2005/06/30 23:09:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.29 2006/02/16 23:03:53 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -30,6 +30,9 @@ c-----------------------------------------------------------------------
 #include "fizhi_earth_coms.h"
 #include "fizhi_ocean_coms.h"
 #include "fizhi_chemistry_coms.h"
+#ifdef ALLOW_DIAGNOSTICS
+#include "fizhi_SHP.h"
+#endif
 
        integer myIter, myThid 
        _RL myTime
@@ -55,6 +58,95 @@ c pe on dynamics and physics grid refers to bottom edge
        im2 = sNx
        jm1 = 1
        jm2 = sNy
+
+#ifdef ALLOW_DIAGNOSTICS
+      if ( useDiagnostics ) then
+       if(diagnostics_is_on('TENDUFIZ',myThid) .or.
+     .       diagnostics_is_on('CORRDU  ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         ubef(i,j,L,bi,bj) = uphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        do L = 1,Nr
+        do j = 1,sNy
+        do i = 1,sNx+1
+         udynbef(i,j,L,bi,bj) = uvel(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        enddo
+        enddo
+       endif
+       if(diagnostics_is_on('TENDVFIZ',myThid) .or.
+     .       diagnostics_is_on('CORRDV  ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         vbef(i,j,L,bi,bj) = vphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        do L = 1,Nr
+        do j = 1,sNy+1
+        do i = 1,sNx
+         vdynbef(i,j,L,bi,bj) = vvel(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        enddo
+        enddo
+       endif
+       if(diagnostics_is_on('TENDTFIZ',myThid) .or.
+     .       diagnostics_is_on('CORRDT  ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         thbef(i,j,L,bi,bj) = thphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        do L = 1,Nr
+        do j = 1,sNy
+        do i = 1,sNx
+         thdynbef(i,j,L,bi,bj) = theta(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        enddo
+        enddo
+       endif
+       if(diagnostics_is_on('TENDQFIZ',myThid) .or.
+     .       diagnostics_is_on('CORRDQ  ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         sbef(i,j,L,bi,bj) = sphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        do L = 1,Nr
+        do j = 1,sNy
+        do i = 1,sNx
+         sdynbef(i,j,L,bi,bj) = salt(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        enddo
+        enddo
+       endif
+      endif
+#endif
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
