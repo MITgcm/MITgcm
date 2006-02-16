@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.7 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.8 2006/02/16 21:59:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -237,7 +237,7 @@ c--   Loop over records for the second time.
         call cost_readers( irec, mythid )
 #endif
 
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
         call cost_readgfo( irec, mythid )
 #endif
 
