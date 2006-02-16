@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.2 2005/05/22 02:06:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.3 2006/02/16 09:49:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,12 @@ c     == end of interface ==
      & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice heat budget */')
+      CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
+     & 'SEAICEadvScheme   =', ' /* advection scheme for thickness */')
+      IF ( SEAICEadvScheme .EQ. 2 ) 
+     & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
+     & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
+      SEAICEuseFluxForm  = .FALSE.
       CALL WRITE_0D_R8( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
       CALL WRITE_0D_R8( SEAICE_deltaTdyn  ,INDEX_NONE,
