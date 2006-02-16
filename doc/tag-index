@@ -1,22 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.612 2006/02/15 09:25:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.613 2006/02/16 10:42:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice advection: add code for choosing between the default (2nd order
+  central differences) and multiDim advection schemes provided by
+  pkg/generic_advdiff
 o seaice:
   - removed all references to SEAICE_GRID.h fields from 
     dynsolver, advect, diffus, lsr, without changing the results of lab_sea
     (cubed-sphere configuration will change a little)
   - grid computations in seaice_init are obsolete now.
   - cleaned up code a little so that is easier to read (hopefully).
-  - added new (better?) discretizations of advection and diffusion
-    (still commented out)
+  - added new (better?) discretizations of default advection and diffusion
+    (turn on with SEAICEuseFluxForm)
+  - replace 1 in 3d global fields by kSurface in growth.F
   
 checkpoint58a_post
 o seaice:
   - bug fix in advect.F
-  - replace 1 in 3d global fields by kSurface in growth.F
 o shelfice: 
   - separate shelfice load anomaly from pload (breaks with time 
     dependent forcing), => introduce constant field shelficeLoadAnomaly.
