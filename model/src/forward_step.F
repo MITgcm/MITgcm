@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.129 2006/01/22 15:12:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.130 2006/02/16 23:02:39 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -666,7 +666,7 @@ C AMM
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
          CALL TIMER_START('FIZHI               [FORWARD_STEP]',mythid)
-         CALL STEP_FIZHI_CORR ( myTime, myIter, myThid )
+         CALL STEP_FIZHI_CORR ( myTime, myIter, myThid, dTtracerLev(1) )
          CALL TIMER_STOP('FIZHI               [FORWARD_STEP]',mythid)
         endif
 #endif
