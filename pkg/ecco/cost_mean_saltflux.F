@@ -56,7 +56,6 @@ c     == local variables ==
       integer ilsalt
 
       _RL fctilemm
-      _RL fcthreadmm
       _RL tmpx
       _RL sumcos
 
@@ -96,8 +95,6 @@ c--   Read tiled data.
      &    sfluxbarfile(1:ilsalt),'.',optimcycle
       endif
 
-      fcthreadmm       = 0. _d 0
-
       irec = 1
 
 c--     Read time averages and the monthly mean data.
@@ -115,18 +112,19 @@ c--     Read time averages and the monthly mean data.
               do i = imin,imax
                 tmpx=tmpfld2d(i,j,bi,bj)
                 if (maskC(i,j,kk,bi,bj) .ne. 0.) then
-                   fctilemm = fctilemm+tmpx*cos(yc(i,j,bi,bj)*deg2rad)
-                  sumcos = sumcos + cos(yc(i,j,bi,bj)*deg2rad)
+                   fctilemm = fctilemm + tmpx
+     &                  *cos(yc(i,j,bi,bj)*deg2rad)
+                   sumcos = sumcos + cos(yc(i,j,bi,bj)*deg2rad)
+                   num_sfluxmm(bi,bj) = num_sfluxmm(bi,bj) + 1
                 endif
               enddo
             enddo
 
-            if(sumcos.eq.0) sumcos=1.0
-            fctilemm = (fctilemm / sumcos)
-            fctilemm = wsfluxmm(bi,bj) * (fctilemm )
+            _GLOBAL_SUM_R8( sumcos , myThid )
+            if (sumcos.eq.0.) sumcos = 1.
 
-            objf_sfluxmm(bi,bj) = fctilemm
-            fcthreadmm          = fcthreadmm + fctilemm
+            fctilemm = fctilemm / sumcos
+            objf_sfluxmm(bi,bj) = wsfluxmm(bi,bj) * fctilemm
 
           enddo
         enddo

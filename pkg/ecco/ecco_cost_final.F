@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.16 2005/12/22 21:13:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.17 2006/02/17 23:48:14 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -445,12 +445,10 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_hflux , myThid )
       _GLOBAL_SUM_R8( f_hfluxm , myThid )
       _GLOBAL_SUM_R8( f_hfluxmm , myThid )
-       f_hfluxmm = f_hfluxmm*f_hfluxmm/float(npx*npy)
       _GLOBAL_SUM_R8( f_hfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_sflux , myThid )
       _GLOBAL_SUM_R8( f_sfluxm , myThid )
       _GLOBAL_SUM_R8( f_sfluxmm , myThid )
-       f_sfluxmm = f_sfluxmm*f_sfluxmm/float(npx*npy)
       _GLOBAL_SUM_R8( f_sfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_uwind , myThid )
       _GLOBAL_SUM_R8( f_vwind , myThid )
@@ -501,7 +499,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_ageos , myThid )
       _GLOBAL_SUM_R8( f_kapgm , myThid )
       _GLOBAL_SUM_R8( f_diffkr , myThid )
-       _GLOBAL_SUM_R8( f_ini_fin , myThid )
+      _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
 
       _GLOBAL_SUM_R8( no_temp , myThid )
@@ -708,8 +706,8 @@ c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
 
         fc = fc + mult_hmean*objf_hmean
-        fc = fc + 0.*mult_hflux*f_hfluxmm
-        fc = fc + 0.*mult_sflux*f_sfluxmm
+        fc = fc + 0.*mult_hflux*f_hfluxmm*f_hfluxmm
+        fc = fc + 0.*mult_sflux*f_sfluxmm*f_sfluxmm
         no_hmean = num_hmean
 
         write(standardmessageunit,'(A,D22.15)')

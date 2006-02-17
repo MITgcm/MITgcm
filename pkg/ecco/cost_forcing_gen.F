@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.3 2005/12/22 21:13:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.4 2006/02/17 23:48:14 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -146,7 +146,7 @@ c--   >>> Loop 1 to compute mean forcing:
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -193,7 +193,7 @@ c--   >>> Loop 2 over records.
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -235,7 +235,7 @@ c--   >>> Loop 2 over records.
 
         _EXCH_XY_R8(tmpfld2d, mythid)
 
-c--     Loop over this thread's tiles.
+c--     Loop over this thread tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
