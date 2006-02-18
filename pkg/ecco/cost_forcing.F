@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.8 2005/12/22 15:57:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.9 2006/02/18 01:13:07 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -186,6 +186,16 @@ c--   Atmos. swdown. contribution to the cost function.
      &     num_swdown, num_swdownm,
      &     objf_swdown, objf_swdownm, objf_swdownsmoo,
      &     maskC, mythid )
+#endif
+
+c--   Compute cost function contribution of wind stress observations.  
+#ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
+      call cost_mean_heatflux( myiter, mytime, mythid )
+#endif
+
+c--   Compute cost function contribution of wind stress observations.
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+      call cost_mean_saltflux( myiter, mytime, mythid )
 #endif
 
       end

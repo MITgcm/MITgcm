@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.28 2005/12/22 01:08:57 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.29 2006/02/18 01:13:07 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1021,20 +1021,6 @@ c--   Compute cost function contribution of wind stress observations.
       call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid) 
       call cost_scat( myiter, mytime, mythid )
       call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', mythid)
-#endif
-
-c--   Compute cost function contribution of wind stress observations.  
-#ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-      call timer_start('cost_mean_heatflux   [ECCO SPIN-DOWN]', mythid)
-      call cost_mean_heatflux( myiter, mytime, mythid )
-      call timer_stop ('cost_mean_heatflux   [ECCO SPIN-DOWN]', mythid)
-#endif
-
-c--   Compute cost function contribution of wind stress observations.
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-      call timer_start('cost_mean_saltflux   [ECCO SPIN-DOWN]', mythid)
-      call cost_mean_saltflux( myiter, mytime, mythid )
-      call timer_stop ('cost_mean_saltflux   [ECCO SPIN-DOWN]', mythid)        
 #endif
 
 c--   Compute cost function contribution of drift between the first 
