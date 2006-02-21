@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.1 2006/02/16 10:41:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.2 2006/02/21 17:20:12 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -306,11 +306,12 @@ C-     Advective flux in X
        ENDDO
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-cph-test
 CADJ STORE localTij(:,:)  = 
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE af(:,:)  = 
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
        IF (calc_fluxes_X) THEN
@@ -456,11 +457,12 @@ C-     Advective flux in Y
        ENDDO
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-cph-test
+# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  = 
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 CADJ STORE af(:,:)  = 
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
        IF (calc_fluxes_Y) THEN
