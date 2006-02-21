@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.25 2005/11/08 23:03:17 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.26 2006/02/21 11:45:04 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -385,8 +385,10 @@ C Check first for global file with simple name (ie. fName)
            if ( debugLevel .GE. debLevA ) then
              write(msgbuf,'(a,a)')
      &        ' MDSREADFIELD: opening global file: ',dataFName(1:IL)
+#ifndef ALLOW_ECCO
              call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
+#endif
            endif
            globalFile = .TRUE.
          endif
@@ -399,8 +401,10 @@ C If negative check for global file with MDS name (ie. fName.data)
             if ( debugLevel .GE. debLevA ) then
              write(msgbuf,'(a,a)')
      &        ' MDSREADFIELD: opening global file: ',dataFName(1:IL+5)
+#ifndef ALLOW_ECCO
              call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
+#endif
             endif
             globalFile = .TRUE.
           endif
