@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.7 2005/03/03 14:57:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.8 2006/02/21 01:44:19 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -37,7 +37,7 @@ CEOP
 C     COMPUTATIONAL CONSTANTS
 C     -----------------------
       PARAMETER ( VECMAX = 65535.5    )
-      PARAMETER ( UNDEF  = 1.E15      )
+      PARAMETER ( UNDEF  = 1.d15      )
 
 C     ASTRONOMICAL CONSTANTS
 C     ----------------------
