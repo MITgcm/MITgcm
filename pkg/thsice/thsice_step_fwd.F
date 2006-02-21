@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.11 2005/07/11 19:00:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.12 2006/02/21 01:15:16 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -131,6 +131,7 @@ C-------
      O               albedo,
      I               myThid )
           flxSW(i,j) = flxSW(i,j)*(1. _d 0 - albedo)
+          siceAlb(i,j,bi,bj) = albedo
 
           CALL THSICE_SOLVE4TEMP(
      I          useBulkforce, tmpflx, TFrzOce, hIce, hSnow,
@@ -150,7 +151,6 @@ C--    Update Sea-Ice state :
           Tice2(i,j,bi,bj)=Tice(2)
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
-          siceAlb(i,j,bi,bj) = icFrac*albedo
           IF ( dBug ) THEN
            WRITE(6,1010) 'ThSI_FWD: Tsf, Tice(1,2), frzmltMxL =',
      &                              Tsf, Tice, frzmltMxL
@@ -170,8 +170,16 @@ C--    Update Sea-Ice state :
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   snowPrc,   iceMask,tmpFac,1,'SIsnwPrc',
      I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   siceAlb,   iceMask,tmpFac,1,'SIalbedo',
+     I                   0,1,1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+          siceAlb(i,j,bi,bj) = iceMask(i,j,bi,bj)*siceAlb(i,j,bi,bj)
+       ENDDO
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.2 : ice-covered fraction ; 

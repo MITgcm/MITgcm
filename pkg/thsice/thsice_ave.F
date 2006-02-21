@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.8 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.9 2006/02/21 01:15:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -133,8 +133,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-
-        CALL DIAGNOSTICS_FILL(siceAlb,'SIalbedo',0,1,1,bi,bj,myThid)
 
 C-- Atmospheric fluxes :
        IF ( fluidIsWater ) THEN
