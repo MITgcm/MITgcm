@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.2 2005/06/29 23:07:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.3 2006/02/21 01:23:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -78,10 +78,14 @@ C-      write a kind of header:
               iL = iL+3
             ENDIF
           ENDDO
-          WRITE(nUnit,'(2A)') msgBuf(1:iL)
+          WRITE(nUnit,'(A)') msgBuf(1:iL)
           DO j=1,diagSt_nbFlds(n),10
             WRITE(nUnit,'(A,20A)')      '# Fields       :', 
      &        (' ', diagSt_Flds(m,n), m=j,MIN(diagSt_nbFlds(n),j+9) )
+          ENDDO
+          DO j=1,diagSt_nbFlds(n),50
+            WRITE(nUnit,'(A,50I4)')   '# Nb of levels : ', 
+     &         ( kdiag(jSdiag(m,n)), m=j,MIN(diagSt_nbFlds(n),j+49) )
           ENDDO
           WRITE(nUnit,'(2A)') '# end of header ----------------------',
      &                        '--------------------------------------'
