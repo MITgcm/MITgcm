@@ -65,20 +65,27 @@
 #                 file for the list of all available diag. in this particular config)
 #-----------------
  &DIAG_STATIS_PARMS
+#- regional mask: 3 lat. band: 1 : y <= -24 ; 2 : -24<y<24 ; 3 : 24 <= y
+ diagSt_regMaskFile='regMask_lat24.bin',
+ nSetRegMskFile=1,
+ set_regMask(1)= 1,  1,  1,
+ val_regMask(1)= 1., 2., 3.,
 #- an example just to check the agreement with MONITOR output:
  stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
     stat_fname(1)= 'dynStDiag',
      stat_freq(1)= -3600.,
     stat_phase(1)= 0.,
  stat_fields(1,4)= 'LdSnowH ', 'GrdSurfT', 'GrdTemp ', 'GrdWater',
+ stat_region(1,4)= 1, 2, 3,
     stat_fname(4)= 'landStDiag',
      stat_freq(4)= -3600.,
     stat_phase(4)= 0.,
  stat_fields(1,5)= 'SI_Fract', 'SI_Thick', 'SI_SnowH',
                    'SI_Tsrf ', 'SI_Tice1', 'SI_Tice2',
-#                  'SI_Qice1', 'SI_Qice2', 'SIsnwAge',
-#                  'SIsnwPrc', 'SIalbedo',
-#                  'SIflx2oc', 'SIfrw2oc', 'SIsaltFx',
+#                  'SI_Qice1', 'SI_Qice2',
+                   'SIsnwPrc', 'SIalbedo', 'SIsnwAge',
+                   'SIflx2oc', 'SIfrw2oc', 'SIsaltFx',
+ stat_region(1,5)= 1, 3, 0,
     stat_fname(5)= 'thSIceStDiag',
      stat_freq(5)= -3600.,
     stat_phase(5)= 0.,
