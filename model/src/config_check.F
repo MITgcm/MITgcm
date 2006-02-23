@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.32 2006/02/10 22:56:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.33 2006/02/23 16:46:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,7 +16,7 @@ C     *=========================================================*
 C     | This routine help to prevent the use of parameters
 C     | that are not compatible with the model configuration.
 C     *=========================================================*
-C     \ev                                                           
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -45,7 +45,7 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         WRITE(msgBuf,'(2A)') '**WARNNING** ',
      &   'CONFIG_CHECK: useMNC is TRUE and #undef ALLOW_MNC'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)                      
+     &       SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif
 
@@ -160,10 +160,10 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
       IF (select_rStar .NE. 0) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: rStar is part of NonLin-FS '
-        CALL PRINT_ERROR( msgBuf, myThid)                      
+        CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to use it'
-        CALL PRINT_ERROR( msgBuf, myThid)                      
+        CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif /* NONLIN_FRSURF */
@@ -273,7 +273,7 @@ C-  check parameter consistency :
      &  ' overlap (Olx,Oly) smaller than 3'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF                 
+      ENDIF
       IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
      &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
      &   ) THEN
@@ -282,7 +282,7 @@ C-  check parameter consistency :
      &  ' overlap (Olx,Oly) smaller than 3'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF                 
+      ENDIF
 
       IF ( rigidLid .AND. implicitFreeSurface ) THEN
         WRITE(msgBuf,'(A,A)')
@@ -290,7 +290,7 @@ C-  check parameter consistency :
      &  ' and rigidLid.'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF                 
+      ENDIF
 
       IF (rigidLid .AND. exactConserv) THEN
         WRITE(msgBuf,'(A)') 
@@ -354,7 +354,8 @@ c       CALL PRINT_ERROR( msgBuf , 1)
 c       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 c     ENDIF
 
-      IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
+c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
+      IF (nonlinFreeSurf.NE.0 .AND. use3Dsolver) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: nonlinFreeSurf not yet implemented'
         CALL PRINT_ERROR( msgBuf , myThid)
@@ -369,11 +370,11 @@ c     ENDIF
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause problems'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: with different FreeSurf & Tracer time-steps'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. exactConserv
@@ -393,11 +394,11 @@ c     ENDIF
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: **WARNNING** ',
      &   'RealFreshWater & implicDiv2DFlow < 1'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: works better',
      &   ' with exactConserv=.T. (+ #define EXACT_CONSERV)'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 
 #ifdef EXACT_CONSERV
@@ -417,11 +418,11 @@ c     ENDIF
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: E-P effects on wVel are not included'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> use #define EXACT_CONSERV to fix it'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* EXACT_CONSERV */
 
@@ -444,12 +445,12 @@ C- jmc: but ultimately, this block can/will be removed.
         WRITE(msgBuf,'(2A)') '**WARNNING** ',
      &   'CONFIG_CHECK: CD-scheme is OFF but params(tauCD,rCD) are set'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
      &   ' in "data", namelist PARM01' 
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)                      
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 
       IF ( useCDscheme .AND. useCubedSphereExchange ) THEN
@@ -487,22 +488,7 @@ C- jmc: but ultimately, this block can/will be removed.
      &       'setting usePTRACERS'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF      
-      
-      IF ( tauThetaClimRelax3Dim .NE. 0. .OR.
-     &     tauSaltClimRelax3Dim .NE. 0. ) THEN
-        WRITE(msgBuf,'(2A)')
-     &       'CONFIG_CHECK: 3-dim. relaxation code has moved to ',
-     &       'separate pkg/rbcs.' 
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)')
-     &       'tauThetaClimRelax3Dim, tauSaltClimRelax3Dim no longer ',
-     &       'in use.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-
-C------------------------------------------------------------------------------------------
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,

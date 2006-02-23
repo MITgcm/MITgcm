@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.111 2006/02/10 07:56:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.112 2006/02/23 16:46:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -274,8 +274,6 @@ C--   Time stepping parameters
       tauCD             =  0.D0
       tauThetaClimRelax =  0.D0
       tauSaltClimRelax  =  0.D0
-      tauThetaClimRelax3Dim =  0.D0
-      tauSaltClimRelax3Dim  =  0.D0
       tauTr1ClimRelax   =  0.D0
       periodicExternalForcing = .FALSE.
       externForcingPeriod     = 0.

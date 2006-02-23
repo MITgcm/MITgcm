@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.178 2006/02/10 22:55:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.179 2006/02/23 16:46:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,11 +117,13 @@ C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords
 C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
-C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
-C              :: parameters. These are parameters that are either no-longer used
-C                 or that have moved to a different input file and/or namelist.
 C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
 C                 use old method by setting useAreaViscLength=.true.
+C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C     nRetired :: Counter used to trap gracefully namelists containing "retired"
+C              :: parameters. These are parameters that are either no-longer used
+C                 or that have moved to a different input file and/or namelist.
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -129,6 +131,7 @@ C                 use old method by setting useAreaViscLength=.true.
       _RL rkFac
       _RL viscAstrain, viscAtension
       LOGICAL groundAtK1, useAnisotropicViscAGridMax
+      _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       INTEGER nRetired
 
 C--   Continuous equation parameters
@@ -259,6 +262,8 @@ C--   Initialise retired parameters to unlikely value
       groundAtK1      = .FALSE.
       viscAstrain     = UNSET_RL
       viscAtension    = UNSET_RL
+      tauThetaClimRelax3Dim = UNSET_RL
+      tauSaltClimRelax3Dim  = UNSET_RL
       useAnisotropicViscAgridMax=.TRUE.
 
 C--   Open the parameter file
@@ -782,6 +787,26 @@ C--   Time stepping parameters
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
       ENDIF   
+C     Check for retired parameters still being used
+      IF ( tauThetaClimRelax3Dim .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tauThetaClimRelax3Dim" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: 3-dim. relaxation code',
+     & ' has moved to separate pkg/rbcs.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( tauSaltClimRelax3Dim .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tauSaltClimRelax3Dim" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: 3-dim. relaxation code',
+     & ' has moved to separate pkg/rbcs.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+
 C     Process "timestepping" params
 C     o Time step size
       IF ( deltaTtracer .NE. dTtracerLev(1) .AND.
@@ -1198,7 +1223,7 @@ C
 
 C--   Check whether any retired parameters were found.
 C--   Stop if they were
-      IF ( nRetired .GT. 0 ) THEN    
+      IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'Error reading parameter file "data"'
        CALL PRINT_ERROR( msgBuf , 1)

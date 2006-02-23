@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.178 2006/02/10 22:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.179 2006/02/23 16:43:52 jmc Exp $
 C $Name:  $
 C
 
@@ -36,9 +36,9 @@ C     UNSET_xxx :: Used to indicate variables that have not been given a value
       PARAMETER ( UNSET_FLOAT8 = 1.234567D5 )
       Real*4 UNSET_FLOAT4
       PARAMETER ( UNSET_FLOAT4 = 1.234567E5 )
-      _RL    UNSET_RL    
+      _RL    UNSET_RL
       PARAMETER ( UNSET_RL     = 1.234567D5 )
-      _RS    UNSET_RS     
+      _RS    UNSET_RS
       PARAMETER ( UNSET_RS     = 1.234567E5 )
       INTEGER UNSET_I
       PARAMETER ( UNSET_I      = 123456789  )
@@ -642,8 +642,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
-     & tauThetaClimRelax, tauThetaClimRelax3Dim,
-     & tauSaltClimRelax, tauSaltClimRelax3Dim,
+     & tauThetaClimRelax, tauSaltClimRelax,
      & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
@@ -755,8 +754,6 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL rotationPeriod
       _RL tauThetaClimRelax
       _RL tauSaltClimRelax
-      _RL tauThetaClimRelax3Dim
-      _RL tauSaltClimRelax3Dim
       _RL tauTr1ClimRelax
       _RL lambdaTr1ClimRelax
       _RL latBandClimRelax
@@ -826,7 +823,7 @@ C Logical flags for selecting packages
       LOGICAL useThSIce
       LOGICAL usefizhi
       LOGICAL usegridalt
-      LOGICAL usediagnostics
+      LOGICAL useDiagnostics
       LOGICAL useEBM
       LOGICAL useMNC
       LOGICAL useMATRIX
@@ -837,7 +834,7 @@ C Logical flags for selecting packages
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS,
      &        useSBO, useSEAICE, useShelfIce, useThSIce, useBulkForce, 
-     &        usefizhi, usegridalt, usediagnostics, useEBM, useMNC,
+     &        usefizhi, usegridalt, useDiagnostics, useEBM, useMNC,
      &        usePP81, useMY82, useOPPS, useGGL90, useMATRIX,
      &        useRunClock, useEMBED_FILES
 
