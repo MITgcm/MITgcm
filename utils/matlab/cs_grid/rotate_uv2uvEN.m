@@ -1,5 +1,5 @@
 function [uE,vN] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid)
-% [uE,vN] = rotate_uv2uvEN(u,v,AngleCS,AngleSN.Grid)
+% [uE,vN] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid)
 %
 % Rotate cube sphere U and V vector components to east-west (uE) and
 % north-south (vN) components located on cube sphere grid centers.
@@ -23,6 +23,9 @@ function [uE,vN] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid)
 % >> AngleSN=rdmds('AngleSN');
 % >> [uE,vN] = rotate_uv2uvEN(uA,vA,AngleCS,AngleSN,'A');
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/rotate_uv2uvEN.m,v 1.2 2006/02/23 14:04:12 jmc Exp $
+% $Name:  $
+
 % Default is a C-grid configuration.
 if nargin == 4, Grid = 'C'; end
 
@@ -40,20 +43,20 @@ u=reshape(u,[6*nc nc nz]);
 v=reshape(v,[6*nc nc nz]);
 
 % Do simple average to put u,v at the cell center (A-grid) as needed.
-[uu,vv] = split_UV_cub(u,v);
 if isequal(Grid,'A')
-    u = uu(1:nc,1:nc,1:nz,1:6);
-    v = vv(1:nc,1:nc,1:nz,1:6);
+    u=reshape(u,[6*nc*nc nz]);
+    v=reshape(v,[6*nc*nc nz]);
 elseif isequal(Grid,'C')
+    [uu,vv] = split_UV_cub(u,v);
     uu=reshape(uu,[nc+1 nc nz 6]);
     vv=reshape(vv,[nc nc+1 nz 6]);
     u=(uu(1:nc,:,:,:)+uu(2:nc+1,:,:,:))/2;
     v=(vv(:,1:nc,:,:)+vv(:,2:nc+1,:,:))/2;
+    u=reshape(permute(u,[1 4 2 3]),[6*nc*nc nz]);
+    v=reshape(permute(v,[1 4 2 3]),[6*nc*nc nz]);
 else
     error(['Unrecognized grid type:  ',Grid]);
 end
-u=reshape(permute(u,[1 4 2 3]),[6*nc*nc nz]);
-v=reshape(permute(v,[1 4 2 3]),[6*nc*nc nz]);
 
 % Make rotation to find uE, vN.
 uE=NaN.*zeros(6*nc*nc,nz);
@@ -64,3 +67,4 @@ for k=1:nz;
 end
 uE = reshape(uE,dim);
 vN = reshape(vN,dim);
+return
