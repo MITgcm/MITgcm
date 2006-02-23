@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.19 2005/12/20 20:31:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.20 2006/02/23 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,11 +47,12 @@ C     faceArea - Temporary used to hold cell face areas.
 C     myNorm - Work variable used in clculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
-      INTEGER I,  J, K, ks
+      INTEGER I, J, K, ks
       _RL     faceArea
       _RS     myNorm
       _RL     theRecip_Dr
       _RL     aU, aL, aW, aE, aN, aS, aC
+      _RL     tmpFac, nh_Fac, igwFac
 CEOP
 
 CcnhDebugStarts
@@ -92,6 +93,13 @@ C-       From common bloc SFP3D_COMMON_R:
        ENDDO
       ENDDO
 
+      nh_Fac = 0.
+      igwFac = 0.
+      IF ( nonHydrostatic
+     &      .AND. nh_Am2.NE.0. ) nh_Fac = 1. _d 0 / nh_Am2
+      IF ( implicitIntGravWave ) igwFac = 1. _d 0
+
+      IF ( use3Dsolver ) THEN
 C--   Initialise laplace operator
 C     aW3d: Ax/dX
 C     aS3d: Ay/dY
@@ -126,6 +134,9 @@ C     aV3d: Ar/dR
          ENDDO
         ENDDO
         DO K=2,Nr
+         tmpFac = nh_Fac*recip_horiVertRatio*recip_horiVertRatio
+     &          + igwFac*dBdrRef(k)*deltaTMom*dTtracerLev(k)
+         IF (tmpFac.GT.0. ) tmpFac = 1. _d 0 / tmpFac
          DO J=1,sNy
           DO I=1,sNx
            faceArea = _rA(I,J,bi,bj)*maskC(I,J, K ,bi,bj)
@@ -136,8 +147,7 @@ caja &      drF(K  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
 c          IF ( theRecip_Dr .NE. 0. ) 
 c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
-           aV3d(I,J,K,bi,bj) = faceArea*theRecip_Dr
-     &                 *horiVertRatio*horiVertRatio *nh_Am2
+           aV3d(I,J,K,bi,bj) = faceArea*theRecip_Dr*tmpFac
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -351,6 +361,9 @@ c     ENDDO
 C     CALL PLOT_FIELD_XYRS( zMU, 'zMU INI_CG3D.1' , Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYRS( zML, 'zML INI_CG3D.1' , Nr, 1, myThid )
 CcnhDebugEnds
+
+C--   end if (use3Dsolver)
+      ENDIF
 
 #endif /* ALLOW_NONHYDROSTATIC */
 

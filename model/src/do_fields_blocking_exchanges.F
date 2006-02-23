@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.19 2004/11/02 19:09:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.20 2006/02/23 20:55:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,12 +48,15 @@ c     _EXCH_XYZ_R8( vVel , myThid )
 #ifndef ALLLOW_OFFLINE
       IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-       _EXCH_XYZ_R8( wVel , myThid )
+       IF ( .NOT.implicitIntGravWave )
+     & _EXCH_XYZ_R8( wVel , myThid )
       ENDIF
 c     IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
 c    & _EXCH_XY_R8( etaN , myThid )
-      _EXCH_XYZ_R8( theta, myThid )
-      _EXCH_XYZ_R8( salt , myThid )
+      IF ( .NOT.implicitIntGravWave ) THEN
+       _EXCH_XYZ_R8( theta, myThid )
+       _EXCH_XYZ_R8( salt , myThid )
+      ENDIF
 #endif
 
 #ifndef ALLOW_OFFLINE

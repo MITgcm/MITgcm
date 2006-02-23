@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.52 2005/12/22 01:08:57 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.53 2006/02/23 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -172,7 +172,7 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic .AND. zeroPsNH ) THEN
+        IF ( use3Dsolver .AND. zeroPsNH ) THEN
          DO j=1,sNy
           DO i=1,sNx
            ks = ksurfC(i,j,bi,bj)
@@ -186,7 +186,7 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
            ENDIF
           ENDDO
          ENDDO
-        ELSEIF ( nonHydrostatic ) THEN
+        ELSEIF ( use3Dsolver ) THEN
          DO j=1,sNy
           DO i=1,sNx
            ks = ksurfC(i,j,bi,bj)
@@ -313,7 +313,7 @@ C--   Transfert the 2D-solution to "etaN" :
       ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
-      IF ( nonHydrostatic ) THEN
+      IF ( use3Dsolver ) THEN
 
 C--   Solve for a three-dimensional pressure term (NH or IGW or both ).
 C     see CG3D.h for the interface to this routine.

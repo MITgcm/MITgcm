@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.127 2005/12/15 21:09:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.128 2006/02/23 20:55:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -405,12 +405,21 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 
 C        phiHyd(z=0)=0
-         CALL CALC_PHI_HYD(
+         IF ( implicitIntGravWave ) THEN
+           CALL CALC_PHI_HYD(
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
+     I        gT, gS,
+     U        phiHydF,
+     O        phiHydC, dPhiHydX, dPhiHydY,
+     I        myTime, myIter, myThid )
+         ELSE
+           CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        theta, salt,
      U        phiHydF,
      O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
+         ENDIF
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
@@ -537,16 +546,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
-      IF ( momStepping .AND. nonHydrostatic ) THEN
+      IF ( nonHydrostatic ) THEN
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('CALC_GW', myThid )
 #endif
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW( myTime, myIter, myThid )
-         CALL TIMESTEP_WVEL( myTime, myIter, myThid )
-         CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
       ENDIF
+      IF ( nonHydrostatic.OR.implicitIntGravWave ) 
+     &   CALL TIMESTEP_WVEL( myTime, myIter, myThid )
+      IF ( nonHydrostatic )
+     &   CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

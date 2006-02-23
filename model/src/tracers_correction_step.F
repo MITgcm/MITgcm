@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.9 2005/11/06 22:01:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.10 2006/02/23 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,11 +78,17 @@ C-        Update tracer fields:  T(n) = T**
 #ifdef ALLOW_PTRACERS
 C-        Update passive tracer fields:  T(n) = T**
           IF (usePTRACERS)
-     &        CALL PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
+     &      CALL PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
 #endif /* ALLOW_PTRACERS */
 
 C--     End DO K=1,Nr
         ENDDO
+
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( implicitIntGravWave ) THEN
+          CALL TRACERS_IIGW_CORRECTION(bi,bj, myTime,myIter,myThid)
+        ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C--    End of 1rst bi,bj loop
        ENDDO
@@ -123,14 +129,14 @@ C--     Convectively adjust new fields to be statically stable
          CALL OPPS_INTERFACE(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
-        ELSE
+        ELSEIF ( cAdjFreq .NE. 0. ) THEN
+#else /* ALLOW_OPPS */
+        IF ( cAdjFreq .NE. 0. ) THEN
 #endif /* ALLOW_OPPS */
          CALL CONVECTIVE_ADJUSTMENT(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
-#ifdef ALLOW_OPPS
         ENDIF
-#endif /* ALLOW_OPPS */
 
 #ifdef ALLOW_MATRIX
       IF (useMATRIX)

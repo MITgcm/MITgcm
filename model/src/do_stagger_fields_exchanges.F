@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.5 2004/07/07 22:52:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.6 2006/02/23 20:55:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,8 +34,15 @@ CEOP
 
       IF ( staggerTimeStep .AND. useMultiDimAdvec) THEN
         CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-        _EXCH_XYZ_R8( wVel , myThid )
+        IF ( .NOT.implicitIntGravWave )
+     &  _EXCH_XYZ_R8( wVel , myThid )
       ENDIF
+c #ifdef ALLOW_NONHYDROSTATIC
+      IF ( implicitIntGravWave ) THEN
+        _EXCH_XYZ_R8( gT , myThid )
+        _EXCH_XYZ_R8( gS , myThid )
+      ENDIF
+c #endif
 
       RETURN
       END

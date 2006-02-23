@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.61 2005/12/15 02:06:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.62 2006/02/23 20:55:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,7 +127,7 @@ C       Raw fields
         CALL READ_REC_XY_RL (  'etaN',   etaN, 1,myIter,myThid)
         
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( use3Dsolver ) THEN
           CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
 c         CALL READ_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
           CALL READ_REC_XYZ_RL( 'gWnm1', gwNm1,1,myIter,myThid)
@@ -221,7 +221,7 @@ C       Read model fields
           CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
         ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( use3Dsolver ) THEN
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
 c         CALL MDSREADFIELD(fn,prec,'RL',Nr,    gW,2,myThid)
@@ -265,7 +265,7 @@ C#endif
         ENDIF
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
-        IF (nonHydrostatic) THEN
+        IF (use3Dsolver) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
 c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'gWnm1', gwNm1, myThid)
@@ -311,7 +311,7 @@ c     _EXCH_XYZ_R8(gs    , myThid )
      &     _EXCH_XYZ_RL( totPhiHyd, myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
-      IF ( nonHydrostatic ) THEN
+      IF ( use3Dsolver ) THEN
         _EXCH_XYZ_R8(phi_nh, myThid )
 c       _EXCH_XYZ_R8(gW    , myThid )
         _EXCH_XYZ_R8(gwNm1 , myThid )
@@ -520,7 +520,7 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL( 'gSNm1',  gsNm1, 1,myIter,myThid)
         CALL WRITE_REC_XY_RL (  'etaN',  etaN,  1,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( use3Dsolver ) THEN
           CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
 c         CALL WRITE_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
           CALL WRITE_REC_XYZ_RL( 'gWnm1', gwNm1,1,myIter,myThid)
@@ -587,7 +587,7 @@ C       Reset binary precision
      &         1,myIter,myThid)
         ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( use3Dsolver ) THEN
           IF ( permCheckPoint ) THEN
             WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
           ELSE
@@ -642,7 +642,7 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF ( use3Dsolver ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
 c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'gWnm1', gwNm1, myThid)

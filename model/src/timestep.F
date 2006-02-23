@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.43 2005/12/13 21:07:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.44 2006/02/23 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -107,7 +107,7 @@ C-    Initialize local arrays (not really necessary but safer)
        ENDDO
       ENDDO
 
-      IF ( .NOT.staggerTimeStep ) THEN
+      IF ( .NOT.staggerTimeStep .AND. .NOT. implicitIntGravWave ) THEN
 C--   Synchronous time step: add grad Phi_Hyp to gU,gV before doing Adams-Bashforth
         DO j=jMin,jMax
          DO i=iMin,iMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.1 2005/12/15 21:09:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_wvel.F,v 1.2 2006/02/23 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,7 @@ C     == Local variables ==
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j
       _RL     gWtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     tmpFac, nh_Fac, igwFac
 CEOP
 
       iMin = 1
@@ -46,27 +47,43 @@ CEOP
       jMin = 1
       jMax = sNy
 
+      igwFac = 0.
+      IF ( implicitIntGravWave ) igwFac = horiVertRatio*horiVertRatio
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     tile loops :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+       IF ( nonHydrostatic ) THEN
+        nh_Fac = 0.
+        IF ( nh_Am2.NE.0. ) nh_Fac = 1. _d 0 / nh_Am2
+
+        k = 1
+        DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+
         DO k=2,Nr
 
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           gWtmp(i,j) = gW(i,j,k,bi,bj)
+C     apply mask to gW and keep a copy of wVel in gW:
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            gWtmp(i,j) = gW(i,j,k,bi,bj)
      &             *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+            gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
           ENDDO
          ENDDO
-
-C     Step forward vertical velocity (and keep a copy in gW)
+C     Step forward vertical velocity
+         tmpFac = nh_Fac + igwFac*dBdrRef(k)*deltaTMom*dTtracerLev(k)
+         IF (tmpFac.GT.0. ) tmpFac = 1. _d 0 / tmpFac
          DO j=jMin,jMax
           DO i=iMin,iMax
-            gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
-     &                        + deltaTmom*nh_Am2*gWtmp(i,j)
+     &                        + deltaTmom*tmpFac*gWtmp(i,j)
           ENDDO
          ENDDO
 
@@ -85,6 +102,19 @@ C     impact. This is purely for diagnostic purposes.
          ENDDO
         ENDIF
 #endif /* ALLOW_OBCS */
+
+       ELSEIF ( implicitIntGravWave ) THEN
+C     keep a copy of wVel in gW:
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+
+C-    End if nonHydrostatic / elseif implicitIntGravWave
+       ENDIF
 
 C-    End of bi,bj loops
        ENDDO

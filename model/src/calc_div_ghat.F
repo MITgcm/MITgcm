@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.20 2004/04/06 00:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.21 2006/02/23 20:55:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,14 +7,14 @@ CBOP
 C     !ROUTINE: CALC_DIV_GHAT
 C     !INTERFACE:
       SUBROUTINE CALC_DIV_GHAT(
-     I        bi,bj,iMin,iMax,jMin,jMax,K,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        xA,yA,
      U        cg2d_b,
      I        myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R CALC_DIV_GHAT                                         
-C     | o Form the right hand-side of the surface pressure eqn.   
+C     | S/R CALC_DIV_GHAT
+C     | o Form the right hand-side of the surface pressure eqn.
 C     *==========================================================*
 C     | Right hand side of pressure equation is divergence
 C     | of veclocity tendency (GHAT) term along with a relaxation
@@ -34,14 +34,15 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C                                      results will be set.
-C     k                              - Index of layer.
-C     xA, yA                         - Cell face areas
-C     cg2d_b - Conjugate Gradient 2-D solver : Right-hand side vector 
-C     myThid - Instance number for this call of CALC_DIV_GHAT
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER K
+C     bi, bj  :: tile indices
+C     iMin, iMax, jMin, jMax :: Range of points for which calculation
+C                               results will be set.
+C     k       :: Index of layer.
+C     xA, yA  :: Cell face areas
+C     cg2d_b  :: Conjugate Gradient 2-D solver : Right-hand side vector
+C     myThid  :: Instance number for this call of CALC_DIV_GHAT
+      INTEGER bi,bj, iMin,iMax,jMin,jMax
+      INTEGER k
       _RS xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -56,7 +57,7 @@ C     pf  :: Intermediate array for building RHS source term.
 CEOP
 
 C--   Pressure equation source term
-C     Term is the vertical integral of the divergence of the 
+C     Term is the vertical integral of the divergence of the
 C     time tendency terms along with a relaxation term that
 C     pulls div(U) + dh/dt back toward zero.
 
@@ -72,7 +73,7 @@ c     ELSEIF (nonlinFreeSurf.GT.0) THEN
 C     Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx+1
-          pf(i,j) = implicDiv2Dflow 
+          pf(i,j) = implicDiv2Dflow
      &             *xA(i,j)*gU(i,j,k,bi,bj) / deltaTmom
          ENDDO
         ENDDO
@@ -81,7 +82,7 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
 C-- Now the filter are applied in the_correction_step().
 C   We have left this code here to indicate where the filters used to be
-C   in the algorithm before JMC moved them to after the pressure solver. 
+C   in the algorithm before JMC moved them to after the pressure solver.
 C- 
 C#ifdef ALLOW_ZONAL_FILT
 C        IF (zonal_filt_lat.LT.90.) THEN 
@@ -107,7 +108,7 @@ C#endif
       ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
-      IF (nonHydrostatic) THEN
+      IF (use3Dsolver) THEN
        DO j=1,sNy
         DO i=1,sNx
          cg3d_b(i,j,k,bi,bj) = pf(i+1,j)-pf(i,j)
@@ -150,7 +151,7 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
       ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
-      IF (nonHydrostatic) THEN
+      IF (use3Dsolver) THEN
        DO j=1,sNy
         DO i=1,sNx
          cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj) +
