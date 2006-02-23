@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.8 2006/02/23 20:03:10 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -79,7 +79,7 @@ c set arrays to zero if first timestep
        ENDDO
 
 C     Dump files and restart average computation if needed
-      ELSEIF ( 
+      ELSEIF (
      &  DIFFERENT_MULTIPLE(thSIce_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
@@ -137,7 +137,7 @@ c    &                 bi,bj,myThid)
          ENDIF
         ENDDO
        ENDDO
-         
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Write 1 file per time-average variable:
@@ -282,7 +282,7 @@ C        C             123456789 1
 
        _END_MASTER( myThid )
        _BARRIER
-         
+
 C--    Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -304,22 +304,22 @@ C--    Reset averages to zero
          ice_timeAve(1,bi,bj) = 0.
         ENDDO
        ENDDO
-         
+
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
 
 C     Dump a snap-shot of main state variables:
-      IF ( 
+      IF (
      &     DIFFERENT_MULTIPLE( thSIce_diagFreq, myTime, deltaTClock )
      &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
      &                             myTime.EQ.startTime  )
      &   ) THEN
 
         IF ( thSIce_snapshot_mdsio ) THEN
-          
+
           WRITE(suff,'(I10.10)') myIter
-          
+
           CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
      &         myIter,myThid)
           CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceheight,
@@ -336,17 +336,19 @@ C     Dump a snap-shot of main state variables:
      &         myIter,myThid)
           CALL WRITE_FLD_XY_RL('ice_Qice2.',  suff,Qice2,
      &         myIter,myThid)
-          CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
-     &         myIter,myThid)
           CALL WRITE_FLD_XY_RL('ice_snowAge.',suff,snowAge,
      &         myIter,myThid)
+          IF ( myTime.NE.startTime ) THEN
+            CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
+     &           myIter,myThid)
+          ENDIF
           IF ( stepFwd_oceMxL ) THEN
             CALL WRITE_FLD_XY_RL('ice_tOceMxL.', suff, tOceMxL,
      &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('ice_sOceMxL.', suff, sOceMxL,
-     &     myIter,myThid)
+     &           myIter,myThid)
           ENDIF
-          
+
         ENDIF
 
 #ifdef ALLOW_MNC
@@ -383,11 +385,11 @@ C         C             123456789 12345
 
 
       ENDIF
-         
+
       IF ( thSIce_monFreq.GT. 0. _d 0 )
      &    CALL THSICE_MONITOR( myTime, myIter, myThid )
 
 #endif /* ALLOW_THSICE */
-      
+
       RETURN
       END
