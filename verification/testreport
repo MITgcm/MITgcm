@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.74 2006/01/13 16:33:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.75 2006/02/24 23:15:25 jmc Exp $
 #  $Name:  $
 #
 
@@ -515,14 +515,19 @@ runmodel()
     #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
-	printf 'runmodel ... ' 1>&2
+	printf 'runmodel in %s ...' $1 1>&2
 	# make output.txt
 	echo
 	rm -f run.log
+        if test output.txt -ot mitgcmuv ; then
+	   ( eval $COMMAND ) > run.log 2>&1
+	   RETVAL=$?
+	else
+           echo ' output.txt is up to date ' > run.log 2>&1
+	   RETVAL=0
+	fi
 	# echo "COMMAND='$COMMAND'"
 	# echo "pwd='"`pwd`"'"
-	( eval $COMMAND ) > run.log 2>&1
-	RETVAL=$?
 	if test "x$RETVAL" = x0 ; then
 	    tail run.log
 	    echo successful 1>&2
@@ -811,7 +816,7 @@ if test "x$ADM" = xt -a "x$COMMAND" = x ; then
 fi
 
 if test "x$COMMAND" = x ; then
-    COMMAND="$MAKE output.txt"
+    COMMAND="./mitgcmuv > output.txt"
 fi
 
 echo "OK"
@@ -1048,22 +1053,9 @@ for dir in $TESTDIRS ; do
 	    done
 	    ldir=build
 	    (
-		cd "$dir/$ldir" > /dev/null 2>&1
-		ls -1 2>/dev/null
-	    ) > tr_exrun_tmp
-	    echo "Makefile" > tr_exrun_links
-	    echo "mitgcmuv" >> tr_exrun_links
-	    cat tr_exrun_tmp | grep '\.[fFhco]$' >> tr_exrun_links
-	    (
-		cd "$dir/tr_run.$ex"
-		    cat ../../tr_exrun_links | while read i ; do
-			if test ! "x$i" = x ; then
-			    test ! -r $i  &&  ln -s "../"$ldir"/"$i $i
-			fi
-		    done
+		cd $dir/tr_run.$ex
+		test ! -e mitgcmuv  &&  ln -s "../"$ldir"/"mitgcmuv .
 	    )
-	    test -e tr_exrun_tmp  &&  rm -f tr_exrun_tmp
-	    test -e tr_exrun_links  &&  rm -f tr_exrun_links
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput $dir tr_run.$ex "."$ex`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
