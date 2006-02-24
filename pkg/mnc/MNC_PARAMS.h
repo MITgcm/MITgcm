@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.14 2005/10/24 18:12:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.15 2006/02/24 20:39:10 edhill Exp $
 C $Name:  $
 C
 
@@ -53,16 +53,24 @@ C     ===  PARM_MNC_I Common Block  ===
 C     mnc_curr_iter    :: current iter for file names
 
       COMMON /PARM_MNC_I/
-     &     mnc_curr_iter
+     &     mnc_def_imv, mnc_curr_iter
+      INTEGER mnc_def_imv(2)
       INTEGER mnc_curr_iter
 
-C     ===  PARM_MNC_R Common Block  ===
+C     ===  PARM_MNC_R8 Common Block  ===
 C     mnc_max_fsize    :: maximum file size
 
-      COMMON /PARM_MNC_R/
+      COMMON /PARM_MNC_R8/
+     &     mnc_def_dmv,
      &     mnc_max_fsize, mnc_filefreq
+      REAL*8  mnc_def_dmv(2)
       REAL*8  mnc_max_fsize
       REAL*8  mnc_filefreq
+
+C     ===  PARM_MNC_R8 Common Block  ===
+      COMMON /PARM_MNC_R4/
+     &     mnc_def_rmv
+      REAL*4  mnc_def_rmv(2)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

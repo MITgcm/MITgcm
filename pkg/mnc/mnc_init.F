@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.20 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.21 2006/02/24 20:39:10 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -55,6 +55,7 @@ C     Blank the CW tables
         mnc_cw_gname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_vname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_vgind(g) = 0
+        mnc_cw_vfmv(g) = 0
         mnc_cw_ndim(g) = 0
         mnc_cw_fgnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_fgud(g) = 0
@@ -78,6 +79,9 @@ C       mnc_cw_cvnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         ENDDO
         DO i = 1,2
            mnc_cw_vbij(i,g) = 0
+           mnc_cw_vmvi(i,g) = 0
+           mnc_cw_vmvr(i,g) = 0.0
+           mnc_cw_vmvd(i,g) = 0.0D0
 C          mnc_cw_cvse(i,g) = 0
         ENDDO
       ENDDO

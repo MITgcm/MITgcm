@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.34 2005/09/24 03:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.35 2006/02/24 20:39:10 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -118,9 +118,13 @@ C     !LOCAL VARIABLES:
       character*(MNC_MAX_CHAR) fname
       character*(MNC_MAX_CHAR) path_fname
       character*(MNC_MAX_CHAR) tmpnm
+      REAL*8  dval, dvm(2)
+      REAL*4  rval, rvm(2)
+      INTEGER ival, ivm(2), irv
       REAL*8  resh_d( MNC_MAX_BUFF )
       REAL*4  resh_r( MNC_MAX_BUFF )
       INTEGER resh_i( MNC_MAX_BUFF )
+      LOGICAL write_attributes, use_missing
 #ifdef HAVE_STAT
       integer ntotenc, ncenc, nbytes, fs_isdone
       character*(200) cenc
@@ -344,15 +348,24 @@ C         Ensure that the "grid" is defined
      &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid), myThid)
 
 C         Ensure that the variable is defined
+          irv = 0
           IF (stype(1:1) .EQ. 'D')
      &         CALL MNC_VAR_INIT_DBL(
-     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+     &         fname, mnc_cw_gname(igrid), vtype, irv, myThid)
           IF (stype(1:1) .EQ. 'R')
      &         CALL MNC_VAR_INIT_REAL(
-     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+     &         fname, mnc_cw_gname(igrid), vtype, irv, myThid)
           IF (stype(1:1) .EQ. 'I')
      &         CALL MNC_VAR_INIT_INT(
-     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+     &         fname, mnc_cw_gname(igrid), vtype, irv, myThid)
+
+          IF (irv .GT. 0) THEN
+C           Return value indicates that the variable did not previously
+C           exist in this file, so we need to write all the attributes
+            write_attributes = .TRUE.
+          ELSE
+            write_attributes = .FALSE.
+          ENDIF
 
           DO i = 1,mnc_fv_ids(indf,1)
             j = 2 + 3*(i - 1)
@@ -445,19 +458,60 @@ C         Check the offsets
             ENDIF
           ENDDO
 
-C         Add the per-variable attributes
-          DO i = 1,mnc_cw_vnat(1,indv)
-            CALL MNC_VAR_ADD_ATTR_STR( fname, vtype, 
-     &           mnc_cw_vtnm(i,indv), mnc_cw_vtat(i,indv), myThid)
-          ENDDO
-          DO i = 1,mnc_cw_vnat(2,indv)
-            CALL MNC_VAR_ADD_ATTR_INT( fname, vtype, 
-     &           mnc_cw_vinm(i,indv), 1, mnc_cw_viat(i,indv), myThid)
-          ENDDO
-          DO i = 1,mnc_cw_vnat(3,indv)
-            CALL MNC_VAR_ADD_ATTR_DBL( fname, vtype, 
-     &           mnc_cw_vdnm(i,indv), 1, mnc_cw_vdat(i,indv), myThid)
-          ENDDO
+          IF (write_attributes) THEN
+C           Add the per-variable attributes
+            DO i = 1,mnc_cw_vnat(1,indv)
+              CALL MNC_VAR_ADD_ATTR_STR( fname, vtype, 
+     &             mnc_cw_vtnm(i,indv), mnc_cw_vtat(i,indv), myThid)
+            ENDDO
+            DO i = 1,mnc_cw_vnat(2,indv)
+              CALL MNC_VAR_ADD_ATTR_INT( fname, vtype, 
+     &             mnc_cw_vinm(i,indv), 1, mnc_cw_viat(i,indv), myThid)
+            ENDDO
+            DO i = 1,mnc_cw_vnat(3,indv)
+              CALL MNC_VAR_ADD_ATTR_DBL( fname, vtype, 
+     &             mnc_cw_vdnm(i,indv), 1, mnc_cw_vdat(i,indv), myThid)
+            ENDDO
+          ENDIF
+
+C         Handle missing values
+          use_missing = .FALSE.
+          IF (mnc_cw_vfmv(indv) .EQ. 0) THEN
+            use_missing = .FALSE.
+          ELSE
+            IF (mnc_cw_vfmv(indv) .EQ. 1) THEN
+              use_missing = .TRUE.
+              dvm(1)  = mnc_def_dmv(1)
+              dvm(2)  = mnc_def_dmv(2)
+              rvm(1)  = mnc_def_rmv(1)
+              rvm(2)  = mnc_def_rmv(2)
+              ivm(1)  = mnc_def_imv(1)
+              ivm(2)  = mnc_def_imv(2)
+            ELSEIF (mnc_cw_vfmv(indv) .EQ. 2) THEN
+              use_missing = .TRUE.
+              dvm(1)  = mnc_cw_vmvd(1,indv)
+              dvm(2)  = mnc_cw_vmvd(2,indv)
+              rvm(1)  = mnc_cw_vmvr(1,indv)
+              rvm(2)  = mnc_cw_vmvr(2,indv)
+              ivm(1)  = mnc_cw_vmvi(1,indv)
+              ivm(2)  = mnc_cw_vmvi(2,indv)
+            ENDIF
+          ENDIF
+          IF (write_attributes .AND. use_missing) THEN
+            write(msgbuf,'(4a)') 'writing attribute ''missing_value''', 
+     &           ' within file ''', fname(1:nfname), ''''
+            IF (stype(1:1) .EQ. 'D') THEN
+              err = NF_PUT_ATT_DOUBLE(fid, idv, 'missing_value', 
+     &             NF_DOUBLE, 1, dvm(2))
+            ELSEIF (stype(1:1) .EQ. 'R') THEN
+              err = NF_PUT_ATT_REAL(fid, idv, 'missing_value', 
+     &             NF_FLOAT, 1, dvm(2))
+            ELSEIF (stype(1:1) .EQ. 'I') THEN
+              err = NF_PUT_ATT_INT(fid, idv, 'missing_value', 
+     &             NF_INT, 1, ivm(2))
+            ENDIF
+            CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+          ENDIF
 
           CALL MNC_FILE_ENDDEF(fname, myThid)
 
@@ -508,31 +562,72 @@ C         Write the variable one vector at a time
         STOP 'ABNORMAL END: S/R MNC_CW_RX_W_OFFSET'
       ENDIF
 
-      IF (stype(1:1) .EQ. 'D') THEN
-        DO j1 = s(1),e(1)
-          k1 = k2 + j1
-          kr = kr + 1
-          resh_d(kr) = var(k1)
-        ENDDO
-        err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
-      ENDIF
-      IF (stype(1:1) .EQ. 'R') THEN
-        DO j1 = s(1),e(1)
-          k1 = k2 + j1
-          kr = kr + 1
-          resh_r(kr) = var(k1)
-        ENDDO
-        err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh_r)
-      ENDIF
-      IF (stype(1:1) .EQ. 'I') THEN
-        DO j1 = s(1),e(1)
-          k1 = k2 + j1
-          kr = kr + 1
-          resh_i(kr) = MNC2I( var(k1) )
-        ENDDO
-        err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh_i)
-      ENDIF
+      IF (use_missing) THEN
 
+        IF (stype(1:1) .EQ. 'D') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            dval = var(k1)
+            IF (dval .EQ. dvm(1)) THEN
+              resh_d(kr) = dvm(2)
+            ELSE
+              resh_d(kr) = dval
+            ENDIF
+          ENDDO
+          err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
+        ELSEIF (stype(1:1) .EQ. 'R') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            rval = var(k1)
+            IF (rval .EQ. rvm(1)) THEN
+              resh_r(kr) = rvm(2)
+            ELSE
+              resh_r(kr) = rval
+            ENDIF
+          ENDDO
+          err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh_r)
+        ELSEIF (stype(1:1) .EQ. 'I') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            ival = MNC2I( var(k1) )
+            IF (ival .EQ. ivm(1)) THEN
+              resh_i(kr) = ivm(2)
+            ELSE
+              resh_i(kr) = ival
+            ENDIF
+          ENDDO
+          err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh_i)
+        ENDIF
+
+      ELSE
+        
+        IF (stype(1:1) .EQ. 'D') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            resh_d(kr) = var(k1)
+          ENDDO
+          err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
+        ELSEIF (stype(1:1) .EQ. 'R') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            resh_r(kr) = var(k1)
+          ENDDO
+          err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh_r)
+        ELSEIF (stype(1:1) .EQ. 'I') THEN
+          DO j1 = s(1),e(1)
+            k1 = k2 + j1
+            kr = kr + 1
+            resh_i(kr) = MNC2I( var(k1) )
+          ENDDO
+          err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh_i)
+        ENDIF
+
+      ENDIF
       CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
                     ENDDO

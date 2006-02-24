@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.28 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.29 2006/02/24 20:39:10 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -101,6 +101,13 @@ C     mnc_cw_ie   (i,g) :: ending indicies:   ie1, ie2, ...  |
 C     .                                                      |
 C     mnc_cw_vname (v)  :: Vtype names                       |
 C     mnc_cw_vgind (v)  :: index into                --------+
+C     mnc_cw_vfmv  (v)  :: flag for missing values
+C     .                      0 = ignore it (default)
+C     .                      1 = use global value
+C     .                      2 = use specific per-var value
+C     mnc_cw_vmvi (2,v) :: integer missing values: 1=IN, 2=OUT
+C     mnc_cw_vmvr (2,v) :: REAL*4  missing values: 1=IN, 2=OUT
+C     mnc_cw_vmvd (2,v) :: REAL*8  missing values: 1=IN, 2=OUT
 C     mnc_cw_vnat (3,v) :: number of attributes [T,I,D]
 C     mnc_cw_vbij (2,v) :: bi,bi indicies (0 if not applicable)
 C     mnc_cw_vtnm (i,v) :: text (character) attribute names
@@ -156,15 +163,18 @@ C     &     mnc_cw_cvnm
       COMMON /MNC_CW_VARS_I/
      &     mnc_cw_ndim,  mnc_cw_dims, 
      &     mnc_cw_is,    mnc_cw_ie,
-     &     mnc_cw_vgind, mnc_cw_vnat,
+     &     mnc_cw_vgind, mnc_cw_vfmv,  mnc_cw_vmvi, mnc_cw_vnat,
      &     mnc_cw_vbij,  mnc_cw_viat,
      &     mnc_cw_fgud,  mnc_cw_fgis,  mnc_cw_fgig, mnc_cw_fgci,
      &     mnc_cw_cit
 C     &     mnc_cw_cvse
 
-      COMMON /MNC_CW_VARS_R/
-     &     mnc_cw_vdat
+      COMMON /MNC_CW_VARS_D/
+     &     mnc_cw_vdat,  mnc_cw_vmvd
 C     &     mnc_cw_cvdt
+
+      COMMON /MNC_CW_VARS_R4/
+     &     mnc_cw_vmvr
 
       character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
@@ -179,6 +189,10 @@ C     &     mnc_cw_cvdt
       character*(MNC_MAX_CHAR) mnc_cw_vdnm(MNC_CW_MAX_I,MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_vgind(MNC_MAX_ID)
+      integer mnc_cw_vfmv(MNC_MAX_ID)
+      integer mnc_cw_vmvi(2,MNC_MAX_ID)
+      REAL*4  mnc_cw_vmvr(2,MNC_MAX_ID)
+      REAL*8  mnc_cw_vmvd(2,MNC_MAX_ID)
       integer mnc_cw_vnat(3,MNC_MAX_ID)
       integer mnc_cw_vbij(2,MNC_MAX_ID)
       integer mnc_cw_viat(MNC_CW_MAX_I,MNC_MAX_ID)

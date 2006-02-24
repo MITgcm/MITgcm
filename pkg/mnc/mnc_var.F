@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.18 2004/12/26 15:24:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.19 2006/02/24 20:39:10 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -12,6 +12,7 @@ C     !INTERFACE:
      I     fname, 
      I     gname, 
      I     vname, 
+     I     irv,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -23,11 +24,11 @@ C     !USES:
 #include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      integer irv,myThid
       character*(*) fname,gname,vname
 CEOP
 
-      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_DOUBLE, myThid)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_DOUBLE, irv,myThid)
       RETURN
       END
 
@@ -40,6 +41,7 @@ C     !INTERFACE:
      I     fname, 
      I     gname, 
      I     vname, 
+     I     irv,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -51,11 +53,11 @@ C     !USES:
 #include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      integer irv,myThid
       character*(*) fname,gname,vname
 CEOP
 
-      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_FLOAT, myThid)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_FLOAT, irv,myThid)
       RETURN
       END
 
@@ -68,6 +70,7 @@ C     !INTERFACE:
      I     fname, 
      I     gname, 
      I     vname, 
+     I     irv,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -78,11 +81,11 @@ C     !USES:
 #include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      integer irv,myThid
       character*(*) fname,gname,vname
 CEOP
 
-      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_INT, myThid)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_INT, irv,myThid)
       RETURN
       END
 
@@ -96,6 +99,7 @@ C     !INTERFACE:
      I     gname, 
      I     vname, 
      I     vtype, 
+     I     irv,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -109,7 +113,7 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      integer irv,myThid
       character*(*) fname,gname,vname
       integer vtype
 CEOP
@@ -194,10 +198,13 @@ C     Check if the variable is already defined
             stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
           ELSE
 C           Its OK, the variable and grid names are the same
+            irv = 0
             RETURN
           ENDIF
         ENDIF
       ENDDO
+
+      irv = 1
 
 C     Add the variable definition
       CALL MNC_FILE_REDEF(fname, myThid)
