@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.14 2006/02/16 23:03:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.15 2006/02/24 00:12:15 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -59,6 +59,7 @@ c pe on dynamics and physics grid refers to bottom edge
 
        _RL tempij(sNx,sNy)
        _RL dtfake
+       _RL dtinv
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -68,7 +69,8 @@ c pe on dynamics and physics grid refers to bottom edge
        idim2 = sNx
        jdim1 = 1
        jdim2 = sNy
-       dtfake = 1.
+       dtfake = 1. _d 0
+       dtinv = 1. _d 0 / dt
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
@@ -84,7 +86,7 @@ C Construct Pressures on physics and dynamics grids
         do j = 1,sNy
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
-         if(Lbotij.ne.0.) 
+         if(Lbotij.lt.nr+1) 
      .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
         enddo
         enddo
@@ -114,11 +116,13 @@ c Do not use a zero field as the top edge pressure for interpolation
         enddo
 c
 c Create a wind magnitude field on the physics grid - 
+c   (Load the wind speed bottom up for use by dyn2phys)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
-         windphy(i,j,L,bi,bj) = sqrt(uphy(i,j,L,bi,bj)*uphy(i,j,L,bi,bj) 
-     .        + vphy(i,j,L,bi,bj)*vphy(i,j,L,bi,bj))
+         windphy(i,j,L,bi,bj) = 
+     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj) 
+     .        + vphy(i,j,Nrphys+1-L,bi,bj)*vphy(i,j,Nrphys+1-L,bi,bj))
         enddo
         enddo
         enddo
@@ -263,6 +267,7 @@ c    Last: Increment physics state by the correction term
        enddo
        enddo
 
+#ifdef ALLOW_DIAGNOSTICS
       do bj = myByLo(myThid), myByHi(myThid)
       do bi = myBxLo(myThid), myBxHi(myThid)
       do L=1,Nrphys
@@ -273,7 +278,7 @@ c -----------------------------------------------
         do j=jm1,jm2
         do i=im1,im2
          tempij(i,j) = (uphy (i,j,L,bi,bj)-ubef(i,j,L,bi,bj) )
-     .                     * 86400. / dt
+     .                     * 86400. _d 0 * dtinv
         enddo
         enddo
         call diagnostics_fill(tempij,'TENDUFIZ',L,1,3,bi,bj,myThid)
@@ -285,7 +290,7 @@ c -----------------------------------------------
         do j=jm1,jm2
         do i=im1,im2
          tempij(i,j) = (vphy (i,j,L,bi,bj)-vbef(i,j,L,bi,bj) )
-     .                     * 86400. / dt
+     .                     * 86400. _d 0 * dtinv
         enddo
         enddo
         call diagnostics_fill(tempij,'TENDVFIZ',L,1,3,bi,bj,myThid)
@@ -297,7 +302,7 @@ c -----------------------------------------------
         do j=jm1,jm2
         do i=im1,im2
          tempij(i,j) = (thphy (i,j,L,bi,bj)-thbef(i,j,L,bi,bj) )
-     .                     * 86400. / dt
+     .                     * 86400. _d 0 * dtinv
         enddo
         enddo
         call diagnostics_fill(tempij,'TENDTFIZ',L,1,3,bi,bj,myThid)
@@ -309,7 +314,7 @@ c -----------------------------------------------
         do j=jm1,jm2
         do i=im1,im2
          tempij(i,j) = (sphy (i,j,L,bi,bj)-sbef(i,j,L,bi,bj) )
-     .                     * 86400. / dt
+     .                     * 86400. _d 0 * dtinv
         enddo
         enddo
         call diagnostics_fill(tempij,'TENDQFIZ',L,1,3,bi,bj,myThid)
@@ -318,6 +323,182 @@ c -----------------------------------------------
       enddo
       enddo
       enddo
+
+c Gridalt Correction Term Tendency for U and V (m/sec/day)
+c --------------------------------------------------------
+      if(diagnostics_is_on('CORRDU  ',myThid) .or.
+     .    diagnostics_is_on('CORRDV  ',myThid)   ) then
+
+C gridalt correction term - first step is to compute adv+filters tendency
+C                           on dynamics grid (total - physics tend)
+      do bj = myByLo(myThid), myByHi(myThid)
+      do bi = myBxLo(myThid), myBxHi(myThid)
+       do L=1,Nr
+       do j=jm1,jm2
+       do i=im1,im2
+        udyntemp(i,j,L,bi,bj) = 
+     .    (uvel(i,j,L,bi,bj)-udynbef(i,j,L,bi,bj))*dtinv - 
+     .                                        guphy(i,j,L,bi,bj)
+        vdyntemp(i,j,L,bi,bj) = 
+     .    (vvel(i,j,L,bi,bj)-vdynbef(i,j,L,bi,bj))*dtinv - 
+     .                                        gvphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Next step - interpolate to fizhi grid
+C  first put the u and v tendencies on an a-grid
+       CALL TIMER_START('CTOA              [STEP_FIZHI_CORR]',mythid)
+       call CtoA(myThid,udyntemp,vdyntemp,maskW,maskS,im1,im2,jm1,jm2,
+     .     Nr,Nsx,Nsy,1,sNx,1,sNy,udyntemp,vdyntemp)
+       CALL TIMER_STOP('CTOA              [STEP_FIZHI_CORR]',mythid)
+C  then do vertical interpolation
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+        windphy(i,j,L,bi,bj) = 
+     .     sqrt(uphy(i,j,Nrphys+1-L,bi,bj)*uphy(i,j,Nrphys+1-L,bi,bj) 
+     .        + vphy(i,j,Nrphys+1-L,bi,bj)*vphy(i,j,Nrphys+1-L,bi,bj))
+       enddo
+       enddo
+       enddo
+       CALL TIMER_START('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+        call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+       CALL TIMER_STOP('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+C Note: adv+filters term is now bottom up - needed in top down arrays
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+         uphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+       call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+         vphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Last Step - subtract adv+filters and physics tend from total tend on physics grid
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+        uphytemp(i,j,L,bi,bj)=
+     .    ( (uphy(i,j,L,bi,bj)-ubef(i,j,L,bi,bj))*dtinv
+     .     - duphy(i,j,L,bi,bj) - uphytemp(i,j,L,bi,bj) ) * 86400. _d 0
+        vphytemp(i,j,L,bi,bj)=
+     .    ( (vphy(i,j,L,bi,bj)-vbef(i,j,L,bi,bj))*dtinv
+     .     - dvphy(i,j,L,bi,bj) - vphytemp(i,j,L,bi,bj) ) * 86400. _d 0
+       enddo
+       enddo
+       enddo
+      enddo
+      enddo
+
+      if(diagnostics_is_on('CORRDU  ',myThid)) then
+       call diagnostics_fill(uphytemp,'CORRDU  ',0,Nrphys,0,1,1,myThid)
+      endif
+      if(diagnostics_is_on('CORRDV  ',myThid)) then
+       call diagnostics_fill(vphytemp,'CORRDV  ',0,Nrphys,0,1,1,myThid)
+      endif
+
+      endif
+
+c Gridalt Correction Term Tendency for TH (deg K/day)
+c --------------------------------------------------------
+      if(diagnostics_is_on('CORRDT  ',myThid))  then
+
+C gridalt correction term - first step is to compute adv+filters tendency
+C                           on dynamics grid (total - physics tend)
+      do bj = myByLo(myThid), myByHi(myThid)
+      do bi = myBxLo(myThid), myBxHi(myThid)
+       do L=1,Nr
+       do j=jm1,jm2
+       do i=im1,im2
+        thdyntemp(i,j,L,bi,bj) = 
+     .    (theta(i,j,L,bi,bj)-thdynbef(i,j,L,bi,bj))*dtinv - 
+     .                                        gthphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Next step - interpolate to fizhi grid
+       CALL TIMER_START('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+       call dyn2phys(thdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
+     .     1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+       CALL TIMER_STOP('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+C Note: adv+filters term is now bottom up - needed in top down arrays
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+         thphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Last Step - subtract adv+filters and physics tend from total tend on physics grid
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+        thphytemp(i,j,L,bi,bj)=
+     .    ( (thphy(i,j,L,bi,bj)-thbef(i,j,L,bi,bj))*dtinv
+     .     - dthphy(i,j,L,bi,bj) - thphytemp(i,j,L,bi,bj) ) * 86400. _d 0
+       enddo
+       enddo
+       enddo
+      enddo
+      enddo
+
+      call diagnostics_fill(thphytemp,'CORRDT  ',0,Nrphys,0,1,1,myThid)
+      endif
+
+c Gridalt Correction Term Tendency for Q (kg/kg/day)
+c --------------------------------------------------------
+      if(diagnostics_is_on('CORRDQ  ',myThid))  then
+
+C gridalt correction term - first step is to compute adv+filters tendency
+C                           on dynamics grid (total - physics tend)
+      do bj = myByLo(myThid), myByHi(myThid)
+      do bi = myBxLo(myThid), myBxHi(myThid)
+       do L=1,Nr
+       do j=jm1,jm2
+       do i=im1,im2
+        sdyntemp(i,j,L,bi,bj) = 
+     .    (salt(i,j,L,bi,bj)-sdynbef(i,j,L,bi,bj))*dtinv - 
+     .                                        gsphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Next step - interpolate to fizhi grid
+       CALL TIMER_START('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+       call dyn2phys(sdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+       CALL TIMER_STOP('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)
+C Note: adv+filters term is now bottom up - needed in top down arrays
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+         sphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       enddo
+C Last Step - subtract adv+filters and physics tend from total tend on physics grid
+       do L = 1,Nrphys
+       do j = 1,sNy
+       do i = 1,sNx
+        sphytemp(i,j,L,bi,bj)=
+     .    ( (sphy(i,j,L,bi,bj)-sbef(i,j,L,bi,bj))*dtinv
+     .     - dsphy(i,j,L,bi,bj) - sphytemp(i,j,L,bi,bj) ) * 86400. _d 0
+       enddo
+       enddo
+       enddo
+      enddo
+      enddo
+
+      call diagnostics_fill(sphytemp,'CORRDQ  ',0,Nrphys,0,1,1,myThid)
+      endif
+#endif
 
       return
       end
