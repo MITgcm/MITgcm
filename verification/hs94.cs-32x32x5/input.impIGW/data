@@ -1,0 +1,72 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=289.6, 298.1, 314.5, 335.8, 437.4,
+ sRef=5*0.0,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALGAS',
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+#nonlinFreeSurf=4,
+#select_rStar=2,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ uniformLin_PhiSurf=.FALSE.,
+ saltStepping=.FALSE.,
+ momViscosity=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ useAbsVorticity=.TRUE.,
+ SadournyCoriolis=.TRUE.,
+ selectKEscheme=3,
+#staggerTimeStep=.TRUE.,
+ implicitIntGravWave=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-12,
+ cg2dTargetResWunit=1.E-17,
+ cg3dMaxIters=40,
+ cg3dTargetResidual=1.E-4,
+ &
+
+# Time stepping parameters
+ &PARM03
+#- stable up to 1350.s
+ deltaT=1200.,
+ nIter0=25920,
+ nTimeSteps=10,
+#forcing_In_AB=.FALSE.,
+#alph_AB=0.6,
+#beta_AB=0.,
+ alph_AB=0.5,
+ beta_AB=0.281105,
+ doAB_onGtGs=.FALSE.,
+#startFromPickupAB2=.TRUE.,
+ pChkptFreq=31104000.,
+ chkptFreq =0.,
+ dumpFreq  =31104000.,
+ monitorFreq=432000.,
+ taveFreq=0.,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+ delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
+ Ro_SeaLevel=1.E5,
+ &
+
+# Input datasets
+ &PARM05
+ &
