@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.32 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.33 2006/02/25 16:29:55 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -182,6 +182,10 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _KPP_RL vddiff( ibot:itop    , jbot:jtop    , 0:Nrp1, mdiff )
       _KPP_RL ghat  ( ibot:itop    , jbot:jtop    , Nr            )
       _KPP_RL hbl   ( ibot:itop    , jbot:jtop                    )
+cph(
+      _KPP_RL TTALPHA( ibot:itop, jbot:jtop, Nrp1 )
+      _KPP_RL SSBETA ( ibot:itop, jbot:jtop, Nrp1 )
+cph)
 #ifdef KPP_ESTIMATE_UREF
       _KPP_RL z0    ( ibot:itop    , jbot:jtop                    )
       _KPP_RL zRef  ( ibot:itop    , jbot:jtop                    )
@@ -252,7 +256,7 @@ c------------------------------------------------------------------------
       CALL STATEKPP(
      I       ikppkey, bi, bj, myThid
      O     , work2, dbloc, Ritop
-     O     , vddiff(ibot,jbot,1,1), vddiff(ibot,jbot,1,2)
+     O     , TTALPHA, SSBETA
      &     )
       CALL TIMER_STOP ('STATEKPP      [KPP_CALC]', myThid)
 
@@ -292,10 +296,10 @@ c     horizontally smooth density related quantities with 121 filters
      U        Ritop (ibot,jbot,k)  )
          CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        vddiff(ibot,jbot,k,1) )
+     U        TTALPHA(ibot,jbot,k) )
          CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        vddiff(ibot,jbot,k,2) )
+     U        SSBETA(ibot,jbot,k) )
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
 
@@ -329,6 +333,7 @@ CADJ store work2              = comlev1_kpp, key = ikppkey
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ store dbloc, Ritop, ghat = comlev1_kpp, key = ikppkey
 CADJ store vddiff             = comlev1_kpp, key = ikppkey
+CADJ store TTALPHA, SSBETA    = comlev1_kpp, key = ikppkey
 #endif
 cph)
 
@@ -379,12 +384,12 @@ cph)
         endif
 
         bo(I,J) = - gravity *
-     &       ( vddiff(I,J,1,1) * (surfaceForcingT(i,j,bi,bj)+
+     &       ( TTALPHA(I,J,1) * (surfaceForcingT(i,j,bi,bj)+
      &       surfaceForcingTice(i,j,bi,bj)) +
-     &       vddiff(I,J,1,2) * surfaceForcingS(i,j,bi,bj) )
+     &       SSBETA(I,J,1) * surfaceForcingS(i,j,bi,bj) )
      &       / work2(I,J)
 
-        bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
+        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
      &       / work2(I,J)
 
