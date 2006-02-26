@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.75 2006/02/24 23:15:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.76 2006/02/26 17:40:37 jmc Exp $
 #  $Name:  $
 #
 
@@ -519,11 +519,11 @@ runmodel()
 	# make output.txt
 	echo
 	rm -f run.log
-        if test output.txt -ot mitgcmuv ; then
+        if test $OUTPUTFILE -ot $EXECUTABLE ; then
 	   ( eval $COMMAND ) > run.log 2>&1
 	   RETVAL=$?
 	else
-           echo ' output.txt is up to date ' > run.log 2>&1
+           echo " $OUTPUTFILE is up to date " > run.log 2>&1
 	   RETVAL=0
 	fi
 	# echo "COMMAND='$COMMAND'"
@@ -811,15 +811,24 @@ if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
     OPTFILE=$MITGCM_OF
 fi
 
+if test "x$ADM" = xt ; then
+    EXECUTABLE="mitgcmuv_ad"
+    OUTPUTFILE="output.txt_adm"
+else
+    EXECUTABLE="mitgcmuv"
+    OUTPUTFILE="output.txt"
+fi
+
 if test "x$ADM" = xt -a "x$COMMAND" = x ; then
-    COMMAND="./mitgcmuv_ad > output.txt_adm 2>&1"
+    COMMAND="./$EXECUTABLE > $OUTPUTFILE 2>&1"
 fi
 
 if test "x$COMMAND" = x ; then
-    COMMAND="./mitgcmuv > output.txt"
+    COMMAND="./$EXECUTABLE > $OUTPUTFILE"
 fi
 
-echo "OK"
+#echo "OK"
+echo "OK (COMMAND= $COMMAND )"
 
 #  create the FORTRAN comparison code
 createcodelet
