@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.46 2005/12/08 15:44:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.47 2006/02/26 01:57:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,7 +138,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      U           fVerT, gT,
      I           myTime, myIter, myThid )
       ELSE
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
         CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
@@ -148,8 +147,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           calcAdvection, tempImplVertAdv,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
-#ifdef ALLOW_ADAMSBASHFORTH_3
       ENDIF
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+        CALL GAD_CALC_RHS(
+     I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I           uVel, vVel, wVel,
+     I           diffKhT, diffK4T, KappaRT, gtNm1, theta,
+     I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
+     I           calcAdvection, tempImplVertAdv,
+     U           fVerT, gT,
+     I           myTime, myIter, myThid )
 #endif
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
