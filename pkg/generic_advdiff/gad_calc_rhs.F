@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.38 2005/11/06 22:14:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.39 2006/02/26 01:56:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -66,9 +66,10 @@ C uVel,vVel,wVel   :: 3 components of the velcity field (3-D array)
 C diffKh           :: horizontal diffusion coefficient
 C diffK4           :: bi-harmonic diffusion coefficient
 C KappaR           :: 2-D array for vertical diffusion coefficient, interf k
-C Tracer           :: tracer field
-C TracAB           :: tracer field but extrapolated fwd in time (to nIter+1/2)
-C                     if applying AB on tracer field (instead of on tendency)
+C Tracer           :: tracer field @ time-step n (Note: only used
+C                     if applying AB on tracer field rather than on tendency Gtr)
+C TracAB           :: current tracer field (@ time-step n if applying AB on Gtr
+C                     or extrapolated fwd in time to n+1/2 if applying AB on Tr)
 C tracerIdentity   :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
 C vertAdvecScheme  :: advection scheme to use (Vertical direction)
@@ -160,12 +161,21 @@ C--   Set diagnostic suffix for the current tracer
       ENDDO
 
 C--   Make local copy of tracer array
+#ifdef ALLOW_ADAMSBASHFORTH_3
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         localT(i,j)=Tracer(i,j,k,bi,bj)
         locABT(i,j)=TracAB(i,j,k,bi,bj)
        ENDDO
       ENDDO
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        localT(i,j)=TracAB(i,j,k,bi,bj)
+        locABT(i,j)=TracAB(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 C--   Unless we have already calculated the advection terms we initialize
 C     the tendency to zero.
@@ -264,7 +274,11 @@ C-    GM/Redi flux in X
 C *note* should update GMREDI_XTRANSPORT to set df  *aja*
         CALL GMREDI_XTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
+#ifdef ALLOW_ADAMSBASHFORTH_3
      I     xA,Tracer,tracerIdentity,
+#else
+     I     xA,TracAB,tracerIdentity,
+#endif
      U     df,
      I     myThid)
       ENDIF
@@ -364,7 +378,11 @@ C-    GM/Redi flux in Y
 C *note* should update GMREDI_YTRANSPORT to set df  *aja*
        CALL GMREDI_YTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
+#ifdef ALLOW_ADAMSBASHFORTH_3
      I     yA,Tracer,tracerIdentity,
+#else
+     I     yA,TracAB,tracerIdentity,
+#endif
      U     df,
      I     myThid)
       ENDIF
@@ -458,7 +476,11 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
+#ifdef ALLOW_ADAMSBASHFORTH_3
        CALL GAD_DIFF_R(bi,bj,k,KappaR,Tracer,df,myThid)
+#else
+       CALL GAD_DIFF_R(bi,bj,k,KappaR,TracAB,df,myThid)
+#endif
       ENDIF
 
 #ifdef ALLOW_GMREDI
@@ -467,7 +489,11 @@ C-    GM/Redi flux in R
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
        CALL GMREDI_RTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
+#ifdef ALLOW_ADAMSBASHFORTH_3
      I     Tracer,tracerIdentity,
+#else
+     I     TracAB,tracerIdentity,
+#endif
      U     df,
      I     myThid)
       ENDIF
