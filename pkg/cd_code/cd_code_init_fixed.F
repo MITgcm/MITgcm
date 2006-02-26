@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_init_fixed.F,v 1.1 2004/10/13 18:37:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_init_fixed.F,v 1.2 2006/02/26 19:51:54 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -17,13 +17,6 @@ C     myThid -  Number of this instance of INI_UVEL
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
-      INTEGER bi, bj
-      INTEGER  I,  J, K
-      CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(10) suff
-      INTEGER prec
 CEOP
 
 #ifdef ALLOW_CD_CODE

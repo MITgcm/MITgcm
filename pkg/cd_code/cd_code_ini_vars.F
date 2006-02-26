@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.6 2004/10/13 18:37:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.7 2006/02/26 19:51:54 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -22,9 +22,6 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I,  J, K
-      CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(10) suff
-      INTEGER prec
 CEOP
 
 #ifdef ALLOW_CD_CODE
