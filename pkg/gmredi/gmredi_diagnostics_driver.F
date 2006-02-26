@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.3 2006/02/15 04:58:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.4 2006/02/26 19:36:34 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -6,21 +6,21 @@ C $Name:  $
 CStartOfInterface
       SUBROUTINE GMREDI_DIAGNOSTICS_DRIVER(
      I             bi, bj, myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_DIAGNOSTICS_DRIVER                     |
-C     | o Calculate tensor elements for GM/Redi tensor.          |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_DIAGNOSTICS_DRIVER
+C     | o fill GM-Redi diagnostics
+C     *==========================================================*
+C     | note: formerly was part of S/R GMREDI_CALC_TENSOR
+C     |       and was isolated in this S/R for TAF reasons
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "GMREDI.h"
-#include "GMREDI_TAVE.h"
 
 C     == Routine arguments ==
 C
@@ -31,8 +31,10 @@ CEndOfInterface
 #ifdef ALLOW_GMREDI
 
 C     == Local variables ==
+#ifdef ALLOW_TAU_EDDY
       INTEGER i,j,k
       _RL tmpfld3dloc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -64,10 +66,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(GM_PsiY,'GM_PsiY ',0,Nr,1,bi,bj,myThid)
        ENDIF
 #endif
+
 #ifdef ALLOW_TAU_EDDY
        DO k = 1, Nr
-	DO j = 1, sny
-	 DO i = 1, snx
+        DO j = 1, sny
+         DO i = 1, snx
           tmpfld3dloc(i,j,k,bi,bj) =
      &     0.5*rhoConst*fCori(i,j,bi,bj)*
      &     Kwy(i,j,k,bi,bj)
@@ -75,10 +78,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauX',0,Nr,1,bi,bj,myThid)
-c
+
        DO k = 1, Nr
-	DO j = 1, sny
-	 DO i = 1, snx
+        DO j = 1, sny
+          DO i = 1, snx
           tmpfld3dloc(i,j,k,bi,bj) =
      &     -0.5*rhoConst*fCoriG(i,j,bi,bj)*
      &     Kwx(i,j,k,bi,bj)
@@ -86,7 +89,8 @@ c
         ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauY',0,Nr,1,bi,bj,myThid)
-#endif
+#endif /* ALLOW_TAU_EDDY */
+
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
