@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.24 2006/01/13 22:38:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.25 2006/02/27 17:55:14 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -539,7 +539,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'TOTTEND '
+      diagName  = 'TOTTTEND'
       diagTitle = 'Tendency of Potential Temperature (degC,K)'
       diagUnits = 'deg K/sec'
       diagCode  = 'SM      MR      '
