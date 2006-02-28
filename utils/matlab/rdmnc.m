@@ -1,4 +1,4 @@
-function [S] = rdmnc_mod2(varargin)
+function [S] = rdmnc(varargin)
 
 % Usage:
 %   S=RDMNC(FILE1,FILE2,...)
@@ -154,20 +154,22 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
             continue
         end
 	
-        dims=ncnames(dim(nc{cvar}));        % Dimensions
+        dims = ncnames(dim(nc{cvar}));        % Dimensions
         
-        if dims{1}=='T'
+        adj = 0;
+        if dims{1} == 'T'
             if isempty(find(fii)), return, end
-            tmpdata=nc{cvar}(find(fii),:);
-            it = length(dims);
+            tmpdata = nc{cvar}(find(fii),:);
+            if ismember('Zd000001' ,dims), adj = adj - 1; end
+            if ismember('Zmd000001',dims), adj = adj - 1; end
+            it = length(dims) + adj;
         else
-            tmpdata=nc{cvar}(:);
+            tmpdata = nc{cvar}(:);
             it = 0;
         end
         
         tmpdata=squeeze(permute(tmpdata,[9:-1:1]));
         [ni nj nk nm nn no np]=size(tmpdata);
-        [ni nj nk nm nn no np];
         
         [i0,j0,fn]=findTileOffset(S);
         cdim=dims{end}; if cdim(1)~='X'; i0=0; end
@@ -191,6 +193,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
             else, error('Can''t handle this many dimensions!');
             end
         end
+        
         eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
         %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
         S.attributes.(cvar)=read_att(nc{cvar});
