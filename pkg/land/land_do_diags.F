@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.8 2006/03/01 23:13:28 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -61,9 +61,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &  .OR. dumpInitAndLast.AND.( myTime+land_deltaT.EQ.endTime )
      &   ) THEN 
 
+        iterWr = myIter+1
+
         IF ( land_snapshot_mdsio ) THEN
 
-       iterWr = myIter+1
        WRITE(suff,'(I10.10)') iterWr
 
 c      _BARRIER
