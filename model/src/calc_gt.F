@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.47 2006/02/26 01:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.48 2006/03/01 03:08:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,7 +124,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (staggerTimeStep) iterNb = myIter -1
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      IF ( AdamsBashforth_T ) THEN
         m1 = 1 + MOD(iterNb+1,2)
         m2 = 1 + MOD( iterNb ,2)
         CALL GAD_CALC_RHS(
@@ -134,20 +133,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           diffKhT, diffK4T, KappaRT,
      I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
-     I           calcAdvection, tempImplVertAdv,
+     I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
-      ELSE
-        CALL GAD_CALC_RHS(
-     I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I           uVel, vVel, wVel,
-     I           diffKhT, diffK4T, KappaRT, theta, theta,
-     I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
-     I           calcAdvection, tempImplVertAdv,
-     U           fVerT, gT,
-     I           myTime, myIter, myThid )
-      ENDIF
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
@@ -155,7 +143,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           uVel, vVel, wVel,
      I           diffKhT, diffK4T, KappaRT, gtNm1, theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
-     I           calcAdvection, tempImplVertAdv,
+     I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
 #endif
