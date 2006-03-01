@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.39 2006/02/26 01:56:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.40 2006/03/01 03:06:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,9 +11,9 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
-     I           diffKh, diffK4, KappaR, Tracer, TracAB,
+     I           diffKh, diffK4, KappaR, TracerN, TracAB,
      I           tracerIdentity, advectionScheme, vertAdvecScheme,
-     I           calcAdvection, implicitAdvection,
+     I           calcAdvection, implicitAdvection, applyAB_onTracer,
      U           fVerT, gTracer,
      I           myTime, myIter, myThid )
 
@@ -66,15 +66,16 @@ C uVel,vVel,wVel   :: 3 components of the velcity field (3-D array)
 C diffKh           :: horizontal diffusion coefficient
 C diffK4           :: bi-harmonic diffusion coefficient
 C KappaR           :: 2-D array for vertical diffusion coefficient, interf k
-C Tracer           :: tracer field @ time-step n (Note: only used
-C                     if applying AB on tracer field rather than on tendency Gtr)
-C TracAB           :: current tracer field (@ time-step n if applying AB on Gtr
+C TracerN          :: tracer field @ time-step n (Note: only used
+C                     if applying AB on tracer field rather than on tendency gTr)
+C TracAB           :: current tracer field (@ time-step n if applying AB on gTr
 C                     or extrapolated fwd in time to n+1/2 if applying AB on Tr)
 C tracerIdentity   :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
 C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
 C implicitAdvection:: =True if vertical Advec computed implicitly
+C applyAB_onTracer :: apply Adams-Bashforth on Tracer (rather than on gTr)
 C myTime           :: current time
 C myIter           :: iteration number
 C myThid           :: thread number
@@ -92,12 +93,12 @@ C myThid           :: thread number
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL diffKh, diffK4
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL TracAB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL TracerN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme, vertAdvecScheme
       LOGICAL calcAdvection
-      LOGICAL implicitAdvection
+      LOGICAL implicitAdvection, applyAB_onTracer
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -161,21 +162,21 @@ C--   Set diagnostic suffix for the current tracer
       ENDDO
 
 C--   Make local copy of tracer array
-#ifdef ALLOW_ADAMSBASHFORTH_3
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        localT(i,j)=Tracer(i,j,k,bi,bj)
-        locABT(i,j)=TracAB(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-#else /* ALLOW_ADAMSBASHFORTH_3 */
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        localT(i,j)=TracAB(i,j,k,bi,bj)
-        locABT(i,j)=TracAB(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      IF ( applyAB_onTracer ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          localT(i,j)=TracerN(i,j,k,bi,bj)
+          locABT(i,j)= TracAB(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          localT(i,j)= TracAB(i,j,k,bi,bj)
+          locABT(i,j)= TracAB(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Unless we have already calculated the advection terms we initialize
 C     the tendency to zero.
@@ -272,15 +273,19 @@ C-    Add bi-harmonic diffusive flux in X
 C-    GM/Redi flux in X
       IF (useGMRedi) THEN
 C *note* should update GMREDI_XTRANSPORT to set df  *aja*
-        CALL GMREDI_XTRANSPORT(
-     I     iMin,iMax,jMin,jMax,bi,bj,K,
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     I     xA,Tracer,tracerIdentity,
-#else
-     I     xA,TracAB,tracerIdentity,
-#endif
-     U     df,
-     I     myThid)
+        IF ( applyAB_onTracer ) THEN
+          CALL GMREDI_XTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         xA,TracerN,tracerIdentity,
+     U         df,
+     I         myThid)
+        ELSE
+          CALL GMREDI_XTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         xA,TracAB, tracerIdentity,
+     U         df,
+     I         myThid)
+        ENDIF
       ENDIF
 #endif
       DO j=1-Oly,sNy+Oly
@@ -376,15 +381,19 @@ C-    Add bi-harmonic flux in Y
 C-    GM/Redi flux in Y
       IF (useGMRedi) THEN
 C *note* should update GMREDI_YTRANSPORT to set df  *aja*
-       CALL GMREDI_YTRANSPORT(
-     I     iMin,iMax,jMin,jMax,bi,bj,K,
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     I     yA,Tracer,tracerIdentity,
-#else
-     I     yA,TracAB,tracerIdentity,
-#endif
-     U     df,
-     I     myThid)
+        IF ( applyAB_onTracer ) THEN
+          CALL GMREDI_YTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         yA,TracerN,tracerIdentity,
+     U         df,
+     I         myThid)
+        ELSE
+          CALL GMREDI_YTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         yA,TracAB, tracerIdentity,
+     U         df,
+     I         myThid)
+        ENDIF
       ENDIF
 #endif
       DO j=1-Oly,sNy+Oly
@@ -407,11 +416,11 @@ C--   Compute vertical flux fVerT(kUp) at interface k (between k-1 & k):
 C-    Advective flux in R
 #ifdef ALLOW_AIM
 C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
-      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2 .AND.
-     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.K.LT.Nr)
+      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. k.GE.2 .AND.
+     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.k.LT.Nr)
      &   ) THEN
 #else
-      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2) THEN
+      IF (calcAdvection .AND. .NOT.implicitAdvection .AND. k.GE.2) THEN
 #endif
 C-    Compute vertical advective flux in the interior:
         IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
@@ -476,26 +485,30 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
-#ifdef ALLOW_ADAMSBASHFORTH_3
-       CALL GAD_DIFF_R(bi,bj,k,KappaR,Tracer,df,myThid)
-#else
-       CALL GAD_DIFF_R(bi,bj,k,KappaR,TracAB,df,myThid)
-#endif
+       IF ( applyAB_onTracer ) THEN
+         CALL GAD_DIFF_R(bi,bj,k,KappaR,TracerN,df,myThid)
+       ELSE
+         CALL GAD_DIFF_R(bi,bj,k,KappaR,TracAB, df,myThid)
+       ENDIF
       ENDIF
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in R
       IF (useGMRedi) THEN
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
-       CALL GMREDI_RTRANSPORT(
-     I     iMin,iMax,jMin,jMax,bi,bj,K,
-#ifdef ALLOW_ADAMSBASHFORTH_3
-     I     Tracer,tracerIdentity,
-#else
-     I     TracAB,tracerIdentity,
-#endif
-     U     df,
-     I     myThid)
+        IF ( applyAB_onTracer ) THEN
+          CALL GMREDI_RTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         TracerN,tracerIdentity,
+     U         df,
+     I         myThid)
+        ELSE
+          CALL GMREDI_RTRANSPORT(
+     I         iMin,iMax,jMin,jMax,bi,bj,k,
+     I         TracAB, tracerIdentity,
+     U         df,
+     I         myThid)
+        ENDIF
       ENDIF
 #endif
 
