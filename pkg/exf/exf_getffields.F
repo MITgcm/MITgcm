@@ -1,10 +1,10 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.30 2006/03/02 02:53:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.31 2006/03/02 15:30:10 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_getffields( mycurrenttime, mycurrentiter, mythid )
+      subroutine exf_getffields( mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_getffields
@@ -41,8 +41,8 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer mythid
-      integer mycurrentiter
-      _RL     mycurrenttime
+      integer myiter
+      _RL     mytime
 
 c     == local variables ==
 
@@ -68,7 +68,7 @@ c     Zonal and meridional wind stress.
      &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      &     vstress_nlon, vstress_nlat,
      &     vstress_exfremo_intercept, vstress_exfremo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen( 
      &     ustressfile, ustressstartdate, ustressperiod,
@@ -76,14 +76,14 @@ c     Zonal and meridional wind stress.
      &     exf_inscal_ustress,
      &     ustress_exfremo_intercept, ustress_exfremo_slope,
      &     ustress, ustress0, ustress1, ustressmask,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
       call exf_set_gen(
      &     vstressfile, vstressstartdate, vstressperiod,
      &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_vstress,
      &     vstress_exfremo_intercept, vstress_exfremo_slope,
      &     vstress, vstress0, vstress1, vstressmask,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_ATM_WIND
@@ -103,7 +103,7 @@ c     Zonal and meridional wind.
      &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
      &     vwind_nlon, vwind_nlat,
      &     vwind_exfremo_intercept, vwind_exfremo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen(
      &     uwindfile, uwindstartdate, uwindperiod,
@@ -111,14 +111,14 @@ c     Zonal and meridional wind.
      &     exf_inscal_uwind,
      &     uwind_exfremo_intercept, uwind_exfremo_slope,
      &     uwind, uwind0, uwind1, uwindmask,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
       call exf_set_gen(
      &     vwindfile, vwindstartdate, vwindperiod,
      &     vwindstartdate1, vwindstartdate2,
      &     exf_inscal_vwind,
      &     vwind_exfremo_intercept, vwind_exfremo_slope,
      &     vwind, vwind0, vwind1, vwindmask,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
 
 #endif /* ALLOW_ATM_WIND */
@@ -134,7 +134,7 @@ c     Atmospheric heat flux.
      &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
      &     hflux_nlon, hflux_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 c     Salt flux.
       call exf_set_gen  ( 
@@ -147,7 +147,7 @@ c     Salt flux.
      &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
      &     sflux_nlon, sflux_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 #ifdef ALLOW_ATM_TEMP
 
@@ -162,7 +162,7 @@ c     Atmospheric temperature.
      &     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
      &     atemp_nlon, atemp_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
       do bj = mybylo(mythid),mybyhi(mythid)
        do bi = mybxlo(mythid),mybxhi(mythid)
         do j = 1,sny
@@ -184,7 +184,7 @@ c     Atmospheric humidity.
      &     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
      &     aqh_nlon, aqh_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 c     Net long wave radiative flux.
       call exf_set_gen( 
@@ -197,7 +197,7 @@ c     Net long wave radiative flux.
      &     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
      &     lwflux_nlon, lwflux_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 c     Precipitation.
       call exf_set_gen( 
@@ -210,7 +210,7 @@ c     Precipitation.
      &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
      &     precip_nlon, precip_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 #endif /* ALLOW_ATM_TEMP */
 
@@ -226,7 +226,7 @@ c     Net short wave radiative flux.
      &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
      &     swflux_nlon, swflux_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef EXF_READ_EVAP
@@ -241,7 +241,7 @@ c     Evaporation
      &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
      &     evap_nlon, evap_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
@@ -257,7 +257,7 @@ c     Downward shortwave radiation.
      &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
      &     swdown_nlon, swdown_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 c     Downward longwave radiation.
       call exf_set_gen  ( 
@@ -270,7 +270,7 @@ c     Downward longwave radiation.
      &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
      &     lwdown_nlon, lwdown_nlat, xC, yC, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 #endif
 
@@ -287,7 +287,7 @@ c     Atmos. pressure forcing
      &     apressure_lat_inc, apressure_nlon, apressure_nlat, xC, yC,
      &     interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 c-- Control variables for atmos. state
@@ -297,7 +297,7 @@ c-- Control variables for atmos. state
      &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
      &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
      &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_AQH_CONTROL
@@ -305,7 +305,7 @@ c-- Control variables for atmos. state
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
      &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
      &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_PRECIP_CONTROL
@@ -313,7 +313,7 @@ c-- Control variables for atmos. state
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
      &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SWFLUX_CONTROL
@@ -321,7 +321,7 @@ c-- Control variables for atmos. state
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
      &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
      &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SWDOWN_CONTROL
@@ -329,7 +329,7 @@ c-- Control variables for atmos. state
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
      &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_UWIND_CONTROL
@@ -337,7 +337,7 @@ c-- Control variables for atmos. state
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif /* ALLOW_UWIND_CONTROL */
 
 #ifdef ALLOW_VWIND_CONTROL
@@ -345,7 +345,7 @@ c-- Control variables for atmos. state
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
      &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
 
 #ifdef ALLOW_LWFLUX_CONTROL
