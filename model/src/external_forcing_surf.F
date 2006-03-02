@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.33 2006/02/10 10:00:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.34 2006/03/02 21:24:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -189,6 +189,16 @@ C     Net Salt Flux :
         
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Fresh-water flux 
+
+C-    Apply mask on Fresh-Water flux 
+C      (needed for SSH forcing, whether or not exactConserv is used) 
+      IF ( useRealFreshWaterFlux ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskH(i,j,bi,bj) 
+         ENDDO
+        ENDDO
+      ENDIF
 
 #ifdef EXACT_CONSERV
 c NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
