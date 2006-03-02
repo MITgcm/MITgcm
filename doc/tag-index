@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.616 2006/03/02 02:56:54 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.617 2006/03/02 16:10:08 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice: add runtime flags for turning angles (default to zero)
 o Adding runtime parameter to exf/, ctrl/, to remove on-the-fly global mean 
   and trend from exf forcing and ctrl control adjustments
 o fix variable aliasing in gad_calc_rhs that cannot be handled by TAF
