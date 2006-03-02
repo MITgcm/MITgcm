@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.4 2006/02/26 19:36:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.5 2006/03/02 21:10:41 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -68,27 +68,33 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 #ifdef ALLOW_TAU_EDDY
-       DO k = 1, Nr
-        DO j = 1, sny
-         DO i = 1, snx
-          tmpfld3dloc(i,j,k,bi,bj) =
-     &     0.5*rhoConst*fCori(i,j,bi,bj)*
-     &     Kwy(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-       CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauX',0,Nr,1,bi,bj,myThid)
-
-       DO k = 1, Nr
-        DO j = 1, sny
+       IF ( DIAGNOSTICS_IS_ON('GMEdTauX',myThid) ) THEN
+        DO k = 1, Nr
+         DO j = 1, sny
           DO i = 1, snx
-          tmpfld3dloc(i,j,k,bi,bj) =
-     &     -0.5*rhoConst*fCoriG(i,j,bi,bj)*
-     &     Kwx(i,j,k,bi,bj)
+           tmpfld3dloc(i,j,k,bi,bj) =
+     &      0.5*rhoConst*fCori(i,j,bi,bj)*
+     &      Kwy(i,j,k,bi,bj)
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauY',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauX',
+     &   0,Nr,1,bi,bj,myThid)
+       ENDIF
+c
+       IF ( DIAGNOSTICS_IS_ON('GMEdTauY',myThid) ) THEN
+        DO k = 1, Nr
+         DO j = 1, sny
+          DO i = 1, snx
+           tmpfld3dloc(i,j,k,bi,bj) =
+     &      -0.5*rhoConst*fCori(i,j,bi,bj)*
+     &      Kwx(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauY',
+     &   0,Nr,1,bi,bj,myThid)
+       ENDIF
 #endif /* ALLOW_TAU_EDDY */
 
       ENDIF
