@@ -11,9 +11,10 @@ function [flist] = find_files_grid_first(fpat)
 %
 %
 %  Ed Hill
-%  $Id: find_files_grid_first.m,v 1.2 2005/10/23 20:45:09 edhill Exp $
+%  $Id: find_files_grid_first.m,v 1.3 2006/03/02 07:34:46 edhill Exp $
 
 files = {};
+fdirs = {};
 if ischar(fpat)
   tmp = fpat;
   fpat = {};
@@ -21,26 +22,36 @@ if ischar(fpat)
 end
 for ip = 1:length(fpat)
   d = dir(fpat{ip});
+  r = regexp(fpat{ip},'^(?<dirname>.*/)[^/]+$','names');
   for i = 1:length(d)
-    files{end+1} = d(i).name;
+    if (not(d(i).isdir))
+      fdirs{end+1} = r.dirname;
+      files{end+1} = d(i).name;
+    end
   end
 end
-fall = sort(unique(files));
+[fall,iu] = unique(files);
+dall = {};
+for i = 1:length(iu)
+  dall{end+1} = fdirs{iu(i)};
+end
+
 %  Order all the files with any grid files first and the rest
 %  alphabetically
-m = regexp(fall, 'grid.+', 'match');
-grid_files = {};
-data_files = {};
+
 fordered = {};
-for i = 1:length(m)
-  if not(isempty(m{i}))
-    fordered{end+1} = fall{i};
+notg = [];
+for i = 1:length(fall)
+  if strncmp(fall{i},'grid.',5)
+    fordered{end+1} = [ dall{i} fall{i} ];
+  else
+    notg = [ notg ; i ];
   end
 end
-for i = 1:length(m)
-  if isempty(m{i})
-    fordered{end+1} = fall{i};
-  end
+
+for i = 1:length(notg)
+  fordered{end+1} = [ dall{notg(i)} fall{notg(i)} ];
 end
+
 flist = fordered;
 
