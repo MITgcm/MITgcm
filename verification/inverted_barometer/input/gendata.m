@@ -24,8 +24,8 @@ phi(find(r==0))=0;
 
 kr = 2*pi/r0;
 
-
-mask = change(h,'~=',0,1);
+%mask = change(h,'~=',0,1);
+mask=ones(nx,ny); mask(find(h==0))=0;
 
 fid=fopen('topog.box','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
