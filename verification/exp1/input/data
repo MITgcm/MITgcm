@@ -9,6 +9,7 @@
  no_slip_bottom=.TRUE.,
  diffKhT=4.E2,
  diffKzT=1.E-2,
+ rotationPeriod=86400.,
  beta=1.E-11,
  tAlpha=2.E-4,
  sBeta =0.,

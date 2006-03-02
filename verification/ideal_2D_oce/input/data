@@ -22,6 +22,7 @@
  tAlpha=2.E-4,
  sBeta =0.E-4,
  saltStepping=.FALSE.,
+ rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1035.,
  implicitFreeSurface=.TRUE.,

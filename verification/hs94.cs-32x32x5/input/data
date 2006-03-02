@@ -19,6 +19,7 @@
  diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
+ rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
@@ -58,7 +59,7 @@
 # Gridding parameters
  &PARM04
  usingCurvilinearGrid=.TRUE.,
- delR=1.E4, 2.5E4, 3.E4, 2.E4, 1.5E4,
+ delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,
  rSphere=6370.E3,
  &

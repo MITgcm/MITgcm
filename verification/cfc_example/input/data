@@ -13,6 +13,7 @@
  viscAr=1.E-3,
  diffKrT=5.E-5,
  diffKrS=5.E-5,
+ rotationPeriod=86400.,
  beta=1.E-11,
  f0=1.e-4,
  tAlpha=2.E-4,

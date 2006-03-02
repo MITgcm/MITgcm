@@ -21,6 +21,7 @@
  eosType='IDEALGAS',
  atm_Rq=0.6078,
 #Integr_GeoPot=2,
+ rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,

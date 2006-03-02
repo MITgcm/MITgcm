@@ -22,6 +22,7 @@
  diffKrS=3.E-5,
  tAlpha=2.E-4,
  sBeta =7.4E-4,
+ rotationPeriod=86400.,
  gravity=9.81,
  rigidLid=.TRUE.,
 #implicitFreeSurface=.TRUE.,

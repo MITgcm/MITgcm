@@ -44,6 +44,7 @@
  diffKzT=1.46e-5,
  diffKhS=0.0,
  diffKzS=1.46e-5,
+ rotationPeriod=86400.,
  beta=1.E-11,
  tAlpha=2.E-4,
  sBeta =7.4E-4,

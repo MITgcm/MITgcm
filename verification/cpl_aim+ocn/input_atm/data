@@ -13,6 +13,7 @@
  atm_Rq=0.6078E-3,
  Integr_GeoPot=2,
  selectFindRoSurf=1,
+ rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
