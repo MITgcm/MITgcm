@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.614 2006/02/24 00:57:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.615 2006/03/02 02:03:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change the default rotation period to 86164.s = the Earth rotation
 o 1rst implementation of Implicit IGW using the 3-D solver (use3Dsolver=T)
   and based on a reference stratification. Tested within hs94.cs-32x32x5.
 o seaice advection: add code for choosing between the default (2nd order
