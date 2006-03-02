@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.17 2006/02/15 20:44:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.18 2006/03/02 16:09:47 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,17 +65,11 @@ C--   FIRST SET UP BASIC CONSTANTS
       ECM2=ONE/(ECCEN**2)
       PSTAR=SEAICE_strength
 
-C--   25 DEG GIVES SIN EQUAL TO 0.4226
-      SINWIN=0.4226 _d 0
-      COSWIN=0.9063 _d 0
-      SINWAT=0.4226 _d 0
-      COSWAT=0.9063 _d 0
-
-C--   Do not introduce turning angle
-      SINWIN=ZERO
-      COSWIN=ONE
-      SINWAT=ZERO
-      COSWAT=ONE
+C--   introduce turning angle (default is zero)
+      SINWIN=SIN(SEAICE_airTurnAngle)
+      COSWIN=COS(SEAICE_airTurnAngle)
+      SINWAT=SIN(SEAICE_waterTurnAngle)
+      COSWAT=COS(SEAICE_waterTurnAngle)
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)

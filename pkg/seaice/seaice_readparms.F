@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.32 2006/02/15 22:26:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.33 2006/03/02 16:09:47 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,6 +61,7 @@ C--   SEAICE parameters
      & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
+     & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ, 
      & SEAICE_tave_mnc
@@ -153,6 +154,8 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       DIFF1      = 2.0*DIFF1
       A22        = 0.15      _d 0
       HO         = 0.5       _d 0
+      SEAICE_airTurnAngle   = 0.0 _d 0
+      SEAICE_waterTurnAngle = 0.0 _d 0
       WindForcingStart  = -99999.
       WindForcingEnd    = -99999.
       WindForcingPeriod = -99999.

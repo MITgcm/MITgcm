@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.21 2006/02/15 22:26:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.22 2006/03/02 16:09:47 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -123,6 +123,8 @@ C     SSSForcingEnd      - Time of last   SSS  forcing record  (s)
 C     SSSForcingPeriod   - Period between SSS  forcing records (s)
 C     StartingYear       - Starting year of integration
 C     EndingYear         - Ending year of integration
+C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
+C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn
       _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
@@ -138,6 +140,7 @@ C
       _RL SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod
       _RL SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod
       _RL StartingYear,     EndingYear
+      _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
@@ -152,7 +155,8 @@ C
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
      &    SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
      &    SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
-     &    StartingYear,     EndingYear
+     &    StartingYear,     EndingYear,
+     &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MAX_HEFF   - maximum ice thickness     (m)

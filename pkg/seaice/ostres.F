@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.14 2006/02/07 08:08:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.15 2006/03/02 16:09:47 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,16 +36,11 @@ C     i,j,bi,bj - Loop counters
       _RL  fuIce, fvIce
 #endif
 
-C   25 DEG GIVES SIN EQUAL TO 0.4226
-      SINWIN=0.4226 _d 0
-      COSWIN=0.9063 _d 0
-      SINWAT=0.4226 _d 0
-      COSWAT=0.9063 _d 0
-c do not introduce turning angle
-      SINWIN=ZERO
-      COSWIN=ONE
-      SINWAT=ZERO
-      COSWAT=ONE
+c     introduce turning angle (default is zero)
+      SINWIN=SIN(SEAICE_airTurnAngle)
+      COSWIN=COS(SEAICE_airTurnAngle)
+      SINWAT=SIN(SEAICE_waterTurnAngle)
+      COSWAT=COS(SEAICE_waterTurnAngle)
 
 #ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
 C--   Following formulation is problematic and is no longer used.
