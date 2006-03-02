@@ -3,13 +3,13 @@
       subroutine exf_set_gen( 
      &     genfile, genstartdate, genperiod, 
      &     genstartdate1, genstartdate2,
-     &     exf_inscal_gen,
+     &     exf_inscal_gen, genremove_intercept, genremove_slope,
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
      &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
      &     gen_nlon, gen_nlat, gen_xout, gen_yout, interp_method,
 #endif
-     &     mycurrenttime, mycurrentiter, mythid )
+     &     mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_set_gen
@@ -35,6 +35,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 #include "exf_param.h"
@@ -43,15 +44,16 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer genstartdate1, genstartdate2
-      _RL     genstartdate, genperiod
-      _RL     exf_inscal_gen
-      _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL genstartdate, genperiod
+      _RL exf_inscal_gen
+      _RL genremove_intercept, genremove_slope
+      _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       character*1 genmask
       character*(128) genfile, genfile0, genfile1
-      _RL     mycurrenttime
-      integer mycurrentiter
+      _RL     mytime
+      integer myiter
       integer mythid
 #ifdef USE_EXF_INTERPOLATION
 c     gen_lon_0 ,gen_lat_0 :: longitude and latitude of SouthWest
@@ -97,7 +99,7 @@ c     get record numbers and interpolation factor for gen
      I        , useExfYearlyFields
      O        , fac, first, changed
      O        , count0, count1, year0, year1
-     I        , mycurrenttime, mycurrentiter, mythid
+     I        , mytime, myiter, mythid
      &        )
 
          if ( first ) then
@@ -182,16 +184,17 @@ C     Complete filename with YR or _YEAR extension
 
 c     Loop over tiles.
          do bj = mybylo(mythid),mybyhi(mythid)
-            do bi = mybxlo(mythid),mybxhi(mythid)
-               do j = 1,sny
-                  do i = 1,snx
-
-c     Interpolate linearly onto the current time.
-
-                     genfld(i,j,bi,bj) = exf_inscal_gen * (
-     &                                fac * gen0(i,j,bi,bj) +
-     &                    (exf_one - fac) * gen1(i,j,bi,bj) )
-
+          do bi = mybxlo(mythid),mybxhi(mythid)
+           do j = 1,sny
+            do i = 1,snx
+c     Interpolate linearly onto the  time.
+             genfld(i,j,bi,bj) = exf_inscal_gen * (
+     &                          fac * gen0(i,j,bi,bj) +
+     &              (exf_one - fac) * gen1(i,j,bi,bj) )
+             genfld(i,j,bi,bj) = 
+     &            genfld(i,j,bi,bj) -
+     &            exf_inscal_gen * ( genremove_intercept +
+     &            genremove_slope*(mytime-starttime) )
                   enddo
                enddo
             enddo

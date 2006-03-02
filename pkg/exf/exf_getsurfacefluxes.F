@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.10 2005/07/28 19:52:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.11 2006/03/02 02:53:22 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -60,6 +60,7 @@ c     == end of interface ==
       call ctrl_get_gen ( 
      &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
      &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
+     &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
      &     mytime, myiter, mythid )
 #endif
 
@@ -67,6 +68,7 @@ c     == end of interface ==
       call ctrl_get_gen ( 
      &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
      &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
+     &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
      &     mytime, myiter, mythid )
 #endif
 
@@ -74,6 +76,7 @@ c     == end of interface ==
       call ctrl_get_gen ( 
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
      &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     mytime, myiter, mythid )
 #endif
 
@@ -81,6 +84,7 @@ c     == end of interface ==
       call ctrl_get_gen ( 
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     mytime, myiter, mythid )
 #endif
 

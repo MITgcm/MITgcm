@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.22 2005/02/21 05:32:55 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.23 2006/03/02 02:53:23 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -48,6 +48,8 @@ c     data values
       _RL     hfluxstartdate
       _RL     hfluxperiod
       _RL     hfluxconst
+      _RL     hflux_exfremo_intercept 
+      _RL     hflux_exfremo_slope
       character*1 hfluxmask
       parameter(  hfluxmask = 's' )
 
@@ -56,6 +58,8 @@ c     data values
       _RL     atempstartdate
       _RL     atempperiod
       _RL     atempconst
+      _RL     atemp_exfremo_intercept 
+      _RL     atemp_exfremo_slope
       character*1 atempmask
       parameter(  atempmask = 's' )
 
@@ -64,6 +68,8 @@ c     data values
       _RL     aqhstartdate
       _RL     aqhperiod
       _RL     aqhconst
+      _RL     aqh_exfremo_intercept 
+      _RL     aqh_exfremo_slope
       character*1 aqhmask
       parameter(  aqhmask = 's' )
 
@@ -72,6 +78,8 @@ c     data values
       _RL     sfluxstartdate
       _RL     sfluxperiod
       _RL     sfluxconst
+      _RL     sflux_exfremo_intercept 
+      _RL     sflux_exfremo_slope
       character*1 sfluxmask
       parameter(  sfluxmask = 's' )
 
@@ -80,6 +88,8 @@ c     data values
       _RL     evapstartdate
       _RL     evapperiod
       _RL     evapconst
+      _RL     evap_exfremo_intercept 
+      _RL     evap_exfremo_slope
       character*1 evapmask
       parameter(  evapmask = 's' )
 
@@ -88,6 +98,8 @@ c     data values
       _RL     precipstartdate
       _RL     precipperiod
       _RL     precipconst
+      _RL     precip_exfremo_intercept 
+      _RL     precip_exfremo_slope
       character*1 precipmask
       parameter(  precipmask = 's' )
 
@@ -96,6 +108,8 @@ c     data values
       _RL     runoffstartdate
       _RL     runoffperiod
       _RL     runoffconst
+      _RL     runoff_exfremo_intercept 
+      _RL     runoff_exfremo_slope
       character*1 runoffmask
       parameter(  runoffmask = 's' )
 
@@ -104,6 +118,8 @@ c     data values
       _RL     ustressstartdate
       _RL     ustressperiod
       _RL     ustressconst
+      _RL     ustress_exfremo_intercept 
+      _RL     ustress_exfremo_slope
       character*1 ustressmask
       parameter(  ustressmask = 'u' )
 
@@ -112,6 +128,8 @@ c     data values
       _RL     vstressstartdate
       _RL     vstressperiod
       _RL     vstressconst
+      _RL     vstress_exfremo_intercept 
+      _RL     vstress_exfremo_slope
       character*1 vstressmask
       parameter(  vstressmask = 'v' )
 
@@ -120,6 +138,8 @@ c     data values
       _RL     uwindstartdate
       _RL     uwindperiod
       _RL     uwindconst
+      _RL     uwind_exfremo_intercept 
+      _RL     uwind_exfremo_slope
       character*1 uwindmask
       parameter(  uwindmask = 's' )
 
@@ -128,6 +148,8 @@ c     data values
       _RL     vwindstartdate
       _RL     vwindperiod
       _RL     vwindconst
+      _RL     vwind_exfremo_intercept 
+      _RL     vwind_exfremo_slope
       character*1 vwindmask
       parameter(  vwindmask = 's' )
 
@@ -136,6 +158,8 @@ c     data values
       _RL     swfluxstartdate
       _RL     swfluxperiod
       _RL     swfluxconst
+      _RL     swflux_exfremo_intercept 
+      _RL     swflux_exfremo_slope
       character*1 swfluxmask
       parameter(  swfluxmask = 's' )
 
@@ -144,6 +168,8 @@ c     data values
       _RL     lwfluxstartdate
       _RL     lwfluxperiod
       _RL     lwfluxconst
+      _RL     lwflux_exfremo_intercept 
+      _RL     lwflux_exfremo_slope
       character*1 lwfluxmask
       parameter(  lwfluxmask = 's' )
 
@@ -152,6 +178,8 @@ c     data values
       _RL     swdownstartdate
       _RL     swdownperiod
       _RL     swdownconst
+      _RL     swdown_exfremo_intercept 
+      _RL     swdown_exfremo_slope
       character*1 swdownmask
       parameter(  swdownmask = 's' )
 
@@ -160,8 +188,20 @@ c     data values
       _RL     lwdownstartdate
       _RL     lwdownperiod
       _RL     lwdownconst
+      _RL     lwdown_exfremo_intercept 
+      _RL     lwdown_exfremo_slope
       character*1 lwdownmask
       parameter(  lwdownmask = 's' )
+
+      integer apressurestartdate1
+      integer apressurestartdate2
+      _RL     apressurestartdate
+      _RL     apressureperiod
+      _RL     apressureconst
+      _RL     apressure_exfremo_intercept 
+      _RL     apressure_exfremo_slope
+      character*1 apressuremask
+      parameter(  apressuremask = 's' )
 
       integer obcsNstartdate1
       integer obcsNstartdate2
@@ -182,14 +222,6 @@ c     data values
       integer obcsWstartdate2
       _RL     obcsWstartdate
       _RL     obcsWperiod
-
-      integer apressurestartdate1
-      integer apressurestartdate2
-      _RL     apressurestartdate
-      _RL     apressureperiod
-      _RL     apressureconst
-      character*1 apressuremask
-      parameter(  apressuremask = 's' )
 
 c     File names.
       character*(128) hfluxfile
@@ -280,6 +312,40 @@ C                           instead of _YEAR for useExfYearlyFields
      &                          swdownconst,
      &                          lwdownconst,
      &                          apressureconst
+
+      common /exf_param_trend_removal/
+     &                          hflux_exfremo_intercept,
+     &                          atemp_exfremo_intercept,
+     &                          aqh_exfremo_intercept,
+     &                          sflux_exfremo_intercept,
+     &                          evap_exfremo_intercept,
+     &                          precip_exfremo_intercept,
+     &                          runoff_exfremo_intercept,
+     &                          ustress_exfremo_intercept,
+     &                          vstress_exfremo_intercept,
+     &                          uwind_exfremo_intercept,
+     &                          vwind_exfremo_intercept,
+     &                          swflux_exfremo_intercept,
+     &                          lwflux_exfremo_intercept,
+     &                          swdown_exfremo_intercept,
+     &                          lwdown_exfremo_intercept,
+     &                          apressure_exfremo_intercept,
+     &                          hflux_exfremo_slope,
+     &                          atemp_exfremo_slope,
+     &                          aqh_exfremo_slope,
+     &                          sflux_exfremo_slope,
+     &                          evap_exfremo_slope,
+     &                          precip_exfremo_slope,
+     &                          runoff_exfremo_slope,
+     &                          ustress_exfremo_slope,
+     &                          vstress_exfremo_slope,
+     &                          uwind_exfremo_slope,
+     &                          vwind_exfremo_slope,
+     &                          swflux_exfremo_slope,
+     &                          lwflux_exfremo_slope,
+     &                          swdown_exfremo_slope,
+     &                          lwdown_exfremo_slope,
+     &                          apressure_exfremo_slope
 
       common /exf_param_c/
      &                          hfluxfile,

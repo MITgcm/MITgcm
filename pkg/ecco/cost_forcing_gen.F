@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.4 2006/02/17 23:48:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.5 2006/03/02 02:53:23 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -10,6 +10,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.4 2006/02/17 
      I                       endrec,
      I                       xx_gen_file,
      I                       xx_gen_dummy,
+     I                       xx_gen_period,
      I                       wmean_gen,
      I                       wgen,
      O                       num_gen_anom,
@@ -17,6 +18,8 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.4 2006/02/17 
      O                       objf_gen_anom,
      O                       objf_gen_mean,
      O                       objf_gen_smoo,
+     I                       xx_gen_remo_intercept, 
+     I                       xx_gen_remo_slope,
      I                       genmask,
      I                       mythid
      &                         )
@@ -53,6 +56,7 @@ c     == routine arguments ==
       integer endrec
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
+      _RL xx_gen_period
       _RL wmean_gen
       _RL wgen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL num_gen_anom(nsx,nsy)
@@ -61,6 +65,8 @@ c     == routine arguments ==
       _RL objf_gen_anom(nsx,nsy)
       _RL objf_gen_mean(nsx,nsy)
       _RL objf_gen_smoo(nsx,nsy)
+      _RL xx_gen_remo_intercept
+      _RL xx_gen_remo_slope
       _RS genmask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer mythid
 
@@ -152,7 +158,9 @@ c--     Loop over this thread tiles.
             do j = jmin,jmax
               do i = imin,imax
                 xx_mean(i,j,bi,bj) = xx_mean(i,j,bi,bj)
-     &                               + tmpfld2d(i,j,bi,bj)
+     &                + tmpfld2d(i,j,bi,bj)
+     &                - ( xx_gen_remo_intercept +
+     &                    xx_gen_remo_slope*(irec-1)*xx_gen_period )
               enddo
             enddo
           enddo
@@ -204,6 +212,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (genmask(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_mean(i,j,bi,bj)
+     &                   - ( xx_gen_remo_intercept +
+     &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile

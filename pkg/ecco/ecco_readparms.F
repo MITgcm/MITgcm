@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.19 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.20 2006/03/02 02:53:23 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -79,6 +79,7 @@ c--   Read the namelist input.
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
+     &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh, 
      &                   mult_precip, mult_swflux, mult_swdown,
      &                   mult_uwind, mult_vwind,
@@ -191,6 +192,8 @@ c--     Set default values.
         geoid_covariancefile  =    ' '
         mult_hflux            =      0. _d 0
         mult_sflux            =      0. _d 0
+        mult_hfluxmm          =      0. _d 0
+        mult_sfluxmm          =      0. _d 0
         mult_tauu             =      0. _d 0
         mult_tauv             =      0. _d 0
         mult_atemp            =      0. _d 0

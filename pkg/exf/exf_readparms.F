@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.26 2005/05/23 19:28:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.27 2006/03/02 02:53:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -125,7 +125,39 @@ c     Surface flux data.
      &         lwfluxconst,
      &         swdownconst,
      &         lwdownconst,
-     &         apressureconst
+     &         apressureconst,
+     &     hflux_exfremo_intercept,
+     &     atemp_exfremo_intercept,
+     &     aqh_exfremo_intercept,
+     &     sflux_exfremo_intercept,
+     &     evap_exfremo_intercept,
+     &     precip_exfremo_intercept,
+     &     runoff_exfremo_intercept,
+     &     ustress_exfremo_intercept,
+     &     vstress_exfremo_intercept,
+     &     uwind_exfremo_intercept,
+     &     vwind_exfremo_intercept,
+     &     swflux_exfremo_intercept,
+     &     lwflux_exfremo_intercept,
+     &     swdown_exfremo_intercept,
+     &     lwdown_exfremo_intercept,
+     &     apressure_exfremo_intercept,
+     &     hflux_exfremo_intercept,
+     &     atemp_exfremo_slope,
+     &     aqh_exfremo_slope,
+     &     sflux_exfremo_slope,
+     &     evap_exfremo_slope,
+     &     precip_exfremo_slope,
+     &     runoff_exfremo_slope,
+     &     ustress_exfremo_slope,
+     &     vstress_exfremo_slope,
+     &     uwind_exfremo_slope,
+     &     vwind_exfremo_slope,
+     &     swflux_exfremo_slope,
+     &     lwflux_exfremo_slope,
+     &     swdown_exfremo_slope,
+     &     lwdown_exfremo_slope,
+     &     apressure_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
      & ,ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      & ustress_nlon, ustress_nlat,
@@ -173,76 +205,113 @@ c     Calendar data.
       hfluxstartdate2    = 0
       hfluxperiod        = 0.0 _d 0
       hfluxconst         = 0.0 _d 0
+      hflux_exfremo_intercept = 0.0 _d 0
+      hflux_exfremo_slope = 0.0 _d 0
 
       atempstartdate1    = 0
       atempstartdate2    = 0
       atempperiod        = 0.0 _d 0
       atempconst         = celsius2K
+      atemp_exfremo_intercept = 0.0 _d 0
+      atemp_exfremo_slope = 0.0 _d 0
 
       aqhstartdate1      = 0
       aqhstartdate2      = 0
       aqhperiod          = 0.0 _d 0
       aqhconst           = 0.0 _d 0
+      aqh_exfremo_intercept = 0.0 _d 0
+      aqh_exfremo_slope = 0.0 _d 0
 
       sfluxstartdate1    = 0
       sfluxstartdate2    = 0
       sfluxperiod        = 0.0 _d 0
       sfluxconst         = 0.0 _d 0
+      sflux_exfremo_intercept = 0.0 _d 0
+      sflux_exfremo_slope = 0.0 _d 0
 
       evapstartdate1   = 0
       evapstartdate2   = 0
       evapperiod       = 0.0 _d 0
       evapconst        = 0.0 _d 0
+      evap_exfremo_intercept = 0.0 _d 0
+      evap_exfremo_slope = 0.0 _d 0
 
       precipstartdate1   = 0
       precipstartdate2   = 0
       precipperiod       = 0.0 _d 0
       precipconst        = 0.0 _d 0
+      precip_exfremo_intercept = 0.0 _d 0
+      precip_exfremo_slope = 0.0 _d 0
 
       runoffstartdate1   = 0
       runoffstartdate2   = 0
       runoffperiod       = 0.0 _d 0
       runoffconst        = 0.0 _d 0
+      runoff_exfremo_intercept = 0.0 _d 0
+      runoff_exfremo_slope = 0.0 _d 0
 
       ustressstartdate1  = 0
       ustressstartdate2  = 0
       ustressperiod      = 0.0 _d 0
       ustressconst       = 0.0 _d 0
+      ustress_exfremo_intercept = 0.0 _d 0
+      ustress_exfremo_slope = 0.0 _d 0
 
       vstressstartdate1  = 0
       vstressstartdate2  = 0
       vstressperiod      = 0.0 _d 0
       vstressconst       = 0.0 _d 0
+      vstress_exfremo_intercept = 0.0 _d 0
+      vstress_exfremo_slope = 0.0 _d 0
 
       uwindstartdate1    = 0
       uwindstartdate2    = 0
       uwindperiod        = 0.0 _d 0
       uwindconst         = 0.0 _d 0
+      uwind_exfremo_intercept = 0.0 _d 0
+      uwind_exfremo_slope = 0.0 _d 0
 
       vwindstartdate1    = 0
       vwindstartdate2    = 0
       vwindperiod        = 0.0 _d 0
       vwindconst         = 0.0 _d 0
+      vwind_exfremo_intercept = 0.0 _d 0
+      vwind_exfremo_slope = 0.0 _d 0
 
       swfluxstartdate1   = 0
       swfluxstartdate2   = 0
       swfluxperiod       = 0.0 _d 0
       swfluxconst        = 0.0 _d 0
+      swflux_exfremo_intercept = 0.0 _d 0
+      swflux_exfremo_slope = 0.0 _d 0
 
       lwfluxstartdate1   = 0
       lwfluxstartdate2   = 0
       lwfluxperiod       = 0.0 _d 0
       lwfluxconst        = 0.0 _d 0
+      lwflux_exfremo_intercept = 0.0 _d 0
+      lwflux_exfremo_slope = 0.0 _d 0
 
       swdownstartdate1   = 0
       swdownstartdate2   = 0
       swdownperiod       = 0.0 _d 0
       swdownconst        = 0.0 _d 0
+      swdown_exfremo_intercept = 0.0 _d 0
+      swdown_exfremo_slope = 0.0 _d 0
 
       lwdownstartdate1   = 0
       lwdownstartdate2   = 0
       lwdownperiod       = 0.0 _d 0
       lwdownconst        = 0.0 _d 0
+      lwdown_exfremo_intercept = 0.0 _d 0
+      lwdown_exfremo_slope = 0.0 _d 0
+
+      apressurestartdate1    = 0
+      apressurestartdate2    = 0
+      apressureperiod        = 0.0 _d 0
+      apressureconst         = 0.0 _d 0
+      apressure_exfremo_intercept = 0.0 _d 0
+      apressure_exfremo_slope = 0.0 _d 0
 
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
@@ -259,11 +328,6 @@ c     Calendar data.
       obcsWstartdate1    = 0
       obcsWstartdate2    = 0
       obcsWperiod        = 0.0 _d 0
-
-      apressurestartdate1    = 0
-      apressurestartdate2    = 0
-      apressureperiod        = 0.0 _d 0
-      apressureconst         = 0.0 _d 0
 
       repeatPeriod           = 0.0 _d 0
       exf_albedo             = 0.1 _d 0

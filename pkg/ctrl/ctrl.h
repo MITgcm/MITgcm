@@ -607,6 +607,32 @@ c     xx_obcssperiod - sampling interval
       _RL     xx_obcswperiod
       _RL     xx_obcseperiod
 
+      common /ctrl_param_trend_removal/
+     &       xx_hflux_remo_intercept, xx_hflux_remo_slope,
+     &       xx_sflux_remo_intercept, xx_sflux_remo_slope,
+     &       xx_tauu_remo_intercept, xx_tauu_remo_slope,
+     &       xx_tauv_remo_intercept, xx_tauv_remo_slope,
+     &       xx_atemp_remo_intercept, xx_atemp_remo_slope,
+     &       xx_aqh_remo_intercept, xx_aqh_remo_slope,
+     &       xx_precip_remo_intercept, xx_precip_remo_slope,
+     &       xx_swflux_remo_intercept, xx_swflux_remo_slope,
+     &       xx_swdown_remo_intercept, xx_swdown_remo_slope,
+     &       xx_uwind_remo_intercept, xx_uwind_remo_slope,
+     &       xx_vwind_remo_intercept, xx_vwind_remo_slope
+
+      _RL xx_hflux_remo_intercept, xx_hflux_remo_slope
+      _RL xx_sflux_remo_intercept, xx_sflux_remo_slope
+      _RL xx_tauu_remo_intercept, xx_tauu_remo_slope
+      _RL xx_tauv_remo_intercept, xx_tauv_remo_slope
+      _RL xx_atemp_remo_intercept, xx_atemp_remo_slope
+      _RL xx_aqh_remo_intercept, xx_aqh_remo_slope
+      _RL xx_precip_remo_intercept, xx_precip_remo_slope
+      _RL xx_swflux_remo_intercept, xx_swflux_remo_slope
+      _RL xx_swdown_remo_intercept, xx_swdown_remo_slope
+      _RL xx_uwind_remo_intercept, xx_uwind_remo_slope
+      _RL xx_vwind_remo_intercept, xx_vwind_remo_slope
+
+
 c     xx_hfluxstartdate - start date for the heat flux control part.
 c     xx_sfluxstartdate - start date for the salt flux control part.
 c     xx_tauustartdate  - start date for the zonal wind stress

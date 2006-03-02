@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.29 2005/08/06 11:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.30 2006/03/02 02:53:22 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -53,8 +53,6 @@ c     == end of interface ==
 
 c--   read forcing fields from files and temporal interpolation
 
-cph-exf-print      print *, 'ph-exf --------- ----------------------------------'
-
 c     Zonal and meridional wind stress.
 #ifdef USE_EXF_INTERPOLATION
       call exf_set_uv(
@@ -63,23 +61,27 @@ c     Zonal and meridional wind stress.
      &     exf_inscal_ustress, ustress, ustress0, ustress1, ustressmask,
      &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      &     ustress_nlon, ustress_nlat,
+     &     ustress_exfremo_intercept, ustress_exfremo_slope,
      &     vstressfile, vstressstartdate, vstressperiod,
      &     vstressstartdate1, vstressstartdate2,
      &     exf_inscal_vstress, vstress, vstress0, vstress1, vstressmask,
      &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      &     vstress_nlon, vstress_nlat,
+     &     vstress_exfremo_intercept, vstress_exfremo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen( 
      &     ustressfile, ustressstartdate, ustressperiod,
      &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_ustress,
+     &     ustress_exfremo_intercept, ustress_exfremo_slope,
      &     ustress, ustress0, ustress1, ustressmask,
      &     mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen(
      &     vstressfile, vstressstartdate, vstressperiod,
      &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_vstress,
+     &     vstress_exfremo_intercept, vstress_exfremo_slope,
      &     vstress, vstress0, vstress1, vstressmask,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
@@ -94,23 +96,27 @@ c     Zonal and meridional wind.
      &     exf_inscal_uwind, uwind, uwind0, uwind1, uwindmask,
      &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
      &     uwind_nlon, uwind_nlat,
+     &     uwind_exfremo_intercept, uwind_exfremo_slope,
      &     vwindfile, vwindstartdate, vwindperiod,
      &     vwindstartdate1, vwindstartdate2,
      &     exf_inscal_vwind, vwind, vwind0, vwind1, vwindmask,
      &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
      &     vwind_nlon, vwind_nlat,
+     &     vwind_exfremo_intercept, vwind_exfremo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen(
      &     uwindfile, uwindstartdate, uwindperiod,
      &     uwindstartdate1, uwindstartdate2,
      &     exf_inscal_uwind,
+     &     uwind_exfremo_intercept, uwind_exfremo_slope,
      &     uwind, uwind0, uwind1, uwindmask,
      &     mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen(
      &     vwindfile, vwindstartdate, vwindperiod,
      &     vwindstartdate1, vwindstartdate2,
      &     exf_inscal_vwind,
+     &     vwind_exfremo_intercept, vwind_exfremo_slope,
      &     vwind, vwind0, vwind1, vwindmask,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
@@ -122,6 +128,7 @@ c     Atmospheric heat flux.
      &     hfluxfile, hfluxstartdate, hfluxperiod, 
      &     hfluxstartdate1, hfluxstartdate2,
      &     exf_inscal_hflux,
+     &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     hflux, hflux0, hflux1, hfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -134,6 +141,7 @@ c     Salt flux.
      &     sfluxfile, sfluxstartdate, sfluxperiod, 
      &     sfluxstartdate1, sfluxstartdate2,
      &     exf_inscal_sflux,
+     &     sflux_exfremo_intercept, sflux_exfremo_slope,
      &     sflux, sflux0, sflux1, sfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
@@ -148,6 +156,7 @@ c     Atmospheric temperature.
      &     atempfile, atempstartdate, atempperiod, 
      &     atempstartdate1, atempstartdate2,
      &     exf_inscal_atemp,
+     &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     atemp, atemp0, atemp1, atempmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
@@ -155,13 +164,13 @@ c     Atmospheric temperature.
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
       do bj = mybylo(mythid),mybyhi(mythid)
-         do bi = mybxlo(mythid),mybxhi(mythid)
-            do j = 1,sny
-               do i = 1,snx
-                  atemp(i,j,bi,bj) = atemp(i,j,bi,bj) + exf_offset_atemp
-               enddo
-            enddo
+       do bi = mybxlo(mythid),mybxhi(mythid)
+        do j = 1,sny
+         do i = 1,snx
+          atemp(i,j,bi,bj) = atemp(i,j,bi,bj) + exf_offset_atemp
          enddo
+        enddo
+       enddo
       enddo
 
 c     Atmospheric humidity.
@@ -169,6 +178,7 @@ c     Atmospheric humidity.
      &     aqhfile, aqhstartdate, aqhperiod, 
      &     aqhstartdate1, aqhstartdate2,
      &     exf_inscal_aqh,
+     &     aqh_exfremo_intercept, aqh_exfremo_slope,
      &     aqh, aqh0, aqh1, aqhmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
@@ -181,6 +191,7 @@ c     Net long wave radiative flux.
      &     lwfluxfile, lwfluxstartdate, lwfluxperiod, 
      &     lwfluxstartdate1, lwfluxstartdate2,
      &     exf_inscal_lwflux,
+     &     lwflux_exfremo_intercept, lwflux_exfremo_slope,
      &     lwflux, lwflux0, lwflux1, lwfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
@@ -193,6 +204,7 @@ c     Precipitation.
      &     precipfile, precipstartdate, precipperiod, 
      &     precipstartdate1, precipstartdate2,
      &     exf_inscal_precip,
+     &     precip_exfremo_intercept, precip_exfremo_slope,
      &     precip, precip0, precip1, precipmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
@@ -208,6 +220,7 @@ c     Net short wave radiative flux.
      &     swfluxfile, swfluxstartdate, swfluxperiod, 
      &     swfluxstartdate1, swfluxstartdate2,
      &     exf_inscal_swflux,
+     &     swflux_exfremo_intercept, swflux_exfremo_slope,
      &     swflux, swflux0, swflux1, swfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
@@ -222,6 +235,7 @@ c     Evaporation
      &     evapfile, evapstartdate, evapperiod, 
      &     evapstartdate1, evapstartdate2,
      &     exf_inscal_evap,
+     &     evap_exfremo_intercept, evap_exfremo_slope,
      &     evap, evap0, evap1, evapmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
@@ -237,6 +251,7 @@ c     Downward shortwave radiation.
      &     swdownfile, swdownstartdate, swdownperiod, 
      &     swdownstartdate1, swdownstartdate2,
      &     exf_inscal_swdown,
+     &     swdown_exfremo_intercept, swdown_exfremo_slope,
      &     swdown, swdown0, swdown1, swdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
@@ -249,6 +264,7 @@ c     Downward longwave radiation.
      &     lwdownfile, lwdownstartdate, lwdownperiod, 
      &     lwdownstartdate1, lwdownstartdate2,
      &     exf_inscal_lwdown,
+     &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
      &     lwdown, lwdown0, lwdown1, lwdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
@@ -264,6 +280,7 @@ c     Atmos. pressure forcing
      &     apressurefile, apressurestartdate, apressureperiod, 
      &     apressurestartdate1, apressurestartdate2,
      &     exf_inscal_apressure,
+     &     apressure_exfremo_intercept, apressure_exfremo_slope,
      &     apressure, apressure0, apressure1, apressuremask, 
 #ifdef USE_EXF_INTERPOLATION
      &     apressure_lon0, apressure_lon_inc, apressure_lat0,
@@ -279,6 +296,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
      &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
+     &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -286,6 +304,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
      &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
+     &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -293,6 +312,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
      &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
+     &     xx_precip_remo_intercept, xx_precip_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -300,6 +320,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
      &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
+     &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -307,6 +328,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen ( 
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
      &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
+     &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -314,6 +336,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* ALLOW_UWIND_CONTROL */
 
@@ -321,6 +344,7 @@ c-- Control variables for atmos. state
       call ctrl_get_gen (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
      &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
 

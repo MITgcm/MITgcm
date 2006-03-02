@@ -555,6 +555,8 @@ c                  function contributions.
       common /ecco_cost_aux_r/
      &                    mult_hflux,
      &                    mult_sflux,
+     &                    mult_hfluxmm,
+     &                    mult_sfluxmm,
      &                    mult_tauu,
      &                    mult_tauv,
      &                    mult_hmean,
@@ -602,6 +604,8 @@ c                  function contributions.
 
       _RL  mult_hflux
       _RL  mult_sflux
+      _RL  mult_hfluxmm
+      _RL  mult_sfluxmm
       _RL  mult_tauu
       _RL  mult_tauv
       _RL  mult_hmean

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.9 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.10 2006/03/02 02:53:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -8,12 +8,14 @@ C $Name:  $
      &     uvecstartdate1, uvecstartdate2,
      &     exf_inscal_uvec, uvec, uvec0, uvec1, uvecmask,
      &     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &     uvec_nlon, uvec_nlat,
+     &     uvec_nlon, uvec_nlat, 
+     &     uvec_remove_intercept, uvec_remove_slope,
      &     vvecfile, vvecstartdate, vvecperiod,
      &     vvecstartdate1, vvecstartdate2,
      &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
      &     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &     vvec_nlon, vvec_nlat,
+     &     vvec_remove_intercept, vvec_remove_slope,
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
@@ -60,6 +62,7 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
       _RL     uvecstartdate, uvecperiod
       integer uvecstartdate1, uvecstartdate2
       _RL     exf_inscal_uvec
+      _RL     uvec_remove_intercept, uvec_remove_slope
       _RL     uvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     uvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     uvec1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -71,6 +74,7 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
       _RL     vvecstartdate, vvecperiod
       integer vvecstartdate1, vvecstartdate2
       _RL     exf_inscal_vvec
+      _RL     vvec_remove_intercept, vvec_remove_slope
       _RL     vvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     vvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     vvec1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -321,6 +325,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           uvecfile, uvecstartdate, uvecperiod,
      I           uvecstartdate1, uvecstartdate2,
      &           exf_inscal_uvec,
+     &           uvec_remove_intercept, uvec_remove_slope,
      &           uvec, uvec0, uvec1, uvecmask,
      &           uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
      &           uvec_nlon, uvec_nlat, xC, yC, interp_method,
@@ -329,6 +334,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           vvecfile, vvecstartdate, vvecperiod,
      I           vvecstartdate1, vvecstartdate2,
      &           exf_inscal_vvec,
+     &           vvec_remove_intercept, vvec_remove_slope,
      &           vvec, vvec0, vvec1, vvecmask,
      &           vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &           vvec_nlon, vvec_nlat, xC, yC, interp_method,

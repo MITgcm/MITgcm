@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.8 2005/01/12 20:33:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.9 2006/03/02 02:53:23 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -7,6 +7,7 @@ C $Name:  $
       subroutine ctrl_get_gen(
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
      I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy, 
+     I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          mytime, myiter, mythid
      &                     )
 
@@ -47,6 +48,8 @@ c     == routine arguments ==
       _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen_dummy
+      _RL     xx_gen_remo_intercept
+      _RL     xx_gen_remo_slope
 
       _RL     mytime
       integer myiter
@@ -167,7 +170,10 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
               genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
      &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
      &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
-              genfld(i,j,bi,bj) = genfld(i,j,bi,bj)*genmask(i,j,k,bi,bj)
+              genfld(i,j,bi,bj) = 
+     &             genmask(i,j,k,bi,bj)*( genfld (i,j,bi,bj) -
+     &             ( xx_gen_remo_intercept +
+     &               xx_gen_remo_slope*(mytime-starttime) ) )
             enddo
           enddo
         enddo
