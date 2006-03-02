@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.112 2006/02/23 16:46:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.113 2006/03/02 01:54:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,96 +40,96 @@ CEOP
 
 C--   Grid parameters
 C     Vertical gridding
-      rkFacDefault         = 1.D0
-      horiVertRatio        = 1.D0
-      Ro_SeaLevel = 0.
+      rkFacDefault        = 1. _d 0
+      horiVertRatio       = 1. _d 0
+      Ro_SeaLevel         = 0.
       DO k=1,Nr
-       delRdefault(k) = 0.
+       delRdefault(k)     = 0.
       ENDDO
       DO k=1,Nr+1
-       delRc(k) = UNSET_RL
+       delRc(k)           = UNSET_RL
       ENDDO
 
 C     Horizontal gridding
-      delXFile        = ' '
-      delYFile        = ' '
-      horizGridFile   = ' '
+      delXFile            = ' '
+      delYFile            = ' '
+      horizGridFile       = ' '
 C     In cartesian coords distances are in metres
-      usingCartesianGrid = .FALSE.
+      usingCartesianGrid  = .FALSE.
       DO i=1,Nx
-       delX(i) = UNSET_RL
+       delX(i)            = UNSET_RL
       ENDDO
       DO j=1,Ny
-       delY(j) = UNSET_RL
+       delY(j)            = UNSET_RL
       ENDDO
 C     In spherical polar distances are in degrees
       usingSphericalPolarGrid = .FALSE.
-      phiMin               = 0.0
-      thetaMin             = 0.
-      rSphere              = 6370. * 1.D3
+      phiMin              = 0.0
+      thetaMin            = 0.
+      rSphere             = 6370. _d 3
 C     General curvilinear coordinate system
-      usingCurvilinearGrid = .FALSE.
+      usingCurvilinearGrid= .FALSE.
 C     General cylindrical coordinate system
-      usingCylindricalGrid = .FALSE.
+      usingCylindricalGrid= .FALSE.
 C     Coriolis map:
-      useConstantF  = .FALSE.
-      useBetaPlaneF = .FALSE.
-      useSphereF    = .FALSE.
+      useConstantF        = .FALSE.
+      useBetaPlaneF       = .FALSE.
+      useSphereF          = .FALSE.
 
 
 C--   Set default "physical" parameters
-      nh_Am2              = 1.D0
-      gravity             = 9.81D0
-      rhoNil              = 999.8D0
+      nh_Am2              = 1. _d 0
+      gravity             = 9.81 _d 0
+      rhoNil              = 999.8 _d 0
 C-- jmc : the default is to set rhoConstFresh to rhoConst (=rhoNil by default)
 C         (so that the default produces same results as before)
-c     rhoConstFresh       = 999.8D0
-      f0                  = 1.D-4
-      beta                = 1.D-11
-C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
-      rotationPeriod      = 86400. _d 0
-      viscAh              = 0.D3
-      viscAhGrid          = 0.D0
-      viscAhGridMin       = 0.D0
-      viscAhGridMax       = 1.D21
-      viscAhMax           = 1.D21
-      viscAhReMax         = 0.D0
-      viscC2leith         = 0.D0
-      viscC2leithD        = 0.D0
-      viscC2smag          = 0.D0
-      diffKhT             = 0.D3
-      diffKhS             = 0.D3
-      viscArDefault       = 0.D-3
+c     rhoConstFresh       = 999.8 _d 0
+      f0                  = 1. _d -4
+      beta                = 1. _d -11
+C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
+      rotationPeriod      = 86164. _d 0
+      viscAh              = 0. _d 3
+      viscAhGrid          = 0. _d 0
+      viscAhGridMin       = 0. _d 0
+      viscAhGridMax       = 1. _d 21
+      viscAhMax           = 1. _d 21
+      viscAhReMax         = 0. _d 0
+      viscC2leith         = 0. _d 0
+      viscC2leithD        = 0. _d 0
+      viscC2smag          = 0. _d 0
+      diffKhT             = 0. _d 3
+      diffKhS             = 0. _d 3
+      viscArDefault       = 0. _d -3
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
-      diffKrTDefault      = 0.D-3
-      diffKrSDefault      = 0.D-3
-      diffKrBL79surf      = 0.D0
-      diffKrBL79deep      = 0.D0
-      diffKrBL79scl       = 200.D0
-      diffKrBL79Ho        = -2000.D0
-      viscA4              = 0.D11
-      viscA4Grid          = 0.D0
-      viscA4GridMax       = 1.D21
-      viscA4GridMin       = 0.D0
-      viscA4Max           = 1.D21
-      viscA4ReMax         = 0.D0
-      viscC4leith         = 0.D0
-      viscC4leithD        = 0.D0
-      viscC4smag          = 0.D0
-      diffK4T             = 0.D11
-      diffK4S             = 0.D11
+      diffKrTDefault      = 0. _d -3
+      diffKrSDefault      = 0. _d -3
+      diffKrBL79surf      = 0. _d 0
+      diffKrBL79deep      = 0. _d 0
+      diffKrBL79scl       = 200. _d 0
+      diffKrBL79Ho        = -2000. _d 0
+      viscA4              = 0. _d 11
+      viscA4Grid          = 0. _d 0
+      viscA4GridMax       = 1. _d 21
+      viscA4GridMin       = 0. _d 0
+      viscA4Max           = 1. _d 21
+      viscA4ReMax         = 0. _d 0
+      viscC4leith         = 0. _d 0
+      viscC4leithD        = 0. _d 0
+      viscC4smag          = 0. _d 0
+      diffK4T             = 0. _d 11
+      diffK4S             = 0. _d 11
       cosPower            = 0.
-      HeatCapacity_Cp     = 3994.D0
-Cml      tAlpha              = 2.D-4
-Cml      sBeta               = 7.4D-4
+      HeatCapacity_Cp     = 3994. _d 0
+Cml      tAlpha              = 2. _d -4
+Cml      sBeta               = 7.4 _d -4
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
-      hFacMin             = 1.D0
-      hFacMinDrDefault    = 0.D0
+      hFacMin             = 1. _d 0
+      hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
       staggerTimeStep     = .FALSE.
       momViscosity        = .TRUE.
@@ -149,7 +149,7 @@ Cml      sBeta               = 7.4D-4
       useNHMTerms         = .FALSE.
       useFullLeith        = .FALSE.
       useAreaViscLength   = .FALSE.
-      useStrainTensionVisc = .FALSE.
+      useStrainTensionVisc= .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       momImplVertAdv      = .FALSE.
@@ -161,7 +161,7 @@ Cml      sBeta               = 7.4D-4
       useSingleCpuIO      = .FALSE.
       allowFreezing       = .FALSE.
       useOldFreezing      = .FALSE.
-      ivdc_kappa          = 0.D0
+      ivdc_kappa          = 0. _d 0
       usePickupBeforeC35    = .FALSE.
       usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.
@@ -185,8 +185,8 @@ Cml      sBeta               = 7.4D-4
 C--   Set (free)surface-related parameters
       implicitFreeSurface = .FALSE.
       rigidLid            = .FALSE.
-      implicSurfPress     = 1.D0
-      implicDiv2DFlow     = 1.D0
+      implicSurfPress     = 1. _d 0
+      implicDiv2DFlow     = 1. _d 0
       exactConserv        = .FALSE.
       uniformLin_PhiSurf  = .TRUE.
       nonlinFreeSurf      = 0
@@ -212,13 +212,13 @@ C--   Atmospheric physical parameters (e.g.: EOS)
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
-      cg2dTargetResidual = 1.D-7
+      cg2dTargetResidual = 1. _d -7
       cg2dTargetResWunit = -1.
       cg2dChkResFreq     = 1
-      cg2dpcOffDFac      = 0.51D0
+      cg2dpcOffDFac      = 0.51 _d 0
       cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
-      cg3dTargetResidual = 1.D-7
+      cg3dTargetResidual = 1. _d -7
       cg3dChkResFreq     = 1
 
 C--   Time stepping parameters
@@ -237,7 +237,7 @@ C--   Time stepping parameters
       endTime           = deltaT*float(nEndIter)
       forcing_In_AB     = .TRUE.
       doAB_onGtGs       = .TRUE.
-      abEps             = 0.01
+      abEps             = 0.01 _d 0
 #ifdef ALLOW_ADAMSBASHFORTH_3
       alph_AB           = 0.5 _d 0
       beta_AB           = 5. _d 0 / 12. _d 0
@@ -270,11 +270,11 @@ C--   Time stepping parameters
       nCheckLev         = 1
       checkPtSuff(1)    = 'ckptA'
       checkPtSuff(2)    = 'ckptB'
-      cAdjFreq          =  0.D0
-      tauCD             =  0.D0
-      tauThetaClimRelax =  0.D0
-      tauSaltClimRelax  =  0.D0
-      tauTr1ClimRelax   =  0.D0
+      cAdjFreq          =  0. _d 0
+      tauCD             =  0. _d 0
+      tauThetaClimRelax =  0. _d 0
+      tauSaltClimRelax  =  0. _d 0
+      tauTr1ClimRelax   =  0. _d 0
       periodicExternalForcing = .FALSE.
       externForcingPeriod     = 0.
       externForcingCycle      = 0.
@@ -308,6 +308,5 @@ C--   Input files
       lambdaSaltFile  = ' '
       mdsioLocalDir   = ' '
 
-C
       RETURN
       END
