@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.617 2006/03/02 16:10:08 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.618 2006/03/02 22:52:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Apply mask on Fresh-Water flux (needed for SSH forcing).
+  update output.txt of exp. global_ocean_ebm & cpl_aim+ocn (affects cg2d residual)
 o seaice: add runtime flags for turning angles (default to zero)
 o Adding runtime parameter to exf/, ctrl/, to remove on-the-fly global mean 
   and trend from exf forcing and ctrl control adjustments
