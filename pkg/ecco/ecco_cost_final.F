@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.18 2006/03/02 02:53:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.19 2006/03/02 21:43:08 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -57,7 +57,7 @@ c     == local variables ==
       _RL f_tauu, f_tauv, f_hflux, f_sflux 
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
       _RL f_tauusmoo, f_tauvsmoo, f_hfluxsmoo, f_sfluxsmoo
-      _RL f_hfluxmm, f_sfluxmm 
+      _RL f_hfluxmm, f_sfluxmm, f_hfluxmm2, f_sfluxmm2
       _RL f_sst, f_tmi, f_sss, f_atl, f_ctdt, f_ctds
       _RL f_drifter, f_xbt, f_tdrift, f_sdrift, f_wdrift
       _RL f_argot, f_argos, f_ssh ,f_ctdtclim, f_ctdsclim
@@ -117,10 +117,12 @@ c     == end of interface ==
       f_hfluxm = 0. _d 0
       f_hfluxsmoo = 0. _d 0 
       f_hfluxmm = 0. _d 0 
+      f_hfluxmm2 = 0. _d 0 
       f_sflux  = 0. _d 0
       f_sfluxsmoo = 0. _d 0 
       f_sfluxm  = 0. _d 0
       f_sfluxmm  = 0. _d 0
+      f_sfluxmm2  = 0. _d 0
       f_uwind  = 0. _d 0
       f_vwind  = 0. _d 0
       f_atemp  = 0. _d 0
@@ -706,10 +708,21 @@ c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
 
         fc = fc + mult_hmean*objf_hmean
-        fc = fc + mult_hfluxmm*f_hfluxmm*f_hfluxmm
-        fc = fc + mult_sfluxmm*f_sfluxmm*f_sfluxmm
         no_hmean = num_hmean
 
+        f_hfluxmm2 = mult_hfluxmm
+     &       *(f_hfluxmm-1.0)*(f_hfluxmm-1.0)
+     &       /(wmean_hflux*wmean_hflux)
+        f_sfluxmm2 = mult_sfluxmm
+     &       *f_sfluxmm*f_sfluxmm
+     &       /(wmean_sflux*wmean_sflux)
+        fc = fc + f_hfluxmm2 + f_sfluxmm2
+
+
+        write(standardmessageunit,'(A,D22.15)')
+     &           ' --> f_hfluxmm2           =',f_hfluxmm2
+        write(standardmessageunit,'(A,D22.15)')
+     &           ' --> f_sfluxmm2           =',f_sfluxmm2
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
@@ -734,10 +747,12 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_hflux =', f_hflux, no_hflux
         write(ifc,*) 'f_hfluxm =', f_hfluxm, no_hfluxm
         write(ifc,*) 'f_hfluxmm =', f_hfluxmm, no_hfluxmm
+        write(ifc,*) 'f_hfluxmm2 =', f_hfluxmm2, mult_hfluxmm
         write(ifc,*) 'f_hfluxsmoo =', f_hfluxsmoo, no_hflux
         write(ifc,*) 'f_sflux =', f_sflux, no_sflux
         write(ifc,*) 'f_sfluxm =', f_sfluxm, no_sfluxm
         write(ifc,*) 'f_sfluxmm =', f_sfluxmm, no_sfluxmm
+        write(ifc,*) 'f_sfluxmm2 =', f_sfluxmm2, mult_sfluxmm
         write(ifc,*) 'f_sfluxsmoo =', f_sfluxsmoo, no_sflux
         write(ifc,*) 'f_uwind  =', f_uwind, no_uwind
         write(ifc,*) 'f_vwind  =', f_vwind, no_vwind
