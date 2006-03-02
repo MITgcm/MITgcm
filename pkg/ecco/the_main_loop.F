@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.30 2006/02/21 17:20:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.31 2006/03/02 23:41:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -548,6 +548,9 @@ C--     Step forward fields and calculate time tendency terms.
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
+#endif
 #endif
 
 #ifdef ALLOW_GCHEM

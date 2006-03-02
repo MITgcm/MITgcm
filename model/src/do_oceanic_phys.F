@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.22 2006/02/10 07:56:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.23 2006/03/02 23:41:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -253,9 +253,6 @@ CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
-# ifdef EXACT_CONSERV
-CADJ STORE pmepr(:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
@@ -376,6 +373,12 @@ C       relaxation terms, etc.
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE EmPmR(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE PmEpR(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+#endif
          CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
@@ -395,7 +398,6 @@ CADJ STORE surfaceForcingT(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfaceForcingTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
-
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_GMREDI

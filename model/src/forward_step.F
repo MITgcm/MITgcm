@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.131 2006/02/23 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.132 2006/03/02 23:41:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -336,6 +336,9 @@ CADJ &     = comlev1, key = ikey_dynamics
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
+#endif
 #endif
 
 #ifdef ALLOW_GCHEM
