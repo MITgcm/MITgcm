@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.619 2006/03/03 07:52:57 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.620 2006/03/03 10:21:29 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o move balancing of fluxes before the call of external_forcing_surf
 o seaice:
   - correct units of turning angles (now they are really in degrees)
   - move computation of GWATX/Y out of main routine into dynsolver
