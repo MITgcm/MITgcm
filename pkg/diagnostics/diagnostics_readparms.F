@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.16 2006/01/24 02:59:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.17 2006/03/03 15:37:50 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -63,7 +63,7 @@ C     stat_fname  :: List of statistics output Filename
       INTEGER set_regMask(rdimLoc)
       _RS     val_regMask(rdimLoc)
       INTEGER ku, stdUnit
-      INTEGER j,k,l,n,m
+      INTEGER j,k,l,n,m,nf
       INTEGER iLen, regionCount
       _RL undef, getcon
       INTEGER  ILNBLNK
@@ -434,8 +434,11 @@ C     Echo History List Data Structure
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
          ENDDO
         ENDIF
-        WRITE(msgBuf,*) 'Fields:   ',(' ',flds(l,n),l=1,nfields(n))
+        DO nf = 1,nfields(n),10
+        m = MIN(nfields(n),nf+9)
+        WRITE(msgBuf,*) 'Fields:   ',(' ',flds(l,n),l=nf,m)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ENDDO
       ENDDO
       WRITE(msgBuf,'(A)')
      & '-----------------------------------------------------'
