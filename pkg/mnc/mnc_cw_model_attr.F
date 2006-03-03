@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.11 2004/10/20 21:26:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.12 2006/03/03 18:36:53 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -20,6 +20,7 @@ C     information including locations, spacing, areas, \textit{etc}.
 
 C     !USES:
       implicit none
+#include "BUILD_INFO.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"

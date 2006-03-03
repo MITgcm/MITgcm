@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.620 2006/03/03 10:21:29 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.621 2006/03/03 18:36:53 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove the BUILD_INFO.h include from CPP_EEOPTIONS.h and explicitly 
+  include it only where its needed
 o move balancing of fluxes before the call of external_forcing_surf
 o seaice:
   - correct units of turning angles (now they are really in degrees)

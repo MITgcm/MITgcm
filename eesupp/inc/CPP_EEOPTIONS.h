@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.23 2004/09/04 18:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.24 2006/03/03 18:36:53 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -103,4 +103,3 @@ C           filled in some way.
 
 #include "CPP_EEMACROS.h"
 
-#include "BUILD_INFO.h"
