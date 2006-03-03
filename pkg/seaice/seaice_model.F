@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.28 2006/02/16 10:41:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.29 2006/03/03 07:52:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,27 +77,6 @@ C     pkg/exf, which does not update edges.
 C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
 #endif /* SEAICE_EXTERNAL_FORCING */
-
-C--   Compute proxy for geostrophic velocity,
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-     &                         +uVel(i,j-1,KGEO(I,J,bi,bj),bi,bj))
-          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-     &                         +vVel(i-1,j,KGEO(I,J,bi,bj),bi,bj))
-#ifdef SEAICE_DEBUG
-c          write(*,'(2i4,2i2,f7.1,7f12.3)')
-c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)
-c     &     ,GWATX(I,J,bi,bj),GWATY(I,J,bi,bj)
-c     &     ,uVel(i+1,j,3,bi,bj),uVel(i+1,j+1,3,bi,bj)
-c     &     ,vVel(i,j+1,3,bi,bj),vVel(i+1,j+1,3,bi,bj)
-#endif
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uwind = comlev1, key = ikey_dynamics

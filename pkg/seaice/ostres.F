@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.15 2006/03/02 16:09:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.16 2006/03/03 07:52:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -37,10 +37,10 @@ C     i,j,bi,bj - Loop counters
 #endif
 
 c     introduce turning angle (default is zero)
-      SINWIN=SIN(SEAICE_airTurnAngle)
-      COSWIN=COS(SEAICE_airTurnAngle)
-      SINWAT=SIN(SEAICE_waterTurnAngle)
-      COSWAT=COS(SEAICE_waterTurnAngle)
+      SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
+      COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
+      SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+      COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 #ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
 C--   Following formulation is problematic and is no longer used.
@@ -110,12 +110,22 @@ C--   Compute ice-affected wind stress
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          fuIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
+          fuIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*(
+     &         COSWAT * 
      &         ( UICE(I,J,  1,bi,bj)-GWATX(I,J,  bi,bj)
      &         + UICE(I,J+1,1,bi,bj)-GWATX(I,J+1,bi,bj) )
-          fvIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
+     &         -SINWAT *
      &         ( VICE(I,  J,1,bi,bj)-GWATY(I,  J,bi,bj)
      &         + VICE(I+1,J,1,bi,bj)-GWATY(I+1,J,bi,bj) )
+     &         )
+          fvIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*(
+     &         SINWAT * 
+     &         ( UICE(I,J,  1,bi,bj)-GWATX(I,J,  bi,bj)
+     &         + UICE(I,J+1,1,bi,bj)-GWATX(I,J+1,bi,bj) )
+     &         + COSWAT * 
+     &         ( VICE(I,  J,1,bi,bj)-GWATY(I,  J,bi,bj)
+     &         + VICE(I+1,J,1,bi,bj)-GWATY(I+1,J,bi,bj) )
+     &         )
           fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
      &         AREA(I,J,1,bi,bj)*fuIce
           fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+

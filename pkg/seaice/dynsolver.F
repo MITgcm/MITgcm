@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.18 2006/03/02 16:09:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.19 2006/03/03 07:52:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,6 +18,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
 CML#include "SEAICE_GRID.h"
@@ -66,10 +67,31 @@ C--   FIRST SET UP BASIC CONSTANTS
       PSTAR=SEAICE_strength
 
 C--   introduce turning angle (default is zero)
-      SINWIN=SIN(SEAICE_airTurnAngle)
-      COSWIN=COS(SEAICE_airTurnAngle)
-      SINWAT=SIN(SEAICE_waterTurnAngle)
-      COSWAT=COS(SEAICE_waterTurnAngle)
+      SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
+      COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
+      SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+      COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
+
+C--   Compute proxy for geostrophic velocity,
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+     &                         +uVel(i,j-1,KGEO(I,J,bi,bj),bi,bj))
+          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+     &                         +vVel(i-1,j,KGEO(I,J,bi,bj),bi,bj))
+#ifdef SEAICE_DEBUG
+c          write(*,'(2i4,2i2,f7.1,7f12.3)')
+c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)
+c     &     ,GWATX(I,J,bi,bj),GWATY(I,J,bi,bj)
+c     &     ,uVel(i+1,j,3,bi,bj),uVel(i+1,j+1,3,bi,bj)
+c     &     ,vVel(i,j+1,3,bi,bj),vVel(i+1,j+1,3,bi,bj)
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)
