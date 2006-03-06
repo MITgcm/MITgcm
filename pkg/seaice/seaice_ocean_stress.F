@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.2 2006/03/06 13:27:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.3 2006/03/06 20:53:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -37,78 +37,31 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
-      _RL  SINWIN, COSWIN, SINWAT, COSWAT
-#ifdef SEAICE_TEST_ICE_STRESS_1
+      _RL  SINWAT, COSWAT
       _RL  fuIce, fvIce
-#endif
 
 c     introduce turning angle (default is zero)
-      SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
-      COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-
-CML#ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
-CMLC--   Following formulation is problematic and is no longer used.
-CML#ifdef SEAICE_ALLOW_DYNAMICS
-CML      IF ( SEAICEuseDYNAMICS ) THEN
-CMLC--   Compute ice-affected wind stress
-CML       DO bj=myByLo(myThid),myByHi(myThid)
-CML        DO bi=myBxLo(myThid),myBxHi(myThid)
-CML         DO j=1,sNy
-CML          DO i=1,sNx
-CML           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
-CML     &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,1,bi,bj))
-CML     &          -SINWAT*(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
-CML           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
-CML     &          *(SINWAT*(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
-CML     &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,1,bi,bj)))
-CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
-CML     &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
-CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
-CML     &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
-CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,1,bi,bj)
-CML     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,1,bi,bj)
-CML     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-CML          ENDDO
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML       DO bj=myByLo(myThid),myByHi(myThid)
-CML        DO bi=myBxLo(myThid),myBxHi(myThid)
-CML         DO j=1,sNy
-CML          DO i=1,sNx
-CML           WINDX(I,J,bi,bj)=-WINDX(I,J,bi,bj)
-CML           WINDY(I,J,bi,bj)=-WINDY(I,J,bi,bj)
-CML          ENDDO
-CML         ENDDO
-CML        ENDDO
-CML       ENDDO
-CML      ENDIF
-CML#endif /*  SEAICE_ALLOW_DYNAMICS */
-CML#endif /* SEAICE_ORIGINAL_BAD_ICE_STRESS */
 
 C--   Update overlap regions
       CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
 
 #ifndef SEAICE_EXTERNAL_FLUXES
-C--   Interpolate wind stress (N/m^2) from South-West B-grid
-C     to South-West C-grid for forcing ocean model.
+C--   Interpolate wind stress (N/m^2) from C-points of C-grid
+C     to U and V points of C-grid for forcing the ocean model.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-            fu(I,J,bi,bj)=WINDX(I,J,bi,bj)
-            fv(I,J,bi,bj)=WINDY(I,J,bi,bj)
+          fu(I,J,bi,bj)=0.5*(WINDX(I,J,bi,bj) + WINDX(I-1,J,bi,bj))
+          fv(I,J,bi,bj)=0.5*(WINDY(I,J,bi,bj) + WINDY(I,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 #endif /* ifndef SEAICE_EXTERNAL_FLUXES */
 
-#ifdef SEAICE_TEST_ICE_STRESS_1
 C--   Compute ice-affected wind stress (interpolate to U/V-points)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -141,7 +94,7 @@ C--   Compute ice-affected wind stress (interpolate to U/V-points)
        ENDDO
       ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-#endif /* SEAICE_TEST_ICE_STRESS_1 */
+
 #endif /* not SEAICE_CGRID */
 
       RETURN
