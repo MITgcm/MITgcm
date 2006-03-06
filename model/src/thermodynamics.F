@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.98 2006/03/01 15:49:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.99 2006/03/06 18:25:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -313,8 +313,9 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+cph-test
+cphCADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+cphCADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef ALLOW_PTRACERS
 cph-- moved to forward_step to avoid key computation
 cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
@@ -485,11 +486,12 @@ C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gT, gS, etc.
 #ifndef ALLOW_OFFLINE
          IF ( tempStepping ) THEN
-#ifdef NONLIN_FRSURF
-# ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifdef NONLIN_FRSURF
 CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
@@ -518,11 +520,12 @@ CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #ifndef ALLOW_OFFLINE
          IF ( saltStepping ) THEN
-#ifdef NONLIN_FRSURF
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifdef NONLIN_FRSURF
 CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.25 2006/03/03 20:15:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.26 2006/03/06 18:25:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -386,8 +386,10 @@ C       relaxation terms, etc.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# ifdef EXACT_CONSERV
 CADJ STORE PmEpR(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #endif
          CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,

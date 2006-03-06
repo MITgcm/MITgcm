@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.44 2006/03/01 03:08:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.45 2006/03/06 18:25:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,7 +114,10 @@ C--   only the kUp part of fverS is set in this subroutine
 C--   the kDown is still required
       fVerS(1,1,kDown) = fVerS(1,1,kDown)
 # ifdef NONLIN_FRSURF
-CADJ STORE fVerS(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fVerS(:,:,:) =
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gsNm1(:,:,k,bi,bj) = 
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif
 
