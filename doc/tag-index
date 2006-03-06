@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.622 2006/03/06 13:18:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.623 2006/03/06 19:19:59 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o ecco
+  - enable trend removal from SSH anomaly obs.
+o adjoint
+  - a fix for PmEpR when #undef EXACT_CONSERV
+  - fix of "hidden" recomp. in thermodynamics (no TAF warnings)
+  - try to fix "hidden" recomp. in forward_step for NLFS
+    (NLFS seems broken sometimes after I checked it in)
 o seaice: 
  - add c-grid version of the dynamic solver:
    + three new routines that are the c-grid substitute lsr, dynsolver
