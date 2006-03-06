@@ -1171,6 +1171,20 @@ c     sshperiod      - sampling interval for the sea surface height data.
       _RL gfoperiod
       _RL scatperiod
 
+      common /ecco_cost_data_detrend/
+     &                           topexintercept,
+     &                           ersintercept,
+     &                           gfointercept,
+     &                           topexslope,
+     &                           ersslope,
+     &                           gfoslope
+      _RL topexintercept
+      _RL ersintercept
+      _RL gfointercept
+      _RL topexslope
+      _RL ersslope
+      _RL gfoslope
+
 c     ==================================================================
 c     END OF HEADER COST
 c     ==================================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.20 2006/03/02 02:53:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.21 2006/03/06 19:16:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -48,12 +48,15 @@ c--   Read the namelist input.
      &                   using_topex,
      &                   topexstartdate1, topexstartdate2,
      &                   topexperiod, topexfile, topexmeanfile,
+     &                   topexintercept, topexslope,
      &                   using_ers,
      &                   ersstartdate1, ersstartdate2,
      &                   ersperiod, ersfile,
+     &                   ersintercept, ersslope,
      &                   using_gfo,
      &                   gfostartdate1, gfostartdate2,
      &                   gfoperiod, gfofile,
+     &                   gfointercept, gfoslope,
      &                   scatstartdate1, scatstartdate2, 
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
@@ -123,17 +126,23 @@ c--     Set default values.
         topexstartdate1       =      0
         topexstartdate2       =      0
         topexperiod           =      0. _d 0
+        topexintercept        =      0. _d 0
+        topexslope            =      0. _d 0
         topexfile             =    ' '
         topexmeanfile         =    ' '
         using_ers             = .false.
         ersstartdate1         =      0
         ersstartdate2         =      0
         ersperiod             =      0. _d 0
+        ersintercept          =      0. _d 0
+        ersslope              =      0. _d 0
         ersfile               =    ' '
         using_gfo             = .false.
         gfostartdate1         =      0
         gfostartdate2         =      0
         gfoperiod             =      0. _d 0
+        gfointercept          =      0. _d 0
+        gfoslope              =      0. _d 0
         gfofile               =    ' '
         scatstartdate1        =      0
         scatstartdate2        =      0

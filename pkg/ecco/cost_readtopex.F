@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.4 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.5 2006/03/06 19:16:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -150,9 +150,9 @@ c             set tpmask=0 in areas shallower than 1000m
               endif
 
               tpmask(i,j,bi,bj) = tpmask(i,j,bi,bj)*frame(i,j)
-              tpobs(i,j,bi,bj)  = tpobs(i,j,bi,bj)*
-     &                            tpmask(i,j,bi,bj)*
-     &                            factor
+              tpobs(i,j,bi,bj)  = tpmask(i,j,bi,bj)*factor*
+     &             ( tpobs(i,j,bi,bj) - 
+     &               ( topexintercept + topexslope*irec*hoursperday ) )
             enddo
           enddo
         enddo

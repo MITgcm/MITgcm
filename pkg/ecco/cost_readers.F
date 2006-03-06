@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.4 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.5 2006/03/06 19:16:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -152,9 +152,9 @@ c             set tpmask=0 in areas shallower than 1000m
               endif
 
               ersmask(i,j,bi,bj) = ersmask(i,j,bi,bj)*frame(i,j)
-              ersobs(i,j,bi,bj)  = ersobs(i,j,bi,bj)*
-     *                             ersmask(i,j,bi,bj)*
-     &                             factor
+              ersobs(i,j,bi,bj)  = ersmask(i,j,bi,bj)*factor*
+     &             ( ersobs(i,j,bi,bj) - 
+     &               ( ersintercept + ersslope*irec*hoursperday ) )
             enddo
           enddo
         enddo
