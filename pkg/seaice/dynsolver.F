@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.19 2006/03/03 07:52:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.20 2006/03/06 13:17:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,6 +38,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
+#ifndef SEAICE_CGRID
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
@@ -47,22 +48,16 @@ C     i,j,bi,bj - Loop counters
       _RL TEMPVAR, U1, V1
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL E11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL E22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL E12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 C--   FIRST SET UP BASIC CONSTANTS
-      RHOICE=0.91 _d +03
-      RHOAIR=1.3 _d 0
-      ECCEN=TWO
+      RHOICE=SEAICE_rhoIce
+      RHOAIR=SEAICE_rhoAir
+      ECCEN=SEAICE_eccen
       ECM2=ONE/(ECCEN**2)
       PSTAR=SEAICE_strength
 
@@ -402,7 +397,7 @@ cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 #endif /* SEAICE_ALLOW_DYNAMICS */
 
 C Calculate ocean surface stress
-      CALL OSTRES ( DWATN, COR_ICE, myThid )
+      CALL OSTRES ( COR_ICE, myThid )
 
 #ifdef SEAICE_ALLOW_DYNAMICS
 
@@ -450,6 +445,7 @@ CADJ STORE vice = comlev1, key=ikey_dynamics
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* NOT SEAICE_CGRID */
 
       RETURN
       END

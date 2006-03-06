@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.33 2006/03/02 16:09:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.34 2006/03/06 13:17:37 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,9 +47,10 @@ C--   SEAICE parameters
      & SEAICEadvScheme,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
+     & SEAICE_rhoAir, SEAICE_rhoIce, 
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
-     & SEAICE_waterAlbedo, SEAICE_strength,
+     & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
@@ -116,6 +117,8 @@ C--   set default sea ice parameters
       SEAICE_mon_mnc  = .FALSE.
 #endif
       SEAICE_initialHEFF = ZERO
+      SEAICE_rhoAir      = 1.3    _d 0
+      SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
@@ -125,6 +128,7 @@ C--   set default sea ice parameters
       SEAICE_wetSnowAlb  = 0.7    _d 0
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
+      SEAICE_eccen       = 2.     _d 0
 C     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
       SEAICE_sensHeat    = 2.284  _d +00
 C     SEAICE_latentWater = 1.75 _d -03 * 2.500 _d 06 * 1.3

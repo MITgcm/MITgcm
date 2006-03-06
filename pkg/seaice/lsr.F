@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.17 2006/02/15 20:44:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.18 2006/03/06 13:17:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
+#ifndef SEAICE_CGRID
 #ifdef SEAICE_ALLOW_DYNAMICS
 
 C     === Local variables ===
@@ -598,6 +599,7 @@ C NOW MAKE COROLIS TERM IMPLICIT
       CALL SEAICE_EXCH_UV ( UICE, VICE, myThid )
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.29 2006/03/03 07:52:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.30 2006/03/06 13:17:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,9 +91,15 @@ C solve ice momentum equations and calculate ocean surface stress
       IF ( 
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
+#ifdef SEAICE_CGRID
+         CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+         CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+#else
          CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
          CALL DYNSOLVER ( myTime, myIter, myThid )
          CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
+#endif /* SEAICE_CGRID */
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC

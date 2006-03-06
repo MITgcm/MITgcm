@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.29 2006/03/03 07:52:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.30 2006/03/06 13:17:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,30 +91,30 @@ C--   Initialize grid info
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
-          CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
-CML(
-C     inverses of CSTICE and CSUICE. Lets hope we are never
-C     at the poles
-          IF ( CSTICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
-           RECIP_CSTICE(I,J,bi,bj) = 1./CSTICE(I,J,bi,bj)
-          ELSE	
-           RECIP_CSTICE(I,J,bi,bj) =0. _d 0
-          ENDIF
-          IF ( CSUICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
-           RECIP_CSUICE(I,J,bi,bj) = 1./CSUICE(I,J,bi,bj)
-          ELSE	
-           RECIP_CSUICE(I,J,bi,bj) =0. _d 0
-          ENDIF
-CML)
-          SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
-          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
-          SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
-          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
-          DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
-          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
-          DYTICE(i,j,bi,bj)=dyF(i,j,bi,bj)
-          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
+CML          CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
+CML          CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
+CMLCML(
+CMLC     inverses of CSTICE and CSUICE. Lets hope we are never
+CMLC     at the poles
+CML          IF ( CSTICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
+CML           RECIP_CSTICE(I,J,bi,bj) = 1./CSTICE(I,J,bi,bj)
+CML          ELSE	
+CML           RECIP_CSTICE(I,J,bi,bj) =0. _d 0
+CML          ENDIF
+CML          IF ( CSUICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
+CML           RECIP_CSUICE(I,J,bi,bj) = 1./CSUICE(I,J,bi,bj)
+CML          ELSE	
+CML           RECIP_CSUICE(I,J,bi,bj) =0. _d 0
+CML          ENDIF
+CMLCML)
+CML          SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
+CML          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
+CML          SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
+CML          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
+CML          DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
+CML          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
+CML          DYTICE(i,j,bi,bj)=dyF(i,j,bi,bj)
+CML          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
@@ -213,11 +213,19 @@ C--   Make sure that DXTICE and DYTICE do not contain any zeros
            TICES(I,J,k,bi,bj)=273.0 _d 0
           ENDDO
 #endif
-          UICEC(I,J,bi,bj)=ZERO
-          VICEC(I,J,bi,bj)=ZERO
-          AMASS(I,J,bi,bj)=1000.0 _d 0
-          GWATX(I,J,bi,bj)=ZERO
-          GWATY(I,J,bi,bj)=ZERO
+          UICEC      (I,J,bi,bj)=ZERO
+          VICEC      (I,J,bi,bj)=ZERO
+#ifndef SEAICE_CGRID
+          AMASS      (I,J,bi,bj)=1000.0 _d 0
+#else
+          seaiceMassC(I,J,bi,bj)=1000.0 _d 0
+          seaiceMassU(I,J,bi,bj)=1000.0 _d 0
+          seaiceMassV(I,J,bi,bj)=1000.0 _d 0
+          seaiceMaskU(I,J,bi,bj)=   1.0 _d 0
+          seaiceMaskV(I,J,bi,bj)=   1.0 _d 0
+#endif
+          GWATX      (I,J,bi,bj)=ZERO
+          GWATY      (I,J,bi,bj)=ZERO
          ENDDO
         ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.22 2006/03/02 16:09:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.23 2006/03/06 13:17:38 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -77,6 +77,8 @@ C     SEAICE_deltaTdyn   - Seaice timestep for dynamic solver          (s)
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
+C     SEAICE_rhoAir      - density of air                              (kg/m^3)
+C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
 C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
@@ -86,6 +88,7 @@ C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
+C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
 C     SEAICE_sensHeat    - buld sensible heat transfer coefficient 
 C                          = (sensible heat transfer coefficient)
 C                          x (heat capacity of air) 
@@ -128,9 +131,10 @@ C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn
       _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
+      _RL SEAICE_rhoAir, SEAICE_rhoIce
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
-      _RL SEAICE_waterAlbedo, SEAICE_strength
+      _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
@@ -144,9 +148,10 @@ C
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
+     &    SEAICE_rhoAir, SEAICE_rhoIce,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
-     &    SEAICE_waterAlbedo, SEAICE_strength,
+     &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,

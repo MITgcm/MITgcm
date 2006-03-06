@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.13 2006/01/27 20:18:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.14 2006/03/06 13:17:38 mlosch Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -69,6 +69,11 @@ C     set the following flag (pressure is assumed to have no effect,
 C     which is a good assumption for the top 20 meters). With this
 C     option defined the parameter SEAICE_freeze has no effect.
 #undef SEAICE_VARIABLE_FREEZING_POINT
+
+C--   By default the seaice model is discretized on a B-Grid (for 
+C     historical reasons). Define the following flag to use a new
+C     (not thoroughly) test version on a C-grid
+#undef SEAICE_CGRID
 
 #endif /* SEAICE_OPTIONS_H */
 
