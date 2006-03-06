@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.30 2006/03/06 13:17:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.31 2006/03/06 13:58:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,7 +18,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE.h"
-#include "SEAICE_GRID.h"
+CML#include "SEAICE_GRID.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_EXCH2
@@ -89,34 +89,6 @@ cph)
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-CML          CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
-CML          CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
-CMLCML(
-CMLC     inverses of CSTICE and CSUICE. Lets hope we are never
-CMLC     at the poles
-CML          IF ( CSTICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
-CML           RECIP_CSTICE(I,J,bi,bj) = 1./CSTICE(I,J,bi,bj)
-CML          ELSE	
-CML           RECIP_CSTICE(I,J,bi,bj) =0. _d 0
-CML          ENDIF
-CML          IF ( CSUICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
-CML           RECIP_CSUICE(I,J,bi,bj) = 1./CSUICE(I,J,bi,bj)
-CML          ELSE	
-CML           RECIP_CSUICE(I,J,bi,bj) =0. _d 0
-CML          ENDIF
-CMLCML)
-CML          SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
-CML          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
-CML          SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
-CML          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
-CML          DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
-CML          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
-CML          DYTICE(i,j,bi,bj)=dyF(i,j,bi,bj)
-CML          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
-         ENDDO
-        ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM(i,j,bi,bj)=ONE
@@ -125,10 +97,19 @@ CML          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
         ENDDO
         DO J=2-OLy,sNy+OLy
          DO I=2-OLx,sNx+OLx
+#ifndef SEAICE_CGRID
           UVM(i,j,bi,bj)=ZERO
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
      &             +HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J,  bi,bj)
           IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
+#else
+          seaiceMaskU(I,J,bi,bj)=   0.0 _d 0
+          seaiceMaskV(I,J,bi,bj)=   0.0 _d 0
+          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I-1,J  ,bi,bj)
+          IF(mask_uice.GT.1.5) seaiceMaskU(I,J,bi,bj)=ONE
+          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J+1,bi,bj)
+          IF(mask_uice.GT.1.5) seaiceMaskV(I,J,bi,bj)=ONE
+#endif /* not SEAICE_CGRID */
          ENDDO
         ENDDO
 
@@ -136,20 +117,6 @@ CML          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
-           CSTICE(i,j,bi,bj) = ONE
-           CSUICE(i,j,bi,bj) = ONE
-CML(
-           RECIP_CSTICE(I,J,bi,bj) = ONE
-           RECIP_CSUICE(I,J,bi,bj) = ONE
-CML)
-           TNGTICE(i,j,bi,bj)= ZERO
-           TNGICE(i,j,bi,bj) = ZERO
-           DXTICE(i,j,bi,bj) = dxF(i,j,bi,bj)
-           DXUICE(i,j,bi,bj) = dxV(i,j,bi,bj)
-          ENDDO
-         ENDDO
          myTile = W2_myTileList(bi)
          IF ( exch2_myFace(myTile) .EQ. 1 .OR.
      &        exch2_myFace(myTile) .EQ. 2 .OR.
@@ -171,38 +138,6 @@ CML)
            UVM(i,j,bi,bj)=ZERO
           ENDDO
          ENDIF
-C--   Make sure that DXTICE and DYTICE do not contain any zeros
-         DO J=1,sNy
-          DO I=1-OLx,0
-           IF(DXTICE(i,j,bi,bj).EQ.0)
-     &            DXTICE(i,j,bi,bj)=DXTICE(1,j,bi,bj)
-           IF(DYTICE(i,j,bi,bj).EQ.0)
-     &            DYTICE(i,j,bi,bj)=DYTICE(1,j,bi,bj)
-          ENDDO
-          DO I=sNx+1,sNx+OLx
-           IF(DXTICE(i,j,bi,bj).EQ.0)
-     &            DXTICE(i,j,bi,bj)=DXTICE(sNx,j,bi,bj)
-           IF(DYTICE(i,j,bi,bj).EQ.0)
-     &            DYTICE(i,j,bi,bj)=DYTICE(sNx,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO J=1-OLy,0
-          DO I=1-OLx,sNx+OLx
-           IF(DXTICE(i,j,bi,bj).EQ.0)
-     &            DXTICE(i,j,bi,bj)=DXTICE(i,1,bi,bj)
-           IF(DYTICE(i,j,bi,bj).EQ.0)
-     &            DYTICE(i,j,bi,bj)=DYTICE(i,1,bi,bj)
-          ENDDO
-         ENDDO
-         DO J=sNy+1,sNy+OLy
-          DO I=1-OLx,sNx+OLx
-           IF(DXTICE(i,j,bi,bj).EQ.0)
-     &            DXTICE(i,j,bi,bj)=DXTICE(i,sNy,bi,bj)
-           IF(DYTICE(i,j,bi,bj).EQ.0)
-     &            DYTICE(i,j,bi,bj)=DYTICE(i,sNy,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
 #endif /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy
@@ -221,8 +156,6 @@ C--   Make sure that DXTICE and DYTICE do not contain any zeros
           seaiceMassC(I,J,bi,bj)=1000.0 _d 0
           seaiceMassU(I,J,bi,bj)=1000.0 _d 0
           seaiceMassV(I,J,bi,bj)=1000.0 _d 0
-          seaiceMaskU(I,J,bi,bj)=   1.0 _d 0
-          seaiceMaskV(I,J,bi,bj)=   1.0 _d 0
 #endif
           GWATX      (I,J,bi,bj)=ZERO
           GWATY      (I,J,bi,bj)=ZERO
@@ -257,24 +190,6 @@ C--   Update overlap regions
 C--   Now lets look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
          myIter=0
-         CALL PLOT_FIELD_XYRL( CSTICE  , 'Current CSTICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( CSUICE  , 'Current CSUICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( TNGTICE , 'Current TNGTICE ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( TNGICE  , 'Current TNGICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( SINEICE , 'Current SINEICE ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXTICE  , 'Current DXTICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXUICE  , 'Current DXUICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYTICE  , 'Current DYTICE  ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYUICE  , 'Current DYUICE  ' ,
-     &        myIter, myThid )
          CALL PLOT_FIELD_XYRL( HEFFM   , 'Current HEFFM   ' ,
      &        myIter, myThid )
          CALL PLOT_FIELD_XYRL( UVM     , 'Current UVM     ' ,
