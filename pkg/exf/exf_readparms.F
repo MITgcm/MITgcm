@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.28 2006/03/02 15:30:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.29 2006/03/06 20:01:46 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -116,7 +116,7 @@ c     Surface flux data.
      &         uwindconst,  vwindconst,          swfluxconst,
      &         lwfluxconst, swdownconst,         lwdownconst,
      &         apressureconst,
-     &     hflux_exfremo_intercept, hflux_exfremo_intercept,
+     &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
      &     sflux_exfremo_intercept, sflux_exfremo_slope,
