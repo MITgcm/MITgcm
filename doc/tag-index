@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.621 2006/03/03 18:36:53 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.622 2006/03/06 13:18:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice: 
+ - add c-grid version of the dynamic solver:
+   + three new routines that are the c-grid substitute lsr, dynsolver
+     and ostres
+   + put a few fields that were local to dynsolver into global common
+     blocks, so that I can move the computation of stresses etc into
+     seaice_lsr (saves coding but may break the adjoint).
+ - replace more hardwired parameters by runtime parameters
+ - add ice masks that mask the rhs of the implicit solvers where there
+   is no ice (commented out in seaice_dynsolver, because i am not sure
+   if this works properly), eventually this should replace the clipping
+   of ice velocities in seaice_dynsolver to +/-40cm/s.
 o remove the BUILD_INFO.h include from CPP_EEOPTIONS.h and explicitly 
   include it only where its needed
 o move balancing of fluxes before the call of external_forcing_surf
