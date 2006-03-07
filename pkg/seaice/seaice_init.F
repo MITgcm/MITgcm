@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.31 2006/03/06 13:58:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.32 2006/03/07 04:26:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -138,6 +138,7 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
            UVM(i,j,bi,bj)=ZERO
           ENDDO
          ENDIF
+        ENDIF
 #endif /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy
