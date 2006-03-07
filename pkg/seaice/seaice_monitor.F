@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.2 2005/04/06 18:46:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.3 2006/03/07 05:04:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,9 +47,13 @@ C       Print some statistics about input forcing fields
               ENDDO
            ENDDO
         ENDDO
+#ifdef SEAICE_CGRID
+        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
+     &       maskW,maskW,rAw,drF,myThid)
+#else
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
      &       UVM,UVM,rAz,drF,myThid)
-        CALL MON_SET_PREF('seaice',myThid)
+#endif
         DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
               DO J=1-OLy,sNy+OLy
@@ -59,8 +63,13 @@ C       Print some statistics about input forcing fields
               ENDDO
            ENDDO
         ENDDO
+#ifdef SEAICE_CGRID
+        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
+     &       maskS,maskS,rAs,drF,myThid)
+#else
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
      &       UVM,UVM,rAz,drF,myThid)
+#endif
         DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
               DO J=1-OLy,sNy+OLy
