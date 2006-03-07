@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.4 2005/09/06 10:21:58 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.5 2006/03/07 04:11:20 mlosch Exp $
 #  $Name:  $
 #
 # tested on xd1.awi-bremerhaven.de
@@ -18,7 +18,7 @@ CPP='/usr/bin/cpp -P -traditional'
 
 MPI='true'
 DEFINES='-DWORDLENGTH=4'
-INCLUDES='-I/usr/mpich/mpich-1.2.5-pgi522/include -I/opt/awi/netcdf-3.6.0-p1/include' 
+INCLUDES='-I/usr/mpich/mpich-1.2.6-pgi524/include -I/opt/awi/netcdf-3.6.0-p1/include' 
 LIBS='-Mmpi -Mfmpi -L/opt/awi/netcdf-3.6.0-p1/lib -lnetcdf'
 
 if test "x$IEEE" = x ; then
