@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.2 2006/03/06 14:45:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.3 2006/03/07 04:08:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,7 +48,7 @@ C     i,j,bi,bj - Loop counters
       _RL TEMPVAR, U1, V1
 
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CML      _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   FIRST SET UP BASIC CONSTANTS
       RHOICE = SEAICE_rhoIce
@@ -64,8 +64,10 @@ C--   Compute proxy for geostrophic velocity,
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-          GWATY(I,J,bi,bj)=vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+CML          GWATX(I,J,bi,bj)=uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+CML          GWATY(I,J,bi,bj)=vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+          GWATX(I,J,bi,bj)=uVel(i,j,1,bi,bj)
+          GWATY(I,J,bi,bj)=vVel(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -76,13 +78,13 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-CML this need to be taken care of
           seaiceMassC(I,J,bi,bj)=RHOICE*HEFF(i,j,1,bi,bj)
           seaiceMassU(I,J,bi,bj)=RHOICE*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj) )
           seaiceMassV(I,J,bi,bj)=RHOICE*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
-          COR_ICE(I,J,bi,bj)=seaiceMassC(I,J,bi,bj) * _fCori(I,J,bi,bj)
+CML          COR_ICE(I,J,bi,bj)=seaiceMassC(I,J,bi,bj) * _fCori(I,J,bi,bj)
+C     dynamic masking of areas with no ice
 CML          seaiceMaskU(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
 CML          IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
 CML           seaiceMaskU(I,J,bi,bj) = 1. _d 0
@@ -127,22 +129,23 @@ CML          DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
 CML     &         +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
 CML     &         +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj))
 CML     &         )
-C     why is the stress coefficient averaged over open water and ice?
-          DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-     &         + DAIRN(I,J,bi,bj)*(ONE-AREA(I,J,1,bi,bj))
+CMLC     why is the stress coefficient averaged over open water and ice?
+CML          DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
+CML     &         + DAIRN(I,J,bi,bj)*(ONE-AREA(I,J,1,bi,bj))
+          DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA
          ENDDO
         ENDDO
 C     now interpolate to U and V points respectively
         DO j=1,sNy
          DO i=1,sNx
-          FORCEX(I,J,bi,bj)=0.5 _d 0 * 
+          FORCEX0(I,J,bi,bj)=0.5 _d 0 * 
      &         ( DAIRN(I  ,J,bi,bj)*(
      &         COSWIN*uWind(I  ,J,bi,bj)-SINWIN*vWind(I  ,J,bi,bj) )
      &         + DAIRN(I-1,J,bi,bj)*(
      &         COSWIN*uWind(I-1,J,bi,bj)-SINWIN*vWind(I-1,J,bi,bj) )
      &         )
 C     interpolate to V point
-          FORCEY(I,J,bi,bj)=0.5 _d 0 * 
+          FORCEY0(I,J,bi,bj)=0.5 _d 0 * 
      &         ( DAIRN(I,J  ,bi,bj)*(
      &         SINWIN*uWind(I,J  ,bi,bj)+COSWIN*vWind(I,J  ,bi,bj) )
      &         + DAIRN(I,J-1,bi,bj)*(
@@ -158,22 +161,19 @@ C     interpolate to V point
         DO j=1,sNy
          DO i=1,sNx
 C--   NOW ADD IN TILT
-CML          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+CML          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
 CML     &         -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
-CML          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+CML          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
 CML     &         +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
 C--   use actual sea surface height for tilt computations
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
      &         -seaiceMassU(I,J,bi,bj)*gravity* _recip_dxC(I,J,bi,bj)
      &         *( etaN(I,J,bi,bj)-etaN(I-1,J,bi,bj) )
      &         
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
      &         -seaiceMassV(I,J,bi,bj)*gravity* _recip_dyC(I,J,bi,bj)
      &         *( etaN(I,J,bi,bj)-etaN(I,J-1,bi,bj) )
      &         
-C NOW KEEP FORCEX0
-          FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-          FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
