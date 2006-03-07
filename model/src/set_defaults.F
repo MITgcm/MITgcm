@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.113 2006/03/02 01:54:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.114 2006/03/07 15:28:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -235,7 +235,9 @@ C--   Time stepping parameters
       nTimeSteps        = 0
       nEndIter          = nIter0+nTimeSteps
       endTime           = deltaT*float(nEndIter)
-      forcing_In_AB     = .TRUE.
+      momForcingOutAB   = UNSET_I
+      tracForcingOutAB  = UNSET_I
+      momDissip_In_AB   = .TRUE.
       doAB_onGtGs       = .TRUE.
       abEps             = 0.01 _d 0
 #ifdef ALLOW_ADAMSBASHFORTH_3

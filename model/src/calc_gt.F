@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.49 2006/03/06 18:25:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.50 2006/03/07 15:28:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,7 +152,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
-      IF ( tempForcing .AND. forcing_In_AB )
+      IF ( tempForcing .AND. tracForcingOutAB.NE.1 )
      & CALL EXTERNAL_FORCING_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
@@ -172,7 +172,7 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
       ENDIF
 
 C--   External thermal forcing term(s) outside Adams-Bashforth:
-      IF ( tempForcing .AND. .NOT.forcing_In_AB )
+      IF ( tempForcing .AND. tracForcingOutAB.EQ.1 )
      & CALL EXTERNAL_FORCING_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)

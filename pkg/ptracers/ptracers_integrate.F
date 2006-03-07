@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.29 2006/03/01 03:07:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.30 2006/03/07 15:28:39 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -115,7 +115,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   myTime, myIter, myThid )
 
 C External forcing term(s)
-       IF ( forcing_In_AB )
+       IF ( tracForcingOutAB.NE.1 )
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
@@ -145,7 +145,7 @@ C  prevent gPtr from being replaced by the average of gPtr and gPtrNm1.
       ENDIF
 
 C External forcing term(s)
-       IF ( .NOT.forcing_In_AB )
+       IF ( tracForcingOutAB.EQ.1 )
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),

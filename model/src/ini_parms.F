@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.179 2006/02/23 16:46:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.180 2006/03/07 15:28:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,6 +31,8 @@ C                            Units are that of coordinate system
 C                            i.e. cartesian => metres
 C                                  s. polar => degrees
 C     deltaTtracer :: Timestep for tracer equations ( s )
+C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum) 
+C                      contribution in (or out of) Adams-Bashforth time stepping.
 C     goptCount - Used to count the nuber of grid options
 C                 (only one is allowed! )
 C     msgBuf    - Informational/error meesage buffer
@@ -44,6 +46,7 @@ C     xxxDefault - Default value for variable xxx
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
+      LOGICAL forcing_In_AB
       INTEGER goptCount
       INTEGER K, i, j, IL, iUnit
       INTEGER errIO
@@ -200,7 +203,8 @@ C--   Time stepping parammeters
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
      & deltaT, deltaTClock, deltaTmom, 
      & deltaTtracer, dTtracerLev, deltaTfreesurf,
-     & forcing_In_AB, doAB_onGtGs,
+     & forcing_In_AB, momForcingOutAB, tracForcingOutAB, 
+     & momDissip_In_AB, doAB_onGtGs,
      & abEps, alph_AB, beta_AB, startFromPickupAB2, 
      & tauCD, rCD,
      & baseTime, startTime, endTime, chkPtFreq,
@@ -763,6 +767,7 @@ C--   Time stepping parameters
       rCD               = -1.D0
       latBandClimRelax  = UNSET_RL
       deltaTtracer      = 0. _d 0
+      forcing_In_AB     = .TRUE.
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
@@ -858,6 +863,15 @@ C it is better to set deltaTreesurf=deltaTtracer
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
+      ENDIF
+C     o Adams-Bashforth time stepping:
+      IF ( momForcingOutAB  .EQ. UNSET_I ) THEN 
+        momForcingOutAB  = 1
+        IF ( forcing_In_AB ) momForcingOutAB  = 0
+      ENDIF
+      IF ( tracForcingOutAB .EQ. UNSET_I ) THEN 
+        tracForcingOutAB = 1
+        IF ( forcing_In_AB ) tracForcingOutAB = 0
       ENDIF
 C     o Convection frequency
       IF ( cAdjFreq .LT. 0. ) THEN

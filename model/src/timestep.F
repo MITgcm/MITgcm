@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.44 2006/02/23 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.45 2006/03/07 15:28:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,8 +49,6 @@ C     gvDissip :: dissipation tendency (all explicit terms), v component
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      LOGICAL momForcing_In_AB
-      LOGICAL momDissip_In_AB
       LOGICAL momStartAB
       INTEGER i,j
       _RL phxFac,phyFac, psFac
@@ -79,11 +77,6 @@ C-- explicit part of the surface potential gradient is added in this S/R
 C--  factors for gradient (X & Y directions) of Hydrostatic Potential
       phxFac = pfFacMom
       phyFac = pfFacMom
-
-C-- including or excluding momentum forcing from Adams-Bashforth:
-      momForcing_In_AB = forcing_In_AB
-      momForcing_In_AB = .TRUE.
-      momDissip_In_AB  = .TRUE.
 
 #ifdef ALLOW_DIAGNOSTICS
       externForcDiagIsOn = useDiagnostics .AND. momForcing
@@ -132,7 +125,7 @@ C--   Dissipation term inside the Adams-Bashforth:
       ENDIF
 
 C--   Forcing term inside the Adams-Bashforth:
-      IF (momForcing .AND. momForcing_In_AB) THEN
+      IF ( momForcing .AND. momForcingOutAB.NE.1 ) THEN
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics .AND. externForcDiagIsOn ) THEN
          DO j=1,sNy+1
@@ -206,7 +199,7 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
       
 C--   Forcing term outside the Adams-Bashforth:
 C     (not recommended with CD-scheme ON)
-      IF (momForcing .AND. .NOT.momForcing_In_AB) THEN
+      IF ( momForcing .AND. momForcingOutAB.EQ.1 ) THEN
        IF (useCDscheme) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax

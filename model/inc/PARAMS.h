@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.179 2006/02/23 16:43:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.180 2006/03/07 15:27:14 jmc Exp $
 C $Name:  $
 C
 
@@ -152,6 +152,10 @@ C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
+C     momForcingOutAB     :: =1: take momentum forcing contribution
+C                           out of (=0: in) Adams-Bashforth time stepping.
+C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
+C                           out of (=0: in) Adams-Bashforth time stepping.
 C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
 C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
@@ -169,6 +173,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
+     &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme,
@@ -188,6 +193,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER nCheckLev
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
+      INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme 
@@ -264,7 +270,7 @@ C     saltImplVertAdv :: Turns on implicit vertical advection for Salinity
 C     momImplVertAdv  :: Turns on implicit vertical advection for Momentum
 C     multiDimAdvection :: Flag that enable multi-dimension advection
 C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
-C     forcing_In_AB     :: if False, put forcing (Temp,Salt,Tracers) contribution
+C     momDissip_In_AB   :: if False, put Dissipation tendency contribution
 C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
 C                          apply AB on tracer tendencies (rather than on Tracer) 
@@ -332,7 +338,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec, 
-     & forcing_In_AB, doAB_onGtGs,
+     & momDissip_In_AB, doAB_onGtGs,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & fluidIsAir, fluidIsWater,
@@ -399,7 +405,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL momImplVertAdv
       LOGICAL multiDimAdvection
       LOGICAL useMultiDimAdvec
-      LOGICAL forcing_In_AB
+      LOGICAL momDissip_In_AB
       LOGICAL doAB_onGtGs
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
