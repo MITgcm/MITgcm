@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.11 2005/09/01 14:16:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.12 2006/03/07 15:29:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,8 +31,9 @@ C--   ALLOW_SEAICE
      &     SQUEEZE_RIGHT , myThid )
 
 C--   SEAICE needs forcing_In_AB FALSE
-      IF (forcing_In_AB) THEN
-         WRITE(msgBuf,'(A)') 'Need forcing_In_AB = .FALSE.'
+      IF (tracForcingOutAB.NE.1) THEN
+         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &         ' Need T,S forcing out of AB (tracForcingOutAB=1)'
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
