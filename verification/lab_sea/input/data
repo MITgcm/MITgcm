@@ -111,7 +111,8 @@
  tauSaltClimRelax = 4142330.,
  tauThetaClimRelax = 0.,
  monitorFreq=1.,
- forcing_In_AB = .FALSE.
+#forcing_In_AB = .FALSE.
+ tracForcingOutAB=1,
  &
 
 # Gridding parameters

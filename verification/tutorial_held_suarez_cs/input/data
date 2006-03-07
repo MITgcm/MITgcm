@@ -42,7 +42,8 @@
  startTime=124416000.,
 #- run for 1 year (192.iterations x 450.s = 1.day, 360*192=69120):
 #nTimeSteps=69120,
- forcing_In_AB=.FALSE.,
+#forcing_In_AB=.FALSE.,
+ tracForcingOutAB=1,
  abEps=0.1,
  pChkptFreq=31104000.,
  chkptFreq=2592000.,
