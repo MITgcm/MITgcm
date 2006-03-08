@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.3 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.4 2006/03/08 06:36:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,6 +58,7 @@ C-- Apply OBC to rStar_Factor_W,S before updating hFacW,S
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx 
+# ifndef DISABLE_RSTAR_CODE
 C-- Update the fractional thickness hFacC , hFacW & hFacS (& "recip_hFac") :
             hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
      &                          *rStarFacC(i,j,bi,bj)
@@ -65,6 +66,8 @@ C-- Update the fractional thickness hFacC , hFacW & hFacS (& "recip_hFac") :
      &                          *rStarFacW(i,j,bi,bj)
             hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
      &                          *rStarFacS(i,j,bi,bj)
+#endif
+C
 #ifdef USE_MASK_AND_NO_IF
             recip_hFacC(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
      &        / ( hFacC(i,j,k,bi,bj) + (1.-maskC(i,j,k,bi,bj)) )

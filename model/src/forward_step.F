@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.133 2006/03/06 18:25:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.134 2006/03/08 06:36:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -144,15 +144,12 @@ C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-      ENDIF
-#endif
-
 C--   State-variables diagnostics
-      IF ( usediagnostics ) THEN
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
 
 C--   Call Bulk-Formulae forcing package
 #ifdef ALLOW_BULK_FORCE
@@ -194,6 +191,13 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
        CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
+# ifdef NONLIN_FRSURF
+CADJ STORE SST    = comlev1, key = ikey_dynamics
+CADJ STORE SSS    = comlev1, key = ikey_dynamics
+#  ifdef SHORTWAVE_HEATING
+CADJ STORE Qsw    = comlev1, key = ikey_dynamics
+#  endif
+# endif
 #  if (defined (ALLOW_SEAICE) || defined (ALLOW_EBM))
       ENDIF
 #  endif
@@ -304,27 +308,17 @@ C--     Step forward fields and calculate time tendency terms.
        CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta              = comlev1, key = ikey_dynamics
-CADJ STORE salt               = comlev1, key = ikey_dynamics
-CADJ STORE totphihyd          = comlev1, key = ikey_dynamics
-CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics
 # ifdef ALLOW_KPP
 CADJ STORE uvel               = comlev1, key = ikey_dynamics
 CADJ STORE vvel               = comlev1, key = ikey_dynamics
 # endif
 # ifdef EXACT_CONSERV
-CADJ STORE empmr              = comlev1, key = ikey_dynamics
-CADJ STORE pmepr              = comlev1, key = ikey_dynamics
+cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
+cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
 # ifdef NONLIN_FRSURF
 cph-test
-CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
-CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics
-CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics
-CADJ STORE hFacC, hFacS, hFacW
-CADJ &     = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ STORE hFacC              = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -338,8 +332,27 @@ CADJ &     = comlev1, key = ikey_dynamics
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
+# ifdef EXACT_CONSERV
+CADJ STORE pmepr    = comlev1, key = ikey_dynamics
+# endif
 #endif
 #endif
+C
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
+CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics
+CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics
+CADJ STORE hFacC, hFacS, hFacW
+CADJ &     = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
+CADJ &     = comlev1, key = ikey_dynamics
+c
+CADJ STORE surfaceforcingu = comlev1, key = ikey_dynamics
+CADJ STORE surfaceforcingv = comlev1, key = ikey_dynamics
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_GCHEM
 C     GCHEM package is an interface for any bio-geochemical or
@@ -402,11 +415,7 @@ CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
 # endif
 c
 # ifdef NONLIN_FRSURF
-cph-test
-CADJ STORE etaN               = comlev1, key = ikey_dynamics
 CADJ STORE etaH               = comlev1, key = ikey_dynamics
-CADJ STORE uVel               = comlev1, key = ikey_dynamics
-CADJ STORE vVel               = comlev1, key = ikey_dynamics
 #  ifdef ALLOW_CD_CODE
 CADJ STORE etanm1             = comlev1, key = ikey_dynamics
 #  endif
@@ -448,6 +457,17 @@ C      Read in coupling data that I import.
        ENDIF
 #endif /* COMPONENT_MODULE */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+CADJ STORE hFacC          = comlev1, key = ikey_dynamics
+CADJ STORE hFacS          = comlev1, key = ikey_dynamics
+CADJ STORE hFacW          = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE etaN           = comlev1, key = ikey_dynamics
+# endif
+#endif
 C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -460,9 +480,16 @@ C--   Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
-#ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
+# endif
 #endif
+C
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+cph-test
+CADJ STORE gU, gV  = comlev1, key = ikey_dynamics
+# endif
 #endif
 
 C--   Update time-counter
@@ -496,13 +523,30 @@ C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
+# ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+# endif
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
         CALL UPDATE_R_STAR( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+# endif
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
-cph-test
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW 
 CADJ &     = comlev1, key = ikey_dynamics
 #endif
@@ -511,6 +555,15 @@ CADJ &     = comlev1, key = ikey_dynamics
         CALL TIMER_STOP ('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
        ENDIF
       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+# endif
 C-    update also CG2D matrix (and preconditioner)
       IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
         CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',myThid)
@@ -576,6 +629,10 @@ c     ENDIF
 
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+cphCADJ STORE etaH          = comlev1, key = ikey_dynamics
+#endif
 C--   Update etaH(n+1) :
         CALL TIMER_START('UPDATE_ETAH         [FORWARD_STEP]',mythid)
         CALL UPDATE_ETAH( myTime, myIter, myThid )
@@ -593,13 +650,17 @@ C--   r* : compute the future level thickness according to etaH(n+1)
 # endif /* DISABLE_RSTAR_CODE */
       ELSEIF ( nonlinFreeSurf.GT.0) THEN
 C--   compute the future surface level thickness according to etaH(n+1) 
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE etaH          = comlev1, key = ikey_dynamics
-#endif
+# endif
         CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
         CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
         CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics
+# endif 
 #endif /* NONLIN_FRSURF */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -613,12 +674,14 @@ C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
         CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_DIAGNOSTICS
 C--   State-variables diagnostics
        IF ( usediagnostics ) THEN
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        ENDIF
+#endif
 
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
@@ -666,11 +729,13 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_DIAGNOSTICS
       IF ( usediagnostics ) THEN
        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
        CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
 
 C AMM
 #ifdef ALLOW_GRIDALT
@@ -699,10 +764,12 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
+#ifdef ALLOW_TIMEAVE
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
+#endif
 
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.18 2006/03/06 18:25:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.19 2006/03/08 06:36:40 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -6,14 +6,8 @@ c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
 #ifdef NONLIN_FRSURF
-CADJ STORE dEtaHdt       = comlev1, key = ikey_dynamics
-CADJ STORE wVel          = comlev1, key = ikey_dynamics
-CADJ STORE gUnm1         = comlev1, key = ikey_dynamics
-CADJ STORE gVnm1         = comlev1, key = ikey_dynamics
-CADJ STORE gTnm1         = comlev1, key = ikey_dynamics
-CADJ STORE gSnm1         = comlev1, key = ikey_dynamics
-CADJ STORE gT            = comlev1, key = ikey_dynamics
-CADJ STORE gS            = comlev1, key = ikey_dynamics
+c
+c
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_CD_CODE
@@ -38,14 +32,14 @@ CADJ STORE SSS0    = comlev1, key = ikey_dynamics
 CADJ STORE SSS1    = comlev1, key = ikey_dynamics
 CADJ STORE saltFlux0    = comlev1, key = ikey_dynamics
 CADJ STORE saltFlux1    = comlev1, key = ikey_dynamics
-#ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = comlev1, key = ikey_dynamics
 CADJ STORE Qsw1    = comlev1, key = ikey_dynamics
-#endif
-#ifdef ATMOSPHERIC_LOADING
+# endif
+# ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0  = comlev1, key = ikey_dynamics
 CADJ STORE pload1  = comlev1, key = ikey_dynamics
-#endif
+# endif
 #endif /* ALLOW_EXF */
 
 #ifdef ALLOW_OBCS
