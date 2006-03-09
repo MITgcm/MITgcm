@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.18 2006/01/17 15:59:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.19 2006/03/09 00:00:36 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -12,10 +12,10 @@ C***********************************************************************
 
       integer myid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
       _RL p(im2,jm2,Nbi,Nbj)
-      _RL uphy(im2,jm2,Nrphys,Nbi,Nbj)
-      _RL vphy(im2,jm2,Nrphys,Nbi,Nbj)
-      _RL thphy(im2,jm2,Nrphys,Nbi,Nbj)
-      _RL sphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL uphy(im2,jm2,Nrphys)
+      _RL vphy(im2,jm2,Nrphys)
+      _RL thphy(im2,jm2,Nrphys)
+      _RL sphy(im2,jm2,Nrphys)
       _RL qq(im2,jm2,Nrphys,Nbi,Nbj),pk(im2,jm2,Nrphys,Nbi,Nbj)
       _RL dp(im2,jm2,Nrphys,Nbi,Nbj)
       _RL radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
@@ -275,7 +275,7 @@ c ------------------------
       if(diagnostics_is_on('UWND    ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = uphy(i,j,L,bi,bj)
+        tmpdiag(i,j) = uphy(i,j,L)
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'UWND    ',L,1,3,bi,bj,myid)
@@ -286,7 +286,7 @@ c ------------------------
       if(diagnostics_is_on('VWND    ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = vphy(i,j,L,bi,bj)
+        tmpdiag(i,j) = vphy(i,j,L)
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'VWND    ',L,1,3,bi,bj,myid)
@@ -297,7 +297,7 @@ c ----------------------
       if(diagnostics_is_on('TMPU    ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = thphy(i,j,L,bi,bj)*pk(i,j,L,bi,bj)
+        tmpdiag(i,j) = thphy(i,j,L)*pk(i,j,L,bi,bj)
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'TMPU    ',L,1,3,bi,bj,myid)
@@ -319,7 +319,7 @@ c -----------------------
       if(diagnostics_is_on('SPHU    ',myid) ) then
        do j=jm1,jm2
        do i=im1,im2
-        tmpdiag(i,j) = sphy(i,j,L,bi,bj) * 1000.
+        tmpdiag(i,j) = sphy(i,j,L) * 1000.
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'SPHU    ',L,1,3,bi,bj,myid)
@@ -440,7 +440,7 @@ c ---------------------------------------------
        do j=jm1,jm2
        do i=im1,im2
        qbar(i,j) = qbar(i,j) + 
-     .             sphy(i,j,L,bi,bj)*dp(i,j,L,bi,bj)
+     .             sphy(i,j,L)*dp(i,j,L,bi,bj)
        enddo
        enddo
        enddo

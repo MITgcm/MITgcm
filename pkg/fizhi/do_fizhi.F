@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.51 2005/03/21 19:58:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.52 2006/03/09 00:00:36 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myIter,myid,
@@ -303,7 +303,7 @@ C compute pressures - all pressure are converted here to hPa
       enddo
       enddo
 
-      call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
+      call fizhi_step_diag(myid,p,u,v,t,q,qq,pkl,dpres,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
      .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
      .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
