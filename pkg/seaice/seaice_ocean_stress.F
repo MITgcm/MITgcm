@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.3 2006/03/06 20:53:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.4 2006/03/09 20:22:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,6 +39,7 @@ C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj
       _RL  SINWAT, COSWAT
       _RL  fuIce, fvIce
+      _RL  areaW, areaS
 
 c     introduce turning angle (default is zero)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -85,10 +86,10 @@ C--   Compute ice-affected wind stress (interpolate to U/V-points)
      &         +0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj) 
      &                   +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj)) )
      &         )
-          fu(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fu(I,J,bi,bj)+
-     &         AREA(I,J,1,bi,bj)*fuIce
-          fv(I,J,bi,bj)=(ONE-AREA(I,J,1,bi,bj))*fv(I,J,bi,bj)+
-     &         AREA(I,J,1,bi,bj)*fvIce
+          areaW = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
+          areaS = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
+          fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce
+          fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce
          ENDDO
         ENDDO
        ENDDO
