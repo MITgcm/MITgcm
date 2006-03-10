@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.2 2006/03/10 13:59:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.3 2006/03/10 16:06:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -529,7 +529,7 @@ C     now set up right-hand-side
           dUdx(I,J) = ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
      &         * _recip_dxF(I,J,bi,bj)
           dUdy(I,J) = ( uIceC(I,J+1,bi,bj) - uIceC(I,J,bi,bj) )
-     &         * _recip_dyU(I,J,bi,bj)
+     &         * _recip_dyU(I,J+1,bi,bj)
          ENDDO
         ENDDO
         DO J=1,sNy
