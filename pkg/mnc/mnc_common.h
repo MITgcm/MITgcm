@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.29 2006/02/24 20:39:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.30 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -131,11 +131,14 @@ CEOP
 
       COMMON /MNC_VARS_C/
      &     mnc_blank_name, 
-     &     mnc_f_names, mnc_g_names, mnc_v_names, mnc_d_names, 
+     &     mnc_f_names,
+     &     mnc_g_names, mnc_v_names, mnc_d_names, 
      &     mnc_out_path
 
       character*(MNC_MAX_CHAR) mnc_blank_name
-      character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
+C
+      character*(MNC_MAX_PATH) mnc_f_names(MNC_MAX_ID)
+C
       character*(MNC_MAX_CHAR) mnc_g_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_v_names(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_d_names(MNC_MAX_ID)
@@ -150,8 +153,9 @@ CEOP
       integer mnc_f_alld(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_d_size(MNC_MAX_ID)
       integer mnc_d_ids(MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_out_path
+      character*(MNC_MAX_PATH) mnc_out_path
 
+C=====================================================================
       COMMON /MNC_CW_VARS_C/
      &     mnc_cw_gname, mnc_cw_dn, 
      &     mnc_cw_vname, 
@@ -160,6 +164,16 @@ CEOP
      &     mnc_cw_fgnm
 C     &     mnc_cw_cvnm
 
+      character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vname(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vtnm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vinm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vdnm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
+
+C=====================================================================
       COMMON /MNC_CW_VARS_I/
      &     mnc_cw_ndim,  mnc_cw_dims, 
      &     mnc_cw_is,    mnc_cw_ie,
@@ -176,18 +190,11 @@ C     &     mnc_cw_cvdt
       COMMON /MNC_CW_VARS_R4/
      &     mnc_cw_vmvr
 
-      character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_ndim(MNC_MAX_ID)
       integer mnc_cw_dims(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_is(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_ie(MNC_CW_MAX_I,MNC_MAX_ID)
 
-      character*(MNC_MAX_CHAR) mnc_cw_vname(MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_vtnm(MNC_CW_MAX_I,MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_vinm(MNC_CW_MAX_I,MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_vdnm(MNC_CW_MAX_I,MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_vgind(MNC_MAX_ID)
       integer mnc_cw_vfmv(MNC_MAX_ID)
       integer mnc_cw_vmvi(2,MNC_MAX_ID)
@@ -198,7 +205,6 @@ C     &     mnc_cw_cvdt
       integer mnc_cw_viat(MNC_CW_MAX_I,MNC_MAX_ID)
       REAL*8  mnc_cw_vdat(MNC_CW_MAX_I,MNC_MAX_ID)
 
-      character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
       integer mnc_cw_fgud(MNC_MAX_ID)
       integer mnc_cw_fgis(MNC_MAX_ID)
       integer mnc_cw_fgig(MNC_MAX_ID)

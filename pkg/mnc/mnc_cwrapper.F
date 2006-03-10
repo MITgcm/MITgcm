@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.25 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.26 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -50,7 +50,7 @@ C     Check that this name is not already defined
         stop 'ABNORMAL END: S/R MNC_CW_ADD_GNAME'
       ENDIF
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_gname, 
-     &     indg, myThid)
+     &     'mnc_cw_gname', indg, myThid)
 
       mnc_cw_gname(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
       mnc_cw_gname(indg)(1:(nnl-nnf+1)) = name(nnf:nnl)
@@ -194,7 +194,7 @@ C     !LOCAL VARIABLES:
             write(s1,'(a5,a14,i4,a3,a25,a3,a55)') 
      &           'MNC: ','      text_at:',i, 
      &           ' : ', mnc_cw_vtnm(i,j)(1:25), ' : ',
-     &           mnc_cw_vtat(i,j)(1:55)
+     &           mnc_cw_vtat(i,j)(1:MNC_MAX_CHAR)
             CALL PRINT_MESSAGE(
      &           s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
           ENDDO
@@ -321,7 +321,7 @@ C     Check that this vname is not already defined
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
       ENDIF
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_vname, 
-     &     indv, myThid)
+     &     'mnc_cw_vname', indv, myThid)
 
 C     Check that gname exists
       CALL MNC_GET_IND(MNC_MAX_ID, gname, mnc_cw_gname, indg, myThid)

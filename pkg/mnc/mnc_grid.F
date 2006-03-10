@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.16 2005/01/24 04:40:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.17 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -73,16 +73,17 @@ C     !LOCAL VARIABLES:
       integer ng_ind,lg_ind, ds_last, ndim_file, igr,ig1,ig2
       integer ngt, ngn
       character*(MAX_LEN_MBUF) msgbuf
-      character*(MNC_MAX_CHAR) name
-      character*(MNC_MAX_CHAR) file_name
+      character*(MNC_MAX_PATH) file_name
 
 C     Functions
       integer ILNBLNK
 
 C     Get the file ID and indicies
-      file_name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+      DO i =1,MNC_MAX_PATH
+        file_name(i:i) = ' '
+      ENDDO
       nf = ILNBLNK(fname)
-      IF (nf .GT. MNC_MAX_CHAR) nf = MNC_MAX_CHAR
+      IF (nf .GT. MNC_MAX_PATH) nf = MNC_MAX_PATH
       file_name(1:nf) = fname(1:nf)
       CALL MNC_GET_IND(MNC_MAX_ID,file_name,mnc_f_names,indf, myThid)
       IF (indf .LT. 1) THEN
@@ -163,7 +164,7 @@ C         a new definition for this grid.
 C     Reaching this point means the grid was NOT previously defined and
 C     we must therefore create a new definition.
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_g_names,
-     &     indg, myThid)
+     &     'mnc_g_names', indg, myThid)
       mnc_g_names(indg)(1:MNC_MAX_CHAR) =
      &     mnc_blank_name(1:MNC_MAX_CHAR)
       n = ILNBLNK(gname)
@@ -173,7 +174,6 @@ C     Add the dimensions
       DO i = 1,ndim
 
         j = ds_last + i
-        name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
         n = ILNBLNK(dnames(i))
 
 C       Search for the dimension ID within the list of dimensions

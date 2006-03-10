@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.27 2005/10/24 18:12:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.28 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -156,9 +156,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, ntot, npathd, idate
-      character*(100) pathd
+      character*(MNC_MAX_PATH) pathd
       character*(100) cenc
-      integer ienc(100)
+      integer ienc(MNC_MAX_PATH)
       integer ncenc
 
 C     Functions
@@ -174,11 +174,11 @@ C     Functions
       ELSE
         idate = 0
       ENDIF
-      DO i = 1,100
+      DO i = 1,MNC_MAX_PATH
         pathd(i:i) = ' '
       ENDDO
       k = ILNBLNK(mnc_outdir_str)
-      IF (k .GT. 80)  k = 80
+      IF (k .GT. MNC_MAX_PATH)  k = MNC_MAX_PATH
       pathd(1:k) = mnc_outdir_str(1:k)
       ntot = 0
       DO i = 1,k
@@ -191,24 +191,15 @@ C     Functions
         ENDDO
  20     CONTINUE
       ENDDO
-C      write(*,*) 'ntot,k = ', ntot, ',',k
-C      DO i = 1,ntot
-C        write(*,*) 'ienc = ', ienc(i)
-C      ENDDO
 
-#define HAVE_MNCCDIR
-#ifdef HAVE_MNCCDIR
       CALL mnccdir(ntot, ienc, idate)
-#else
-      npathd = 0
-#endif
 
-      DO i = 1,MNC_MAX_CHAR
+      DO i = 1,MNC_MAX_PATH
         mnc_out_path(i:i) = ' '
       ENDDO
       IF (ntot .GT. 0) THEN
-        IF (ntot .GT. (MNC_MAX_CHAR-40)) THEN
-          ntot = MNC_MAX_CHAR - 40
+        IF (ntot .GT. (MNC_MAX_PATH-40)) THEN
+          ntot = MNC_MAX_PATH - 40
         ENDIF
         DO i = 1,ntot
           j = ienc(i)
@@ -216,10 +207,6 @@ C      ENDDO
         ENDDO
         mnc_out_path((ntot+1):(ntot+1)) = '/'
       ENDIF
-
-C      k = ILNBLNK(mnc_out_path)
-C      write(*,*) 'mnc_out_path = ''', mnc_out_path(1:k), ''''
-C      STOP 'yoyoyo'
 
       RETURN
       END

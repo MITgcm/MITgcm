@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.35 2006/02/24 20:39:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.36 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -115,9 +115,10 @@ C     !LOCAL VARIABLES:
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       integer indfg, fg1,fg2, npath
       character*(MAX_LEN_MBUF) msgbuf
-      character*(MNC_MAX_CHAR) fname
-      character*(MNC_MAX_CHAR) path_fname
-      character*(MNC_MAX_CHAR) tmpnm
+      character*(MNC_MAX_PATH) fname
+      character*(MNC_MAX_PATH) path_fname
+      character*(MNC_MAX_PATH) tmpnm
+      character*(MNC_MAX_PATH) bpath
       REAL*8  dval, dvm(2)
       REAL*4  rval, rvm(2)
       INTEGER ival, ivm(2), irv
@@ -137,6 +138,10 @@ C     Functions
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+      DO i = 1,MNC_MAX_PATH
+        bpath(i:i) = ' '
+      ENDDO
 
 C     Get the current index for the unlimited dimension from the file
 C     group (or base) name
@@ -190,7 +195,7 @@ C     Set the bi,bj indicies
 
 C         Create the file name
           CALL MNC_CW_GET_TILE_NUM(lbi,lbj, uniq_tnum, myThid)
-          fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+          fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
           n1 = IFNBLNK(fbname)
           n2 = ILNBLNK(fbname)
 
@@ -241,11 +246,11 @@ C           We have an error--bad flag value
 
 C         Add the path to the file name
           IF (mnc_use_outdir) THEN
-            path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+            path_fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
             npath = ILNBLNK(mnc_out_path)
             path_fname(1:npath) = mnc_out_path(1:npath)
             path_fname((npath+1):(npath+nfname)) = fname(1:nfname)
-            fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
+            fname(1:MNC_MAX_PATH) = path_fname(1:MNC_MAX_PATH)
             nfname = npath + nfname
           ENDIF
 
@@ -726,10 +731,11 @@ C     integer f_sNx,f_sNy, alen, atype, ind_fv_ids, ierr, indf
       integer p(9),s(9),e(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
-      character*(MNC_MAX_CHAR) fname
-      character*(MNC_MAX_CHAR) fname_zs
-      character*(MNC_MAX_CHAR) tmpnm
-      character*(MNC_MAX_CHAR) path_fname
+      character*(MNC_MAX_PATH) fname
+      character*(MNC_MAX_PATH) fname_zs
+      character*(MNC_MAX_PATH) tmpnm
+      character*(MNC_MAX_PATH) path_fname
+      character*(MNC_MAX_PATH) bpath
       integer indfg, fg1,fg2
       REAL*8  resh_d( MNC_MAX_BUFF )
       REAL*4  resh_r( MNC_MAX_BUFF )
@@ -740,6 +746,10 @@ C     Functions
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+      DO i = 1,MNC_MAX_PATH
+        bpath(i:i) = ' '
+      ENDDO
 
 C     Get the current index for the unlimited dimension from the file
 C     group (or base) name
@@ -790,7 +800,7 @@ C     Set the bi,bj indicies
 
 C         Create the file name
           CALL MNC_CW_GET_TILE_NUM( lbi,lbj, uniq_tnum, myThid)
-          fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+          fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
 
 #ifdef MNC_READ_OLDNAMES
 
@@ -805,11 +815,11 @@ C         Create the file name
 
 C         Add the path to the file name
           IF (mnc_use_indir) THEN
-            path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+            path_fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
             npath = ILNBLNK(mnc_indir_str)
             path_fname(1:npath) = mnc_indir_str(1:npath)
             path_fname((npath+1):(npath+nfname)) = fname(1:nfname)
-            fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
+            fname(1:MNC_MAX_PATH) = path_fname(1:MNC_MAX_PATH)
             nfname = npath + nfname
           ENDIF
 
@@ -861,7 +871,7 @@ C         Add an iteraton count to the file name if its requested
      &            mnc_cw_cit(2,mnc_cw_fgci(indfg)), '.'
           ENDIF
           ntot = ILNBLNK(fname)
-          path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+          path_fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
           npath = ILNBLNK(mnc_indir_str)
 C         Add the face index
           CALL MNC_CW_GET_FACE_NUM( lbi,lbj, uniq_fnum, myThid)
@@ -887,7 +897,7 @@ C         WRITE(*,*) 'trying: "', path_fname, '"'
 C           Create the PER-TILE file name
             CALL MNC_PSNCM(tmpnm, uniq_tnum, MNC_DEF_TMNC)
             k = ILNBLNK(tmpnm)
-            path_fname(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+            path_fname(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
             WRITE(path_fname,'(2a,a1,a,a3)') 
      &           mnc_indir_str(1:npath), fname(1:ntot), 't',
      &           tmpnm(1:k), '.nc'

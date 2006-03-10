@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.19 2005/07/21 02:32:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.20 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -95,7 +95,8 @@ C       Error
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_STR'
       ENDIF
 
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,indf, myThid)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,
+     &     'mnc_f_names', indf, myThid)
       n = ILNBLNK(fname)
       mnc_f_names(indf)(1:n) = fname(1:n)
       mnc_f_info(indf,1) = 1
@@ -666,7 +667,8 @@ C     Open and save the filename and fID
         ierr = err
         RETURN
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,indf, myThid)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,
+     &     'mnc_f_names', indf, myThid)
       mnc_f_names(indf)(1:(nlf-nff+1)) = fname(nff:nlf)
       mnc_f_info(indf,2) = fid
 
@@ -722,7 +724,8 @@ C       Create a grid for this variable
         CALL MNC_GRID_INIT_ALL(fname, name, ndv, dnames, indg, myThid)
 
 C       Update the tables
-        CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_v_names,indv,myThid)
+        CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_v_names,
+     &       'mnc_v_names', indv,myThid)
         mnc_v_names(indv)(1:(n2-n1+1)) = name(n1:n2)
         iv = 2 + 3*mnc_fv_ids(indf,1)
         mnc_fv_ids(indf,iv)   = indv

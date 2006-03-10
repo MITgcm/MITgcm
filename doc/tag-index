@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.625 2006/03/08 06:43:37 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.626 2006/03/10 05:50:22 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o various mnc cleanups and improvements:
+  + shrink lookup tables by factor of ~4
+  + better error reporting when running out of lookup space
+  + able to handle longer path/file names (up to 500 chars)
 o adjoint:
   - Another overhaul of store dirs. for NLFS to eliminate  "hidden" recomputations.
   - TBD: "hidden" mom_vecinv recomp. in dynamics

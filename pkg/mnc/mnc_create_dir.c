@@ -1,5 +1,5 @@
 /*************************************************  -*- mode: C -*-
- * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_create_dir.c,v 1.3 2005/06/16 16:59:02 ce107 Exp $
+ * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_create_dir.c,v 1.4 2006/03/10 05:50:23 edhill Exp $
  * $Name:  $
  */
 
@@ -26,7 +26,7 @@ void FC_NAMEMANGLE(mnccdir) ( int *nienc, int *ienc, int *idate )
 	{"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.,+-=/~\0"};
     int ncenc = 70;
 
-    n = ((*nienc) > 100) ? 100 : (*nienc);
+    n = ((*nienc) > 500) ? 500 : (*nienc);
     tt = time(&tt);
     tmp = localtime(&tt);
     iyyyymmdd = tmp->tm_mday 
@@ -39,9 +39,9 @@ void FC_NAMEMANGLE(mnccdir) ( int *nienc, int *ienc, int *idate )
     /* printf("name = \"%s\", n = %d\n", name, n); */
     for (i=1; i<10000; i++) {
 	if (*idate == 1) 
-	    snprintf(dname, 100, "%s%08d_%04d\0", name, iyyyymmdd, i);
+	    snprintf(dname, 500, "%s%08d_%04d\0", name, iyyyymmdd, i);
 	else
-	    snprintf(dname, 100, "%s%04d\0", name, i);
+	    snprintf(dname, 500, "%s%04d\0", name, i);
 	mode = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH;
 	if (mkdir(dname, mode) == 0) {
 	    break;

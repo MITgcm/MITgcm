@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.13 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.14 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -117,6 +117,7 @@ C     !INTERFACE:
       SUBROUTINE MNC_GET_NEXT_EMPTY_IND(
      I     NT,
      I     name_list,
+     I     var_symb,
      O     ind,
      I     myThid )
 
@@ -130,6 +131,7 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, nt
       character*(*) name_list(NT)
+      character*(*) var_symb
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -153,6 +155,11 @@ C     If this is code is reached, we have exceeded the array size
       write(msgbuf,'(a,i6,a)')
      &     'MNC_GET_NEXT_EMPTY_IND: array size ', nt, 
      &     ' exceeded--try increasing MNC_MAX_ID'
+      CALL print_error( msgbuf, myThid )
+      n = ILNBLNK( var_symb )
+      write(msgbuf,'(a,a,a)')
+     &     'MNC_GET_NEXT_EMPTY_IND: occurred within the ''',
+     &     var_symb(1:n), ''' array'
       CALL print_error( msgbuf, myThid )
       stop 'ABNORMAL END: S/R MNC_GET_NEXT_EMPTY_IND'
 

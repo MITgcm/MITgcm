@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.21 2006/02/24 20:39:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.22 2006/03/10 05:50:23 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -27,18 +27,25 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,j, g, v
+      integer i,j, g
       character blank*(MNC_MAX_CHAR)
+      character bpath*(MNC_MAX_PATH)
 
 C     Write blanks or zeros to all the internal names and ID tables
       DO i = 1,MNC_MAX_CHAR
         blank(i:i) = ' '
       ENDDO
+      DO i = 1,MNC_MAX_PATH
+        bpath(i:i) = ' '
+      ENDDO
+
       mnc_blank_name(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
       DO i = 1,MNC_MAX_ID
         mnc_d_size(i) = 0
         mnc_d_ids(i)  = 0
-        mnc_f_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+C
+        mnc_f_names(i)(1:MNC_MAX_PATH) = bpath(1:MNC_MAX_PATH)
+C
         mnc_g_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_v_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_d_names(i)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
