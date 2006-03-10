@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.26 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.27 2006/03/10 22:01:53 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -727,7 +727,7 @@ C     !LOCAL VARIABLES:
       integer ierr
 
 C     Check if the file is already open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, indf, myThid)
       IF (indf .GT. 0) THEN
         RETURN
       ENDIF

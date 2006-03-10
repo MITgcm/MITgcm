@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.21 2006/03/10 16:09:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.22 2006/03/10 22:01:54 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -67,7 +67,7 @@ C     Functions
 
 C     Is the file already open?
       nf = ILNBLNK(fname)
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname,mnc_f_names,indf,myThid)
       IF (indf .GT. 0) THEN
         write(msgbuf,'(3a)') 'MNC_FILE_OPEN ERROR: ''', fname(1:nf), 
      &       ''' is already open -- cannot open twice'
@@ -95,7 +95,7 @@ C       Error
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_STR'
       ENDIF
 
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_FID, mnc_f_names,
      &     'mnc_f_names', indf, myThid)
       n = ILNBLNK(fname)
       mnc_f_names(indf)(1:n) = fname(1:n)
@@ -263,7 +263,7 @@ C     Functions
       integer ILNBLNK
 
 C     Verify that the file is open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         nf = ILNBLNK( fname )
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
@@ -345,7 +345,7 @@ C     Functions
       nf = ILNBLNK(fname)
 
 C     Check that the file is open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC Warning: file ''', fname(1:nf), 
      &       ''' is already closed'
@@ -394,7 +394,9 @@ C     grids
         ENDDO
       ENDIF
 C     file name
-      mnc_f_names(indf)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+      DO i = 1,MNC_MAX_PATH
+        mnc_f_names(indf)(i:i) = ' '
+      ENDDO
 
       RETURN
       END
@@ -429,7 +431,7 @@ C     Functions
       integer ILNBLNK
 
       n = ILNBLNK(fname)
-      DO i = 1,MNC_MAX_ID
+      DO i = 1,MNC_MAX_FID
 
 C       Check that the file is open
         IF (fname(1:n) .EQ. mnc_f_names(i)(1:n)) THEN
@@ -464,12 +466,17 @@ CEOP
 
 C     !LOCAL VARIABLES:
       integer i
+      character*(MNC_MAX_PATH) bpath
 
-      DO i = 1,MNC_MAX_ID
+      DO i = 1,MNC_MAX_PATH
+        bpath(i:i) = ' '
+      ENDDO
+
+      DO i = 1,MNC_MAX_FID
 
 C       Check that the file is open
-        IF (mnc_f_names(i)(1:MNC_MAX_CHAR) 
-     &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
+        IF (mnc_f_names(i)(1:MNC_MAX_PATH) 
+     &       .NE. bpath(1:MNC_MAX_PATH)) THEN
           CALL MNC_FILE_CLOSE(mnc_f_names(i), myThid)
         ENDIF
 
@@ -509,7 +516,7 @@ C     Functions
       integer ILNBLNK
 
 C     Verify that the file is open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
@@ -562,7 +569,7 @@ C     Functions
       integer ILNBLNK
 
 C     Verify that the file is open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
@@ -668,7 +675,7 @@ C     Open and save the filename and fID
         ierr = err
         RETURN
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_FID, mnc_f_names,
      &     'mnc_f_names', indf, myThid)
       mnc_f_names(indf)(1:(nlf-nff+1)) = fname(nff:nlf)
       mnc_f_info(indf,2) = fid

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.17 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.18 2006/03/10 22:01:54 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -85,7 +85,7 @@ C     Get the file ID and indicies
       nf = ILNBLNK(fname)
       IF (nf .GT. MNC_MAX_PATH) nf = MNC_MAX_PATH
       file_name(1:nf) = fname(1:nf)
-      CALL MNC_GET_IND(MNC_MAX_ID,file_name,mnc_f_names,indf, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID,file_name,mnc_f_names,indf,myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', file_name(1:nf), 
      &       ''' does not exist'
@@ -130,9 +130,10 @@ C     Check for grid re-definition
 
 C         Check if different number of dims
           IF (ndim .NE. (ig2-ig1+1)) THEN
-            write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname,
+            kk = ILNBLNK( mnc_f_names(indf) )
+            write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname(1:ngn),
      &           ''' was previously defined for file ''', 
-     &           mnc_f_names(indf), ''' with a different ',
+     &           mnc_f_names(indf)(1:kk), ''' with a different ',
      &           'number of dimensions'
             CALL print_error(msgbuf, mythid)
             stop 'ABNORMAL END: S/R MNC_GRID_INIT'
@@ -143,9 +144,10 @@ C         Check if same number of dims but different dim names
           DO jj = ig1,ig2
             k = k + 1
             IF (mnc_d_names(mnc_fd_ind(indf,jj)) .NE. dnames(k)) THEN
-              write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname,
+              kk = ILNBLNK( mnc_f_names(indf) )
+              write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname(1:ngn),
      &             ''' was previously defined for file ''', 
-     &             mnc_f_names(indf), ''' with a different ',
+     &             mnc_f_names(indf)(1:kk), ''' with a different ',
      &             'combination of dimensions'
               CALL print_error(msgbuf, mythid)
               stop 'ABNORMAL END: S/R MNC_GRID_INIT'

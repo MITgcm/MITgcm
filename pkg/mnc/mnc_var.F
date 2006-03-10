@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.21 2006/03/10 16:09:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.22 2006/03/10 22:01:54 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -134,7 +134,7 @@ C     Strip trailing spaces
       lenv = ILNBLNK(vname)
 
 C     Check that the file is open
-      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
+      CALL MNC_GET_IND(MNC_MAX_FID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         nf = ILNBLNK( fname )
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:nf), 

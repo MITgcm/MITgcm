@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dump.F,v 1.1 2004/12/08 15:50:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dump.F,v 1.2 2006/03/10 22:01:53 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -44,19 +44,19 @@ C     !LOCAL VARIABLES:
 
       write(*,*) 'mnc_f_names :'
       DO i = 1,n_id
-        write(*,'(i3,a,a40)') i,':', mnc_f_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_f_names(i)(1:40)
       ENDDO
       write(*,*) 'mnc_g_names :'
       DO i = 1,n_id
-        write(*,'(i3,a,a40)') i,':', mnc_g_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_g_names(i)(1:40)
       ENDDO
       write(*,*) 'mnc_v_names :'
       DO i = 1,n_id
-        write(*,'(i3,a,a40)') i,':', mnc_v_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_v_names(i)(1:40)
       ENDDO
       write(*,*) 'mnc_d_names :'
       DO i = 1,n_id
-        write(*,'(i3,a,a40)') i,':', mnc_d_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_d_names(i)(1:40)
       ENDDO
 
       write(*,*) 'mnc_d_ids, mnc_d_size :'
