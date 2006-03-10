@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.36 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.37 2006/03/10 16:09:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -108,7 +108,7 @@ CEOP
 C     !LOCAL VARIABLES:
       integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot, indu
       integer bis,bie, bjs,bje, uniq_tnum, uniq_fnum, nfname, iseq
-      integer fid, idv, indvids, ndim, indf, err 
+      integer fid, idv, indvids, ndim, indf, err, nf
       integer lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9)
       integer vstart(9),vcount(9), udo(9)
@@ -644,7 +644,8 @@ C         Write the variable one vector at a time
 
 C         Sync the file
           err = NF_SYNC(fid)
-          write(msgbuf,'(3a)') 'sync for file ''', fname, 
+          nf = ILNBLNK( fname )
+          write(msgbuf,'(3a)') 'sync for file ''', fname(1:nf), 
      &         ''' in S/R MNC_CW_RX_W'
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.20 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.21 2006/03/10 16:09:32 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -119,7 +119,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
+      integer i,j,k, n, nf, indf,indv, fid, nd, ngrid, is,ie, err
       integer vid, nv, ind_g_finfo, needed, nvar
       character*(MAX_LEN_MBUF) msgbuf
       integer ids(20)
@@ -136,7 +136,8 @@ C     Strip trailing spaces
 C     Check that the file is open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname, 
+        nf = ILNBLNK( fname )
+        write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:nf), 
      &       ''' must be opened first'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'

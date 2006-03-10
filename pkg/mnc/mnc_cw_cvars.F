@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.5 2005/02/23 05:17:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.6 2006/03/10 16:09:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -187,14 +187,15 @@ C     Check all the coordinate variables that we know about
         CALL MNC_FILE_REDEF(fname, myThid)
         err = NF_DEF_VAR(fid, cvname, NF_DOUBLE, 
      &       nids, cv_did, vid)
+        i = ILNBLNK( fname )
         write(msgbuf,'(5a)') 'defining coordinate variable ''', 
-     &       cvname(nnf:nnl), ''' in file ''', fname, ''''
+     &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         CALL MNC_FILE_ENDDEF(fname, myThid)
         err = NF_PUT_VARA_DOUBLE(fid, vid, 
      &       cv_start, cv_count, rtmp)
         write(msgbuf,'(5a)') 'writing coordinate variable ''', 
-     &       cvname(nnf:nnl), ''' in file ''', fname, ''''
+     &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.20 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.21 2006/03/10 16:09:32 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -75,7 +75,7 @@ C     Is the file already open?
         stop 'ABNORMAL END: package MNC'
       ENDIF
 
-      write(msgbuf,'(3a)') 'opening ''', fname, ''''
+      write(msgbuf,'(3a)') 'opening ''', fname(1:nf), ''''
       IF (itype .EQ. 0) THEN
 
 C       Create new file
@@ -255,7 +255,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer n, err, fid, ind, n1, lens
+      integer n, nf, err, fid, ind, n1, lens
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
 
@@ -265,8 +265,9 @@ C     Functions
 C     Verify that the file is open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
+        nf = ILNBLNK( fname )
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       fname, ''' must be opened first'
+     &       fname(1:nf), ''' must be opened first'
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_INT'
       ENDIF
