@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.1 2006/03/06 13:17:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.2 2006/03/10 13:59:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -264,7 +264,7 @@ C     (d/dy)[eta*(d/dy + tanphi/a)] U (also on UVRT1/2)
      &         ) * _recip_dyG(I,J,bi,bj)
      &         - (etaMeanZ(I,J+1,bi,bj) - etaMeanZ(I,J,bi,bj)) 
      &         * 0.5 _d 0 * _tanPhiAtU(I,J,bi,bj)
-     &         * recip_rSphere * _recip_dxG(I,J,bi,bj)
+     &         * recip_rSphere * _recip_dyG(I,J,bi,bj)
 C     2*eta*(tanphi/a) * ( tanphi/a ) U
           AA6=TWO*etaMeanU(I,J,bi,bj)*recip_rSphere*recip_rSphere
      &         * _tanPhiAtU(I,J,bi,bj)  * _tanPhiAtU(I,J,bi,bj)
