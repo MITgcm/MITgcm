@@ -3,9 +3,10 @@
 c
 c         arguments
 c
-      integer n, is, m, jmin, jmax, ifail, rectmp
+      integer n, is, m, jmin, jmax, ifail
       double precision    fc, gnorm0
       logical cold
+      integer*8 rectmp, tmp1, tmp2
 c----
 c
       common /xxstore/ itape, ntape, isize
@@ -40,7 +41,9 @@ cc one record = two arrays of real*(isize)
      $        '  opening direct access with recl = ',n,' * ',isize
       print*
 
-      rectmp = n * isize
+      tmp1 = n
+      tmp2 = isize
+      rectmp = tmp1*tmp2
 cph(
       print *, 'pathei rectmp ', rectmp, n, isize
 cph)

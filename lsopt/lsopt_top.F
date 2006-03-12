@@ -125,7 +125,7 @@ c-----------------------------------------
       mm    = nn
       mupd  = nupdate
 
-      REAL_BYTE = 8 
+      REAL_BYTE = 4
       isize = REAL_BYTE
 
 c-----------------------------------------
@@ -279,7 +279,7 @@ cph)
 cph(
       print *, 'pathei: vor lswri '
 cph)
-         call lswri( isize, iiter, nn, xx, gg, lphprint )
+cph         call lswri( isize, iiter, nn, xx, gg, lphprint )
 
 cph(
       print *, 'pathei: vor gnorm0 '
@@ -450,7 +450,7 @@ c
       call dostore( nn, xx, .true., 1 )
       call dostore( nn, gg, .true., 2 )
 cph(
-      call lswri( isize, iiter, nn, xx, gg, lphprint )
+cph      call lswri( isize, iiter, nn, xx, gg, lphprint )
 cph)
 
       gnorm = DNRM2( nn, gg, 1 )
