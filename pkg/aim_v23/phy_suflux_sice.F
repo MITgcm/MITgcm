@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_sice.F,v 1.5 2004/07/22 22:58:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_sice.F,v 1.6 2006/03/13 03:58:32 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -32,6 +32,7 @@ C     Resolution parameters
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 
 C-- Physics package
 #include "AIM_PARAMS.h"
@@ -91,7 +92,7 @@ CEOP
 
 C-- Local variables:
 C    CDENVV :: surf. heat flux (sens.,lat.) coeff including stability effect
-C    ALHevp :: Latent Heat of evaporation 
+C    ALHevp :: Latent Heat of evaporation
       _RL CDENVV(NGP), RDTH, FSSICE
       _RL ALHevp, Fstb0, dTstb, dFstb
       _RL QSAT0(NGP,2)
@@ -102,7 +103,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ALHevp = ALHC
 C     Evap of snow/ice: account for Latent Heat of freezing :
-      IF ( aim_energPrecip ) ALHevp = ALHC + ALHF
+      IF ( aim_energPrecip .OR. useThSIce ) ALHevp = ALHC + ALHF
 
 C     1.5 Define effective skin temperature to compensate for
 C         non-linearity of heat/moisture fluxes during the daily cycle
@@ -138,7 +139,7 @@ C   the derivative using the discrete form: F(Ts+dTstab)-F(Ts-dTstab)/2.dTstab
        ENDDO
 C-    deBug part:
 c      J = 6 + (17-1)*sNx
-c      IF ( bi.EQ.3 .AND. J.LE.NGP ) 
+c      IF ( bi.EQ.3 .AND. J.LE.NGP )
 c    &  WRITE(6,1020)'SUFLUX_SICE: Stab=',Shf0(J),CDENVV(J),dShf(J)
       ENDIF
 
@@ -176,7 +177,7 @@ C-    account for stability function derivative relative to Tsurf:
      &            + dShf(J)*CP*(TSKIN(J)-T0(J))
         dShf(J) = MAX( dShf(J), 0. _d 0 )
 C--   do not allow negative derivative vs Ts of Sensible+Latent H.flux:
-C     a) quiet unrealistic ; 
+C     a) quiet unrealistic ;
 C     b) garantee positive deriv. of total H.flux (needed for implicit solver)
         dEvp(J) = MAX( dEvp(J), -dShf(J)/ALHevp )
        ENDDO
