@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.12 2006/02/21 01:15:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.13 2006/03/13 03:53:40 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -6,14 +6,14 @@ C $Name:  $
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD
 C     !INTERFACE:
-      SUBROUTINE THSICE_STEP_FWD( 
+      SUBROUTINE THSICE_STEP_FWD(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             prcAtm,
      U             evpAtm, flxSW,
      I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R  THSICE_STEP_FWD             
+C     | S/R  THSICE_STEP_FWD
 C     | o Step Forward Therm-SeaIce model.
 C     *==========================================================*
 C     \ev
@@ -30,14 +30,14 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj   :: tile indices
 C   iMin,iMax :: computation domain: 1rst index range
 C   jMin,jMax :: computation domain: 2nd  index range
 C- input:
-C     prcAtm  :: total precip from the atmosphere [kg/m2/s] 
+C     prcAtm  :: total precip from the atmosphere [kg/m2/s]
 C     evpAtm  :: (Inp) evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
 C     flxSW   :: (Inp) short-wave heat flux (+=down): downward comp. only
 C                      (part.1), becomes net SW flux into ocean (part.2).
@@ -94,7 +94,7 @@ C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
 
       LOGICAL dBug
 
- 1010 FORMAT(A,1P4E11.3)
+ 1010 FORMAT(A,1P4E14.6)
       dBug = .FALSE.
 C-    Initialise flxAtm
        DO j = 1-Oly, sNy+Oly
@@ -109,10 +109,10 @@ C-    Initialise flxAtm
 c        dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C    part.1 : ice-covered fraction ; 
+C    part.1 : ice-covered fraction ;
 C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
-         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
+         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
           icFrac  = iceMask(i,j,bi,bj)
           TFrzOce = -mu_Tf*sOceMxL(i,j,bi,bj)
           hIce    = iceHeight(i,j,bi,bj)
@@ -182,8 +182,8 @@ C--    Update Sea-Ice state :
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C    part.2 : ice-covered fraction ; 
-C     change in ice/snow thickness and ice-fraction 
+C    part.2 : ice-covered fraction ;
+C     change in ice/snow thickness and ice-fraction
 C     note: can only reduce the ice-fraction but not increase it.
 C-------
       agingTime = 50. _d 0 * 86400. _d 0
@@ -204,13 +204,13 @@ C-------
         IF (dBug .AND. (frzmltMxL.GT.0. .OR. compact.GT.0.) ) THEN
           WRITE(6,'(A,2I4,2I2)') 'ThSI_FWD: i,j=',i,j,bi,bj
           WRITE(6,1010) 'ThSI_FWD:-1- iceMask, hIc, hSn, Tsf  =',
-     &                  compact, iceHeight(i,j,bi,bj), 
+     &                  compact, iceHeight(i,j,bi,bj),
      &                  snowHeight(i,j,bi,bj), Tsrf(i,j,bi,bj)
           WRITE(6,1010) 'ThSI_FWD: ocTs,TFrzOce,frzmltMxL,Qnet=',
      &                     oceTs, TFrzOce, frzmltMxL,Qnet(i,j,bi,bj)
         ENDIF
 C-------
-        IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
+        IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
 
           oceV2s  = v2ocMxL(i,j,bi,bj)
           snowPr  = snowPrc(i,j,bi,bj)
@@ -233,10 +233,10 @@ C         but to reproduce old results, is reset to zero if Tsf >= 0
           snowPrc(i,j,bi,bj) = snowPr
 
 C--  Snow aging :
-          snowAge(i,j,bi,bj) = thSIce_deltaT 
+          snowAge(i,j,bi,bj) = thSIce_deltaT
      &                       + snowAge(i,j,bi,bj)*ageFac
-          IF ( snowPr.GT.0. _d 0 ) 
-     &      snowAge(i,j,bi,bj) = snowAge(i,j,bi,bj) 
+          IF ( snowPr.GT.0. _d 0 )
+     &      snowAge(i,j,bi,bj) = snowAge(i,j,bi,bj)
      &          * EXP( -(thSIce_deltaT*snowPr/rhos)/hNewSnowAge )
 C--
 
@@ -312,9 +312,9 @@ c       compact= iceMask(i,j,bi,bj)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,flx2oc,fsalt,frw2oc='
      &                 ,compact,flx2oc,fsalt,frw2oc
-#ifdef CHECK_ENERGY_CONSERV 
-          tmpflx(1) = 0. 
-          tmpflx(2) = 0. 
+#ifdef CHECK_ENERGY_CONSERV
+          tmpflx(1) = 0.
+          tmpflx(2) = 0.
           CALL THSICE_CHECK_CONSERV( dBug, i, j, bi, bj, 1,
      I            icFrac, compact, hIce, hSnow, qicen,
      I            flx2oc, frw2oc, fsalt, tmpflx(1), tmpflx(2),
@@ -333,7 +333,7 @@ C--    Update Sea-Ice state :
           snowHeight(i,j,bi,bj)= hSnow
 C--    Net fluxes :
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc
-          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc/rhofw 
+          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc/rhofw
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt
 
           IF (dBug) WRITE(6,1010)

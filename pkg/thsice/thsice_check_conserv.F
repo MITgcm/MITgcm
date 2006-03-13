@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.3 2006/03/13 03:53:40 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
- 
+
 C     !ROUTINE: THSICE_CHECK_CONSERV
 C     !INTERFACE:
       SUBROUTINE THSICE_CHECK_CONSERV(
@@ -11,7 +11,7 @@ C     !INTERFACE:
      I             qleft, ffresh, fsalt, flxAtm, frwAtm,
      I             myTime, myIter, myThid )
 C     *==========================================================*
-C     | S/R  THSICE_CHECK_CONSERV             
+C     | S/R  THSICE_CHECK_CONSERV
 C     | o Check Conservation of Energy, water and salt
 C     *==========================================================*
 
@@ -25,7 +25,7 @@ c #include "PARAMS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myIter :: iteration counter for this thread
@@ -48,13 +48,13 @@ C     === Local variables ===
       _RL dEnerg, dWater, dSalt
       _RL flxFrac
 
- 1010 FORMAT(A,1P4E11.3)
+ 1010 FORMAT(A,1P4E14.6)
 
           flxFrac = iceFrac
           IF (iceStart.EQ.1) flxFrac = 1.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-          dEnerg= -rhos*snowHeight(i,j,bi,bj)*qsnow 
+          dEnerg= -rhos*snowHeight(i,j,bi,bj)*qsnow
      &            -rhoi*iceHeight(i,j,bi,bj)
      &             *(Qice1(i,j,bi,bj)+Qice2(i,j,bi,bj))*0.5
           dWater = rhos*snowheight(i,j,bi,bj)+rhoi*iceHeight(i,j,bi,bj)
@@ -63,7 +63,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &    dEnerg, dWater, dSalt
 C--
           dEnerg = dEnerg*iceFrac
-     &     + compact*( rhos*hSnow*qsnow 
+     &     + compact*( rhos*hSnow*qsnow
      &               + rhoi*hIce*(qicen(1)+qicen(2))*0.5
      &               )
           dWater = dWater*iceFrac
