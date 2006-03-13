@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.626 2006/03/10 05:50:22 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.627 2006/03/13 04:36:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o AIM+thSIce: fix sign of Short-Wave through the Ice ; 
+  update output.txt of exp. aim.5l_cs.thSI
 o various mnc cleanups and improvements:
   + shrink lookup tables by factor of ~4
   + better error reporting when running out of lookup space
