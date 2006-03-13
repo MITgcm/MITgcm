@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.3 2006/03/13 04:09:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.4 2006/03/13 20:29:44 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -103,7 +103,16 @@ C     from g/m2/s to m/s :
 #endif
 
       DO j=1,sNy
-        DO i=1,sNx
+       DO i=1,sNx
+        IF ( land_frc(i,j,bi,bj).GE.1. _d 0 ) THEN
+C-    Full Land grid-cell: set all fluxes to zero (this has no effect on the
+C        model integration and just put this to get meaningfull diagnostics)
+         prcAtm(i,j)     = 0. _d 0
+         Qnet(i,j,bi,bj) = 0. _d 0
+         EmPmR(i,j,bi,bj)= 0. _d 0
+         flxSW(i,j)      = 0. _d 0
+         Qsw(i,j,bi,bj)  = 0. _d 0
+        ELSE
          I2 = i+(j-1)*sNx
 
 C-    Total Precip (no distinction between ice-covered / ice-free fraction):
@@ -128,7 +137,8 @@ C-    Transfert SW flux at the base of the sea-ice, from Qsw(+=up) to flxSW (+=d
 C-    Net short wave (ice-free ocean) into the ocean (+=down)
          Qsw(i,j,bi,bj) = SSR(I2,2,myThid)
 
-        ENDDO
+        ENDIF
+       ENDDO
       ENDDO
 
 #ifdef ALLOW_THSICE
