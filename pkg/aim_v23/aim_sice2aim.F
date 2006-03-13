@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.6 2006/02/21 01:14:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.7 2006/03/13 04:00:10 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -11,9 +11,9 @@ C     !ROUTINE: AIM_SICE2AIM
 C     !INTERFACE:
       SUBROUTINE AIM_SICE2AIM(
      I               land_frc,
-     U               aimTsoce, aimSIfrc, 
+     U               aimTsoce, aimSIfrc,
      O               aimTsice, aimAlb,
-     I               myTime, myIter, bi, bj, myThid ) 
+     I               myTime, myIter, bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -62,7 +62,7 @@ C     aimTsice :: sea-ice (or snow) surface temp (K), used in AIM
 C     aimAlb   :: sea-ice albedo [0-1], used in AIM
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
-C     bi,bj    :: Tile index 
+C     bi,bj    :: Tile index
 C     myThid   :: Number of this instance of the routine
       _RS  land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aimTsoce(sNx,sNy)
@@ -103,7 +103,7 @@ C-    Fill in thsice-pkg Temp. using AIM surf. fields
       ENDIF
 
       IF ( .TRUE. ) THEN
-C-     Compute albedo over sea-ice 
+C-     Compute albedo over sea-ice
         DO j=1,sNy
          DO i=1,sNx
           IF ( iceMask(i,j,bi,bj) .GT. 0. _d 0 ) THEN
@@ -131,7 +131,7 @@ C-- fill in ocean mixed layer variables
 C   notes: this replace reading initial conditions from files.
 C          needs to be done before call to phy_driver (since freezing
 C          temp. is fct of salinity) ; but would be better somewhere else.
-      IF ( tauRelax_MxL .EQ. -1. _d 0 
+      IF ( tauRelax_MxL .EQ. -1. _d 0
      &     .OR. ( stepFwd_oceMxL  .AND. StartIceModel.NE.0
      &                            .AND. myIter.EQ.nIter0   )
      &     .OR. ( myIter.EQ.0 .AND. myTime.EQ.baseTime .AND.
@@ -145,6 +145,15 @@ C          temp. is fct of salinity) ; but would be better somewhere else.
           ENDIF
          ENDDO
         ENDDO
+        IF ( myIter.EQ.nIter0 ) THEN
+C-- Over-write the initial T,S_MxL files with the correct fields
+          CALL WRITE_LOCAL_RL( 'ice_tOceMxL', 'I10', 1,
+     &                         tOceMxL(1-Olx,1-Oly,bi,bj),
+     &                         bi, bj, 1, myIter, myThid )
+          CALL WRITE_LOCAL_RL( 'ice_sOceMxL', 'I10', 1,
+     &                         sOceMxL(1-Olx,1-Oly,bi,bj),
+     &                         bi, bj, 1, myIter, myThid )
+        ENDIF
       ELSE
 C-- Use ocean mixed layer Temp as Atmos. SST (instead of prescribed Temp)
         DO j=1,sNy
