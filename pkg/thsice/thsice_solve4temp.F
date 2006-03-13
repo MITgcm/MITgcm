@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.6 2006/02/10 00:24:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.7 2006/03/13 03:55:39 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: THSICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE THSICE_SOLVE4TEMP(
-     I                     useBlkFlx, flxExcSw, Tf, hi, hs, 
+     I                     useBlkFlx, flxExcSw, Tf, hi, hs,
      U                     flxSW, Tsf, qicen,
      O                     Tice, sHeating, flxCnB,
      O                     dTsf, flxAtm, evpAtm,
@@ -37,7 +37,7 @@ C     Tf       :: freezing temperature (oC) of local sea-water
 C     hi       :: ice height
 C     hs       :: snow height
 C     flxSW    :: net Short-Wave flux (+=down) [W/m2]: input= at surface
-C              ::               output= at the sea-ice base to the ocean 
+C              ::               output= at the sea-ice base to the ocean
 C     Tsf      :: surface (ice or snow) temperature
 C     qicen    :: ice enthalpy (J/kg)
 C     Tice     :: internal ice temperatures
@@ -75,11 +75,11 @@ C ADAPTED FROM:
 C LANL CICE.v2.0.2
 C-----------------------------------------------------------------------
 C.. thermodynamics (vertical physics) based on M. Winton 3-layer model
-C.. See Bitz, C. M. and W. H. Lipscomb, 1999:  "An energy-conserving 
-C..       thermodynamic sea ice model for climate study."  J. Geophys. 
+C.. See Bitz, C. M. and W. H. Lipscomb, 1999:  "An energy-conserving
+C..       thermodynamic sea ice model for climate study."  J. Geophys.
 C..       Res., 104, 15669 - 15677.
-C..     Winton, M., 1999:  "A reformulated three-layer sea ice model."  
-C..       Submitted to J. Atmos. Ocean. Technol.  
+C..     Winton, M., 1999:  "A reformulated three-layer sea ice model."
+C..       Submitted to J. Atmos. Ocean. Technol.
 C.. authors Elizabeth C. Hunke and William Lipscomb
 C..         Fluid Dynamics Group, Los Alamos National Laboratory
 C-----------------------------------------------------------------------
@@ -116,13 +116,13 @@ c     _RL  Tsf_start     ! old value of Tsf
       INTEGER iceornot
       LOGICAL dBug
 
- 1010 FORMAT(A,I3,3F8.3)
- 1020 FORMAT(A,1P4E11.3)
+ 1010 FORMAT(A,I3,3F11.6)
+ 1020 FORMAT(A,1P4E14.6)
 
       dt  = thSIce_deltaT
       dBug = .FALSE.
 c     dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
-c     dBug = ( bi.EQ.6 .AND. i.EQ.18 .AND. j.EQ.10 )
+c     dBug = ( bi.EQ.6 .AND. i.EQ.10 .AND. j.EQ.20 )
       IF (dBug) WRITE(6,'(A,2I4,2I2)') 'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 
       IF ( hi.LT.himin ) THEN
@@ -202,17 +202,17 @@ C Compute top surface flux.
      I                        iceornot, Tsf,
      O                        flxExceptSw, df0dT, evap, dEvdT,
      I                        i,j,bi,bj,myThid )
-         flx0 = fswdn + flxExceptSw
         ELSE
-         flx0 = fswdn + flxExcSw(1)
+         flxExceptSw = flxExcSw(1)
          df0dT = flxExcSw(2)
         ENDIF
+        flx0 = fswdn + flxExceptSw
         IF ( dBug ) WRITE(6,1020) 'ThSI_SOLVE4T: flx0,df0dT,k12,D=',
      &                                     flx0,df0dT,k12,k12-df0dT
 
 C Compute new top layer and surface temperatures.
 C If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
-C with different coefficients. 
+C with different coefficients.
 
          a1 = a10 - k12*df0dT / (k12-df0dT)
          b1 = b10 - k12*(flx0-df0dT*Tsf) / (k12-df0dT)
@@ -236,18 +236,18 @@ C with different coefficients.
      I                        iceornot, Tsf,
      O                        flxExceptSw, df0dT, evap, dEvdT,
      I                        i,j,bi,bj,myThid )
-            flx0 = fswdn + flxExceptSw
             dTsf = 0. _d 0
            ELSE
-            flx0 = fswdn + flxExcSw(0)
+            flxExceptSw = flxExcSw(0)
             dTsf = 1000.
             df0dT = 0.
            ENDIF
+           flx0 = fswdn + flxExceptSw
          ENDIF
 
 C Check for convergence.  If no convergence, then repeat.
 C
-C Convergence test: Make sure Tsfc has converged, within prescribed error.  
+C Convergence test: Make sure Tsfc has converged, within prescribed error.
 C (Energy conservation is guaranteed within machine roundoff, even
 C if Tsfc has not converged.)
 C If no convergence, then repeat.
@@ -282,17 +282,16 @@ C Compute final flux values at surfaces.
       flxCnB = 4. _d 0*kice *(Tice(2)-Tf)/hi
       flx0   = flx0 + df0dT*dTsf
       IF ( useBlkFlx ) THEN
-        evpAtm = evap
 C--   needs to update also Evap (Tsf changes) since Latent heat has been updated
         evpAtm = evap + dEvdT*dTsf
-C-    energy flux to Atmos: use net short-wave flux at surf. and
-C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
-        flxAtm = flxSW + flxExceptSw + df0dT*dTsf
-     &                 + evpAtm*Lfresh
       ELSE
-        flxAtm = 0.
+C- WARNING: Evap & +Evap*Lfresh are missing ! (but only affects Diagnostics)
         evpAtm = 0.
       ENDIF
+C-    energy flux to Atmos: use net short-wave flux at surf. and
+C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
+      flxAtm = flxSW + flxExceptSw + df0dT*dTsf + evpAtm*Lfresh
+C-    excess of energy @ surface (used for surface melting):
       sHeating = flx0 - fct
 
 C-    SW flux at sea-ice base left to the ocean
@@ -303,14 +302,14 @@ C-    SW flux at sea-ice base left to the ocean
 
 C Compute new enthalpy for each layer.
 
-      qicen(1) = -cpwater*Tmlt1 + cpice *(Tmlt1-Tice(1)) + 
-     &              Lfresh*(1. _d 0-Tmlt1/Tice(1))
+      qicen(1) = -cpwater*Tmlt1 + cpice *(Tmlt1-Tice(1))
+     &            + Lfresh*(1. _d 0-Tmlt1/Tice(1))
       qicen(2) = -cpice *Tice(2) + Lfresh
 
 C Make sure internal ice temperatures do not exceed Tmlt.
 C (This should not happen for reasonable values of i0.)
 
-      IF (Tice(1) .GE. Tmlt1) then 
+      IF (Tice(1) .GE. Tmlt1) THEN
         WRITE (6,'(A,2I4,2I3,1P2E14.6)')
      &   'BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,Tice(1),Tmlt1
       ENDIF
