@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.2 2006/01/22 15:51:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.3 2006/03/14 15:57:31 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_BULK_FORCE
@@ -115,10 +115,12 @@ C                          than the default formula (LANL)
 
       LOGICAL calcWindStress
       LOGICAL useFluxFormula_AIM
+      LOGICAL useQnetch, useEmPch
 
       COMMON / BULK_PAR_L /
      &       calcWindStress,
-     &       useFluxFormula_AIM
+     &       useFluxFormula_AIM,
+     &       useQnetch, useEmPch
 
 C--   COMMON / BULK_PAR_C / Character string parameters
       CHARACTER*(MAX_LEN_FNAM) AirTempFile

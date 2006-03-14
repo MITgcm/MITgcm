@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.13 2006/03/13 03:53:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.14 2006/03/14 15:58:27 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -73,6 +73,7 @@ C     frw2oc    :: fresh-water flux from the ice to the ocean
 C     fsalt     :: mass salt flux to the ocean
 C     frzmltMxL :: ocean mixed-layer freezing/melting potential [W/m2]
 C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
+C     isIceFree :: true for ice-free grid-cell that remains ice-free
       INTEGER i,j
       _RL snowPr
       _RL agingTime, ageFac
@@ -88,6 +89,7 @@ C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
       _RL oceV2s, oceTs
       _RL compact, hIce, hSnow, Tsf, Tice(nlyr), qicen(nlyr)
       _RL tmpflx(0:2), tmpdTs
+      LOGICAL isIceFree(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
 #endif
@@ -100,6 +102,7 @@ C-    Initialise flxAtm
        DO j = 1-Oly, sNy+Oly
         DO i = 1-Olx, sNx+Olx
           flxAtm(i,j) = 0.
+          isIceFree(i,j) = .FALSE.
         ENDDO
        ENDDO
 
@@ -134,7 +137,7 @@ C-------
           siceAlb(i,j,bi,bj) = albedo
 
           CALL THSICE_SOLVE4TEMP(
-     I          useBulkforce, tmpflx, TFrzOce, hIce, hSnow,
+     I          useBulkForce, tmpflx, TFrzOce, hIce, hSnow,
      U          flxSW(i,j), Tsf, qicen,
      O          Tice, sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj),
      O          tmpdTs, flxAtm(i,j), evpAtm(i,j),
@@ -342,6 +345,9 @@ C--    Net fluxes :
 C--   - if esurp > 0 : end
         ENDIF
 
+        IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
+     &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
+     &                       .AND.   compact .LE.0. _d 0
         IF ( compact .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=compact
           IF ( hSnow .EQ. 0. _d 0 ) snowAge(i,j,bi,bj) = 0. _d 0
@@ -370,6 +376,14 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_BULK_FORCE
+      IF ( useBulkForce ) THEN
+        CALL BULKF_FLUX_ADJUST(
+     I                          bi, bj, iMin, iMax, jMin, jMax,
+     I                          isIceFree, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_BULK_FORCE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_THSICE */

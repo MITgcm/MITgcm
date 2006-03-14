@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_readparms.F,v 1.4 2006/01/22 15:51:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_readparms.F,v 1.5 2006/03/14 15:57:31 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -171,6 +171,9 @@ C-    Define other constants (from previous ones):
       Qcoef  = 6.11 _d 0 * 0.622 _d 0 / p0
       Sha    = Rgas / .286 _d 0
 
+      useQnetch = QnetFile .NE. ' '
+      useEmPch  = EmPFile  .NE. ' '
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
 c     iUnit=88
@@ -210,7 +213,9 @@ c     OPEN(iUnit,file='bulkf_check_params',status='unknown')
       WRITE(iUnit,*) 'BlkF: FSTAB    =', FSTAB
 #endif
       WRITE(iUnit,*) 'BlkF: useFluxFormula_AIM=',useFluxFormula_AIM
-      WRITE(iUnit,*) 'BlkF: calcWindStress    =',calcWindStress
+      WRITE(iUnit,*) 'BlkF: calcWindStress  =', calcWindStress
+      WRITE(iUnit,*) 'BlkF: useQnetch       =', useQnetch
+      WRITE(iUnit,*) 'BlkF: useEmPch        =', useEmPch
       WRITE(iUnit,*) 'BlkF: blk_taveFreq=', blk_taveFreq
       IF (iUnit.EQ.88) CLOSE(iUnit)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.5 2006/01/22 15:51:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.6 2006/03/14 15:57:31 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_BULK_FORCE
@@ -19,8 +19,8 @@ C- Optional:
 C  uwind     :: zonal wind speed (m/s),      at cell center (A-grid)
 C  vwind     :: meridional wind speed (m/s), at cell center (A-grid)
 C  runoff    :: freshwater runoff
-C  qnetch    :: net heat flux (cheating)
-C  empch     :: E-P (cheating)
+C  Qnetch    :: net heat flux (cheating)
+C  EmPch     :: E-P (cheating)
 C  cloud     :: fraction sky covered in cloud
 C  thAir     :: Air potential temp. in the BL [K]
 C                (used in AIM-formula stability function)
@@ -28,7 +28,7 @@ C                (used in AIM-formula stability function)
       COMMON /BULKF_FFIELDS/
      &       Tair, Qair, Rain, Solar, flwdwn,
      &       wspeed, uwind, vwind, runoff,
-     &       qnetch, empch, cloud
+     &       Qnetch, EmPch, cloud
 #ifdef ALLOW_FORMULA_AIM
      &     , thAir
 #endif
@@ -42,8 +42,8 @@ C                (used in AIM-formula stability function)
       _RL  uwind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vwind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL runoff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL qnetch (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL empch  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Qnetch (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL EmPch  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cloud  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_FORMULA_AIM
       _RL thAir  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
