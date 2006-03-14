@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.32 2006/03/07 04:26:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.33 2006/03/14 15:18:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,8 +95,8 @@ C--   Initialize grid info
           IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=ZERO
          ENDDO
         ENDDO
-        DO J=2-OLy,sNy+OLy
-         DO I=2-OLx,sNx+OLx
+        DO J=1-OLy+1,sNy+OLy
+         DO I=1-OLx+1,sNx+OLx
 #ifndef SEAICE_CGRID
           UVM(i,j,bi,bj)=ZERO
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
@@ -107,7 +107,7 @@ C--   Initialize grid info
           seaiceMaskV(I,J,bi,bj)=   0.0 _d 0
           mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I-1,J  ,bi,bj)
           IF(mask_uice.GT.1.5) seaiceMaskU(I,J,bi,bj)=ONE
-          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J+1,bi,bj)
+          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J-1,bi,bj)
           IF(mask_uice.GT.1.5) seaiceMaskV(I,J,bi,bj)=ONE
 #endif /* not SEAICE_CGRID */
          ENDDO
