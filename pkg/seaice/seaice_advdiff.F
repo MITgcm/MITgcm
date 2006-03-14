@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.1 2006/02/16 10:41:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.2 2006/03/14 11:38:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,6 +102,14 @@ C                 (empty if no diffusion)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_CGRID
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          uc(I,J,bi,bj)=UICE(I,J,1,bi,bj)
+          vc(I,J,bi,bj)=VICE(I,J,1,bi,bj)
+         ENDDO
+        ENDDO
+#else /* not SEAICE_CGRID = BGRID */
 C average seaice velocity to c-grid
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
@@ -109,6 +117,7 @@ C average seaice velocity to c-grid
           vc(I,J,bi,bj)=.5 _d 0*(VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
          ENDDO
         ENDDO
+#endif /* SEAICE_CGRID */
        ENDDO
       ENDDO
 C     Do we need this? I am afraid so.

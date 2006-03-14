@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.15 2006/02/15 22:26:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.16 2006/03/14 11:38:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,12 +60,22 @@ C NOW REARRANGE HS
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef SEAICE_CGRID
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           UI(I,J,bi,bj)=UICE(I,J,1,bi,bj)
           VI(I,J,bi,bj)=VICE(I,J,1,bi,bj)
          ENDDO
         ENDDO
+#else /* not SEAICE_CGRID = BGRID */
+C average seaice velocity to c-grid
+        DO j=1-Oly,sNy+Oly-1
+         DO i=1-Olx,sNx+Olx-1
+          UI(I,J,bi,bj)=.5 _d 0*(UICE(I,J,1,bi,bj)+UICE(I,J+1,1,bi,bj))
+          VI(I,J,bi,bj)=.5 _d 0*(VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
+         ENDDO
+        ENDDO
+#endif /* SEAICE_CGRID */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -91,19 +101,19 @@ CML   This formulation gives the same result as the original code on a
 CML   lat-lon-grid, but may not be accurate on irregular grids
           HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
      &         -DELTT*(
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))-
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
-     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj)))
-     &     *(QUART * _recip_dxF(I,J,bi,bj))
+     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &         *   UI(I+1,J,  bi,bj) -
+     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &         *   UI(I  ,J,  bi,bj) )
+     &     *(HALF * _recip_dxF(I,J,bi,bj))
      &         -DELTT*(
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &         *   VI(I  ,J+1,  bi,bj)
      &         * _dxG(I  ,J+1,bi,bj) -
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &         *   VI(I  ,J  ,  bi,bj)
      &         * _dxG(I,J,bi,bj))
-     &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
+     &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -115,19 +125,19 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
          DO I=1,sNx
 C--   Use flux form for MITgcm compliance, unfortunately changes results
           HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
-     &         -DELTT * QUART * (
+     &         -DELTT * HALF * (
      &        + _dyG(I+1,J,bi,bj) *
      &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-     &         *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+     &         *  UI(I+1,J  ,  bi,bj)
      &        - _dyG(I,J,bi,bj) *
      &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
-     &         *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+     &         *  UI(I  ,J  ,  bi,bj)
      &        + _dxG(I  ,J+1,bi,bj) *
      &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-     &         *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &         *  VI(I  ,J+1,  bi,bj)
      &        - _dxG(I  ,J  ,bi,bj)*
      &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-     &         *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &         *  VI(I  ,J  ,  bi,bj)
      &        )*recip_rA(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -165,18 +175,18 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
              HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
      &            -DELTT*(
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))-
+     &            *  UI(I+1,J  ,  bi,bj) -
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
-     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj)))
-     &     *(QUART * _recip_dxF(I,J,bi,bj))
+     &            *  UI(I  ,J  ,  bi,bj) )
+     &     *(HALF * _recip_dxF(I,J,bi,bj))
      &            -DELTT*(
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
-     &            * _dxG(I,J+1,bi,bj)
-     &            -(HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-     &            *(  VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &            *  VI(I  ,J+1,  bi,bj) 
+     &            * _dxG(I,J+1,bi,bj) -
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &            *   VI(I  ,J  ,  bi,bj) 
      &            * _dxG(I,J,bi,bj))
-     &     *(QUART * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
+     &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
             ENDDO
            ENDDO
           ENDDO
@@ -188,19 +198,19 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
             DO I=1,sNx
 C--   Use flux form for MITgcm compliance, unfortunately changes results
              HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
-     &            -DELTT * QUART * (
+     &            -DELTT * HALF * (
      &           + _dyG(I+1,J  ,bi,bj) *
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
-     &            *( UI(I+1,J+1,  bi,bj)+  UI(I+1,J  ,  bi,bj))
+     &            *  UI(I+1,J  ,  bi,bj)
      &           - _dyG(I  ,J  ,bi,bj) *
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,  J,2,bi,bj))
-     &            *( UI(I  ,J+1,  bi,bj)+  UI(I  ,J  ,  bi,bj))
+     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &            *  UI(I  ,J  ,  bi,bj)
      &           + _dxG(I  ,J+1,bi,bj) *
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-     &            *( VI(I  ,J+1,  bi,bj)+  VI(I+1,J+1,  bi,bj))
+     &            *  VI(I  ,J+1,  bi,bj)
      &           - _dxG(I  ,J  ,bi,bj) *
      &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-     &            *( VI(I  ,J  ,  bi,bj)+  VI(I+1,J  ,  bi,bj))
+     &            *  VI(I  ,J  ,  bi,bj)
      &            )*recip_rA(I,J,bi,bj)
             ENDDO
            ENDDO
