@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.629 2006/03/14 11:41:17 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.630 2006/03/15 13:06:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o seaice: modify advection so that it works also on the C-grid
+o seaice: 
+  - modify advection so that it works also on the C-grid
+  - extend loop ranges in seaice_lsr and seaice_dynsolver; fixes 
+    problem in multi-tile runs with C-grid
+  - remove velocity clipping from seaice_dynsolver with C-grid
 
 checkpoint58b_post
 o AIM+thSIce: fix sign of Short-Wave through the Ice ; 
