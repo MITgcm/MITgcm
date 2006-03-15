@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.1 2006/02/16 10:41:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.2 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,6 +47,36 @@ C     i,j,k,bi,bj - Loop counters
 CADJ STORE heff  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+
+C--   This would be the natural way to do diffusion (explicitly)
+C     For now we stick to the modified Eulerian time step
+CML      DO bj=myByLo(myThid),myByHi(myThid)
+CML       DO bi=myBxLo(myThid),myBxHi(myThid)
+CML        CALL GAD_DIFF_X(bi,bj,k,xA,diff1,localT,df,myThid)
+CML        DO j=1-Oly,sNy+Oly
+CML         DO i=1-Olx,sNx+Olx
+CML          fZon(i,j) = fZon(i,j) + df(i,j)
+CML         ENDDO
+CML        ENDDO
+CML        CALL GAD_DIFF_Y(bi,bj,k,yA,diff1,localT,df,myThid)
+CML        DO j=1-Oly,sNy+Oly
+CML         DO i=1-Olx,sNx+Olx
+CML          fMer(i,j) = fMer(i,j) + df(i,j)
+CML         ENDDO
+CML        ENDDO
+CMLC--   Divergence of fluxes: update scalar field
+CML        DO j=1-Oly,sNy+Oly-1
+CML         DO i=1-Olx,sNx+Olx-1
+CML          HEFF(i,j,1,bi,bj)=HEFF(i,j,1,bi,bj) + DELTT *
+CML     &         maskC(i,j,kSurface,bi,bj)*recip_rA(i,j,bi,bj)
+CML     &       *( (fZon(i+1,j)-fZon(i,j))
+CML     &         +(fMer(i,j+1)-fMer(i,j))
+CML     &                       )
+CML     &         )
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+CML      ENDDO
 
 C NOW DO DIFFUSION ON H(I,J,3)
 C NOW CALCULATE DIFFUSION COEF ROUGHLY

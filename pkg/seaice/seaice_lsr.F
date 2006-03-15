@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.6 2006/03/15 16:11:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.7 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,17 +74,9 @@ C     i,j,bi,bj - Loop counters
       _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       _RL SINWAT, COSWAT
-      _RL ECCEN, ECM2, DELT1, DELT2
       _RL TEMPVAR
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL E11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL E22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL E12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-
-C--   FIRST SET UP BASIC CONSTANTS
-      ECCEN=SEAICE_eccen
-      ECM2=ONE/(ECCEN**2)
 
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -117,50 +109,10 @@ CADJ STORE vice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)= _recip_dxF(I,J,bi,bj) *
-     &                (uIceC(I,J,bi,bj)-uIceC(I-1,J  ,bi,bj))
-     &                -HALF*
-     &                (vIceC(I,J,bi,bj)+vIceC(I  ,J+1,bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-          E22(I,J,bi,bj)= _recip_dyF(I,J,bi,bj) *
-     &                (vIceC(I,J+1,bi,bj)-vIceC(I,J,bi,bj))
-          E12(I,J,bi,bj)=HALF*(
-     &                (uIceC(I,J+1,bi,bj)+uIceC(I+1,J+1,bi,bj)
-     &                -uIceC(I,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
-     &                * 1. _d 0 / (dyC(I,J,bi,bj) + dyC(I,J-1,bi,bj))
-     &                +
-     &                (vIceC(I+1,J+1,bi,bj)+vIceC(I+1,J,bi,bj)
-     &                -vIceC(I-1,J+1,bi,bj)-vIceC(I-1,J,bi,bj))
-     &                * 1. _d 0 / (dxC(I,J,bi,bj) + dxC(I-1,J,bi,bj))
-     &                +HALF*
-     &                (uIceC(I,  J,  bi,bj)+uIceC(I+1,J,  bi,bj))
-     &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
-C  NOW EVALUATE VISCOSITIES
-          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
-     &         +4. _d 0*ECM2*E12(I,J,bi,bj)**2
-     &         +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
-          IF ( DELT1 .LE. SEAICE_EPS_SQ ) THEN
-             DELT2=SEAICE_EPS
-          ELSE
-             DELT2=SQRT(DELT1)
-          ENDIF
-          ZETA(I,J,bi,bj)=HALF*PRESS0(I,J,bi,bj)/DELT2
-C NOW PUT MIN AND MAX VISCOSITIES IN
-          ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
-          ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS 
-          ZETA (I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
-          ETA  (I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
-          PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+      CALL SEAICE_CALC_VISCOSITIES( 
+     I     uIceC, vIceC, zMin, zMax, hEffM, press0,
+     O     eta, zeta, press, 
+     I     myThid )
 
 C--   Update overlap regions
       _EXCH_XY_R8(ETA, myThid)
@@ -502,7 +454,7 @@ C     d/dy [(zeta-eta) tanphi/a] V
 C     2*eta tanphi/a ( - tanphi/a - d/dy) V
           AA7=TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &         * _tanPhiAtV(I,J,bi,bj) 
-
+C
           AV(I,J,bi,bj)=(
      &         - AA2
      &         - AA6

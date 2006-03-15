@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.23 2006/03/06 13:17:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.24 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -14,6 +14,9 @@ C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
+C     useHB87stressCoupling :: use an intergral over ice and ocean surface
+C                          layer to define surface stresses on ocean
+C                          following Hibler and Bryan (1987, JPO)
 C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
 C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
 C     SEAICE_mon_stdio  :: write monitor to std-outp
@@ -22,10 +25,12 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL 
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
+     &     useHB87stressCoupling, 
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
+     &     useHB87stressCoupling, 
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 

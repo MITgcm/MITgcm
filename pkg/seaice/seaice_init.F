@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.33 2006/03/14 15:18:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.34 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,6 +114,8 @@ C--   Initialize grid info
         ENDDO
 
 #ifdef ALLOW_EXCH2
+#ifdef SEAICE_CGRID
+#else
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
@@ -139,6 +141,7 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
           ENDDO
          ENDIF
         ENDIF
+#endif
 #endif /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy
@@ -151,6 +154,8 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
 #endif
           UICEC      (I,J,bi,bj)=ZERO
           VICEC      (I,J,bi,bj)=ZERO
+          DAIRN      (I,J,bi,bj)=ZERO
+          DWATN      (I,J,bi,bj)=ZERO
 #ifndef SEAICE_CGRID
           AMASS      (I,J,bi,bj)=1000.0 _d 0
 #else
@@ -186,15 +191,27 @@ C--   Choose a proxy level for geostrophic velocity,
       ENDDO
 
 C--   Update overlap regions
+#ifdef SEAICE_CGRID
+      _EXCH_XY_R8(seaiceMaskU, myThid)
+      _EXCH_XY_R8(seaiceMaskV, myThid)
+#else
       _EXCH_XY_R8(UVM, myThid)
+#endif
 
 C--   Now lets look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
          myIter=0
          CALL PLOT_FIELD_XYRL( HEFFM   , 'Current HEFFM   ' ,
      &        myIter, myThid )
+#ifdef SEAICE_CGRID
+         CALL PLOT_FIELD_XYRL( seaiceMaskU, 'Current seaiceMaskU',
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( seaiceMaskV, 'Current seaiceMaskV',
+     &        myIter, myThid )
+#else
          CALL PLOT_FIELD_XYRL( UVM     , 'Current UVM     ' ,
      &        myIter, myThid )
+#endif
       ENDIF
 
 C--   Set model variables to initial/restart conditions

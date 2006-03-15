@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.18 2006/03/06 13:17:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.19 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -61,7 +61,8 @@ CEOP
       _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_4/
-     &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
+     &     DAIRN, DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
+      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -73,18 +74,21 @@ CEOP
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
-      COMMON/ARRAY/HEFFM,UVM
+      COMMON/ARRAY/HEFFM
 #ifdef SEAICE_CGRID
      &     , seaiceMaskU, seaiceMaskV
+#else
+     &     , UVM
 #endif
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
       COMMON/SALT_WATER/SEAICE_SALT
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #ifdef SEAICE_CGRID
       _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#else
+      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #endif /* SEAICE_CGRID */
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)

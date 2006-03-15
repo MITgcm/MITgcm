@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.4 2006/03/15 13:03:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.5 2006/03/15 19:49:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,8 +47,6 @@ C     i,j,bi,bj - Loop counters
       _RL PSTAR, AAA
       _RL TEMPVAR, U1, V1
 
-      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C--   FIRST SET UP BASIC CONSTANTS
       RHOICE = SEAICE_rhoIce
       RHOAIR = SEAICE_rhoAir
@@ -82,7 +80,11 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
      &          HEFF(i,j,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj) )
           seaiceMassV(I,J,bi,bj)=RHOICE*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
+         ENDDO
+        ENDDO
 C     dynamic masking of areas with no ice
+CML        DO j=1-Oly+1,sNy+Oly
+CML         DO i=1-Olx+1,sNx+Olx
 CML          seaiceMaskU(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
 CML          IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
 CML           seaiceMaskU(I,J,bi,bj) = 1. _d 0
@@ -91,12 +93,12 @@ CML           seaiceMaskU(I,J,bi,bj) = 0. _d 0
 CML          ENDIF
 CML          seaiceMaskV(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I,J-1,1,bi,bj)
 CML          IF ( seaiceMaskV(I,J,bi,bj) .GT. 0. _d 0 ) THEN
-CML           seaiceMaskV(I,J,bi,bj) = 1. 
+CML           seaiceMaskV(I,J,bi,bj) = 1. _d 0
 CML          ELSE
 CML           seaiceMaskV(I,J,bi,bj) = 0. _d 0
 CML          ENDIF
-         ENDDO
-        ENDDO
+CML         ENDDO
+CML        ENDDO
        ENDDO
       ENDDO
 
