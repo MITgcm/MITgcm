@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.631 2006/03/15 15:05:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.632 2006/03/15 19:52:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,6 +11,14 @@ o seaice:
   - remove velocity clipping from seaice_dynsolver with C-grid
   - fix drag (ocean on ice) formulation and a bug that caused noise in the
     C-grid solver
+  - added a few comments to seaice_diffusion.F
+  - separate C-grid and B-grid versions more cleanly (UVM and seaiceMaskU/V
+    are now exclusive)
+  - add a new ocean-ice stress coupling method (Hibler and Bryan, 1987) which 
+    required re-ordering the code a little:
+   + make DAIRN global variable (defined in SEAICE)
+   + move computation of the viscosities eta and zeta into a new separate
+     routine (because I need to recompute them in seaice_ocean_stress.F)
 
 checkpoint58b_post
 o AIM+thSIce: fix sign of Short-Wave through the Ice ; 
