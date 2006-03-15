@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.4 2006/03/15 13:03:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.5 2006/03/15 15:04:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,7 +128,7 @@ C NOW EVALUATE STRAIN RATES
      &                (vIceC(I,J,bi,bj)+vIceC(I  ,J+1,bi,bj))
      &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
           E22(I,J,bi,bj)= _recip_dyF(I,J,bi,bj) *
-     &                (vIceC(I,J,bi,bj)+vIceC(I,J-1,bi,bj))
+     &                (vIceC(I,J+1,bi,bj)-vIceC(I,J,bi,bj))
           E12(I,J,bi,bj)=HALF*(
      &                (uIceC(I,J+1,bi,bj)+uIceC(I+1,J+1,bi,bj)
      &                -uIceC(I,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
@@ -157,6 +157,9 @@ C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
           ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
           ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
           PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
+          ZETA(I,J,bi,bj)=0.
+          ETA(I,J,bi,bj)=0.
+          PRESS(I,J,bi,bj)=0.
          ENDDO
         ENDDO
        ENDDO
@@ -182,22 +185,32 @@ C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           ELSE
              DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
           ENDIF
+          DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
 C NOW SET UP SYMMETTRIC DRAG
-          DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
-C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-CML          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*SINWAT+COR_ICE(I,J,bi,bj)
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*SINWAT
-     &         + seaiceMassC(I,J,bi,bj) * _fCori(I,J,bi,bj)
-C NOW ADD IN CURRENT FORCE ( remember to average to correct velocity points )
-          FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj) *
-     &         (COSWAT * GWATX(I,J,bi,bj) - SINWAT* 0.5 _d 0 * (
-     &          0.5 _d 0 * (GWATY(I,J  ,bi,bj)+GWATY(I-1,J  ,bi,bj))
-     &         +0.5 _d 0 * (GWATY(I,J+1,bi,bj)+GWATY(I-1,J+1,bi,bj)) )
+          DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
+C NOW SET UP ANTI SYMMETTRIC DRAG FORCE AND ADD IN CURRENT FORCE 
+C     ( remember to average to correct velocity points )
+          FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
+     &         0.5*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
+     &         COSWAT * GWATX(I,J,bi,bj) 
+     &         - SINWAT* 0.5 _d 0 * 
+     &         ( DWATN(I  ,J,bi,bj) *
+     &         0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &                    +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &         + DWATN(I-1,J,bi,bj) *
+     &         0.5 _d 0 * (GWATY(I-1,J  ,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &                    +GWATY(I-1,J+1,bi,bj)-vIceC(I-1,J+1,bi,bj))
      &         )
-          FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+DWATN(I,J,bi,bj) *
-     &         (SINWAT * GWATX(I,J,bi,bj) + COSWAT * 0.5 _d 0 * ( 
-     &          0.5 _d 0 * (GWATY(I,J  ,bi,bj) + GWATX(I+1,J  ,bi,bj))
-     &         +0.5 _d 0 * (GWATY(I,J-1,bi,bj) + GWATX(I+1,J-1,bi,bj)) )
+          FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
+     &         0.5*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
+     &         COSWAT * GWATY(I,J,bi,bj) 
+     &         + SINWAT * 0.5 _d 0 * 
+     &         ( DWATN(I,J  ,bi,bj) *
+     &         0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &                    +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &         + DWATN(I,J-1,bi,bj) *
+     &         0.5 _d 0 * (GWATX(I  ,J-1,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &                    +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
@@ -274,7 +287,7 @@ C     2*eta*(tanphi/a) * ( tanphi/a ) U
      &         - AU(I,J,bi,bj) - CU(I,J,bi,bj)
      &         + ( AA3 + AA6
      &         + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5*(DRAGS(I,J,bi,bj)+DRAGS(I-1,J,bi,bj))
+     &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) )
      &         )* _maskW(I,J,1,bi,bj)
 C     coefficients of uIce(I,J-1)
           UVRT1(I,J,bi,bj)=
@@ -310,11 +323,11 @@ C     now set up right-hand side
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-C     coriolis, "off-diagonal" drag terms and other forcing
+C     coriolis and other forcing
           FXY(I,J,bi,bj)=
-     &     0.5*( DRAGA( i ,j,bi,bj)
+     &     0.5*( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
      &          *0.5*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
-     &         + DRAGA(i-1,j,bi,bj)
+     &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
      &          *0.5*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
      &         +FORCEX(I,J,bi,bj)
 C     + d/dx[ (zeta-eta) dV/dy]
@@ -489,7 +502,7 @@ C     d/dy [(zeta-eta) tanphi/a] V
      &         * _recip_dyC(I,J,bi,bj)*recip_rSphere * 0.5 _d 0
           AA6= zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
      &         * _recip_dyC(I,J,bi,bj)*recip_rSphere * 0.5 _d 0
-C     2*eta tanphi/a (tanphi/a - d/dy) V
+C     2*eta tanphi/a ( - tanphi/a - d/dy) V
           AA7=TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &         * _tanPhiAtV(I,J,bi,bj) 
 C* _tanPhiAtV(I,J,bi,bj)*recip_rSphere
@@ -534,11 +547,11 @@ C     now set up right-hand-side
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-C     coriols, "off-diagonal" drag terms and other foring
+C     coriols and other foring
           FXY(I,J,bi,bj)=
-     &         -0.5*( _fCori(i, j ,bi,bj)
+     &         -0.5*( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
      &              *0.5*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
-     &              + _fCori(i,j-1,bi,bj)
+     &              + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
      &              *0.5*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
      &         + FORCEY(I,J,bi,bj)
 C     + d/dy[ (zeta-eta) dU/dx ]
