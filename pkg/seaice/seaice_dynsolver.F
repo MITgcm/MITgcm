@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.3 2006/03/07 04:08:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.4 2006/03/15 13:03:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,7 +48,6 @@ C     i,j,bi,bj - Loop counters
       _RL TEMPVAR, U1, V1
 
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-CML      _RL COR_ICE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   FIRST SET UP BASIC CONSTANTS
       RHOICE = SEAICE_rhoIce
@@ -62,8 +61,8 @@ C--   introduce turning angle (default is zero)
 C--   Compute proxy for geostrophic velocity,
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=0,sNy+1
-         DO i=0,sNx+1
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Oly,sNx+Olx
 CML          GWATX(I,J,bi,bj)=uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
 CML          GWATY(I,J,bi,bj)=vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
           GWATX(I,J,bi,bj)=uVel(i,j,1,bi,bj)
@@ -83,7 +82,6 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
      &          HEFF(i,j,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj) )
           seaiceMassV(I,J,bi,bj)=RHOICE*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
-CML          COR_ICE(I,J,bi,bj)=seaiceMassC(I,J,bi,bj) * _fCori(I,J,bi,bj)
 C     dynamic masking of areas with no ice
 CML          seaiceMaskU(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
 CML          IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
@@ -136,8 +134,8 @@ CML     &         + DAIRN(I,J,bi,bj)*(ONE-AREA(I,J,1,bi,bj))
          ENDDO
         ENDDO
 C     now interpolate to U and V points respectively
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
           FORCEX0(I,J,bi,bj)=0.5 _d 0 * 
      &         ( DAIRN(I  ,J,bi,bj)*(
      &         COSWIN*uWind(I  ,J,bi,bj)-SINWIN*vWind(I  ,J,bi,bj) )
@@ -158,13 +156,9 @@ C     interpolate to V point
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
 C--   NOW ADD IN TILT
-CML          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
-CML     &         -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
-CML          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
-CML     &         +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
 C--   use actual sea surface height for tilt computations
           FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
      &         -seaiceMassU(I,J,bi,bj)*gravity* _recip_dxC(I,J,bi,bj)
@@ -245,53 +239,6 @@ cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 
 C Calculate ocean surface stress
       CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )
-
-#ifdef SEAICE_ALLOW_DYNAMICS
-
-      IF ( SEAICEuseDYNAMICS ) THEN
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
-#endif /* ALLOW_AUTODIFF_TAMC */
-c Put a cap on ice velocity
-c limit velocity to 0.40 m s-1 to avoid potential CFL violations
-c in open water areas (drift of zero thickness ice)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_DEBUG
-c          write(*,'(2i4,2i2,f7.1,7f12.3)')
-c     &      i,j,bi,bj,UVM(I,J,bi,bj),amass(i,j,bi,bj)
-c     &     ,gwatx(I,J,bi,bj),gwaty(i,j,bi,bj)
-c     &     ,forcex(I,J,bi,bj),forcey(i,j,bi,bj)
-c     &     ,uice(i,j,1,bi,bj)
-c     &     ,vice(i,j,1,bi,bj)
-#endif /* SEAICE_DEBUG */
-          uIce(i,j,1,bi,bj)=min(uIce(i,j,1,bi,bj),0.40 _d +00)
-          vIce(i,j,1,bi,bj)=min(vIce(i,j,1,bi,bj),0.40 _d +00)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
-#endif /* ALLOW_AUTODIFF_TAMC */
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uIce(i,j,1,bi,bj)=max(uIce(i,j,1,bi,bj),-0.40 _d +00)
-          vIce(i,j,1,bi,bj)=max(vIce(i,j,1,bi,bj),-0.40 _d +00)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-      ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
 
       RETURN

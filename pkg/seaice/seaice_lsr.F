@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.3 2006/03/10 16:06:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.4 2006/03/15 13:03:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -169,8 +169,8 @@ C--   Update overlap regions
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           TEMPVAR = QUART*(
      &          (uIceC(I  ,J,bi,bj)-GWATX(I  ,J,bi,bj)
@@ -696,19 +696,18 @@ C ITERATION END -----------------------------------------------------
        _END_MASTER( myThid )
       ENDIF
 
-C NOW END
-C NOW MAKE COROLIS TERM IMPLICIT
+C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
           uIce(I,J,1,bi,bj)=uIce(I,J,1,bi,bj)* _maskW(I,J,1,bi,bj)
           vIce(I,J,1,bi,bj)=vIce(I,J,1,bi,bj)* _maskS(I,J,1,bi,bj)
          END DO
         END DO
        ENDDO
       ENDDO
-      CALL SEAICE_EXCH_UV ( uIce, vIce, myThid )
+CML      CALL SEAICE_EXCH_UV ( uIce, vIce, myThid )
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
