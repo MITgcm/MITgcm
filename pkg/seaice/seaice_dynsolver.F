@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.5 2006/03/15 19:49:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.6 2006/03/15 21:12:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,10 +42,10 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj, kii
+      INTEGER i, j, bi, bj
       _RL RHOICE, RHOAIR, SINWIN, COSWIN
       _RL PSTAR, AAA
-      _RL TEMPVAR, U1, V1
+      _RL U1, V1
 
 C--   FIRST SET UP BASIC CONSTANTS
       RHOICE = SEAICE_rhoIce
@@ -82,25 +82,34 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
      &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
          ENDDO
         ENDDO
-C     dynamic masking of areas with no ice
-CML        DO j=1-Oly+1,sNy+Oly
-CML         DO i=1-Olx+1,sNx+Olx
-CML          seaiceMaskU(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
-CML          IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
-CML           seaiceMaskU(I,J,bi,bj) = 1. _d 0
-CML          ELSE
-CML           seaiceMaskU(I,J,bi,bj) = 0. _d 0
-CML          ENDIF
-CML          seaiceMaskV(I,J,bi,bj) = AREA(I,J,1,bi,bj)+AREA(I,J-1,1,bi,bj)
-CML          IF ( seaiceMaskV(I,J,bi,bj) .GT. 0. _d 0 ) THEN
-CML           seaiceMaskV(I,J,bi,bj) = 1. _d 0
-CML          ELSE
-CML           seaiceMaskV(I,J,bi,bj) = 0. _d 0
-CML          ENDIF
-CML         ENDDO
-CML        ENDDO
        ENDDO
       ENDDO
+
+      IF ( SEAICE_maskRHS ) THEN
+C     dynamic masking of areas with no ice
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-Oly+1,sNy+Oly
+          DO i=1-Olx+1,sNx+Olx
+           seaiceMaskU(I,J,bi,bj)=AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
+           IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
+            seaiceMaskU(I,J,bi,bj) = 1. _d 0
+           ELSE
+            seaiceMaskU(I,J,bi,bj) = 0. _d 0
+           ENDIF
+           seaiceMaskV(I,J,bi,bj)=AREA(I,J,1,bi,bj)+AREA(I,J-1,1,bi,bj)
+           IF ( seaiceMaskV(I,J,bi,bj) .GT. 0. _d 0 ) THEN
+            seaiceMaskV(I,J,bi,bj) = 1. _d 0
+           ELSE
+            seaiceMaskV(I,J,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       _EXCH_XY_R8( seaiceMaskU, myThid )
+       _EXCH_XY_R8( seaiceMaskV, myThid )
+      ENDIF
 
 C--   NOW SET UP FORCING FIELDS
 
@@ -125,13 +134,6 @@ C first ocean surface stress
           WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*U1-SINWIN*V1)
           WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*U1+COSWIN*V1)
 C now ice surface stress
-CML          DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-CML     &         +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-CML     &         +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj))
-CML     &         )
-CMLC     why is the stress coefficient averaged over open water and ice?
-CML          DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-CML     &         + DAIRN(I,J,bi,bj)*(ONE-AREA(I,J,1,bi,bj))
           DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA
          ENDDO
         ENDDO
@@ -190,58 +192,73 @@ CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-crg what about DRAGS,DRAGA,ETA,ZETA
-
-crg later c$taf loop = iteration uice,vice
-
-cdm c$taf store uice,vice = comlev1_seaice_ds,
-cdm c$taf&                key = kii + (ikey_dynamics-1)
 C NOW DO PREDICTOR TIME STEP
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-          vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
-          uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-          vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
+           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
 
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
-      CALL SEAICE_LSR( 1, myThid )
+       CALL SEAICE_LSR( 1, myThid )
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 
 C NOW DO MODIFIED EULER STEP
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
-          vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
-          uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-          vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
+           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-
+       
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-      CALL SEAICE_LSR( 2, myThid )
-
-cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
+       CALL SEAICE_LSR( 2, myThid )
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
 
 C Calculate ocean surface stress
       CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )
-#endif /* SEAICE_CGRID */
 
+#ifdef SEAICE_ALLOW_DYNAMICS
+      IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
+c Put a cap on ice velocity
+c limit velocity to 0.40 m s-1 to avoid potential CFL violations
+c in open water areas (drift of zero thickness ice)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(i,j,1,bi,bj)=
+     &          MAX(MIN(uIce(i,j,1,bi,bj),0.40 _d +00),-0.40 _d +00)
+           vIce(i,j,1,bi,bj)=
+     &          MAX(MIN(vIce(i,j,1,bi,bj),0.40 _d +00),-0.40 _d +00)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
       RETURN
       END
