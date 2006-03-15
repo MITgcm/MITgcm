@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.3 2006/02/16 09:49:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.4 2006/03/15 21:19:23 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,6 +60,14 @@ c     == end of interface ==
      & 'SEAICEwriteState  =', ' /* write sea ice state to file */')
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
      & 'SEAICEuseDYNAMICS =', ' /* use dynamics */')
+#ifdef SEAICE_CGRID
+      CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
+     & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
+      CALL WRITE_0D_L ( SEAICE_clipVelocities, INDEX_NONE,
+     & 'SEAICE_clipVeloctities =', ' /* impose max. vels. */')
+      CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
+     & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
+#endif /* SEAICE_CGRID */
       CALL WRITE_0D_I ( LAD,               INDEX_NONE,
      & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
