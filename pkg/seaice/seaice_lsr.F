@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.5 2006/03/15 15:04:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.6 2006/03/15 16:11:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -154,12 +154,9 @@ C NOW PUT MIN AND MAX VISCOSITIES IN
           ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
           ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
 C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS 
-          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
-          ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
+          ZETA (I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
+          ETA  (I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
           PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
-          ZETA(I,J,bi,bj)=0.
-          ETA(I,J,bi,bj)=0.
-          PRESS(I,J,bi,bj)=0.
          ENDDO
         ENDDO
        ENDDO
@@ -505,7 +502,6 @@ C     d/dy [(zeta-eta) tanphi/a] V
 C     2*eta tanphi/a ( - tanphi/a - d/dy) V
           AA7=TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &         * _tanPhiAtV(I,J,bi,bj) 
-C* _tanPhiAtV(I,J,bi,bj)*recip_rSphere
 
           AV(I,J,bi,bj)=(
      &         - AA2
