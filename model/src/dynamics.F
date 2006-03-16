@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.129 2006/02/25 16:20:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.130 2006/03/16 16:29:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -476,7 +476,7 @@ C--     end of dynamics k loop (1:Nr)
         ENDDO
 
 C--     Implicit Vertical advection & viscosity
-#ifdef INCLUDE_IMPLVERTADV_CODE
+#if (defined (INCLUDE_IMPLVERTADV_CODE) && defined (ALLOW_MOM_COMMON))
         IF ( momImplVertAdv ) THEN
           CALL MOM_U_IMPLICIT_R( kappaRU, 
      I                           bi, bj, myTime, myIter, myThid )
@@ -575,7 +575,7 @@ C     &                'phiHydLow', myThid )
 Cml)
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics ) THEN
+      IF ( useDiagnostics ) THEN
 
        CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0, 1,0,1,1,myThid)
