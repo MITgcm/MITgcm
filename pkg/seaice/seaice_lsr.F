@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.7 2006/03/15 19:49:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.8 2006/03/16 14:41:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -142,7 +142,7 @@ C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &         0.5*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
      &         COSWAT * GWATX(I,J,bi,bj) 
-     &         - SINWAT* 0.5 _d 0 * 
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
      &         ( DWATN(I  ,J,bi,bj) *
      &         0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
      &                    +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
@@ -153,7 +153,7 @@ C     ( remember to average to correct velocity points )
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &         0.5*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &         COSWAT * GWATY(I,J,bi,bj) 
-     &         + SINWAT * 0.5 _d 0 * 
+     &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
      &         ( DWATN(I,J  ,bi,bj) *
      &         0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
      &                    +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))

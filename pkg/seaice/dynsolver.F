@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.21 2006/03/15 19:49:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.22 2006/03/16 14:41:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -122,15 +122,19 @@ C     locations from wind on tracer locations
 C first ocean surface stress
           DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
      &         *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-          WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*U1-SINWIN*V1)
-          WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*U1+COSWIN*V1)
+          WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
+          WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
 
 C now ice surface stress
           DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
      &         +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
      &         +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
-          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*U1-SINWIN*V1)
-          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*U1+COSWIN*V1)
+          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
+          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
          ENDDO
         ENDDO
        ENDDO
@@ -255,14 +259,15 @@ C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*SINWAT+COR_ICE(I,J,bi,bj)
+          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)
+     &         *SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
 C NOW ADD IN CURRENT FORCE
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &                     *(COSWAT*GWATX(I,J,bi,bj)
-     &                     -SINWAT*GWATY(I,J,bi,bj))
+     &         *(COSWAT*GWATX(I,J,bi,bj)
+     &         -SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATY(I,J,bi,bj))
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &                     *(SINWAT*GWATX(I,J,bi,bj)
-     &                     +COSWAT*GWATY(I,J,bi,bj))
+     &         *(SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATX(I,J,bi,bj)
+     &         +COSWAT*GWATY(I,J,bi,bj))
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &          -QUART * _recip_dxV(I,J,bi,bj)
@@ -365,14 +370,15 @@ C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*SINWAT+COR_ICE(I,J,bi,bj)
+          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*
+     &         SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
 C NOW ADD IN CURRENT FORCE
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &                     *(COSWAT*GWATX(I,J,bi,bj)
-     &                     -SINWAT*GWATY(I,J,bi,bj))
+     &         *(COSWAT*GWATX(I,J,bi,bj)
+     &         -SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATY(I,J,bi,bj))
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+DWATN(I,J,bi,bj)
-     &                     *(SINWAT*GWATX(I,J,bi,bj)
-     &                     +COSWAT*GWATY(I,J,bi,bj))
+     &         *(SIGN(SINWAT, _fCori(I,J,bi,bj))*GWATX(I,J,bi,bj)
+     &         +COSWAT*GWATY(I,J,bi,bj))
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &          -QUART * _recip_dxV(I,J,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.17 2006/03/06 13:17:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.18 2006/03/16 14:41:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,9 +53,11 @@ C--   Compute ice-affected wind stress
           DO i=1,sNx
            WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
      &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,1,bi,bj))
-     &          -SINWAT*(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
+     &          -SIGN(SINWAT,COR_ICE(I,J,bi,bj))
+     &          *(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
            WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
-     &          *(SINWAT*(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
+     &          *(SIGN(SINWAT,COR_ICE(I,J,bi,bj))
+     &          *(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
      &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,1,bi,bj)))
            WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
      &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
@@ -114,12 +116,12 @@ C--   Compute ice-affected wind stress
      &         COSWAT * 
      &         ( UICE(I,J,  1,bi,bj)-GWATX(I,J,  bi,bj)
      &         + UICE(I,J+1,1,bi,bj)-GWATX(I,J+1,bi,bj) )
-     &         -SINWAT *
+     &         -SIGN(SINWAT,COR_ICE(I,J,bi,bj)) *
      &         ( VICE(I,  J,1,bi,bj)-GWATY(I,  J,bi,bj)
      &         + VICE(I+1,J,1,bi,bj)-GWATY(I+1,J,bi,bj) )
      &         )
           fvIce=QUART*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*(
-     &         SINWAT * 
+     &         SIGN(SINWAT,COR_ICE(I,J,bi,bj)) * 
      &         ( UICE(I,J,  1,bi,bj)-GWATX(I,J,  bi,bj)
      &         + UICE(I,J+1,1,bi,bj)-GWATX(I,J+1,bi,bj) )
      &         + COSWAT * 
