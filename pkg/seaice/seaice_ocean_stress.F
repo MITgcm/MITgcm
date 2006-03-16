@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.5 2006/03/15 19:49:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.6 2006/03/16 14:25:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -224,15 +224,19 @@ C     recompute wind stress over ice (done already in seaice_dynsolver,
 C     but not saved)
            fuIce = 0.5 _d 0 * 
      &          ( DAIRN(I  ,J,bi,bj)*(
-     &          COSWIN*uWind(I  ,J,bi,bj)-SINWIN*vWind(I  ,J,bi,bj) )
+     &          COSWIN*uWind(I  ,J,bi,bj)
+     &          -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*vWind(I  ,J,bi,bj) )
      &          + DAIRN(I-1,J,bi,bj)*(
-     &          COSWIN*uWind(I-1,J,bi,bj)-SINWIN*vWind(I-1,J,bi,bj) )
+     &          COSWIN*uWind(I-1,J,bi,bj)
+     &          -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*vWind(I-1,J,bi,bj) )
      &          )
            fvIce = 0.5 _d 0 * 
      &          ( DAIRN(I,J  ,bi,bj)*(
-     &          SINWIN*uWind(I,J  ,bi,bj)+COSWIN*vWind(I,J  ,bi,bj) )
+     &          SIGN(SINWIN, _fCori(I  ,J,bi,bj))*uWind(I,J  ,bi,bj)
+     &          +COSWIN*vWind(I,J  ,bi,bj) )
      &          + DAIRN(I,J-1,bi,bj)*(
-     &          SINWIN*uWind(I,J-1,bi,bj)+COSWIN*vWind(I,J-1,bi,bj) )
+     &          SIGN(SINWIN, _fCori(I,J-1,bi,bj))*uWind(I,J-1,bi,bj)
+     &          +COSWIN*vWind(I,J-1,bi,bj) )
      &          )
 C     average wind stress over ice and ocean and apply averaged wind 
 C     stress and internal ice stresses to surface layer of ocean
@@ -253,23 +257,27 @@ C     ice cover
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          fuIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*(
+          fuIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
      &         COSWAT * 
      &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
-     &         - SINWAT* 0.5 _d 0 * (
-     &          0.5 _d 0*(vIce(I  ,J  ,1,bi,bj)-GWATY(I  ,J  ,bi,bj)
-     &                   +vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj))
-     &         +0.5 _d 0*(vIce(I  ,J+1,1,bi,bj)-GWATY(I  ,J+1,bi,bj)
-     &                   +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj)) )
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
+     &         ( DWATN(I  ,J,bi,bj) *
+     &         0.5 _d 0*(vIce(I  ,J  ,1,bi,bj)-GWATY(I  ,J  ,bi,bj)
+     &                  +vIce(I  ,J+1,1,bi,bj)-GWATY(I  ,J+1,bi,bj)) 
+     &         + DWATN(I-1,J,bi,bj) *
+     &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj)
+     &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj)) 
      &         )
-          fvIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*(
-     &         SINWAT * 
-     &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
-     &         + COSWAT * 0.5 _d 0 * ( 
-     &          0.5 _d 0*(uIce(I  ,J  ,1,bi,bj)-GWATX(I  ,J  ,bi,bj)
-     &                   +uIce(I+1,J  ,1,bi,bj)-GWATX(I+1,J  ,bi,bj))
-     &         +0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj) 
-     &                   +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj)) )
+          fvIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
+     &         COSWAT *
+     &         ( VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj) )
+     &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(I,J  ,bi,bj) *
+     &         0.5 _d 0*(uIce(I  ,J  ,1,bi,bj)-GWATX(I  ,J  ,bi,bj)
+     &                  +uIce(I+1,J  ,1,bi,bj)-GWATX(I+1,J  ,bi,bj))
+     &         + DWATN(I,J-1,bi,bj) *
+     &         0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj) 
+     &                  +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj)) 
      &         )
           areaW = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
           areaS = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
