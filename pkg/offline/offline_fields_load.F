@@ -1,5 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.8 2006/03/17 03:22:42 jmc Exp $
+C $Name:  $
 
-#include "CPP_OPTIONS.h"
 #include "OFFLINE_OPTIONS.h"
  
 C     !ROUTINE: OFFLINE_FIELDS_LOAD
@@ -9,7 +10,7 @@ C     *==========================================================*
 C     | SUBROUTINE OFFLINE_FIELDS_LOAD                           
 C     | o Control reading of fields from external source.         
 C     *==========================================================*
-C     | Offline External source field loading routine.                    
+C     | Offline External source field loading routine.
 C     | This routine is called every time we want to              
 C     | load a a set of external fields. The routine decides      
 C     | which fields to load and then reads them in.              
@@ -112,7 +113,6 @@ c     _RS  tmp      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       EXTERNAL IFNBLNK, ILNBLNK
 
 #ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
       prec = precFloat32
       KGM=1.d0
 
@@ -486,7 +486,6 @@ CEOP
         enddo
        ENDDO
       ENDDO
-      CALL TIMER_STOP ('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
 
       RETURN
       END
@@ -520,7 +519,6 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
-      CALL TIMER_STOP ('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
 
       RETURN
       END
