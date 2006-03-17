@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.87 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.88 2006/03/17 23:28:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -227,7 +227,6 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
-
       CALL WRITE_0D_R8( freeSurfFac, INDEX_NONE,'freeSurfFac =',
      &'   /* Implicit free surface factor */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
@@ -286,6 +285,8 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       CALL WRITE_0D_R8( nh_Am2, INDEX_NONE, 'nh_Am2 =',
      & ' /* Non-Hydrostatic terms scaling factor */')
+      CALL WRITE_0D_L( quasiHydrostatic, INDEX_NONE,
+     & 'quasiHydrostatic =', ' /* Quasi-Hydrostatic on/off flag */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_0D_L( momAdvection, INDEX_NONE,
@@ -296,6 +297,10 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &                '/* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
+      CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
+     &                '  /* metric-Terms on/off flag */')
+      CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
+     &              ' /* Non-Hydrostatic Metric-Terms on/off */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
@@ -420,6 +425,8 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL WRITE_0D_I( tracForcingOutAB, INDEX_NONE,
      & 'tracForcingOutAB =',
      & ' /* =1: take T,S,pTr Forcing out of Adams-Bash. stepping */')
+      CALL WRITE_0D_L( momDissip_In_AB,INDEX_NONE,'momDissip_In_AB =',
+     & ' /* put Dissipation Tendency in Adams-Bash. stepping */')
       CALL WRITE_0D_L( doAB_onGtGs, INDEX_NONE, 'doAB_onGtGs =',
      &  ' /* apply AB on Tendencies (rather than on T,S)*/')
       CALL WRITE_0D_R8( abEps, INDEX_NONE,'abEps =',
@@ -628,8 +635,4 @@ C     Grid along selected grid lines
 
 
       RETURN
-  100 FORMAT(A,
-     &' '
-     &)
       END
-
