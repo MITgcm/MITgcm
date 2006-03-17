@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.100 2006/03/08 06:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.101 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,9 +19,9 @@ C     !INTERFACE:
       SUBROUTINE THERMODYNAMICS(myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE THERMODYNAMICS                                 
-C     | o Controlling routine for the prognostic part of the      
-C     |   thermo-dynamics.                                        
+C     | SUBROUTINE THERMODYNAMICS
+C     | o Controlling routine for the prognostic part of the
+C     |   thermo-dynamics.
 C     *===========================================================
 C     | The algorithm...
 C     |
@@ -79,9 +79,6 @@ C     == Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
-#endif
-#ifdef ALLOW_OFFLINE
-#include "OFFLINE.h"
 #endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
@@ -180,7 +177,7 @@ CEOP
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
- 
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
       ikey = 1
@@ -334,7 +331,6 @@ C to be able to exclude this scheme to avoid excessive storage and
 C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
-#ifndef ALLOW_OFFLINE
         IF (tempMultiDimAdvec) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
@@ -347,8 +343,6 @@ C disable this section of code.
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
-#endif
-#ifndef ALLOW_OFFLINE
         IF (saltMultiDimAdvec) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
@@ -361,7 +355,7 @@ C disable this section of code.
      O             gS,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
-#endif
+
 C Since passive tracers are configurable separately from T,S we
 C call the multi-dimensional method for PTRACERS regardless
 C of whether multiDimAdvection is set or not.
@@ -484,7 +478,6 @@ CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gT, gS, etc.
-#ifndef ALLOW_OFFLINE
 C--
 # ifdef ALLOW_AUTODIFF_TAMC 
 #  if (defined (NONLIN_FRSURF) && defined (ALLOW_GMREDI))
@@ -525,9 +518,7 @@ CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
 #endif
          ENDIF
-#endif
 
-#ifndef ALLOW_OFFLINE
          IF ( saltStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -559,7 +550,7 @@ CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
 #endif
          ENDIF
-#endif
+
 #ifdef ALLOW_PTRACERS
          IF ( usePTRACERS ) THEN
            IF ( .NOT.implicitDiffusion ) THEN
@@ -591,7 +582,6 @@ C--      Apply open boundary conditions
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
 C  freezing at surface level has been moved to FORWARD_STEP 
-#ifndef ALLOW_OFFLINE
          IF ( useOldFreezing .AND. .NOT. useSEAICE
      &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -600,7 +590,6 @@ CADJ &   , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
          ENDIF
-#endif
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
@@ -621,7 +610,6 @@ C       field for implicit matrix calculation
         jMax = sNy
 
 C--     Implicit vertical advection & diffusion 
-#ifndef ALLOW_OFFLINE
         IF ( tempStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -650,7 +638,6 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      U         gT,
      I         myThid )
         ENDIF
-#endif /* ndef ALLOW_OFFLINE */
 
 #ifdef ALLOW_TIMEAVE
         useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
@@ -666,7 +653,6 @@ c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
         ENDIF
 #endif /* ALLOW_TIMEAVE */ 
 
-#ifndef ALLOW_OFFLINE
         IF ( saltStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -696,7 +682,6 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      U         gS,
      I         myThid )
         ENDIF
-#endif
 
 #ifdef ALLOW_PTRACERS
         IF     ( usePTRACERS ) THEN

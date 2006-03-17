@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.56 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.57 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,7 +48,7 @@ CEOP
 
 C     Generaly only thread 1 does IO here. It can not start until 
 C     all threads fields are ready.
-      IF (debugMode) THEN 
+      IF (debugMode) THEN
         IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &     ) THEN
 
@@ -63,12 +63,14 @@ C         Write "text-plots" of certain fields
      &         Nr, myIter, myThid )
           CALL PLOT_FIELD_XYRL( etaN  , 'Current etaN  ' , 
      &         myIter, myThid )
-          
+
         ENDIF
       ENDIF
 
 C     Write model state to binary file
-      CALL WRITE_STATE( myTime, myIter, myThid )
+      IF ( .NOT.useOffLine ) THEN
+        CALL WRITE_STATE( myTime, myIter, myThid )
+      ENDIF
 
 #ifdef ALLOW_TIMEAVE
 C     Do time averages
@@ -86,12 +88,12 @@ C     Do time averages
 C     Do AIM time averages
       IF ( useAIM )
      &     CALL AIM_WRITE_TAVE( myTime, myIter, myThid )
-#endif                                                             
+#endif
 #ifdef ALLOW_LAND
 C     Do LAND time averages
       IF ( useLAND )
      &     CALL LAND_WRITE_DIAGS( myTime, myIter, myThid )
-#endif                                                             
+#endif
 
 #ifdef ALLOW_OBCS
       IF (useOBCS .AND. myIter.NE.nIter0 )
@@ -100,13 +102,13 @@ C     Do LAND time averages
 
 #ifdef ALLOW_GMREDI
 C     Do GMRedi output.
-      IF (useGMRedi .AND. myIter.NE.nIter0 )
+      IF (useGMRedi .AND. myIter.NE.nIter0 .AND. .NOT.useOffLine )
      &     CALL GMREDI_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_KPP
 C     Do KPP diagnostics.
-      IF ( useKPP )
+      IF ( useKPP .AND. .NOT.useOffLine )
      &     CALL KPP_DO_DIAGS( myTime, myIter, myThid )
 #endif
 
@@ -184,13 +186,19 @@ C--   Do GCHEM diagnostics.
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 
+#ifdef ALLOW_OFFLINE
+C--   Do Off-Line variables output
+c     IF (useOffLine)
+c    & CALL OFFLINE_STATE( myTime, myIter, myThid )
+#endif
+
 #ifdef COMPONENT_MODULE
       IF ( useCoupler )
      &     CALL CPL_WRITE_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics ) 
+      IF ( useDiagnostics )
      &     CALL DIAGNOSTICS_WRITE( myTime, myIter, myThid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.10 2006/02/23 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.11 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,14 +18,14 @@ C     | The arrays used for time stepping are cycled.
 C     | Tracers:
 C     |           T(n) = Gt(n)
 C     |
-C     |part1: update T,S                                      
-C     |  T* (contained in gT) is copied to T (theta)           
-C     |  S* (contained in gS) is copied to S (salt)            
-C     |                                                           
+C     |part1: update T,S
+C     |  T* (contained in gT) is copied to T (theta)
+C     |  S* (contained in gS) is copied to S (salt)
+C     |
 C     |part2: Adjustments & Diagnostics
-C     |   o Filter  T,S (Shapiro Filter, Zonal_Filter)        
-C     |   o Convective Adjustment                                 
-C     |   o Diagmnostic of state variables (Time average)         
+C     |   o Filter  T,S (Shapiro Filter, Zonal_Filter)
+C     |   o Convective Adjustment
+C     |   o Diagmnostic of state variables (Time average)
 C     *==========================================================*
 C     \ev
 
@@ -63,7 +63,6 @@ C--     Loop over all layers, top to bottom
         DO K=1,Nr
 
 C-        Update tracer fields:  T(n) = T**
-#ifndef ALLOW_OFFLINE
           IF (tempStepping)
      &      CALL CYCLE_TRACER(
      I           bi,bj,K,
@@ -74,7 +73,6 @@ C-        Update tracer fields:  T(n) = T**
      I           bi,bj,k,
      U           salt,gS,
      I           myTime,myIter,myThid )
-#endif
 #ifdef ALLOW_PTRACERS
 C-        Update passive tracer fields:  T(n) = T**
           IF (usePTRACERS)
@@ -115,7 +113,6 @@ C--   Filter (and exchange)
       ENDIF
 #endif
 
-#ifndef ALLOW_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -139,14 +136,13 @@ C--     Convectively adjust new fields to be statically stable
         ENDIF
 
 #ifdef ALLOW_MATRIX
-      IF (useMATRIX)
+        IF (useMATRIX)
      &  CALL MATRIX_STORE_TENDENCY_IMP( bi, bj, myTime, myIter, myThid )
 #endif
 
 C--    End of 2nd bi,bj loop
        ENDDO
       ENDDO
-#endif /* ALLOW_OFFLINE */
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
 

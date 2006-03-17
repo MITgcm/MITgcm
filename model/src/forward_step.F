@@ -1,12 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.134 2006/03/08 06:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.135 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_OFFLINE
-# include "OFFLINE_OPTIONS.h"
-#endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
@@ -25,9 +22,9 @@ C     |
 C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
 C     | Adjoint Model Compiler (TAMC). For this purpose the initialization
 C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,   
+C     | not depend on a specific model run are set in INITIALISE_FIXED,
 C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.   
+C     | initialized in INITIALISE_VARIA.
 C     |
 C     *==================================================================
 C     \ev
@@ -113,7 +110,7 @@ C     myIter - iteration counter for this thread
 C     myTime - time counter for this thread
 C     myThid - thread number for this instance of the routine.
       INTEGER iloop
-      INTEGER myThid 
+      INTEGER myThid
       INTEGER myIter
       _RL     myTime
 
@@ -253,20 +250,26 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 #endif
 
 #ifdef ALLOW_OFFLINE
-        call OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
-#endif
+      IF ( useOffLine ) THEN
+        CALL TIMER_START('OFFLINE_FIELDS_LOAD [FORWARD_STEP]',myThid)
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &        CALL DEBUG_CALL('OFFLINE_FIELDS_LOAD',myThid)
+#endif /* ALLOW_DEBUG */
+        CALL OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
+        CALL TIMER_STOP ('OFFLINE_FIELDS_LOAD [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_OFFLINE */
 
-#ifdef ALLOW_PTRACERS
-# ifdef ALLOW_GCHEM
-        IF ( useGCHEM ) THEN 
+#ifdef ALLOW_GCHEM
+        IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
      &        CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
 #endif /* ALLOW_DEBUG */
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
         ENDIF
-# endif
-#endif
+#endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_RBCS
         IF ( useRBCS ) THEN
@@ -322,9 +325,11 @@ CADJ STORE hFacC              = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef ALLOW_OFFLINE
+#ifndef ALLOW_AUTODIFF_TAMC
+       IF ( .NOT. useOffLine ) THEN
+#endif
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB ) 
+       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
 #endif
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
@@ -335,9 +340,10 @@ CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
 # ifdef EXACT_CONSERV
 CADJ STORE pmepr    = comlev1, key = ikey_dynamics
 # endif
+#else
+       ENDIF
 #endif
-#endif
-C
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 cph-test
@@ -469,7 +475,6 @@ CADJ STORE etaN           = comlev1, key = ikey_dynamics
 # endif
 #endif
 C--   Step forward fields and calculate time tendency terms.
-#ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -480,11 +485,10 @@ C--   Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
-# ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-# endif
 #endif
-C
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 cph-test
@@ -597,12 +601,11 @@ C      => Filtering of uVel,vVel is necessary
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
       ENDIF
-#endif  
+#endif
 
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
-#ifndef ALLOW_OFFLINE
       IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
@@ -616,16 +619,17 @@ CADJ &     = comlev1, key = ikey_dynamics
         CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
-#endif
 
 C--   Correct divergence in flow field and cycle time-stepping momentum
-c     IF ( momStepping ) THEN
-#ifndef ALLOW_OFFLINE
+#ifndef ALLOW_AUTODIFF_TAMC
+      IF ( momStepping ) THEN
+#endif
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
+#ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
 #endif
-c     ENDIF
 
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
@@ -676,7 +680,7 @@ C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   State-variables diagnostics
-       IF ( usediagnostics ) THEN
+       IF ( useDiagnostics ) THEN
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
@@ -730,7 +734,7 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics ) THEN
+      IF ( useDiagnostics ) THEN
        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
        CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
@@ -771,14 +775,14 @@ C--   State-variables time-averaging
       CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
 #endif
 
-#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
+      IF ( .NOT.useOffLine ) THEN
 C--   Check status of solution (statistics, cfl, etc...)
-      CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
-      CALL MONITOR( myIter, myTime, myThid )
-      CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
+        CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
+        CALL MONITOR( myIter, myTime, myThid )
+        CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
+      ENDIF
 #endif /* ALLOW_MONITOR */
-#endif
 
 #ifdef ALLOW_COST
 C--     compare model with data and compute cost function
@@ -789,42 +793,32 @@ C--     this is done after exchanges to allow interpolation
 #endif
 
 C--   Do IO if needed.
-#ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_MODEL_IO    [FORWARD_STEP]',myThid)
-      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('OFFLINE_MODEL_IO    [FORWARD_STEP]',myThid)
-#else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-#endif
 
 #ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
         IF ( i_got_signal .GT. 0 ) THEN
           CALL PACKAGES_WRITE_PICKUP(
      I         .TRUE., myTime, myIter, myThid )
-#ifndef ALLOW_OFFLINE
           CALL WRITE_CHECKPOINT(
-     I         .TRUE., myTime, myIter, myThid )   
-#endif
+     I         .TRUE., myTime, myIter, myThid )
           STOP 'Checkpoint completed -- killed by signal handler'
         ENDIF
       ENDIF
-#endif
+#endif /* HAVE_SIGREG */
 
 C--   Save state for restarts
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
       CALL PACKAGES_WRITE_PICKUP(
      I               .FALSE., myTime, myIter, myThid )
-#ifndef ALLOW_OFFLINE
       CALL WRITE_CHECKPOINT(
-     I               .FALSE., myTime, myIter, myThid )   
-#endif
+     I               .FALSE., myTime, myIter, myThid )
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
 

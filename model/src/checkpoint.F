@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.62 2006/02/23 20:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.63 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -325,8 +325,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_CHECKPOINT
 C     !INTERFACE:
-      SUBROUTINE WRITE_CHECKPOINT( 
-     I     modelEnd, myTime, 
+      SUBROUTINE WRITE_CHECKPOINT(
+     I     modelEnd, myTime,
      I     myIter, myThid )
 
 C     !DESCRIPTION:
@@ -350,9 +350,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
@@ -363,7 +360,7 @@ C     modelEnd  :: Checkpoint call at end of model run.
 C     myThid    :: Thread number for this instance of the routine.
 C     myIter    :: Iteration number
 C     myTime    :: Current time of simulation ( s )
-      LOGICAL modelEnd    
+      LOGICAL modelEnd
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
@@ -374,16 +371,17 @@ C     permCheckPoint :: Flag indicating whether a permanent checkpoint will
 C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
 C                       checkpoint (that will be permanent if permCheckPoint=T)
-      LOGICAL permCheckPoint, tempCheckPoint  
+      LOGICAL permCheckPoint, tempCheckPoint
 #ifdef ALLOW_CAL
       INTEGER thisdate(4), prevdate(4)
 #endif
 
-      permCheckPoint = .FALSE.
-      tempCheckPoint = .FALSE.
-      permCheckPoint =
+      IF ( .NOT.useOffLine ) THEN
+       permCheckPoint = .FALSE.
+       tempCheckPoint = .FALSE.
+       permCheckPoint =
      &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
-      tempCheckPoint =
+       tempCheckPoint =
      &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,deltaTClock)
 
 #ifdef ALLOW_CAL
@@ -416,17 +414,18 @@ C-    Yearly   ChkptFreq:
       ENDIF
 #endif
 
-      IF (
+       IF (
      &     ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
      &     .OR.
      &     ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
-     &     ) THEN
-
+     &    ) THEN
         CALL WRITE_CHECKPOINT_NOW(
      &       permCheckPoint, myTime, myIter, myThid )
+       ENDIF
 
-
+C-    if not useOffLine: end
       ENDIF
+
       RETURN
       END
 

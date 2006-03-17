@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.47 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.48 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,12 +152,10 @@ C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
 C     stored files.
-#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
 #endif
       CALL INI_FIELDS( myThid )
-#endif
       _BARRIER
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -186,7 +184,6 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
 #endif
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
-#ifndef ALLOW_OFFLINE
       IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CONVECTIVE_ADJUSTMENT_INI',myThid)
@@ -205,8 +202,7 @@ CADJ loop = parallel
          ENDDO
         ENDDO
         _BARRIER
-      END IF
-#endif
+      ENDIF
 
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
@@ -233,7 +229,6 @@ C-    update also CG2D matrix (and preconditioner)
       ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INTEGR_CONTINUITY',myThid)
 #endif
@@ -243,10 +238,9 @@ C-    update also CG2D matrix (and preconditioner)
 C--   Integrate continuity vertically for vertical velocity
         CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
      I                          startTime, nIter0, myThid )
- 
+
        ENDDO
       ENDDO
-#endif
 
 #ifdef EXACT_CONSERV
       IF ( exactConserv ) THEN
@@ -296,22 +290,21 @@ C--   initialise time-average arrays with initial state values
         IF (taveFreq.GT.0.) THEN
            CALL TIMEAVE_STATVARS(startTime, nIter0, bi, bj, myThid)
         ENDIF
-cswdptr -- add ---
+
 #ifdef ALLOW_PTRACERS
-che3 needs an IF ( usePTRACERS ) THEN
+        IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('PTRACERS_STATVARS',myThid)
+          IF (debugMode) CALL DEBUG_CALL('PTRACERS_STATVARS',myThid)
 #endif
            CALL PTRACERS_STATVARS(startTime, nIter0, bi, bj, myThid)
-#endif
-cswdptr -- end add ---
+        ENDIF
+#endif /* ALLOW_PTRACERS */
 
 C--   end bi,bj loop.
        ENDDO
       ENDDO
 #endif /* ALLOW_TIMEAVE */
 
-C AMM
 #ifdef ALLOW_GRIDALT
         if (useGRIDALT) then
          CALL TIMER_START('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
@@ -319,12 +312,9 @@ C AMM
          CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
         endif
 #endif
-C AMM
 
 C--   Fill in overlap regions for wVel :
-#ifndef ALLOW_OFFLINE
-      _EXCH_XYZ_R8(wVel,myThid) 
-#endif
+      _EXCH_XYZ_R8(wVel,myThid)
 
 C--   Finally summarise the model state
 #ifdef ALLOW_DEBUG

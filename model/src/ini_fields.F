@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.20 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.21 2006/03/17 04:24:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,7 +38,7 @@ C     Set model variables to initial/restart conditions
         CALL INI_EP( myThid )
 #endif
         IF (nonHydrostatic) CALL INI_PNH( myThid )
-      ELSE
+      ELSEIF ( .NOT.useOffLine ) THEN
 c       IF ( nIter0 .EQ. 0 ) THEN
 c         nIter0 = INT(startTime/deltaTClock )
 c       ENDIF
