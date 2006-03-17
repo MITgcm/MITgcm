@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.32 2006/02/07 11:46:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.33 2006/03/17 23:18:05 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -101,14 +101,14 @@ C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k-1 & k
       _RL fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVrUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVrDw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     afFacMom      - Tracer parameters for turning terms
-C     vfFacMom        on and off.
+C     afFacMom     :: Tracer parameters for turning terms on and off.
+C     vfFacMom        
 C     pfFacMom        afFacMom - Advective terms 
 C     cfFacMom        vfFacMom - Eddy viscosity terms
-C     mTFacMom        pfFacMom - Pressure terms
+C     mtFacMom        pfFacMom - Pressure terms
 C                     cfFacMom - Coriolis terms
 C                     foFacMom - Forcing
-C                     mTFacMom - Metric term
+C                     mtFacMom - Metric term
 C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching terms off
       _RS    hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS  r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -137,6 +137,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  ArDudrFac
       _RL  fuFac
       _RL  mtFacU
+      _RL  mtNHFacU
       _RL  uDvdxFac
       _RL  AhDvdxFac
       _RL  vDvdyFac
@@ -145,6 +146,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  ArDvdrFac
       _RL  fvFac
       _RL  mtFacV
+      _RL  mtNHFacV
       _RL  sideMaskFac
       LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
 CEOP
@@ -182,7 +184,8 @@ C     o U momentum equation
       AhDudyFac    = vfFacMom*1.
       rVelDudrFac  = afFacMom*1.
       ArDudrFac    = vfFacMom*1.
-      mTFacU       = mtFacMom*1.
+      mtFacU       = mtFacMom*1.
+      mtNHFacU     = 1.
       fuFac        = cfFacMom*1.
 C     o V momentum equation
       uDvdxFac     = afFacMom*1.
@@ -191,7 +194,8 @@ C     o V momentum equation
       AhDvdyFac    = vfFacMom*1.
       rVelDvdrFac  = afFacMom*1.
       ArDvdrFac    = vfFacMom*1.
-      mTFacV       = mtFacMom*1.
+      mtFacV       = mtFacMom*1.
+      mtNHFacV     = 1.
       fvFac        = cfFacMom*1.
 
       IF (implicitViscosity) THEN
@@ -482,28 +486,30 @@ c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
-C      o Non-hydrosatic metric terms
+C      o Non-Hydrostatic (spherical) metric terms
        CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,mT,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtNHFacU*mT(i,j)
         ENDDO
        ENDDO
       ENDIF
-      IF (usingSphericalPolarMTerms) THEN
+      IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
+C      o Spherical polar grid metric terms
        CALL MOM_U_METRIC_SPHERE(bi,bj,k,uFld,vFld,mT,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
         ENDDO
        ENDDO
       ENDIF
-      IF (usingCylindricalGrid) THEN
-         CALL MOM_U_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-             gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
-          ENDDO
+      IF ( usingCylindricalGrid .AND. metricTerms ) THEN
+C      o Cylindrical grid metric terms
+       CALL MOM_U_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
+        ENDDO
        ENDDO
       ENDIF
 
@@ -682,29 +688,31 @@ c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
-C      o Spherical polar grid metric terms
+C      o Non-Hydrostatic (spherical) metric terms
        CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,mT,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtNHFacV*mT(i,j)
         ENDDO
        ENDDO
       ENDIF
-      IF (usingSphericalPolarMTerms) THEN
+      IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
+C      o Spherical polar grid metric terms
        CALL MOM_V_METRIC_SPHERE(bi,bj,k,uFld,mT,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
         ENDDO
        ENDDO
       ENDIF
-      IF (usingCylindricalGrid) THEN
-         CALL MOM_V_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
-         DO j=jMin,jMax
-            DO i=iMin,iMax
-               gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
-            ENDDO
-         ENDDO
+      IF ( usingCylindricalGrid .AND. metricTerms ) THEN
+C      o Cylindrical grid metric terms
+       CALL MOM_V_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
+        ENDDO
+       ENDDO
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
