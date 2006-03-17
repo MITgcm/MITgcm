@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.182 2006/03/17 18:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.183 2006/03/17 23:24:51 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1045,31 +1045,26 @@ C-     No horizontal grid is specified => use Cartesian grid as default:
       ENDIF
 C--   Make metric term settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
-       usingSphericalPolarMterms = .FALSE.
        metricTerms = .FALSE.
        useNHMTerms = .FALSE.
        useBetaPlaneF = .TRUE.
       ENDIF
-C--   Make metric term settings consistent with underlying grid.
       IF ( usingCylindricalGrid) THEN
-       usingSphericalPolarMterms = .FALSE.
        useNHMTerms = .FALSE.
        useBetaPlaneF = .TRUE.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
       ENDIF
-
       IF ( usingSphericalPolarGrid ) THEN
        useSphereF    = .TRUE.
-       usingSphericalPolarMterms = metricTerms
       ENDIF
       IF ( usingCurvilinearGrid ) THEN
        useSphereF    = .TRUE.
        metricTerms = .FALSE.
        useNHMTerms = .FALSE.
       ENDIF
+
 C--   Set default for latitude-band where relaxation to climatology applies
 C     note: done later (once domain size is known) if using CartesianGrid
       IF ( latBandClimRelax .EQ. UNSET_RL) THEN
