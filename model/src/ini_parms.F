@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.180 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.181 2006/03/17 16:12:55 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
+c #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -11,8 +11,8 @@ C     !INTERFACE:
       SUBROUTINE INI_PARMS( myThid )
 
 C     !DESCRIPTION:
-C     Routine to set model "parameters".                       
-      
+C     Routine to load model "parameters" from parameter file "data"
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -292,7 +292,7 @@ C--   Open the parameter file
        CALL PRINT_ERROR( msgBuf , 1)
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF     
+      ENDIF
 
       DO WHILE ( .TRUE. )
        READ(modelDataUnit,FMT='(A)',END=1001) RECORD
@@ -345,7 +345,7 @@ C--   Set default "physical" parameters
       viscAhZ  = UNSET_RL
       viscA4D  = UNSET_RL
       viscA4Z  = UNSET_RL
-      viscAz   = UNSET_RL    
+      viscAz   = UNSET_RL
       viscAr   = UNSET_RL
       viscAp   = UNSET_RL
       diffKzT  = UNSET_RL
@@ -466,55 +466,6 @@ C-    set default vertical profile for salinity/water-vapour: sRef
         IF (sRef(k).EQ.UNSET_RL) sRef(k) = tracerDefault
         tracerDefault = sRef(k)
       ENDDO
-C--   On/Off flags for each terms of the momentum equation 
-      nonHydrostatic   = momStepping .AND. nonHydrostatic
-      quasiHydrostatic = momStepping .AND. quasiHydrostatic
-      momAdvection = momStepping .AND. momAdvection
-      momViscosity = momStepping .AND. momViscosity
-      momForcing   = momStepping .AND. momForcing
-      useCoriolis  = momStepping .AND. useCoriolis
-      useCDscheme  = momStepping .AND. useCDscheme
-      momPressureForcing= momStepping .AND. momPressureForcing
-      implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
-      momImplVertAdv   = momAdvection .AND. momImplVertAdv
-      implicitViscosity= momViscosity .AND. implicitViscosity
-      use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave
-C--   Momentum viscosity on/off flag.
-      IF ( momViscosity        ) THEN
-       vfFacMom = 1.D0
-      ELSE
-       vfFacMom = 0.D0
-      ENDIF
-C--   Momentum advection on/off flag.
-      IF ( momAdvection        ) THEN
-       afFacMom = 1.D0
-      ELSE
-       afFacMom = 0.D0
-      ENDIF
-C--   Momentum forcing on/off flag.
-      IF ( momForcing ) THEN
-       foFacMom = 1.D0
-      ELSE
-       foFacMom = 0.D0
-      ENDIF
-C--   Coriolis term on/off flag.
-      IF ( useCoriolis ) THEN
-       cfFacMom = 1.D0
-      ELSE
-       cfFacMom = 0.D0
-      ENDIF
-C--   Pressure term on/off flag.
-      IF ( momPressureForcing ) THEN
-       pfFacMom = 1.D0
-      ELSE
-       pfFacMom = 0.D0
-      ENDIF
-C--   Metric terms on/off flag.
-      IF ( metricTerms ) THEN
-       mTFacMom = 1.D0
-      ELSE
-       mTFacMom = 0.D0
-      ENDIF
 C--   Non-hydrostatic/quasi-hydrostatic
       IF (nonHydrostatic.AND.quasiHydrostatic) THEN
        WRITE(msgBuf,'(A)')
@@ -522,13 +473,7 @@ C--   Non-hydrostatic/quasi-hydrostatic
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-C--   Advection and Forcing for Temp and salt  on/off flags
-      tempAdvection = tempStepping .AND. tempAdvection
-      tempForcing   = tempStepping .AND. tempForcing
-      saltAdvection = saltStepping .AND. saltAdvection
-      saltForcing   = saltStepping .AND. saltForcing
-      tempImplVertAdv = tempAdvection .AND. tempImplVertAdv
-      saltImplVertAdv = saltAdvection .AND. saltImplVertAdv
+C--  Advection and Forcing for Temp and salt
       IF (tempVertAdvScheme.EQ.0) tempVertAdvScheme = tempAdvScheme
       IF (saltVertAdvScheme.EQ.0) saltVertAdvScheme = saltAdvScheme
 C--  horizontal viscosity for vertical moments
@@ -761,7 +706,7 @@ C--   Elliptic solver parameters
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM02 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
-      ENDIF    
+      ENDIF
 
 C--   Time stepping parameters
       rCD               = -1.D0
@@ -791,7 +736,7 @@ C--   Time stepping parameters
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM03 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
-      ENDIF   
+      ENDIF
 C     Check for retired parameters still being used
       IF ( tauThetaClimRelax3Dim .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
@@ -1018,7 +963,7 @@ C     In spherical polar distances are in degrees
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM04 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
-      ENDIF    
+      ENDIF
 
 C     Check for retired parameters still being used
       IF ( rkFac .NE. UNSET_RL ) THEN
@@ -1172,20 +1117,12 @@ C     Check for multiple coordinate systems
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
-C--   When using the dynamical pressure in EOS (with Z-coord.),
-C     needs to activate specific part of the code (restart & exchange)
-c     useDynP_inEos_Zc = .FALSE.
-      useDynP_inEos_Zc = ( fluidIsWater .AND. usingZCoords
-     &              .AND. ( eosType .EQ. 'JMD95P' .OR.
-     &                      eosType .EQ. 'UNESCO' .OR.
-     &                      eosType .EQ. 'MDJWF'       )  )
-
 C--   Input files
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM05'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
-      IF ( errIO .LT. 0 ) THEN    
+      IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
        CALL PRINT_ERROR( msgBuf , 1)
@@ -1201,7 +1138,7 @@ C--   Input files
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM05 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
-      ENDIF       
+      ENDIF
 
 C--   Set factors required for mixing pressure and meters as vertical coordinate.
 C     rkSign is a "sign" parameter which is used where the orientation of the vertical

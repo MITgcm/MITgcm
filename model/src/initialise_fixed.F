@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.44 2005/12/05 14:37:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.45 2006/03/17 16:12:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,6 +36,8 @@ C      | |
 C      | | - MNC_INIT + MNC_CW_INIT
 C      | |
 C      | | - ${PKG}_READPARMS
+C      |
+C      |-- SET_PARMS
 C      |
 C      |-- INI_MODEL_IO
 C      |
@@ -94,6 +96,10 @@ C--   Configure packages
 
 C--   Read configuration parameters for packages
       CALL PACKAGES_READPARMS( myThid )
+
+C--   Set (or reset) parameters (at this point, know which packages are used);
+C     after this call, main model parameters are not supposed to be modified.
+      CALL SET_PARMS( myThid )
 
 C--   Write units/set precision/etc for I/O of variables/arrays belonging
 C     to the core dynamical model
