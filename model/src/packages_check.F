@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.32 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.33 2006/03/17 03:55:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,6 +117,10 @@ CEOP
       IF (useGCHEM) CALL PACKAGES_CHECK_ERROR('GCHEM', myThid)
 #endif
 
+#ifndef ALLOW_OFFLINE
+      IF (useOffLine) CALL PACKAGES_CHECK_ERROR('OFFLINE', myThid)
+#endif
+
 #ifndef ALLOW_SHAP_FILT
       IF (useSHAP_FILT) CALL PACKAGES_CHECK_ERROR('SHAP_FILT', myThid)
 #endif
@@ -170,7 +174,7 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) CALL DIAGNOSTICS_CHECK( myThid )
 #else
-      IF (useDiagnostics) 
+      IF (useDiagnostics)
      &   CALL PACKAGES_CHECK_ERROR('DIAGNOSTICS', myThid )
 #endif
 

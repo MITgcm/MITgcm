@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.31 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.32 2006/03/17 03:55:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,6 +61,7 @@ C     data.pkg namelists
      &          usePTRACERS,
      &          useGCHEM,
      &          useRBCS,
+     &          useOffLine,
      &          useSBO,
      &          useSEAICE,
      &          useShelfIce,
@@ -68,7 +69,7 @@ C     data.pkg namelists
      &          useThSIce,
      &          usefizhi,
      &          usegridalt,
-     &          usediagnostics,
+     &          useDiagnostics,
      &          useEBM,
      &          useMNC,
      &          useRunClock,
@@ -105,6 +106,7 @@ C--   Default package configuration
       usePTRACERS=.FALSE.
       useGCHEM=.FALSE.
       useRBCS=.FALSE.
+      useOffLine=.FALSE.
       useSBO=.FALSE.
       useSeaIce=.FALSE.
       useShelfIce=.FALSE.
@@ -112,7 +114,7 @@ C--   Default package configuration
       useThSIce=.FALSE.
       usefizhi=.FALSE.
       usegridalt=.FALSE.
-      usediagnostics=.FALSE.
+      useDiagnostics=.FALSE.
       useEBM=.FALSE.
       useMNC=.FALSE.
       useRunClock=.FALSE.
