@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.181 2006/03/17 16:12:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.182 2006/03/17 18:48:30 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1048,15 +1048,12 @@ C--   Make metric term settings consistent with underlying grid.
        usingSphericalPolarMterms = .FALSE.
        metricTerms = .FALSE.
        useNHMTerms = .FALSE.
-       mTFacMom = 0.
        useBetaPlaneF = .TRUE.
       ENDIF
 C--   Make metric term settings consistent with underlying grid.
       IF ( usingCylindricalGrid) THEN
        usingSphericalPolarMterms = .FALSE.
-       metricTerms = .FALSE.
        useNHMTerms = .FALSE.
-       mTFacMom = 1.
        useBetaPlaneF = .TRUE.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
