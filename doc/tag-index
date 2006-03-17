@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.633 2006/03/15 21:13:01 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.634 2006/03/17 16:24:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new S/R "SET_PARMS": set parameters that might depend on the use of some pkgs.
+  (called from INITIALISE_FIXED, after INI_PARMS & PACKAGES_READPARAMS)
+o add on/off flag useOffLine for package OFFLINE
 o seaice: 
   - modify advection so that it works also on the C-grid
   - extend loop ranges in seaice_lsr and seaice_dynsolver; fixes 
