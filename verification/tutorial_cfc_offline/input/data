@@ -29,10 +29,6 @@
  multiDimAdvection   = .FALSE.
  allowFreezing=.TRUE.,
  useCDscheme=.FALSE.,
-#- need to set those 3 flags to .F. (should be automatic when useOffLine=T)
- tempStepping=.FALSE.,
- saltStepping=.FALSE.,
- momStepping =.FALSE.,
  &
 
 # Elliptic solver parameters
