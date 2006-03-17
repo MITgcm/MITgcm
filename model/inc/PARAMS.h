@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.181 2006/03/16 23:17:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.182 2006/03/17 23:29:37 jmc Exp $
 C $Name:  $
 C
 
@@ -222,8 +222,7 @@ C                     and off.
 C     momPressureForcing :: Flag which turns pressure term in momentum equation
 C                          on and off.
 C     metricTerms   :: Flag which turns metric terms on or off.
-C     usingSphericalPolarMTerms :: If TRUE use spherical polar metric terms.
-C     useNHMTerms :: If TRUE use non-hydrostatic metric terms.
+C     useNHMTerms   :: If TRUE use non-hydrostatic metric terms.
 C     useCoriolis   :: Flag which turns the coriolis terms on and off.
 C     tempAdvection :: Flag which turns advection of temperature on
 C                     and off.
@@ -329,7 +328,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & momStepping, tempStepping, saltStepping,
-     & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
+     & metricTerms, useNHMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
@@ -357,7 +356,6 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
       LOGICAL usingCurvilinearGrid
-      LOGICAL usingSphericalPolarMTerms
       LOGICAL useNHMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
@@ -753,7 +751,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL pfFacMom
       _RL cfFacMom
       _RL foFacMom
-      _RL mTFacMom
+      _RL mtFacMom
       _RL cosPower
       _RL cAdjFreq
       _RL omega
