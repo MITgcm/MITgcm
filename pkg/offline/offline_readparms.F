@@ -1,5 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.5 2006/03/17 03:23:26 jmc Exp $
+C $Name:  $
 
-#include "CPP_OPTIONS.h"
 #include "OFFLINE_OPTIONS.h"
 
       SUBROUTINE OFFLINE_READPARMS( myThid )
@@ -97,5 +98,5 @@ C--   Everyone else must wait for the parameters to be loaded
 
 #endif /* ALLOW_OFFLINE */
 
-      return
-      end
+      RETURN
+      END
