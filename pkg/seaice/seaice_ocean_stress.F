@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.6 2006/03/16 14:25:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.7 2006/03/17 15:53:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,7 +114,7 @@ C     re-compute internal stresses with updated ice velocities
          ENDDO
          DO J = 1,sNy
           DO I = 1,sNx
-C     First FX = (d/dx)*sigam
+C     First FX = (d/dx)*sigma
 C     + d/dx[ eta+zeta d/dx ] U
            FX = _recip_dxC(I,J,bi,bj) *
      &            ( etaPlusZeta(I  ,J) * dUdx(I  ,J) 
@@ -170,7 +170,7 @@ C     - (d/dx) P/2
            FX = _maskW(I,J,1,bi,bj) * ( FX - _recip_dxC(I,J,bi,bj) 
      &          * ( press(I,J,bi,bj) - press(I-1,J,bi,bj) ) )
 C
-C     then FY = (d/dy)*sigam
+C     then FY = (d/dy)*sigma
 C     + d/dy [(eta+zeta) d/dy] V
            FY = _recip_dyC(I,J,bi,bj) *
      &          ( dVdy(I,J  ) * etaPlusZeta(I,J  )
@@ -242,8 +242,8 @@ C     average wind stress over ice and ocean and apply averaged wind
 C     stress and internal ice stresses to surface layer of ocean
            areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
            areaS = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
-           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*(fuIce + FX)
-           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*(fvIce + FY)
+           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce + FX
+           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce + FY
           END DO
          END DO
         ENDDO

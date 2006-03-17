@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.8 2006/03/16 14:41:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.9 2006/03/17 15:53:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -163,11 +163,11 @@ C     ( remember to average to correct velocity points )
      &         )
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &         -  _recip_dxC(I,J,bi,bj)
-     &         *(PRESS(I,  J,bi,bj) - PRESS(I-1,J,bi,bj))
+     &         - 0.5 _d 0 *  _recip_dxC(I,J,bi,bj)
+     &         *(PRESS(I,J,bi,bj) - PRESS(I-1,J  ,bi,bj))
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) 
-     &         -  _recip_dyC(I,J,bi,bj)
-     &          *(PRESS(I,J,  bi,bj) - PRESS(I,J-1,bi,bj))
+     &         - 0.5 _d 0 *  _recip_dyC(I,J,bi,bj)
+     &          *(PRESS(I,J,bi,bj) - PRESS(I  ,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO
