@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.182 2006/03/17 23:29:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.183 2006/03/20 15:10:24 jmc Exp $
 C $Name:  $
 C
 
@@ -96,7 +96,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                dQdTfile, ploadFile,
      &                eddyTauxFile, eddyTauyFile,
      &                eosType, pickupSuff,
-     &                mdsioLocalDir, 
+     &                mdsioLocalDir,
      &                the_run_name
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) delXFile
@@ -196,7 +196,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
-      INTEGER selectKEscheme 
+      INTEGER selectKEscheme
       INTEGER debugLevel
 
 C
@@ -305,10 +305,6 @@ C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
-C     calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
-C                      for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
-C                      KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
-C                      calendar months and years.  Requires pkg/cal.
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0) 
 C                        & Last iteration, in addition multiple of dumpFreq iter.
 C     balanceEmPmR    :: substract global mean of EmPmR at every time step
@@ -318,7 +314,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
-     & momViscosity, momAdvection, momForcing, useCoriolis, 
+     & momViscosity, momAdvection, momForcing, useCoriolis,
      & momPressureForcing, vectorInvariantMomentum,
      & tempAdvection, tempForcing,
      & saltAdvection, saltForcing,
@@ -336,10 +332,10 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & useAbsVorticity, upwindShear,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & multiDimAdvection, useMultiDimAdvec, 
+     & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
-     & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
-     & periodicExternalForcing, 
+     & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax,
+     & periodicExternalForcing,
      & fluidIsAir, fluidIsWater,
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
@@ -349,7 +345,6 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & calendarDumps,
      & balanceEmPmR, balanceQnet, balancePrintMean
 
       LOGICAL usingCartesianGrid
@@ -398,8 +393,8 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL upwindShear
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
-      LOGICAL tempImplVertAdv 
-      LOGICAL saltImplVertAdv 
+      LOGICAL tempImplVertAdv
+      LOGICAL saltImplVertAdv
       LOGICAL momImplVertAdv
       LOGICAL multiDimAdvection
       LOGICAL useMultiDimAdvec
@@ -431,7 +426,6 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
-      LOGICAL calendarDumps
 
       LOGICAL balanceEmPmR
       LOGICAL balanceQnet
@@ -618,7 +612,7 @@ C     bottomDragLinear   :: Drag coefficient built in to core dynamics
 C     bottomDragQuadratic   ( linear: 1/s, quadratic: 1/m )
 C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
-      COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit, 
+      COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, delX, delY,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
@@ -629,7 +623,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & viscC2leith, viscC2leithD,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
-     & viscA4, viscA4W, 
+     & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscAhRemax, viscA4Remax,
      & viscC4leith, viscC4leithD, viscAr,
@@ -638,11 +632,11 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
-     & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
-     & recip_rhoConst, rhoConst, 
+     & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil,
+     & recip_rhoConst, rhoConst,
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
-     & baseTime, startTime, endTime, 
-     & chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
+     & baseTime, startTime, endTime,
+     & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
@@ -699,7 +693,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL viscC2smag
       _RL viscC4smag
       _RL viscAr
-      _RL viscA4 
+      _RL viscA4
       _RL viscA4W
       _RL viscA4D
       _RL viscA4Z
@@ -708,12 +702,12 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL viscA4Grid, viscA4GridMax, viscA4GridMin
       _RL viscC4leith
       _RL viscC4leithD
-      _RL diffKhT 
+      _RL diffKhT
       _RL diffKrNrT(Nr)
-      _RL diffK4T 
-      _RL diffKhS 
+      _RL diffK4T
+      _RL diffKhS
       _RL diffKrNrS(Nr)
-      _RL diffK4S 
+      _RL diffK4S
       _RL diffKrBL79surf
       _RL diffKrBL79deep
       _RL diffKrBL79scl
@@ -794,7 +788,7 @@ C     integr_GeoPot :: option to select the way we integrate the geopotential
 C                     (still a subject of discussions ...) 
 C     selectFindRoSurf :: select the way surf. ref. pressure (=Ro_surf) is
 C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
-      COMMON /PARM_ATM/ 
+      COMMON /PARM_ATM/
      &            celsius2K,
      &            atm_Cp, atm_Rd, atm_kappa, atm_Rq, atm_Po,
      &            integr_GeoPot, selectFindRoSurf
@@ -812,6 +806,9 @@ C Logical flags for selecting packages
       LOGICAL useOBCS
       LOGICAL useAIM
       LOGICAL useLand
+      LOGICAL useCAL
+      LOGICAL useEXF
+      LOGICAL useEBM
       LOGICAL useGrdchk
       LOGICAL useECCO
       LOGICAL useSHAP_FILT
@@ -821,26 +818,26 @@ C Logical flags for selecting packages
       LOGICAL useGCHEM
       LOGICAL useRBCS
       LOGICAL useOffLine
+      LOGICAL useMATRIX
       LOGICAL useSBO
       LOGICAL useSEAICE
       LOGICAL useShelfIce
-      LOGICAL useBulkForce
       LOGICAL useThSIce
+      LOGICAL useBulkForce
       LOGICAL usefizhi
       LOGICAL usegridalt
       LOGICAL useDiagnostics
-      LOGICAL useEBM
       LOGICAL useMNC
-      LOGICAL useMATRIX
       LOGICAL useRunClock
       LOGICAL useEMBED_FILES
       COMMON /PARM_PACKAGES/
-     &        useKPP, useGMRedi, useOBCS, useAIM, useLand, useECCO, 
-     &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
-     &        usePTRACERS, useGCHEM, useRBCS, useOffLine,
-     &        useSBO, useSEAICE, useShelfIce, useThSIce, useBulkForce, 
-     &        usefizhi, usegridalt, useDiagnostics, useEBM, useMNC,
-     &        usePP81, useMY82, useOPPS, useGGL90, useMATRIX,
+     &        useOPPS, usePP81, useMY82, useGGL90, useKPP,
+     &        useGMRedi, useOBCS, useAIM, useLand,
+     &        useCAL, useEXF, useEBM, useGrdchk, useECCO,
+     &        useSHAP_FILT, useZONAL_FILT, useFLT,
+     &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
+     &        useSBO, useSEAICE, useShelfIce, useThSIce, useBulkForce,
+     &        usefizhi, usegridalt, useDiagnostics, useMNC,
      &        useRunClock, useEMBED_FILES
 
 CEH3 ;;; Local Variables: ***
