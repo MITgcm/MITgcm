@@ -70,7 +70,6 @@ momentum_correction_step.f
 packages_init_variables.f
 plot_field.f	
 pressure_for_eos.f
-quasihydrostaticterms.f
 solve_for_pressure.f
 state_summary.f	
 taueddy_external_forcing.f

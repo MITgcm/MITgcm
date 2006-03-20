@@ -1,0 +1,86 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.1 2006/03/20 14:20:47 jmc Exp $
+C $Name:  $
+
+#include "MOM_COMMON_OPTIONS.h"
+
+CBOP
+C !ROUTINE: MOM_QUASIHYDROSTATIC
+
+C !INTERFACE: ==========================================================
+      SUBROUTINE MOM_QUASIHYDROSTATIC(
+     I                bi,bj,k,
+     I                uFld, vFld,
+     O                effectiveBuoy,
+     I                myThid )
+
+C !DESCRIPTION:
+C     *==========================================================*
+C     | o SUBROUTINE MOM_QUASIHYDROSTATIC
+C     |   Add Quasi-Hydrostatic Terms to buoyancy
+C     *==========================================================*
+
+C !USES: ===============================================================
+      IMPLICIT NONE
+
+C--   == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+C--   == Routine arguments ==
+C !INPUT VARIABLES: ====================================================
+C  bi,bj         :: tile indices
+C  k             :: vertical level
+C  uFld          :: zonal flow
+C  vFld          :: meridional flow
+C  myThid        :: my Thread Id number
+      INTEGER bi,bj,k
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER myThid
+
+C !OUTPUT/MODIFIED VARIABLES: ==========================================
+C  effectiveBuoy :: Density anomaly 
+      _RL effectiveBuoy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j           :: loop indices
+C  scalingFactor :: scaling factor (from acceleration to density)
+      INTEGER i,j
+      _RL scalingFactor
+CEOP
+
+      scalingFactor=rhoConst*gravitySign*recip_gravity
+C-    to reproduce old (wrong) results:
+c     scalingFactor=gravitySign*recip_gravity
+
+      DO j=1-Oly,sNy+Oly-1
+       DO i=1-Olx,sNx+Olx-1
+         effectiveBuoy(i,j)=effectiveBuoy(i,j)
+     &    +scalingFactor*
+     &     fCoriCos(i,j,bi,bj)*
+     &       ( angleCosC(i,j,bi,bj)*0.5 _d 0 * 
+     &                (uFld(i,j,k,bi,bj)+uFld(i+1,j,k,bi,bj))
+     &        -angleSinC(i,j,bi,bj)*0.5 _d 0 *
+     &                (vFld(i,j,k,bi,bj)+vFld(i,j+1,k,bi,bj))
+     &       )
+       ENDDO
+      ENDDO
+
+      IF (useNHMTerms) THEN
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+         effectiveBuoy(i,j)=effectiveBuoy(i,j)
+     &    +scalingFactor*
+     &     (   (uFld( i ,j,k,bi,bj)*uFld( i ,j,k,bi,bj)
+     &         +uFld(i+1,j,k,bi,bj)*uFld(i+1,j,k,bi,bj))
+     &       + (vFld(i, j ,k,bi,bj)*vFld(i, j ,k,bi,bj)
+     &         +vFld(i,j+1,k,bi,bj)*vFld(i,j+1,k,bi,bj))
+     &     )* 0.5 _d 0 * recip_rSphere
+        ENDDO
+       ENDDO
+      ENDIF
+
+      RETURN
+      END

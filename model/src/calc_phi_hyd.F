@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.33 2006/02/07 11:47:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.34 2006/03/20 14:22:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -166,10 +166,12 @@ C     overlying shelfice (whose density we do not know)
      &   CALL DIAGNOSTICS_FILL(alphaRho,'RHOAnoma',k,1,2,bi,bj,myThid)
 #endif
 
+#ifdef ALLOW_MOM_COMMON
 C Quasi-hydrostatic terms are added in as if they modify the buoyancy
         IF (quasiHydrostatic) THEN
-         CALL QUASIHYDROSTATICTERMS(bi,bj,k,alphaRho,myThid)
+         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
         ENDIF
+#endif /* ALLOW_MOM_COMMON */
 
 #ifdef NONLIN_FRSURF
         IF (k.EQ.1 .AND. addSurfPhiAnom) THEN
