@@ -13,6 +13,7 @@
  diffKhS=0.,
  diffKrS=3.E-5,
  rhonil=1035.,
+ rhoConstFresh=1000.,
  gravity=9.81,
  eosType = 'POLY3',
  ivdc_kappa=100.,
