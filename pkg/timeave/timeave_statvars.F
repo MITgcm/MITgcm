@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.23 2005/11/04 01:35:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.24 2006/03/20 15:15:39 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -34,11 +34,9 @@ C     myTime - Current time of simulation ( s )
 
 C     == Local variables ==
       INTEGER k
+      LOGICAL dumpFiles
       _RL DDTT
-#ifdef ALLOW_CAL
-      INTEGER thisdate(4), prevdate(4)
-#endif
- 
+
 C-    Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
         CALL TIMEAVE_RESET(uFluxtave, 1,  bi, bj, myThid)
@@ -84,29 +82,21 @@ c       CALL TIMEAVE_RESET(hFacStave, Nr, bi, bj, myThid)
          TimeAve_full(k,bi,bj)=0.
         ENDDO
       ENDIF
-      
-C--   Cumulate state-variables with Half or Full time step : 
-      DDTT = deltaTclock
+
+C--   Cumulate state-variables with Half or Full time step :
       IF ( myIter .EQ. nIter0 ) THEN
         DDTT = deltaTclock*(1. _d 0 - tave_lastIter)
+      ELSE
+        DDTT = deltaTclock
+        dumpFiles = DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
-      ELSEIF ( calendarDumps .AND. (
-     &       ( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 ) .OR.
-     &       ( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 ))) THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-C-    First determine calendar dates for this and previous time step.
-       call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
-       call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
-C-    Monthly taveFreq:
-       IF(taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 .AND.
-     &  (thisdate(1)-prevdate(1)).GT.50  )DDTT=deltaTclock*tave_lastIter
-C-    Yearly  taveFreq:
-       IF(taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 .AND.
-     &  (thisdate(1)-prevdate(1)).GT.5000)DDTT=deltaTclock*tave_lastIter
-#endif
-      ELSEIF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) ) THEN
-        DDTT = deltaTclock*tave_lastIter
+        IF ( useCAL ) THEN
+          CALL CAL_TIME2DUMP( taveFreq, deltaTClock,
+     U                        dumpFiles,
+     I                        myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_CAL */
+        IF ( dumpFiles ) DDTT = deltaTclock*tave_lastIter
       ENDIF
 
       IF ( DDTT .NE. 0. _d 0) THEN
@@ -181,22 +171,22 @@ C-- end if DDTT ...
 
 C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
- 
+
 C-    Time Averages of surface fluxes
 C     <- moved to external_forcing_surf
 
         CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1,
      &                                   deltaTclock, bi, bj, myThid)
-        CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr, 
+        CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr,
      &                                   deltaTclock, bi, bj, myThid)
-        CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave, 
+        CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave,
      &       phiHydLow,phiHydLow, 1,  0, deltaTclock, bi, bj, myThid)
         DO K=1,Nr
          TimeAve_full(k,bi,bj)=TimeAve_full(k,bi,bj)+deltaTclock
         ENDDO
       ENDIF
 
-#endif /* ALLOW_TIMEAVE */ 
+#endif /* ALLOW_TIMEAVE */
 
       RETURN
       END

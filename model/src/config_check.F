@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.34 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.35 2006/03/20 15:11:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -229,19 +229,6 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf , 1)
         WRITE(msgBuf,'(A)')
      &  'Re-compile with pkg "timeave" in packages.conf'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-#endif
-
-C     o If calendarDumps is set, pkg/cal is required
-#ifndef ALLOW_CAL
-      IF (calendarDumps) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CONFIG_CHECK: calendarDumps is set but pkg/cal is not compiled'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with pkg "cal" in packages.conf'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF

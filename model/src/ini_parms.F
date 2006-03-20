@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.183 2006/03/17 23:24:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.184 2006/03/20 15:11:18 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -111,19 +111,23 @@ C                 salt vertically ( Pa^2/s )
       _RL diffKrS
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
+C Namelist PARM01:
 C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
 C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
 C     tempDiffusion :: diffusion of temperature on/off (flag not used)
 C     zonal_filt_lat :: Moved to package "zonal_filt"
-C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
-C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
 C                 use old method by setting useAreaViscLength=.true.
+C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C     calendarDumps  :: moved to package "cal" (calendar)
+C Namelist PARM04:
+C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
+C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     nRetired :: Counter used to trap gracefully namelists containing "retired"
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
@@ -131,10 +135,14 @@ C                 or that have moved to a different input file and/or namelist.
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
       _RL zonal_filt_lat
-      _RL rkFac
       _RL viscAstrain, viscAtension
-      LOGICAL groundAtK1, useAnisotropicViscAGridMax
+      LOGICAL useAnisotropicViscAGridMax
+C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
+      LOGICAL calendarDumps
+C-
+      LOGICAL groundAtK1
+      _RL rkFac
       INTEGER nRetired
 
 C--   Continuous equation parameters
@@ -262,13 +270,14 @@ C--   Initialise retired parameters to unlikely value
       trac_EvPrRn     = UNSET_RL
       zonal_filt_lat  = UNSET_RL
       gravitySign     = UNSET_RL
-      rkFac           = UNSET_RL
-      groundAtK1      = .FALSE.
       viscAstrain     = UNSET_RL
       viscAtension    = UNSET_RL
+      useAnisotropicViscAgridMax=.TRUE.
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
-      useAnisotropicViscAgridMax=.TRUE.
+      calendarDumps   = .FALSE.
+      rkFac           = UNSET_RL
+      groundAtK1      = .FALSE.
 
 C--   Open the parameter file
 #ifdef TARGET_BGL
@@ -754,6 +763,15 @@ C     Check for retired parameters still being used
        CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: 3-dim. relaxation code',
      & ' has moved to separate pkg/rbcs.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( calendarDumps ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "calendarDumps" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: calendarDumps',
+     & ' has moved to "data.cal"'
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
 

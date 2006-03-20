@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.20 2005/11/08 23:01:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.21 2006/03/20 15:11:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,47 +54,25 @@ C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint  
-#ifdef ALLOW_CAL
-      INTEGER thisdate(4), prevdate(4)
-#endif
 CEOP
 
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
       permCheckPoint=
-     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(pChkPtFreq,myTime,deltaTClock)
       tempCheckPoint=
-     &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE( chkPtFreq,myTime,deltaTClock)
 
 #ifdef ALLOW_CAL
-      IF ( calendarDumps ) THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-C-    First determine calendar dates for this and previous time step.
-         call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
-         call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
-C-    Monthly pChkptFreq:
-         IF( pChkptFreq.GE. 2592000 .AND. pChkptFreq.LE. 2678400 ) THEN
-            permCheckPoint = .FALSE.
-            IF((thisdate(1)-prevdate(1)) .GT. 50  )permCheckPoint=.TRUE.
-         ENDIF
-C-    Yearly  pChkptFreq:
-         IF( pChkptFreq.GE.31104000 .AND. pChkptFreq.LE.31968000 ) THEN
-            permCheckPoint = .FALSE.
-            IF((thisdate(1)-prevdate(1)) .GT. 5000)permCheckPoint=.TRUE.
-         ENDIF
-C-    Monthly  ChkptFreq:
-         IF(  ChkptFreq.GE. 2592000 .AND.  ChkptFreq.LE. 2678400 ) THEN
-            tempCheckPoint = .FALSE.
-            IF((thisdate(1)-prevdate(1)) .GT. 50  )tempCheckPoint=.TRUE.
-         ENDIF
-C-    Yearly   ChkptFreq:
-         IF(  ChkptFreq.GE.31104000 .AND.  ChkptFreq.LE.31968000 ) THEN
-            tempCheckPoint = .FALSE.
-            IF((thisdate(1)-prevdate(1)) .GT. 5000)tempCheckPoint=.TRUE.
-         ENDIF
+      IF ( useCAL ) THEN
+         CALL CAL_TIME2DUMP( pChkPtFreq, deltaTClock,
+     U                       permCheckPoint,
+     I                       myTime, myIter, myThid )
+         CALL CAL_TIME2DUMP( chkPtFreq,  deltaTClock,
+     U                       tempCheckPoint,
+     I                       myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_CAL */
 
       IF (
      &     ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )

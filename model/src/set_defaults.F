@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.114 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.115 2006/03/20 15:11:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -249,7 +249,7 @@ C--   Time stepping parameters
       beta_AB           = UNSET_RL
       startFromPickupAB2= .TRUE.
 #endif
-      pchkPtFreq        = deltaT*0
+      pChkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
       outputTypesInclusive = .FALSE.
       pickup_read_mdsio = .TRUE.
@@ -282,7 +282,6 @@ C--   Time stepping parameters
       externForcingCycle      = 0.
       tCylIn             = 0.
       tCylOut            = 20.
-      calendarDumps     = .FALSE.
 
 C--   Input files
       bathyFile       = ' '

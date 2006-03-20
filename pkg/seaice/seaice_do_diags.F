@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.18 2006/03/14 21:21:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.19 2006/03/20 15:15:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -34,7 +34,6 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, k, bi, bj
       _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-      INTEGER thisdate(4), prevdate(4)
       LOGICAL dumpFiles
       CHARACTER*(1) pf
 
@@ -252,26 +251,14 @@ C--   Time-cumulations
 C     Dump files and restart average computation if needed
       dumpFiles = .FALSE.
       IF ( myIter .NE. nIter0 ) THEN
-      IF ( DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,deltaTClock) )
-     &     dumpFiles = .TRUE.
+        dumpFiles =
+     &     DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
-      IF ( calendarDumps .AND. (
-     & (SEAICE_taveFreq.GE. 2592000.AND.SEAICE_taveFreq.LE. 2678400).OR.
-     & (SEAICE_taveFreq.GE.31104000.AND.SEAICE_taveFreq.LE.31968000)))
-     & THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-C-    First determine calendar dates for this and previous time step.
-       call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
-       call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
-       dumpFiles = .FALSE.
-C-    Monthly SEAICE_taveFreq:
-       IF( SEAICE_taveFreq.GE. 2592000 .AND. SEAICE_taveFreq.LE. 2678400
-     &      .AND. (thisdate(1)-prevdate(1)).GT.50   ) dumpFiles = .TRUE.
-C-    Yearly  SEAICE_taveFreq:
-       IF( SEAICE_taveFreq.GE.31104000 .AND. SEAICE_taveFreq.LE.31968000
-     &      .AND. (thisdate(1)-prevdate(1)).GT.5000 ) dumpFiles = .TRUE.
-      ENDIF
+        IF ( useCAL ) THEN
+          CALL CAL_TIME2DUMP( SEAICE_taveFreq, deltaTClock,
+     U                        dumpFiles,
+     I                        myTime, myIter, myThid )
+        ENDIF
 #endif
       ENDIF
 

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.32 2006/03/17 03:55:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.33 2006/03/20 15:11:18 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -65,12 +66,12 @@ C     data.pkg namelists
      &          useSBO,
      &          useSEAICE,
      &          useShelfIce,
-     &          useBulkForce,
      &          useThSIce,
+     &          useBulkForce,
+     &          useEBM,
      &          usefizhi,
      &          usegridalt,
      &          useDiagnostics,
-     &          useEBM,
      &          useMNC,
      &          useRunClock,
      &          useMATRIX,
@@ -90,35 +91,38 @@ CEOP
      I                          myThid )
 
 C--   Default package configuration
-      usePP81=.FALSE.
-      useMY82=.FALSE.
-      useGGL90=.FALSE.
-      useKPP=.FALSE.
-      useGMRedi=.FALSE.
-      useOBCS=.FALSE.
-      useAIM=.FALSE.
-      useLand=.FALSE.
-      useGrdchk=.FALSE.
-      useECCO=.FALSE.
-      useSHAP_FILT=.FALSE.
-      useZONAL_FILT=.FALSE.
-      useFLT=.FALSE.
-      usePTRACERS=.FALSE.
-      useGCHEM=.FALSE.
-      useRBCS=.FALSE.
-      useOffLine=.FALSE.
-      useSBO=.FALSE.
-      useSeaIce=.FALSE.
-      useShelfIce=.FALSE.
-      useBulkForce=.FALSE.
-      useThSIce=.FALSE.
-      usefizhi=.FALSE.
-      usegridalt=.FALSE.
-      useDiagnostics=.FALSE.
-      useEBM=.FALSE.
-      useMNC=.FALSE.
-      useRunClock=.FALSE.
-      useMATRIX=.FALSE.
+      useOPPS         =.FALSE.
+      usePP81         =.FALSE.
+      useMY82         =.FALSE.
+      useGGL90        =.FALSE.
+      useKPP          =.FALSE.
+      useGMRedi       =.FALSE.
+      useOBCS         =.FALSE.
+      useAIM          =.FALSE.
+      useLand         =.FALSE.
+      useCAL          =.FALSE.
+      useEXF          =.FALSE.
+      useEBM          =.FALSE.
+      useGrdchk       =.FALSE.
+      useECCO         =.FALSE.
+      useSHAP_FILT    =.FALSE.
+      useZONAL_FILT   =.FALSE.
+      useFLT          =.FALSE.
+      usePTRACERS     =.FALSE.
+      useGCHEM        =.FALSE.
+      useRBCS         =.FALSE.
+      useOffLine      =.FALSE.
+      useMATRIX       =.FALSE.
+      useSBO          =.FALSE.
+      useSEAICE       =.FALSE.
+      useShelfIce     =.FALSE.
+      useThSIce       =.FALSE.
+      useBulkForce    =.FALSE.
+      usefizhi        =.FALSE.
+      usegridalt      =.FALSE.
+      useDiagnostics  =.FALSE.
+      useMNC          =.FALSE.
+      useRunClock     =.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)
@@ -132,6 +136,14 @@ C--   Close the open data file
       CLOSE(iUnit)
       _END_MASTER(myThid)
  
+C--   packages with hard-coded switch
+#ifdef ALLOW_EXF
+      useEXF = .TRUE.
+#endif
+#ifdef ALLOW_CAL
+      useCAL = .TRUE.
+#endif
+
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 

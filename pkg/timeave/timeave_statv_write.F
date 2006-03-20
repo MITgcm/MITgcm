@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.36 2006/02/07 12:49:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.37 2006/03/20 15:15:39 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -38,7 +38,7 @@ C     myTime - Current time of simulation ( s )
       _RL     myTime
 CEOP
 
-#ifdef ALLOW_TIMEAVE 
+#ifdef ALLOW_TIMEAVE
 C     !LOCAL VARIABLES:
 C     suff         :: Hold suffix part of a filename
 C     TimeAve      :: total time over average
@@ -53,30 +53,14 @@ C     useVariableK :: T when vertical diffusion is not constant
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif
-#ifdef ALLOW_CAL
-      INTEGER thisdate(4), prevdate(4)
-#endif
 
 C     Final Time Averages and Dump Files if needed
-      dumpFiles = .FALSE.
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) )
-     &     dumpFiles = .TRUE.
+      dumpFiles = DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
-      IF ( calendarDumps .AND. (
-     &       ( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 ) .OR.
-     &       ( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 ))) THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-C-    First determine calendar dates for this and previous time step.
-         call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
-         call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
-         dumpFiles = .FALSE.
-C-    Monthly taveFreq:
-         IF( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.50   ) dumpFiles = .TRUE.
-C-    Yearly  taveFreq:
-         IF( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.5000 ) dumpFiles = .TRUE.
+      IF ( useCAL ) THEN
+         CALL CAL_TIME2DUMP( taveFreq, deltaTClock,
+     U                       dumpFiles,
+     I                       myTime, myIter, myThid )
       ENDIF
 #endif
 
@@ -120,7 +104,7 @@ C         Normalize by integrated time
 C         CALL TIMEAVE_NORMALIZ(hFacCtave,TimeAve_half,Nr,bi,bj,myThid)
 C         CALL TIMEAVE_NORMALIZ(hFacWtave,TimeAve_half,Nr,bi,bj,myThid)
 C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
-#endif /* NONLIN_FRSURF */ 
+#endif /* NONLIN_FRSURF */
 
           CALL TIMEAVE_NORMALIZ(TdiffRtave,TimeAve_full,Nr,
      &         bi,bj,myThid)
@@ -142,7 +126,7 @@ C       Write to files
 C       _BEGIN_MASTER( myThid )
 
         IF (timeave_mdsio) THEN
-          
+
 C         Set IO "context" for writing state
 #ifdef USE_DFILE
           CALL DFILE_SET_RW
@@ -168,7 +152,7 @@ C         Read IO error counter
           CALL WRITE_FLD_XYZ_RL('VVtave.',suff,VVtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('UVtave.',suff,UVtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
-          
+
           IF (useVariableK)
      &         CALL WRITE_FLD_XYZ_RL('Tdiftave.',suff,TdiffRtave,
      &         myIter,myThid)
@@ -198,15 +182,15 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
             CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
      &           myIter,myThid)
           ENDIF
-          
+
 #ifdef NONLIN_FRSURF
           CALL WRITE_FLD_XYZ_RL('hUtave.',suff,hUtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('hVtave.',suff,hVtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacCtave.',suff,hFacCtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacWtave.',suff,hFacWtave,myIter,myThid)
 C         CALL WRITE_FLD_XYZ_RL('hFacStave.',suff,hFacStave,myIter,myThid)
-#endif /* NONLIN_FRSURF */ 
-          
+#endif /* NONLIN_FRSURF */
+
 C         Reread IO error counter
           endIOErrCount = IO_ERRCOUNT(myThid)
 
@@ -219,20 +203,20 @@ C         Check for IO errors
             WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
             CALL PRINT_ERROR( msgBuf, 1 )
           ELSE
-            WRITE(msgBuf,'(A,I10)')  
+            WRITE(msgBuf,'(A,I10)')
      &           '// Time-average data written, t-step', myIter
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &           SQUEEZE_RIGHT, 1 )
             WRITE(msgBuf,'(A)')  ' '
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &           SQUEEZE_RIGHT, 1 )
           ENDIF
-          
+
         ENDIF
 
-#ifdef ALLOW_MNC        
+#ifdef ALLOW_MNC
         IF (useMNC .AND. timeave_mnc) THEN
-          
+
           IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
             pf(1:1) = 'D'
           ELSE
@@ -298,29 +282,29 @@ C         CALL MNC_CW_RL_W(pf,'tave',0,0,'KEtave',KEtave,myThid)
 C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacCtave',hFacCtave,myThid)
 C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacWtave',hFacWtave,myThid)
 C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacStave',hFacStave,myThid)
-#endif /* NONLIN_FRSURF */ 
+#endif /* NONLIN_FRSURF */
 
         ENDIF
 #endif /* ALLOW_MNC */
 
 C       _END_MASTER( myThid )
         _BARRIER
-        
+
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            
+
 C           Like before the 1rst iteration,
 C           ==> call TIMEAVE_STATVARS with myIter=nIter0 :
 C           1) Reset the averages to zero ;
 C           2) Start to cumulate state-variables with Half time step.
-            
+
             CALL TIMEAVE_STATVARS(myTime, nIter0, bi, bj, myThid)
-            
+
           ENDDO
         ENDDO
-        
+
       ENDIF
-      
+
 #endif /* ALLOW_TIMEAVE */
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.27 2006/01/23 22:21:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.28 2006/03/20 15:15:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -32,9 +32,6 @@ c ===============
       INTEGER   myItM1, wrIter
       LOGICAL   dump2fileNow, write2file
       _RL       phiSec, freqSec, wrTime
-#ifdef ALLOW_CAL
-      INTEGER thisdate(4), prevdate(4)
-#endif
 #ifdef ALLOW_FIZHI
       logical alarm2
       character *9 tagname
@@ -49,14 +46,6 @@ c ===============
 C***********************************************************************
 C***   Check to see IF its time for Diagnostic Output                ***
 C***********************************************************************
-
-#ifdef ALLOW_CAL
-        IF ( calendarDumps ) THEN
-C-    Determine calendar dates for this and previous time step.
-           call cal_GetDate(myiter  ,mytime            ,thisdate,mythid)
-           call cal_GetDate(myiter-1,mytime-deltaTClock,prevdate,mythid)
-        ENDIF
-#endif
 
         write2file = .FALSE.
         DO n = 1,nlists
@@ -79,28 +68,18 @@ C       state-variable time-step:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-         if( useFIZHI) then 
-          write(tagname,'(A,I2.2)')'diagtag',n
-          dump2fileNow = alarm2(tagname)
-         endif
-#endif
-
-#ifdef ALLOW_CAL
-          IF ( calendarDumps .AND. (
-     &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
-     &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 ))) THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-           dump2fileNow = .FALSE.
-C-    Monthly freqSec:
-           IF( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.50   ) dump2fileNow = .TRUE.
-C-    Yearly  freqSec:
-           IF( freqSec.GE.31104000 .AND. freqSec.LE.31968000 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.5000 ) dump2fileNow = .TRUE.
+          IF( useFIZHI) THEN
+           write(tagname,'(A,I2.2)')'diagtag',n
+           dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
-
+#ifdef ALLOW_CAL
+          IF ( useCAL ) THEN
+            CALL CAL_TIME2DUMP( freqSec, deltaTClock,
+     U                          dump2fileNow,
+     I                          myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_CAL */
           IF ( dump2fileNow .OR.
      &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
             write2file = .TRUE.
@@ -130,12 +109,11 @@ C       state-variable time-step:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-         if( useFIZHI) then 
-          write(tagname,'(A,I2.2)')'diagStg',n
-          dump2fileNow = alarm2(tagname)
-         endif
+          IF( useFIZHI) THEN
+           write(tagname,'(A,I2.2)')'diagStg',n
+           dump2fileNow = alarm2(tagname)
+          ENDIF
 #endif
-
           IF ( dump2fileNow .OR.
      &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
             write2file = .TRUE.
@@ -164,28 +142,18 @@ C--     Clear storage space:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-          if( useFIZHI) then 
+          IF( useFIZHI) THEN
            write(tagname,'(A,I2.2)')'diagtag',n
            dump2fileNow = alarm2(tagname)
-          endif
-#endif
-
-#ifdef ALLOW_CAL
-          IF ( calendarDumps .AND. (
-     &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
-     &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 ))) THEN
-C--   Convert approximate months (30-31 days) and years (360-372 days)
-C     to exact calendar months and years.
-           dump2fileNow = .FALSE.
-C-    Monthly freqSec:
-           IF( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.50   ) dump2fileNow = .TRUE.
-C-    Yearly  freqSec:
-           IF( freqSec.GE.31104000 .AND. freqSec.LE.31968000 .AND.
-     &        (thisdate(1)-prevdate(1)).GT.5000 ) dump2fileNow = .TRUE.
           ENDIF
 #endif
-
+#ifdef ALLOW_CAL
+          IF ( useCAL ) THEN
+            CALL CAL_TIME2DUMP( freqSec, deltaTClock,
+     U                          dump2fileNow,
+     I                          myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_CAL */
           IF ( dump2fileNow .OR.
      &        (myTime.EQ.endTime .AND. dumpatlast)
      &       ) CALL DIAGNOSTICS_CLEAR(n,myThid)
@@ -199,10 +167,10 @@ C-    Yearly  freqSec:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-         if( useFIZHI) then 
-          write(tagname,'(A,I2.2)')'diagStg',n
-          dump2fileNow = alarm2(tagname)
-         endif
+          IF( useFIZHI) THEN
+           write(tagname,'(A,I2.2)')'diagStg',n
+           dump2fileNow = alarm2(tagname)
+          ENDIF
 #endif
           IF ( dump2fileNow .OR.
      &        (myTime.EQ.endTime .AND. dumpatlast)
