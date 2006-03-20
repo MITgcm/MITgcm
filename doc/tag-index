@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.634 2006/03/17 16:24:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.635 2006/03/20 14:49:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add S/R to compute NH-metrics terms & Coriolis f' in vertical momentum
+  (were missing in NH mode, and wrong in quasihydrostatic mode).
+  waiting for Chris updated version of calc_gw to add those CALLs.
+o fix bug in quasihydrostatic S/R ;
+  add a test for this option: global_ocean.90x40x15.qshyd
 o new S/R "SET_PARMS": set parameters that might depend on the use of some pkgs.
   (called from INITIALISE_FIXED, after INI_PARMS & PACKAGES_READPARAMS)
 o add on/off flag useOffLine for package OFFLINE
