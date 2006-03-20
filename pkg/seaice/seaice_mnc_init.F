@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.3 2005/08/11 02:50:12 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.4 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef SEAICE_ALLOW_EVP
+#include "SEAICE_PARAMS.h"
+#endif /* SEAICE_ALLOW_EVP */
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -26,6 +29,23 @@ CEOP
 #ifdef ALLOW_SEAICE
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
+
+#ifdef SEAICE_ALLOW_EVP
+       IF ( SEAICEuseEVP ) THEN
+        CALL MNC_CW_ADD_VNAME('si_sigma1','Cen_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma1','units','N/m^2', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma1','description',
+     &       'divergence of stress tensor', myThid)
+        CALL MNC_CW_ADD_VNAME('si_sigma2','Cen_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma2','units','N/m^2', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma2','description',
+     &       'tension of stress tensor', myThid)
+        CALL MNC_CW_ADD_VNAME('si_sigma12','Cor_xy_Hn__-__t',3,4,myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma12','units','N/m^2', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('si_sigma12','description',
+     &       'shear of stress tensor', myThid)
+       ENDIF
+#endif /* SEAICE_ALLOW_EVP */
 
         CALL MNC_CW_ADD_VNAME('si_UWIND','U_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('si_UWIND','units','m/s', myThid)

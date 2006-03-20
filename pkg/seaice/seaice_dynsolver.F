@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.7 2006/03/16 14:41:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.8 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,8 +9,10 @@ C     /==========================================================\
 C     | SUBROUTINE SEAICE_DYNSOLVER                              |
 C     | o Ice dynamics using LSR solver                          |
 C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
+C     |   or EVP explicit solver by Hunke and Dukowicz, JPO 27,  |
+C     |   1849-1867 (1997)                                       |
 C     |==========================================================|
-C     | C-grid version by Martin Losch                           |
+C     | written by Martin Losch, March 2006                      |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -198,6 +200,13 @@ CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef SEAICE_ALLOW_EVP
+       IF ( SEAICEuseEVP ) THEN
+        CALL SEAICE_EVP( myTime, myIter, myThid )
+       ELSE
+C     do the original VP solver of Zhang and Hibler (1997), ported to
+C     a C-grid
+#endif /* SEAICE_ALLOW_EVP */
 C NOW DO PREDICTOR TIME STEP
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -235,6 +244,9 @@ C NOW DO MODIFIED EULER STEP
        
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
        CALL SEAICE_LSR( 2, myThid )
+#ifdef SEAICE_ALLOW_EVP
+       ENDIF
+#endif /* SEAICE_ALLOW_EVP */
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */

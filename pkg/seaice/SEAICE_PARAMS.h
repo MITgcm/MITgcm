@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.25 2006/03/15 21:12:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.26 2006/03/20 21:36:12 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -12,6 +12,8 @@ C     SEAICEwriteState  - If true, write sea ice state to file;
 C                         default is false.
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
+C     SEAICEuseEVP      - If false, use Zhangs LSR solver for VP equations
+C                         if true use elastic viscous plastic solver  
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
@@ -26,14 +28,14 @@ C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL 
-     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
-     &     useHB87stressCoupling, 
+     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
+     &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
-     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseFluxForm,
-     &     useHB87stressCoupling, 
+     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP, 
+     &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
@@ -83,6 +85,9 @@ C
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
 C     SEAICE_deltaTdyn   - Seaice timestep for dynamic solver          (s)
+C     SEAICE_deltaTevp   - Seaice timestep for EVP solver              (s)
+C     SEAICE_elasticParm - parameter that sets relaxation timescale
+C                          T = SEAICE_elasticParm * SEAICE_deltaTdyn
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
@@ -138,7 +143,7 @@ C     EndingYear         - Ending year of integration
 C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
-      _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn
+      _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
@@ -154,8 +159,10 @@ C
       _RL SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod
       _RL StartingYear,     EndingYear
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
+      _RL SEAICE_elasticParm
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
+     &    SEAICE_deltaTevp, SEAICE_elasticParm,
      &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,

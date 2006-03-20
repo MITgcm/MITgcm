@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.19 2006/03/20 15:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.20 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,6 +56,16 @@ C     == Local variables ==
             CALL MNC_CW_I_W_S('I','sice',0,0,'iter', myIter, myThid)
             CALL MNC_CW_RL_W_S('D','sice',0,0,'model_time',
      &           myTime,myThid)
+#if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
+            IF ( SEAICEuseEVP ) THEN
+             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma1',
+     &            seaice_sigma1,myThid)
+             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma2',
+     &            seaice_sigma2,myThid)
+             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma12',
+     &            seaice_sigma12,myThid)
+            ENDIF
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'fu',fu,myThid)
@@ -76,6 +86,16 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
+#if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
+            IF ( SEAICEuseEVP ) THEN
+             CALL WRITE_FLD_XY_Rs('SIGMA1.',suff,seaice_sigma1,
+     &            myIter,myThid)
+             CALL WRITE_FLD_XY_Rs('SIGMA2.',suff,seaice_sigma2,
+     &            myIter,myThid)
+             CALL WRITE_FLD_XY_Rs('SIGMA12.',suff,seaice_sigma12,
+     &            myIter,myThid)
+            ENDIF
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
             _END_MASTER( myThid )
             _BARRIER
           ENDIF

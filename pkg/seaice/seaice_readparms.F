@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.36 2006/03/15 21:12:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.37 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,12 +42,13 @@ C     iUnit       - Work variable for IO unit number
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
-     & SEAICEuseFluxForm,
+     & SEAICEuseEVP, SEAICEuseFluxForm,
      & useHB87stressCoupling,
      & SEAICE_clipVelocities, SEAICE_maskRHS,
      & LAD, IMAX_TICE,
      & SEAICEadvScheme,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
+     & SEAICE_deltaTevp, SEAICE_elasticParm,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, 
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -103,6 +104,7 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
+      SEAICEuseEVP       = .FALSE.
       SEAICEuseFluxForm  = .FALSE.
       useHB87stressCoupling = .FALSE.
       SEAICE_clipVelocities = .TRUE.
@@ -110,8 +112,10 @@ C--   set default sea ice parameters
       SEAICEadvScheme    = 2
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
+      SEAICE_deltaTevp   = dTtracerLev(1)
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
+      SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
 #ifdef ALLOW_MNC
       SEAICE_tave_mnc = timeave_mnc
       SEAICE_dump_mnc = snapshot_mnc
@@ -274,6 +278,24 @@ C     yet been tried nor thought through.
          CALL PRINT_ERROR( msgBuf , mythid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
+#ifdef SEAICE_ALLOW_EVP
+      IF ( SEAICEuseEVP ) THEN
+       IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
+     &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_deltaTevp must be a factor of SEAICE_deltaTdyn.'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+       ENDIF
+       IF ( SEAICE_elasticParm .LE. 0. _d 0 .OR.
+     &      SEAICE_elasticParm .GT. 1. _d 0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_elasticParm must greater than 0 and less than 1.'
+        CALL PRINT_ERROR( msgBuf , mythid)
+        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+       ENDIF
+      ENDIF
+#endif /* SEAICE_ALLOW_EVP */
 
 
 #ifndef SEAICE_EXTERNAL_FORCING

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.9 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.10 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,6 +47,14 @@ C--    Read ice model fields
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 5, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 6, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 7, myThid )
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma1,  22, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma2,  23, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma12, 24, myThid )
+#endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_MULTILEVEL */
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, TICE , 1, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 2, myThid )
@@ -55,6 +63,14 @@ C--    Read ice model fields
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 3, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 4, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 5, myThid )
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma1,  16, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma2,  17, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &      seaice_sigma12, 18, myThid )
+#endif /* SEAICE_ALLOW_EVP */
 #endif /* SEAICE_MULTILEVEL */
 
        _END_MASTER( myThid )
@@ -67,6 +83,9 @@ C--    Update overlap regions
        _EXCH_XY_R8(TICE , myThid )
        _EXCH_XY_R8(YNEG , myThid )
        _EXCH_XY_R8(HSNOW, myThid )
+       _EXCH_XY_R8(seaice_sigma1 , myThid )
+       _EXCH_XY_R8(seaice_sigma2 , myThid )
+       _EXCH_XY_R8(seaice_sigma12, myThid )
 
       RETURN
       END
@@ -119,6 +138,14 @@ C--    Write model fields
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 5, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 6, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 7, myIt,myThid)
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma1,  22, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma2,  23, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma12, 24, myIt,myThid)
+#endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_MULTILEVEL */
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  TICE, 1, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 2, myIt,myThid)
@@ -127,6 +154,14 @@ C--    Write model fields
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 3, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 4, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 5, myIt,myThid)
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma1,  16, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma2,  17, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &      seaice_sigma12, 18, myIt,myThid)
+#endif /* SEAICE_ALLOW_EVP */
 #endif /* SEAICE_MULTILEVEL */
 
       RETURN

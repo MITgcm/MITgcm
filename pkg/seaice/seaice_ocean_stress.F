@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.7 2006/03/17 15:53:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.8 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -87,6 +87,9 @@ C     recompute viscosities from updated ice velocities
      I      uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1), 
      I      zMin, zMax, hEffM, press0,
      O      eta, zeta, press, 
+#ifdef SEAICE_ALLOW_EVP
+     O      seaice_div, seaice_tension, seaice_shear,
+#endif /* SEAICE_ALLOW_EVP */
      I      myThid )
 C     re-compute internal stresses with updated ice velocities
        DO bj=myByLo(myThid),myByHi(myThid)

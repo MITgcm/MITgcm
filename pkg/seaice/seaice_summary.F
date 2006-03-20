@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.4 2006/03/15 21:19:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.5 2006/03/20 21:36:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,6 +61,10 @@ c     == end of interface ==
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
      & 'SEAICEuseDYNAMICS =', ' /* use dynamics */')
 #ifdef SEAICE_CGRID
+#ifdef SEAICE_ALLOW_EVP
+      CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
+     & 'SEAICEuseEVP      =', ' /* use EVP solver */')
+#endif /* SEAICE_ALLOW_EVP */
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
      & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
       CALL WRITE_0D_L ( SEAICE_clipVelocities, INDEX_NONE,
@@ -77,11 +81,14 @@ c     == end of interface ==
       IF ( SEAICEadvScheme .EQ. 2 ) 
      & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
      & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
-      SEAICEuseFluxForm  = .FALSE.
       CALL WRITE_0D_R8( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
       CALL WRITE_0D_R8( SEAICE_deltaTdyn  ,INDEX_NONE,
      & 'SEAICE_deltaTdyn  =', ' /* dynamic timestep */')
+#ifdef SEAICE_ALLOW_EVP
+      CALL WRITE_0D_R8( SEAICE_deltaTevp  ,INDEX_NONE,
+     & 'SEAICE_deltaTevp  =', ' /* EVP timestep */')
+#endif
       CALL WRITE_0D_R8( SEAICE_dumpFreq   ,INDEX_NONE,
      & 'SEAICE_dumpFreq   =', ' /* dump frequency */')
       CALL WRITE_0D_R8( SEAICE_taveFreq   ,INDEX_NONE,
