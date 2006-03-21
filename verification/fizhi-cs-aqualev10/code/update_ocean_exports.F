@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.3 2005/12/01 16:18:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.4 2006/03/21 21:12:31 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -308,8 +308,8 @@ C      endif
 C   and now add the anomaly
 C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
 C    .     (abs(xc(i,j,bi,bj)) .lt. 30. _d 0) ) then
-C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)*deg2rad
-C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)*deg2rad
+C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)
 C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
 C    .     cos(cosarg1)*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
 C      endif
@@ -324,8 +324,8 @@ C      endif
 C   and now add the anomaly
 C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
 C    .     (abs(xc(i,j,bi,bj)) .lt. 30. _d 0) ) then
-C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)*deg2rad
-C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)*deg2rad
+C       cosarg1 = pio2*(xc(i,j,bi,bj)/30. _d 0)
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/15. _d 0)
 C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
 C    .     3.*cos(cosarg1)*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
 C      endif
@@ -340,7 +340,7 @@ C      endif
 C   and now add the anomaly
 C      if( abs(yc(i,j,bi,bj))  .lt. 30.0 _d 0 ) then
 C       cosarg1 = (xc(i,j,bi,bj))*deg2rad
-C       cosarg2 = pio2*(yc(i,j,bi,bj)/30.0 _d 0)*deg2rad
+C       cosarg2 = pio2*(yc(i,j,bi,bj)/30.0 _d 0)
 C       sst(i,j,bi,bj) = sst(i,j,bi,bj) +
 C    .             3.*cos(cosarg1)*cos(cosarg2)*cos(cosarg2)
 C      endif
