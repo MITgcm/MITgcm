@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.636 2006/03/20 21:54:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.637 2006/03/21 13:00:33 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice: add an EVP solver following Hunke and Dukowicz (1997) and the 
+  documentation of CICE. Turn on by defining SEAICE_ALLOW_EVP in
+  SEAICE_OPTIONS.h and SEAICEuseEVP=.true. in data.seaice. Works only 
+  with SEAICE_CGRID defined.
 o move calendarDumps from "data" to "data.cal" and clean-up the code
   with a simple call to pkg/cal S/R: CAL_TIME2WRITE
 o add useEXF & useCAL flags (for now, set in hard-coded way)
