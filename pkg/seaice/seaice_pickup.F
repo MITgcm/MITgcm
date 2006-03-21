@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.10 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.11 2006/03/21 12:56:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,9 +83,11 @@ C--    Update overlap regions
        _EXCH_XY_R8(TICE , myThid )
        _EXCH_XY_R8(YNEG , myThid )
        _EXCH_XY_R8(HSNOW, myThid )
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        _EXCH_XY_R8(seaice_sigma1 , myThid )
        _EXCH_XY_R8(seaice_sigma2 , myThid )
        _EXCH_XY_R8(seaice_sigma12, myThid )
+#endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
 
       RETURN
       END
