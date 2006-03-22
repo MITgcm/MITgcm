@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.4 2006/03/21 21:12:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev10/code/Attic/update_ocean_exports.F,v 1.5 2006/03/22 18:03:37 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -303,7 +303,7 @@ C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
 C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
 C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
 C      else
-C       sst(i,j,bi,bj) = 0.
+C       sst(i,j,bi,bj) = 273.16
 C      endif
 C   and now add the anomaly
 C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
@@ -319,7 +319,7 @@ C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
 C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
 C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
 C      else
-C       sst(i,j,bi,bj) = 0.
+C       sst(i,j,bi,bj) = 273.16
 C      endif
 C   and now add the anomaly
 C      if( (abs(yc(i,j,bi,bj)) .lt. 15. _d 0) .and.
@@ -335,7 +335,7 @@ C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
 C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
 C       sst(i,j,bi,bj) = 273.16 + 27.*(1.-(sin(sinarg)*sin(sinarg)))
 C      else
-C       sst(i,j,bi,bj) = 0.
+C       sst(i,j,bi,bj) = 273.16
 C      endif
 C   and now add the anomaly
 C      if( abs(yc(i,j,bi,bj))  .lt. 30.0 _d 0 ) then
