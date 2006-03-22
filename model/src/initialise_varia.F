@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.48 2006/03/17 04:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.49 2006/03/22 22:48:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -95,32 +95,37 @@ CEOP
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
+C--   Intialize the hFacC for TAF/TAMC 
+      CALL INI_HFAC( myThid )
+      CALL INI_DEPTHS( myThid )
+      CALL INI_MASKS_ETC( myThid )
+
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
-#endif
+# endif
       CALL INI_LINEAR_PHISURF( myThid )
 
 C--   Set coriolis operators
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CORI',myThid)
-#endif
+# endif
       CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CG2D',myThid)
-#endif
+# endif
       CALL INI_CG2D( myThid )
 
-#ifdef ALLOW_NONHYDROSTATIC
+# ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
 ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
-#ifdef ALLOW_DEBUG
+#  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CG3D',myThid)
-#endif
+#  endif
       CALL INI_CG3D( myThid )
-#endif
+# endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */
       _BARRIER

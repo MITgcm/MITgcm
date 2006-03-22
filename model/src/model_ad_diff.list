@@ -37,7 +37,6 @@ freeze_surface.f
 grad_sigma.f	
 impldiff.f	
 ini_autodiff.f	
-ini_surf_dr.f
 ini_cartesian_grid.f
 ini_cg2d.f	
 ini_cori.f	
@@ -47,6 +46,7 @@ ini_depths.f
 ini_fields.f	
 ini_forcing.f	
 ini_grid.f	
+ini_hfac.f
 ini_linear_phisurf.f
 ini_masks_etc.f	
 ini_mixing.f	
@@ -57,6 +57,7 @@ ini_psurf.f
 ini_r_star.f
 ini_salt.f	
 ini_spherical_polar_grid.f
+ini_surf_dr.f
 ini_theta.f	
 ini_dynvars.f	
 ini_vel.f	
