@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.8 2005/12/15 00:48:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.9 2006/03/22 19:21:58 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -28,6 +28,7 @@ c     == global variables ==
 # include "exf_param.h"
 #endif
 #ifdef ALLOW_PTRACERS.h
+# include "PARAMS.h"
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS.h"
 # include "OBCS_PTRACERS.h"
