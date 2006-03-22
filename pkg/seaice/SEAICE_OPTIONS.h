@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.15 2006/03/20 21:36:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.16 2006/03/22 14:55:36 jmc Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -79,7 +79,7 @@ C--   Only for the C-grid version it is possible to enable EVP code by
 C     defining the following flag
 #ifdef SEAICE_CGRID
 #undef SEAICE_ALLOW_EVP
-#endif /* SEAICE_CGRID
+#endif /* SEAICE_CGRID */
 
 #endif /* SEAICE_OPTIONS_H */
 
