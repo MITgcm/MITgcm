@@ -22,6 +22,7 @@ cal_printerror.f
 cal_stepsforday.f
 cal_stepsperday.f
 cal_subdates.f
+cal_time2dump.f
 cal_timeinterval.f
 cal_timepassed.f
 cal_timestamp.f
