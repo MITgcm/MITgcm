@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.637 2006/03/21 13:00:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.638 2006/03/23 19:59:59 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58c_post
+o adjoint: finish NLFS adjoint and provide reference output in
+  verification/global_ocean.90x40x15/results_ad_nlfs
 o seaice: add an EVP solver following Hunke and Dukowicz (1997) and the 
   documentation of CICE. Turn on by defining SEAICE_ALLOW_EVP in
   SEAICE_OPTIONS.h and SEAICEuseEVP=.true. in data.seaice. Works only 
