@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.3 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.4 2006/03/23 23:06:48 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -30,6 +30,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ecco_cost.h"
+#include "profiles.h"
+#include "ctrl_dummy.h"
 
 c     == routine arguments ==
 
@@ -43,6 +45,7 @@ c     == local variables ==
       integer imin, imax
       integer jmin, jmax
       integer i,j,k
+      integer num_file,num_var
 
       logical exst
 
@@ -129,6 +132,11 @@ c--   Initialize the tiled cost function contributions.
           objf_kapgm(bi,bj)    = 0. _d 0
           objf_theta_ini_fin(bi,bj) = 0. _d 0
           objf_salt_ini_fin(bi,bj)  = 0. _d 0
+          do num_file=1,NFILESPROFMAX
+           do num_var=1,4
+            objf_profiles(num_file,num_var,bi,bj)= 0. _d 0
+           enddo
+          enddo
 c
           num_hflux(bi,bj)    = 0. _d 0
           num_hfluxm(bi,bj)   = 0. _d 0
@@ -180,6 +188,11 @@ c
           num_kapgm(bi,bj)    = 0. _d 0
           num_theta_ini_fin(bi,bj) = 0. _d 0
           num_salt_ini_fin(bi,bj)  = 0. _d 0
+          do num_file=1,NFILESPROFMAX
+           do num_var=1,4
+            num_profiles(num_file,num_var,bi,bj) = 0. _d 0
+           enddo
+          enddo
         enddo
       enddo
 
@@ -256,6 +269,12 @@ c--   Initialise the "global" parts of the cost function.
         num_obcsvol = 0. _d 0
         num_hmean   = 0. _d 0
       _END_MASTER( mythid )
+
+      do num_file=1,50
+         do num_var=1,10
+            profiles_dummy(num_file,num_var)=0. _d 0
+         enddo
+      enddo
 
       _BARRIER
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.19 2006/03/02 21:43:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.20 2006/03/23 23:06:48 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -30,6 +30,7 @@ c     == global variables ==
 #include "ecco_cost.h"
 #include "ctrl.h"
 #include "optim.h"
+#include "profiles.h"
 
 c     == routine arguments ==
 
@@ -42,6 +43,7 @@ c     == local variables ==
       integer jtlo,jthi
       integer ifc
       integer totnum
+      integer num_file,num_var
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_temp, f_salt 
@@ -67,6 +69,7 @@ c     == local variables ==
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
       _RL f_eddytau
+      _RL f_profiles(NFILESPROFMAX,4)
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
       _RL no_uwind, no_vwind
@@ -86,11 +89,16 @@ c     == local variables ==
       _RL no_kapgm, no_diffkr
       _RL no_eddytau
       _RL no_hmean
+      _RL no_profiles(NFILESPROFMAX,4)
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
+
+      INTEGER IL
+C Functions
+      INTEGER ILNBLNK
 
 c     == end of interface ==
 
@@ -174,6 +182,11 @@ c     == end of interface ==
       f_kapgm   = 0. _d 0
       f_diffkr  = 0. _d 0
       f_eddytau = 0. _d 0
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        f_profiles(num_file,num_var)= 0. _d 0
+       enddo
+      enddo
 
       no_temp = 0. _d 0
       no_salt = 0. _d 0
@@ -233,6 +246,11 @@ c     == end of interface ==
       no_kapgm   = 0. _d 0
       no_diffkr  = 0. _d 0
       no_eddytau = 0. _d 0
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        no_profiles(num_file,num_var)= 0. _d 0
+       enddo
+      enddo
 
 c--   Sum up all contributions.
       do bj = jtlo,jthi
@@ -298,6 +316,14 @@ c--   Sum up all contributions.
      &         + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
      &                          objf_salt_ini_fin(bi,bj))
      &         + mult_eddytau * objf_eddytau(bi,bj)
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+          fc = fc
+     &            + mult_profiles(num_file,num_var)
+     &            *objf_profiles(num_file,num_var,bi,bj)
+       enddo
+      enddo
+
 
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
@@ -367,6 +393,12 @@ c--   Sum up all contributions.
           f_ini_fin = f_ini_fin +
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+          f_profiles(num_file,num_var)=f_profiles(num_file,num_var)
+     &            +objf_profiles(num_file,num_var,bi,bj)
+       enddo
+      enddo
 
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
@@ -422,6 +454,12 @@ c--   Sum up all contributions.
           no_ini_fin = no_ini_fin +
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
           no_eddytau = no_eddytau + num_eddytau(bi,bj) 
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+          no_profiles(num_file,num_var)=no_profiles(num_file,num_var)
+     &            +num_profiles(num_file,num_var,bi,bj)
+       enddo
+      enddo
 
         enddo
       enddo
@@ -503,6 +541,11 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_diffkr , myThid )
       _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        _GLOBAL_SUM_R8(f_profiles(num_file,num_var), myThid )
+       enddo
+      enddo
 
       _GLOBAL_SUM_R8( no_temp , myThid )
       _GLOBAL_SUM_R8( no_salt , myThid )
@@ -562,6 +605,11 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_diffkr , myThid )
       _GLOBAL_SUM_R8( no_ini_fin , myThid )
       _GLOBAL_SUM_R8( no_eddytau , myThid )
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        _GLOBAL_SUM_R8(no_profiles(num_file,num_var), myThid )
+       enddo
+      enddo
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
@@ -703,6 +751,15 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_diffkr  =',f_diffkr
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_eddytau =', f_eddytau
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        if (no_profiles(num_file,num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_profiles =',f_profiles(num_file,num_var),
+     &      num_file, num_var
+        endif
+       enddo
+      enddo
 
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
@@ -805,6 +862,17 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_diffkr=', f_diffkr, no_diffkr
         write(ifc,*) 'f_ini_fin =', f_ini_fin, no_ini_fin
         write(ifc,*) 'f_eddytau =', f_eddytau, no_eddytau
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,4
+        if (no_profiles(num_file,num_var).GT.0) then
+         IL  = ILNBLNK( profilesfiles(num_file) )
+         write(ifc,*) profilesfiles(num_file)(1:IL), 
+     &    prof_names(num_var), ' = ', 
+     &    f_profiles(num_file,num_var), 
+     &    no_profiles(num_file,num_var)
+        endif
+       enddo
+      enddo
 
         close(ifc)
         

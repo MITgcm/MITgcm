@@ -25,6 +25,8 @@ c
 c    o  g_active_write_tile_xy   - Write an active 2D variable to a file.
 c    o  g_active_write_tile_xyz  - Write an active 3D variable to a file.
 c
+c    o  g_active_read_profile      - Read  an active 1D variable from file.
+c    o  g_active_write_profile     - Write an active 1D variable to a file.
 c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
@@ -1003,3 +1005,140 @@ c     == end of interface ==
 
       return
       end
+
+c     ==================================================================
+c     ==================================================================
+
+
+      subroutine g_active_read_profile(
+     I                           active_num_file,
+     I                           nactive_var,
+     O                           active_var,
+     I                           active_varnum,
+     I                           irec,
+     I                           lAdInit,
+     I                           myOptimIter,
+     I                           mythid,
+     I                           dummy,
+     I                           g_active_var
+     &                         )
+
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     SUBROUTINE g_active_read_profile
+c     ==================================================================
+c     o Read an active 1D record from an profile data file.
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "profiles.h"
+c     == routine arguments ==
+c     active_var_file: filename
+c     nactive_var:     integer size of active_var
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+      integer nactive_var
+      _RL  active_var(nactive_var)
+      _RL  g_active_var(nactive_var)
+      integer irec,active_varnum,active_num_file
+      integer myOptimIter
+      integer mythid
+      logical lAdInit
+      _RL     dummy
+
+      call active_read_profile_rl( fidforward(active_num_file),
+     &     active_num_file,
+     & nactive_var,  active_var, active_varnum, lAdInit,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     & TANGENT_SIMULATION, myOptimIter, mythid)
+
+      call active_read_profile_rl( fidtangent(active_num_file),
+     &     active_num_file,
+     & nactive_var, g_active_var,active_varnum, lAdInit,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     & TANGENT_SIMULATION, myOptimIter, mythid)
+
+
+      return
+      end
+
+
+c     ==================================================================
+c     ==================================================================
+c     ==================================================================
+
+      subroutine g_active_write_profile(
+     I                           active_num_file,
+     I                           nactive_var,
+     I                           active_var,
+     I                           active_varnum,
+     I                           irec,
+     I                           myOptimIter,
+     I                           mythid,
+     I                           dummy,
+     I                           g_active_var,
+     I                           g_dummy
+     &                                )
+
+c     ==================================================================
+c     SUBROUTINE g_active_write_profile
+c     ==================================================================
+c
+c     o Write an active 1D variable to a file.
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "profiles.h"
+
+c     == routine arguments ==
+c     active_var_file: filename
+c     nactive_var:     integer size of active_var
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+      integer nactive_var,active_num_file
+      _RL  active_var(nactive_var)
+      _RL  g_active_var(nactive_var)
+      integer irec,active_varnum
+      integer myOptimIter
+      integer mythid
+      _RL     dummy
+      _RL     g_dummy
+
+
+      call active_write_profile_rl( fidforward(active_num_file) ,
+     &     active_num_file,
+     & nactive_var, active_var, active_varnum,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     & TANGENT_SIMULATION, myOptimIter, mythid)
+
+      call active_write_profile_rl( fidtangent(active_num_file) ,
+     &     active_num_file,
+     & nactive_var, g_active_var, active_varnum,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     & TANGENT_SIMULATION, myOptimIter, mythid)
+
+
+
+      return
+      end
+
+c     ==================================================================
+
+
+

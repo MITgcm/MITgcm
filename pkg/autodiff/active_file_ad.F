@@ -24,6 +24,8 @@ c     o  adactive_read_tile_xyz   - Adjoint of active_read_tile_xyz
 c     o  adactive_write_tile_xy   - Adjoint of active_write_tile_xy
 c     o  adactive_write_tile_xyz  - Adjoint of active_write_tile_xyz
 c
+c     o  adactive_read_profile      - Adjoint of active_read_profile
+c     o  adactive_write_profile     - Adjoint of active_write_profile
 c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
@@ -1035,3 +1037,116 @@ c     == end of interface ==
      &                         )
 
       end
+
+      subroutine adactive_read_profile(
+     I                              active_num_file,
+     I                              nadactive_var,
+     I                           active_varnum,
+     I                              irec,
+     I                              lAdInit,
+     I                              myiter,
+     I                              mythid,
+     I                              adactive_var
+     &                            )
+
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     SUBROUTINE adactive_read_profile
+c     ==================================================================
+c     o Adjoint of active_read_profile.
+c     ==================================================================
+      implicit none
+
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "profiles.h"
+
+c     == routine arguments ==
+c     active_var_file: filename
+c     nadactive_var:   integer size of adactive_var
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+      integer nadactive_var,active_num_file
+      _RL    adactive_var(nadactive_var)
+      integer irec,active_varnum
+      integer myiter
+      integer mythid
+      logical lAdInit
+
+      call active_read_profile_rl( fidadjoint(active_num_file) ,
+     &     active_num_file,
+     &  nadactive_var, adactive_var, active_varnum, lAdInit,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     &  REVERSE_SIMULATION, myiter, mythid)
+
+      end
+
+c     ==================================================================
+c     ==================================================================
+c     ==================================================================
+
+
+      subroutine adactive_write_profile(
+     I                              active_num_file,
+     I                              nadactive_var,
+     I                           active_varnum,
+     I                              irec,
+     I                              myiter,
+     I                              mythid,
+     I                              adactive_var,
+     I                              dummy
+     &                            )
+
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     SUBROUTINE adactive_write_profile
+c     ==================================================================
+c     o Adjoint of active_write_profile.
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "profiles.h"
+
+c     == routine arguments ==
+c     active_var_file: filename
+c     nadactive_var:   integer size of adactive_var
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+      integer nadactive_var,active_num_file
+      _RL    adactive_var(nadactive_var)
+      integer irec,active_varnum
+      integer myiter
+      integer mythid
+      _RL     dummy
+
+
+c     == end of interface ==
+
+      call active_write_profile_rl( fidadjoint(active_num_file) ,
+     &     active_num_file,
+     &  nadactive_var, adactive_var, active_varnum,
+     &     irec, prof_ind_glob(active_num_file,irec),
+     &  REVERSE_SIMULATION, myiter, mythid)
+
+      end
+
+c     ==================================================================
+
+

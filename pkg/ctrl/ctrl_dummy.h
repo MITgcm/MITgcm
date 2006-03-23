@@ -62,6 +62,7 @@ c     ==================================================================
      &                  , xx_theta_ini_fin_dummy
      &                  , xx_salt_ini_fin_dummy
      &                  , xx_smrareabar_mean_dummy
+     &                  , profiles_dummy
 
       _RL xx_theta_dummy
       _RL xx_salt_dummy
@@ -117,6 +118,7 @@ c
       _RL xx_theta_ini_fin_dummy
       _RL xx_salt_ini_fin_dummy
       _RL xx_smrareabar_mean_dummy
+      _RL profiles_dummy(50,10)
 
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES
