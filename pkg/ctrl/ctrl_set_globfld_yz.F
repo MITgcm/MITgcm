@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.8 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.9 2006/03/24 22:59:39 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -101,14 +101,14 @@ c     Initialise temporary file
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-      nrec_nl=int(ncvarrecs(ivartype)/snx)
+      nrec_nl=int(ncvarrecs(ivartype)/Nx)
       do irec = 1, nrec_nl
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &        Nr, globfld3d,
      &        irec,   optimcycle,  mythid)
       enddo
 
-      do irec = nrec_nl*snx+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)
          call MDSWRITEFIELD_YZ_GL( fname, ctrlprec, 'RL',
      &        Nr, globfldyz,
      &        irec,   optimcycle,  mythid)
