@@ -21,11 +21,13 @@ C ==================== Global Variables ===========================
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
-#include "profiles.h"
-#include "netcdf.inc"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+# include "profiles.h"
+# include "netcdf.inc"
+#endif
 C ==================== Routine Variables ==========================
 
-      integer k,bi,bj,iG,jG, myThid,num_file,length_for_tile
+      integer k,l,m,bi,bj,iG,jG, myThid,num_file,length_for_tile
       integer fid, dimid, varid1, varid1a, varid1b
       integer varid2,varid3
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
@@ -36,6 +38,8 @@ C ==================== Routine Variables ==========================
       character*(80) fnameequinc, adfnameequinc
       integer IL, err
       logical  exst
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
 
 c     == external functions ==
       integer ILNBLNK
@@ -55,9 +59,16 @@ c--   == end of interface ==
       prof_namesweight(3)='prof_Uweight'
       prof_namesweight(4)='prof_Vweight'
       profiles_curfile_buff=0
-      profiles_data_buff=0
-      profiles_weight_buff=0
       profilesfile_equi_type=2
+
+      do m=1,NLEVELMAX
+      do l=1,1000
+      do k=1,4
+      profiles_data_buff(m,l,k)=0
+      profiles_weight_buff(m,l,k)=0
+      enddo
+      enddo
+      enddo
  
 c remplacer par une boucle ensuite :
       do num_file=1,NFILESPROFMAX
@@ -248,9 +259,9 @@ C===========================================================
       call profiles_init_ncfile(num_file,fiddata(num_file),fnameequinc,
      & fidforward(num_file),profno(num_file),profdepthno(num_file),
      & myThid)
-      call profiles_init_ncfile(num_file,fiddata(num_file),adfnameequinc,
-     & fidadjoint(num_file),profno(num_file),profdepthno(num_file),
-     & myThid)
+      call profiles_init_ncfile(num_file,fiddata(num_file),
+     & adfnameequinc, fidadjoint(num_file),profno(num_file),
+     & profdepthno(num_file), myThid)
       else
       err = NF_OPEN(fnameequinc , NF_WRITE , fidforward(num_file) )
       err = NF_OPEN(adfnameequinc , NF_WRITE , fidadjoint(num_file) )
@@ -268,17 +279,17 @@ C===========================================================
       call profiles_init_ncfile(num_file,fiddata(num_file),fnameequinc,
      & fidforward(num_file),profno(num_file),profdepthno(num_file),
      & myThid)
-      call profiles_init_ncfile(num_file,fiddata(num_file),adfnameequinc,
-     & fidadjoint(num_file),profno(num_file),profdepthno(num_file),
-     & myThid)
+      call profiles_init_ncfile(num_file,fiddata(num_file),
+     & adfnameequinc, fidadjoint(num_file),profno(num_file),
+     & profdepthno(num_file), myThid)
       else
        call MDSFINDUNIT( fidforward(num_file) , mythid )
-       open( fidforward(num_file),file=fnameequinc,form ='unformatted', 
-     & status='unknown', access='direct',
+       open( fidforward(num_file),file=fnameequinc, 
+     & form ='unformatted',status='unknown', access='direct',
      & recl=  (profdepthno(num_file)+1)*WORDLENGTH*2 )
        call MDSFINDUNIT( fidadjoint(num_file) , mythid )
-       open( fidadjoint(num_file),file=adfnameequinc,form ='unformatted',         
-     & status='unknown', access='direct',
+       open( fidadjoint(num_file),file=adfnameequinc,
+     & form ='unformatted',status='unknown', access='direct',
      & recl=  (profdepthno(num_file)+1)*WORDLENGTH*2 )
       endif
 
@@ -309,6 +320,7 @@ C===========================================================
       enddo !      do num_file=1,NFILESPROFMAX
 C===========================================================
 
+#endif
 
       END
 

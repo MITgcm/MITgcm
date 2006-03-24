@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.45 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.46 2006/03/24 22:58:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,6 +237,11 @@ ceh3 needs an IF ( useEXF ) THEN
 #ifdef ALLOW_ECCO
 c--   Initialize ECCO package parameters
       call ecco_readparms ( myThid )
+#endif
+
+#ifdef ALLOW_PROFILES
+c--   Initialize PROFILES package parameters
+      call profiles_readparms ( myThid )
 #endif
 
 #ifdef COMPONENT_MODULE

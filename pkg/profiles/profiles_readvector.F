@@ -16,15 +16,19 @@ C ==================== Global Variables ===========================
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
 #include "netcdf.inc"
 #include "profiles.h"
+#endif
 C ==================== Routine Variables ==========================
       integer vec_loc_length, vNb, k, kk, kkk
       integer irec, fNb, myThid,err,varid1,tmpprofno
       _RL vec_loc(vec_loc_length)
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+
       integer vec_start(2),vec_count(2)
       _RL vec_tmp1(1000*NLEVELMAX),vec_tmp2(1000*NLEVELMAX)
-
 c--   == end of interface ==
 
 
@@ -59,11 +63,11 @@ c implies that a forward loop is calling
       do kkk=1,4
       if (vec_quantities(fNb,kkk).EQV..TRUE.) then
       err = NF_INQ_VARID(fiddata(fNb),prof_names(kkk), varid1 )
-      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, vec_count,
-     & vec_tmp1)
+      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, 
+     & vec_count, vec_tmp1)
       err = NF_INQ_VARID(fiddata(fNb),prof_namesweight(kkk), varid1 )
-      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, vec_count,
-     & vec_tmp2)
+      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, 
+     & vec_count, vec_tmp2)
 
       if (err.NE.NF_NOERR) then
       print*,"stop readvector",vec_start(2),vec_count(2)
@@ -96,5 +100,6 @@ cgf ...now, get vec_loc from the buffer
            enddo
        endif 
 
+#endif
 
       END

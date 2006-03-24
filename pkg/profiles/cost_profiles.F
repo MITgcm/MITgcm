@@ -20,12 +20,18 @@ C     ======== Global data ============================
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
 #include "profiles.h"
 #include "netcdf.inc"
+#endif
+
 c     == routine arguments ==
       integer myiter
       _RL     mytime
       integer mythid
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+
 C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
       integer bi,bj,iG,jG,err,fid
@@ -104,6 +110,7 @@ c     == end of interface ==
       ENDDO
       ENDDO
 C===========================================================
- 
+
+#endif
 
       END

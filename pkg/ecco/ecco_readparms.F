@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.22 2006/03/23 23:06:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.23 2006/03/24 22:58:25 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -25,7 +25,6 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ecco_cost.h"
-#include "profiles.h"
 
 c     == routine arguments ==
 
@@ -82,7 +81,6 @@ c--   Read the namelist input.
      &                   precip_errfile, swflux_errfile, swdown_errfile,
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
-     &                   profilesfiles,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh, 
@@ -102,7 +100,6 @@ c--   Read the namelist input.
      &                   mult_curmtr, mult_ageos,
      &                   mult_kapgm, mult_diffkr,
      &                   mult_smooth_ic, mult_smooth_bc,
-     &                   mult_profiles,
      &                   whflux0, wsflux0, wtau0,
      &                   watemp0, waqh0, 
      &                   wprecip0, wswflux0, wswdown0, wwind0,
@@ -202,9 +199,6 @@ c--     Set default values.
         vwind_errfile         =    ' '
         geoid_errfile         =    ' '
         geoid_covariancefile  =    ' '
-        do num_file=1,NFILESPROFMAX
-          profilesfiles(num_file)      =    ' '
-        enddo
 
         mult_hflux            =      0. _d 0
         mult_sflux            =      0. _d 0
@@ -270,11 +264,6 @@ c--     Set default values.
         wmean_hflux           =      0. _d 0
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
-        do num_file=1,NFILESPROFMAX
-         do num_var=1,4
-          mult_profiles(num_file,num_var) = 0. _d 0
-         enddo
-        enddo
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'

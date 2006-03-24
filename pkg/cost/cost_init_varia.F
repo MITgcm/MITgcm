@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.3 2005/12/19 23:29:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.4 2006/03/24 22:58:25 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -96,6 +96,10 @@ cph because we need it in ADM*TLM
 #ifdef ALLOW_ECCO
       call ecco_cost_init_varia( mythid )
 #endif
+
+# ifdef ALLOW_PROFILES
+      CALL profiles_init_varia( mythid )
+# endif
 
 c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )

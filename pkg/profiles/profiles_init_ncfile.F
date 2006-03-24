@@ -17,8 +17,10 @@ C ==================== Global Variables ===========================
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "profiles.h"
-#include "netcdf.inc"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+# include "profiles.h"
+# include "netcdf.inc"
+#endif
 C ==================== Routine Variables ==========================
       integer fid1,fid2,dimid1,dimid2,varid(10),varid0
       integer myThid,err,vecid(2), length, Zlength
@@ -26,6 +28,8 @@ C ==================== Routine Variables ==========================
       integer irec, num_var,num_file
       real*8 tmp_vec(Zlength+1)
 c     == end of interface ==
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
 
       if (profilesfile_equi_type.EQ.1) then
 c1) creation :
@@ -82,5 +86,7 @@ c1) creation :
        enddo
 
        endif
+
+#endif
 
       END

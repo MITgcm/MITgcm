@@ -23,12 +23,19 @@ C ==================== Global Variables ===========================
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
-#include "profiles.h"
-#include "netcdf.inc"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+# include "profiles.h"
+# include "netcdf.inc"
+#endif
 C ==================== Routine Variables ==========================
 
-      integer k,bi,bj,prof_num, num_file, num_var, myThid
       _RL mytime
+      integer myThid
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+
+C ==================== Local Variables ==========================
+      integer k,bi,bj,prof_num, num_file, num_var
       _RL tmp_lon,prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
       
 c     == end of interface ==
@@ -77,6 +84,7 @@ c     == end of interface ==
       ENDDO
       ENDDO
 
+#endif
 
        END
 

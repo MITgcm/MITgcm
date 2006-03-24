@@ -30,17 +30,27 @@ C ==================== Global Variables ===========================
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
-#include "profiles.h"
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+# include "profiles.h"
+#else
+      integer NLEVELMAX
+      parameter (NLEVELMAX=1)
+#endif
 C ==================== Routine Variables ==========================
       _RL  mytime
       integer mythid
-c     == end of interface ==
+      integer type_cur,file_cur 
+      _RL  traj_cur_out(NLEVELMAX)
+      _RL  lon_cur,lat_cur
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+
+C ==================== Local Variables ==========================
       _RL tab_coeffs1(2,2),tab_coeffs2(2,2),tab_coeffs3(2,2)
       _RL ponderations(2,2),pondsSUM,distance1,distance2
-      integer i,j,k,kk,kcur,iG,jG,bi,bj,file_cur 
-      _RL traj_cur(nR),mask_cur(nR),lon_cur,lat_cur
-      _RL traj_cur_out(NLEVELMAX)
-      integer type_cur,prof_i,prof_j
+      integer i,j,k,kk,kcur,iG,jG,bi,bj
+      _RL traj_cur(nR),mask_cur(nR)
+      integer prof_i,prof_j
       _RL lon_tmp,tmp_coeff
 c--   == end of interface ==
 
@@ -253,6 +263,8 @@ c		if in upper cell, upper cell value
 
       ENDDO
       ENDDO
+
+#endif
 
       end
 

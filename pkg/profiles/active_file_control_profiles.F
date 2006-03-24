@@ -36,8 +36,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_PROFILES
 #include "netcdf.inc"
 #include "profiles.h"
+#endif
 
 c     == routine arguments ==
 
@@ -53,6 +55,8 @@ c     == routine arguments ==
       _RL   active_data_t(nactive_var)
       integer i,ivar
       real*8 vec_tmp(nactive_var+1)
+
+#ifdef ALLOW_PROFILES
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -82,7 +86,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif    
       do ivar=1,nactive_var
       active_var(ivar)=vec_tmp(ivar)
@@ -91,7 +95,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+2 )
      & vec_tmp
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       do ivar=1,nactive_var
       prof_mask1D_cur(ivar)=vec_tmp(ivar)
@@ -148,7 +152,7 @@ c       Set active_var to zero.
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       do ivar=1,nactive_var
       active_data_t(ivar)=vec_tmp(ivar)
@@ -164,7 +168,7 @@ c       Store the result on disk.
       vec_tmp(ivar)=active_data_t(ivar)
       enddo
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
@@ -206,7 +210,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       do ivar=1,nactive_var
       active_var(ivar)=vec_tmp(ivar)
@@ -219,6 +223,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       endif
 
       _BARRIER
+
+#endif /* ALLOW_PROFILES */
 
       return
       end
@@ -252,8 +258,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_PROFILES
 #include "netcdf.inc"
 #include "profiles.h"
+#endif
 
 c     == routine arguments ==
 
@@ -266,6 +274,7 @@ c     == routine arguments ==
       _RL   active_var(nactive_var)
       real*8 vec_tmp(nactive_var+1)
 
+#ifdef ALLOW_PROFILES
 c     == local variables ==
 
       integer  i
@@ -309,7 +318,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       enddo
       vec_tmp(nactive_var+1)=irecglob
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
@@ -319,7 +328,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       enddo
       vec_tmp(nactive_var+1)=irecglob
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+2 )
@@ -372,7 +381,7 @@ c       Add active_var to data.
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       do ivar=1,nactive_var
       active_data_t(ivar)=vec_tmp(ivar)
@@ -389,7 +398,7 @@ c       Store the result on disk.
       vec_tmp(ivar)=active_data_t(ivar)
       enddo
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
@@ -429,7 +438,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       enddo
       vec_tmp(nactive_var+1)=irecglob
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,vec_tmp)
+            call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
      & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
@@ -443,6 +452,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       endif
 
       _BARRIER
+
+#endif /* ALLOW_PROFILES */
 
       return
       end
