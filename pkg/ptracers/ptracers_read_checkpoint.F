@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.10 2005/09/10 18:30:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.11 2006/03/24 11:00:53 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -50,11 +50,13 @@ C       Read variables from the pickup file
           CALL MNC_CW_RL_R('D',fn,0,0, PTRACERS_names(iTracer),
      &         gPtrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
+      _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         CALL MNC_CW_SET_UDIM(fn, 2, myThid)
         DO iTracer = 1,PTRACERS_numInUse
           CALL MNC_CW_RL_R('D',fn,0,0, PTRACERS_names(iTracer),
      &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
+      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
          
