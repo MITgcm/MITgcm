@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.639 2006/03/23 23:08:09 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.640 2006/03/24 11:43:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix mnc-pickup/restart for ptracers
 o new code to compute profile cost
   by Gael Forget
   (modifs in ecco, ctrl, autodiff)
