@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.88 2006/03/17 23:28:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.89 2006/03/24 16:25:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -289,6 +289,9 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      & 'quasiHydrostatic =', ' /* Quasi-Hydrostatic on/off flag */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
+      CALL WRITE_0D_L( vectorInvariantMomentum,  INDEX_NONE,
+     & 'vectorInvariantMomentum=',
+     & ' /* Vector-Invariant Momentum on/off */')
       CALL WRITE_0D_L( momAdvection, INDEX_NONE,
      & 'momAdvection =', '  /* Momentum advection on/off flag */')
       CALL WRITE_0D_L( momViscosity, INDEX_NONE,
