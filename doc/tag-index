@@ -1,13 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.640 2006/03/24 11:43:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.641 2006/03/24 23:01:39 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o fix mnc-pickup/restart for ptracers
-o new code to compute profile cost
-  by Gael Forget
+o new package prifiles:
+  code to compute profile-based cost by Gael Forget
   (modifs in ecco, ctrl, autodiff)
+o Benign bug fix in initialization (spotted by M. Mazloff) of
+  ctrl_set_globfld_xz.F ctrl_set_globfld_yz.F
 
 checkpoint58c_post
 o adjoint: finish NLFS adjoint and provide reference output in
