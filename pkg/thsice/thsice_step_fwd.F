@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.14 2006/03/14 15:58:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.15 2006/03/26 00:45:40 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -155,8 +155,8 @@ C--    Update Sea-Ice state :
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
           IF ( dBug ) THEN
-           WRITE(6,1010) 'ThSI_FWD: Tsf, Tice(1,2), frzmltMxL =',
-     &                              Tsf, Tice, frzmltMxL
+           WRITE(6,1010) 'ThSI_FWD: Tsf, Tice(1,2), TFrzOce =',
+     &                              Tsf, Tice, TFrzOce
            WRITE(6,1010) 'ThSI_FWD: sHeat,fxCndBt, fxAtm,evAtm=',
      &                  sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj),
      &                  flxAtm(i,j), evpAtm(i,j)
