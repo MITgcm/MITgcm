@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.9 2005/09/27 22:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.10 2006/03/26 22:56:43 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -49,11 +49,17 @@ C     == Local variables ==
 C     bi,bj,k :: loop index
       INTEGER bi, bj, k
 #endif /* USE_OLD_SHAPIRO_FILTERS */
+      INTEGER exchInOut
       CHARACTER*(MAX_LEN_MBUF) suff
 
 CEOP
 
       IF (nShapT.GT.0 .OR. nShapS.GT.0) THEN
+
+C-    Apply Exchanges on Input field, before the filter (but not after):
+        exchInOut = 1
+C-    Apply Exchanges on Output field, after the filter (but not before):
+        IF ( implicitIntGravWave ) exchInOut = 2
 
 #ifdef USE_OLD_SHAPIRO_FILTERS
 
@@ -85,7 +91,7 @@ CEOP
      &                            .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
      U           tFld, Shap_tmpFld1,
-     I           nShapT, Nr, myTime, myThid )
+     I           nShapT, exchInOut, Nr, myTime, myIter, myThid )
           ELSEIF (Shap_funct.EQ.4) THEN
             CALL SHAP_FILT_TRACER_S4(
      U           tFld, Shap_tmpFld1,
@@ -132,7 +138,7 @@ C               is directly proportional to Delta-Tr due to the Filter
      &                            .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
      U           sFld, Shap_tmpFld1,
-     I           nShapS, Nr, myTime, myThid )
+     I           nShapS, exchInOut, Nr, myTime, myIter, myThid )
           ELSEIF (Shap_funct.EQ.4) THEN
             CALL SHAP_FILT_TRACER_S4(
      U           sFld, Shap_tmpFld1,
@@ -146,7 +152,7 @@ c    I           nShapS, Nr, myTime, myThid )
           ENDIF
 
 C-----    Diagnostic of Shapiro Filter effect on salinity :
-C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4) 
+C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4)
 C               is directly proportional to Delta-Tr due to the Filter
           IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
      &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,deltaTClock)
