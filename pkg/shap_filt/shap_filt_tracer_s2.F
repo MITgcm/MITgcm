@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.11 2006/03/26 22:56:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.12 2006/03/26 23:38:42 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -45,9 +45,10 @@ C     kSize     :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
 C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number in simulation
 C     myThid    :: Thread number for this instance of SHAP_FILT_TRACER_S2
+      INTEGER kSize
       _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
-      INTEGER nShapTr, exchInOut, kSize
+      INTEGER nShapTr, exchInOut
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
