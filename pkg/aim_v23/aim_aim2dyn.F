@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.5 2004/07/08 15:51:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.6 2006/03/28 04:26:21 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -27,13 +27,12 @@ C-------
 
 C     == Global data ==
 C-- size for MITgcm & Physics package :
-#include "AIM_SIZE.h" 
+#include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "DYNVARS.h"
 
 #include "AIM2DYN.h"
 #include "com_physvar.h"
@@ -55,8 +54,21 @@ C     conv_T2theta :: conversion factor from (absolute) Temp. to Pot.Temp.
       _RL conv_T2theta
       INTEGER i,j,k
       INTEGER I2, Katm
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  physTendDiag
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
 
 C--   Physics tendency term
+
+#ifdef ALLOW_DIAGNOSTICS
+      physTendDiag = .FALSE.
+      IF (useDiagnostics) THEN
+        physTendDiag = DIAGNOSTICS_IS_ON( 'DIABT   ', myThid )
+     &            .OR. DIAGNOSTICS_IS_ON( 'DIABQ   ', myThid )
+      ENDIF
+#endif
 
 C-    Planetary boundary layer drag coeff.
       DO j=1,sNy
@@ -70,20 +82,33 @@ C-    Planetary boundary layer drag coeff.
        Katm = _KD2KA( k )
        conv_T2theta = (atm_po/rC(k))**atm_kappa
 
-C-     temp. & water vap. tendencies (ignoring partial cell factor)
+C-     Add all tendencies (ignoring partial cell factor) for T & Q
+C          and convert Temp. tendency to Pot.Temp. tendency
        DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
-C        temperature tendency (except LSC, added later)
-         aim_dTdt(i,j,k,bi,bj) =   TT_CNV(I2,Katm,myThid)
+C        temperature tendency
+         aim_dTdt(i,j,k,bi,bj) = ( TT_CNV(I2,Katm,myThid)
      &                            +TT_PBL(I2,Katm,myThid)
      &                            +TT_RSW(I2,Katm,myThid)
      &                            +TT_RLW(I2,Katm,myThid)
-C        water vapor tendency (except LSC, added later)
+     &                            +TT_LSC(I2,Katm,myThid)
+     &                           )*conv_T2theta
+C        water vapor tendency
          aim_dSdt(i,j,k,bi,bj) =   QT_CNV(I2,Katm,myThid)
      &                            +QT_PBL(I2,Katm,myThid)
+     &                            +QT_LSC(I2,Katm,myThid)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( physTendDiag ) THEN
+         CALL DIAGNOSTICS_FILL( aim_dTdt, 'DIABT   ',
+     &                          k, Nr, 1,bi,bj, myThid )
+         CALL DIAGNOSTICS_FILL( aim_dSdt, 'DIABQ   ',
+     &                          k, Nr, 1,bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C-     Account for partial cell filling:
 #ifdef NONLIN_FRSURF
@@ -129,18 +154,6 @@ C-     Account for partial cell filling:
          ENDDO
         ENDDO
        ENDIF
-
-C-     Net tendencies : Add LSC term & comvert to Pot.Temp.:
-       DO j=1,sNy
-        DO i=1,sNx
-         I2 = i+(j-1)*sNx
-         aim_dTdt(i,j,k,bi,bj) = ( aim_dTdt(i,j,k,bi,bj)
-     &                            +TT_LSC(I2,Katm,myThid) 
-     &                           )*conv_T2theta
-         aim_dSdt(i,j,k,bi,bj) =   aim_dSdt(i,j,k,bi,bj) 
-     &                            +QT_LSC(I2,Katm,myThid)
-        ENDDO
-       ENDDO
 
 C--- end of k loop.
       ENDDO

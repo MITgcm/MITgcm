@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_lscond.F,v 1.2 2006/01/26 01:14:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_lscond.F,v 1.3 2006/03/28 04:26:21 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      I                   kGrd,bi,bj,myThid)
 C--
 C--   SUBROUTINE LSCOND (PSA,QA,QSAT,
-C--  *                   PRECLS,DTLSC,DQLSC) 
+C--  *                   PRECLS,DTLSC,DQLSC)
 C--
 C--   Purpose: Compute large-scale precipitation and
 C--            associated tendencies of temperature and moisture
@@ -29,7 +29,7 @@ C--
 C     Resolution parameters
 
 C-- size for MITgcm & Physics package :
-#include "AIM_SIZE.h" 
+#include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
 
@@ -49,7 +49,7 @@ C-- Routine arguments:
 
 #ifdef ALLOW_AIM
 
-C-- Local variables:  
+C-- Local variables:
       INTEGER J, K
       _RL PSA2(NGP)
 
@@ -74,8 +74,8 @@ c_FM  QSMAX = 50.
       ENDDO
 
 C--   2. Tendencies of temperature and moisture
-C        NB. A maximum heating rate is imposed to avoid 
-C            grid-point-storm instability 
+C        NB. A maximum heating rate is imposed to avoid
+C            grid-point-storm instability
 
       DO K=2,NLEV
         SIG2=SIG(K)*SIG(K)
@@ -94,11 +94,20 @@ C      to fix this, apply the threshold directly to the condensation
         ENDDO
       ENDDO
 
+C--   Scale LSC tendencies by dpFac (=Partial-Cell factor) (=> Mass Weighted)
+C     to get homogenous units & scaling across all physics tendencies.
+      DO K=2,NLEV
+        DO J=1,NGP
+          DQLSC(J,K) = DQLSC(J,K)*dpFac(J,K)
+          DTLSC(J,K) = DTLSC(J,K)*dpFac(J,K)
+        ENDDO
+      ENDDO
+
 C--   3. Large-scale precipitation
 
       DO J=1,NGP
         DO K=2,kGrd(J)
-          PFACT = DSIG(K)*PRG*dpFac(J,K)
+          PFACT = DSIG(K)*PRG
           PRECLS(J) = PRECLS(J)-PFACT*DQLSC(J,K)
         ENDDO
       ENDDO
@@ -108,7 +117,7 @@ c_FM    PRECLS(J) = PRECLS(J)*PSA(J)
 c_FM  ENDDO
 
 C--
-#endif /* ALLOW_AIM */ 
+#endif /* ALLOW_AIM */
 
       RETURN
       END
