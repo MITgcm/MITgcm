@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.9 2006/03/02 02:53:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.10 2006/03/29 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -107,12 +107,31 @@ c--   Now, read the control vector.
      &       xx_gen_file(1:ilgen), '.', optimcycle
       endif
 
+# ifdef ALLOW_CAL
+         if ( xx_genperiod .EQ. 0 ) then
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+            call cal_GetMonthsRec(
+     O           genfac, genfirst, genchanged,
+     O           gencount0, gencount1,
+     I           mytime, myiter, mythid
+     &           )
+         else
 c--   Get the counters, flags, and the interpolation factor.
       call ctrl_get_gen_rec(
      I                   xx_genstartdate, xx_genperiod,
      O                   genfac, genfirst, genchanged,
      O                   gencount0,gencount1,
      I                   mytime, myiter, mythid )
+        endif
+# else
+c--   Get the counters, flags, and the interpolation factor.
+      call ctrl_get_gen_rec(
+     I                   xx_genstartdate, xx_genperiod,
+     O                   genfac, genfirst, genchanged,
+     O                   gencount0,gencount1,
+     I                   mytime, myiter, mythid )
+# endif
 
       if ( genfirst ) then
         call active_read_xy_loc( fnamegen, xx_gen1, gencount0,
@@ -144,7 +163,8 @@ cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
       if ( gencount0 .LE. 2 .AND. 
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
-     &       xx_gen_file .EQ. xx_tauv_file ) ) then
+     &       xx_gen_file .EQ. xx_tauv_file ) .AND.
+     &     ( xx_genperiod .NE. 0 ) ) then
          doCtrlUpdate = .FALSE.
       else
          doCtrlUpdate = .TRUE.

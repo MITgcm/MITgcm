@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.21 2006/01/05 17:05:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.22 2006/03/29 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -187,10 +187,15 @@ c--   Heat flux.
         call cal_TimePassed( xx_hfluxstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_hfluxperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_hfluxperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_hfluxperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -209,10 +214,15 @@ c--   Atmos. temperature
         call cal_TimePassed( xx_atempstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_atempperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_atempperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_atempperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -241,10 +251,15 @@ c--   Salt flux.
         call cal_TimePassed( xx_sfluxstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_sfluxperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_sfluxperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_sfluxperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -263,10 +278,15 @@ c--   Atmos. humidity
         call cal_TimePassed( xx_aqhstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_aqhperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_aqhperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_aqhperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -295,10 +315,15 @@ c--   Zonal wind stress.
         call cal_TimePassed( xx_tauustartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_tauuperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_tauuperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_tauuperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -317,10 +342,15 @@ c--   Zonal wind speed.
         call cal_TimePassed( xx_uwindstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_uwindperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_uwindperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_uwindperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -349,10 +379,15 @@ c--   Meridional wind stress.
         call cal_TimePassed( xx_tauvstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_tauvperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_tauvperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_tauvperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -371,10 +406,15 @@ c--   Meridional wind speed.
         call cal_TimePassed( xx_vwindstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_vwindperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_vwindperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_vwindperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -535,10 +575,15 @@ c--
         call cal_TimePassed( xx_sststartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_sstperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_sstperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_sstperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -566,10 +611,15 @@ c--
         call cal_TimePassed( xx_sssstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_sssperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_sssperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_sssperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -692,10 +742,15 @@ c--   Atmos. precipitation
         call cal_TimePassed( xx_precipstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_precipperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_precipperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_precipperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -718,10 +773,15 @@ c--   Atmos. swflux
         call cal_TimePassed( xx_swfluxstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_swfluxperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_swfluxperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_swfluxperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
@@ -744,10 +804,15 @@ c--   Atmos. swdown
         call cal_TimePassed( xx_swdownstartdate, modelstartdate,
      &                       difftime, mythid )
         call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_swdownperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
         startrec = int((modelstart + startTime - diffsecs)/
      &                 xx_swdownperiod) + 1
         endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
      &                 xx_swdownperiod) + 2
+        endif
 # else
         startrec = 1
         endrec   = 1
