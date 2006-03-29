@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.641 2006/03/24 23:01:39 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.642 2006/03/29 22:11:08 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o in ctrl pkg, if ALLOW_CAL, use monthly mean controls 
+  if the control period (xx_hfluxperiod etc) is 0
+o in profiles pkg, clean routines and fix details
+o in ecco pkg, reading ssh data: 
+  fix problem in case the model does not start at iter0=0
 o fix mnc-pickup/restart for ptracers
 o new package prifiles:
   code to compute profile-based cost by Gael Forget
