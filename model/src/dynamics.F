@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.130 2006/03/16 16:29:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.131 2006/03/29 17:00:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
+
 #undef DYNAMICS_GUGV_EXCH_CHECK
 
 CBOP
@@ -86,6 +90,16 @@ C     == Global variables ===
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS.h"
+# endif
+# ifdef ALLOW_OBCS
+#  include "OBCS.h"
+#  ifdef ALLOW_PTRACERS
+#   include "OBCS_PTRACERS.h"
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

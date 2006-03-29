@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.67 2005/12/22 01:08:57 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.68 2006/03/29 17:00:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,6 +66,9 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS.h"
+#  ifdef ALLOW_PTRACERS
+#   include "OBCS_PTRACERS.h"
+#  endif
 # endif
 # ifdef ALLOW_EXF
 #  include "exf_fields.h"
@@ -296,6 +299,8 @@ c--
 #ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num
+CADJ INIT comlev1_bibj_k_ptracers = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num*nr
 #endif /* ALLOW_PTRACERS */
 c--
 #ifndef DISABLE_MULTIDIM_ADVECTION

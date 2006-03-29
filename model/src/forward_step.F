@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.135 2006/03/17 04:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.136 2006/03/29 17:00:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,6 +6,9 @@ C $Name:  $
 
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
+#endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
 #endif
 
 CBOP
@@ -75,12 +78,15 @@ C     == Global variables ==
 #   include "exf_constants.h"
 #  endif
 # endif
-# ifdef ALLOW_OBCS
-#  include "OBCS.h"
-# endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS.h"
+# endif
+# ifdef ALLOW_OBCS
+#  include "OBCS.h"
+#  ifdef ALLOW_PTRACERS
+#   include "OBCS_PTRACERS.h"
+#  endif
 # endif
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"
