@@ -127,9 +127,9 @@ c2) read the dates and positions :
 
 
       length_for_tile=0
-      profno_div1000=max(1,int(profno(num_file)/1000))
+      profno_div1000=max(0,int(profno(num_file)/1000))
 
-      do kk=1,profno_div1000
+      do kk=1,profno_div1000+1
 
       if (min(ProfNo(num_file), 1000*kk).GE.
      &  1+1000*(kk-1)) then
@@ -170,26 +170,43 @@ c2) read the dates and positions :
       call cal_ToSeconds (tmpdiff,diffsecs,mythid)
       diffsecs=diffsecs+nIter0*deltaTclock
 
-       if (xC(sNx+1,1,bi,bj).LT.xC(sNx+1,1,bi,bj)) then
-       tmp_lon=2*xC(sNx,1,bi,bj)-xC(sNx-1,1,bi,bj)
+       if (xC(sNx+1,1,bi,bj).LT.xC(1,1,bi,bj)) then
+        tmp_lon=xC(sNx+1,1,bi,bj)+360
        else
-       tmp_lon=xC(sNx+1,1,bi,bj)
+        tmp_lon=xC(sNx+1,1,bi,bj)
        endif
        if ((xC(1,1,bi,bj).LE.tmp_lon2(k)).AND.
-     &  (tmp_lon.GT.tmp_lon2(k)).AND.
-     &  (yC(1,1,bi,bj).LE.tmp_lat2(k)).AND.
-     &  (yC(1,sNy+1,bi,bj).GT.tmp_lat2(k))
+     & (tmp_lon.GT.tmp_lon2(k)).AND.
+     & (yC(1,1,bi,bj).LE.tmp_lat2(k)).AND.
+     & (yC(1,sNy+1,bi,bj).GT.tmp_lat2(k))
      & ) then
-       length_for_tile=length_for_tile+1
-      prof_time(num_file,length_for_tile)=diffsecs
-      prof_lon(num_file,length_for_tile)=tmp_lon2(k)
-      prof_lat(num_file,length_for_tile)=tmp_lat2(k)
-      prof_ind_glob(num_file,length_for_tile)=k+1000*(kk-1)
-          if (length_for_tile.GT.NOBSGLOB) then
+        length_for_tile=length_for_tile+1
+        prof_time(num_file,length_for_tile)=diffsecs
+        prof_lon(num_file,length_for_tile)=tmp_lon2(k)
+        prof_lat(num_file,length_for_tile)=tmp_lat2(k)
+        prof_ind_glob(num_file,length_for_tile)=k+1000*(kk-1)
+        if (length_for_tile.GT.NOBSGLOB) then
       print*,"too much profiles: need to increase NOBSGLOB,"
       print*,"   or split the data file (less memory cost)"
       stop
-          endif
+        endif
+       elseif (xC(sNx+1,1,bi,bj).LT.xC(1,1,bi,bj)) then
+        if ((xC(1,1,bi,bj).LE.tmp_lon2(k)+360).AND.
+     &  (tmp_lon.GT.tmp_lon2(k)+360).AND.
+     &  (yC(1,1,bi,bj).LE.tmp_lat2(k)).AND.
+     &  (yC(1,sNy+1,bi,bj).GT.tmp_lat2(k))
+     &  ) then
+         length_for_tile=length_for_tile+1
+         prof_time(num_file,length_for_tile)=diffsecs
+         prof_lon(num_file,length_for_tile)=tmp_lon2(k)+360
+         prof_lat(num_file,length_for_tile)=tmp_lat2(k)
+         prof_ind_glob(num_file,length_for_tile)=k+1000*(kk-1)
+         if (length_for_tile.GT.NOBSGLOB) then
+      print*,"too much profiles: need to increase NOBSGLOB,"
+      print*,"   or split the data file (less memory cost)"
+      stop
+         endif
+        endif
        endif
       enddo
       endif

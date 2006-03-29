@@ -49,17 +49,6 @@ c     == end of interface ==
       if ((prof_time(num_file,prof_num).GE.mytime).AND.
      & (prof_time(num_file,prof_num).LT.(mytime+deltaTclock))) then
 
-       if (xC(sNx+1,1,bi,bj).LT.xC(sNx+1,1,bi,bj)) then
-       tmp_lon=2*xC(sNx,1,bi,bj)-xC(sNx-1,1,bi,bj)
-       else
-       tmp_lon=xC(sNx+1,1,bi,bj)
-       endif
-       if ((xC(1,1,bi,bj).LE.prof_lon(num_file,prof_num)).AND.
-     &  (tmp_lon.GT.prof_lon(num_file,prof_num)).AND.
-     &  (yC(1,1,bi,bj).LE.prof_lat(num_file,prof_num)).AND.
-     &  (yC(1,sNy+1,bi,bj).GT.prof_lat(num_file,prof_num))
-     & ) then
-
       do num_var=1,4
       do k=1,NLEVELMAX
       prof_traj1D(k)=0
@@ -69,14 +58,12 @@ c     == end of interface ==
 	      call profiles_interp(prof_traj1D,
      & prof_lon(num_file,prof_num), prof_lat(num_file,prof_num),
      & num_var,num_file,mytime,myThid)
-
 	       call active_write_profile(num_file,
      &profdepthno(num_file),prof_traj1D,num_var,
      &prof_num,optimcycle,mythid,profiles_dummy(num_file,num_var))
       endif
       enddo
 
-      endif !if ((xC(1,1,bi,bj).LE.prof_lon ...
       endif !if ((prof_time...
       endif !if (ProfNo(num_file).NE.0) then
       enddo !do prof_num...

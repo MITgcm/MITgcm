@@ -48,18 +48,6 @@ c     == end of interface ==
       do prof_num=1,NOBSGLOB
       if (prof_num.LE.ProfNo(num_file)) then
 
-         if (xC(sNx+1,1,bi,bj).LT.xC(sNx+1,1,bi,bj)) then
-         tmp_lon=2*xC(sNx,1,bi,bj)-xC(sNx-1,1,bi,bj)
-         else
-         tmp_lon=xC(sNx+1,1,bi,bj)
-         endif
-
-         if ((xC(1,1,bi,bj).LE.prof_lon(num_file,prof_num)).AND.
-     &  (tmp_lon.GT.prof_lon(num_file,prof_num)).AND.
-     &  (yC(1,1,bi,bj).LE.prof_lat(num_file,prof_num)).AND.
-     &  (yC(1,sNy+1,bi,bj).GT.prof_lat(num_file,prof_num))
-     & ) then
-
       do num_var=1,4
 
        do K=1,NLEVELMAX
@@ -93,7 +81,6 @@ c     == end of interface ==
       endif
 
       enddo !do num_var... 
-      endif !if ((xC(1,1,bi,bj).LE.prof_lon ...
       endif !if (prof_num.LE.ProfNo(num_file)) then
       enddo !do prof_num=..
       if (ProfNo(num_file).GT.0) then
