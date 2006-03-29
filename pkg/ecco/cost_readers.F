@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.5 2006/03/06 19:16:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.6 2006/03/29 21:16:04 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -87,8 +87,8 @@ c     == end of interface ==
       spval = -9990. 
 
 cnew(
-      daytime = FLOAT(secondsperday*(irec-1))
-      dayiter = hoursperday*(irec-1)
+      daytime = FLOAT(secondsperday*(irec-1)) + modelstart
+      dayiter = hoursperday*(irec-1)+modeliter0
       call cal_getdate( dayiter, daytime, daydate, mythid )
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
       ymod = ersstartdate(1)/10000
