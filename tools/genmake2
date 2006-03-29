@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.144 2006/03/11 02:53:48 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.145 2006/03/29 19:28:02 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2416,7 +2416,7 @@ Clean:
 	@make clean
 	@make cleanlinks
 	-rm -f \$(SPECIAL_FILES)
-	-rm -f genmake* make.log run.log *.bak
+	-rm -f genmake_state genmake_*optfile genmake_warnings make.log run.log *.bak
 CLEAN:
 	@make Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
