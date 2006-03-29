@@ -7,5 +7,5 @@
  useLand=.TRUE.,
  useThSIce=.TRUE.,
  useSHAP_FILT=.TRUE.,
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
  &
