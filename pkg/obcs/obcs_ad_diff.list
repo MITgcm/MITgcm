@@ -4,6 +4,7 @@ obcs_apply_tloc.f
 obcs_apply_ts.f	
 obcs_apply_uv.f	
 obcs_apply_w.f
+obcs_apply_ptracer.f
 obcs_calc.f	
 obcs_init_variables.f
 obcs_prescribe_exchanges.f
