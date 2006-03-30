@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.56 2006/02/07 11:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.57 2006/03/30 19:51:31 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
-      SUBROUTINE MOM_VECINV( 
+      SUBROUTINE MOM_VECINV(
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        KappaRU, KappaRV,
      U        fVerU, fVerV,
@@ -71,7 +71,6 @@ C     == Local variables ==
       _RL      vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -94,9 +93,7 @@ C     i,j,k  :: Loop counters
       INTEGER i,j,k
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
-c     _RL  mtFacU
       _RL  ArDvdrFac
-c     _RL  mtFacV
       _RL  sideMaskFac
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
@@ -146,7 +143,6 @@ C     Initialise intermediate terms
         vrF(i,j)   = 0.
         uCf(i,j)   = 0.
         vCf(i,j)   = 0.
-c       mT(i,j)    = 0.
         del2u(i,j) = 0.
         del2v(i,j) = 0.
         dStar(i,j) = 0.
@@ -172,10 +168,8 @@ c       mT(i,j)    = 0.
 C--   Term by term tracer parmeters
 C     o U momentum equation
       ArDudrFac    = vfFacMom*1.
-c     mTFacU       = mtFacMom*1.
 C     o V momentum equation
       ArDvdrFac    = vfFacMom*1.
-c     mTFacV       = mtFacMom*1.
 
 C note: using standard stencil (no mask) results in under-estimating
 C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
@@ -213,7 +207,7 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
       IF (momViscosity) THEN
-C--    For viscous term, compute horizontal divergence, tension & strain 
+C--    For viscous term, compute horizontal divergence, tension & strain
 C      and mask relative vorticity (free-slip case):
 
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
@@ -291,7 +285,7 @@ C      in terms of vorticity and divergence
      I                       viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      I                       harmonic,biharmonic,useVariableViscosity,
      O                       guDiss,gvDiss,
-     &                       myThid)         
+     &                       myThid)
        ENDIF
 C--   if (momViscosity) end of block.
       ENDIF
@@ -327,7 +321,7 @@ C--   Tendency is minus divergence of the fluxes
        ENDDO
       ENDIF
 
-C-- No-slip and drag BCs appear as body forces in cell abutting topography 
+C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_U_SIDEDRAG(
@@ -392,7 +386,7 @@ C--   Tendency is minus divergence of the fluxes
        ENDDO
       ENDIF
 
-C-- No-slip and drag BCs appear as body forces in cell abutting topography 
+C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_V_SIDEDRAG(
@@ -481,7 +475,6 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
          gV(i,j,k,bi,bj) = vCf(i,j)
         ENDDO
        ENDDO
-
        IF ( writeDiag ) THEN
          IF (snapshot_mdsio) THEN
            CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
@@ -502,7 +495,6 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
          CALL DIAGNOSTICS_FILL(vCf,'Vm_Cori ',k,1,2,bi,bj,myThid)
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -634,22 +626,40 @@ C--   Bernoulli term
 C--   end if momAdvection
       ENDIF
 
-C--   Metric terms for curvilinear grid systems
-c     IF (usingSphericalPolarMTerms) THEN
-C      o Spherical polar grid metric terms
-c      CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,mT,myThid)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
-c       ENDDO
-c      ENDDO
-c      CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,mT,myThid)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mTFacV*mT(i,j)
-c       ENDDO
-c      ENDDO
-c     ENDIF
+C--   3.D Coriolis term (horizontal momentum, Eastward component: -f'*w)
+      IF ( nonHydrostatic.OR.quasiHydrostatic ) THEN
+        CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,uCf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+         ENDDO
+        ENDDO
+       IF ( usingCurvilinearGrid ) THEN
+C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
+        CALL MOM_V_CORIOLIS_NH(bi,bj,k,wVel,vCf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+
+C--   Non-Hydrostatic (spherical) metric terms
+      IF ( useNHMTerms ) THEN
+       CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,uCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+        ENDDO
+       ENDDO
+       CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,vCf,myThid)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Set du/dt & dv/dt on boundaries to zero
       DO j=jMin,jMax
