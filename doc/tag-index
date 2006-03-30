@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.642 2006/03/29 22:11:08 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.643 2006/03/30 20:59:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o move NH metric terms & 3.D Coriolis S/R to pkg/mom_common
+  and add those terms in Vector-Invariant formulation.
 o in ctrl pkg, if ALLOW_CAL, use monthly mean controls 
   if the control period (xx_hfluxperiod etc) is 0
 o in profiles pkg, clean routines and fix details
