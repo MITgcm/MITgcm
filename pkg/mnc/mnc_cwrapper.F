@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.28 2006/03/30 02:56:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.29 2006/03/30 20:25:43 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -522,7 +522,8 @@ C       Text Attribute
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute name ''',
      &         tname(n1:n2), ''' has more than ', MNC_MAX_CHAR,
      &         ' characters and has been truncated to fit'
-          CALL print_error(msgbuf, mythid)
+          CALL PRINT_MESSAGE( msgbuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
 C         MNC_MAX_CHAR = n2 - n1 + 1
           n2 = MNC_MAX_CHAR + n1 - 1
         ENDIF
@@ -538,7 +539,8 @@ C       write(*,*) atype,tname(n1:n2)
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute value ''',
      &         tval(n1:n2), ''' has more than ', MNC_MAX_CHAR,
      &         ' characters and has been truncated to fit'
-          CALL print_error(msgbuf, mythid)
+          CALL PRINT_MESSAGE( msgbuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
           n2 = MNC_MAX_CHAR + n1 - 1
         ENDIF
 
