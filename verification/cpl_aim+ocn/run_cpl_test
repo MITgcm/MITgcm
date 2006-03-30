@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.7 2005/02/13 00:25:37 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.8 2006/03/30 02:13:59 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -15,6 +15,7 @@ then
   echo 'step = 2 : copy input files and dir(s)'
   echo "step = 3 : run on $Np processor"
   echo 'step = 4 : check the results'
+  echo 'step = 5 : remove output files in rank_0,1,2 dir.'
   exit
 fi
 kpr=$1
@@ -52,6 +53,16 @@ then
  if test -f build_cpl/Makefile ; then cd build_cpl ; make CLEAN ; cd .. ; fi
  if test -f build_ocn/Makefile ; then cd build_ocn ; make CLEAN ; cd .. ; fi
  if test -f build_atm/Makefile ; then cd build_atm ; make CLEAN ; cd .. ; fi
+fi
+if test $kpr = 5
+then
+ echo 'remove output files in rank_0,1,2 dir.'
+ rm -f pr_group std_outp
+ if test -d rank_0 ; then cd rank_0 ; rm -f Coupler.0000.clog ; cd .. ; fi
+ if test -d rank_1
+ then cd rank_1 ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
+ if test -d rank_2
+ then cd rank_2 ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
 fi
 
 if test $kpr = 1
