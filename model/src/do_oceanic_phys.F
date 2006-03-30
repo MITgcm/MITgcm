@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.27 2006/03/08 06:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.28 2006/03/30 02:33:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,8 +19,8 @@ C     !INTERFACE:
       SUBROUTINE DO_OCEANIC_PHYS(myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DO_OCEANIC_PHYS                                 
-C     | o Controlling routine for oceanic physics and 
+C     | SUBROUTINE DO_OCEANIC_PHYS
+C     | o Controlling routine for oceanic physics and
 C     |   parameterization
 C     *==========================================================*
 C     | o originally, part of S/R thermodynamics
@@ -156,15 +156,13 @@ CADJ STORE theta = comlev1, key = ikey_dynamics
         CALL FREEZE_SURFACE(  myTime, myIter, myThid )
       ENDIF
 
-#ifdef COMPONENT_MODULE
-# ifndef ALLOW_AIM
+#ifdef ALLOW_OCN_COMPON_INTERF
 C--    Apply imported data (from coupled interface) to forcing fields
-C jmc: do not know precisely where to put this call (bf or af thSIce ?) 
+C jmc: do not know precisely where to put this call (bf or af thSIce ?)
        IF ( useCoupler ) THEN
          CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
        ENDIF
-# endif
-#endif /* COMPONENT_MODULE */
+#endif /* ALLOW_OCN_COMPON_INTERF */
 
 #ifdef ALLOW_BALANCE_FLUXES
 C     balance fluxes 

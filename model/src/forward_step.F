@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.136 2006/03/29 17:00:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.137 2006/03/30 02:33:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -461,11 +461,11 @@ C      Read in coupling data that I import.
          CALL CPL_EXPORT_MY_DATA(       myItP1, myTime, myThid )
          CALL CPL_IMPORT_EXTERNAL_DATA( myItP1, myTime, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-# ifndef ALLOW_AIM
+# ifdef ALLOW_OCN_COMPON_INTERF
         IF ( useRealFreshWaterFlux ) THEN
          CALL OCN_APPLY_IMPORT( .FALSE., myTime, myIter, myThid )
         ENDIF
-# endif
+# endif /* ALLOW_OCN_COMPON_INTERF */
        ENDIF
 #endif /* COMPONENT_MODULE */
 
@@ -726,7 +726,7 @@ C     of ptracers here in GCHEM_FORCING_SEP
          CALL TIMER_START('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
          CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
          CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
-        ENDIF	
+        ENDIF
 #endif /* ALLOW_GCHEM */
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
