@@ -4,10 +4,8 @@ mom_u_adv_uu.f
 mom_u_adv_vu.f
 mom_u_adv_wu.f
 mom_u_coriolis.f
-mom_u_coriolis_nh.f
 mom_u_del2u.f
 mom_u_metric_cylinder.f
-mom_u_metric_nh.f
 mom_u_metric_sphere.f
 mom_u_xviscflux.f
 mom_u_yviscflux.f
@@ -17,7 +15,6 @@ mom_v_adv_wv.f
 mom_v_coriolis.f
 mom_v_del2v.f
 mom_v_metric_cylinder.f
-mom_v_metric_nh.f
 mom_v_metric_sphere.f
 mom_v_xviscflux.f
 mom_v_yviscflux.f
