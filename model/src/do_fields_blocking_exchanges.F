@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.20 2006/02/23 20:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.21 2006/03/30 02:20:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,9 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 CEOP
 
+      IF ( .NOT.useOffLine ) THEN
+C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
+
 c     _EXCH_XYZ_R8( Gu , myThid )
 c     _EXCH_XYZ_R8( Gv , myThid )
 c     _EXCH_XYZ_R8( Gt , myThid )
@@ -45,7 +48,6 @@ c     _EXCH_XYZ_R8( gTNm1 , myThid )
 c     _EXCH_XYZ_R8( gSNm1 , myThid )
 c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
-#ifndef ALLLOW_OFFLINE
       IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        IF ( .NOT.implicitIntGravWave )
@@ -57,9 +59,7 @@ c    & _EXCH_XY_R8( etaN , myThid )
        _EXCH_XYZ_R8( theta, myThid )
        _EXCH_XYZ_R8( salt , myThid )
       ENDIF
-#endif
 
-#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_CD_CODE
 c     _EXCH_XYZ_R8( guCD , myThid )
 c     _EXCH_XYZ_R8( gvCD , myThid )
@@ -68,7 +68,8 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
 #endif
       IF ( useDynP_inEos_Zc )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
-#endif
+C-    if not useOffLine: end
+      ENDIF
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS)
