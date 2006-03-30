@@ -8,9 +8,13 @@ mom_calc_tension.f
 mom_calc_visc.f
 mom_hdissip.f
 mom_quasihydrostatic.f
+mom_u_coriolis_nh.f
+mom_u_metric_nh.f
 mom_u_bottomdrag.f
 mom_u_rviscflux.f
 mom_u_sidedrag.f
+mom_v_coriolis_nh.f
+mom_v_metric_nh.f
 mom_v_bottomdrag.f
 mom_v_rviscflux.f
 mom_v_sidedrag.f
