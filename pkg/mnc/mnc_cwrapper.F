@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.27 2006/03/10 22:01:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.28 2006/03/30 02:56:14 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -517,12 +517,31 @@ C       Text Attribute
         n = mnc_cw_vnat(1,indv) + 1
         n1 = IFNBLNK(tname)
         n2 = ILNBLNK(tname)
+        IF ((n2-n1+1) .GT. MNC_MAX_CHAR) THEN
+          write(msgbuf,'(3a,i6,a)') 
+     &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute name ''',
+     &         tname(n1:n2), ''' has more than ', MNC_MAX_CHAR,
+     &         ' characters and has been truncated to fit'
+          CALL print_error(msgbuf, mythid)
+C         MNC_MAX_CHAR = n2 - n1 + 1
+          n2 = MNC_MAX_CHAR + n1 - 1
+        ENDIF
 C       write(*,*) atype,tname(n1:n2)
         mnc_cw_vtnm(n,indv)(1:MNC_MAX_CHAR) =
      &       mnc_blank_name(1:MNC_MAX_CHAR)
         mnc_cw_vtnm(n,indv)(1:(n2-n1+1)) = tname(n1:n2)
+
         n1 = IFNBLNK(tval)
         n2 = ILNBLNK(tval)
+        IF ((n2-n1+1) .GT. MNC_MAX_CHAR) THEN
+          write(msgbuf,'(3a,i6,a)') 
+     &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute value ''',
+     &         tval(n1:n2), ''' has more than ', MNC_MAX_CHAR,
+     &         ' characters and has been truncated to fit'
+          CALL print_error(msgbuf, mythid)
+          n2 = MNC_MAX_CHAR + n1 - 1
+        ENDIF
+
         IF ((n1 .EQ. 0) .OR. (n2 .EQ. 0)) THEN
           mnc_cw_vtat(n,indv)(1:MNC_MAX_CHAR) =
      &         mnc_blank_name(1:MNC_MAX_CHAR)          
