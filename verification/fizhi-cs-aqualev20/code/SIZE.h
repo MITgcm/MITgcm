@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/SIZE.h,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/SIZE.h,v 1.2 2006/04/03 20:58:48 molod Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -40,9 +40,9 @@ C     Nr  - No. points in Z for full process domain.
      &           sNy =  32,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   1,
+     &           nSx =   6,
      &           nSy =   1,
-     &           nPx =   6,
+     &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
