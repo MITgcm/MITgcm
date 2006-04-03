@@ -1,0 +1,7 @@
+ncra mnc_out_*/SHfields.*.t001.nc -o mnc_out_processed/SHave.t001.nc
+ncra mnc_out_*/SHfields.*.t002.nc -o mnc_out_processed/SHave.t002.nc
+ncra mnc_out_*/SHfields.*.t003.nc -o mnc_out_processed/SHave.t003.nc
+ncra mnc_out_*/SHfields.*.t004.nc -o mnc_out_processed/SHave.t004.nc
+ncra mnc_out_*/SHfields.*.t005.nc -o mnc_out_processed/SHave.t005.nc
+ncra mnc_out_*/SHfields.*.t006.nc -o mnc_out_processed/SHave.t006.nc
+ncrcat mnc_out_*/GTfields.*.nc -o mnc_out_processed/GTall.nc

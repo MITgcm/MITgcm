@@ -1,0 +1,28 @@
+#
+foreach dirname (`cat mncdirlist`)
+echo mnc_out_$dirname
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t001.nc mnc_out_$dirname/TR.t001.nc
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t002.nc mnc_out_$dirname/TR.t002.nc
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t003.nc mnc_out_$dirname/TR.t003.nc
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t004.nc mnc_out_$dirname/TR.t004.nc
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t005.nc mnc_out_$dirname/TR.t005.nc
+ncks -v PREACC,OLR,RSURF -A mnc_out_$dirname/SHfields.*.t006.nc mnc_out_$dirname/TR.t006.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t001.nc mnc_out_$dirname/TR.t001.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t002.nc mnc_out_$dirname/TR.t002.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t003.nc mnc_out_$dirname/TR.t003.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t004.nc mnc_out_$dirname/TR.t004.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t005.nc mnc_out_$dirname/TR.t005.nc
+ncks -v UVEL,VVEL -d Zmd000017,9,9 -A mnc_out_$dirname/MLfields.*.t006.nc mnc_out_$dirname/TR.t006.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t001.nc mnc_out_$dirname/TR.t001.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t002.nc mnc_out_$dirname/TR.t002.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t003.nc mnc_out_$dirname/TR.t003.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t004.nc mnc_out_$dirname/TR.t004.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t005.nc mnc_out_$dirname/TR.t005.nc
+ncks -v WVEL -d Zld000017,6,6 -A mnc_out_$dirname/MLfields.*.t006.nc mnc_out_$dirname/TR.t006.nc
+end
+ncrcat mnc_out_*/TR.t001.nc -o mnc_out_processed/TRall.t001.nc
+ncrcat mnc_out_*/TR.t002.nc -o mnc_out_processed/TRall.t002.nc
+ncrcat mnc_out_*/TR.t003.nc -o mnc_out_processed/TRall.t003.nc
+ncrcat mnc_out_*/TR.t004.nc -o mnc_out_processed/TRall.t004.nc
+ncrcat mnc_out_*/TR.t005.nc -o mnc_out_processed/TRall.t005.nc
+ncrcat mnc_out_*/TR.t006.nc -o mnc_out_processed/TRall.t006.nc

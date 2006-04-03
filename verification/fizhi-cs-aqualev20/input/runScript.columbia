@@ -1,0 +1,77 @@
+#!/bin/csh
+#PBS -N APE6hr
+#PBS -l ncpus=6
+#PBS -l walltime=08:00:00
+#PBS -j oe
+#PBS -o /nobackup2/molod/APE6hr/input/stdout
+#PBS -q science@columbia2
+#PBS -V
+
+
+echo 'start'
+#----------------------------------------------
+set namPBS=APE6hr
+set runDir=/nobackup/molod/APE6hr/input
+set executable=/nobackup/molod/APE6hr/build/mitgcmuv
+#-------------------
+cd $runDir
+
+#------
+limit stacksize unlimited
+module list
+module purge
+module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0
+#------
+
+set its=`egrep 'nIter0' data | sed 's/ nIter0=//'| sed 's/,$//'`
+
+#-------------------
+
+ mpirun -np 6 $executable
+
+#-------------------
+#- prepare new submission :
+#-------------------
+echo 'Copying datetime file to datetime0 - time is: ' `cat datetime`
+cp datetime datetime0
+
+set ite=`grep CHECKPOINT STDOUT.0000 | grep ckptA | sed 's/(PID.TID 0000.0001) %CHECKPOINT//' | sed 's/ //g' | sed 's/ckptA//'`
+echo 'Ending iteration number '$ite
+set nitPick = `/u/molod/bin/add0upto10c $ite`
+if ( -f pickup.ckptA.001.001.data ) then
+ echo 'file:' pickup.ckptA.001.001.data 'exist'
+echo 'Rename pickup files'
+   mv pickup.ckptA.001.001.data pickup.$nitPick.001.001.data
+   mv pickup.ckptA.002.001.data pickup.$nitPick.002.001.data
+   mv pickup.ckptA.003.001.data pickup.$nitPick.003.001.data
+   mv pickup.ckptA.004.001.data pickup.$nitPick.004.001.data
+   mv pickup.ckptA.005.001.data pickup.$nitPick.005.001.data
+   mv pickup.ckptA.006.001.data pickup.$nitPick.006.001.data
+   mv pickup_fizhi.ckptA.001.001.data pickup_fizhi.$nitPick.001.001.data
+   mv pickup_fizhi.ckptA.002.001.data pickup_fizhi.$nitPick.002.001.data
+   mv pickup_fizhi.ckptA.003.001.data pickup_fizhi.$nitPick.003.001.data
+   mv pickup_fizhi.ckptA.004.001.data pickup_fizhi.$nitPick.004.001.data
+   mv pickup_fizhi.ckptA.005.001.data pickup_fizhi.$nitPick.005.001.data
+   mv pickup_fizhi.ckptA.006.001.data pickup_fizhi.$nitPick.006.001.data
+   mv pickup_vegtiles.ckptA.001.001.data pickup_vegtiles.$nitPick.001.001.data
+   mv pickup_vegtiles.ckptA.002.001.data pickup_vegtiles.$nitPick.002.001.data
+   mv pickup_vegtiles.ckptA.003.001.data pickup_vegtiles.$nitPick.003.001.data
+   mv pickup_vegtiles.ckptA.004.001.data pickup_vegtiles.$nitPick.004.001.data
+   mv pickup_vegtiles.ckptA.005.001.data pickup_vegtiles.$nitPick.005.001.data
+   mv pickup_vegtiles.ckptA.006.001.data pickup_vegtiles.$nitPick.006.001.data
+   mv pickup_vegtiles.ckptA.007.001.data pickup_vegtiles.$nitPick.007.001.data
+echo 'Rename mnc directories'
+ mkdir mnc_out_$ite
+ mv mnc_out_200511*00*/* mnc_out_$ite
+ mv STDOUT.0001 mnc_out_$ite
+ /bin/rmdir mnc_out_200511*00*
+echo 'Change start iteration number for next run '
+ sed "s/ nIter0=$its/ nIter0=$ite/" data > data.tmp
+ mv data.tmp data
+ sleep 5
+ qsub $runDir/runScript.columbia
+else
+ echo 'file:' pickup.ckptA.001.001.data 'do not exist !'
+endif
+
+exit

@@ -1,0 +1,71 @@
+MF01  \ mf_uu        \  u2totz  \ zonal_wind_variance  \ m2 s-2
+MF02  \ mf_vv	     \  v2totz  \ meridional_wind_variance  \ m2 s-2
+MF03  \ mf_tt	     \  potempsqz  \ temperature_variance \ K2
+MF04  \ mf_omom	     \  wvelsqz  \ omega_variance \ Pa2 s-2
+MF05  \ mf_phiphi    \  phihydsqz  \ geopotential_variance \ (m2 s-2)2
+MF06  \ mf_qq	     \  saltsqz  \ specific_humidity_variance \ (kg kg-1)2
+MF07  \ mf_uv	     \  uvtotz  \ poleward_zonal_momentum_flux \ m2 s-2
+MF08  \ mf_uom	     \    \ vertical_zonal_momentum_flux \ m Pa s-2 
+MF09  \ mf_vom	     \    \ vertical_meridional_momentum_flux \ m Pa s-2
+MF10  \ mf_vt	     \    \ poleward_temperature_flux \ m s-1 K
+MF11  \ mf_omt	     \  wvelthz  \ vertical_temperature_flux \ Pa s-1 K
+MF12  \ mf_vq	     \    \ poleward_moisture_flux \ m s-1 kg kg-1
+MF13  \ mf_omq	     \  wvelsltz  \ vertical_moisture_flux \ Pa s-1 kg kg-1
+MF14  \ mf_vphi	     \    \ poleward_geopotential_flux \ m3 s-3
+MF15  \ mf_sm_uu     \  smusq  \  zonal_wind_variance_stationary_mean  \ m2 s-2
+MF16  \ mf_sm_vv     \  smvsq  \  meridional_wind_variance_stationary_mean  \ m2 s-2
+MF17  \ mf_sm_tt     \  smtsq  \  temperature_variance_stationary_mean \ K2
+MF18  \ mf_sm_omom   \  smwsq  \  omega_variance_stationary_mean \ Pa2 s-2
+MF19  \ mf_sm_phiphi \  smphisq  \  geopotential_variance_stationary_mean \ (m2 s-2)2
+MF20  \ mf_sm_qq     \  smqsq  \  specific_humidity_variance_stationary_mean \ (kg kg-1)2
+MF21  \ mf_sm_uv     \  smuv  \  poleward_zonal_momentum_flux_stationary_mean \ m2 s-2
+MF22  \ mf_sm_uom    \  smuw  \  vertical_zonal_momentum_flux_stationary_mean \ m Pa s-2
+MF23  \ mf_sm_vom    \  smvw  \  vertical_meridional_momentum_flux_stationary_mean \ m Pa s-2
+MF24  \ mf_sm_vt     \  smvt  \  poleward_temperature_flux_stationary_mean \ m s-1 K
+MF25  \ mf_sm_omt    \  smwt  \  vertical_temperature_flux_stationary_mean \ Pa s-1 K
+MF26  \ mf_sm_vq     \  smvq  \  poleward_moisture_flux_stationary_mean \ m s-1 kg kg-1
+MF27  \ mf_sm_omq    \  smwq  \  vertical_moisture_flux_stationary_mean \ Pa s-1 kg kg-1
+MF28  \ mf_sm_vphi   \  smvphi  \  poleward_geopotential_flux_stationary_mean \ m3 s-3
+MF29  \ mf_se_uu     \  seusq  \ zonal_wind_variance_stationary_eddy \ m2 s-2 
+MF30  \ mf_se_vv     \  sevsq  \ meridional_wind_variance__stationary_eddy \ m2 s-2
+MF31  \ mf_se_tt     \  setsq  \ temperature_variance_stationary_eddy \ K2
+MF32  \ mf_se_omom   \  sewsq  \ omega_variance_stationary_eddy \ Pa2 s-2
+MF33  \ mf_se_phiphi \  sephisq  \  geopotential_variance_stationary_eddy \ (m2 s-2)2
+MF34  \ mf_se_qq     \  seqsq  \ specific_humidity_variance_stationary_eddy \ (kg kg-1)2
+MF35  \ mf_se_uv     \  seuv  \ poleward_zonal_momentum_flux_stationary_eddy \ m2 s-2
+MF36  \ mf_se_uom    \  seuw  \ vertical_zonal_momentum_flux_stationary_eddy \ m Pa s-2
+MF37  \ mf_se_vom    \  sevw  \ vertical_meridional_momentum_flux_stationary_eddy \ m Pa s-2
+MF38  \ mf_se_vt     \  sevt  \ poleward_temperature_flux_stationary_eddy \ m s-1 K 
+MF39  \ mf_se_omt    \    \ vertical_temperature_flux_stationary_eddy \ Pa s-1 K
+MF40  \ mf_se_vq     \  sevq  \ poleward_moisture_flux_stationary_eddy \ m s-1 kg kg-1
+MF41  \ mf_se_omq    \  sewq  \ vertical_moisture_flux_stationary_eddy \ Pa s-1 kg kg-1
+MF42  \ mf_se_vphi   \  sevphi  \ poleward_geopotential_flux_stationary_eddy \ m3 s-3
+MF43  \ mf_tm_uu     \  tmusq  \ zonal_wind_variance_transient_mean_merdional \ m2 s-2
+MF44  \ mf_tm_vv     \  tmvsq  \ meridional_wind_variance_transient_mean_merdional \ m2 s-2
+MF45  \ mf_tm_tt     \  tmtsq  \ temperature_variance_transient_mean_merdional \ K2
+MF46  \ mf_tm_omom   \  tmwsq  \ omega_variance_transient_mean_merdional \ Pa2 s-2
+MF47  \ mf_tm_phiphi \  tmphisq  \  geopotential_variance_transient_mean_merdional \ (m2 s-2)2
+MF48  \ mf_tm_qq     \  tmqsq  \ specific_humidity_variance_transient_mean_merdional \ (kg kg-1)2
+MF49  \ mf_tm_uv     \  tmuv  \ poleward_zonal_momentum_flux_transient_mean_merdional \ m2 s-2
+MF50  \ mf_tm_uom    \  tmuw  \ vertical_zonal_momentum_flux_transient_mean_merdional \ m Pa s-2
+MF51  \ mf_tm_vom    \  tmvw  \ vertical_meridional_momentum_flux_transient_mean_merdional \ m Pa s-2
+MF52  \ mf_tm_vt     \  tmvt  \ poleward_temperature_flux_transient_mean_merdional \ m s-1 K 
+MF53  \ mf_tm_omt    \  tmwt  \ vertical_temperature_flux_transient_mean_merdional  \ Pa s-1 K
+MF54  \ mf_tm_vq     \  tmvq  \ poleward_moisture_flux_transient_mean_merdional \ m s-1 kg kg-1
+MF55  \ mf_tm_omq    \  tmwq  \ vertical_moisture_flux_transient_mean_merdional \ Pa s-1 kg kg-1
+MF56  \ mf_tm_vphi   \  tmvphi  \ poleward_geopotential_flux_transient_mean_merdional \ m3 s-3 
+MF57  \ mf_te_uu     \  teusq  \ zonal_wind_variance_transient_eddy \ m2 s-2
+MF58  \ mf_te_vv     \  tevsq  \ meridional_wind_variance_transient_eddy \ m2 s-2
+MF59  \ mf_te_tt     \  tetsq  \ temperature_variance_transient_eddy \ K2
+MF60  \ mf_te_omom   \  tewsq  \ omega_variance_transient_eddy \ Pa2 s-2
+MF61  \ mf_te_phiphi \  tephisq  \  geopotential_variance_transient_eddy \ (m2s-2)2
+MF62  \ mf_te_qq     \  teqsq  \ specific_humidity_variance_transient_eddy \ (kg kg-1)2
+MF63  \ mf_te_uv     \  teuv  \ poleward_zonal_momentum_flux_transient_eddy \ m2 s-2
+MF64  \ mf_te_uom    \  teuw  \ vertical_zonal_momentum_flux_transient_eddy \ m Pa s-2 
+MF65  \ mf_te_vom    \  tevw  \ vertical_meridional_momentum_flux_transient_eddy \ m Pa s-2
+MF66  \ mf_te_vt     \  tevt  \ poleward_temperature_flux_transient_eddy \ m s-1 K
+MF67  \ mf_te_omt    \  tewt  \ vertical_temperature_flux_transient_eddy \ Pa s-1 K 
+MF68  \ mf_te_vq     \  tevq  \ poleward_moisture_flux_transient_eddy \ m s-1 kg kg-1
+MF69  \ mf_te_omq    \  tewq  \ vertical_moisture_flux_transient_eddy \ Pa s-1 kg kg-1
+MF70  \ mf_te_vphi   \  tevphi  \  poleward_geopotential_flux_transient_eddy \ m3 s-3 
+

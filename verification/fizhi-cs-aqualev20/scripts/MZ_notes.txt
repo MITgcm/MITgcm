@@ -1,0 +1,9 @@
+
+1  ml_u    ok
+2  ml_v    ok
+3  ml_t    *** something odd at the surface (extrapolation?)
+4  ml_om   ok
+5  ml_phi  ok (CCAM looks odd...?)
+6  ml_q    ok
+7  ml_rh   crazy units
+

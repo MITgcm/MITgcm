@@ -1,0 +1,32 @@
+#!/bin/csh
+#PBS -N APE6hr
+#PBS -l ncpus=6
+#PBS -l walltime=00:20:00
+#PBS -j oe
+#PBS -o /nobackup2/molod/APE6hr/input/stdout
+#PBS -q science@columbia2
+#PBS -V
+
+
+echo 'start'
+#----------------------------------------------
+set namPBS=APE6hr
+set runDir=/nobackup/molod/APE6hr/input
+set executable=/nobackup/molod/APE6hr/build/mitgcmuv
+#-------------------
+cd $runDir
+
+#------
+limit stacksize unlimited
+module list
+module purge
+module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0
+#------
+
+set its=`egrep 'nIter0' data | sed 's/ nIter0=//'| sed 's/,$//'`
+
+#-------------------
+
+ mpirun -np 6 $executable
+
+exit

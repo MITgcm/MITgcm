@@ -1,0 +1,6 @@
+# Fizhi Parameters
+ &fizhi_list
+ nhmsbegin=000000,
+ nymdbegin=20040321,
+ runlength=10.0,
+ &
