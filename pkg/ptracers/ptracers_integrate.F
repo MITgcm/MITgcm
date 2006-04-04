@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.30 2006/03/07 15:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.31 2006/04/04 14:52:43 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -27,6 +27,10 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "GAD.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -76,19 +80,46 @@ C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER iterNb
 CEOP
 
+C Loop ranges for daughter routines
+      iMin = 1-OLx+2
+      iMax = sNx+OLx-1
+      jMin = 1-OLy+2
+      jMax = sNy+OLy-1
+      
+      km1  = MAX(1,k-1)
+      kUp  = 1+MOD(k+1,2)
+      kDown= 1+MOD(k,2)
+
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
 
-C Loop ranges for daughter routines
-       iMin = 1-OLx+2
-       iMax = sNx+OLx-1
-       jMin = 1-OLy+2
-       jMax = sNy+OLy-1
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = iTracer - 1
+          max0 = PTRACERS_num
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iptrkey = (act0 + 1)
+     &                      + act1*max0
+     &                      + act2*max0*max1
+     &                      + act3*max0*max1*max2
+     &                      + act4*max0*max1*max2*max3
+          kkey = (iptrkey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
 
-       km1  = MAX(1,k-1)
-       kUp  = 1+MOD(k+1,2)
-       kDown= 1+MOD(k,2)
-
+#ifdef ALLOW_AUTODIFF_TAMC
+      rFlx(1,1,kDown,iTracer) = rFlx(1,1,kDown,iTracer)
+c
+CADJ STORE ptracer(:,:,k,bi,bj,iTracer)
+CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+CADJ STORE gPtrnm1(:,:,k,bi,bj,iTracer)
+CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+ 
 C Calculate active tracer tendencies (gPtr) due to internal processes
 C (advection, [explicit] diffusion, parameterizations,...)
        calcAdvection = .NOT.multiDimAdvection

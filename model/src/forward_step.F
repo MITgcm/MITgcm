@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.137 2006/03/30 02:33:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.138 2006/04/04 14:52:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -250,8 +250,8 @@ C     theta is dumped or time-averaged.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS
-cph this replaces _bibj storing of ptracer within thermodynamics
-CADJ STORE ptracer  = comlev1, key = ikey_dynamics
+cph this is now also replaced by storing elsewhere
+cphCADJ STORE ptracer  = comlev1, key = ikey_dynamics
 # endif
 #endif
 

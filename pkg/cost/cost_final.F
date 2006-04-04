@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.13 2005/08/25 16:10:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.14 2006/04/04 14:52:43 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -28,7 +28,9 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "cost.h"
-#include "ctrl.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 c     == routine arguments ==
 
