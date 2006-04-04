@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.11 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.12 2006/04/04 07:46:17 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -37,7 +37,8 @@ C     === Routine arguments ===
      &          OBSuFile,OBSvFile,OBStFile,OBSsFile,
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,
      &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,
-     &          useOBCSsponge, useOBCSbalance, useOBCSprescribe
+     &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
+     &          OBCSprintDiags
 #ifdef ALLOW_PTRACERS
      &        , OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile
 #endif
@@ -91,7 +92,8 @@ C--   Default flags and values for OBCS
       useOrlanskiWest =.FALSE.
       useOBCSsponge   =.FALSE.
       useOBCSbalance  =.FALSE.
-      useOBCSprescribe = .FALSE.
+      useOBCSprescribe=.FALSE.
+      OBCSprintDiags  =.TRUE.
 
       OBNuFile = ' '
       OBNvFile = ' '

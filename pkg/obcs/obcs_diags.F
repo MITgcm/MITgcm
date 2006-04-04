@@ -47,6 +47,7 @@ C--   Generaly only thread 1 does IO here. It can not start until
 C--   all threads fields are ready.
       IF (
      &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,deltaTClock)
+     &  .AND. OBCSprintDiags
      & ) THEN
 
        _BARRIER
