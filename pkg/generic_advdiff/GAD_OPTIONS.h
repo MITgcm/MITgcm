@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.5 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.6 2006/04/04 14:12:19 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -22,13 +22,19 @@ C Use this file for selecting options within the GAD package
 
 #include "CPP_OPTIONS.h"
 
-C The selects the form of COSINE(lat) scaling of bi-harmonic term.
+C This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
 C *only for use on a lat-lon grid*
+C Setting this flag here only affects the bi-harmonic tracer terms; to
+C use COSINEMETH_III in the momentum equations set it CPP_OPTIONS.h
 #define COSINEMETH_III
 
-C The selects isotropic scaling of bi-harmonic term when
+C This selects isotropic scaling of harmonic and bi-harmonic term when
 C using the COSINE(lat) scaling.
-#undef  ISOTROPIC_COS_SCALING
+C Setting this flag here only affects the tracer diffusion terms; to
+C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the 
+C momentum equations set it CPP_OPTIONS.h; the following line
+C even overrides setting the flag in CPP_OPTIONS.h
+#undef ISOTROPIC_COS_SCALING
 
 C As of checkpoint41, the inclusion of multi-dimensional advection
 C introduces excessive recomputation/storage for the adjoint.
