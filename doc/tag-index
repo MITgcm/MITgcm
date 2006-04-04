@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.644 2006/04/04 07:47:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.645 2006/04/04 14:59:10 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o ptracers adjoint:
+  * avoid extensive recomputatations
+  * fix missing re-init. of gptr (missed by TAF)
 o obcs: add a flag (OBCSprintDiags, defaults is true) that allows 
   me to turn off the excessive output to STDOUT that this package produces
 o move NH metric terms & 3.D Coriolis S/R to pkg/mom_common
