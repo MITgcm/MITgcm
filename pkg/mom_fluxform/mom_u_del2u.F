@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.5 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.6 2006/04/05 15:43:15 mlosch Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -67,6 +67,9 @@ C     Meridional flux d/dy U
      &   *_dxV(i,j,bi,bj)
      &   *_recip_dyU(i,j,bi,bj)
      &   *(uFld(i,j)-uFld(i,j-1))
+#if (defined (ISOTROPIC_COS_SCALING) && defined (COSINEMETH_III))
+     &   *sqcosFacV(J,bi,bj)
+#endif
        ENDDO
       ENDDO
 
