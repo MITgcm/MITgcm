@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.31 2006/03/10 22:01:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.32 2006/04/05 21:07:36 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -161,8 +161,8 @@ C=====================================================================
      &     mnc_cw_gname, mnc_cw_dn, 
      &     mnc_cw_vname, 
      &     mnc_cw_vtnm,  mnc_cw_vinm,  mnc_cw_vdnm,
-     &     mnc_cw_vtat,
-     &     mnc_cw_fgnm
+     &     mnc_cw_fgnm,
+     &     mnc_cw_vtat
 
       character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
@@ -170,8 +170,10 @@ C=====================================================================
       character*(MNC_MAX_CHAR) mnc_cw_vtnm(MNC_CW_MAX_I,MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_vinm(MNC_CW_MAX_I,MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_vdnm(MNC_CW_MAX_I,MNC_MAX_ID)
-      character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
+
+C     Note the longer string length here
+      character*(MNC_MAX_CATT) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
 
 C=====================================================================
       COMMON /MNC_CW_VARS_I/

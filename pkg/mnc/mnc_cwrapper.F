@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.29 2006/03/30 20:25:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.30 2006/04/05 21:07:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -494,7 +494,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer n, nvf,nvl, n1,n2, indv
+      integer n, nvf,nvl, n1,n2, indv, ic
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Functions
@@ -518,10 +518,11 @@ C       Text Attribute
         n1 = IFNBLNK(tname)
         n2 = ILNBLNK(tname)
         IF ((n2-n1+1) .GT. MNC_MAX_CHAR) THEN
-          write(msgbuf,'(3a,i6,a)') 
+          write(msgbuf,'(3a,i6,2a)') 
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute name ''',
      &         tname(n1:n2), ''' has more than ', MNC_MAX_CHAR,
-     &         ' characters and has been truncated to fit'
+     &         ' characters and has been truncated to fit--please',
+     &         'use a smaller name or increase MNC_MAX_CHAR'
           CALL PRINT_MESSAGE( msgbuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 C         MNC_MAX_CHAR = n2 - n1 + 1
@@ -534,25 +535,23 @@ C       write(*,*) atype,tname(n1:n2)
 
         n1 = IFNBLNK(tval)
         n2 = ILNBLNK(tval)
-        IF ((n2-n1+1) .GT. MNC_MAX_CHAR) THEN
-          write(msgbuf,'(3a,i6,a)') 
+        IF ((n2-n1+1) .GT. MNC_MAX_CATT) THEN
+          write(msgbuf,'(3a,i6,2a)') 
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute value ''',
-     &         tval(n1:n2), ''' has more than ', MNC_MAX_CHAR,
-     &         ' characters and has been truncated to fit'
+     &         tval(n1:n2), ''' has more than ', MNC_MAX_CATT,
+     &         ' characters and has been truncated to fit--please',
+     &         'use a smaller name or increase MNC_MAX_CATT'
           CALL PRINT_MESSAGE( msgbuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
-          n2 = MNC_MAX_CHAR + n1 - 1
+          n2 = MNC_MAX_CATT + n1 - 1
         ENDIF
-
-        IF ((n1 .EQ. 0) .OR. (n2 .EQ. 0)) THEN
-          mnc_cw_vtat(n,indv)(1:MNC_MAX_CHAR) =
-     &         mnc_blank_name(1:MNC_MAX_CHAR)          
-          mnc_cw_vnat(1,indv) = n
-        ELSE
-          mnc_cw_vtat(n,indv)(1:MNC_MAX_CHAR) =
-     &         mnc_blank_name(1:MNC_MAX_CHAR)
+        
+        mnc_cw_vnat(1,indv) = n
+        DO ic = 1,MNC_MAX_CATT
+          mnc_cw_vtat(n,indv)(ic:ic) = ' '
+        ENDDO
+        IF ((n1 .NE. 0) .AND. (n2 .NE. 0)) THEN
           mnc_cw_vtat(n,indv)(1:(n2-n1+1)) = tval(n1:n2)
-          mnc_cw_vnat(1,indv) = n
         ENDIF
       ENDIF
         
