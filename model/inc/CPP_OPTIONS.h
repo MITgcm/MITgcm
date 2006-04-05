@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.35 2006/04/05 15:42:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.36 2006/04/05 21:25:53 mlosch Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -46,6 +46,10 @@ C   Setting this flag here affects both momentum and tracer equation unless
 C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
 C   The definition of the flag is commented to avoid interference with
 C   such other header files.
+C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
+C   in data which is then automatically scaled by the grid size;
+C   the old method of specifying viscAh/viscA4 and this flag is provided
+C   for completeness only (and for use with the adjoint).
 C#define ISOTROPIC_COS_SCALING
 
 C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
