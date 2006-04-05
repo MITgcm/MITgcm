@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.645 2006/04/04 14:59:10 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.646 2006/04/05 15:44:47 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o mom_fluxform: fixing the mutual use of ISOTROPIC_COS_SCALING 
+  and COSINEMETH_III, add comments in default CPP_OPTIONS.h
 o ptracers adjoint:
   * avoid extensive recomputatations
   * fix missing re-init. of gptr (missed by TAF)
