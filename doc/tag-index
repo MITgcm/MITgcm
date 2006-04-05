@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.646 2006/04/05 15:44:47 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.647 2006/04/05 21:27:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o mom_vecinv: add ISOTROPIC_COS_SCALING flags to mom_vi_hdissip for 
+  completeness
 o mom_fluxform: fixing the mutual use of ISOTROPIC_COS_SCALING 
   and COSINEMETH_III, add comments in default CPP_OPTIONS.h
 o ptracers adjoint:
