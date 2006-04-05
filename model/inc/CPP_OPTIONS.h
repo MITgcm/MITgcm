@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.34 2005/08/24 23:05:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.35 2006/04/05 15:42:14 mlosch Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -38,6 +38,25 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #undef NONLIN_FRSURF
+
+C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
+C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
+C *only for use on a lat-lon grid*
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+C#define ISOTROPIC_COS_SCALING
+
+C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
+C *only for use on a lat-lon grid*
+C   Has no effect if ISOTROPIC_COS_SCALING is undefined.
+C   Has no effect on vector invariant momentum equations.
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+C#define COSINEMETH_III
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
