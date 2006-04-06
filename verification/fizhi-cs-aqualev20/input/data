@@ -66,7 +66,7 @@
  pChkptFreq=0.0,
  ChkptFreq=0.0,
  dumpFreq=0.0,
- monitorFreq=267840.,
+ monitorFreq=1.,
 #monitorFreq=2678400.,
  taveFreq=0.0,
  tave_lastiter=1.,
