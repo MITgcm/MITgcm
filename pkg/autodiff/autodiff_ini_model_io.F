@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.10 2005/09/02 23:21:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.11 2006/04/07 10:10:25 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -128,6 +128,15 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS','long_name',
      &     'adjoint sea_surface_salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
+     &     'coordinates','XC YC RC iter', myThid)
+#endif
+
+#ifdef ALLOW_DIFFKR_CONTROL
+      CALL MNC_CW_ADD_VNAME('adDIFFKR', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adDIFFKR','units','[cost]/[m^2/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adDIFFKR','long_name',
+     &     'adjoint vertical diffusion', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adDIFFKR',
      &     'coordinates','XC YC RC iter', myThid)
 #endif
 
