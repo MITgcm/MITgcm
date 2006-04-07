@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# fimm.bccs.uib.no
+# http://www.parallab.uib.no/resources/cluster/nodemem
+
+CPP='/lib/cpp  -traditional -P'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+
+FOPTIM='-O3 -align'
+LIBS='-L/opt/mpich/intel/lib -L/local/netcdf-3.6.0-p1/lib -lnetcdf'
+
+FC=ifort
+
+DEFINES='-DWORDLENGTH=4'
+
+INCLUDES='-I/opt/mpich/intel/include -I/local/netcdf-3.6.0-p1/include'
+INCLUDEDIRS='/opt/mpich/intel/include'
