@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.145 2006/03/29 19:28:02 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.146 2006/04/07 02:53:55 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -13,20 +13,28 @@
 test_for_package_in_cpp_options() {
     cpp_options=$1
     pkg=$2
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg$"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg$"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg$"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg$"
 }
 
 # Search for particular CPP #cmds associated with MPI
 # usage: test_for_mpi_in_cpp_eeoptions CPP_file
 test_for_mpi_in_cpp_eeoptions() {
     cpp_options=$1
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI" || exit 99
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI[ ]"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI$"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI$"
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI$"
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI$"
 }
 
 # Search for particular string in a file. Return 1 if detected, 0 if not
@@ -39,7 +47,7 @@ test_for_string_in_file() {
     if test "x${RETVAL}" = x0 ; then
 	printf "Error: In $file there is an illegal line: "
         grep -i "$strng" $file
-	return 1
+	exit 99
     fi
     return 0
 }
