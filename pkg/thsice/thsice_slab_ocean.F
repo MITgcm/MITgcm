@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.4 2005/11/04 01:34:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.5 2006/04/09 14:47:25 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -55,7 +55,9 @@ C     i,j          :: Loop counters
 #endif
       INTEGER i,j
 
-      IF ( .NOT.stepFwd_oceMxL ) RETURN
+cph the following structure is not supported by TAF
+cph      IF ( .NOT.stepFwd_oceMxL ) RETURN
+      IF ( stepFwd_oceMxL ) THEN
 
 C--    add heat flux and fresh-water + salt flux :
        dtFac   = ocean_deltaT/rhosw
@@ -106,6 +108,9 @@ C-    Diagnose surf. temp. change
          ENDIF
         ENDDO
        ENDDO
+
+c-- End of IF ( stepFwd_oceMxL ) THEN
+      ENDIF
 
 #endif  /* ALLOW_THSICE */
 
