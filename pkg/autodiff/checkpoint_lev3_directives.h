@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.27 2005/12/13 16:15:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.28 2006/04/09 17:35:30 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
@@ -88,6 +88,10 @@ CADJ STORE pload1  = tapelev3, key = ilev_3
 
 #ifdef ALLOW_SEAICE
 # include "seaice_ad_check_lev3_dir.h"
+#endif /* ALLOW_SEAICE */
+
+#ifdef ALLOW_THSICE
+# include "thsice_ad_check_lev3_dir.h"
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_EBM

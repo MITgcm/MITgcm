@@ -1,0 +1,7 @@
+
+C----------------------------------------
+C subroutine thsice_read_pickup 
+C----------------------------------------
+CADJ SUBROUTINE thsice_read_pickup  INPUT  = 1,2,3
+CADJ SUBROUTINE thsice_read_pickup  OUTPUT =
+

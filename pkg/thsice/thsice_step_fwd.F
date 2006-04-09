@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.15 2006/03/26 00:45:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.16 2006/04/09 17:35:30 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -78,7 +78,6 @@ C     isIceFree :: true for ice-free grid-cell that remains ice-free
       _RL snowPr
       _RL agingTime, ageFac
       _RL albedo
-      _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL frwAtm
       _RL flx2oc
       _RL frw2oc
@@ -87,8 +86,14 @@ C     isIceFree :: true for ice-free grid-cell that remains ice-free
       _RL Fbot, esurp
       _RL opFrac, icFrac
       _RL oceV2s, oceTs
-      _RL compact, hIce, hSnow, Tsf, Tice(nlyr), qicen(nlyr)
+      _RL Tsf, Tice(nlyr), qicen(nlyr)
       _RL tmpflx(0:2), tmpdTs
+      _RL hSnow
+c
+      _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL compact(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c
       LOGICAL isIceFree(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
@@ -103,6 +108,10 @@ C-    Initialise flxAtm
         DO i = 1-Olx, sNx+Olx
           flxAtm(i,j) = 0.
           isIceFree(i,j) = .FALSE.
+#ifdef ALLOW_AUTODIFF_TAMC
+          compact(i,j) = 0.
+          hIce(i,j) = 0.
+#endif
         ENDDO
        ENDDO
 
@@ -118,7 +127,7 @@ C-------
          IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
           icFrac  = iceMask(i,j,bi,bj)
           TFrzOce = -mu_Tf*sOceMxL(i,j,bi,bj)
-          hIce    = iceHeight(i,j,bi,bj)
+          hIce(i,j)    = iceHeight(i,j,bi,bj)
           hSnow   = snowHeight(i,j,bi,bj)
           Tsf     = Tsrf(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
@@ -130,14 +139,14 @@ C-------
           ENDIF
 
           CALL THSICE_ALBEDO(
-     I               hIce, hSnow, Tsf, snowAge(i,j,bi,bj),
+     I               hIce(i,j), hSnow, Tsf, snowAge(i,j,bi,bj),
      O               albedo,
      I               myThid )
           flxSW(i,j) = flxSW(i,j)*(1. _d 0 - albedo)
           siceAlb(i,j,bi,bj) = albedo
 
           CALL THSICE_SOLVE4TEMP(
-     I          useBulkForce, tmpflx, TFrzOce, hIce, hSnow,
+     I          useBulkForce, tmpflx, TFrzOce, hIce(i,j), hSnow,
      U          flxSW(i,j), Tsf, qicen,
      O          Tice, sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj),
      O          tmpdTs, flxAtm(i,j), evpAtm(i,j),
@@ -202,12 +211,12 @@ c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 
         Fbot   = 0. _d 0
         saltFlux(i,j,bi,bj) = 0. _d 0
-        compact= iceMask(i,j,bi,bj)
+        compact(i,j)= iceMask(i,j,bi,bj)
 C-------
-        IF (dBug .AND. (frzmltMxL.GT.0. .OR. compact.GT.0.) ) THEN
+        IF (dBug .AND. (frzmltMxL.GT.0. .OR. compact(i,j).GT.0.) ) THEN
           WRITE(6,'(A,2I4,2I2)') 'ThSI_FWD: i,j=',i,j,bi,bj
           WRITE(6,1010) 'ThSI_FWD:-1- iceMask, hIc, hSn, Tsf  =',
-     &                  compact, iceHeight(i,j,bi,bj),
+     &                  compact(i,j), iceHeight(i,j,bi,bj),
      &                  snowHeight(i,j,bi,bj), Tsrf(i,j,bi,bj)
           WRITE(6,1010) 'ThSI_FWD: ocTs,TFrzOce,frzmltMxL,Qnet=',
      &                     oceTs, TFrzOce, frzmltMxL,Qnet(i,j,bi,bj)
@@ -217,7 +226,7 @@ C-------
 
           oceV2s  = v2ocMxL(i,j,bi,bj)
           snowPr  = snowPrc(i,j,bi,bj)
-          hIce    = iceHeight(i,j,bi,bj)
+          hIce(i,j)    = iceHeight(i,j,bi,bj)
           hSnow   = snowHeight(i,j,bi,bj)
           Tsf     = Tsrf(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
@@ -227,7 +236,7 @@ C-------
           CALL THSICE_CALC_THICKN(
      I          frzmltMxL, TFrzOce, oceTs, oceV2s, snowPr,
      I          sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj), evpAtm(i,j),
-     U          compact, hIce, hSnow, Tsf, qicen, flx2oc,
+     U          compact(i,j), hIce(i,j), hSnow, Tsf, qicen, flx2oc,
      O          frw2oc, fsalt, Fbot,
      I          dBug, myThid)
 
@@ -253,11 +262,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (dBug) WRITE(6,1010) 'ThSI_FWD: icFrac,flxAtm,evpAtm,flxSnw=',
      &  iceMask(i,j,bi,bj),flxAtm(i,j),evpAtm(i,j),-Lfresh*snowPr
       IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,flx2oc,fsalt,frw2oc=',
-     &   compact,flx2oc,fsalt,frw2oc
+     &   compact(i,j),flx2oc,fsalt,frw2oc
 #ifdef CHECK_ENERGY_CONSERV
           icFrac = iceMask(i,j,bi,bj)
           CALL THSICE_CHECK_CONSERV( dBug, i, j, bi, bj, 0,
-     I            icFrac, compact, hIce, hSnow, qicen,
+     I            icFrac, compact(i,j), hIce(i,j), hSnow, qicen,
      I            flx2oc, frw2oc, fsalt, flxAtm(i,j), frwAtm,
      I            myTime, myIter, myThid )
 #endif /* CHECK_ENERGY_CONSERV */
@@ -265,7 +274,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Update Sea-Ice state :
 c         iceMask(i,j,bi,bj)=compact
-          iceHeight(i,j,bi,bj) = hIce
+          iceHeight(i,j,bi,bj) = hIce(i,j)
           snowHeight(i,j,bi,bj)= hSnow
           Tsrf(i,j,bi,bj) =Tsf
           Qice1(i,j,bi,bj)=qicen(1)
@@ -284,7 +293,8 @@ C-     weighted average net fluxes:
 
           IF (dBug) WRITE(6,1010)
      &          'ThSI_FWD:-3- compact, hIc, hSn, Qnet =',
-     &                        compact,hIce,hSnow,Qnet(i,j,bi,bj)
+     &                        compact(i,j),hIce(i,j),hSnow,
+     &                        Qnet(i,j,bi,bj)
 
         ELSEIF (hOceMxL(i,j,bi,bj).gt.0. _d 0) THEN
           flxAtm(i,j) =  -Qnet(i,j,bi,bj)
@@ -298,41 +308,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.3 : freezing of sea-water
 C     over ice-free fraction and what is left from ice-covered fraction
 C-------
-c       compact= iceMask(i,j,bi,bj)
-        hIce   = iceHeight(i,j,bi,bj)
+c       compact(i,j) = iceMask(i,j,bi,bj)
+        hIce(i,j)   = iceHeight(i,j,bi,bj)
         hSnow  = snowHeight(i,j,bi,bj)
 
         esurp  = frzmltMxL - Fbot*iceMask(i,j,bi,bj)
         IF (esurp.GT.0. _d 0) THEN
-          icFrac = compact
+          icFrac = compact(i,j)
           qicen(1)= Qice1(i,j,bi,bj)
           qicen(2)= Qice2(i,j,bi,bj)
           CALL THSICE_EXTEND(
      I               esurp, TFrzOce,
-     U               oceTs, compact, hIce, hSnow, qicen,
+     U               oceTs, compact(i,j), hIce(i,j), hSnow, qicen,
      O               flx2oc, frw2oc, fsalt,
      I               dBug, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,flx2oc,fsalt,frw2oc='
-     &                 ,compact,flx2oc,fsalt,frw2oc
+     &                 ,compact(i,j),flx2oc,fsalt,frw2oc
 #ifdef CHECK_ENERGY_CONSERV
           tmpflx(1) = 0.
           tmpflx(2) = 0.
           CALL THSICE_CHECK_CONSERV( dBug, i, j, bi, bj, 1,
-     I            icFrac, compact, hIce, hSnow, qicen,
+     I            icFrac, compact(i,j), hIce(i,j), hSnow, qicen,
      I            flx2oc, frw2oc, fsalt, tmpflx(1), tmpflx(2),
      I            myTime, myIter, myThid )
 #endif /* CHECK_ENERGY_CONSERV */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    Update Sea-Ice state :
-          IF ( compact.GT.0. _d 0 .AND. icFrac.EQ.0. _d 0) THEN
+          IF ( compact(i,j).GT.0. _d 0 .AND. icFrac.EQ.0. _d 0) THEN
              Tsrf(i,j,bi,bj)  = TFrzOce
              Tice1(i,j,bi,bj) = TFrzOce
              Tice2(i,j,bi,bj) = TFrzOce
              Qice1(i,j,bi,bj) = qicen(1)
              Qice2(i,j,bi,bj) = qicen(2)
           ENDIF
-          iceHeight(i,j,bi,bj) = hIce
+          iceHeight(i,j,bi,bj) = hIce(i,j)
           snowHeight(i,j,bi,bj)= hSnow
 C--    Net fluxes :
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc
@@ -340,16 +350,17 @@ C--    Net fluxes :
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt
 
           IF (dBug) WRITE(6,1010)
-     &          'ThSI_FWD:-4- compact, hIc, hSn, Qnet =',
-     &                        compact,hIce,hSnow,Qnet(i,j,bi,bj)
+     &         'ThSI_FWD:-4- compact, hIc, hSn, Qnet =',
+     &         compact(i,j),hIce(i,j),hSnow,
+     &         Qnet(i,j,bi,bj)
 C--   - if esurp > 0 : end
         ENDIF
 
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
      &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
-     &                       .AND.   compact .LE.0. _d 0
-        IF ( compact .GT. 0. _d 0 ) THEN
-          iceMask(i,j,bi,bj)=compact
+     &                       .AND.   compact(i,j) .LE.0. _d 0
+        IF ( compact(i,j) .GT. 0. _d 0 ) THEN
+          iceMask(i,j,bi,bj)=compact(i,j)
           IF ( hSnow .EQ. 0. _d 0 ) snowAge(i,j,bi,bj) = 0. _d 0
         ELSE
           iceMask(i,j,bi,bj)  = 0. _d 0

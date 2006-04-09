@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.68 2006/03/29 17:00:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.69 2006/04/09 17:35:30 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,6 +79,9 @@ c They provide the fields to be stored.
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+# endif
+# ifdef ALLOW_THSICE
+#  include "THSICE_VARS.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"

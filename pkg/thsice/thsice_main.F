@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.6 2006/01/22 15:58:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.7 2006/04/09 17:35:30 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,6 +29,10 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -80,6 +84,19 @@ C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                         + act3*max1*max2
+     &                         + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Mixed layer thickness: take the 1rst layer
 #ifdef NONLIN_FRSURF
         IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
@@ -112,6 +129,11 @@ C--     Mixed layer thickness: take the 1rst layer
           ENDDO
         ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
          DO j = jMin, jMax
           DO i = iMin, iMax
            tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
@@ -129,6 +151,29 @@ C--     Mixed layer thickness: take the 1rst layer
            siceAlb(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceMask = comlev1, key = iicekey
+CADJ STORE iceHeight  = comlev1, key = iicekey
+CADJ STORE snowHeight = comlev1, key = iicekey
+CADJ STORE Tsrf    = comlev1, key = iicekey
+CADJ STORE Qice1   = comlev1, key = iicekey
+CADJ STORE Qice2   = comlev1, key = iicekey
+CADJ STORE snowAge = comlev1, key = iicekey
+
+CADJ STORE sHeating = comlev1, key = iicekey
+CADJ STORE flxCndBt = comlev1, key = iicekey
+CADJ STORE snowPrc  = comlev1, key = iicekey
+
+CADJ STORE hOceMxL = comlev1, key = iicekey
+CADJ STORE tOceMxL = comlev1, key = iicekey
+CADJ STORE sOceMxL = comlev1, key = iicekey
+CADJ STORE v2ocMxL = comlev1, key = iicekey
+
+CADJ STORE empmr   = comlev1, key = iicekey
+CADJ STORE qnet    = comlev1, key = iicekey
+#endif
+
 #ifdef ALLOW_BULK_FORCE
          IF ( useBulkforce ) THEN
            CALL THSICE_GET_PRECIP(
@@ -137,6 +182,7 @@ C--     Mixed layer thickness: take the 1rst layer
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
          ENDIF
 #endif
+
 
          CALL THSICE_STEP_FWD( 
      I                     bi, bj, iMin, iMax, jMin, jMax, 
@@ -152,6 +198,10 @@ c      ENDDO
 c     ENDDO
 
 c       IF ( .FALSE. ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
         IF ( stressReduction.GT. 0. _d 0 ) THEN
          DO j = jMin, jMax
           DO i = iMin+1,iMax

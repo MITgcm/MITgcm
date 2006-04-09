@@ -1,0 +1,14 @@
+thsice_albedo.f
+thsice_ave.f
+thsice_calc_thickn.f
+thsice_check_conserv.f
+thsice_extend.f
+thsice_get_bulkf.f
+thsice_get_precip.f
+thsice_impl_temp.f
+thsice_ini_vars.f
+thsice_main.f
+thsice_reshape_layers.f
+thsice_slab_ocean.f
+thsice_solve4temp.f
+thsice_step_fwd.f
