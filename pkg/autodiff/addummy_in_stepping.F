@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.31 2006/04/07 10:10:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.32 2006/04/09 14:46:00 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -232,7 +232,7 @@ c
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &         'adDIFFKR', addiffkr, myThid)
+     &         'adDiffkr', addiffkr, myThid)
 #endif
 
 c
