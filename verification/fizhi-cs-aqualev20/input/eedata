@@ -5,7 +5,11 @@
  &EEPARMS
  useCubedSphereExchange=.TRUE.,
 # unlimit the stack size for the FIZHI rad code
- useSETRLSTK=.TRUE.,
+#EH3  useSETRLSTK is commented out (default: false) since, with the g77 
+#EH3  compiler, it causes the model to hang *without* returning -- thus
+#EH3  killing all our automated g77 testing on, for instance, the ACES 
+#EH3  cluster.
+#EH3  useSETRLSTK=.TRUE.,
 # Activate one line below to support 2, 3 or 6 way multi-threading
 #nTx=2,
 #nTx=3,
