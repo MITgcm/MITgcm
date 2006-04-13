@@ -1,9 +1,9 @@
 function [data,time] = ...
-    DiagLoadMonitor(fln,mnchandle,dad,itr,tst,SecPerYear,DiagDebug);
+    GraphixLoadMonitor(fln,mnchandle,dad,itr,tst,SecPerYear,DiagDebug);
 
 % Read in files names.
-%files = dir([dad,'/',mnchandle]);
-filesin=ls([dad,'/',mnchandle]);
+%files = dir([dad,'/',mnchandle,'*']);
+filesin=ls([dad,'/',mnchandle,'*']);
 index=1;
 while ~isempty(filesin)
     [token,filesin] = strtok(filesin);
@@ -33,15 +33,7 @@ for ifile = 1:length(files)
     nc=netcdf(files(ifile).name,'read');
     
     % Read time and data information.
-    nciter=nc{'iter'};
-    if isempty(nciter) % Cludge because some mnc output had 'T' being iterations!?!
-        nciter=nc{'T'};
-        if(mod(nciter(end),86400*360) ~= 0)
-            nciter = nciter.*tst;
-        end
-    else
-        nciter = nciter.*tst;
-    end
+    nciter=nc{'T'}(:);
     
     ncdata=nc{fln};
     if isempty(nciter), error('Monitor time axis not found!'); end
