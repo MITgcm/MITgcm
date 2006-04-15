@@ -39,7 +39,7 @@ COMMAND="$HERE/$RUNIT"
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
-TDIR="/SCRATCH/s01/edhill/tmp_"$VENDOR
+TDIR="/SCRATCH/s06/edhill/tmp_"$VENDOR
 if test -e $TDIR ; then
     rm -rf $TDIR
 fi
