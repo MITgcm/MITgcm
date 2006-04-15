@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.183 2006/03/20 15:10:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.184 2006/04/15 15:06:22 jmc Exp $
 C $Name:  $
 C
 
@@ -608,8 +608,9 @@ C     Ro_SeaLevel        :: standard position of Sea-Level in "R" coordinate, us
 C                          starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides) 
 C                           (default=2: full drag ; =1: gives half-slip BC)
-C     bottomDragLinear   :: Drag coefficient built in to core dynamics
-C     bottomDragQuadratic   ( linear: 1/s, quadratic: 1/m )
+C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
+C     bottomDragQuadratic :: Quadratic bottom-drag coefficient (units of [r]/m)
+C               (if using zcoordinate, units becomes linear: m/s, quadratic: [-])
 C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
