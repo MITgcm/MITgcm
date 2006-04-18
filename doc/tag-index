@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.648 2006/04/09 17:36:48 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.649 2006/04/18 13:47:40 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o obcs and ptracers: fix boundary conditions for advections schemes 
+  with larger stencil 
 o thsice adjoint: start
 o mom_vecinv: add ISOTROPIC_COS_SCALING flags to mom_vi_hdissip for 
   completeness
