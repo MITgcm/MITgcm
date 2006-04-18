@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.1 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.2 2006/04/18 13:46:17 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,8 +49,10 @@ C Northern boundary
        J_obc = OB_Jn(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc,K,bi,bj)
-        pFld(I,J_obc)=OBNptr(I,K,bi,bj,iTracer)*obc_mask
-CML        pFld(I,J_obc)=pFld(I,J_obc-1)*obc_mask
+        DO J = J_obc, J_obc+Oly
+         pFld(I,J)=OBNptr(I,K,bi,bj,iTracer)*obc_mask
+CML        pFld(I,J)=pFld(I,J_obc-1)*obc_mask
+        ENDDO
        ENDIF
 #endif
 C Southern boundary
@@ -58,8 +60,10 @@ C Southern boundary
        J_obc = OB_Js(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc+1,K,bi,bj)
-        pFld(I,J_obc)=OBSptr(I,K,bi,bj,iTracer)*obc_mask
-CML        pFld(I,J_obc)=pFld(I,J_obc+1)*obc_mask
+        DO J = J_obc-Oly, J_obc
+         pFld(I,J)=OBSptr(I,K,bi,bj,iTracer)*obc_mask
+CML        pFld(I,J)=pFld(I,J_obc+1)*obc_mask
+        ENDDO
        ENDIF
 #endif
       ENDDO
@@ -71,8 +75,10 @@ C Eastern boundary
        I_obc = OB_Ie(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc,J,K,bi,bj)
-        pFld(I_obc,J)=OBEptr(J,K,bi,bj,iTracer)*obc_mask
-CML        pFld(I_obc,J)=pFld(I_obc-1,J)*obc_mask
+        DO I = I_obc, I_obc+Olx
+         pFld(I,J)=OBEptr(J,K,bi,bj,iTracer)*obc_mask
+CML        pFld(I,J)=pFld(I_obc-1,J)*obc_mask
+        ENDDO
        ENDIF
 #endif
 C Western boundary
@@ -80,8 +86,10 @@ C Western boundary
        I_obc=OB_Iw(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc+1,J,K,bi,bj)
-        pFld(I_obc,J)=OBWptr(J,K,bi,bj,iTracer)*obc_mask
-CML        pFld(I_obc,J)=pFld(I_obc+1,J)*obc_mask
+        DO I = I_obc-Olx, I_obc
+         pFld(I,J)=OBWptr(J,K,bi,bj,iTracer)*obc_mask
+CML        pFld(I,J)=pFld(I_obc+1,J)*obc_mask
+        ENDDO
        ENDIF
 #endif
       ENDDO
