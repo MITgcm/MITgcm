@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.6 2005/08/23 18:25:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.7 2006/04/19 21:45:46 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -96,7 +96,8 @@ C Only do I/O if I am the master thread
         tempgrid(i,j) = globalarr(i+bislot,j+bjslot,1)
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                 temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         tcanopy(n,bi,bj) = temptile(n)
        enddo
@@ -108,7 +109,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = globalarr(i+bislot,j+bjslot,1) - 0.5
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         tdeep(n,bi,bj) = temptile(n)
        enddo
@@ -120,7 +122,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.01
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         ecanopy(n,bi,bj) = temptile(n)
        enddo
@@ -132,7 +135,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.7
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         swetshal(n,bi,bj) = temptile(n)
        enddo
@@ -144,7 +148,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.5
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         swetroot(n,bi,bj) = temptile(n)
        enddo
@@ -156,7 +161,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.3
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         swetdeep(n,bi,bj) = temptile(n)
        enddo
@@ -168,7 +174,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         snodep(n,bi,bj) = temptile(n)
        enddo
@@ -180,7 +187,8 @@ C Only do I/O if I am the master thread
      .    tempgrid(i,j) = 0.
        enddo
        enddo
-       call grd2msc(tempgrid,sNx,sNy,igrd,temptile,nchp,nchptot(bi,bj))
+       call grd2msc(tempgrid,sNx,sNy,igrd(1,bi,bj),
+     .                    temptile,nchp,nchptot(bi,bj))
        do n = 1,nchp
         capac(n,bi,bj) = temptile(n)
        enddo
