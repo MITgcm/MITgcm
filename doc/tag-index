@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.649 2006/04/18 13:47:40 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.650 2006/04/19 19:43:10 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o correct a sign problem in cost_scat.F
 o obcs and ptracers: fix boundary conditions for advections schemes 
   with larger stencil 
 o thsice adjoint: start
