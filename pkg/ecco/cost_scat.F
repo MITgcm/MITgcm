@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.5 2005/05/02 14:30:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.6 2006/04/19 19:41:11 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -134,8 +134,8 @@ c--         Compute cost rel. to monthly SCAT field.
                 if (maskW(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scatx = fctile_scatx +
      &                  wscatx(i,j,bi,bj)*cosphi(i,j,bi,bj)*
-     &                  ( (tauxbar(i,j,bi,bj)+scatxdat(i,j,bi,bj))*
-     &                    (tauxbar(i,j,bi,bj)+scatxdat(i,j,bi,bj))*
+     &                  ( (tauxbar(i,j,bi,bj)-scatxdat(i,j,bi,bj))*
+     &                    (tauxbar(i,j,bi,bj)-scatxdat(i,j,bi,bj))*
      &                           scatxmask(i,j,bi,bj) )
                    if ( wscatx(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  scatxmask(i,j,bi,bj) .ne. 0. )
@@ -153,8 +153,8 @@ c--         Compute cost rel. to monthly SCAT field.
                 if (maskS(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scaty = fctile_scaty +
      &                  wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
-     &                  ( (tauybar(i,j,bi,bj)+scatydat(i,j,bi,bj))*
-     &                    (tauybar(i,j,bi,bj)+scatydat(i,j,bi,bj))*
+     &                  ( (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
+     &                    (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
      &                           scatymask(i,j,bi,bj) )  
                    if ( wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  scatymask(i,j,bi,bj) .ne. 0. )
