@@ -1,0 +1,22 @@
+Tutorial Example: "Global Ocean State Estimation"
+(Global Ocean State Estimation at 4.o Resolution) 
+================================================
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code_ad -adof=../../../tools/adjoint_options/adjoint_staf [-of my_platform_optionFile]
+  make depend
+  make adall
+
+To run:
+  cd build
+  ln -s ../input_ad/* .
+  ln -s ../input/* .
+  ./mitgcmuv_ad > output.txt_adm
+
+There is comparison output in the directory:
+  results/output.txt_adm
+grep for grdchk output:
+  grep 'precision_grdchk_result' output.txt_adm
+
+Comments:
