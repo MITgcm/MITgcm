@@ -1,0 +1,39 @@
+Tutorial Example: "P coordinate Global Ocean" 
+(Global Ocean Simulation at 4o Resolution in Pressure Coordinates)
+==================================================================
+(formerly "global_ocean_pressure") 
+
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+  make depend
+  make
+
+To run:
+  cd build
+  ln -s ../input/* .
+  ./mitgcmuv > output.txt
+
+There is comparison output in the directory:
+  results/output.txt
+
+Comments:
+o the set up is similar to that of global_ocean.90x40x15
+o the code directory contains calc_phi_hyd.F, where the potential is computed
+  according to the more natural finite volume discretization. Finite difference
+  discretization is energy conserving, but the representation of the "fixed"
+  surface (interface ocean-atmosphere) is less consistent.
+o the code directory also contains dynamics.F which calls
+  remove_mean_rl.F, a generic routine, to remove the mean from the
+  diagnostic variable phiHydLow (sea surface height/gravity in pressure
+  coordinates) 
+
+changes: 07 Feb. 2003 (jmc):
+o find difficult to maintain the local version of dynamics.F up to date.
+  therefore, has been remove from the code directory.
+  One can recover the same version (but up to date) simply 
+  by activating the commented lines [between lines Cml( and Cml) ],
+  at the end of the standard version of dynamics.F
+o finite volume form of calc_phi_hyd.F is now a standard option.
+  only needs to set integr_GeoPot=1 in file "data" to select this form.

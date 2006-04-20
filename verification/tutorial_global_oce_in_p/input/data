@@ -1,0 +1,97 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh =3.E5,
+ no_slip_sides=.TRUE.,
+ viscAr =1.721611620915750e5,
+#viscAz =1.67E-3,
+ no_slip_bottom=.FALSE.,
+ diffKhT=1.E3,
+ diffKrT=5.154525811125000e3,
+#diffKzT=0.5E-4,
+ diffKhS=1.E3,
+ diffKrS=5.154525811125000e3,
+#diffKzS=0.5E-4,
+ implicitDiffusion=.TRUE.,
+ ivdc_kappa=1.030905162225000e9,
+#ivdc_kappa=10.0,
+ rotationPeriod=86400.,
+ gravity=9.81,
+ rhonil=1035.,
+ rhoConstFresh=999.8,
+ buoyancyRelation='OCEANICP',
+ integr_GeoPot=1,
+ eosType='JMD95P',
+ useNHMTerms=.TRUE.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+#useRealFreshWaterFlux=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ cosPower=0.5,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime =           0.,
+ endTime   =     3456000.,
+# after 100 years of intergration, one gets a reasonable flow field
+#endTime   = 3110400000.,
+ deltaTmom      =   1200.0,
+ deltaTtracer   = 172800.0,
+ deltaTfreesurf = 172800.0,
+ deltaTClock    = 172800.0,
+ pChkptFreq  = 3110400000.,
+ dumpFreq    = 3110400000.,
+ taveFreq    = 3110400000.,
+ monitorFreq =   1.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ tauThetaClimRelax=5184000.0,
+ abEps=0.1,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.TRUE.,
+ dXspacing=4.,
+ dYspacing=4.,
+ Ro_SeaLevel=53023122.566084,
+ delR=7103300.720021, 6570548.440790, 6041670.010249,
+      5516436.666057, 4994602.034410, 4475903.435290,
+      3960063.245801, 3446790.312651, 2935781.405664,
+      2426722.705046, 1919291.315988, 1413156.804970,
+      1008846.750166,  705919.025481,  504089.693499,
+ phiMin=-80.,
+ &
+
+# Input datasets
+ &PARM05
+ topoFile       ='topog.bin',
+ pLoadFile      ='deltageopotjmd95.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile ='lev_s.bin',
+ zonalWindFile  ='trenberth_taux.bin',
+ meridWindFile  ='trenberth_tauy.bin',
+ thetaClimFile  ='lev_sst.bin',
+#saltClimFile   ='lev_sss.bin',
+ surfQFile      ='shi_qnet.bin',
+ EmPmRFile      ='shi_empmr.bin',
+ &
