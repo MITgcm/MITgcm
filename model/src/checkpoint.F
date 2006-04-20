@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.64 2006/03/20 15:11:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.65 2006/04/20 10:21:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -218,7 +218,7 @@ C       Read model fields
 
         IF ( useDynP_inEos_Zc ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
+cph          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
         ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN

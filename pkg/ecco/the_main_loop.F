@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.32 2006/04/20 03:01:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.33 2006/04/20 10:21:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -480,6 +480,7 @@ c**************************************
       CALL EXF_GETFORCING( mytime, myiter, mythid )
       CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
 # ifdef NONLIN_FRSURF
+CADJ STORE hFacC  = comlev1, key = ikey_dynamics
 CADJ STORE SST    = comlev1, key = ikey_dynamics
 CADJ STORE SSS    = comlev1, key = ikey_dynamics
 #  ifdef SHORTWAVE_HEATING
