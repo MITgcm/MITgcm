@@ -1,0 +1,25 @@
+Tutorial Example: "Barotropic gyre" 
+(Barotropic Ocean Gyre In Cartesian Coordinates)
+================================================
+(formerly "exp0" verification ; 
+ also "barotropic_gyre_in_a_box" in release.1 branch)
+
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+  make depend
+  make
+
+To run:
+  cd build
+  ln -s ../input/* .
+  ./mitgcmuv > output.txt
+
+There is comparison output in the directory:
+  results/output.txt
+
+Comments:
+  The input data is real*8 and generated using the MATLAB script
+  gendata.m.
+
