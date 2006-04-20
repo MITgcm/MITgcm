@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.102 2006/04/04 14:52:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.103 2006/04/20 03:29:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -480,9 +480,11 @@ C--
 # ifdef ALLOW_AUTODIFF_TAMC 
 #  if (defined (NONLIN_FRSURF) && defined (ALLOW_GMREDI))
 CADJ STORE kux(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE kuz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE kvy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#   ifdef GM_EXTRA_DIAGONAL
+CADJ STORE kuz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE kvz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#   endif
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
          IF ( tempStepping ) THEN
