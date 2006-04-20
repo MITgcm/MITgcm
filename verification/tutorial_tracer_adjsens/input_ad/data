@@ -1,0 +1,90 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 16.0 , 15.2 , 14.5 , 13.9 , 13.3 ,
+       12.4 , 11.3 ,  9.9 ,  8.4 ,  6.7 ,
+        5.2 ,  3.8 ,  2.9 ,  2.3 ,  1.8 ,
+        1.5 ,  1.1 ,  0.8 ,  0.66,  0.63,
+ sRef= 34.65, 34.75, 34.82, 34.87, 34.90,
+       34.90, 34.86, 34.78, 34.69, 34.60,
+       34.58, 34.62, 34.68, 34.72, 34.73,
+       34.74, 34.73, 34.73, 34.72, 34.72,
+ viscAz=1.E-3,
+ viscAh=5.E5,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ diffKhT=1.E3,
+ diffKzT=3.E-5,
+ diffKhS=1.E3,
+ diffKzS=3.E-5,
+ rotationPeriod=86400.,
+ beta=1.E-11,
+ f0=1.e-4,
+ tAlpha=2.E-4,
+ sBeta =7.4E-4,
+ gravity=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ eosType='LINEAR',
+ implicitDiffusion=.true.,
+ readBinaryPrec=32,
+ exactConserv=.TRUE.,
+ useCDscheme=.TRUE.,
+# readPickupWithTracer  = .FALSE.,
+# writePickupWithTracer = .FALSE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+# startTime         = 49766400000.,
+ startTime         = 0.,
+# endTime           = 49767264000.,
+ endTime           = 345600.,
+ deltaTmom         = 2400.0,
+ tauCD=321428.,
+ deltaTtracer      = 86400.0,
+ deltaTClock       = 86400.0,
+ cAdjFreq=-1.,
+ abEps=0.1,
+ pChkptFreq        = 86400000.,
+ chkptFreq         = 86400000.,
+ dumpFreq          = 86400.,
+#
+ tauThetaClimRelax = 2592000.0,
+ tauSaltClimRelax  = 2592000.0,
+ tauTr1ClimRelax   = 31104000.0,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.TRUE.,
+ delZ= 5.000000e+01, 5.000000e+01, 5.500000e+01, 6.000000e+01,
+       6.500000e+01, 7.000000e+01, 8.000000e+01, 9.500000e+01,
+       1.200000e+02, 1.550000e+02, 2.000000e+02, 2.600000e+02,
+       3.200000e+02, 4.000000e+02, 4.800000e+02, 5.700000e+02,
+       6.550000e+02, 7.250000e+02, 7.750000e+02, 8.150000e+02,
+ phiMin=-80.,
+ delY=40*4,
+ delX=90*4,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='theta.bin',
+ hydrogSaltFile='salt.bin',
+ bathyFile='topog.bin',
+ zonalWindFile='windx.bin',
+ meridWindFile='windy.bin',
+ thetaClimFile='SST.bin'
+ saltClimFile='SSS.bin'
+ &
