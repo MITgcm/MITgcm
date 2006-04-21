@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.651 2006/04/20 21:30:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.652 2006/04/21 14:29:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58d_post
 o upgrade simple test-experiment to tutorial example:
  step.1: duplicate the experiment and (step.2) will remove the old copy.
   tutorial_barotropic_gyre      <- copy of exp0     (R1:barotropic_gyre_in_a_box)
@@ -16,7 +17,6 @@ o upgrade simple test-experiment to tutorial example:
   tutorial_global_oce_optim     <- empty for now (David ?)
   tutorial_global_oce_in_p      <- copy of global_ocean_pressure
  some tutorials (R1) were already checked-in under tutorial_examples in release1_branch
-
 o correct a sign problem in cost_scat.F
 o obcs and ptracers: fix boundary conditions for advections schemes 
   with larger stencil 
