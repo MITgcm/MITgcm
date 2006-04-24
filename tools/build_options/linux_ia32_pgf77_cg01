@@ -1,22 +1,23 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77_cg01,v 1.1 2005/05/24 15:19:08 molod Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77_cg01,v 1.2 2006/04/24 19:00:15 jmc Exp $
 #
 
-FC='pgf77'
-CC='pgcc'
+FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
+CC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpicc'
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
+NOOPTFLAGS='-O0'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+    FOPTIM='-fast -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+    FOPTIM='-O0 -Mvect=sse -pc64 -Mcache_align -Kieee'
 fi
 
-INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
+INCLUDES='-I/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
 LIBS='-lnetcdf'
