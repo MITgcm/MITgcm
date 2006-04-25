@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.5 2006/03/23 23:06:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.6 2006/04/25 19:37:29 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -126,7 +126,7 @@ cph!!!
       endif
 #endif
 
-#if defined ALLOW_PROFILES_CONTRIBUTION
+#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
       CALL profiles_init_fixed(mythid)
 #endif
 
