@@ -3,6 +3,8 @@
 # o -N Job Name
 #PBS -N eh3_g77
 #
+#PBS -q four-twelve
+#
 # o -l ask for 3 nodes, each with the attribute "p4".
 #PBS -l nodes=2:p4
 #
