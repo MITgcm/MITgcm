@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.9 2006/03/23 23:06:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.10 2006/04/25 16:43:06 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -443,7 +443,7 @@ c--     Accumulate ubar and vbar.
 
 #endif /* ALLOW_SEAICE */
 
-#if defined ALLOW_PROFILES_CONTRIBUTION
+#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
       CALL profiles_inloop(mytime,mythid)
 #endif
 

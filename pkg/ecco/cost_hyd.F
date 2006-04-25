@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.8 2006/03/23 23:06:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.9 2006/04/25 16:43:06 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -181,7 +181,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call cost_salt  ( myiter, mytime, mythid )
 #endif
 
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
        CALL cost_profiles( myiter, mytime, mythid)
 #endif
 
