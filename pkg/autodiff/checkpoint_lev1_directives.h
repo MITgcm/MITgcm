@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.21 2006/04/09 17:35:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.22 2006/04/25 16:42:17 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -7,6 +7,9 @@ c     created: heimbach@mit.edu 10-Jan-2002
 c
 #ifdef NONLIN_FRSURF
 c
+CADJ STORE hfacc       = comlev1, key = ikey_dynamics
+CADJ STORE recip_hfacs = comlev1, key = ikey_dynamics
+CADJ STORE recip_hfacw = comlev1, key = ikey_dynamics
 c
 #endif /* NONLIN_FRSURF */
 
