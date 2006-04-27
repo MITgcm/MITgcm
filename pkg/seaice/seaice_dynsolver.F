@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.8 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.9 2006/04/27 12:41:51 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -250,6 +250,12 @@ C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dwatn = comlev1, key=ikey_dynamics
+CADJ STORE uice  = comlev1, key=ikey_dynamics
+CADJ STORE vice  = comlev1, key=ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C Calculate ocean surface stress
       CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )

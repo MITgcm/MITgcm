@@ -22,3 +22,8 @@ seaice_cost_driver.f
 seaice_cost_final.f
 seaice_cost_init_varia.f
 cost_ice_test.f
+seaice_calc_viscosities.f
+seaice_dynsolver.f
+seaice_evp.f
+seaice_lsr.f
+seaice_ocean_stress.f
