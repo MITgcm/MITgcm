@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.7 2005/12/19 23:37:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.8 2006/04/27 12:49:02 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,9 +66,11 @@ c
 c
       if ( doAdmtlmBypassAD ) then
 c
+#ifdef ALLOW_BYPASSAD
          CALL TIMER_START('ADMTLM_DRIVER             [BYPASSAD]',mythid)
          CALL ADMTLM_BYPASSAD( mythid )
          CALL TIMER_STOP ('ADMTLM_DRIVER             [BYPASSAD]',mythid)
+#endif
 c
       else
 c

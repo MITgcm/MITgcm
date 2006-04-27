@@ -1,11 +1,12 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.2 2005/11/01 04:09:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.3 2006/04/27 12:49:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
-      subroutine admtlm_dsvd2model( first, mythid )
+      subroutine admtlm_dsvd2model( 
+     &     first, postprocev, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_unpack
@@ -61,6 +62,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       logical first
+      logical postprocev
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
@@ -112,7 +114,11 @@ c--   Initialise
       nbuffGlobal = 0
 
 cph-new(
-      yadprefix = 'g_'
+      if ( postprocev ) then
+         yadprefix = 'ev'
+      else
+         yadprefix = 'g_'
+      endif
       nveccount = 0
 cph-new)
 
@@ -179,14 +185,22 @@ c     >>> Write gradient vector <<<
 
 #ifdef ALLOW_ADMTLM
 
-       write(cfile(1:128),'(a)') ' '
-       write(cfile,'(a,i4.4)') 
-     &      'admtlm_vector.it', optimcycle
+       if (postprocev) then
+cph do a dummy read of initialized EV fields
+cph they will be overwritten by array phtmpadmtlm
+          write(cfile(1:128),'(a)') ' '
+          write(cfile,'(a,i4.4)') 
+     &         'admtlm_eigen', optimcycle
+       else
+          write(cfile(1:128),'(a)') ' '
+          write(cfile,'(a,i4.4)') 
+     &         'admtlm_vector.it', optimcycle
+       endif
        print *, 'ph-pack: unpacking ', cfile
-       open( cunit, file   = cfile,
-     &      status = 'old',
-     &      form   = 'unformatted',
-     &      access  = 'sequential'   )
+cph       open( cunit, file   = cfile,
+cph     &      status = 'old',
+cph     &      form   = 'unformatted',
+cph     &      access  = 'sequential'   )
 
 #else /* ndef ALLOW_ADMTLM */
 

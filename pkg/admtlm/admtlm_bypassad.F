@@ -12,7 +12,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ADMTLM
+#if (defined (ALLOW_ADMTLM) && defined (ALLOW_BYPASSAD))
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "optim.h"
@@ -25,7 +25,7 @@ C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
       integer myThid
 
-#ifdef ALLOW_ADMTLM
+#if (defined (ALLOW_ADMTLM) && defined (ALLOW_BYPASSAD))
 
 C     ========= Local variables =========================
       integer i, j, k
