@@ -204,8 +204,9 @@ cph               delZnorm = SQRT(delR(1)/delR(k))
      &                 filek, k
                   STOP 'in S/R ctrl_unpack'
                endif
-#endif /* ALLOW_ADMTLM */
+cph#endif /* ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
+#endif /* ALLOW_ADMTLM */
             endif
 c
             cbuffindex = 0

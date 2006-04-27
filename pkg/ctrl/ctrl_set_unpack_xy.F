@@ -183,8 +183,9 @@ c--   Only the master thread will do I/O.
      &                 filek, 1
                   STOP 'in S/R ctrl_unpack'
                endif
-#endif /* ndef ALLOW_ADMTLM */
+cph#endif /* ndef ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
+#endif /* ndef ALLOW_ADMTLM */
             endif
 c
             cbuffindex = 0
@@ -276,8 +277,9 @@ cph)
      &                 filek, k
                   STOP 'in S/R ctrl_unpack'
                endif
-#endif /* ALLOW_ADMTLM */
+cph#endif /* ALLOW_ADMTLM */
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
+#endif /* ALLOW_ADMTLM */
             endif
 c
             cbuffindex = 0

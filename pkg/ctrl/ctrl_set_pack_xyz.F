@@ -232,8 +232,9 @@ c           --> check cbuffindex.
 #ifndef ALLOW_ADMTLM
                write(cunit) cbuffindex
                write(cunit) k
-#endif
+cph#endif
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
+#endif
             endif
 c
             if ( doPackDiag ) then
