@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.139 2006/04/09 17:35:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.140 2006/04/28 22:53:14 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,7 @@ C--   Reset the model iteration counter and the model time.
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
 #include "checkpoint_lev1_directives.h"
+#include "checkpoint_lev1_template.h"
 c**************************************
 #endif
 

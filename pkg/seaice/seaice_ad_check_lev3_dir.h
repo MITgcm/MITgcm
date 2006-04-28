@@ -12,6 +12,5 @@ CADJ STORE vice     = tapelev3, key = ilev_3
 #  ifdef SEAICE_CGRID
 CADJ STORE dwatn = tapelev3, key = ilev_3
 CADJ STORE seaicemasku,seaicemaskv = tapelev3, key = ilev_3
-CADJ STORE uicec,vicec = tapelev3, key = ilev_3
 #  endif
 # endif
