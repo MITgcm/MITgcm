@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.652 2006/04/21 14:29:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.653 2006/04/28 22:54:02 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o SEAICE_CGRID adjoint started
+  (all stores seem to be sorted out, but NANs in adjoint).
 
 checkpoint58d_post
 o upgrade simple test-experiment to tutorial example:
