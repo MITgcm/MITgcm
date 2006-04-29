@@ -35,8 +35,8 @@ while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
             run_dir="/net/ds-01/scratch-5/edhill/tmp_"$i"/MITgcm/verification"
             tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr' | head -1`
             if test ! "x$tdir" = x ; then
-                cp -ra $run_dir"/"$tdir "/tmp/tr_itrda-"$i"_"$date_str
-                ( cd /tmp ; tar -czf "./tr_aces-"$i".tar.gz" "./tr_itrda-"$i"_"$date_str )
+                cp -ra $run_dir"/"$tdir "/tmp/tr_aces-"$i"_"$date_str
+                ( cd /tmp ; tar -czf "./tr_aces-"$i".tar.gz" "./tr_aces-"$i"_"$date_str )
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" edhill@mitgcm.org
                 echo "Email sent for $i"
             else
