@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.20 2006/03/20 21:36:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.21 2006/05/03 23:32:40 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -152,6 +152,10 @@ C                      /divided by Delta
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       integer KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      integer iicekey
+#endif
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

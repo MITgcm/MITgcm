@@ -1,3 +1,7 @@
+#ifdef NONLIN_FRSURF
+CADJ STORE salt,surfaceforcingtice = comlev1, key = ikey_dynamics
+#endif
+
 CADJ STORE area          = comlev1, key = ikey_dynamics
 CADJ STORE heff          = comlev1, key = ikey_dynamics
 CADJ STORE hsnow         = comlev1, key = ikey_dynamics
