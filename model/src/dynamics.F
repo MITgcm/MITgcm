@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.131 2006/03/29 17:00:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.132 2006/05/03 23:34:41 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,6 +101,7 @@ C     == Global variables ===
 #   include "OBCS_PTRACERS.h"
 #  endif
 # endif
+# include "MOM_FLUXFORM.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !CALLING SEQUENCE:
@@ -311,6 +312,18 @@ cph)
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0
           gvDissip(i,j)  = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+cph(
+c--   need some re-initialisation here to break dependencies
+cph)
+# ifdef NONLIN_FRSURF
+#  ifndef DISABLE_RSTAR_CODE
+          dWtransC(i,j,bi,bj)  = 0. _d 0
+          dWtransU(i,j,bi,bj)  = 0. _d 0
+          dWtransV(i,j,bi,bj)  = 0. _d 0
+#  endif
+# endif /* NONLIN_FRSURF */
+#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
         ENDDO
 
@@ -356,9 +369,9 @@ C--      Calculate the total vertical diffusivity
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRU(:,:,:) 
-CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
+CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 CADJ STORE KappaRV(:,:,:) 
-CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
+CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of dynamics loop
@@ -408,6 +421,14 @@ CADJ STORE gunm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gvnm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#   ifndef DISABLE_RSTAR_CODE
+CADJ STORE dwtransc(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransu(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransv(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#   endif
 #  ifdef ALLOW_CD_CODE
 CADJ STORE unm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -442,16 +463,31 @@ C        phiHyd(z=0)=0
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
+           IF (.NOT. vectorInvariantMomentum) THEN
 #ifdef ALLOW_MOM_FLUXFORM
-           IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
+C
+# ifdef ALLOW_AUTODIFF_TAMC 
+#  ifdef NONLIN_FRSURF
+#   ifndef DISABLE_RSTAR_CODE
+CADJ STORE dwtransc(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransu(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransv(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#   endif
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
+C
+              CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         KappaRU, KappaRV,
      U         fVerU, fVerV,
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
 #endif
+           ELSE
 #ifdef ALLOW_MOM_VECINV
-           IF (vectorInvariantMomentum) THEN
 C
 # ifdef ALLOW_AUTODIFF_TAMC 
 #  ifdef NONLIN_FRSURF
@@ -468,8 +504,9 @@ C
      U         fVerU, fVerV,
      O         guDissip, gvDissip,
      I         myTime, myIter, myThid)
-           ENDIF
 #endif
+           ENDIF
+C
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,

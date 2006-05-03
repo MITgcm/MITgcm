@@ -85,3 +85,6 @@ update_etah.f
 update_surf_dr.f
 update_cg2d.f
 swfrac.f
+calc_r_star.f
+update_r_star.f
+

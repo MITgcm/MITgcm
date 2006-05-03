@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.140 2006/04/28 22:53:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.141 2006/05/03 23:34:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -331,7 +331,10 @@ cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
 # ifdef NONLIN_FRSURF
 cph-test
-CADJ STORE hFacC              = comlev1, key = ikey_dynamics
+CADJ STORE hFacC                 = comlev1, key = ikey_dynamics
+#  ifndef DISABLE_RSTAR_CODE
+CADJ STORE rstarexpc             = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -435,6 +438,10 @@ CADJ STORE etaH               = comlev1, key = ikey_dynamics
 #  ifdef ALLOW_CD_CODE
 CADJ STORE etanm1             = comlev1, key = ikey_dynamics
 #  endif
+#  ifndef DISABLE_RSTAR_CODE
+cph-test
+CADJ STORE rstarexpc = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -482,6 +489,19 @@ CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
 CADJ STORE etaN           = comlev1, key = ikey_dynamics
+c
+#  ifndef DISABLE_RSTAR_CODE
+CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics
+c
+CADJ STORE h0facc,h0facs,h0facw  
+CADJ &     = comlev1, key = ikey_dynamics
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
+CADJ &     = comlev1, key = ikey_dynamics
+CADJ STORE rstarexpc,rstarexps,rstarexpw 
+CADJ &     = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #endif
 C--   Step forward fields and calculate time tendency terms.
@@ -545,6 +565,12 @@ CADJ STORE hFacW    = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+c
+CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics
+c
+CADJ STORE h0facc,h0facs,h0facw  = comlev1, key = ikey_dynamics
 # endif
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
         CALL UPDATE_R_STAR( myTime, myIter, myThid )
@@ -634,6 +660,15 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+#  ifndef DISABLE_RSTAR_CODE
+cph-test
+cph not clear, why this one
+CADJ STORE h0facc = comlev1, key = ikey_dynamics
+#  endif
+# endif
+#endif
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
@@ -643,10 +678,6 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-cph-test
-cphCADJ STORE etaH          = comlev1, key = ikey_dynamics
-#endif
 C--   Update etaH(n+1) :
         CALL TIMER_START('UPDATE_ETAH         [FORWARD_STEP]',mythid)
         CALL UPDATE_ETAH( myTime, myIter, myThid )
@@ -657,6 +688,10 @@ C--   Update etaH(n+1) :
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
+#  ifdef ALLOW_AUTODIFF_TAMC
+cph-test
+CADJ STORE rstarfacc,rstarfacs,rstarfacw = comlev1, key = ikey_dynamics
+#  endif
 C--   r* : compute the future level thickness according to etaH(n+1) 
         CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
         CALL CALC_R_STAR(etaH, myTime, myIter, myThid )

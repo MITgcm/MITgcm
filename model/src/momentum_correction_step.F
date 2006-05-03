@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.4 2006/02/23 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.5 2006/05/03 23:34:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,6 +46,10 @@ C     == Global variables ===
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
+#include "tamc_keys.h"
+# ifdef NONLIN_FRSURF
+#  include "SURFACE.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -139,12 +143,32 @@ C--   Filter (and exchange)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
-cph-test
 CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics
 # endif
 #endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          idynkey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+# ifdef NONLIN_FRSURF
+#  ifndef DISABLE_RSTAR_CODE
+cph-test
+CADJ STORE detahdt(:,:,bi,bj)    = comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE etan(:,:,bi,bj)       = comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE rstardhcdt(:,:,bi,bj) = comlev1_bibj, key = idynkey, byte = isbyte
+#  endif
+# endif
+#endif
 
 C--     Integrate continuity vertically
 C--     for vertical velocity and "etaN" (exact volume conservation) :
