@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.28 2006/04/09 17:35:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.29 2006/05/03 23:35:38 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -43,6 +43,16 @@ CADJ STORE hfacw         = tapelev2, key = ilev_2
 CADJ STORE recip_hfacc   = tapelev2, key = ilev_2
 CADJ STORE recip_hfacs   = tapelev2, key = ilev_2
 CADJ STORE recip_hfacw   = tapelev2, key = ilev_2
+# ifndef DISABLE_RSTAR_CODE
+CADJ STORE rstarexpc,rstarexps,rstarexpw 
+CADJ &     = tapelev2, key = ilev_2
+CADJ STORE rstarfacc,rstarfacs,rstarfacw 
+CADJ &     = tapelev2, key = ilev_2
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
+CADJ &     = tapelev2, key = ilev_2
+CADJ STORE h0facc,h0facs,h0facw
+CADJ &     = tapelev2, key = ilev_2
+# endif
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_CD_CODE

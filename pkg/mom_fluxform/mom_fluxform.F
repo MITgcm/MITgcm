@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.34 2006/03/30 19:49:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.35 2006/05/03 23:35:11 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -52,6 +52,11 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_AUTODIFF_TAMC 
+# include "tamc.h"
+# include "tamc_keys.h"
+# include "MOM_FLUXFORM.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -93,6 +98,9 @@ C  fZon                 :: zonal fluxes
 C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k-1 & k
       INTEGER i,j
+#ifdef ALLOW_AUTODIFF_TAMC 
+      INTEGER imomkey
+#endif
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL cF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -150,6 +158,23 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  sideMaskFac
       LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
 CEOP
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = k - 1
+          max0 = Nr
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          imomkey = (act0 + 1) 
+     &                    + act1*max0
+     &                    + act2*max0*max1
+     &                    + act3*max0*max1*max2
+     &                    + act4*max0*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Initialise intermediate terms
       DO j=1-OLy,sNy+OLy
@@ -277,6 +302,15 @@ C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
 
 C-    Calculate vertical transports above U & V points (West & South face):
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dwtransc(:,:,bi,bj) = 
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE dwtransu(:,:,bi,bj) = 
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE dwtransv(:,:,bi,bj) = 
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL MOM_CALC_RTRANS( k, bi, bj,
      O                        rTransU, rTransV,
      I                        myTime, myIter, myThid)

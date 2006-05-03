@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_nlfs/Attic/CPP_OPTIONS.h,v 1.1 2006/02/17 01:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_nlfs/Attic/CPP_OPTIONS.h,v 1.2 2006/05/03 23:37:13 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -19,7 +19,7 @@ C o Nonlinear free surface
 #define NONLIN_FRSURF
 
 C o NEW OPTION to disable rStar (z*) code
-#define DISABLE_RSTAR_CODE
+cph#define DISABLE_RSTAR_CODE
 
 C********* RELEVANT CHANGES *********
 
