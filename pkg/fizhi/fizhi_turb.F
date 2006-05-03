@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.42 2005/06/27 18:57:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.43 2006/05/03 23:20:01 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2160,8 +2160,8 @@ CE
       do L = 1,nlev-1
         do i = 1,irun
          if(pl(i,L).le.150.) then
-          kh(i,L) = 5.
-          km(i,L) = 5.
+          kh(i,L) = min(kh(i,L),0.1)
+          km(i,L) = min(kh(i,L),0.1)
          endif
         enddo
       enddo
