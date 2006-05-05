@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.34 2006/04/28 22:53:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.35 2006/05/05 19:00:28 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,7 +164,7 @@ c     == local variables ==
       integer max_lev4
 #endif
 
-#if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS)
+#if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS) || defined(USE_PCL_FLOPS)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef TIME_PER_TIMESTEP
 CCE107 common block for per timestep timing
@@ -176,14 +176,27 @@ C     == Timing variables ==
 #ifdef USE_PAPI_FLOPS
 CCE107 common block for PAPI summary performance
 #include <fpapi.h>
-      INTEGER*8 flpops
-      DATA flpops /0/
+      INTEGER*8 flpops, instr
+      DATA flpops, instr /2*0/
       INTEGER check
-      REAL real_time, proc_time, mflops
-      DATA real_time, proc_time, mflops /3*0.0D0/
+      REAL*4 real_time, proc_time, mflops, ipc
+      DATA real_time, proc_time, mflops, ipc /4*0.0E0/
+#else
+#ifdef USE_PCL_FLOPS
+CCE107 common block for PCL summary performance
+#include <pclh.f>
+      INTEGER pcl_counter_list(5), flags, nevents, res, ipcl
+      INTEGER*8 i_result(5), descr
+      REAL*8 fp_result(5)
+      COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
+     $     flags, nevents 
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 61)
+      CHARACTER*22 pcl_counter_name(0:nmaxevents-1)
+      COMMON /pclnames/ pcl_counter_name
 #endif
 #endif
-
+#endif
 c--   == end of interface ==
 
 #ifndef DISABLE_DEBUGMODE
@@ -276,8 +289,35 @@ CCE107 Initial call for timers
 #ifdef USE_PAPI_FLOPS
 CCE107 Initial call for PAPI
       _BEGIN_MASTER( myThid )
+#ifdef USE_FLIPS
+      call PAPIF_flips(real_time, proc_time, flpops, mflops, check)
+#else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
+#endif
+      WRITE(msgBuf,'(A34,F10.6)')
+     $        'Mflop/s before timestepping:', mflops
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+#ifdef PAPI_VERSION
+      call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
+      WRITE(msgBuf,'(A34,F10.6)')
+     $        'IPC before timestepping:', ipc
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+#endif
       _END_MASTER( myThid )
+#else
+#ifdef USE_PCL_FLOPS
+CCE107 Initial call for PCL
+      _BEGIN_MASTER( myThid )
+      res = PCLstop(descr, i_result, fp_result, nevents)
+      do ipcl = 1, nevents
+         WRITE(msgBuf,'(A22,A26,F10.6)'),
+     $        pcl_counter_name(pcl_counter_list(ipcl)),
+     $        'before timestepping:', fp_result(ipcl)
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      enddo
+      res = PCLstart(descr, pcl_counter_list, nevents, flags)
+      _END_MASTER( myThid )
+#endif
 #endif
 
 c--   Do the model integration.
@@ -1011,11 +1051,36 @@ CCE107 Time per timestep information
 #ifdef USE_PAPI_FLOPS
 CCE107 PAPI summary performance
       _BEGIN_MASTER( myThid )
+#ifdef USE_FLIPS
+      call PAPIF_flips(real_time, proc_time, flpops, mflops, check)
+#else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
+#endif
       WRITE(msgBuf,'(F10.6,A34,I8)')
      $        mflops, 'Mflop/s during timestep ', iloop
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       _END_MASTER( myThid )
+#ifdef PAPI_VERSION
+      call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
+      WRITE(msgBuf,'(F10.6,A34,I8)')
+     $        ipc, 'IPC during timestep ', iloop
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+#endif
+      _END_MASTER( myThid )
+#else
+#ifdef USE_PCL_FLOPS
+CCE107 PCL summary performance
+      _BEGIN_MASTER( myThid )
+      res = PCLstop(descr, i_result, fp_result, nevents)
+      do ipcl = 1, nevents
+         WRITE(msgBuf,'(F10.6,A2,A22,A17,I8)'), fp_result(ipcl),
+     $        ' ', pcl_counter_name(pcl_counter_list(ipcl)),
+     $        'during timestep ', iloop 
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      enddo
+       res = PCLstart(descr, pcl_counter_list, nevents, flags)
+      _END_MASTER( myThid )
+#endif
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.20 2005/12/22 01:03:29 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.21 2006/05/05 19:00:28 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -165,23 +165,52 @@ C     nTimers      :: Number of active timers
       PARAMETER ( PRINT = 'PRINT' )
       CHARACTER*(*) PRINTALL
       PARAMETER ( PRINTALL = 'PRINTALL' )
-#ifdef USE_PAPI
-#include <fpapi.h>
-      INTEGER PAPIF_num_counters
-      EXTERNAL PAPIF_num_counters
+#if defined(USE_PAPI) || defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined (USE_PCL)
       CHARACTER*(*) INIT
-      CHARACTER(13) EventName
       PARAMETER ( INIT = 'INIT' )
+#ifdef USE_PAPI
       INTEGER nmaxevents
       PARAMETER (nmaxevents = 18)
-      INTEGER EventCode(nmaxevents)
+      INTEGER neventsmax, nevents
+      SAVE neventsmax, nevents
       INTEGER*8 values(nmaxevents, maxTimers , MAX_NO_THREADS),
      $     values1(nmaxevents, maxTimers, MAX_NO_THREADS),
      $     values2(nmaxevents, maxTimers, MAX_NO_THREADS)
       COMMON /papivalues/ values, values1, values2
-      INTEGER neventsmax, nevents, Check, EventSet
+#include <fpapi.h>
+      CHARACTER(13) EventName
+      INTEGER EventCode(nmaxevents)
+      INTEGER Check, EventSet
       INTEGER papiunit
-      SAVE EventCode, neventsmax, nevents, EventSet
+      SAVE EventCode, EventSet
+#else
+#if defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
+#include <pclh.f>
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 61)
+      INTEGER flags, res, nevents
+      INTEGER*8 descr
+      CHARACTER*22 pcl_counter_name(0:nmaxevents-1)
+#ifdef USE_PCL
+      INTEGER pcl_counter_list(nmaxevents)
+      INTEGER*8 i_result(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER*8 i_result1(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER*8 i_result2(nmaxevents, maxTimers, MAX_NO_THREADS)
+      REAL*8 fp_result(nmaxevents, maxTimers, MAX_NO_THREADS)
+#else
+      INTEGER pcl_counter_list(5), alt_counter_list(5)
+      INTEGER*8 i_result(5)
+      REAL*8 fp_result(5)
+      SAVE alt_counter_list
+      DATA alt_counter_list /PCL_MFLOPS, PCL_IPC, PCL_L1DCACHE_MISSRATE,
+     $     PCL_L2DCACHE_MISSRATE, PCL_MEM_FP_RATIO/
+#endif
+      COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
+     $     flags, nevents
+      COMMON /pclnames/ pcl_counter_name
+      INTEGER pclunit
+#endif
+#endif
 #endif
       INTEGER I, J
       Real*8 userTime
@@ -235,8 +264,14 @@ C
           timerStarts(iTimer,myThreadId) = 
      &       timerStarts(iTimer,myThreadId)+1
 #ifdef USE_PAPI
-CCE107 - Read event counts
+CCE107 PAPI - Read event counts
           call PAPIF_read(EventSet, values1(1,iTimer,myThreadId), Check)
+#else
+#ifdef USE_PCL
+CCE107 PCL - Read event counts
+          res = PCLread(descr, i_result1(1,iTimer,myThreadId),
+     $         fp_result(1,iTimer,myThreadId), nevents)
+#endif
 #endif
         ENDIF
 #ifdef USE_LIBHPM
@@ -251,6 +286,12 @@ CCE107 - Read event counts
 #ifdef USE_PAPI
 CCE107 PAPI - Read event counts
           call PAPIF_read(EventSet, values2(1,iTimer,myThreadId), Check)
+#else
+#ifdef USE_PCL
+CCE107 PCL - Read event counts
+          res = PCLread(descr, i_result2(1,iTimer,myThreadId),
+     $         fp_result(1,iTimer,myThreadId), nevents)
+#endif
 #endif
           CALL TIMER_GET_TIME( userTime, systemTime, wallClockTime )
           timerUser(iTimer,myThreadId)    = 
@@ -270,13 +311,22 @@ CCE107 PAPI - Read event counts
              values(i,iTimer,myThreadId) = values(i,iTimer,myThreadId) +
      $       values2(i,iTimer,myThreadId) - values1(i,iTimer,myThreadId)
           enddo
+#else
+#ifdef USE_PCL
+          do i=1,nevents
+             i_result(i,iTimer,myThreadId) = i_result(i,iTimer
+     $            ,myThreadId) + i_result2(i,iTimer,myThreadId) -
+     $            i_result1(i,iTimer,myThreadId)
+          enddo
+#endif
 #endif
           timerStatus(iTimer,myThreadId)  = STOPPED
           timerStops (iTimer,myThreadId)  = 
      &    timerStops (iTimer,myThreadId)+1
         ENDIF
-#ifdef USE_PAPI
+#if defined (USE_PAPI) || defined (USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
       ELSEIF ( tmpAction .EQ. INIT ) THEN
+#ifdef USE_PAPI
 CCE107 PAPI - Check PAPI version, find the maximum number of events and 
 C      initialize the library, read the suggested events and create 
 C      EventSet, prepare counter for use
@@ -288,7 +338,7 @@ C      EventSet, prepare counter for use
      &           SQUEEZE_RIGHT,myThreadId)
             CALL ABORT
          endif
-         neventsmax = PAPIF_num_counters(check)
+         call PAPIF_num_counters(neventsmax)
          if (neventsmax .GT. nmaxevents) then
             WRITE(msgBuffer,*) "Fix the nmaxevents in the code to ",
      $           neventsmax 
@@ -306,11 +356,20 @@ C       reset to reasonable values
            WRITE(msgBuffer,*)
      $          "resetting the number of PAPI events to the maximum" 
            CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
-     &           SQUEEZE_RIGHT,myThreadId)
+     &          SQUEEZE_RIGHT,myThreadId)
         endif
         do i = 1,nevents
-          read(papiunit,*) EventName
-          call PAPIF_event_name_to_code(EventName, EventCode(i), Check)
+           read(papiunit,*) EventName
+           if ((EventName .eq. 'PAPI_FLOPS') .or.
+     $          (EventName .eq. 'PAPI_IPS')) then
+              WRITE(msgBuffer,*) "Abort! Rate events are not supported:"
+     $             ,EventName
+              CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &             SQUEEZE_RIGHT,myThreadId)
+              CALL ABORT
+           endif
+
+           call PAPIF_event_name_to_code(EventName, EventCode(i), Check)
         end do
         close(papiunit)
         _END_MASTER(myThid)
@@ -330,6 +389,89 @@ C       reset to reasonable values
         enddo
 CCE107 - Start counting events
         call PAPIF_start(EventSet, Check)
+#else
+#if defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
+CCE107 PCL - initialize the library, read the suggested events
+C      and check them
+        res = PCLinit(descr)
+
+#ifdef USE_PCL
+        _BEGIN_MASTER(myThreadId)
+        CALL mdsFindUnit (pclunit, myThreadId)
+        OPEN(UNIT=pclunit,FILE='data.pcl',STATUS='OLD')
+        read(pclunit,*) nevents
+C     reset to reasonable values
+        if (nevents .gt. nmaxevents) then
+           nevents = nmaxevents
+           WRITE(msgBuffer,*)
+     $          "resetting the number of PCL events to the maximum" 
+           CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+        endif
+        do i = 1,nevents
+           read(pclunit,*) pcl_counter_list(i)
+           if ((pcl_counter_list(i) .ge. PCL_MFLOPS) .or.
+     $          (pcl_counter_list(i) .lt. 1)) then
+              if ((pcl_counter_list(i) .ge. PCL_MFLOPS) .and.
+     $             (pcl_counter_list(i) .le. nmaxevents)) then
+                 WRITE(msgBuffer,*)
+     $                "Abort! Rate events are not relevant:",
+     $                pcl_counter_name(pcl_counter_list(i))
+              else
+                 WRITE(msgBuffer,*)
+     $                "Abort! Events are not defined:",
+     $                pcl_counter_list(i)
+              endif
+              CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &             SQUEEZE_RIGHT,myThreadId)
+              CALL ABORT
+           endif
+        enddo
+        close(pclunit)
+        _END_MASTER(myThid)
+
+        do i = 1,nevents
+CCE107 check to see that event are supported in the order asked
+           res = PCLquery(descr, pcl_counter_list, i, flags)
+           IF(res .NE. PCL_SUCCESS) THEN
+              WRITE(msgBuffer,*) "Abort! No support when adding event: "
+     $             , pcl_counter_name(pcl_counter_list(i))
+              CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &             SQUEEZE_RIGHT,myThreadId)
+              CALL ABORT
+           endif
+        enddo
+#else
+        do i = 1,5
+CCE107 check to see which rate events are supported.
+           res = PCLquery(descr, pcl_counter_list, nevents+1, flags)
+           if ((res .ne. PCL_SUCCESS) .and. (i .lt. 5)) then
+              pcl_counter_list(nevents+1) = alt_counter_list(i+1)
+           else
+              if (i .lt. 5) then
+                 nevents = nevents + 1
+              endif
+           endif
+        enddo
+        if (nevents .eq. 0) then
+           WRITE(msgBuffer,*)
+     $          "No PCL rate events supported: Please recompile!"
+           CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+           CALL ABORT
+        endif
+#endif
+
+CCE107 - Start counting events
+        res = PCLstart(descr, pcl_counter_list, nevents, flags)
+        IF(res .NE. PCL_SUCCESS) THEN
+           WRITE(msgBuffer,*) "PCL counting failed - please recompile!"
+           CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+           CALL ABORT
+        ENDIF
+#endif
+#endif
 #endif
       ELSEIF ( tmpAction .EQ. PRINT ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
@@ -362,18 +504,25 @@ CCE107 - Start counting events
 #ifdef USE_PAPI
         do i = 1,nevents
            call PAPIF_event_code_to_name(EventCode(i), EventName, Check)
-           if ((EventName .ne. 'PAPI_FLOPS   ') .and.
-     $         (EventName .ne. 'PAPI_IPS     ')) then
-               WRITE(msgBuffer,71) Eventname,
-     $         values(i,iTimer,myThreadId)/timerUser(iTimer,myThreadId),
-     $         values(i,iTimer,myThreadId)/timerWall(iTimer,myThreadId), 
-     $         1.D0*values(i,iTimer,myThreadId)
-           else
-               WRITE(msgBuffer,72) Eventname,1.D0*values(j,I,myThreadId)
-           endif
+           WRITE(msgBuffer,71) Eventname,
+     $          values(i,iTimer,myThreadId)/timerUser(iTimer,myThreadId)
+     $          ,values(i,iTimer,myThreadId)/timerWall(iTimer,myThreadId
+     $          ),1.D0*values(i,iTimer,myThreadId)
            CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         enddo
+#else
+#ifdef USE_PCL
+        do i = 1,nevents
+           WRITE(msgBuffer,71) pcl_counter_name(pcl_counter_list(i)),
+     $          i_result(i,iTimer,myThreadId)/timerUser(iTimer
+     $          ,myThreadId),i_result(i,iTimer,myThreadId)
+     $          /timerWall(iTimer,myThreadId),1.D0*i_result(i,iTimer
+     $          ,myThreadId)
+           CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+        enddo
+#endif
 #endif
       ELSEIF ( tmpAction .EQ. PRINTALL ) THEN
         DO 10 I = 1, nTimers(myThreadId)
@@ -405,18 +554,24 @@ CCE107 - Start counting events
 #ifdef USE_PAPI
         do j = 1,nevents
            call PAPIF_event_code_to_name(EventCode(j), EventName, Check)
-           if ((EventName .ne. 'PAPI_FLOPS   ') .and.
-     $         (EventName .ne. 'PAPI_IPS     ')) then
-               WRITE(msgBuffer,71) Eventname,
-     $             values(j,I,myThreadId)/timerUser(I,myThreadId),
-     $             values(j,I,myThreadId)/timerWall(I,myThreadId),
-     $             1.D0*values(j,I,myThreadId) 
-           else
-               WRITE(msgBuffer,72) Eventname,1.D0*values(j,I,myThreadId)
-           endif
+           WRITE(msgBuffer,71) Eventname,
+     $          values(j,I,myThreadId)/timerUser(I,myThreadId),
+     $          values(j,I,myThreadId)/timerWall(I,myThreadId),
+     $          1.D0*values(j,I,myThreadId) 
            CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &          SQUEEZE_RIGHT,myThreadId)
         enddo
+#else
+#ifdef USE_PCL
+        do j = 1,nevents
+           WRITE(msgBuffer,71) pcl_counter_name(pcl_counter_list(j)),
+     $          i_result(j,I,myThreadId)/timerUser(I,myThreadId)
+     $          ,i_result(j,I,myThreadId)/timerWall(I,myThreadId),1.D0
+     $          *i_result(j,I,myThreadId) 
+           CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThreadId)
+        enddo
+#endif
 #endif
    10   CONTINUE
       ELSE
@@ -603,6 +758,7 @@ CEH3 This needs to be further cleaned up using a HAVE_CLOC define
 CEH3 that is diagnosed by genmake
 CEH3 #ifndef HAVE_FDATE
       Real*8 system_time, user_time, timenow
+      external system_time, user_time, timenow
 CEH3 #else
 #ifdef TARGET_AIX
       Real*4 ETIME_
@@ -744,7 +900,6 @@ CCE107 Initialization of common block for PAPI timers
       PARAMETER (maxTimers = 40)
       INTEGER nmaxevents
       PARAMETER (nmaxevents = 18)
-      INTEGER EventCode(nmaxevents)
       INTEGER size
       PARAMETER (size = 3*nmaxevents*maxTimers*MAX_NO_THREADS)
       INTEGER*8 values(nmaxevents, maxTimers , MAX_NO_THREADS),
@@ -753,4 +908,129 @@ CCE107 Initialization of common block for PAPI timers
       COMMON /papivalues/ values, values1, values2
       DATA values, values1, values2 /size*0/ 
       END
+#endif
+#if defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
+CCE107 Initialization of common block for PCL event names
+      BLOCK DATA setpclnames
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 61)
+      CHARACTER*22 pcl_counter_name(0:nmaxevents-1)
+      COMMON /pclnames/ pcl_counter_name
+      DATA pcl_counter_name(0) /'PCL_L1CACHE_READ'/
+      DATA pcl_counter_name(1) /'PCL_L1CACHE_WRITE'/
+      DATA pcl_counter_name(2) /'PCL_L1CACHE_READWRITE'/
+      DATA pcl_counter_name(3) /'PCL_L1CACHE_HIT'/
+      DATA pcl_counter_name(4) /'PCL_L1CACHE_MISS'/
+      DATA pcl_counter_name(5) /'PCL_L1DCACHE_READ'/
+      DATA pcl_counter_name(6) /'PCL_L1DCACHE_WRITE'/
+      DATA pcl_counter_name(7) /'PCL_L1DCACHE_READWRITE'/
+      DATA pcl_counter_name(8) /'PCL_L1DCACHE_HIT'/
+      DATA pcl_counter_name(9) /'PCL_L1DCACHE_MISS'/
+      DATA pcl_counter_name(10) /'PCL_L1ICACHE_READ'/
+      DATA pcl_counter_name(11) /'PCL_L1ICACHE_WRITE'/
+      DATA pcl_counter_name(12) /'PCL_L1ICACHE_READWRITE'/
+      DATA pcl_counter_name(13) /'PCL_L1ICACHE_HIT'/
+      DATA pcl_counter_name(14) /'PCL_L1ICACHE_MISS'/
+      DATA pcl_counter_name(15) /'PCL_L2CACHE_READ'/
+      DATA pcl_counter_name(16) /'PCL_L2CACHE_WRITE'/
+      DATA pcl_counter_name(17) /'PCL_L2CACHE_READWRITE'/
+      DATA pcl_counter_name(18) /'PCL_L2CACHE_HIT'/
+      DATA pcl_counter_name(19) /'PCL_L2CACHE_MISS'/
+      DATA pcl_counter_name(20) /'PCL_L2DCACHE_READ'/
+      DATA pcl_counter_name(21) /'PCL_L2DCACHE_WRITE'/
+      DATA pcl_counter_name(22) /'PCL_L2DCACHE_READWRITE'/
+      DATA pcl_counter_name(23) /'PCL_L2DCACHE_HIT'/
+      DATA pcl_counter_name(24) /'PCL_L2DCACHE_MISS'/
+      DATA pcl_counter_name(25) /'PCL_L2ICACHE_READ'/
+      DATA pcl_counter_name(26) /'PCL_L2ICACHE_WRITE'/
+      DATA pcl_counter_name(27) /'PCL_L2ICACHE_READWRITE'/
+      DATA pcl_counter_name(28) /'PCL_L2ICACHE_HIT'/
+      DATA pcl_counter_name(29) /'PCL_L2ICACHE_MISS'/
+      DATA pcl_counter_name(30) /'PCL_TLB_HIT'/
+      DATA pcl_counter_name(31) /'PCL_TLB_MISS'/
+      DATA pcl_counter_name(32) /'PCL_ITLB_HIT'/
+      DATA pcl_counter_name(33) /'PCL_ITLB_MISS'/
+      DATA pcl_counter_name(34) /'PCL_DTLB_HIT'/
+      DATA pcl_counter_name(35) /'PCL_DTLB_MISS'/
+      DATA pcl_counter_name(36) /'PCL_CYCLES'/
+      DATA pcl_counter_name(37) /'PCL_ELAPSED_CYCLES'/
+      DATA pcl_counter_name(38) /'PCL_INTEGER_INSTR'/
+      DATA pcl_counter_name(39) /'PCL_FP_INSTR'/
+      DATA pcl_counter_name(40) /'PCL_LOAD_INSTR'/
+      DATA pcl_counter_name(41) /'PCL_STORE_INSTR'/
+      DATA pcl_counter_name(42) /'PCL_LOADSTORE_INSTR'/
+      DATA pcl_counter_name(43) /'PCL_INSTR'/
+      DATA pcl_counter_name(44) /'PCL_JUMP_SUCCESS'/
+      DATA pcl_counter_name(45) /'PCL_JUMP_UNSUCCESS'/
+      DATA pcl_counter_name(46) /'PCL_JUMP'/
+      DATA pcl_counter_name(47) /'PCL_ATOMIC_SUCCESS'/
+      DATA pcl_counter_name(48) /'PCL_ATOMIC_UNSUCCESS'/
+      DATA pcl_counter_name(49) /'PCL_ATOMIC'/
+      DATA pcl_counter_name(50) /'PCL_STALL_INTEGER'/
+      DATA pcl_counter_name(51) /'PCL_STALL_FP'/
+      DATA pcl_counter_name(52) /'PCL_STALL_JUMP'/
+      DATA pcl_counter_name(53) /'PCL_STALL_LOAD'/
+      DATA pcl_counter_name(54) /'PCL_STALL_STORE'/
+      DATA pcl_counter_name(55) /'PCL_STALL'/
+      DATA pcl_counter_name(56) /'PCL_MFLOPS'/
+      DATA pcl_counter_name(57) /'PCL_IPC'/
+      DATA pcl_counter_name(58) /'PCL_L1DCACHE_MISSRATE'/
+      DATA pcl_counter_name(59) /'PCL_L2DCACHE_MISSRATE'/
+      DATA pcl_counter_name(60) /'PCL_MEM_FP_RATIO'/
+      END
+
+
+#ifdef USE_PCL
+CCE107 Initialization of common block for PCL summary performance
+      BLOCK DATA setpcls
+#include "EEPARAMS.h"
+      INTEGER maxTimers
+      PARAMETER (maxTimers = 40)
+      INTEGER nmaxevents
+      PARAMETER (nmaxevents = 61)
+      INTEGER size
+      PARAMETER (size = nmaxevents*maxTimers*MAX_NO_THREADS)
+      INTEGER PCL_CYCLES, PCL_MODE_USER_SYSTEM
+      PARAMETER (PCL_CYCLES=36, PCL_MODE_USER_SYSTEM=3)
+      INTEGER pcl_counter_list(nmaxevents)
+      INTEGER flags, nevents
+      INTEGER*8 i_result(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER*8 i_result1(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER*8 i_result2(nmaxevents, maxTimers, MAX_NO_THREADS)
+      INTEGER*8 descr
+      REAL*8 fp_result(nmaxevents, maxTimers, MAX_NO_THREADS)
+      COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
+     $     flags, nevents
+      DATA fp_result /size*0.0D0/
+      DATA i_result /size*0/
+      DATA i_result1 /size*0/
+      DATA i_result2 /size*0/
+      DATA descr /0/
+      DATA nevents /nmaxevents/
+      DATA pcl_counter_list /nmaxevents*PCL_CYCLES/
+      DATA flags /PCL_MODE_USER_SYSTEM/
+      END
+#else
+CCE107 Initialization of common block for PCL summary performance
+      BLOCK DATA setpcls
+      INTEGER PCL_MFLOPS, PCL_IPC, PCL_L1DCACHE_MISSRATE,
+     $     PCL_L2DCACHE_MISSRATE, PCL_MEM_FP_RATIO
+      PARAMETER (PCL_MFLOPS=56, PCL_IPC=57, PCL_L1DCACHE_MISSRATE=58,
+     $     PCL_L2DCACHE_MISSRATE=59, PCL_MEM_FP_RATIO=60)
+      INTEGER PCL_MODE_USER_SYSTEM
+      PARAMETER (PCL_MODE_USER_SYSTEM=3)
+      INTEGER pcl_counter_list(5), flags, nevents
+      INTEGER*8 i_result(5), descr
+      REAL*8 fp_result(5)
+      COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
+     $     flags, nevents
+      DATA fp_result /5*0.0D0/
+      DATA i_result /5*0/
+      DATA descr /0/
+      DATA nevents /0/
+      DATA pcl_counter_list /PCL_MFLOPS, PCL_IPC, PCL_L1DCACHE_MISSRATE,
+     $     PCL_L2DCACHE_MISSRATE, PCL_MEM_FP_RATIO/
+      DATA flags /PCL_MODE_USER_SYSTEM/
+      END
+#endif
 #endif

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.146 2006/04/07 02:53:55 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.147 2006/05/05 19:00:28 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -587,11 +587,15 @@ Usage: "$0" [OPTIONS]
     -ts | --ts
           Produce timing information per timestep
     -papis | --papis
-          Produce summary MFlop/s with PAPI per timestep
+          Produce summary MFlop/s (and IPC) with PAPI per timestep
+    -pcls | --pcls
+          Produce summary MFlop/s etc. with PCL per timestep
     -foolad | --foolad
           Fool the AD code generator
     -papi | --papi
           Performance analysis with PAPI
+    -pcl | --pcl
+          Performance analysis with PCL
     -hpmt | --hpmt
           Performance analysis with the HPM Toolkit
 
@@ -1016,8 +1020,10 @@ MPI=
 MPIPATH=
 TS=
 PAPIS=
+PCLS=
 FOOLAD=
 PAPI=
+PCL=
 HPMT=
 GSL=
 HAVE_TEST_L=
@@ -1078,7 +1084,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE TS PAPIS PAPI HPMT GSL MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
@@ -1262,10 +1268,14 @@ for ac_option in "$@" ; do
 	    TS=true ;;
 	-papis | --papis)
 	    PAPIS=true ;;
+	-pcls | --pcls)
+	    PCLS=true ;;
 	-foolad | --foolad)
 	    FOOLAD=true ;;
 	-papi | --papi)
 	    PAPI=true ;;
+	-pcl | --pcl)
+	    PCL=true ;;
 	-hpmt | --hpmt)
 	    HPMT=true ;;
 
@@ -1534,6 +1544,17 @@ if test ! "x$PAPIS" = x ; then
       INCLUDES="$INCLUDES $PAPIINC"
       LIBS="$LIBS $PAPILIB"
 fi
+if test ! "x$PCLS" = x ; then
+      echo "  Turning on PCL counter summary per timestep"
+      echo "  Please make sure PCLINC, PCLLIB are defined"
+      if test ! "x$FOOLAD" = x ; then
+	    DEFINES="$DEFINES -DUSE_PCL_FLOPS_SFP"
+      else
+	    DEFINES="$DEFINES -DUSE_PCL_FLOPS"
+      fi
+      INCLUDES="$INCLUDES $PCLINC"
+      LIBS="$LIBS $PCLLIB"
+fi
 if test ! "x$PAPI" = x ; then
       if test ! "x$PAPIS" = x ; then
 	  echo "  PAPI performance analysis and flop summary per timestep cannot co-exist!"
@@ -1546,10 +1567,25 @@ if test ! "x$PAPI" = x ; then
 	  LIBS="$LIBS $PAPILIB"
       fi
 fi
+if test ! "x$PCL" = x ; then
+      if test ! "x$PCLS" = x ; then
+	  echo "  PCL performance analysis and flop summary per timestep cannot co-exist!"
+	  echo "  Sticking with PCL flop summary per timestep!"
+      else
+	  echo "  Turning on performance analysis with PCL"
+          echo "  Please make sure PCLINC, PCLLIB are defined"
+	  DEFINES="$DEFINES -DUSE_PCL"
+	  INCLUDES="$INCLUDES $PCLINC"
+	  LIBS="$LIBS $PCLLIB"
+      fi
+fi
 if test ! "x$HPMT" = x ; then
       if test ! "x$PAPI" = x ; then
 	  echo "  PAPI and the HPM Toolkit cannot co-exist!"
 	  echo "  Sticking with PAPI!"
+      else if test ! "x$PCL" = x ; then
+	  echo "  PCL and the HPM Toolkit cannot co-exist!"
+	  echo "  Sticking with PCL!"
       else
 	  echo "  Turning on performance analysis with the HPM Toolkit"
           echo "  Please make sure HPMTINC, HPMTLIB are defined"
