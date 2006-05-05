@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.147 2006/05/05 19:00:28 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.148 2006/05/05 20:04:43 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1592,6 +1592,7 @@ if test ! "x$HPMT" = x ; then
 	  DEFINES="$DEFINES -DUSE_LIBHPM"
           INCLUDES="$INCLUDES $HPMTINC"
 	  LIBS="$LIBS $HPMTLIB"
+      fi
       fi
 fi
 if test ! "x$GSL" = x ; then
