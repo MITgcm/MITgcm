@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.1 2006/03/24 22:58:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.2 2006/05/06 14:33:53 heimbach Exp $
 
-#include "AD_CONFIG.h"
-#include "COST_CPPOPTIONS.h"
+#include "PROFILES_OPTIONS.h"
 
       subroutine profiles_init_varia( mythid )
 
@@ -29,9 +28,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 
-#include "ecco_cost.h"
-#include "ctrl_dummy.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 #include "profiles.h"
 #endif
 

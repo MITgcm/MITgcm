@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.2 2006/05/06 14:33:53 heimbach Exp $
+C $Name:  $
+
 C============================================================
 C NOBSMAX : maximal number of profiles
 C============================================================
@@ -51,3 +54,18 @@ C===========================================================
      & profiles_minind_buff,profiles_maxind_buff,profiles_curfile_buff
 
      
+      COMMON /profiles_cost_r/
+     &                objf_profiles,
+     &                num_profiles,
+     &                mult_profiles
+      _RL  objf_profiles(50,10,nsx,nsy)
+      _RL  num_profiles(50,10,nsx,nsy)
+      _RL  mult_profiles(50,10)
+
+      COMMON /profiles_cost_c/
+     &                     profilesfiles
+      character*(MAX_LEN_FNAM) profilesfiles(50)
+
+      COMMON /profiles_ctrl_dummy/
+     &                profiles_dummy
+      _RL profiles_dummy(50,10)

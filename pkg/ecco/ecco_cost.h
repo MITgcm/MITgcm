@@ -353,9 +353,7 @@ c                  function contributions.
      &                objf_diffkr,
      &                objf_theta_ini_fin,
      &                objf_salt_ini_fin,
-     &                objf_eddytau,
-     &                objf_profiles
-
+     &                objf_eddytau
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
       _RL  objf_hfluxmm(nsx,nsy)
@@ -429,7 +427,6 @@ c                  function contributions.
       _RL  objf_theta_ini_fin(nsx,nsy)
       _RL  objf_salt_ini_fin(nsx,nsy)
       _RL  objf_eddytau(nsx,nsy)
-      _RL  objf_profiles(50,10,nsx,nsy)
 
       common /ecco_cost_num/
      &                num_hflux,
@@ -491,8 +488,7 @@ c                  function contributions.
      &                num_diffkr,
      &                num_theta_ini_fin,
      &                num_salt_ini_fin,
-     &                num_eddytau,
-     &                num_profiles
+     &                num_eddytau
 
       _RL  num_hflux  (nsx,nsy)
       _RL  num_hfluxm (nsx,nsy)
@@ -554,7 +550,6 @@ c                  function contributions.
       _RL  num_theta_ini_fin(nsx,nsy)
       _RL  num_salt_ini_fin(nsx,nsy)
       _RL  num_eddytau(nsx,nsy)
-      _RL  num_profiles(50,10,nsx,nsy)
 
       common /ecco_cost_aux_r/
      &                    mult_hflux,
@@ -604,9 +599,7 @@ c                  function contributions.
      &                    mult_ini_fin,
      &                    mult_eddytau,
      &                    mult_smooth_ic,
-     &                    mult_smooth_bc,
-     &                    mult_profiles
-
+     &                    mult_smooth_bc
       _RL  mult_hflux
       _RL  mult_sflux
       _RL  mult_hfluxmm
@@ -655,7 +648,6 @@ c                  function contributions.
       _RL  mult_eddytau
       _RL  mult_smooth_ic
       _RL  mult_smooth_bc
-      _RL  mult_profiles(50,10)
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================
@@ -1057,8 +1049,7 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     udriftfile, 
      &                     vdriftfile,
      &                     curmtrufile,
-     &                     curmtrvfile,
-     &                     profilesfiles
+     &                     curmtrvfile
 
       character*(MAX_LEN_FNAM) tdatfile
       character*(MAX_LEN_FNAM) sdatfile
@@ -1083,7 +1074,6 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) vdriftfile      
       character*(MAX_LEN_FNAM) curmtrufile
       character*(MAX_LEN_FNAM) curmtrvfile
-      character*(MAX_LEN_FNAM) profilesfiles(50)
 
 
 c     Flags used in the model-data comparison:

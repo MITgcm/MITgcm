@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.6 2006/04/25 19:37:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.7 2006/05/06 14:33:25 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -124,10 +124,6 @@ cph!!!
       if ( .NOT. exst) then
          call ecco_cost_init_barfiles( mythid )
       endif
-#endif
-
-#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
-      CALL profiles_init_fixed(mythid)
 #endif
 
 c--   Summarize the cost function's setup.

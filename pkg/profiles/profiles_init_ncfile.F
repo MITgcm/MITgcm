@@ -1,4 +1,6 @@
-#include "COST_CPPOPTIONS.h"
+C $Name:  $
+
+#include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine profiles_init_ncfile                          |

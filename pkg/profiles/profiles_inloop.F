@@ -1,4 +1,7 @@
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.3 2006/05/06 14:33:53 heimbach Exp $
+C $Name:  $
+
+#include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine profiles_inloop                               |
@@ -18,12 +21,16 @@ C ==================== Global Variables ===========================
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_CAL
 #include "cal.h"
-#include "ecco_cost.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#endif
+cph#include "ecco_cost.h"
+cph#include "ctrl.h"
+cph#include "ctrl_dummy.h"
+#ifdef ALLOW_CTRL
 #include "optim.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#endif
+#ifdef ALLOW_PROFILES
 # include "profiles.h"
 # include "netcdf.inc"
 #endif
@@ -32,13 +39,20 @@ C ==================== Routine Variables ==========================
       _RL mytime
       integer myThid
 
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 
 C ==================== Local Variables ==========================
       integer k,bi,bj,prof_num, num_file, num_var
       _RL tmp_lon,prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
+#ifndef ALLOW_CTRL
+      integer optimcycle
+#endif
       
 c     == end of interface ==
+
+#ifndef ALLOW_CTRL
+      optimcycle = 0
+#endif
 
       DO bi = myBxLo(myThid), myBxHi(myThid)
       DO bj = myByLo(myThid), myByHi(myThid)

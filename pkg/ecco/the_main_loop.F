@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.35 2006/05/05 19:00:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.36 2006/05/06 14:33:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,26 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+#endif
+
+#ifdef HAVE_SIGREG
+#include "SIGREG.h"
+#endif
+
+#ifdef ALLOW_SHAP_FILT
+# include "SHAP_FILT.h"
+#endif
+#ifdef ALLOW_ZONAL_FILT
+# include "ZONAL_FILT.h"
+#endif
+#ifdef COMPONENT_MODULE
+# include "CPL_PARAMS.h"
+#endif
 
 c**************************************
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -492,12 +512,21 @@ C--   State-variables diagnostics
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
 
+#ifdef ALLOW_PROFILES
+c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
+        call timer_start('PROFILES_INLOOP       [ECCO MAIN]', mythid)
+        call profiles_inloop( mytime, mythid )
+        call timer_stop ('PROFILES_INLOOP       [ECCO MAIN]', mythid)
+#endif
+
 #ifdef ALLOW_COST
 
-c--     Accumulate time averages of temperature, salinity, and SSH.
+c--     Accumulate time averages of temperature, salinity
         call timer_start('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
         call cost_averagesFields( mytime, mythid )
         call timer_stop ('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
+
+
 #ifdef ALLOW_COST_ATLANTIC
 c--     Compute meridional heat transport 
         call timer_start('cost_atlantic         [ECCO MAIN]', mythid)
@@ -1110,6 +1139,13 @@ c
       call timer_stop ('ECCO MAIN LOOP', mythid)
 
       call timer_start('ECCO SPIN-DOWN', mythid)
+
+#ifdef ALLOW_PROFILES
+c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
+      call timer_start('PROFILES_INLOOP     [ECCO SPIN-DOWN]', mythid)
+      call profiles_inloop( mytime, mythid )
+      call timer_stop ('PROFILES_INLOOP     [ECCO SPIN-DOWN]', mythid)
+#endif
 
 #ifdef ALLOW_COST
 

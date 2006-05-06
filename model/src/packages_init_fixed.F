@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.47 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.48 2006/05/06 14:33:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -223,6 +223,10 @@ C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
       CALL ECCO_COST_INIT_FIXED( myThid )
+#endif
+
+#ifdef ALLOW_PROFILES
+      CALL PROFILES_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF

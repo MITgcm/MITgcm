@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.1 2006/03/24 22:58:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.2 2006/05/06 14:33:53 heimbach Exp $
 
-#include "COST_CPPOPTIONS.h"
+#include "PROFILES_OPTIONS.h"
 
       subroutine profiles_readparms( mythid )
 
@@ -24,7 +24,7 @@ c     == global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
-#include "ecco_cost.h"
+cph#include "ecco_cost.h"
 #include "profiles.h"
 
 c     == routine arguments ==

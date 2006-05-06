@@ -1,4 +1,7 @@
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.3 2006/05/06 14:33:53 heimbach Exp $
+C $Name:  $
+
+#include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine cost_profiles				 |
@@ -15,12 +18,16 @@ C     ======== Global data ============================
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_CAL
 #include "cal.h"
-#include "ecco_cost.h"
+#endif
+cph#include "ecco_cost.h"
+#ifdef ALLOW_CTRL
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#endif
+#ifdef ALLOW_PROFILES
 #include "profiles.h"
 #include "netcdf.inc"
 #endif

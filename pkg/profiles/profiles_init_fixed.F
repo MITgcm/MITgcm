@@ -1,4 +1,7 @@
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.3 2006/05/06 14:33:53 heimbach Exp $
+C $Name:  $
+
+#include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine profiles_init_fixed 				 |
@@ -17,11 +20,11 @@ C ==================== Global Variables ===========================
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "cal.h"
-#include "ecco_cost.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+cph#include "ecco_cost.h"
+cph#include "ctrl.h"
+cph#include "ctrl_dummy.h"
+cph#include "optim.h"
+#ifdef ALLOW_PROFILES
 # include "profiles.h"
 # include "netcdf.inc"
 #endif

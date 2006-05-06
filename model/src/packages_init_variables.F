@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.47 2006/03/24 22:58:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.48 2006/05/06 14:33:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -224,6 +224,12 @@ CADJ STORE theta = tapelev_init, key = 1
 c--   Initialise the cost function.
 ceh3 needs an IF ( useCOST ) THEN
       CALL COST_INIT_VARIA( mythid )
+      _BARRIER
+#endif
+
+#ifdef ALLOW_PROFILES
+c--   Initialise the cost function.
+      CALL PROFILES_INIT_VARIA( mythid )
       _BARRIER
 #endif
 

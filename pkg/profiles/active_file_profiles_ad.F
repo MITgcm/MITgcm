@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_ad.F,v 1.1 2006/03/24 22:58:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_ad.F,v 1.2 2006/05/06 14:33:53 heimbach Exp $
 
-#include "AUTODIFF_OPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 c     ==================================================================
 c

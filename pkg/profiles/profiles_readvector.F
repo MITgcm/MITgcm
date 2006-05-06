@@ -1,4 +1,7 @@
-#include "COST_CPPOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.2 2006/05/06 14:33:53 heimbach Exp $
+C $Name:  $
+
+#include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine profiles_readvector                           |
