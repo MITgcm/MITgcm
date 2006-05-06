@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.10 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.11 2006/05/06 18:03:41 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -297,7 +297,7 @@ C     - d/dx[ (eta+zeta) * v * (tanphi/a) ]
      &         * 0.5 _d 0 * (vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj))
      &         * 0.5 _d 0 * ( _tanPhiAtU(I  ,J,bi,bj) 
      &                      + _tanPhiAtU(I+1,J,bi,bj) )
-     &         - etaPlusZeta(I-1,J,bi,bj) *
+     &         - etaPlusZeta(I-1,J,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj))
      &         * 0.5 _d 0 * ( _tanPhiAtU(I-1,J,bi,bj) 
      &                      + _tanPhiAtU(I  ,J,bi,bj) )
