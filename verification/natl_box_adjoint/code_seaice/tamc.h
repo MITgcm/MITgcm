@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/tamc.h,v 1.3 2004/09/17 23:08:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/tamc.h,v 1.4 2006/05/06 18:02:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -120,7 +120,7 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, ikppkey, iicekey
+     &        itdkey, idynkey, igmkey, ikppkey
 
 c     ================================================================
 c     END OF HEADER TAMC
