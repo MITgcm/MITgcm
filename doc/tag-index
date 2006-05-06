@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.654 2006/05/03 23:46:07 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.655 2006/05/06 14:36:10 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,6 +9,8 @@ o SEAICE_CGRID adjoint started
 o R_STAR adjoint implemented.
   * Seems to just work (based on global_ocean.90x40x15/code_ad_nlfs/ )
   * need to sort out init. of h0facc, etc.
+o Make pkg/profile fully independent of ecco,cost, etc. stuff
+  to be able to use it in pure forward.
 
 checkpoint58d_post
 o upgrade simple test-experiment to tutorial example:
