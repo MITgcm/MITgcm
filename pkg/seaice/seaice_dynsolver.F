@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.9 2006/04/27 12:41:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.10 2006/05/06 19:13:51 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -222,11 +222,11 @@ C NOW DO PREDICTOR TIME STEP
        ENDDO
 
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
        CALL SEAICE_LSR( 1, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
+#endif
 
 C NOW DO MODIFIED EULER STEP
        DO bj=myByLo(myThid),myByHi(myThid)

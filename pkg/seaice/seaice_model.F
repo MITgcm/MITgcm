@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.31 2006/04/27 12:41:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.32 2006/05/06 19:13:51 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,11 +82,12 @@ C--   Load atmospheric state and runoff.
 CADJ STORE uwind = comlev1, key = ikey_dynamics
 CADJ STORE vwind = comlev1, key = ikey_dynamics
 CADJ STORE heff  = comlev1, key = ikey_dynamics
+CADJ STORE heffm = comlev1, key = ikey_dynamics
 # ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE area  = comlev1, key = ikey_dynamics
 #  ifdef SEAICE_CGRID
-CADJ STORE uice  = comlev1, key = ikey_dynamics
-CADJ STORE vice  = comlev1, key = ikey_dynamics
+cphCADJ STORE uice  = comlev1, key = ikey_dynamics
+cphCADJ STORE vice  = comlev1, key = ikey_dynamics
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -108,14 +109,24 @@ C solve ice momentum equations and calculate ocean surface stress
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SEAICE_ALLOW_DYNAMICS
-CADJ STORE heff  = comlev1, key = ikey_dynamics
-CADJ STORE area  = comlev1, key = ikey_dynamics
-CADJ STORE uice  = comlev1, key = ikey_dynamics
-CADJ STORE vice  = comlev1, key = ikey_dynamics
+cphCADJ STORE heffm  = comlev1, key = ikey_dynamics
+cphCADJ STORE heff   = comlev1, key = ikey_dynamics
+cphCADJ STORE area   = comlev1, key = ikey_dynamics
+cphCADJ STORE uice   = comlev1, key = ikey_dynamics
+cphCADJ STORE vice   = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C NOW DO ADVECTION and DIFFUSION
       CALL SEAICE_ADVDIFF( myTime, myIter, myThid ) 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE heffm  = comlev1, key = ikey_dynamics
+CADJ STORE heff   = comlev1, key = ikey_dynamics
+CADJ STORE area   = comlev1, key = ikey_dynamics
+cphCADJ STORE uice   = comlev1, key = ikey_dynamics
+cphCADJ STORE vice   = comlev1, key = ikey_dynamics
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW DO GROWTH
 C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION

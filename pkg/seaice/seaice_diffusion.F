@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.2 2006/03/15 19:49:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.3 2006/05/06 19:13:51 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,7 +44,7 @@ C     i,j,k,bi,bj - Loop counters
       _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff  = comlev1, key = ikey_dynamics
+cphCADJ STORE heff  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 

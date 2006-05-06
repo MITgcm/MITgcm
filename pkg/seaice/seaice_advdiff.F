@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.4 2006/03/20 21:18:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.5 2006/05/06 19:13:51 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,6 +67,20 @@ C     gfld      - tendency of scalar field
       _RL gfld  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Initialise for TAF
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          fld (I,J,bi,bj) = HEFF(I,J,1,bi,bj)
+          gfld(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
+
       SEAICEmultidimadvection = .TRUE.
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.SEAICEadvScheme.EQ.ENUM_UPWIND_3RD
@@ -86,6 +100,12 @@ C                 (which was computed in DIFFUS on timelevel 3)
 C     timelevel 2 is the previous timelevel 1
 C     timelevel 3 is the total diffusion tendency * deltaT
 C                 (empty if no diffusion)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heffm  = comlev1, key = ikey_dynamics
+CADJ STORE uice   = comlev1, key = ikey_dynamics
+CADJ STORE vice   = comlev1, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -206,8 +226,16 @@ C     diffusion
 
       ELSE
 C     if not multiDimAdvection
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heffm  = comlev1, key = ikey_dynamics
+CADJ STORE uice   = comlev1, key = ikey_dynamics
+CADJ STORE vice   = comlev1, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
+
        CALL ADVECT( UICE, VICE, HEFF, HEFFM, myThid )
        CALL ADVECT( UICE, VICE, AREA, HEFFM, myThid )
+
       ENDIF
 
 #endif /* ALLOW_SEAICE */
