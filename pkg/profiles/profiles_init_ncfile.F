@@ -19,7 +19,7 @@ C ==================== Global Variables ===========================
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 # include "profiles.h"
 # include "netcdf.inc"
 #endif
@@ -31,7 +31,7 @@ C ==================== Routine Variables ==========================
       real*8 tmp_vec(Zlength+1)
 c     == end of interface ==
 
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 
       if (profilesfile_equi_type.EQ.1) then
 c1) creation :

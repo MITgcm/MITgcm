@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.3 2006/05/06 14:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.4 2006/05/06 15:14:01 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -31,11 +31,7 @@ C ==================== Global Variables ===========================
 #ifdef ALLOW_CAL
 #include "cal.h"
 #endif
-cph#include "ecco_cost.h"
-cph#include "ctrl.h"
-cph#include "ctrl_dummy.h"
-cph#include "optim.h"
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 # include "profiles.h"
 #else
       integer NLEVELMAX
@@ -48,7 +44,7 @@ C ==================== Routine Variables ==========================
       _RL  traj_cur_out(NLEVELMAX)
       _RL  lon_cur,lat_cur
 
-#ifdef ALLOW_PROFILES_CONTRIBUTION
+#ifdef ALLOW_PROFILES
 
 C ==================== Local Variables ==========================
       _RL tab_coeffs1(2,2),tab_coeffs2(2,2),tab_coeffs3(2,2)

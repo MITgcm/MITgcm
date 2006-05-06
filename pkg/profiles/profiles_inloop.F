@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.3 2006/05/06 14:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.4 2006/05/06 15:14:01 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -24,9 +24,6 @@ C ==================== Global Variables ===========================
 #ifdef ALLOW_CAL
 #include "cal.h"
 #endif
-cph#include "ecco_cost.h"
-cph#include "ctrl.h"
-cph#include "ctrl_dummy.h"
 #ifdef ALLOW_CTRL
 #include "optim.h"
 #endif
