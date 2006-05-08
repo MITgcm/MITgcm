@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.21 2006/05/05 19:00:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.22 2006/05/08 22:24:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -584,139 +584,139 @@ C
   901 CONTINUE
       WRITE(msgBuffer,'(A)')
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer name "',name(ISTART:IEND),'" is invalid.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Names must have fewer than',maxString+1,' characters.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   902 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' No timer action specified.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Valid actions are:'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' "START", "STOP", "PRINT" and "PRINTALL".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   903 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer action"',name(ISTART:IEND),'" is invalid.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Valid actions are:'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' "START", "STOP", "PRINT" and "PRINTALL".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   904 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer "',name(ISTART:IEND),'" cannot be created.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' Only ',maxTimers,' timers are allowed.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
   905 CONTINUE
       WRITE(msgBuffer,*)
      &'                                                       '
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*** WARNING WARNING WARNING WARNING WARNING WARNING ***'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'procedure: "',callProc,'".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'Timer name is blank.'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &' A name must be used with "START", "STOP" or  "PRINT".'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       WRITE(msgBuffer,*)
      &'*******************************************************'
-      CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
+      CALL PRINT_MESSAGE(msgBuffer,errorMessageUnit,
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
 
