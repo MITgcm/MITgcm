@@ -1,41 +1,45 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.7 2006/01/22 15:51:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.8 2006/05/09 18:59:48 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
 #undef ALLOW_THSICE
 
+CBOP
+C     !ROUTINE: BULKF_FORCING
+C     !INTERFACE:
       SUBROUTINE BULKF_FORCING(
-     I                           myTime, myIter, myThid )
+     I                          myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE BULKF_FORCING
-c     ==================================================================
-c
-c     o Get the surface fluxes used to force ocean model
-c       Output:
-c       ------
-c       ustress, vstress - wind stress
-c       qnet             - net heat flux
-c       empmr            - freshwater flux
-c       ---------
-c
-c       Input:
-c       ------
-c       uwind, vwind  - mean wind speed (m/s)     at height hu (m)
-c       Tair  - mean air temperature (K)  at height ht (m)
-c       Qair  - mean air humidity (kg/kg) at height hq (m)
-c       theta(k=1) - sea surface temperature (K)
-c       rain  - precipitation
-c       runoff - river(ice) runoff
-c
-c     ==================================================================
-c     SUBROUTINE bulkf_forcing
-c     ==================================================================
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE BULKF_FORCING
+C     *==========================================================*
+C     \ev
 
+C     o Get the surface fluxes used to force ocean model
+C       Output:
+C       ------
+C       ustress, vstress :: wind stress
+C       qnet             :: net heat flux
+C       empmr            :: freshwater flux
+C       ---------
+C
+C       Input:
+C       ------
+C       uwind, vwind  :: mean wind speed (m/s)     at height hu (m)
+C       Tair  :: mean air temperature (K)  at height ht (m)
+C       Qair  :: mean air humidity (kg/kg) at height hq (m)
+C       theta(k=1) :: sea surface temperature (K)
+C       rain   :: precipitation
+C       runoff :: river(ice) runoff
+C
+C     ==================================================================
+C     SUBROUTINE bulkf_forcing
+C     ==================================================================
+
+C     !USES:
       IMPLICIT NONE
-
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -45,15 +49,17 @@ c     == global variables ==
 #include "BULKF_PARAMS.h"
 #include "BULKF.h"
 #include "BULKF_INT.h"
-#include "BULKF_DIAG.h"
+#include "BULKF_TAVE.h"
 #ifdef ALLOW_THSICE
 #include "THSICE_VARS.h"
 #endif
-c     == routine arguments ==
 
-      INTEGER myThid
-      INTEGER myIter
+C     !INPUT/OUTPUT PARAMETERS:
+C     == routine arguments ==
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_BULK_FORCE
 C     == Local variables ==

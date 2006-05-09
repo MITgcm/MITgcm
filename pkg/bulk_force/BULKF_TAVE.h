@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.5 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_TAVE.h,v 1.1 2006/05/09 18:59:48 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | BULKF_DIAG.h                                             |
-C     | o Header for Bulk formula diagnostic output              |
-C     \==========================================================/
-cswdblk -- change to keep bulk formula fields --
+C     *==========================================================*
+C     | BULKF_TAVE.h
+C     | o Header for Bulk formula time-average output
+C     *==========================================================*
 
 #ifdef ALLOW_BULK_FORCE
 
@@ -36,7 +35,6 @@ C     Storage arrays for time-averages
      &                       BULK_evap_AVE, BULK_flwup_AVE,
      &                       BULK_solar_AVE, BULK_ssq_AVE,
      &                       BULK_flwupnet_AVE
-
 
 
 #endif /* ALLOW_TIMEAVE */

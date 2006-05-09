@@ -1,16 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.7 2005/11/04 01:28:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.8 2006/05/09 18:59:48 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
 
+CBOP
 C     !ROUTINE: BULKF_AVE
 C     !INTERFACE:
-      SUBROUTINE BULKF_AVE(bi,bj,mythid)
+      SUBROUTINE BULKF_AVE(bi,bj,myThid)
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  BULKF_AVE
 C     | o save values for timeaveraging
 C     |   for sea/ice surface and atmosphere
 C     *==========================================================*
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -21,20 +25,21 @@ C     == Global variables ==
 #include "FFIELDS.h"
 #include "BULKF.h"
 #include "BULKF_INT.h"
-#include "BULKF_DIAG.h" 
-c     == routine arguments ==
+#include "BULKF_TAVE.h"
 
-      integer mythid
-      integer bi,bj
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER bi,bj
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_BULK_FORCE
 #ifdef ALLOW_TIMEAVE
 
-      integer i,j
+      INTEGER i,j
 
 C--     Time-average
-          do j = 1,sny
-            do i = 1,snx
+      DO j = 1,sNy
+        DO i = 1,sNx
              BULK_Qnet_AVE(i,j,bi,bj)=BULK_Qnet_AVE(i,j,bi,bj)
      &                       +Qnet(i,j,bi,bj)*deltaTclock
 c    &          +lambdaThetaClimRelax*
@@ -60,13 +65,14 @@ c    &           (recip_Cp*recip_rhoNil*recip_dRf(1))*deltaTclock
      &                       +fswnet(i,j,bi,bj)*deltaTclock
              BULK_ssq_AVE(i,j,bi,bj)=BULK_ssq_AVE(i,j,bi,bj)
      &                       +savssq(i,j,bi,bj)*deltaTclock
-            enddo
-           enddo
-           BULKF_timeave(1,bi,bj)=BULKF_timeave(1,bi,bj)+deltaTclock
+        ENDDO
+      ENDDO
+      BULKF_timeave(1,bi,bj)=BULKF_timeave(1,bi,bj)+deltaTclock
 
 
 #endif  /*ALLOW_TIMEAVE*/
 #endif  /*ALLOW_BULK_FORCE*/
+
       RETURN
       END
 
