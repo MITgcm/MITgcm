@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.54 2006/05/05 19:00:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.55 2006/05/09 16:07:52 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -547,13 +547,15 @@ CCE107 PAPI summary performance
 #else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
 #endif
-      WRITE(msgBuf,'(A34,F10.6)')
-     $        'Mflop/s during this timestep:', mflops
+      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
+     $     'Mflop/s during this timestep:', mflops, ' ', mflops
+     $     *proc_time/(real_time + 1E-36)
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
-      WRITE(msgBuf,'(A34,F10.6)')
-     $        'IPC during this timestep:', ipc
+      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
+     $     'IPC during this timestep:', ipc, ' ', ipc*proc_time
+     $     /(real_time + 1E-36),
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
       _END_MASTER( myThid )
