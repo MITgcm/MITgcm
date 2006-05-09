@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.48 2006/05/06 14:33:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.49 2006/05/09 19:11:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,8 +12,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE PACKAGES_INIT_VARIABLES                        
-C     | o Does initialisation of package-related variable data    
+C     | SUBROUTINE PACKAGES_INIT_VARIABLES
+C     | o Does initialisation of package-related variable data
 C     *==========================================================*
 C     \ev
 
@@ -34,7 +34,7 @@ C       |
 C       |-- GGL90_INIT
 C       |
 C       |-- SEAICE_INIT
-C       | 
+C       |
 C       |-- OBCS_INIT_VARIABLES
 C       |
 C       |-- PTRACERS_INIT
@@ -51,7 +51,7 @@ C       |-- ECCO_INIT
 C       |
 C       |-- COST_INIT
 C       |
-C       |-- BULKF_INIT
+C       |-- BULKF_INIT_VARIA
 C       |
 C       |-- THSICE_INI_VARS
 C       |
@@ -76,7 +76,7 @@ C     myThid -  Number of this instances
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) 
+      IF (debugMode)
      &     CALL DEBUG_ENTER('PACKAGES_INIT_VARIABLES',myThid)
 #endif
 
@@ -87,7 +87,7 @@ CEOP
 #endif
 
 #ifdef ALLOW_CD_CODE
-C--   Initialize CD_CODE variables: 
+C--   Initialize CD_CODE variables:
 C- note(jmc): before packaging CD_CODE, was done within ini_fields (=called before),
 C             therefore call CD-ini-vars before others pkg.
 #ifdef ALLOW_DEBUG
@@ -108,7 +108,7 @@ C--   Initialize GM/Redi parameterization
 C--   Initialize KPP vertical mixing scheme.
       IF (useKPP) THEN
 #ifdef ALLOW_DEBUG
-       IF (debugMode) 
+       IF (debugMode)
      &       CALL DEBUG_CALL('KPP_INIT + KPP_OPEN_DIAGS',myThid)
 #endif
        CALL KPP_INIT( myThid )
@@ -242,7 +242,7 @@ C--   Open boundaries data
 #endif
 
 #ifdef ALLOW_BULK_FORCE
-      IF (useBulkForce) CALL BULKF_INIT( mythid)
+      IF (useBulkForce) CALL BULKF_INIT_VARIA( mythid)
 #endif
 
 #ifdef ALLOW_THSICE
@@ -275,7 +275,7 @@ C Initialize FIZHI state variables
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) 
+      IF (debugMode)
      &     CALL DEBUG_LEAVE('PACKAGES_INIT_VARIABLES',myThid)
 #endif
       RETURN
