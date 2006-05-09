@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.57 2006/03/17 04:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.58 2006/05/09 19:11:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -157,9 +157,9 @@ C     Do SBO diagnostics.
 #endif  /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_BULK_FORCE
-C     Do bulkf diagnostics.
-      IF (useBulkForce .AND. myIter.NE.nIter0 )
-     &     CALL BULKF_DIAGS( myTime, myIter, myThid )
+C     Do bulkf output.
+      IF ( useBulkForce .AND. myIter.NE.nIter0 )
+     &     CALL BULKF_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_THSICE

@@ -1,16 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.8 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_output.F,v 1.1 2006/05/09 19:09:29 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE BULKF_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE BULKF_DIAGS                                  |
-C     | o Do BULKF diagnostic output                           |
-C     |==========================================================|
-C     \==========================================================/
-cswdblk modified for bulk formula -- Dec 01
+CBOP
+C     !ROUTINE: BULKF_OUTPUT
+C     !INTERFACE:
+      SUBROUTINE BULKF_OUTPUT( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE BULKF_OUTPUT
+C     | o Do BULKF time-average output
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -19,17 +24,17 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "BULKF.h"
 #include "BULKF_PARAMS.h"
-#include "BULKF_DIAG.h" 
+#include "BULKF_TAVE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance 
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid ::  Number of this instance
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_BULK_FORCE
 #ifdef ALLOW_TIMEAVE
@@ -45,8 +50,7 @@ C     Dump files and restart average computation if needed
       IF ( DIFFERENT_MULTIPLE(blk_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
-       
-         
+
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -75,7 +79,7 @@ C      Normalize by integrated time
 
         ENDDO
        ENDDO
-         
+
 
        _BEGIN_MASTER(myThid)
        WRITE(suff,'(I10.10)') myIter
@@ -124,12 +128,11 @@ C      Reset averages to zero
        ENDDO
 
 
-         
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-      
+
 #endif /* ALLOW_BULKF */
-      
+
       RETURN
       END
