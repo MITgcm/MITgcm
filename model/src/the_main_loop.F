@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.73 2006/05/09 16:07:52 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.74 2006/05/09 18:43:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -547,7 +547,7 @@ c--   Sum all cost function contributions.
 #endif
 
       _BARRIER
-      CALL TIMER_STOP ('MAIN LOOP            [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
