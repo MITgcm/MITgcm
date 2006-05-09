@@ -290,7 +290,7 @@ checkpoint50d_pre
   $ export CVS_RSH=ssh
   $ export CVSROOT=':ext:NAME@mitgcm.org:/u/gcmpack'
   $ mkdir scratch
-  $ cvs co MITgcm manual mitgcm.org
+  $ cvs co -P MITgcm manual mitgcm.org
 </screen>
 
       <para>These commands extract the necessary information from the CVS server
@@ -983,7 +983,7 @@ Package Output
 
         #ifdef ALLOW_${PKG}
           if ( use${Pkg} )
-     &       CALL ${PKG}_DIAGS( )     [ or CALL ${PKG}_OUTPUT( ) ]
+     &       CALL ${PKG}_OUTPUT( )
         #endif
 
      7. S/R PACKAGES_WRITE_PICKUP()
@@ -1029,13 +1029,14 @@ Description
      use for e.g. ${PKG}_INI_VARS, ${PKG}_INIT_VARIABLES, or the old 
      form ${PKG}_INIT
 
-     - ${PKG}_DIAGS()      [or ${PKG}_OUTPUT( ) ]
+     - ${PKG}_OUTPUT( )
      is responsible for writing time-average fields to output files
      (but the cumulating step is done within the package main S/R).
      Can also contain other diagnostics (.e.g. CALL ${PKG}_MONITOR) 
      and write snap-shot fields that are hold in common blocks. Other 
      temporary fields are directly dump to file where they are available.
-     NOTE: 1) ${PKG}_OUTPUT is progressively replacing ${PKG}_DIAGS()
+     NOTE: 1) the S/R old name ${PKG}_DIAGS is used in some packages 
+              but is beeing replaced by ${PKG}_OUTPUT
               to avoid confusion with pkg/diagnostics functionality.
            2) the output part is not yet in a standard form and might still
               evolve a lot.
@@ -1075,8 +1076,7 @@ Summary
   * ${pkg}_check.F        checks package dependencies and consistencies
   * ${pkg}_init_varia.F   initialises package-related fields
   * ${pkg}_... .F         package source code
-  * ${pkg}_diags.F        write output to file.
-   or ${pkg}_output.F     write output to file.
+  * ${pkg}_output.F       write output to file.
   * ${pkg}_write_pickup.F write a package pickup file to restart the model
 
   New: Subroutine in one package (pkgA) that only contains code which 
