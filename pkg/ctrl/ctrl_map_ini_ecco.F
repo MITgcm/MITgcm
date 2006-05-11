@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.4 2006/02/15 03:52:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.5 2006/05/11 21:43:12 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -273,6 +273,50 @@ cph(
 cph)
 #endif
 
+#ifdef ALLOW_DIFFKR_CONTROL
+c--   diffkr.
+      il=ilnblnk( xx_diffkr_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_diffkr_file(1:il),'.',optimcycle
+      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_diffkr_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
+     &                                tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+c--   kapgm.
+      il=ilnblnk( xx_kapgm_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_kapgm_file(1:il),'.',optimcycle
+      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_kapgm_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
+     &                               tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 #ifdef ALLOW_UVEL0_CONTROL
 c-- initial zonal velocity
       il=ilnblnk( xx_uvel_file )
@@ -390,6 +434,14 @@ c--   Update the tile edges.
        CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
 #elif (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
        STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
+#endif
+
+#ifdef ALLOW_DIFFKR_CONTROL
+      _EXCH_XYZ_R8( diffkr, mythid)
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+      _EXCH_XYZ_R8( kapgm, mythid)
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL
