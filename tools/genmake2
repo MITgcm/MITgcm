@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.148 2006/05/05 20:04:43 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.149 2006/05/11 20:28:50 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -934,7 +934,7 @@ EOF
     cat genmake_tnc.F >> genmake_tnc.log
     echo "===  genmake_tnc.F  ===" >> genmake_tnc.log
     RET_CPP=f
-    COMM="$CPP $DEFINES $INCLUDES genmake_tnc.F"
+    COMM="cat genmake_tnc.F | $CPP $DEFINES $INCLUDES"
     echo "$COMM" >> genmake_tnc.log
     $COMM > genmake_tnc.$FS 2>/dev/null  &&  RET_CPP=t
     if test "x$RET_CPP" = xf ; then
@@ -962,10 +962,10 @@ EOF
     else
 	# try again with "-lnetcdf" added to the libs
 	echo "try again with added '-lnetcdf'" > genmake_tnc.log
-	echo "$CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS \ " >> genmake_tnc.log
+	echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
 	echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
 	echo " &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
-	$CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS 2>/dev/null  \
+	cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS 2>/dev/null  \
 	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	    &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
 	RET_COMPILE=$?
