@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.8 2004/06/18 16:59:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.9 2006/05/11 00:03:07 heimbach Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -119,6 +119,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "CG2D.h"
 #include "SBO.h"
 
@@ -177,6 +178,10 @@ c     initialize variables to be computed
       xcom  = 0.0
       ycom  = 0.0
       zcom  = 0.0
+      sboarea     = 0.0
+      sboempmrwet = 0.0
+      sboqnetwet  = 0.0
+      
       DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
             DO J = 1-OLy, sNy+OLy
@@ -203,6 +208,12 @@ c     longitude (rad)
 
 c     unit radius
                   darea = dyF(I,J,bi,bj) * dxF(I,J,bi,bj) / ae / ae
+
+                  if (_hFacC(i,j,1,bi,bj).ne.0.) then
+                     sboarea = sboarea + darea
+                     sboempmrwet = sboempmrwet + empmr(i,j,bi,bj)*darea
+                     sboqnetwet  = sboqnetwet  + qnet(i,j,bi,bj) *darea
+                  endif
 
                   do K = 0, Nr
 c     K=0 => ssh
@@ -302,11 +313,20 @@ c     sum all values across model tiles
       _GLOBAL_SUM_R8( xoamp , myThid )
       _GLOBAL_SUM_R8( yoamp , myThid )
       _GLOBAL_SUM_R8( zoamp , myThid )
+cph(
+      _GLOBAL_SUM_R8( sboarea, myThid )
+      _GLOBAL_SUM_R8( sboempmrwet, myThid )
+      _GLOBAL_SUM_R8( sboqnetwet, myThid )
+cph)
 
 c     finish calculating center-of-mass of oceans
       xcom = xcom / mass
       ycom = ycom / mass
       zcom = zcom / mass
+cph(
+      sboempmrwet = sboempmrwet / sboarea
+      sboqnetwet = sboqnetwet / sboarea
+cph)
 
 #endif /* ALLOW_SBO */
 
