@@ -790,6 +790,10 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wscatx,wscaty,
      &                      wtheta,wtheta2,wthetaLev,
      &                      wsalt,wsalt2,wsaltLev,
+     &                      wdiffkr,wdiffkr2,wdiffkrFld,
+     &                      wkapgm,wkapgm2,wkapgmFld,
+     &                      wedtaux,wedtaux2,wedtauxFld,
+     &                      wedtauy,wedtauy2,wedtauyFld,
      &                      wsst,wsss,
      &                      wtp,wers,wgfo,
      &                      wp,
@@ -840,10 +844,23 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wcurrent2   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wcurrentLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wbaro
+      _RL wdiffkr (                            nr,nsx,nsy)
+      _RL wdiffkr2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wdiffkrFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wkapgm (                            nr,nsx,nsy)
+      _RL wkapgm2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wkapgmFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wedtaux (                            nr,nsx,nsy)
+      _RL wedtaux2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wedtauxFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wedtauy (                            nr,nsx,nsy)
+      _RL wedtauy2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wedtauyFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       common /ecco_cost_weights_0_r/
      &        whflux0, wsflux0, wtau0,
-     &        watemp0, waqh0, wprecip0, wswflux0, wswdown0, wwind0
+     &        watemp0, waqh0, wprecip0, wswflux0, wswdown0, wwind0,
+     &        wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
       _RL wsflux0
       _RL wtau0
@@ -853,6 +870,9 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wswflux0
       _RL wswdown0
       _RL wwind0
+      _RL wdiffkr0
+      _RL wkapgm0
+      _RL wedtau0
 
       common /ecco_cost_weights_mean_r/
      &        wmean_hflux, wmean_sflux, wmean_tau,

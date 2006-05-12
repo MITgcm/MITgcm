@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.16 2005/10/19 03:30:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.17 2006/05/12 13:40:18 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -140,12 +140,24 @@ cph)
             wsalt  (k,bi,bj) = 0. _d 0
             wctdt  (k,bi,bj) = 0. _d 0
             wctds  (k,bi,bj) = 0. _d 0
+            wdiffkr(k,bi,bj) = wdiffkr0
+            wkapgm (k,bi,bj) = wkapgm0
+            wedtaux(k,bi,bj) = wedtau0
+            wedtauy(k,bi,bj) = wedtau0
             do j = jmin,jmax
               do i = imin,imax
                 wtheta2 (i,j,k,bi,bj) = 0. _d 0
                 wsalt2  (i,j,k,bi,bj) = 0. _d 0
+                wdiffkr2(i,j,k,bi,bj) = wdiffkr0
+                wkapgm2 (i,j,k,bi,bj) = wkapgm0
+                wedtaux2(i,j,k,bi,bj) = wedtau0
+                wedtauy2(i,j,k,bi,bj) = wedtau0
                 wthetaLev (i,j,k,bi,bj) = 0. _d 0
                 wsaltLev  (i,j,k,bi,bj) = 0. _d 0
+                wdiffkrFld(i,j,k,bi,bj) = wdiffkr0
+                wkapgmFld (i,j,k,bi,bj) = wkapgm0
+                wedtauxFld(i,j,k,bi,bj) = wedtau0
+                wedtauyFld(i,j,k,bi,bj) = wedtau0
               enddo
             enddo
           enddo
@@ -261,26 +273,26 @@ c--       is no need to add the zonal and meridional directions.
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
             wobcsn(k,1) = wti(k)
             wobcsn(k,2) = wsi(k)
-            wobcsn(k,3) = wti(k)*0.02
-            wobcsn(k,4) = wti(k)*0.02
+            wobcsn(k,3) = wvi(k)
+            wobcsn(k,4) = wvi(k)
 #endif
 #ifdef ALLOW_OBCSS_COST_CONTRIBUTION
             wobcss(k,1) = wti(k)
             wobcss(k,2) = wsi(k)
-            wobcss(k,3) = wti(k)*0.02
-            wobcss(k,4) = wti(k)*0.02
+            wobcss(k,3) = wvi(k)
+            wobcss(k,4) = wvi(k)
 #endif
 #ifdef ALLOW_OBCSW_COST_CONTRIBUTION
             wobcsw(k,1) = wti(k)
             wobcsw(k,2) = wsi(k)
-            wobcsw(k,3) = wti(k)*0.02
-            wobcsw(k,4) = wti(k)*0.02
+            wobcsw(k,3) = wvi(k)
+            wobcsw(k,4) = wvi(k)
 #endif
 #ifdef ALLOW_OBCSE_COST_CONTRIBUTION
             wobcse(k,1) = wti(k)
             wobcse(k,2) = wsi(k)
-            wobcse(k,3) = wti(k)*0.02
-            wobcse(k,4) = wti(k)*0.02
+            wobcse(k,3) = wvi(k)
+            wobcse(k,4) = wvi(k)
 #endif
           enddo
         enddo
@@ -1183,6 +1195,67 @@ cph)
         enddo
       enddo
 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            if (wdiffkr(k,bi,bj) .ne. 0.) then
+              wdiffkr(k,bi,bj) = 1./wdiffkr(k,bi,bj)/wdiffkr(k,bi,bj)
+            else
+              wdiffkr(k,bi,bj) = 0.0 _d 0
+            endif
+            if (wkapgm(k,bi,bj) .ne. 0.) then
+              wkapgm(k,bi,bj) = 1./wkapgm(k,bi,bj)/wkapgm(k,bi,bj)
+            else
+              wkapgm(k,bi,bj) = 0.0 _d 0
+            endif
+            if (wedtaux(k,bi,bj) .ne. 0.) then
+              wedtaux(k,bi,bj) = 1./wedtaux(k,bi,bj)/wedtaux(k,bi,bj)
+            else
+              wedtaux(k,bi,bj) = 0.0 _d 0
+            endif
+            if (wedtauy(k,bi,bj) .ne. 0.) then
+              wedtauy(k,bi,bj) = 1./wedtauy(k,bi,bj)/wedtauy(k,bi,bj)
+            else
+              wedtauy(k,bi,bj) = 0.0 _d 0
+            endif
+            do j = jmin,jmax
+              do i = imin,imax
+                if (wdiffkr2(i,j,k,bi,bj) .ne. 0.) then
+                   wdiffkr2(i,j,k,bi,bj) = frame(i,j)/
+     &                  wdiffkr2(i,j,k,bi,bj)/wdiffkr2(i,j,k,bi,bj)
+                else
+                   wdiffkr2(i,j,k,bi,bj) = 0.0 _d 0
+                endif
+                wdiffkrFld(i,j,k,bi,bj) = wdiffkr2(i,j,k,bi,bj) 
+c
+                if (wkapgm2(i,j,k,bi,bj) .ne. 0.) then
+                   wkapgm2(i,j,k,bi,bj) = frame(i,j)/
+     &                  wkapgm2(i,j,k,bi,bj)/wkapgm2(i,j,k,bi,bj)
+                else
+                   wkapgm2(i,j,k,bi,bj) = 0.0 _d 0
+                endif
+                wkapgmFld(i,j,k,bi,bj) = wkapgm2(i,j,k,bi,bj) 
+c
+                if (wedtaux2(i,j,k,bi,bj) .ne. 0.) then
+                   wedtaux2(i,j,k,bi,bj) = frame(i,j)/
+     &                  wedtaux2(i,j,k,bi,bj)/wedtaux2(i,j,k,bi,bj)
+                else
+                   wedtaux2(i,j,k,bi,bj) = 0.0 _d 0
+                endif
+                wedtauxFld(i,j,k,bi,bj) = wedtaux2(i,j,k,bi,bj) 
+c
+                if (wedtauy2(i,j,k,bi,bj) .ne. 0.) then
+                   wedtauy2(i,j,k,bi,bj) = frame(i,j)/
+     &                  wedtauy2(i,j,k,bi,bj)/wedtauy2(i,j,k,bi,bj)
+                else
+                   wedtauy2(i,j,k,bi,bj) = 0.0 _d 0
+                endif
+                wedtauyFld(i,j,k,bi,bj) = wedtauy2(i,j,k,bi,bj) 
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
 c
 c     write masks and weights to files to be read by a master process
 c
