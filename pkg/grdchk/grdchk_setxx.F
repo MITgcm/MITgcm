@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.14 2005/08/31 00:03:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.15 2006/05/12 02:17:03 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -401,6 +401,52 @@ c--   == end of interface ==
      &                          mythid, dummy)
 
 #endif /* ALLOW_OBCSE_CONTROL */
+
+#ifdef ALLOW_DIFFKR_CONTROL
+      else if ( grdchkvarindex .eq. 15 ) then
+         il=ilnblnk( xx_diffkr_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_diffkr_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_diffkr_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz_loc( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_xyz_loc( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_DIFFKR_CONTROL */
+
+#ifdef ALLOW_KAPGM_CONTROL
+      else if ( grdchkvarindex .eq. 16 ) then
+         il=ilnblnk( xx_kapgm_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_kapgm_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_kapgm_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz_loc( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_xyz_loc( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_KAPGM_CONTROL */
 
 #ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.7 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.8 2006/05/12 02:17:03 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -164,6 +164,15 @@ c--   components of the given control variable.
       enddo
       ncvarcomp     = ncvarcomp*ncvarrecs(grdchkvarindex)
       maxncvarcomps = maxncvarcomps*ncvarrecs(grdchkvarindex)
+
+      iwetsum(0)    = 0
+      do bj = jtlo,jthi
+         do bi = itlo,ithi
+            do k = 1,ncvarnrmax(grdchkvarindex)
+               iwetsum(k) = iwetsum(k-1) + nwettile(bi,bj,k,1)
+            enddo
+         enddo
+      enddo
 
       _END_MASTER( mythid )
 

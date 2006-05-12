@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.8 2003/11/04 20:47:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.9 2006/05/12 02:17:03 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -54,6 +54,7 @@ c     == routine arguments ==
       integer       itilepos
       integer       jtilepos
       integer       itest
+      integer       iwettot
       integer       ierr
       integer       mythid
 
@@ -103,6 +104,7 @@ c--     A valid component of the control variable has been selected.
             iobcswrk  = 1
             jwrk      = 1
             iwrk      = 1
+            iwettot   = 0
          else
             itest     = itestmem (ichknum-1)
             icomptest = icompmem (ichknum-1)
@@ -114,6 +116,7 @@ c--     A valid component of the control variable has been selected.
             jwrk      = jlocmem  (ichknum-1)
             iwrk      = ilocmem  (ichknum-1)
             iwrk      = iwrk + 1
+            iwettot   = iwetsum(kwrk)
          end if
 
 c--   set max loop index for obcs multiplicities
@@ -132,8 +135,8 @@ cph         do iobcs = iobcswrk, nobcsmax
             do k = kwrk, ncvarnrmax(grdchkvarindex)
 
              if ( (ierr .ne. 0) .and.
-     &              (icomp .gt. itest) .and.
-     &              (icomp .le. itest + nwettile(bi,bj,k,iobcs))) then
+     &              (icomp .gt. iwetsum(k-1)) .and.
+     &              (icomp .le. iwetsum(k))) then
                icvrec = irec
                itile  = bi
                jtile  = bj
@@ -186,6 +189,7 @@ cph         do iobcs = iobcswrk, nobcsmax
                      layer    = k
                      obcspos  = iobcs
                      ierr     = 0
+                     itest    = iwetsum(k)
                   endif
                  endif
                 enddo
@@ -193,7 +197,7 @@ cph         do iobcs = iobcswrk, nobcsmax
                enddo
                jwrk = 1
              else if (ierr .NE. 0) then
-                itest     = itest + nwettile(bi,bj,k,iobcs)
+                icomptest = icomptest + nwettile(bi,bj,k,iobcs)
                 iwrk      = 1
                 jwrk      = 1
              else

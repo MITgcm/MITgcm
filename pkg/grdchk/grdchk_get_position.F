@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.1 2004/03/23 19:42:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.2 2006/05/12 02:17:03 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -188,7 +188,7 @@ c
                         print '(a,7I5)', 
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
-     &                       iG, jG
+     &                       itile, jtile
                      endif
                   else if ( pastit .EQ. 0 .AND. 
      &                    wetlocal .NE.0 ) then
@@ -200,7 +200,7 @@ c
                         print '(a,7I5)', 
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
-     &                       iG, jG
+     &                       itile, jtile
                   endif
 c
                  endif
