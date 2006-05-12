@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.22 2006/02/09 20:21:54 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.23 2006/05/12 19:08:46 edhill Exp $
 #  $Name:  $
 #
 
@@ -8,6 +8,7 @@
 FC=g77
 CC=gcc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+# CPP='gcc -E -traditional -P -'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 

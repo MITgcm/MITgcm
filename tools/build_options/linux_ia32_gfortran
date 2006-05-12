@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.3 2005/10/16 06:35:31 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.4 2006/05/12 19:08:46 edhill Exp $
 #  $Name:  $
 #
 
@@ -17,6 +17,7 @@
 FC=gfortran
 CC=gcc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
+# CPP='gcc -E -traditional -P -'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 
