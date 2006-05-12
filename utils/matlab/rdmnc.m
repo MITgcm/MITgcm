@@ -155,11 +155,11 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
         end
 	
         dims = ncnames(dim(nc{cvar}));        % Dimensions
-        
         adj = 0;
         if dims{1} == 'T'
             if isempty(find(fii)), return, end
-            tmpdata = nc{cvar}(find(fii),:);
+            
+            tmpdata = nc{cvar}(fii,:);
             if ismember('Zd000001' ,dims), adj = adj - 1; end
             if ismember('Zmd000001',dims), adj = adj - 1; end
             it = length(dims) + adj;
