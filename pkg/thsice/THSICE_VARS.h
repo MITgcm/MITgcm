@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.5 2006/04/09 17:35:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.6 2006/05/14 14:06:13 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -77,7 +77,9 @@ C   v2ocMxL :: velocity (square) in the mixed layer [m2/s2]
       _RL sOceMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v2ocMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER iicekey
+#endif
 
 #endif /* ALLOW_THSICE */
 
