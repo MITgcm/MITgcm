@@ -1,9 +1,16 @@
 
 c     Define dummy weights as a placeholder
       common /ctrl_weights_dummy_r/
-     &                        wtheta, wsalt
-      _RL wtheta   ( nr,nsx,nsy )
-      _RL wsalt    ( nr,nsx,nsy )
+     &                        wtheta, wsalt,
+     &                        wdiffkr, wkapgm,
+     &                        wedtaux, wedtauy
+
+      _RL wtheta ( nr,nsx,nsy )
+      _RL wsalt ( nr,nsx,nsy )
+      _RL wdiffkr ( nr,nsx,nsy )
+      _RL wkapgm ( nr,nsx,nsy )
+      _RL wedtaux ( nr,nsx,nsy )
+      _RL wedtauy ( nr,nsx,nsy )
 
 #if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || defined (ALLOW_OBCSN_CONTROL))
       common /ctrl_cost_weights_obcsn/
