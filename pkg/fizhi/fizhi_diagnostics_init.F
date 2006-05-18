@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.7 2006/02/15 20:51:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.8 2006/05/18 22:16:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -606,6 +606,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'PS      '
       diagTitle  = 'Time-Averaged Surface Pressure  (hPa)'
       diagUnits  = 'hPa             '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SLP     '
+      diagTitle  = 'Sea Level Pressure (mb)'
+      diagUnits  = 'mb              '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
