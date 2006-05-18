@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.1 2006/05/18 03:10:54 edhill Exp $
+#
+
+FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf77'
+CC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgcc'
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+# INCLUDES="-I/scratch/edhill/netcdf_for_pgi/pgi_fc3/include"
+# LIBS="-L/scratch/edhill/netcdf_for_pgi/pgi_fc3/lib"
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+fi
+
