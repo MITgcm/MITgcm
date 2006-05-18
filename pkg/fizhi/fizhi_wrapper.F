@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.29 2006/02/16 23:03:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.30 2006/05/18 22:14:23 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -45,6 +45,9 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL pedyn(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1,nSx,nSy)
        _RL tempphy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
+       _RL tempLdiag(sNx,sNy,Nrphys,Nsx,Nsy)
+       _RL tempLdiag2(sNx,sNy,Nrphys,Nsx,Nsy)
+       _RL tempdiag(sNx,sNy,Nsx,Nsy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
@@ -223,6 +226,36 @@ c Do not use a zero field as the top edge pressure for interpolation
        do bi = myBxLo(myThid), myBxHi(myThid)
         call get_landfrac(im2,jm2,Nsx,Nsy,bi,bj,maxtyp,
      .        surftype,tilefrac,fracland(1,1,bi,bj))
+
+#ifdef ALLOW_DIAGNOSTICS
+      if ( useDiagnostics ) then
+       if(diagnostics_is_on('SLP     ',myThid) ) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+        do j = 1,sNy
+        do i = 1,sNx
+         tempdiag(i,j,L,bi,bj) = Phihydlow(i,j,bi,bj)
+        do L = 1,Nrphys+1
+         tempLdiag(i,j,L,bi,bj) = pephy4fiz(i,j,L,bi,bj)
+         tempLdiag2(i,j,L,bi,bj) = thphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        call slprs(tempdiag,tempLdiag(1,1,1,bi,bj),
+     .  tempLdiag2(1,1,1,bi,bj),fracland(1,1,bi,bj),sNx,sNy,Nrphys,slp)
+        do j = 1,sNy
+        do i = 1,sNx
+         tempij(i,j) = slp(i,j,bi,bj)
+        enddo
+        enddo
+        call diagnostics_fill(tempij,'SLP     ',1,
+     .                                     1,2,bi,bj,myThid)
+        enddo
+        enddo
+       endif
+      endif
+#endif
+
 c
 c Compute physics increments
 

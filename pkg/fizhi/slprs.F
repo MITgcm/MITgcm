@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/slprs.F,v 1.1 2006/05/18 19:38:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/slprs.F,v 1.2 2006/05/18 22:14:23 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine slprs (SLP,PZ,PTOP,PHIS,THZ,PLE,lwmask,im,jm,lm)
+      subroutine slprs (PHIS,PLE,THZ,lwmask,im,jm,lm,SLP)
 C***********************************************************************        
 C  INPUT                                                                        
-C    PZ ...... SURFACE   PRESSURE (MB) - PTOP                                   
-C    PTOP .... MODEL TOP PRESSURE (MB)                                          
 C    PHIS .... SURFACE GEOPOTENTIAL (M2/S2)                                     
 C    THZ ..... POTENTIAL TEMPERATURE (K) ON  Model LEVELS                       
 C    grid .... Dynamics Grid Structure                                          
@@ -21,18 +19,16 @@ C***********************************************************************
       implicit none
 
       integer im,jm,lm
-      _RL  SLP   (im*jm),  PZ   (im*jm)
+      _RL  SLP   (im*jm)
       _RL  PHIS  (im*jm),  THZ  (im*jm,lm)
       _RL  lwmask(im*jm)
       _RL  ple(im*jm,lm+1)
 
-      _RL ZERO, ONE, TWO, BETA
-      PARAMETER(ZERO = 0.0)
-      PARAMETER(ONE  = 1.0)
+      _RL TWO, BETA
       PARAMETER(TWO  = 2.0)
       PARAMETER(BETA = 0.0065)
 
-      _RL  getcon,g,r,ak,cp,delp,ptop
+      _RL  getcon,g,r,ak
       integer i,L
       _RL  tm (im*jm)
       integer Ltop (im*jm)
@@ -40,8 +36,6 @@ C***********************************************************************
       G  = GETCON('GRAVITY')                                                    
       R  = GETCON('RGAS')                                                       
       AK = GETCON('KAPPA')                                                      
-      CP = GETCON('CP')                                                      
-                                                                                
 C***********************************************************************        
 C*                COMPUTE MEAN THETA IN PBL (100 MB)                   *        
 C***********************************************************************        
@@ -70,13 +64,13 @@ C***********************************************************************
                                                                                 
       do i=1,im*jm                                                           
       if( lwmask(i).eq.0.0 ) then
-      TM(I) = TM(I) * ((PZ(I)+PTOP)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
+      TM(I) = TM(I) * (PLE(I,LM+1)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
       else
-      TM(I) = THZ(I,LM)*((PZ(I)+PTOP)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
+      TM(I) = THZ(I,LM)*(PLE(I,LM+1)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
       endif
 
       SLP(I) = PHIS(I) / ( R*TM(I) )                                            
-      SLP(I) = ( PZ(I)+PTOP ) * EXP( SLP(I) )                                   
+      SLP(I) = PLE(I,LM+1) * EXP( SLP(I) )                                   
       enddo
                                                                                 
       RETURN                                                                    
