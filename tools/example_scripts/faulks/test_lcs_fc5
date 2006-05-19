@@ -1,0 +1,153 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.1 2006/05/19 17:52:57 edhill Exp $
+
+#  Ed Hill
+
+#  Test script for MITgcm that should work on most of the lcs.mit.edu
+#  Linux machines.
+
+usage()
+{
+    cat << EOF
+
+Usage:  $0 [OPTIONS]
+
+where possible OPTIONS are:
+  (-help|-h)               print usage
+  (-dir | -d) TDIR         specify testing directory
+                             (def="$TDIR")
+  (-of | -optfile) FILE    specify an OPTFILE
+                             (def="$OPTFILE")
+  (-[no]ieee)              IEEE math flag
+                             (def="$IEEE")
+
+EOF
+    exit 1
+}
+
+
+# defaults
+export PATH='/usr/local/bin:/bin:/usr/bin'
+OPTFILE=
+TESTDIR="/scratch/edhill/test_"`hostname`
+IEEE="-ieee"
+
+#  Parse options
+ac_prev=
+for ac_option ; do
+
+    # If the previous option needs an argument, assign it.
+    if test -n "$ac_prev"; then
+        eval "$ac_prev=\$ac_option"
+        ac_prev=
+        continue
+    fi
+
+    ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
+    
+    case $ac_option in
+        
+        -help | --help | -h | --h)
+            usage ;;
+        
+        -dir | --dir | -d | --d)
+            ac_prev=TESTDIR ;;
+        -dir=* | --dir=* | -d=* | --d=*)
+            TESTDIR=$ac_optarg ;;
+
+        -of | --of | -optfile | --optfile)
+            ac_prev=OPTFILE ;;
+        --of=* | -of=* | --optfile=* | -optfile=*)
+            OPTFILE=$ac_optarg ;;
+
+	-ieee)
+	    IEEE="-ieee" ;;
+	-noieee)
+	    IEEE= ;;
+        
+        *)
+            echo "Error: don't understand argument \"$ac_option\""
+            usage
+            ;;
+        
+     esac
+     
+done
+
+#  Turn off stack limit for FIZHI
+ulimit -s unlimited
+
+echo -n "Creating a temp directory ..."
+mach=`hostname`
+file=${OPTFILE##*/}
+tdir=$TESTDIR"_"$file
+test -e $tdir  &&  rm -rf $tdir
+mkdir $tdir
+echo "  done"
+
+echo -n "Downloading the MITgcm code from CVS pserver..."
+cd $tdir
+export CVSROOT='/u/gcmpack'
+cvs co MITgcm > /dev/null 2>&1
+echo "  done"
+
+echo "Running testreport using:"
+cd MITgcm/verification
+comm="./testreport $IEEE -a edhill@mitgcm.org"
+if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+fi
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+cd MITgcm/verification
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+export PGI=/usr/local/pkg/pgi/pgi-6.1-5
+cd MITgcm/verification
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+comm="./testreport -adm $IEEE -a edhill@mitgcm.org"
+if test "x$OPTFILE" != x ; then
+    comm="$comm -of=$OPTFILE"
+fi
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+ 
