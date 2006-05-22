@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.149 2006/05/11 20:28:50 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.150 2006/05/22 22:11:11 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -767,6 +767,9 @@ EOF
 
 
 check_HAVE_SIGREG()  {
+    if test ! "x$HAVE_SIGREG" = x ; then
+	return
+    fi
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -1690,7 +1693,7 @@ rm -f genmake_t*
 
 printf "  Can we register a signal handler using $FC...  "
 check_HAVE_SIGREG
-if test "x$HAVE_SIGREG" != x ; then
+if test "x$HAVE_SIGREG" = xt ; then
     echo "yes"
 else
     echo "no"
