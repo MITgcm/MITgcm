@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.657 2006/05/17 00:02:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.658 2006/05/22 00:25:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o results_ad : rename "output.txt_adm" to "output_adm.txt" and change
+ testreport accordingly
 
 checkpoint58e_post
 o SEAICE_CGRID adjoint done
