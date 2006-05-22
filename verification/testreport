@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.77 2006/03/20 21:50:36 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.78 2006/05/22 00:14:29 jmc Exp $
 #  $Name:  $
 #
 
@@ -181,10 +181,10 @@ dashnum()
 
 testoutput_ad()
 {
-    grep $3 $1/results_ad/output.txt_adm | awk '{print NR " " $5}' > t05.txt
-    grep $3 $1/$2/output.txt_adm | awk '{print NR " " $5}' > t15.txt
-    grep $3 $1/results_ad/output.txt_adm | awk '{print NR " " $6}' > t06.txt
-    grep $3 $1/$2/output.txt_adm | awk '{print NR " " $6}' > t16.txt
+    grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $5}' > t05.txt
+    grep $3 $1/$2/output_adm.txt | awk '{print NR " " $5}' > t15.txt
+    grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $6}' > t06.txt
+    grep $3 $1/$2/output_adm.txt | awk '{print NR " " $6}' > t16.txt
     join t05.txt t15.txt > t5.txt
     join t06.txt t16.txt > t6.txt
     echo "-1" >> t5.txt
@@ -535,7 +535,7 @@ runmodel()
 	    # if test "x$ADM" = x ; then
 	    #   cp output.txt $CDIR"/output.txt"
 	    # else
-	    #   cp output.txt_adm $CDIR"/output.txt_adm"
+	    #   cp output_adm.txt $CDIR"/output_adm.txt"
 	    # fi
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
@@ -813,7 +813,7 @@ fi
 
 if test "x$ADM" = xt ; then
     EXECUTABLE="mitgcmuv_ad"
-    OUTPUTFILE="output.txt_adm"
+    OUTPUTFILE="output_adm.txt"
 else
     EXECUTABLE="mitgcmuv"
     OUTPUTFILE="output.txt"
@@ -950,7 +950,7 @@ for dir in $TESTDIRS ; do
     if test "x$ADM" = x ; then
 	fout=$dir"/results/output.txt"
     else
-	fout=$dir"/results_ad/output.txt_adm"
+	fout=$dir"/results_ad/output_adm.txt"
     fi
     if test ! -r $fout ; then
 	echo "can't read \"$fout\" -- skipping $dir"
