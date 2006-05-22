@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.9 2006/05/11 00:03:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.10 2006/05/22 14:25:46 heimbach Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -137,6 +137,7 @@ C !LOCAL VARIABLES: ====================================================
 c     external function called by calc_sbo
 c     returns density of sea water
       _RL sbo_rho
+      _RL rhoK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 c     internal variables
 c     bi, bj    - array indices
@@ -158,7 +159,7 @@ c     density   - density at grid point (kg/m**3)
 c     ae        - earth s mean radius  (m) (PREM value)
 c     grav      - earth s mean gravity (m/s**2) (PREM)
 c     sbo_omega - earth s mean angular velocity (rad/s)
-      integer bi, bj, I, J, K
+      integer bi, bj, I, J, K, Kn0
       _RL lat, lat_deg, lon, radius, darea, dradius, dvolume, depth
       _RL s, t, u, v, density
       _RL ae, grav, sbo_omega
@@ -178,6 +179,7 @@ c     initialize variables to be computed
       xcom  = 0.0
       ycom  = 0.0
       zcom  = 0.0
+      sbobp       = 0.0
       sboarea     = 0.0
       sboempmrwet = 0.0
       sboqnetwet  = 0.0
@@ -195,110 +197,107 @@ c     initialize variables to be computed
 c     loop over all grid points, accumulating mass, com, oam, and obp
 
       do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+          do K = 0, Nr
+            kn0 = max(K,1)
+
+            CALL FIND_RHO(
+     I           bi, bj, 1, sNx, 1, sNy, Kn0, Kn0,
+     I           theta, salt,
+     O           rhoK,
+     I           myThid )
+
+c--
             do J = 1, sNy
-               do I = 1, sNx
+             do I = 1, sNx
+              if ( _hFacC(i,j,Kn0,bi,bj) .ne. 0. ) then
 
+                if ( K .EQ. 0 ) then
 c     latitude (rad)
-               lat_deg = yC(I,J,bi,bj)
-               lat = yC(I,J,bi,bj) * pi / 180.0
-
+                  lat_deg = yC(I,J,bi,bj)
+                  lat = yC(I,J,bi,bj) * pi / 180.0
 c     longitude (rad)
                   lon = xC(I,J,bi,bj) * pi / 180.0
-
 c     unit radius
                   darea = dyF(I,J,bi,bj) * dxF(I,J,bi,bj) / ae / ae
+     &                    * maskC(I,J,Kn0,bi,bj)
 
-                  if (_hFacC(i,j,1,bi,bj).ne.0.) then
-                     sboarea = sboarea + darea
-                     sboempmrwet = sboempmrwet + empmr(i,j,bi,bj)*darea
-                     sboqnetwet  = sboqnetwet  + qnet(i,j,bi,bj) *darea
-                  endif
-
-                  do K = 0, Nr
+                  sboarea = sboarea + darea
+                  sboempmrwet = sboempmrwet + empmr(i,j,bi,bj)*darea
+                  sboqnetwet  = sboqnetwet  + qnet(i,j,bi,bj) *darea
 c     K=0 => ssh
-                     if (K .eq. 0) then
+                  radius = ae
+                  dradius = etaN(I,J,bi,bj) * maskC(I,J,Kn0,bi,bj)
 
-c     if land, flag it in obp and skip it
-                        if (_hFacC(i,j,1,bi,bj).eq.0.) then
-                           obp(I,J,bi,bj) = -999.99
-                           goto 1010
-                        end if
-
-                        radius = ae
-                        dradius = etaN(I,J,bi,bj)
-c     assume surface has same vel and density as first layer
-                        s = salt(I,J,1,bi,bj)
-                        t = theta(I,J,1,bi,bj)
-                        u =(uvel(I,J,1,bi,bj)+uvel(I+1,J,1,bi,bj))/2.
-                        v =(vvel(I,J,1,bi,bj)+vvel(I,J+1,1,bi,bj))/2.
-
-                     else
-
-c     if land, skip it
-                        if (_hFacC(i,j,k,bi,bj).eq.0.) goto 1010
+                else
+c-- K > 0
 
 c     radius to center of cell (m)
-                        radius = ae - abs(rC(K))
-                        dradius = drF(K)
-                        s = salt(I,J,K,bi,bj)
-                        t = theta(I,J,K,bi,bj)
-                        u =(uvel(I,J,K,bi,bj)+uvel(I+1,J,K,bi,bj))/2.
-                        v =(vvel(I,J,K,bi,bj)+vvel(I,J+1,K,bi,bj))/2.
-                     end if
+                  radius = ae - abs(rC(K))
+                  dradius = drF(K) * maskC(I,J,K,bi,bj)
+c-- end of K-if
+                end if
+
+
+cph                s = salt(I,J,Kn0,bi,bj)
+cph                t = theta(I,J,Kn0,bi,bj)
+                u =(uvel(I,J,Kn0,bi,bj)+uvel(I+1,J,Kn0,bi,bj))/2.
+                v =(vvel(I,J,Kn0,bi,bj)+vvel(I,J+1,Kn0,bi,bj))/2.
 
 c     cell volume (m**3)
-                     dvolume = darea * radius**2 * dradius
+                dvolume = darea * radius**2 * dradius
 
 c     get density
-                     depth = ae - radius
-                     density = sbo_rho(depth,lat_deg,s,t)
+                depth = ae - radius
+cph(
+cph compute density consistent with EOS used by model
+cph                density = sbo_rho(depth,lat_deg,s,t)
+                density = rhoConst + rhoK(I,J)
+cph)
 
 c     accumulate mass of oceans
-                     mass = mass + density * dvolume
+                mass = mass + density * dvolume
 
 c     accumulate center-of-mass of oceans
-                     xcom = xcom + density * cos(lat) * cos(lon)
-     &                    * radius * dvolume
-                     ycom = ycom + density * cos(lat) * sin(lon)
-     &                    * radius * dvolume
-                     zcom = zcom + density * sin(lat) *
-     &                    radius * dvolume
+                xcom = xcom + density * cos(lat) * cos(lon)
+     &               * radius * dvolume
+                ycom = ycom + density * cos(lat) * sin(lon)
+     &               * radius * dvolume
+                zcom = zcom + density * sin(lat) *
+     &               radius * dvolume
 
 c     accumulate oceanic angular momentum due to currents
-                     xoamc = xoamc + ( v*sin(lon)-u*sin(lat)*cos(lon))
-     &                    * density * radius * dvolume
-                     yoamc = yoamc + (-v*cos(lon)-u*sin(lat)*sin(lon))
-     &                    * density * radius * dvolume
-                     zoamc = zoamc +   u*cos(lat)
-     &                    * density * radius * dvolume
+                xoamc = xoamc + ( v*sin(lon)-u*sin(lat)*cos(lon))
+     &               * density * radius * dvolume
+                yoamc = yoamc + (-v*cos(lon)-u*sin(lat)*sin(lon))
+     &               * density * radius * dvolume
+                zoamc = zoamc +   u*cos(lat)
+     &               * density * radius * dvolume
 
 c     accumulate oceanic angular momentum due to pressure
-                     xoamp = xoamp - sin(lat) * cos(lat) * cos(lon)
-     &                    * sbo_omega * density * radius**2 * dvolume
-                     yoamp = yoamp - sin(lat) * cos(lat) * sin(lon)
-     &                    * sbo_omega * density * radius**2 * dvolume
-                     zoamp = zoamp + cos(lat)**2
-     &                    * sbo_omega * density * radius**2 * dvolume
+                xoamp = xoamp - sin(lat) * cos(lat) * cos(lon)
+     &               * sbo_omega * density * radius**2 * dvolume
+                yoamp = yoamp - sin(lat) * cos(lat) * sin(lon)
+     &               * sbo_omega * density * radius**2 * dvolume
+                zoamp = zoamp + cos(lat)**2
+     &               * sbo_omega * density * radius**2 * dvolume
 
 c     accumulate ocean-bottom pressure
-                     obp(I,J,bi,bj) = obp(I,J,bi,bj) +
-     &                    grav * density * dradius
+                obp(I,J,bi,bj) = obp(I,J,bi,bj) +
+     &               grav * density * dradius
+                sbobp = obp(I,J,bi,bj)
 
-c     end loop over depth
-                  end do
-
- 1010             continue
-
-c     end loop over longitude
-               end do
-
-c     end loop over latitude
+c     end if wet
+              endif
+c     end loop over I
+             end do
+c     end loop over J
             end do
 
+c     end loop over K
+          end do
 c     end loop over bi
-         end do
-
+        end do
 c     end loop over bj
       end do
 
@@ -314,6 +313,7 @@ c     sum all values across model tiles
       _GLOBAL_SUM_R8( yoamp , myThid )
       _GLOBAL_SUM_R8( zoamp , myThid )
 cph(
+      _GLOBAL_SUM_R8( sbobp, myThid )
       _GLOBAL_SUM_R8( sboarea, myThid )
       _GLOBAL_SUM_R8( sboempmrwet, myThid )
       _GLOBAL_SUM_R8( sboqnetwet, myThid )
@@ -324,8 +324,9 @@ c     finish calculating center-of-mass of oceans
       ycom = ycom / mass
       zcom = zcom / mass
 cph(
+      sbobp       = sbobp / sboarea
       sboempmrwet = sboempmrwet / sboarea
-      sboqnetwet = sboqnetwet / sboarea
+      sboqnetwet  = sboqnetwet / sboarea
 cph)
 
 #endif /* ALLOW_SBO */

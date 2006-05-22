@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.5 2006/05/11 00:03:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.6 2006/05/22 14:25:46 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_SBO
@@ -27,10 +27,10 @@ cph)
 C
       _RL xoamc, yoamc, zoamc, xoamp, yoamp, zoamp          
       _RL mass, xcom, ycom, zcom
-      _RL sboarea, sboempmrwet, sboqnetwet
+      _RL sbobp, sboarea, sboempmrwet, sboqnetwet
       _RL obp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       common /sbo/ xoamc, yoamc, zoamc, xoamp, yoamp, zoamp,
-     &             mass, xcom, ycom, zcom, obp,
+     &             mass, xcom, ycom, zcom, obp, sbobp,
      &             sboarea, sboempmrwet, sboqnetwet
 
 C     sbo_taveFreq - SBO time-averaging frequency              (s)
