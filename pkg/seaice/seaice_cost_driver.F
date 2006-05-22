@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.1 2005/09/01 05:34:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.2 2006/05/22 19:27:46 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -59,7 +59,10 @@ c     == end of interface ==
      &     SQUEEZE_RIGHT , mythid)
       nnzbar = 1
       nnzobs = 1
-      nrecloc = ndaysrec
+cph(
+cph      nrecloc = ndaysrec
+      nrecloc = 4383
+cph)
       spminloc = 0.
       spmaxloc = 1.
       spzeroloc = -9999.
@@ -72,6 +75,12 @@ c     == end of interface ==
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_smrarea, num_smrarea,
      &     myiter, mytime, mythid )
+cph(
+      write(msgbuf,'(a,1P2E18.10)') 
+     &     'ph-cost smrarea ', objf_smrarea(1,1), num_smrarea
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+cph)
 #endif
 
       end
