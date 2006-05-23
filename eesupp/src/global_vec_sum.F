@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.2 2005/09/28 23:21:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.3 2006/05/23 14:55:19 edhill Exp $
 C $Name:  $
 
 C     Perform a global sum on an array of threaded vectors.
@@ -25,7 +25,7 @@ C     processes.  Within a process only one thread does the sum, each
 C     thread is assumed to have already summed its local data.  The same
 C     thread also does the inter-process sum for example with MPI and
 C     then writes the result into a shared location. All threads wait
-C     until the sum is avaiailable.
+C     until the sum is available.
 
 C     !USES:
       IMPLICIT NONE
