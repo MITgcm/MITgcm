@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.7 2006/03/13 04:00:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.8 2006/05/23 16:44:49 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -108,7 +108,7 @@ C-     Compute albedo over sea-ice
          DO i=1,sNx
           IF ( iceMask(i,j,bi,bj) .GT. 0. _d 0 ) THEN
            CALL THSICE_ALBEDO(
-     I              snowHeight(i,j,bi,bj), iceHeight(i,j,bi,bj),
+     I              iceHeight(i,j,bi,bj), snowHeight(i,j,bi,bj),
      I              Tsrf(i,j,bi,bj), snowAge(i,j,bi,bj),
      O              aimAlb(i,j),
      I              myThid)
