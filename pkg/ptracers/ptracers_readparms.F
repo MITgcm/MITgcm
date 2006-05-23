@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.23 2005/10/14 12:45:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.24 2006/05/23 23:32:41 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -6,10 +6,10 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PTRACERS_READPARMS
-      
+
 C     !INTERFACE:
       SUBROUTINE PTRACERS_READPARMS( myThid )
-      
+
 C     !DESCRIPTION:
 C     Initialize PTRACERS parameters, read in data.ptracers
 
@@ -53,6 +53,7 @@ C                          are written to post-processing files.
      &     PTRACERS_diffKr,
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
+     &     PTRACERS_EvPrRn,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,
      &     PTRACERS_Iter0,
@@ -62,10 +63,10 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_timeave_mnc, 
+     &     PTRACERS_timeave_mnc,
      &     PTRACERS_snapshot_mnc,
      &     PTRACERS_monitor_mnc,
-     &     PTRACERS_pickup_write_mnc, 
+     &     PTRACERS_pickup_write_mnc,
      &     PTRACERS_pickup_read_mnc
 
 C     This routine has been called by the main model so we set our
@@ -88,6 +89,7 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_diffKrNr(k,iTracer)=diffKrNrS(k)
           PTRACERS_ref     (k,iTracer)=0. _d 0
         ENDDO
+        PTRACERS_EvPrRn(iTracer)=UNSET_RL
         PTRACERS_useGMRedi(iTracer)=useGMRedi
         PTRACERS_useKPP(iTracer)=useKPP
         PTRACERS_initialFile(iTracer)=' '
@@ -209,7 +211,7 @@ C     Check that enough parameters were specified
      &     .OR. outputTypesInclusive
       PTRACERS_pickup_read_mdsio  = (.NOT. PTRACERS_pickup_read_mnc)
      &     .OR. outputTypesInclusive
-      
+
 #else
       PTRACERS_timeave_mnc        = .FALSE.
       PTRACERS_snapshot_mnc       = .FALSE.
@@ -222,7 +224,7 @@ C     Check that enough parameters were specified
       PTRACERS_pickup_write_mdsio = .TRUE.
       PTRACERS_pickup_read_mdsio  = .TRUE.
 #endif
-      
+
 C--   Print a summary of pTracer parameter values:
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') '// ==================================='
@@ -279,6 +281,10 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_useGMRedi =', ' /* apply GM-Redi */')
         CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
      &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
+        CALL WRITE_1D_R8( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
+     &     'PTRACERS_ref =', ' /* Reference vertical profile */')
+        CALL WRITE_0D_R8( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
+     &     'PTRACERS_EvPrRn =', '/* tracer conc. in Evap. & Rain */')
 
       ENDDO
         WRITE(msgBuf,'(A)') ' -----------------------------------'

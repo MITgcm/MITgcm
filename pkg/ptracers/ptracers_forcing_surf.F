@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.4 2005/05/14 22:51:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.5 2006/05/23 23:32:41 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,12 +20,13 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "SURFACE.h"
 #include "FFIELDS.h"
 c #include "DYNVARS.h"
-#include "GRID.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -41,19 +42,54 @@ C  myThid               :: thread number
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER i, j, iTracer
+C  iTrc                 :: tracer index
+C  ks                   :: surface level index
+      INTEGER i, j
+      INTEGER iTrc, ks
 CEOP
 
+      IF ( usingPCoords ) THEN
+        ks = Nr
+      ELSE
+        ks = 1
+      ENDIF
+
 C Example of how to add forcing at the surface
-       DO iTracer=1,PTRACERS_numInUse
+      DO iTrc=1,PTRACERS_numInUse
           DO j = jMin, jMax
            DO i = iMin, iMax
-             surfaceForcingPtr(i,j,bi,bj,iTracer) = 
+             surfaceForcingPtr(i,j,bi,bj,iTrc) =
      &               0. _d 0
 c    &               surfaceForcingS(i,j,bi,bj)
            ENDDO
           ENDDO
+      ENDDO
+
+#ifdef EXACT_CONSERV
+      IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
+     &     .AND. useRealFreshWaterFlux ) THEN
+
+       DO iTrc=1,PTRACERS_numInUse
+
+c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
+c   the water column height ; temp., salt, (tracer) flux associated
+c   with this input/output of water is added here to the surface tendency.
+c
+         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+             surfaceForcingPtr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+     &        + PmEpR(i,j,bi,bj)
+     &          *( PTRACERS_EvPrRn(iTrc) - pTracer(i,j,ks,bi,bj,iTrc) )
+     &          *convertEmP2rUnit
+           ENDDO
+          ENDDO
+         ENDIF
+
        ENDDO
+      ENDIF
+#endif /* EXACT_CONSERV */
 
 #endif /* ALLOW_PTRACERS */
 

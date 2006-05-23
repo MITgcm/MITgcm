@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.18 2005/10/14 12:45:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.19 2006/05/23 23:32:41 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -7,7 +7,7 @@ CBOP
 C    !ROUTINE: PTRACERS.h
 C    !INTERFACE:
 C #include PTRACERS.h
- 
+
 C    !DESCRIPTION:
 C Contains passive tracer fields and parameters.
 
@@ -20,6 +20,9 @@ C                          are written to post-processing files.
 C     PTRACERS_Iter0    :: timestep number when tracers are initialized
 C     PTRACERS_ref      :: vertical profile for passive tracers, in
 C                          analogy to tRef and sRef, hence the name
+C     PTRACERS_EvPrRn   :: tracer concentration in Rain, Evap & RunOff
+C       notes: a) used if both NonLin_FrSurf & useRealFreshWater are set.
+C              b) use pTracer surface (local) value if = UNSET_RL (default)
 
 C     PTRACERS parameters
       _RL PTRACERS_dumpFreq
@@ -29,6 +32,7 @@ C     PTRACERS parameters
       _RL PTRACERS_diffK4(PTRACERS_num)
       _RL PTRACERS_diffKrNr(Nr,PTRACERS_num)
       _RL PTRACERS_ref(Nr,PTRACERS_num)
+      _RL PTRACERS_EvPrRn(PTRACERS_num)
       INTEGER PTRACERS_Iter0
       INTEGER PTRACERS_numInUse
       INTEGER PTRACERS_advScheme(PTRACERS_num)
@@ -40,7 +44,7 @@ C     PTRACERS parameters
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_long_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_units(PTRACERS_num)
-      LOGICAL 
+      LOGICAL
      &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
@@ -54,6 +58,7 @@ C     PTRACERS parameters
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
+     &     PTRACERS_EvPrRn,
      &     PTRACERS_Iter0,
      &     PTRACERS_numInUse,
      &     PTRACERS_advScheme,
