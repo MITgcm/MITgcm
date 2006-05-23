@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.658 2006/05/22 00:25:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.659 2006/05/23 16:49:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix bug in aim+thsice albedo: snow & ice thickness arguments were switched;
+  generate new output for test-experiment: aim.5l_cs.thSI
 o results_ad : rename "output.txt_adm" to "output_adm.txt" and change
  testreport accordingly
 
