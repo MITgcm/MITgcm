@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.49 2006/05/09 19:11:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.50 2006/05/24 00:47:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,7 +37,7 @@ C       |-- SEAICE_INIT
 C       |
 C       |-- OBCS_INIT_VARIABLES
 C       |
-C       |-- PTRACERS_INIT
+C       |-- PTRACERS_INIT_VARIA
 C       |
 C       |-- LAND_INI_VARS
 C       |
@@ -164,9 +164,9 @@ cph#endif
       IF ( usePTRACERS ) THEN
 # endif
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('PTRACERS_INIT',myThid)
+      IF (debugMode) CALL DEBUG_CALL('PTRACERS_INIT_VARIA',myThid)
 #endif
-         CALL PTRACERS_INIT( mythid )
+         CALL PTRACERS_INIT_VARIA( myThid )
 #ifdef ALLOW_GCHEM
 # ifndef ALLOW_AUTODIFF_TAMC
          IF (useGCHEM) THEN
