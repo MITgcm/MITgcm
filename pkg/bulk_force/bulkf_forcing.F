@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.8 2006/05/09 18:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.9 2006/05/25 17:32:29 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -119,17 +119,18 @@ C-    reverse sign (AIM convention -> BULKF convention):
                   fsh(i,j,bi,bj) = -SHF(1)
                   flh(i,j,bi,bj) = -Lvap*EVPloc(1)
 C-    Convert from g/m2/s to m/s
-                  evap(i,j,bi,bj) = EVPloc(1) * 1. _d -3 / rhofw
+                  evap(i,j,bi,bj) = EVPloc(1) * 1. _d -3 / rhoFW
                   dEvdT = dEvp(1) * 1. _d -3
                   df0dT = sFlx(2)
              ELSE
 #else  /* ALLOW_FORMULA_AIM */
              IF ( .TRUE. ) THEN
 #endif /* ALLOW_FORMULA_AIM */
+              IF ( blk_nIter.EQ.0 ) THEN
                CALL BULKF_FORMULA_LANL(
      I            uwind(i,j,bi,bj), vwind(i,j,bi,bj),
-     I            wspeed(i,j,bi,bj), Tair(i,j,bi,bj), Qair(i,j,bi,bj),
-     I            cloud(i,j,bi,bj), tmp,
+     I            wspeed(i,j,bi,bj), Tair(i,j,bi,bj),
+     I            Qair(i,j,bi,bj), cloud(i,j,bi,bj), tmp,
      O            flwup(i,j,bi,bj), flh(i,j,bi,bj),
      O            fsh(i,j,bi,bj), df0dT,
      O            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
@@ -139,8 +140,20 @@ C-    Convert from g/m2/s to m/s
 C               Note that the LANL flux conventions are opposite
 C               of what they are in the model.
 
+              ELSE
+               CALL BULKF_FORMULA_LAY(
+     I            uwind(i,j,bi,bj), vwind(i,j,bi,bj),
+     I            wspeed(i,j,bi,bj), Tair(i,j,bi,bj),
+     I            Qair(i,j,bi,bj), tmp,
+     O            flwup(i,j,bi,bj), flh(i,j,bi,bj),
+     O            fsh(i,j,bi,bj), df0dT,
+     O            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
+     O            evp, savssq(i,j,bi,bj), dEvdT,
+     I            iceornot, i,j,bi,bj,myThid )
+              ENDIF
+
 C-             Convert from kg/m2/s to m/s
-               evap(i,j,bi,bj) = evp/rhofw
+               evap(i,j,bi,bj) = evp/rhoFW
 
              ENDIF
 

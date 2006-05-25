@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.3 2006/01/22 15:58:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.4 2006/05/25 17:36:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -95,11 +95,19 @@ C-      convert from [g/m2/s] to [kg/m2/s]
         vst = 0.
         ssq = 0.
 
-        CALL BULKF_FORMULA_LANL(
+        IF ( blk_nIter.EQ.0 ) THEN
+         CALL BULKF_FORMULA_LANL(
      I        uwind(i,j,bi,bj), vwind(i,j,bi,bj), wspeed(i,j,bi,bj),
      I        Tair(i,j,bi,bj), Qair(i,j,bi,bj), cloud(i,j,bi,bj), Tsf,
      O        flwup, flh, fsh, df0dT, ust, vst, evap, ssq, dEvdT,
      I        iceornot, myThid )
+        ELSE
+         CALL BULKF_FORMULA_LAY(
+     I        uwind(i,j,bi,bj), vwind(i,j,bi,bj), wspeed(i,j,bi,bj),
+     I        Tair(i,j,bi,bj), Qair(i,j,bi,bj), Tsf,
+     O        flwup, flh, fsh, df0dT, ust, vst, evap, ssq, dEvdT,
+     I        iceornot, i,j,bi,bj,myThid )
+        ENDIF
 
         flwNet_dwn = flwdwn(i,j,bi,bj) - flwup
         flxExceptSw = flwNet_dwn + fsh + flh
