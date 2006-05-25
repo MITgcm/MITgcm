@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_OPTIONS.h,v 1.2 2005/06/24 04:36:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_OPTIONS.h,v 1.3 2006/05/25 17:59:00 jmc Exp $
 C $Name:  $
 
 #ifndef THSICE_OPTIONS_H
@@ -8,6 +8,9 @@ C $Name:  $
 #ifdef ALLOW_THSICE
 
 #include "CPP_OPTIONS.h"
+
+C- allow single grid-point debugging write to standard-output
+#define ALLOW_DBUG_THSICE
 
 C- only to check conservation 
 C  (change content of ICE_qleft,fresh,salFx-T files)
