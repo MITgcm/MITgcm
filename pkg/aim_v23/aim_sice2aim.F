@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.8 2006/05/23 16:44:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.9 2006/05/25 18:05:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,6 +45,9 @@ C-- Sea-Ice package
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
+      INTEGER siLo, siHi, sjLo, sjHi
+      PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
+      PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
 #endif
 
 #ifdef COMPONENT_MODULE
@@ -104,18 +107,17 @@ C-    Fill in thsice-pkg Temp. using AIM surf. fields
 
       IF ( .TRUE. ) THEN
 C-     Compute albedo over sea-ice
+        CALL THSICE_ALBEDO(
+     I          bi, bj, siLo, siHi, sjLo, sjHi,
+     I          1, sNx, 1, sNy,
+     I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
+     I          snowHeight(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
+     I          snowAge(siLo,sjLo,bi,bj),
+     O          siceAlb(siLo,sjLo,bi,bj),
+     I          myTime, myIter, myThid )
         DO j=1,sNy
          DO i=1,sNx
-          IF ( iceMask(i,j,bi,bj) .GT. 0. _d 0 ) THEN
-           CALL THSICE_ALBEDO(
-     I              iceHeight(i,j,bi,bj), snowHeight(i,j,bi,bj),
-     I              Tsrf(i,j,bi,bj), snowAge(i,j,bi,bj),
-     O              aimAlb(i,j),
-     I              myThid)
-          ELSE
-           aimAlb(i,j) = ALBICE
-          ENDIF
-          siceAlb(i,j,bi,bj) = aimAlb(i,j)
+          aimAlb(i,j) = siceAlb(i,j,bi,bj)
          ENDDO
         ENDDO
       ELSE

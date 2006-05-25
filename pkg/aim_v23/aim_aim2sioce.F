@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.4 2006/03/13 20:29:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.5 2006/05/25 18:05:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: AIM_AIM2SIOCE
 C     !INTERFACE:
       SUBROUTINE AIM_AIM2SIOCE(
      I               land_frc, siceFrac,
-     O               prcAtm, evpAtm, flxSW,
+     O               prcAtm,
      I               bi, bj, myTime, myIter, myThid)
 
 C     !DESCRIPTION: \bv
@@ -55,7 +55,9 @@ C             and the Ice-Covered contribution will be added in S/R THSICE_STEP_
 C      EmPmR(out) :: Net fresh water flux out off the ocean (ice-free ocean only)
 C             and the Ice-Covered contribution will be added in S/R THSICE_STEP_FWD
 C      sHeating(in/out) :: air - seaice surface heat flux left to melt the ice
-C      snowPrc(out) :: snow precip over sea-ice
+C      snowPrc(out):: snow precip over sea-ice
+C      icFrwAtm   :: Evaporation over sea-ice [kg/m2/s] (>0 if evaporate)
+C      icFlxSW    :: net SW heat flux through the ice to the ocean [W/m2] (+=dw)
 C  if not using thSIce:
 C      Qsw(out)   :: SW radiation down to the ocean (ice-free + ice-covered)(+=up)
 C      Qnet(out)  :: Net heat flux out of the ocean (ice-free + ice-covered)(+=up)
@@ -66,8 +68,6 @@ C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
 C     siceFrac :: sea-ice fraction (relative to full grid-cell) [0-1]
 C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
-C     evpAtm   :: Evaporation over sea-ice [kg/m2/s] (>0 if evaporate)
-C     flxSW    :: net SW heat flux through the ice to the ocean [W/m2] (+=dw)
 C     bi,bj    :: Tile index
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
@@ -75,8 +75,6 @@ C     myThid   :: My Thread Id number
       _RS land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL siceFrac(sNx,sNy)
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi, bj, myIter, myThid
       _RL myTime
 CEOP
@@ -110,7 +108,7 @@ C        model integration and just put this to get meaningfull diagnostics)
          prcAtm(i,j)     = 0. _d 0
          Qnet(i,j,bi,bj) = 0. _d 0
          EmPmR(i,j,bi,bj)= 0. _d 0
-         flxSW(i,j)      = 0. _d 0
+         icFlxSW(i,j,bi,bj)=0. _d 0
          Qsw(i,j,bi,bj)  = 0. _d 0
         ELSE
          I2 = i+(j-1)*sNx
@@ -132,8 +130,6 @@ C-    E-P over ice-free ocean [m/s]: (same as above is aim_splitSIOsFx=F)
          EmPmR(i,j,bi,bj) = ( EVAP(I2,2,myThid)
      &                      - prcAtm(i,j) ) * conv_EmP
 
-C-    Transfert SW flux at the base of the sea-ice, from Qsw(+=up) to flxSW (+=dw)
-         flxSW(i,j) = -Qsw(i,j,bi,bj)
 C-    Net short wave (ice-free ocean) into the ocean (+=down)
          Qsw(i,j,bi,bj) = SSR(I2,2,myThid)
 
@@ -150,15 +146,16 @@ C-    Mixed-Layer Ocean: (for thsice slab_ocean and coupler)
          IF (land_frc(i,j,bi,bj).EQ.1. _d 0) hOceMxL(i,j,bi,bj) = 0.
 
 C-    Evaporation over sea-ice: (for thsice)
-         evpAtm(i,j) = EVAP(I2,3,myThid)*conv_precip
+         icFrwAtm(i,j,bi,bj) = EVAP(I2,3,myThid)*conv_precip
 
 C-    short-wave downward heat flux (ice-free ocean + ice-covered):
-C     note: at this point we already called THSICE_IMPL_TEMP to solved for
+C     note: at this point we already called THSICE_IMPL_TEMP to solve for
 C     seaice temp and SW flux through the ice. SW is not modified after, and
 C     can therefore combine the open-ocean & ice-covered ocean SW fluxes.
          icFrac = iceMask(i,j,bi,bj)
          opFrac = 1. _d 0 - icFrac
-         Qsw(i,j,bi,bj) = icFrac*flxSW(i,j) + opFrac*Qsw(i,j,bi,bj)
+         Qsw(i,j,bi,bj) = icFrac*icFlxSW(i,j,bi,bj)
+     &                  + opFrac*Qsw(i,j,bi,bj)
 
         ENDDO
        ENDDO

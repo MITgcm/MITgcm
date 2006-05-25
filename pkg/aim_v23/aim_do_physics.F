@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.10 2006/01/26 00:18:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.11 2006/05/25 18:05:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,7 +45,7 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj  - Tile index 
+C     bi,bj  - Tile index
 C     myTime - Current time of simulation ( s )
 C     myIter - Current iteration number in simulation
 C     myThid - Number of this instance of the routine
@@ -55,18 +55,14 @@ CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     I,J,K,I2      - Loop counters
+C     i,j,k,I2      - Loop counters
 C     tYear         - Fraction into year
 C     Katm          - Atmospheric K index
 C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
-C     evpAtm   :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
-C     flxSW    :: net Short-Wave heat flux into the ocean (+=down) [W/m2]
-      INTEGER I,J,K,I2
+      INTEGER i,j,k,I2
 c     INTEGER Katm
       _RL     tYear, yearLength
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 C      ==> move water wapor from the stratos to the surface level.
@@ -85,7 +81,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Physics package needs to know time of year as a fraction
       yearLength = 86400.*360.
-      tYear = mod(myTime/yearLength, 1. _d 0)
+      tYear = MOD(myTime/yearLength, 1. _d 0)
 c     tYear = myTime/(86400.*360.) -
 c    &        FLOAT(INT(myTime/(86400.*360.)))
 
@@ -95,9 +91,9 @@ C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
       CALL AIM_SURF_BC( tYear, myTime, myIter, bi, bj, myThid )
 
 C--   Set surface geopotential: (g * orographic height)
-      DO J=1,sNy
-       DO I=1,sNx
-         I2 = I+(J-1)*sNx
+      DO j=1,sNy
+       DO i=1,sNx
+         I2 = i+(j-1)*sNx
          PHI0(I2) = gravity*topoZ(i,j,bi,bj)
        ENDDO
       ENDDO
@@ -122,24 +118,24 @@ C-    Compute atmospheric-physics tendencies (call the main AIM S/R)
 #ifdef ALLOW_LAND
       IF (useLand) THEN
 C-    prepare Surface flux over land for land package
-        CALL AIM_AIM2LAND( aim_landFr, bi, bj, 
+        CALL AIM_AIM2LAND( aim_landFr, bi, bj,
      I                     myTime, myIter, myThid )
 
 C-    Step forward land model
-        CALL LAND_STEPFWD( aim_landFr, bi, bj, 
+        CALL LAND_STEPFWD( aim_landFr, bi, bj,
      I                     myTime, myIter, myThid )
 
 C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
-      CALL LAND_DO_DIAGS(  aim_landFr, bi, bj, 
+      CALL LAND_DO_DIAGS(  aim_landFr, bi, bj,
      I                     myTime, myIter, myThid )
 
       ENDIF
 #endif /* ALLOW_LAND */
 
-C-    surface fluxes over ocean (ice-free & ice covered) 
+C-    surface fluxes over ocean (ice-free & ice covered)
 C       used for diagnostics, thsice package and coupler
         CALL AIM_AIM2SIOCE( aim_landFr, fmask1(1,3,myThid),
-     O                      prcAtm, evpAtm, flxSW, 
+     O                      prcAtm,
      I                      bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_THSICE
@@ -147,16 +143,15 @@ C       used for diagnostics, thsice package and coupler
 
 C-    Step forward sea-ice model
         CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
-     I                        prcAtm, 
-     U                        evpAtm, flxSW,
+     I                        prcAtm,
      I                        myTime, myIter, myThid )
 
-C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity 
-        CALL THSICE_SLAB_OCEAN( 
-     O                         dTsurf(1,2,myThid), 
+C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
+        CALL THSICE_SLAB_OCEAN(
+     O                         dTsurf(1,2,myThid),
      I                         bi,bj, myThid )
 
-        CALL THSICE_AVE( evpAtm, flxSW,
+        CALL THSICE_AVE(
      I                   bi, bj, myTime, myIter, myThid )
 
       ENDIF
