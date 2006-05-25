@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.15 2006/03/10 22:01:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.16 2006/05/25 15:51:53 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -339,7 +339,13 @@ C     !LOCAL VARIABLES:
         ostring(i:i) = ' '
       ENDDO
       WRITE(tmp,'(I25.25)') ival
-      nmin = ival / 10 + 1
+      DO i = 1,25
+        IF (tmp(i:i) .NE. '0') THEN
+          nmin = 26 - i
+          GOTO 200
+        ENDIF
+      ENDDO
+ 200  CONTINUE
       IF (nmin .LT. n)  nmin = n
       ostring(1:nmin) = tmp((26-nmin):25)
 
