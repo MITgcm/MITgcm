@@ -1,79 +1,82 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.3 2006/03/14 15:57:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.4 2006/05/25 17:30:54 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_BULK_FORCE
 C     *==========================================================*
 C     | BULK_PARAMS.h
-C     | o Header file for BULK_FORC package parameters:
+C     | o Header file for BULK_FORCE package parameters:
 C     |   - basic parameter ( I/O frequency, etc ...)
-C     |   - physical constants (not used in therm_seaice pkg)
+C     |   - physical constants
 C     *==========================================================*
 
 C--   COMMON / BULK_PHYS_CONST / physical constants
 C.. densities
-C     rhoa      ::  density of air (kg/m^3)
-C     rhofw     ::  density of fresh water (kg/m^3)
+C     rhoA      ::  density of air [kg/m^3]
+C     rhoFW     ::  density of fresh water [kg/m^3]
+C     rhoSW     ::  density of sea water [kg/m^3]
 C.. specific heats
-C     cpair     ::  specific heat of air (J/kg/K)
-C     cpwv      ::  specific heat of water vapour (J/kg/KC)
-C .. latent heat
-C     Lvap      ::  latent heat of vaporizn at 0 C (J/kg)
-C     Lfresh    ::  latent heat of melting of pure ice (J/kg)
-C .. melting
-C     Tf0kel    ::  Freezing temp of fresh ice in Kelvin = 273.15
-C .. wind drag
-C    drag_[n]   ::  n = 1,2,3 coefficients used to evaluate drag coefficient
-C .. constants
-C     stefan    ::  Stefan-Boltzmann constant (W/m^2 K^4)
-C     xkar      ::  Von Karman constant  QQ units?
-C     Rvap      ::  gas constant for H2O vapor (J/kg/K)
-C.. Miscellaneous
-C     p0        ::  surface pressure (mb)
-C.. Combinations used for efficiency
-C    Qcoef      ::  another constant for latent heat flux
-C .. for bulk formula
-C     humid_fac ::  const. for the evaluation of the virtual temp.
-C     saltsat   ::  reduction of sat. vapor pressure over salt water
-C     gamma_blk ::  adiabatic lapse rate
-C .. for Vince bulk formula QQ check units
-C    Lvap_ice   ::  latent heat from sublimation
-C    Rgas       ::  gas constant for dry air
-C    Sha        ::
-C .. emissivities
-C    atm_emissivity   ::
-C    ocean_emissivity ::
-C    snow_emissivity  ::
-C    ice_emissivity   ::
-C .. for BULKF_FORMULA_AIM
+C     cpAir     ::  specific heat of air [J/kg/K]
+C     cpwv      ::  specific heat of water vapour [J/kg/K]
+C.. latent heat
+C     Lvap      ::  latent heat of vaporization at 0.oC [J/kg]
+C     Lfresh    ::  latent heat of melting of pure ice [J/kg]
+C     Lvap_ice  ::  latent heat from sublimation [J/kg]
+C.. constants
+C     Tf0kel    ::  Freezing temp of fresh water in Kelvin = 273.15
+C     Rgas      ::  gas constant for dry air   [J/kg/K]
+C     Rvap      ::  gas constant for H2O vapor [J/kg/K]
+C     xkar      ::  von Karman constant  [-]
+C     stefan    ::  Stefan-Boltzmann constant [W/m^2/K^4]
+C.. for transfer coefficient
+C     zref      :: reference height [m] for transfer coefficient
+C     zwd       :: height [m] of near-surface wind-speed input data
+C     zth       :: height [m] of near-surface air-temp. & air-humid. input
+C     cDrag_[n] ::  n = 1,2,3 coefficients used to evaluate drag coefficient
+C     cStantonS,U :: coefficients used to evaluate Stanton number (for
+C                 sensib. Heat Flx), under Stable / Unstable stratification
+C     cDalton   :: coefficient used to evaluate Dalton number (for Evap)
+C.. for bulk formula
+C     umin      :: minimum wind speed used in bulk-formulae [m/s]
+C     humid_fac :: dry-air - water-vapor molecular mass ratio (minus one)
+C                    (used to calculate virtual temp.)
+C     saltQsFac :: reduction of sat. vapor pressure over salty water
+C     gamma_blk :: adiabatic lapse rate
+C.. for Long-Wave Radiation
+C     atm_emissivity   ::
+C     ocean_emissivity ::
+C     snow_emissivity  ::
+C     ice_emissivity   ::
+C.. for BULKF_FORMULA_AIM
 C      FWIND0 :: ratio of near-sfc wind to lowest-level wind
 C      CHS    :: heat exchange coefficient over sea
 C      VGUST  :: wind speed for sub-grid-scale gusts
 C      DTHETA :: Potential temp. gradient for stability correction
 C      dTstab :: potential temp. increment for stability function derivative
 C      FSTAB  :: Amplitude of stability correction (fraction)
-C .. Albedo
-C    ocean_albedo :: ocean surface albedo [0-1]
+C.. Albedo
+C     ocean_albedo :: ocean surface albedo [0-1]
 	
-      _RL  rhoa
-      _RL  rhosw
-      _RL  rhofw
-      _RL  cpair
-      _RL  cpwv
+      _RL  rhoA
+c     _RL  rhoSW
+      _RL  rhoFW
+      _RL  cpAir
+c     _RL  cpwv
       _RL  Lvap
       _RL  Lfresh
+c     _RL  Lvap_ice
       _RL  Tf0kel
-      _RL  cdrag_1, cdrag_2, cdrag_3
-      _RL  stefan
-      _RL  xkar
-      _RL  Rvap
-      _RL  p0
-      _RL  Qcoef
-      _RL  humid_fac
-      _RL  saltsat
-      _RL  gamma_blk
-      _RL  Lvap_ice
       _RL  Rgas
-      _RL  Sha
+c     _RL  Rvap
+      _RL  xkar
+      _RL  stefan
+      _RL  zref, zwd, zth
+      _RL  cDrag_1, cDrag_2, cDrag_3
+      _RL  cStantonS, cStantonU
+      _RL  cDalton
+      _RL  umin
+      _RL  humid_fac
+      _RL  saltQsFac
+      _RL  gamma_blk
       _RL  atm_emissivity
       _RL  ocean_emissivity
       _RL  snow_emissivity
@@ -82,17 +85,15 @@ C    ocean_albedo :: ocean surface albedo [0-1]
       _RL  FWIND0, CHS, VGUST, DTHETA, dTstab, FSTAB
 #endif
       _RL  ocean_albedo
-
       COMMON / BULK_PHYS_CONST /
-     &  rhoa, rhosw, rhofw,
-     &  cpair, cpwv,
-     &  Lvap, Lfresh,
-     &  Tf0kel,
-     &  cdrag_1, cdrag_2, cdrag_3,
-     &  stefan, xkar, Rvap,
-     &  p0, Qcoef,
-     &  humid_fac, saltsat, gamma_blk,
-     &  Lvap_ice, Rgas, Sha,
+     &  rhoA, rhoFW,
+     &  cpAir, Lvap, Lfresh,
+     &  Tf0kel, Rgas,
+     &  xkar, stefan,
+     &  zref, zwd, zth,
+     &  cDrag_1, cDrag_2, cDrag_3,
+     &  cStantonS, cStantonU, cDalton,
+     &  umin, humid_fac, saltQsFac, gamma_blk,
      &  atm_emissivity, ocean_emissivity,
      &  snow_emissivity, ice_emissivity,
 #ifdef ALLOW_FORMULA_AIM
@@ -100,10 +101,17 @@ C    ocean_albedo :: ocean surface albedo [0-1]
 #endif
      &  ocean_albedo
 
+C--   COMMON / BULK_PAR_I / Integer parameters
+C     blk_nIter :: Number of iterations to find turbulent transfer coeff.
+
+      INTEGER blk_nIter
+      COMMON / BULK_PAR_I /
+     &       blk_nIter
+
 C--   COMMON / BULK_PAR_R / real parameter
+C     blk_taveFreq :: time-average output frequency [s]
 
       _RL  blk_taveFreq
-
       COMMON / BULK_PAR_R /
      &       blk_taveFreq
 
@@ -116,13 +124,13 @@ C                          than the default formula (LANL)
       LOGICAL calcWindStress
       LOGICAL useFluxFormula_AIM
       LOGICAL useQnetch, useEmPch
-
       COMMON / BULK_PAR_L /
      &       calcWindStress,
      &       useFluxFormula_AIM,
      &       useQnetch, useEmPch
 
 C--   COMMON / BULK_PAR_C / Character string parameters
+
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirHumidityFile
       CHARACTER*(MAX_LEN_FNAM) RainFile
@@ -137,7 +145,6 @@ C--   COMMON / BULK_PAR_C / Character string parameters
       CHARACTER*(MAX_LEN_FNAM) CloudFile
       CHARACTER*(MAX_LEN_FNAM) SnowFile
       CHARACTER*(MAX_LEN_FNAM) airPotTempFile
-
       COMMON / BULK_PAR_C /
      &       AirTempFile, AirHumidityFile, RainFile,
      &       SolarFile, LongwaveFile, UWindFile, VWindFile,
