@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.5 2005/06/24 04:36:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.6 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -41,6 +41,7 @@ C     albIceMin   :: minimum ice albedo (very thin ice)
 C     hAlbIce     :: ice thickness for albedo transition: thin/thick ice albedo
 C     hAlbSnow    :: snow thickness for albedo transition: snow/ice albedo
 C     hNewSnowAge :: new snow thickness that refresh the snow-age (by 1/e)
+C     snowAgTime  :: snow aging time scale (s)
 C .. Solar parameters
 C     i0        ::   fraction of penetrating solar rad
 C     ksolar    ::   bulk solar abs coeff of sea ice (m-1)
@@ -65,13 +66,14 @@ C     hihig      :: ice height above which freezing only occurs over open ocean
 C                                        (=large for no fractional ice)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      COMMON / THSICE_PHYSPAR_R / 
+      COMMON / THSICE_PHYSPAR_R /
      &  rhos, rhoi, rhosw, rhofw, rhoiw,
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albColdSnow, albWarmSnow, albOldSnow, hNewSnowAge,
+     &  albColdSnow, albWarmSnow, albOldSnow,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
+     &  hNewSnowAge, snowAgTime,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
      &  Tf0kel, Tmlt1,
@@ -94,11 +96,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL  albColdSnow
       _RL  albWarmSnow
       _RL  albOldSnow
-      _RL  hNewSnowAge
       _RL  albIceMax
       _RL  albIceMin
       _RL  hAlbIce
       _RL  hAlbSnow
+      _RL  hNewSnowAge
+      _RL  snowAgTime
       _RL  i0
       _RL  ksolar
       _RL  saltice
@@ -129,11 +132,11 @@ C     thSIce_mon_mnc        :: write monitor to netcdf file
 C     thSIce_pickup_read_mnc    :: pickup read w/ MNC
 C     thSIce_pickup_write_mnc   :: pickup write w/ MNC
 C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
-      COMMON / THSICE_PAR_L / 
+      COMMON / THSICE_PAR_L /
      &     stepFwd_oceMxL,
      &     thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio,
      &     thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc,
-     &     thSIce_pickup_read_mnc, 
+     &     thSIce_pickup_read_mnc,
      &     thSIce_pickup_write_mdsio,
      &     thSIce_pickup_write_mnc
 
@@ -145,10 +148,10 @@ C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       LOGICAL thSIce_pickup_write_mnc
 
 C--   COMMON / THSICE_PAR_I / ice model (integer) parameters
-c     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
-c                   :: -1 : start from a small pickup (without Mix.Layer)
-c     nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf) 
-      COMMON / THSICE_PAR_I / 
+C     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
+C                   :: -1 : start from a small pickup (without Mix.Layer)
+C     nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf)
+      COMMON / THSICE_PAR_I /
      &  startIceModel, nitMaxTsf
 
       INTEGER startIceModel
@@ -171,9 +174,9 @@ C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
      &  stressReduction,
      &  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
-      _RL  thSIce_deltaT, ocean_deltaT, tauRelax_MxL 
-      _RL  hMxL_default, sMxL_default, vMxL_default 
-      _RL  stressReduction 
+      _RL  thSIce_deltaT, ocean_deltaT, tauRelax_MxL
+      _RL  hMxL_default, sMxL_default, vMxL_default
+      _RL  stressReduction
       _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
 C--   COMMON / THSICE_PAR_C / ice model (character) parameters
@@ -189,7 +192,7 @@ C     thSIceTsurf_InitFile :: File name for initial surf. temp
      &  thSIceSnowH_InitFile,
      &  thSIceSnowA_InitFile,
      &  thSIceEnthp_InitFile,
-     &  thSIceTsurf_InitFile 
+     &  thSIceTsurf_InitFile
       CHARACTER*(MAX_LEN_FNAM) thSIceFract_InitFile
       CHARACTER*(MAX_LEN_FNAM) thSIceThick_InitFile
       CHARACTER*(MAX_LEN_FNAM) thSIceSnowH_InitFile

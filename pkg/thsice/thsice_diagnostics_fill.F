@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.5 2005/07/11 19:00:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diagnostics_fill.F,v 1.6 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -78,11 +78,11 @@ C-     Ice-Volume weighted quantities:
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Qice1(1-Olx,1-Oly,bi,bj),
+     I                   Qice1(1-OLx,1-OLy,bi,bj),
      I                   tmpFld,tmpFac,1,'SI_Qice1',
      I                   0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Qice2(1-Olx,1-Oly,bi,bj),
+     I                   Qice2(1-OLx,1-OLy,bi,bj),
      I                   tmpFld,tmpFac,1,'SI_Qice2',
      I                   0,1,2,bi,bj,myThid)
        ENDIF

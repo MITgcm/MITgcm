@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.7 2005/06/24 04:36:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.8 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,7 +49,8 @@ C--   Th-Sea-ICE parameter
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albColdSnow, albWarmSnow, albOldSnow, hNewSnowAge,
+     &  albColdSnow, albWarmSnow, albOldSnow,
+     &  hNewSnowAge, snowAgTime,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
@@ -57,7 +58,7 @@ C--   Th-Sea-ICE parameter
      &  himin, Terrmax, nitMaxTsf, hiMax, hsMax,
      &  iceMaskmax, iceMaskmin, himin0,
      &  frac_energy, hihig
- 
+
       NAMELIST /THSICE_PARM01/
      &     startIceModel, stepFwd_oceMxL,
      &     thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
@@ -75,7 +76,7 @@ C--   Th-Sea-ICE parameter
       WRITE(msgBuf,'(A)') ' THSICE_READPARMS: opening data.ice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-    
+
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.ice', 'THSICE_READPARMS',
      O                          iUnit,
@@ -101,6 +102,7 @@ C--   Default values (constants)
       hAlbIce    = 0.50 _d 0
       hAlbSnow   = 0.30 _d 0
       hNewSnowAge= 2. _d -3
+      snowAgTime = 50. _d 0 * 86400. _d 0
       i0       = 0.3 _d 0
       ksolar   = 1.5 _d 0
       saltice  = 4. _d 0
@@ -128,7 +130,7 @@ C--   Default values (parameters)
       sMxL_default    = 35. _d 0
       vMxL_default    = 5. _d -2
       stressReduction = 1. _d 0
-      thSIce_taveFreq = taveFreq 
+      thSIce_taveFreq = taveFreq
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
 #ifdef ALLOW_MNC
@@ -179,13 +181,13 @@ C     Set I/O parameters
       IF (useMNC) THEN
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_tave_mnc ) thSIce_tave_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive 
-     &       .AND. thSIce_snapshot_mnc ) 
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. thSIce_snapshot_mnc )
      &       thSIce_snapshot_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. thSIce_mon_mnc  ) thSIce_mon_stdio  = .FALSE.
         IF ( .NOT.outputTypesInclusive
-     &       .AND. thSIce_pickup_write_mnc  ) 
+     &       .AND. thSIce_pickup_write_mnc  )
      &       thSIce_pickup_write_mdsio = .FALSE.
       ENDIF
 #endif
@@ -209,11 +211,12 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: albColdSnow=',albColdSnow
       WRITE(iUnit,*) 'ThSI: albWarmSnow=',albWarmSnow
       WRITE(iUnit,*) 'ThSI: albOldSnow =',albOldSnow
-      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
       WRITE(iUnit,*) 'ThSI: albIceMax =',albIceMax
       WRITE(iUnit,*) 'ThSI: albIceMin =',albIceMin
       WRITE(iUnit,*) 'ThSI: hAlbIce   =',hAlbIce
       WRITE(iUnit,*) 'ThSI: hAlbSnow  =',hAlbSnow
+      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
+      WRITE(iUnit,*) 'ThSI: snowAgTime =',snowAgTime
       WRITE(iUnit,*) 'ThSI: i0      =',i0
       WRITE(iUnit,*) 'ThSI: ksolar  =',ksolar
       WRITE(iUnit,*) 'ThSI: saltice =',saltice

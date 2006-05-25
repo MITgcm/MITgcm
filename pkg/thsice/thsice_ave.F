@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.9 2006/02/21 01:15:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.10 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -6,12 +6,11 @@ C $Name:  $
 CBOP
 C     !ROUTINE: THSICE_AVE
 C     !INTERFACE:
-      SUBROUTINE THSICE_AVE( 
-     I                      frwAtm, flxAtm,
+      SUBROUTINE THSICE_AVE(
      I                      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R  THSICE_AVE                                              
+C     | S/R  THSICE_AVE
 C     | o save values for timeaveraging
 C     *==========================================================*
 C     \ev
@@ -36,8 +35,8 @@ C     myTime  :: time counter for this thread
 C     bi,bj   :: tile indices
 C     myIter  :: iteration counter for this thread
 C     myThid  :: thread number for this instance of the routine.
-      _RL frwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL frwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj
       _RL  myTime
       INTEGER myIter
@@ -48,14 +47,14 @@ CEOP
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER wrtIter
+c     INTEGER wrtIter
 
 #ifdef ALLOW_TIMEAVE
 
       IF ( thSIce_taveFreq .GT. 0. _d 0 ) THEN
 
 C--    Time-average
-       CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask, 
+       CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask,
      &                       1, thSIce_deltaT, bi, bj, myThid )
 C-- area weighted average (with ice-fraction)
        CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceheight, iceMask,
@@ -71,7 +70,7 @@ C-- area weighted average (with ice-fraction)
        CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
 C--    notes: siceAlb is already multiplied by iceFraction
-       CALL TIMEAVE_CUMULATE(ice_albedo_Ave, siceAlb, 
+       CALL TIMEAVE_CUMULATE(ice_albedo_Ave, siceAlb,
      &                       1, thSIce_deltaT, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- simple average (without ice-fraction)
@@ -88,15 +87,15 @@ c    &                       1, thSIce_deltaT, bi, bj, myThid )
 c      CALL TIMEAVE_CUMULATE(ice_snowPr_Ave, snowPrc,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
 
-C-- average of atmospheric fluxes : 
+C-- average of atmospheric fluxes :
       IF ( fluidIsWater ) THEN
-       CALL TIMEAVE_CUMUL_1T(ice_flxAtm_Ave, flxAtm,
+       CALL TIMEAVE_CUMULATE(ice_flxAtm_Ave, icFlxAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_1T(ice_frwAtm_Ave, frwAtm,
+       CALL TIMEAVE_CUMULATE(ice_frwAtm_Ave, icFrwAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
       ENDIF
 
-C-- average of oceanic fluxes : 
+C-- average of oceanic fluxes :
 #ifndef CHECK_ENERGY_CONSERV
        CALL TIMEAVE_CUMULATE(ice_flx2oc_Ave, Qnet,
      &                       1, thSIce_deltaT, bi, bj, myThid )
@@ -119,15 +118,15 @@ C-- average of Ocean Mixed-Layer temp. & salinity
       ENDIF
 #endif /* ALLOW_TIMEAVE */
 
-      IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,
-     &                        myTime+deltaTClock,deltaTClock)
-     &     .AND. fluidIsWater ) THEN 
-        wrtIter = myIter+1
-        CALL WRITE_LOCAL_RL('ice_flxAtm','I10',1,flxAtm,
-     &                      bi,bj,1,wrtIter,myThid)
-        CALL WRITE_LOCAL_RL('ice_frwAtm','I10',1,frwAtm,
-     &                      bi,bj,1,wrtIter,myThid)
-      ENDIF
+c     IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,
+c    &                        myTime+deltaTClock,deltaTClock)
+c    &     .AND. fluidIsWater ) THEN
+c       wrtIter = myIter+1
+c       CALL WRITE_LOCAL_RL('ice_flxAtm','I10',1,flxAtm,
+c    &                      bi,bj,1,wrtIter,myThid)
+c       CALL WRITE_LOCAL_RL('ice_frwAtm','I10',1,frwAtm,
+c    &                      bi,bj,1,wrtIter,myThid)
+c     ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -136,8 +135,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-- Atmospheric fluxes :
        IF ( fluidIsWater ) THEN
-        CALL DIAGNOSTICS_FILL(flxAtm, 'SIflxAtm',0,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(frwAtm, 'SIfrwAtm',0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(icFlxAtm,'SIflxAtm',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(icFrwAtm,'SIfrwAtm',0,1,1,bi,bj,myThid)
        ENDIF
 
 C-- Oceanic fluxes :

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.8 2006/02/23 20:03:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.9 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -340,6 +340,10 @@ C     Dump a snap-shot of main state variables:
      &         myIter,myThid)
           IF ( myTime.NE.startTime ) THEN
             CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
+     &           myIter,myThid)
+            CALL WRITE_FLD_XY_RL('ice_flxAtm.',suff,icFlxAtm,
+     &           myIter,myThid)
+            CALL WRITE_FLD_XY_RL('ice_frwAtm.',suff,icFrwAtm,
      &           myIter,myThid)
           ENDIF
           IF ( stepFwd_oceMxL ) THEN

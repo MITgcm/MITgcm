@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.3 2006/03/13 03:53:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.4 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -6,9 +6,9 @@ C $Name:  $
 C     !ROUTINE: THSICE_CHECK_CONSERV
 C     !INTERFACE:
       SUBROUTINE THSICE_CHECK_CONSERV(
-     I             dBug, i, j, bi, bj, iceStart,
+     I             dBugFlag, i, j, bi, bj, iceStart,
      I             iceFrac, compact, hIce, hSnow, qicen,
-     I             qleft, ffresh, fsalt, flxAtm, frwAtm,
+     I             qleft, ffresh, fsalt,
      I             myTime, myIter, myThid )
 C     *==========================================================*
 C     | S/R  THSICE_CHECK_CONSERV
@@ -31,13 +31,12 @@ C     === Routine arguments ===
 C     myIter :: iteration counter for this thread
 C     myTime :: time counter for this thread
 C     myThid :: thread number for this instance of the routine.
-      LOGICAL dBug
+      LOGICAL dBugFlag
       INTEGER i,j, bi,bj
       INTEGER iceStart
       _RL iceFrac
       _RL compact, hIce, hSnow, qicen(nlyr)
       _RL qleft, fsalt, ffresh
-      _RL flxAtm, frwAtm
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -47,10 +46,21 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL dEnerg, dWater, dSalt
       _RL flxFrac
+      _RL flxAtm, frwAtm
+      LOGICAL dBugLoc
+
+C-    define grid-point location where to print debugging values
+#include "THSICE_DEBUG.h"
 
  1010 FORMAT(A,1P4E14.6)
 
+          dBugLoc = .FALSE.
+#ifdef ALLOW_DBUG_THSICE
+          dBugLoc = dBug(i,j,bi,bj)
+#endif
           flxFrac = iceFrac
+          flxAtm = icFlxAtm(i,j,bi,bj)
+          frwAtm = icFrwAtm(i,j,bi,bj)
           IF (iceStart.EQ.1) flxFrac = 1.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -59,7 +69,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &             *(Qice1(i,j,bi,bj)+Qice2(i,j,bi,bj))*0.5
           dWater = rhos*snowheight(i,j,bi,bj)+rhoi*iceHeight(i,j,bi,bj)
           dSalt =  rhoi*iceHeight(i,j,bi,bj)*saltice
-         IF (dBug) WRITE(6,1010) 'ThSI_CHK: Ener0,Water0,Salt0 =',
+         IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: Ener0,Water0,Salt0 =',
      &    dEnerg, dWater, dSalt
 C--
           dEnerg = dEnerg*iceFrac
@@ -71,10 +81,10 @@ C--
           dSalt =  dSalt*iceFrac
      &     - compact* rhoi*hIce*saltice
 
-         IF (dBug) WRITE(6,1010) 'ThSI_CHK: dEner,dH20,dSal /dt=',
+         IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: dEner,dH20,dSal /dt=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
-         IF (dBug) WRITE(6,1010) 'ThSI_CHK: fxH,fxW,fxS=',flxAtm-qleft,
-     &     -ffresh-frwAtm,-fsalt
+         IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: fxH,fxW,fxS=',
+     &    flxAtm-qleft, -ffresh-frwAtm,-fsalt
           dEnerg = dEnerg + thSIce_deltaT*flxFrac*(flxAtm-qleft)
           dWater = dWater - thSIce_deltaT*flxFrac*(ffresh+frwAtm)
           dSalt  = dSalt  - thSIce_deltaT*flxFrac*fsalt
@@ -88,9 +98,9 @@ C--
      &          + dSalt
 #endif /*ALLOW_TIMEAVE*/
 C--
-         IF (dBug) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
+         IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
-         IF (dBug) WRITE(6,1010) 'ThSI_CHK: hIc,hSn,snow*dt=',
+         IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: hIc,hSn,snow*dt=',
      &    hIce, hSnow, snowPrc(i,j,bi,bj)*thSIce_deltaT/rhos
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

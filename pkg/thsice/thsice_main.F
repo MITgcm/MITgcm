@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.7 2006/04/09 17:35:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.8 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: THSICE_MAIN
 C     !INTERFACE:
-      SUBROUTINE THSICE_MAIN( 
+      SUBROUTINE THSICE_MAIN(
      I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R  THSICE_MAIN             
-C     | o Therm_SeaIce main routine. 
+C     | S/R  THSICE_MAIN
+C     | o Therm_SeaIce main routine.
 C     |   step forward Thermodynamic_SeaIce variables and modify
 C     |    ocean surface forcing accordingly.
 C     *==========================================================*
@@ -33,7 +33,7 @@ C     === Global variables ===
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myIter :: iteration counter for this thread
@@ -52,8 +52,9 @@ C     === Local variables ===
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       _RL tauFac
 
@@ -61,10 +62,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( stressReduction.GT. 0. _d 0 ) THEN
 C-     needs new Ice Fraction in halo region to apply wind-stress reduction
-       iMin = 1-Olx
-       iMax = sNx+Olx-1
-       jMin = 1-Oly
-       jMax = sNy+Oly-1
+       iMin = 1-OLx
+       iMax = sNx+OLx-1
+       jMin = 1-OLy
+       jMax = sNy+OLy-1
 #ifdef ATMOSPHERIC_LOADING
       ELSEIF ( useRealFreshWaterFlux ) THEN
 C-     needs sea-ice loading in part of the halo regions for grad.Phi0surf
@@ -104,7 +105,7 @@ C--     Mixed layer thickness: take the 1rst layer
           DO j = jMin, jMax
            DO i = iMin, iMax
              hOceMxL(i,j,bi,bj) = drF(1)*h0FacC(i,j,1,bi,bj)
-     &                                  *rStarFacC(i,j,bi,bj) 
+     &                                  *rStarFacC(i,j,bi,bj)
            ENDDO
           ENDDO
          ELSE
@@ -138,15 +139,16 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
           DO i = iMin, iMax
            tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
            sOceMxL(i,j,bi,bj) = salt (i,j,1,bi,bj)
-           v2ocMxL(i,j,bi,bj) = 
+           v2ocMxL(i,j,bi,bj) =
      &              ( uvel(i,j,1,bi,bj)*uvel(i,j,1,bi,bj)
      &              + uvel(i+1,j,1,bi,bj)*uvel(i+1,j,1,bi,bj)
      &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
      &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj)
      &              )*0.5 _d 0
            prcAtm(i,j) = 0.
-           evpAtm(i,j) = 0.
-           flxSW (i,j) = 0.
+           icFrwAtm(i,j,bi,bj) = 0. _d 0
+           icFlxAtm(i,j,bi,bj) = 0. _d 0
+           icFlxSW (i,j,bi,bj) = 0. _d 0
            snowPrc(i,j,bi,bj) = 0. _d 0
            siceAlb(i,j,bi,bj) = 0. _d 0
           ENDDO
@@ -178,21 +180,24 @@ CADJ STORE qnet    = comlev1, key = iicekey
          IF ( useBulkforce ) THEN
            CALL THSICE_GET_PRECIP(
      I                  iceMask,
-     O                  prcAtm, snowPrc(1-Olx,1-Oly,bi,bj), flxSW,
+     O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
          ENDIF
 #endif
 
 
-         CALL THSICE_STEP_FWD( 
-     I                     bi, bj, iMin, iMax, jMin, jMax, 
-     I                     prcAtm, 
-     U                     evpAtm, flxSW,
+         CALL THSICE_STEP_TEMP(
+     I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
-         CALL THSICE_AVE( 
-     I                   evpAtm, flxSW, 
-     I                   bi,bj, myTime, myIter, myThid )
+         CALL THSICE_STEP_FWD(
+     I                     bi, bj, iMin, iMax, jMin, jMax,
+     I                     prcAtm,
+     I                     myTime, myIter, myThid )
+
+         CALL THSICE_AVE(
+     I                     bi,bj, myTime, myIter, myThid )
 
 c      ENDDO
 c     ENDDO

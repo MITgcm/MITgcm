@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.6 2006/05/14 14:06:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.7 2006/05/25 18:03:24 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -40,6 +40,13 @@ C   flxCndBt :: heat flux conducted through the ice to bottom surface
 C   snowPrc  :: snow precipitation                        [kg/m2/s]
 C   siceAlb  :: area weighted sea-ice albedo           [0-1]
 C   dFdT     :: heat deriveative for coupled model
+C atmospheric fluxes (change along the time-stepping):
+C   icFlxSW  :: short-wave heat flux (+=down) over sea-ice 
+C               (downward SW / net SW @ surface / net SW below sea-ice)
+C   icFlxAtm :: Atmospheric surf. heat flux over sea-ice [W/m2] (+=down)
+C               (over sea-ice only / weighted by ice-fraction)
+C   icFrwAtm :: fresh-water flux (E-P) from the atmosphere [kg/m2/s] (+=up)
+C               ( ice Evap only / ice E-P / ice - ocean weighted E-P )
 C   oceQnet  :: net heat flux  to the ocean         (+=down) [W/m2]
 C   oceQsw   :: net short-wave that enter the ocean (+=down) [W/m2]
 C   oceFWfx  :: net fresh water flux to the ocean   (+=down) [kg/m2]
@@ -47,10 +54,11 @@ C   oceSflx  :: net salt flux to the ocean      (+=down) [psu.kg/m2]
       COMMON / THSICE_FLUX /
 c    &       oceQsw, oceQnet, oceFWfx, oceSflx,
      &       sHeating, flxCndBt,
-     &       snowPrc, siceAlb
+     &       snowPrc, siceAlb,
 #ifdef COUPLE_MODEL
-     &     , dFdT 
+     &       dFdT, 
 #endif
+     &       icFlxSW, icFlxAtm, icFrwAtm
 
 c     _RL oceQnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL oceQsw (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -63,6 +71,9 @@ c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef COUPLE_MODEL
       _RL dFdT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+      _RL icFlxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icFlxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icFrwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C-- COMMON / THSICE_OCEMXLAYER / oceanic mixed layer state
 C   hOceMxL :: thickness   of the ocean mixed layer [m]
