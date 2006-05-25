@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.23 2006/03/02 02:53:23 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.24 2006/05/25 18:32:56 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -38,6 +38,8 @@ c     Calendar data.
 
 c     Sea-water albedo
       _RL     exf_albedo
+c     longwave surface emittance
+      _RL     surfEmittance
 
 c     Maximum absolute windstress, used to reset unreastically high
 c     data values
@@ -103,6 +105,16 @@ c     data values
       character*1 precipmask
       parameter(  precipmask = 's' )
 
+      integer snowprecipstartdate1
+      integer snowprecipstartdate2
+      _RL     snowprecipstartdate
+      _RL     snowprecipperiod
+      _RL     snowprecipconst
+      _RL     snowprecip_exfremo_intercept 
+      _RL     snowprecip_exfremo_slope
+      character*1 snowprecipmask
+      parameter(  snowprecipmask = 's' )
+
       integer runoffstartdate1
       integer runoffstartdate2
       _RL     runoffstartdate
@@ -152,6 +164,16 @@ c     data values
       _RL     vwind_exfremo_slope
       character*1 vwindmask
       parameter(  vwindmask = 's' )
+
+      integer wspeedstartdate1
+      integer wspeedstartdate2
+      _RL     wspeedstartdate
+      _RL     wspeedperiod
+      _RL     wspeedconst
+      _RL     wspeed_exfremo_intercept 
+      _RL     wspeed_exfremo_slope
+      character*1 wspeedmask
+      parameter(  wspeedmask = 's' )
 
       integer swfluxstartdate1
       integer swfluxstartdate2
@@ -229,12 +251,14 @@ c     File names.
       character*(128) aqhfile
       character*(128) evapfile
       character*(128) precipfile
+      character*(128) snowprecipfile
       character*(128) sfluxfile
       character*(128) runofffile
       character*(128) ustressfile
       character*(128) vstressfile
       character*(128) uwindfile
       character*(128) vwindfile
+      character*(128) wspeedfile
       character*(128) swfluxfile
       character*(128) lwfluxfile
       character*(128) swdownfile
@@ -249,127 +273,140 @@ C                           instead of _YEAR for useExfYearlyFields
       logical useExfCheckRange
 
       common /exf_param_l/
-     &                          useExfYearlyFields, twoDigitYear,
-     &                          useExfCheckRange
+     &                     useExfYearlyFields, twoDigitYear,
+     &                     useExfCheckRange
       common /exf_param_i/
-     &                          hfluxstartdate1,   hfluxstartdate2,
-     &                          atempstartdate1,   atempstartdate2,
-     &                          aqhstartdate1,     aqhstartdate2,
-     &                          sfluxstartdate1,   sfluxstartdate2,
-     &                          evapstartdate1,    evapstartdate2,
-     &                          runoffstartdate1,  runoffstartdate2,
-     &                          precipstartdate1,  precipstartdate2,
-     &                          ustressstartdate1, ustressstartdate2,
-     &                          vstressstartdate1, vstressstartdate2,
-     &                          uwindstartdate1,   uwindstartdate2,
-     &                          vwindstartdate1,   vwindstartdate2,
-     &                          swfluxstartdate1,  swfluxstartdate2,
-     &                          lwfluxstartdate1,  lwfluxstartdate2,
-     &                          swdownstartdate1,  swdownstartdate2,
-     &                          lwdownstartdate1,  lwdownstartdate2,
-     &                          obcsNstartdate1,   obcsNstartdate2,
-     &                          obcsSstartdate1,   obcsSstartdate2,
-     &                          obcsEstartdate1,   obcsEstartdate2,
-     &                          obcsWstartdate1,   obcsWstartdate2,
-     &                          apressurestartdate1,apressurestartdate2
+     &                     hfluxstartdate1,   hfluxstartdate2,
+     &                     atempstartdate1,   atempstartdate2,
+     &                     aqhstartdate1,     aqhstartdate2,
+     &                     sfluxstartdate1,   sfluxstartdate2,
+     &                     evapstartdate1,    evapstartdate2,
+     &                     runoffstartdate1,  runoffstartdate2,
+     &                     precipstartdate1,  precipstartdate2,
+     &                     snowprecipstartdate1, snowprecipstartdate2,
+     &                     ustressstartdate1, ustressstartdate2,
+     &                     vstressstartdate1, vstressstartdate2,
+     &                     uwindstartdate1,   uwindstartdate2,
+     &                     vwindstartdate1,   vwindstartdate2,
+     &                     wspeedstartdate1,  wspeedstartdate2,
+     &                     swfluxstartdate1,  swfluxstartdate2,
+     &                     lwfluxstartdate1,  lwfluxstartdate2,
+     &                     swdownstartdate1,  swdownstartdate2,
+     &                     lwdownstartdate1,  lwdownstartdate2,
+     &                     obcsNstartdate1,   obcsNstartdate2,
+     &                     obcsSstartdate1,   obcsSstartdate2,
+     &                     obcsEstartdate1,   obcsEstartdate2,
+     &                     obcsWstartdate1,   obcsWstartdate2,
+     &                     apressurestartdate1,apressurestartdate2
 
       common /exf_param_r/
-     &                          year2sec,          windstressmax,
-     &                          repeatPeriod,      exf_albedo,
-     &                          hfluxperiod,       hfluxstartdate,
-     &                          atempperiod,       atempstartdate,
-     &                          aqhperiod,         aqhstartdate,
-     &                          sfluxperiod,       sfluxstartdate,
-     &                          evapperiod,        evapstartdate,
-     &                          precipperiod,      precipstartdate,
-     &                          runoffperiod,      runoffstartdate,
-     &                          ustressperiod,     ustressstartdate,
-     &                          vstressperiod,     vstressstartdate,
-     &                          uwindperiod,       uwindstartdate,
-     &                          vwindperiod,       vwindstartdate,
-     &                          swfluxperiod,      swfluxstartdate,
-     &                          lwfluxperiod,      lwfluxstartdate,
-     &                          swdownperiod,      swdownstartdate,
-     &                          lwdownperiod,      lwdownstartdate,
-     &                          obcsNperiod,       obcsNstartdate,
-     &                          obcsSperiod,       obcsSstartdate,
-     &                          obcsEperiod,       obcsEstartdate,
-     &                          obcsWperiod,       obcsWstartdate,
-     &                          apressureperiod,   apressurestartdate,
-     &                          hfluxconst,
-     &                          atempconst,
-     &                          aqhconst,
-     &                          sfluxconst,
-     &                          evapconst,
-     &                          precipconst,
-     &                          runoffconst,
-     &                          ustressconst,
-     &                          vstressconst,
-     &                          uwindconst,
-     &                          vwindconst,
-     &                          swfluxconst,
-     &                          lwfluxconst,
-     &                          swdownconst,
-     &                          lwdownconst,
-     &                          apressureconst
+     &                     year2sec,          windstressmax,
+     &                     repeatPeriod,      exf_albedo,
+     &                     surfEmittance,
+     &                     hfluxperiod,       hfluxstartdate,
+     &                     atempperiod,       atempstartdate,
+     &                     aqhperiod,         aqhstartdate,
+     &                     sfluxperiod,       sfluxstartdate,
+     &                     evapperiod,        evapstartdate,
+     &                     precipperiod,      precipstartdate,
+     &                     snowprecipperiod,  snowprecipstartdate,
+     &                     runoffperiod,      runoffstartdate,
+     &                     ustressperiod,     ustressstartdate,
+     &                     vstressperiod,     vstressstartdate,
+     &                     uwindperiod,       uwindstartdate,
+     &                     vwindperiod,       vwindstartdate,
+     &                     wspeedperiod,      wspeedstartdate,
+     &                     swfluxperiod,      swfluxstartdate,
+     &                     lwfluxperiod,      lwfluxstartdate,
+     &                     swdownperiod,      swdownstartdate,
+     &                     lwdownperiod,      lwdownstartdate,
+     &                     obcsNperiod,       obcsNstartdate,
+     &                     obcsSperiod,       obcsSstartdate,
+     &                     obcsEperiod,       obcsEstartdate,
+     &                     obcsWperiod,       obcsWstartdate,
+     &                     apressureperiod,   apressurestartdate,
+     &                     hfluxconst,
+     &                     atempconst,
+     &                     aqhconst,
+     &                     sfluxconst,
+     &                     evapconst,
+     &                     precipconst,
+     &                     snowprecipconst,
+     &                     runoffconst,
+     &                     ustressconst,
+     &                     vstressconst,
+     &                     uwindconst,
+     &                     vwindconst,
+     &                     wspeedconst,
+     &                     swfluxconst,
+     &                     lwfluxconst,
+     &                     swdownconst,
+     &                     lwdownconst,
+     &                     apressureconst
 
       common /exf_param_trend_removal/
-     &                          hflux_exfremo_intercept,
-     &                          atemp_exfremo_intercept,
-     &                          aqh_exfremo_intercept,
-     &                          sflux_exfremo_intercept,
-     &                          evap_exfremo_intercept,
-     &                          precip_exfremo_intercept,
-     &                          runoff_exfremo_intercept,
-     &                          ustress_exfremo_intercept,
-     &                          vstress_exfremo_intercept,
-     &                          uwind_exfremo_intercept,
-     &                          vwind_exfremo_intercept,
-     &                          swflux_exfremo_intercept,
-     &                          lwflux_exfremo_intercept,
-     &                          swdown_exfremo_intercept,
-     &                          lwdown_exfremo_intercept,
-     &                          apressure_exfremo_intercept,
-     &                          hflux_exfremo_slope,
-     &                          atemp_exfremo_slope,
-     &                          aqh_exfremo_slope,
-     &                          sflux_exfremo_slope,
-     &                          evap_exfremo_slope,
-     &                          precip_exfremo_slope,
-     &                          runoff_exfremo_slope,
-     &                          ustress_exfremo_slope,
-     &                          vstress_exfremo_slope,
-     &                          uwind_exfremo_slope,
-     &                          vwind_exfremo_slope,
-     &                          swflux_exfremo_slope,
-     &                          lwflux_exfremo_slope,
-     &                          swdown_exfremo_slope,
-     &                          lwdown_exfremo_slope,
-     &                          apressure_exfremo_slope
+     &                     hflux_exfremo_intercept,
+     &                     atemp_exfremo_intercept,
+     &                     aqh_exfremo_intercept,
+     &                     sflux_exfremo_intercept,
+     &                     evap_exfremo_intercept,
+     &                     precip_exfremo_intercept,
+     &                     snowprecip_exfremo_intercept,
+     &                     runoff_exfremo_intercept,
+     &                     ustress_exfremo_intercept,
+     &                     vstress_exfremo_intercept,
+     &                     uwind_exfremo_intercept,
+     &                     vwind_exfremo_intercept,
+     &                     wspeed_exfremo_intercept,
+     &                     swflux_exfremo_intercept,
+     &                     lwflux_exfremo_intercept,
+     &                     swdown_exfremo_intercept,
+     &                     lwdown_exfremo_intercept,
+     &                     apressure_exfremo_intercept,
+     &                     hflux_exfremo_slope,
+     &                     atemp_exfremo_slope,
+     &                     aqh_exfremo_slope,
+     &                     sflux_exfremo_slope,
+     &                     evap_exfremo_slope,
+     &                     precip_exfremo_slope,
+     &                     snowprecip_exfremo_slope,
+     &                     runoff_exfremo_slope,
+     &                     ustress_exfremo_slope,
+     &                     vstress_exfremo_slope,
+     &                     uwind_exfremo_slope,
+     &                     vwind_exfremo_slope,
+     &                     wspeed_exfremo_slope,
+     &                     swflux_exfremo_slope,
+     &                     lwflux_exfremo_slope,
+     &                     swdown_exfremo_slope,
+     &                     lwdown_exfremo_slope,
+     &                     apressure_exfremo_slope
 
       common /exf_param_c/
-     &                          hfluxfile,
-     &                          atempfile,
-     &                          aqhfile,
-     &                          sfluxfile,
-     &                          evapfile,
-     &                          precipfile,
-     &                          runofffile,
-     &                          ustressfile,
-     &                          vstressfile,
-     &                          uwindfile,
-     &                          vwindfile,
-     &                          swfluxfile,
-     &                          lwfluxfile,
-     &                          swdownfile,
-     &                          lwdownfile,
-     &                          apressurefile
+     &                     hfluxfile,
+     &                     atempfile,
+     &                     aqhfile,
+     &                     sfluxfile,
+     &                     evapfile,
+     &                     precipfile,
+     &                     snowprecipfile,
+     &                     runofffile,
+     &                     ustressfile,
+     &                     vstressfile,
+     &                     uwindfile,
+     &                     vwindfile,
+     &                     wspeedfile,
+     &                     swfluxfile,
+     &                     lwfluxfile,
+     &                     swdownfile,
+     &                     lwdownfile,
+     &                     apressurefile
 
 c     file precision and field type
 
       common /exf_param_type/ 
-     &                        exf_iprec,
-     &                        exf_yftype
+     &                     exf_iprec,
+     &                     exf_yftype
 
       integer exf_iprec
       character*(2) exf_yftype
@@ -385,9 +422,11 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_vstress
       _RL     exf_inscal_uwind
       _RL     exf_inscal_vwind
+      _RL     exf_inscal_wspeed
       _RL     exf_inscal_swflux
       _RL     exf_inscal_lwflux
       _RL     exf_inscal_precip
+      _RL     exf_inscal_snowprecip
       _RL     exf_inscal_sst
       _RL     exf_inscal_sss
       _RL     exf_inscal_atemp
@@ -415,9 +454,11 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_vstress
      &                    , exf_inscal_uwind
      &                    , exf_inscal_vwind
+     &                    , exf_inscal_wspeed
      &                    , exf_inscal_swflux
      &                    , exf_inscal_lwflux
      &                    , exf_inscal_precip
+     &                    , exf_inscal_snowprecip
      &                    , exf_inscal_sst
      &                    , exf_inscal_sss
      &                    , exf_inscal_atemp
@@ -475,12 +516,18 @@ c for lat interpolation, arraysize currently set to 2176 max data values
       _RL precip_lon0, precip_lon_inc
       _RL precip_lat0, precip_lat_inc(MAX_LAT_INC)
       INTEGER precip_nlon, precip_nlat
+      _RL snowprecip_lon0, snowprecip_lon_inc
+      _RL snowprecip_lat0, snowprecip_lat_inc(MAX_LAT_INC)
+      INTEGER snowprecip_nlon, snowprecip_nlat
       _RL uwind_lon0, uwind_lon_inc
       _RL uwind_lat0, uwind_lat_inc(MAX_LAT_INC)
       INTEGER uwind_nlon, uwind_nlat
       _RL vwind_lon0, vwind_lon_inc
       _RL vwind_lat0, vwind_lat_inc(MAX_LAT_INC)
       INTEGER vwind_nlon, vwind_nlat
+      _RL wspeed_lon0, wspeed_lon_inc
+      _RL wspeed_lat0, wspeed_lat_inc(MAX_LAT_INC)
+      INTEGER wspeed_nlon, wspeed_nlat
       _RL lwflux_lon0, lwflux_lon_inc
       _RL lwflux_lat0, lwflux_lat_inc(MAX_LAT_INC)
       INTEGER lwflux_nlon, lwflux_nlat
@@ -525,12 +572,18 @@ c for lat interpolation, arraysize currently set to 2176 max data values
      & precip_lon0, precip_lon_inc,
      & precip_lat0, precip_lat_inc,
      & precip_nlon, precip_nlat,
+     & snowprecip_lon0, snowprecip_lon_inc,
+     & snowprecip_lat0, snowprecip_lat_inc,
+     & snowprecip_nlon, snowprecip_nlat,
      & uwind_lon0, uwind_lon_inc,
      & uwind_lat0, uwind_lat_inc,
      & uwind_nlon, uwind_nlat,
      & vwind_lon0, vwind_lon_inc,
      & vwind_lat0, vwind_lat_inc,
      & vwind_nlon, vwind_nlat,
+     & wspeed_lon0, wspeed_lon_inc,
+     & wspeed_lat0, wspeed_lat_inc,
+     & wspeed_nlon, wspeed_nlat,
      & lwflux_lon0, lwflux_lon_inc,
      & lwflux_lat0, lwflux_lat_inc,
      & lwflux_nlon, lwflux_nlat,

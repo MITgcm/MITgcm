@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.6 2006/01/13 17:19:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.7 2006/05/25 18:32:56 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -51,6 +51,8 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,vwind,'_vwind',
      &       maskH,maskH,rA ,drF,myThid)
 #endif /* ALLOW_ATM_WIND */
+        CALL MON_PRINTSTATS_RL(1,wspeed,'_wspeed',
+     &       maskH,maskH,rA ,drF,myThid)
 #ifdef ALLOW_ATM_TEMP
         CALL MON_PRINTSTATS_RL(1,atemp,'_atemp',
      &       maskH,maskH,rA ,drF,myThid)
@@ -59,6 +61,8 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,lwflux,'_lwflux',
      &       maskH,maskH,rA ,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,precip,'_precip',
+     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,snowprecip,'_snowprecip',
      &       maskH,maskH,rA ,drF,myThid)
 #endif /* ALLOW_ATM_TEMP */
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)

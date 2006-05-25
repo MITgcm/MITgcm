@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.9 2004/07/02 00:48:23 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.10 2006/05/25 18:32:56 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -50,6 +50,9 @@ c     == end of interface ==
 #endif
 
       call exf_init_gen (
+     &     wspeedconst, wspeed, wspeed0, wspeed1, mythid )
+
+      call exf_init_gen (
      &     hfluxconst, hflux, hflux0, hflux1, mythid )
       call exf_init_gen (
      &     sfluxconst, sflux, sflux0, sflux1, mythid )
@@ -63,6 +66,9 @@ c     == end of interface ==
      &     lwfluxconst, lwflux, lwflux0, lwflux1, mythid )
       call exf_init_gen (
      &     precipconst, precip, precip0, precip1, mythid )
+      call exf_init_gen (
+     &     snowprecipconst, snowprecip, snowprecip0, snowprecip1, 
+     &     mythid )
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)

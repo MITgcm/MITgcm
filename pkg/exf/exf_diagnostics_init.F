@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.2 2005/06/28 22:05:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.3 2006/05/25 18:32:55 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -122,6 +122,13 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'EXFwspee'
+      diagTitle = '10-m wind speed modulus ( >= 0 )'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
       diagName  = 'EXFatemp'
       diagTitle = 'surface (2-m) air temperature'
       diagUnits = 'degK            '
@@ -145,6 +152,13 @@ C--   surface fluxes:
 
       diagName  = 'EXFpreci'
       diagTitle = 'evaporation, > 0 decreases salinity'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'EXFsnow '
+      diagTitle = 'snow precipitation, > 0 decreases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,

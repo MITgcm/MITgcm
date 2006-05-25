@@ -13,6 +13,8 @@ CADJ STORE ustress0  = comlev1, key = ikey_dynamics
 CADJ STORE ustress1  = comlev1, key = ikey_dynamics
 CADJ STORE vstress0  = comlev1, key = ikey_dynamics
 CADJ STORE vstress1  = comlev1, key = ikey_dynamics
+CADJ STORE wspeed0   = comlev1, key = ikey_dynamics
+CADJ STORE wspeed1   = comlev1, key = ikey_dynamics
 
 # ifdef ALLOW_ATM_TEMP
 

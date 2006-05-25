@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_filter_rs.F,v 1.6 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_filter_rs.F,v 1.7 2006/05/25 18:32:55 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -76,7 +76,7 @@ c         Set land points to zero
 
             do j = 1,sny
               do i = 1,snx
-                if ( _hFacC(i,j,1,bi,bj) .eq. 0. ) then
+                if ( maskC(i,j,1,bi,bj) .eq. 0. ) then
                   arr(i,j,bi,bj) = 0. _d 0
                 endif
               enddo
@@ -86,7 +86,7 @@ c         Set land points to zero
 
             do j = 1,sny
               do i = 1,snx
-                if ( maskw(i,j,1,bi,bj) .eq. 0. ) then
+                if ( maskW(i,j,1,bi,bj) .eq. 0. ) then
                   arr(i,j,bi,bj) = 0. _d 0
                 endif
               enddo
@@ -96,7 +96,7 @@ c         Set land points to zero
 
             do j = 1,sny
               do i = 1,snx
-                if ( masks(i,j,1,bi,bj) .eq. 0. ) then
+                if ( maskS(i,j,1,bi,bj) .eq. 0. ) then
                   arr(i,j,bi,bj) = 0. _d 0
                 endif
               enddo

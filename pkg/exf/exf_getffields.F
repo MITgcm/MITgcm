@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.31 2006/03/02 15:30:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.32 2006/05/25 18:32:55 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -85,6 +85,20 @@ c     Zonal and meridional wind stress.
      &     vstress, vstress0, vstress1, vstressmask,
      &     mytime, myiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
+
+c--   wind speed
+      call exf_set_gen( 
+     &     wspeedfile, wspeedstartdate, wspeedperiod, 
+     &     wspeedstartdate1, wspeedstartdate2,
+     &     exf_inscal_wspeed,
+     &     wspeed_exfremo_intercept, wspeed_exfremo_slope,
+     &     wspeed, wspeed0, wspeed1, wspeedmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     wspeed_lon0, wspeed_lon_inc, 
+     &     wspeed_lat0, wspeed_lat_inc,
+     &     wspeed_nlon, wspeed_nlat, xC, yC, interp_method,
+#endif
+     &     mytime, myiter, mythid )
 
 #ifdef ALLOW_ATM_WIND
 
@@ -209,6 +223,20 @@ c     Precipitation.
 #ifdef USE_EXF_INTERPOLATION
      &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
      &     precip_nlon, precip_nlat, xC, yC, interp_method,
+#endif
+     &     mytime, myiter, mythid )
+
+c     Snow.
+      call exf_set_gen( 
+     &     snowprecipfile, snowprecipstartdate, snowprecipperiod, 
+     &     snowprecipstartdate1, snowprecipstartdate2,
+     &     exf_inscal_snowprecip,
+     &     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
+     &     snowprecip, snowprecip0, snowprecip1, snowprecipmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     snowprecip_lon0, snowprecip_lon_inc, 
+     &     snowprecip_lat0, snowprecip_lat_inc,
+     &     snowprecip_nlon, snowprecip_nlat, xC, yC, interp_method,
 #endif
      &     mytime, myiter, mythid )
 

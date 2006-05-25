@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.22 2006/03/02 15:30:11 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.23 2006/05/25 18:32:56 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -158,8 +158,14 @@ c     Get values of climatological fields.
 c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
 
-c     Compute bulk formulae
 #ifdef ALLOW_BULKFORMULAE
+c     Deal set radiative fluxes
+      call exf_radiation( mytime, myiter, mythid )
+
+c     Deal set radiative fluxes
+      call exf_wind( mytime, myiter, mythid )
+
+c     Compute bulk formulae
       call exf_bulkformulae( mytime, myiter, mythid )
 #endif
 
@@ -169,12 +175,24 @@ c     Apply runoff, masks and exchanges
           k = 1
           do j = 1,sny
             do i = 1,snx
+#ifdef ALLOW_ATM_TEMP
+c             Net surface heat flux.
+              hflux(i,j,bi,bj) = 
+     &              - hs(i,j,bi,bj) 
+     &              - hl(i,j,bi,bj)
+     &              + lwflux(i,j,bi,bj)
+#ifndef SHORTWAVE_HEATING
+     &              + swflux(i,j,bi,bj)
+#endif
+c             Salt flux from Precipitation and Evaporation.
+              sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
+#endif /* ALLOW_ATM_TEMP */
 #ifdef ALLOW_RUNOFF
               sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 #endif
 
-              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
             enddo
           enddo
         enddo

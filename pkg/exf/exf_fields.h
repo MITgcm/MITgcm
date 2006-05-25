@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.12 2005/06/28 22:05:49 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.13 2006/05/25 18:32:55 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -62,6 +62,11 @@ c                      north for cartesian and spherical polar grids
 c                  Typical range: -10 < vwind < 10
 c                  Input or input/output field
 c
+c     wspeed    :: Surface (10-m) wind speed in m/s
+c                  >= 0 sqrt(u^2+v^2)
+c                  Typical range: 0 < wspeed < 10
+c                  Input or input/output field
+c
 c     atemp     :: Surface (2-m) air temperature in deg K
 c                  Typical range: 200 < atemp < 300
 c                  Input or input/output field
@@ -82,6 +87,11 @@ c                  Typical range: 0 < evap < 2.5e-7
 c                  Input, input/output, or output field
 c
 c     precip    :: Precipitation in m/s
+c                  > 0 for decrease in salt (ocean salinity)
+c                  Typical range: 0 < precip < 5e-7
+c                  Input or input/output field
+c
+c     snowprecip :: snow in m/s
 c                  > 0 for decrease in salt (ocean salinity)
 c                  Typical range: 0 < precip < 5e-7
 c                  Input or input/output field
@@ -145,6 +155,12 @@ c
       _RL vstress0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL vstress1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
+      common /exf_wspeed_r/ wspeed
+      _RL wspeed   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_wspeed_r/ wspeed0, wspeed1
+      _RL wspeed0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wspeed1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
 #ifdef ALLOW_ATM_WIND
       common /exf_atm_wind_r/ uwind, vwind
       _RL uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -168,11 +184,12 @@ c
       _RL sflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_ATM_TEMP
-      common /exf_atm_temp_r/ atemp, aqh, lwflux, precip
+      common /exf_atm_temp_r/ atemp, aqh, lwflux, precip, snowprecip
       _RL atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL aqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL lwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL precip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL snowprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_atemp_r/ atemp0, atemp1
       _RL atemp0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL atemp1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -185,9 +202,20 @@ c
       common /exfl_precip_r/ precip0, precip1
       _RL precip0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL precip1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /exfl_snowprecip_r/ snowprecip0, snowprecip1
+      _RL snowprecip0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL snowprecip1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_turb_r/ hs, hl
       _RL hs        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL hl        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ALLOW_BULKFORMULAE
+      common /exfl_wind_r/ us, cw, sw, sh
+      _RL us        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL cw        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL sw        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL sh        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)

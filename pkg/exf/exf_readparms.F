@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.29 2006/03/06 20:01:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.30 2006/05/25 18:32:56 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -70,18 +70,21 @@ c     == end of interface ==
 
 c     Surface flux data.
       namelist /exf_nml/
-     &      windstressmax,       repeatPeriod,    exf_albedo,
+     &      windstressmax,       repeatPeriod,
+     &         exf_albedo,      surfEmittance,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
      &    sfluxstartdate1,    sfluxstartdate2,   sfluxperiod,
      &     evapstartdate1,     evapstartdate2,    evapperiod,
      &   precipstartdate1,   precipstartdate2,  precipperiod,
+     & snowprecipstartdate1, snowprecipstartdate2, snowprecipperiod,
      &   runoffstartdate1,   runoffstartdate2,  runoffperiod,
      &  ustressstartdate1,  ustressstartdate2, ustressperiod,
      &  vstressstartdate1,  vstressstartdate2, vstressperiod,
      &    uwindstartdate1,    uwindstartdate2,   uwindperiod,
      &    vwindstartdate1,    vwindstartdate2,   vwindperiod,
+     &   wspeedstartdate1,   wspeedstartdate2,  wspeedperiod,
      &   swfluxstartdate1,   swfluxstartdate2,  swfluxperiod,
      &   lwfluxstartdate1,   lwfluxstartdate2,  lwfluxperiod,
      &   swdownstartdate1,   swdownstartdate2,  swdownperiod,
@@ -94,27 +97,30 @@ c     Surface flux data.
      &          hfluxfile,          atempfile,       aqhfile,
      &          sfluxfile,         precipfile,    runofffile,
      &        ustressfile,        vstressfile,      evapfile,
-     &          uwindfile,          vwindfile,
+     &     snowprecipfile,
+     &          uwindfile,          vwindfile,    wspeedfile,
      &         swfluxfile,         lwfluxfile, apressurefile,
      &         swdownfile,         lwdownfile,
      &          exf_iprec,  exf_yftype, 
-     & useExfYearlyFields,  twoDigitYear,        useExfCheckRange,
-     &   exf_inscal_hflux,  exf_inscal_sflux,
+     & useExfYearlyFields,  twoDigitYear,         useExfCheckRange,
+     &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
      & exf_inscal_ustress,  exf_inscal_vstress,
-     &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_evap,
-     &   exf_inscal_atemp,  exf_offset_atemp,    exf_inscal_aqh,
+     &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_wspeed,
+     &   exf_inscal_atemp,  exf_offset_atemp,       exf_inscal_aqh,
      &     exf_inscal_sst,  exf_inscal_sss,
      &  exf_inscal_swflux,  exf_inscal_lwflux,   exf_inscal_precip,
-     &  exf_inscal_runoff,  exf_inscal_apressure,
+     &  exf_inscal_runoff,  exf_inscal_apressure, exf_inscal_snowprecip,
      &  exf_inscal_swdown,  exf_inscal_lwdown,
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
-     &         hfluxconst,  atempconst,          aqhconst,
-     &         sfluxconst,  evapconst,           precipconst,
-     &         runoffconst, ustressconst,        vstressconst,
-     &         uwindconst,  vwindconst,          swfluxconst,
-     &         lwfluxconst, swdownconst,         lwdownconst,
+     &         hfluxconst,   atempconst,            aqhconst,
+     &         sfluxconst,    evapconst,
+     &        precipconst,   snowprecipconst,
+     &        runoffconst, ustressconst,        vstressconst,
+     &         uwindconst,   vwindconst,         wspeedconst,
+     &        swfluxconst,  lwfluxconst, 
+     &        swdownconst,  lwdownconst,
      &         apressureconst,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
@@ -122,11 +128,13 @@ c     Surface flux data.
      &     sflux_exfremo_intercept, sflux_exfremo_slope,
      &     evap_exfremo_intercept, evap_exfremo_slope,
      &     precip_exfremo_intercept, precip_exfremo_slope,
+     &     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
      &     runoff_exfremo_intercept, runoff_exfremo_slope,
      &     ustress_exfremo_intercept, ustress_exfremo_slope,
      &     vstress_exfremo_intercept, vstress_exfremo_slope,
      &     uwind_exfremo_intercept, uwind_exfremo_slope,
      &     vwind_exfremo_intercept, vwind_exfremo_slope,
+     &     wspeed_exfremo_intercept, wspeed_exfremo_slope,
      &     swflux_exfremo_intercept, swflux_exfremo_slope,
      &     lwflux_exfremo_intercept, lwflux_exfremo_slope,
      &     swdown_exfremo_intercept, swdown_exfremo_slope,
@@ -151,12 +159,18 @@ c     Surface flux data.
      & aqh_nlon, aqh_nlat,
      & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
      & evap_nlon, evap_nlat,
-     & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
+     & precip_lon0, precip_lon_inc, 
+     & precip_lat0, precip_lat_inc,
      & precip_nlon, precip_nlat,
+     & snowprecip_lon0, snowprecip_lon_inc, 
+     & snowprecip_lat0, snowprecip_lat_inc,
+     & snowprecip_nlon, snowprecip_nlat,
      & uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
      & uwind_nlon, uwind_nlat,
      & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
      & vwind_nlon, vwind_nlat,
+     & wspeed_lon0, wspeed_lon_inc, wspeed_lat0, wspeed_lat_inc,
+     & wspeed_nlon, wspeed_nlat,
      & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
      & lwflux_nlon, lwflux_nlat,
      & swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
@@ -216,6 +230,13 @@ c     Calendar data.
       precip_exfremo_intercept = 0.0 _d 0
       precip_exfremo_slope = 0.0 _d 0
 
+      snowprecipstartdate1   = 0
+      snowprecipstartdate2   = 0
+      snowprecipperiod       = 0.0 _d 0
+      snowprecipconst        = 0.0 _d 0
+      snowprecip_exfremo_intercept = 0.0 _d 0
+      snowprecip_exfremo_slope = 0.0 _d 0
+
       runoffstartdate1   = 0
       runoffstartdate2   = 0
       runoffperiod       = 0.0 _d 0
@@ -250,6 +271,13 @@ c     Calendar data.
       vwindconst         = 0.0 _d 0
       vwind_exfremo_intercept = 0.0 _d 0
       vwind_exfremo_slope = 0.0 _d 0
+
+      wspeedstartdate1    = 0
+      wspeedstartdate2    = 0
+      wspeedperiod        = 0.0 _d 0
+      wspeedconst         = 0.0 _d 0
+      wspeed_exfremo_intercept = 0.0 _d 0
+      wspeed_exfremo_slope = 0.0 _d 0
 
       swfluxstartdate1   = 0
       swfluxstartdate2   = 0
@@ -302,9 +330,12 @@ c     Calendar data.
       obcsWstartdate2    = 0
       obcsWperiod        = 0.0 _d 0
 
-      repeatPeriod           = 0.0 _d 0
-      exf_albedo             = 0.1 _d 0
-      windstressmax          = 2.0 _d 0
+      repeatPeriod       = 0.0 _d 0
+      exf_albedo         = 0.1 _d 0
+      windstressmax      = 2.0 _d 0
+c--   this default is chosen to be backward compatible with
+c--   an earlier setting of 5.5 = surfEmittance*stefanBoltzmann
+      surfEmittance       = 5.50D-8/5.670D-8
 
 c     Data files.
       hfluxfile          = ' '
@@ -312,12 +343,14 @@ c     Data files.
       aqhfile            = ' '
       evapfile           = ' '
       precipfile         = ' '
+      snowprecipfile     = ' '
       sfluxfile          = ' '
       runofffile         = ' '
       ustressfile        = ' '
       vstressfile        = ' '
       uwindfile          = ' '
       vwindfile          = ' '
+      wspeedfile         = ' '
       swfluxfile         = ' '
       lwfluxfile         = ' '
       swdownfile         = ' '
@@ -330,12 +363,14 @@ c     Start dates.
       aqhstartdate       = 0.
       evapstartdate      = 0.
       precipstartdate    = 0.
+      snowprecipstartdate = 0.
       sfluxstartdate     = 0.
       runoffstartdate    = 0.
       ustressstartdate   = 0.
       vstressstartdate   = 0.
       uwindstartdate     = 0.
       vwindstartdate     = 0.
+      wspeedstartdate    = 0.
       swfluxstartdate    = 0.
       lwfluxstartdate    = 0.
       swdownstartdate    = 0.
@@ -360,9 +395,11 @@ c     Input scaling factors.
       exf_inscal_vstress   =  1. _d 0
       exf_inscal_uwind     =  1. _d 0
       exf_inscal_vwind     =  1. _d 0
+      exf_inscal_wspeed    =  1. _d 0
       exf_inscal_swflux    =  1. _d 0
       exf_inscal_lwflux    =  1. _d 0
       exf_inscal_precip    =  1. _d 0
+      exf_inscal_snowprecip =  1. _d 0
       exf_inscal_sst       =  1. _d 0
       exf_inscal_sss       =  1. _d 0
       exf_inscal_atemp     =  1. _d 0
@@ -396,13 +433,16 @@ c     Output scaling factors.
       aqh_lon0       = thetaMin + delX(1) / 2 
       evap_lon0      = thetaMin + delX(1) / 2
       precip_lon0    = thetaMin + delX(1) / 2 
+      snowprecip_lon0 = thetaMin + delX(1) / 2 
       vwind_lon0     = thetaMin + delX(1) / 2 
+      wspeed_lon0    = thetaMin + delX(1) / 2 
       lwflux_lon0    = thetaMin + delX(1) / 2 
       swdown_lon0    = thetaMin + delX(1) / 2 
       lwdown_lon0    = thetaMin + delX(1) / 2 
       apressure_lon0 = thetaMin + delX(1) / 2
       vstress_lat0   = phimin
       vwind_lat0     = phimin
+      wspeed_lat0    = phimin
       ustress_lat0   = phimin   + delY(1) / 2
       hflux_lat0     = phimin   + delY(1) / 2
       sflux_lat0     = phimin   + delY(1) / 2
@@ -412,6 +452,7 @@ c     Output scaling factors.
       aqh_lat0       = phimin   + delY(1) / 2
       evap_lat0      = phimin   + delY(1) / 2
       precip_lat0    = phimin   + delY(1) / 2
+      snowprecip_lat0 = phimin   + delY(1) / 2
       uwind_lat0     = phimin   + delY(1) / 2
       lwflux_lat0    = phimin   + delY(1) / 2
       swdown_lat0    = phimin   + delY(1) / 2
@@ -436,11 +477,15 @@ c     Output scaling factors.
       evap_nlon      = Nx
       evap_nlat      = Ny
       precip_nlon    = Nx
+      snowprecip_nlon = Nx
       precip_nlat    = Ny
+      snowprecip_nlat = Ny
       uwind_nlon     = Nx
       uwind_nlat     = Ny
       vwind_nlon     = Nx
       vwind_nlat     = Ny
+      wspeed_nlon    = Nx
+      wspeed_nlat    = Ny
       lwflux_nlon    = Nx
       lwflux_nlat    = Ny
       swdown_nlon    = Nx
@@ -459,8 +504,10 @@ c     Output scaling factors.
       aqh_lon_inc       = delX(1)
       evap_lon_inc      = delX(1)
       precip_lon_inc    = delX(1)
+      snowprecip_lon_inc = delX(1)
       uwind_lon_inc     = delX(1)
       vwind_lon_inc     = delX(1)
+      wspeed_lon_inc    = delX(1)
       lwflux_lon_inc    = delX(1)
       swdown_lon_inc    = delX(1)
       lwdown_lon_inc    = delX(1)
@@ -469,6 +516,7 @@ c     Output scaling factors.
          IF (i.LT.Ny) THEN
             vstress_lat_inc(i)   =  delY(i)
             vwind_lat_inc(i)     =  delY(i)
+            wspeed_lat_inc(i)    =  delY(i)
             ustress_lat_inc(i)   = (delY(i) + delY(i)) / 2.
             hflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
             sflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
@@ -478,6 +526,7 @@ c     Output scaling factors.
             aqh_lat_inc(i)       = (delY(i) + delY(i)) / 2.
             evap_lat_inc(i)      = (delY(i) + delY(i)) / 2.
             precip_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            snowprecip_lat_inc(i) = (delY(i) + delY(i)) / 2.
             uwind_lat_inc(i)     = (delY(i) + delY(i)) / 2.
             lwflux_lat_inc(i)    = (delY(i) + delY(i)) / 2.
             swdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
@@ -494,8 +543,10 @@ c     Output scaling factors.
             aqh_lat_inc(i)       = 0.
             evap_lat_inc(i)      = 0.
             precip_lat_inc(i)    = 0.
+            snowprecip_lat_inc(i) = 0.
             uwind_lat_inc(i)     = 0.
             vwind_lat_inc(i)     = 0.
+            wspeed_lat_inc(i)    = 0.
             lwflux_lat_inc(i)    = 0.
             swdown_lat_inc(i)    = 0.
             lwdown_lat_inc(i)    = 0.
@@ -553,6 +604,13 @@ c     fields to get a complete calendar date array.
          call cal_ToSeconds ( difftime,    vwindstartdate     ,mythid )
          vwindstartdate     = modelstart   + vwindstartdate
       endif
+      if ( wspeedfile .NE. ' ' ) then
+         call cal_FullDate  ( wspeedstartdate1, wspeedstartdate2,
+     &        date_array                        ,mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds ( difftime,    wspeedstartdate     ,mythid )
+         wspeedstartdate     = modelstart   + wspeedstartdate
+      endif
 #else
       if ( ustressfile .NE. ' ' ) then
          call cal_FullDate  ( ustressstartdate1  ,    ustressstartdate2,
@@ -598,6 +656,13 @@ c     fields to get a complete calendar date array.
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,   precipstartdate     ,mythid )
          precipstartdate    = modelstart  + precipstartdate
+      endif
+      if ( snowprecipfile .NE. ' ' ) then
+         call cal_FullDate( snowprecipstartdate1, snowprecipstartdate2,
+     &        date_array                        ,mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds ( difftime, snowprecipstartdate, mythid )
+         snowprecipstartdate    = modelstart  + snowprecipstartdate
       endif
 #else
       if ( hfluxfile .NE. ' ' ) then

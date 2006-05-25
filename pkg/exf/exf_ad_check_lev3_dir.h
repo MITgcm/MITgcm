@@ -8,6 +8,8 @@ CADJ STORE ustress0  = tapelev3, key = ilev_3
 CADJ STORE ustress1  = tapelev3, key = ilev_3
 CADJ STORE vstress0  = tapelev3, key = ilev_3
 CADJ STORE vstress1  = tapelev3, key = ilev_3
+CADJ STORE wspeed0   = tapelev3, key = ilev_3
+CADJ STORE wspeed1   = tapelev3, key = ilev_3
 
 # ifdef ALLOW_ATM_TEMP
 
