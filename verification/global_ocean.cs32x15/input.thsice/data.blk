@@ -1,10 +1,12 @@
  &BULKF_CONST
  Tf0kel = 273.15,
- p0     = 1013.,
+#p0   = 1013.,  <- no longer in Namelist, but hard coded
  Rgas   = 287.,
  &
 
  &BULKF_PARM01
+# set blk_nIter=0 to use the original FORMULA_LANL: 
+ blk_nIter= 0,
 #RainFile=       'ncep_precip_cs.bin',
  RainFile=       'ncep_pr_scal_cs.bin',
  SolarFile=      'ncep_downsolar_cs.bin',
