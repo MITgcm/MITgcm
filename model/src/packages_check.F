@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.33 2006/03/17 03:55:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.34 2006/05/26 03:06:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -168,7 +168,7 @@ CEOP
 #endif
 
 #ifdef ALLOW_GRDCHK
-      CALL GRDCHK_CHECK( myThid )
+      IF (useGRDCHK) CALL GRDCHK_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
