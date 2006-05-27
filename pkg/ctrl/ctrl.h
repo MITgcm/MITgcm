@@ -47,6 +47,10 @@ cph Need to put this in namelist at some point!
       _RL cbuffGlobal( admtlmrec )
 #endif
     
+      common /controlparams_r/
+     &                       delZexp
+      _RL delZexp
+
       common /controlvars_l /
      &                       doInitXX,
      &                       doAdmTlm,
