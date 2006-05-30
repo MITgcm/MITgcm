@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.1 2006/05/25 18:32:56 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.2 2006/05/30 22:47:08 mlosch Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -138,6 +138,7 @@ c--   set lower limit
 c--   if wspeed available, overwrite sh, 
 c--   otherwise fill wspeed array for later use
           if ( wspeedfile .NE. ' ' ) then
+             us(i,j,bi,bj) = wspeed(i,j,bi,bj)
              sh(i,j,bi,bj) = max(wspeed(i,j,bi,bj),umin)
           else
              wspeed(i,j,bi,bj) = sh(i,j,bi,bj)
