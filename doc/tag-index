@@ -1,15 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.661 2006/05/25 18:37:35 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.662 2006/05/30 22:49:21 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o couple pkg/thsice and pkg/exf (as a preparation for coupling pkg/thsice 
+  to pkg/seaice): 
+  - new routines thsice_map_exf and thsice_get_exf provide the interface
+  - add an additional formal parameter to thsice_solve4temp 
 o pkg/exf:
   - add new fields wspeed, snowprecip (to be able to couple to thsice)
   - correct Stefan-Boltzmann constant
   - new parameter for longwave surface emittance
   - separate some stuff from exf_bulkformulae into new routines  
     exf_radiation, exf_wind
+  - add new parameters and constants: longwave emissivity for ocean, ice 
+    and snow, evaporation parameters over ice
 o pkg/thSIce:
 - split thsice_step_fwd.F in 2 S/R: thsice_step_temp.F & thsice_step_fwd.F
 - put i,j loops inside S/R: THSICE_ALBEDO, THSICE_SOLVE4TEMP, THSICE_EXTEND
