@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.24 2006/05/25 18:32:56 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.25 2006/05/30 22:47:40 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -38,8 +38,11 @@ c     Calendar data.
 
 c     Sea-water albedo
       _RL     exf_albedo
-c     longwave surface emittance
-      _RL     surfEmittance
+c     longwave surface emissivities (ice and snow emissivities are used
+c     in conjunction with thsice/seaice)
+      _RL     ocean_emissivity
+      _RL     ice_emissivity
+      _RL     snow_emissivity
 
 c     Maximum absolute windstress, used to reset unreastically high
 c     data values
@@ -302,7 +305,8 @@ C                           instead of _YEAR for useExfYearlyFields
       common /exf_param_r/
      &                     year2sec,          windstressmax,
      &                     repeatPeriod,      exf_albedo,
-     &                     surfEmittance,
+     &                     ocean_emissivity,
+     &                     ice_emissivity,    snow_emissivity,
      &                     hfluxperiod,       hfluxstartdate,
      &                     atempperiod,       atempstartdate,
      &                     aqhperiod,         aqhstartdate,

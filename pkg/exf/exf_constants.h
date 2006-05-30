@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.6 2006/05/25 18:32:55 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.7 2006/05/30 22:47:40 mlosch Exp $
 c
 c
 c     ==================================================================
@@ -58,6 +58,7 @@ c     3. empirical parameters
 c     atmrho       - mean atmospheric density [kg/(m*3)]
 c     atmcp        - mean atmospheric specific heat [J/kg/deg K]
 c     flamb        - latent heat of evaporation [J/kg]
+C     flami        - latent heat of melting of pure ice [J/kg]
 c     cdrag_[n]    - n = 1,2,3 coefficients used to evaluate
 c                    drag coefficient
 c     cstanton_[n] - n = 1,2   coefficients used to evaluate
@@ -81,7 +82,7 @@ c     ht           - height of mean temperature
 c     hq           - height of mean rel. humidity
 
       _RL atmrho,     atmcp
-      _RL flamb
+      _RL flamb, flami
       _RL cdrag_1,    cdrag_2,     cdrag_3
       _RL cstanton_1, cstanton_2
       _RL cdalton
@@ -90,6 +91,7 @@ c     hq           - height of mean rel. humidity
       _RL zref
       _RL karman
       _RL cvapor_fac, cvapor_exp
+      _RL cvapor_fac_ice, cvapor_exp_ice
       _RL humid_fac
       _RL gamma_blk
       _RL saltsat
@@ -99,29 +101,32 @@ c     hq           - height of mean rel. humidity
       _RL ht
       _RL hq
 
-      parameter ( cdrag_1     =       0.0027000d0 ,
-     &            cdrag_2     =       0.0001420d0 ,
-     &            cdrag_3     =       0.0000764d0 ,
-     &            cstanton_1  =       0.0327000d0 ,
-     &            cstanton_2  =       0.0180000d0 ,
-     &            cdalton     =       0.0346000d0 ,
-     &            atmrho      =       1.200    d0 ,
-     &            atmcp       =    1005.000    d0 ,
-     &            flamb       = 2500000.000    d0 ,
-     &            umin        =       0.500    d0 ,
-     &            zolmin      =    -100.000    d0 ,
-     &            zref        =      10.000    d0 ,
-     &            karman      =       0.400    d0 ,
-     &            cvapor_fac  =  640380.000    d0 ,
-     &            cvapor_exp  =    5107.400    d0 ,
-     &            humid_fac   =       0.606    d0 ,
-     &            gamma_blk   =       0.010    d0 ,
-     &            saltsat     =       0.980    d0 ,
-     &            psim_fac    =       5.000    d0 ,
-     &            cen2kel     =     273.150    d0 ,
-     &            hu          =      10.000    d0 ,
-     &            ht          =       2.000    d0 ,
-     &            hq          =       2.000    d0
+      parameter ( cdrag_1        =        0.0027000d0 ,
+     &            cdrag_2        =        0.0001420d0 ,
+     &            cdrag_3        =        0.0000764d0 ,
+     &            cstanton_1     =        0.0327000d0 ,
+     &            cstanton_2     =        0.0180000d0 ,
+     &            cdalton        =        0.0346000d0 ,
+     &            atmrho         =        1.200    d0 ,
+     &            atmcp          =     1005.000    d0 ,
+     &            flamb          =  2500000.000    d0 ,
+     &            flami          =   334000.000    d0 ,
+     &            umin           =        0.500    d0 ,
+     &            zolmin         =     -100.000    d0 ,
+     &            zref           =       10.000    d0 ,
+     &            karman         =        0.400    d0 ,
+     &            cvapor_fac     =   640380.000    d0 ,
+     &            cvapor_exp     =     5107.400    d0 ,
+     &            cvapor_fac_ice = 11637800.000    d3 ,
+     &            cvapor_exp_ice =     5897.800    d0 ,
+     &            humid_fac   =           0.606    d0 ,
+     &            gamma_blk   =           0.010    d0 ,
+     &            saltsat     =           0.980    d0 ,
+     &            psim_fac    =           5.000    d0 ,
+     &            cen2kel     =         273.150    d0 ,
+     &            hu          =          10.000    d0 ,
+     &            ht          =           2.000    d0 ,
+     &            hq          =           2.000    d0
      &          )
 
 

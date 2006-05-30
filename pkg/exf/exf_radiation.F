@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.1 2006/05/25 18:32:56 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.2 2006/05/30 22:47:40 mlosch Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -64,12 +64,12 @@ c     swflux = - ( 1 - albedo ) * swdown
 #ifdef ALLOW_ATM_TEMP
           if ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' )
      &         lwflux(i,j,bi,bj) = 
-     &         surfEmittance*stefanBoltzmann*
+     &         ocean_emissivity*stefanBoltzmann*
      &         ((theta(i,j,k,bi,bj)+cen2kel)**4)
      &         - lwdown(i,j,bi,bj)
           if ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' )
      &         lwdown(i,j,bi,bj) = 
-     &         surfEmittance*stefanBoltzmann*
+     &         ocean_emissivity*stefanBoltzmann*
      &         ((theta(i,j,k,bi,bj)+cen2kel)**4)
      &         - lwflux(i,j,bi,bj)
 #endif
