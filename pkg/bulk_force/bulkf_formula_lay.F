@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lay.F,v 1.1 2006/05/25 17:32:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lay.F,v 1.2 2006/05/30 22:44:54 mlosch Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -234,7 +234,7 @@ C-   Turbulent Fluxes
               flha  = clha*delq
               evp   = -flha/lath
               ust   = tau*rd*uw
-              ust   = tau*rd*vw
+              vst   = tau*rd*vw
 
 C-   surf.Temp derivative of turbulent Fluxes
               dEvdT  =  tau*re*ssq*dEvdT/Ts2
