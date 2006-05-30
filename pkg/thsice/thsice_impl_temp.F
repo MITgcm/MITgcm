@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.4 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.5 2006/05/30 22:49:00 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -100,7 +100,7 @@ C-------
 
       CALL THSICE_SOLVE4TEMP(
      I          bi, bj, siLo, siHi, sjLo, sjHi,
-     I          iMin,iMax, jMin,jMax, dBugFlag, .FALSE.,
+     I          iMin,iMax, jMin,jMax, dBugFlag, .FALSE.,.FALSE.,
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
      I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, sFlx,
      U          icFlxSW(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),

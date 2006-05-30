@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.1 2006/05/25 18:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.2 2006/05/30 22:48:59 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -124,7 +124,8 @@ C-      surface net SW flux:
 
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj, siLo, siHi, sjLo, sjHi,
-     I          iMin,iMax, jMin,jMax, dBugFlag, useBulkForce,
+     I          iMin,iMax, jMin,jMax, dBugFlag, 
+     I          useBulkForce, useEXF,
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
      I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, tmpflx,
      U          icFlxSW(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),

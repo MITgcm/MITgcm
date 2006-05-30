@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.8 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.9 2006/05/30 22:49:00 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -179,6 +179,15 @@ CADJ STORE qnet    = comlev1, key = iicekey
 #ifdef ALLOW_BULK_FORCE
          IF ( useBulkforce ) THEN
            CALL THSICE_GET_PRECIP(
+     I                  iceMask,
+     O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  icFlxSW(1-OLx,1-OLy,bi,bj),
+     I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
+         ENDIF
+#endif
+#ifdef ALLOW_EXF
+         IF ( useEXF ) THEN
+           CALL THSICE_MAP_EXF(
      I                  iceMask,
      O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),

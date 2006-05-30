@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.8 2006/05/25 18:03:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.9 2006/05/30 22:48:59 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -8,7 +8,8 @@ C     !ROUTINE: THSICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE THSICE_SOLVE4TEMP(
      I                  bi, bj, siLo, siHi, sjLo, sjHi,
-     I                  iMin,iMax, jMin,jMax, dBugFlag, useBlkFlx,
+     I                  iMin,iMax, jMin,jMax, dBugFlag, 
+     I                  useBulkForce, useEXF,
      I                  iceMask, hIce, hSnow, tFrz, flxExSW,
      U                  flxSW, tSrf, qIc1, qIc2,
      O                  tIc1, tIc2, dTsrf,
@@ -54,7 +55,8 @@ C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
 C     dBugFlag    :: allow to print debugging stuff (e.g. on 1 grid point).
-C     useBlkFlx   :: use surf. fluxes from bulk-forcing external S/R
+C     useBulkForce:: use surf. fluxes from bulk-forcing external S/R
+C     useEXF      :: use surf. fluxes from exf          external S/R
 C---  Input:
 C         iceMask :: sea-ice fractional mask [0-1]
 C  hIce    (hi)   :: ice height [m]
@@ -86,7 +88,8 @@ C     myThid      :: my Thread Id number
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       LOGICAL dBugFlag
-      LOGICAL useBlkFlx
+      LOGICAL useBulkForce
+      LOGICAL useEXF
       _RL iceMask(siLo:siHi,sjLo:sjHi)
       _RL hIce   (siLo:siHi,sjLo:sjHi)
       _RL hSnow  (siLo:siHi,sjLo:sjHi)
@@ -148,6 +151,7 @@ C     dEvdT          :: derivative of evap. with respect to Tsf [kg/m2/s/K]
 c     _RL  Tsf_start     ! old value of Tsf
       _RL  dt            ! timestep
       INTEGER iceornot
+      LOGICAL useBlkFlx
 
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -156,6 +160,8 @@ C-    define grid-point location where to print debugging values
  1020 FORMAT(A,1P4E14.6)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      useBlkFlx = useEXF .OR. useBulkForce
 
       dt  = thSIce_deltaT
       DO j = jMin, jMax
@@ -249,10 +255,17 @@ C Compute top surface flux.
          ELSE
               iceornot=1
          ENDIF
-         CALL THSICE_GET_BULKF(
-     I                        iceornot, Tsf,
-     O                        flxExceptSw, df0dT, evap, dEvdT,
-     I                        i,j,bi,bj,myThid )
+         IF ( useBulkForce ) THEN
+          CALL THSICE_GET_BULKF(
+     I                         iceornot, Tsf,
+     O                         flxExceptSw, df0dT, evap, dEvdT,
+     I                         i,j,bi,bj,myThid )
+         ELSEIF ( useEXF ) THEN
+          CALL THSICE_GET_EXF  (
+     I                         iceornot, Tsf,
+     O                         flxExceptSw, df0dT, evap, dEvdT,
+     I                         i,j,bi,bj,myThid )
+         ENDIF
         ELSE
          flxExceptSw = flxExSW(i,j,1)
          df0dT = flxExSW(i,j,2)
@@ -287,10 +300,17 @@ C with different coefficients.
             ELSE
                  iceornot=1
             ENDIF
-            CALL THSICE_GET_BULKF(
-     I                        iceornot, Tsf,
-     O                        flxExceptSw, df0dT, evap, dEvdT,
-     I                        i,j,bi,bj,myThid )
+            IF ( useBulkForce ) THEN
+             CALL THSICE_GET_BULKF(
+     I                            iceornot, Tsf,
+     O                            flxExceptSw, df0dT, evap, dEvdT,
+     I                            i,j,bi,bj,myThid )
+            ELSEIF ( useEXF ) THEN
+             CALL THSICE_GET_EXF  (
+     I                            iceornot, Tsf,
+     O                            flxExceptSw, df0dT, evap, dEvdT,
+     I                            i,j,bi,bj,myThid )
+            ENDIF
             dTsf = 0. _d 0
            ELSE
             flxExceptSw = flxExSW(i,j,0)
