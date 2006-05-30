@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.19 2005/12/15 17:15:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.20 2006/05/30 22:45:34 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -133,7 +133,9 @@ C     == Local variables ==
         ENDDO
 
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_AUTODIFF_TAMC
         IF ( usePTRACERS ) THEN
+#endif
          DO iTracer=1,PTRACERS_numInUse
           DO K=1,Nr
            DO I=1-Olx,sNx+Olx
@@ -173,7 +175,9 @@ C     == Local variables ==
            ENDDO
           ENDDO
          ENDDO
+#ifndef ALLOW_AUTODIFF_TAMC
         ENDIF
+#endif
 #endif /* ALLOW_PTRACERS */
 
 #ifdef NONLIN_FRSURF
