@@ -11,7 +11,7 @@ function [flist] = find_files_grid_first(fpat)
 %
 %
 %  Ed Hill
-%  $Id: find_files_grid_first.m,v 1.3 2006/03/02 07:34:46 edhill Exp $
+%  $Id: find_files_grid_first.m,v 1.4 2006/05/31 21:35:42 edhill Exp $
 
 files = {};
 fdirs = {};
@@ -25,7 +25,11 @@ for ip = 1:length(fpat)
   r = regexp(fpat{ip},'^(?<dirname>.*/)[^/]+$','names');
   for i = 1:length(d)
     if (not(d(i).isdir))
-      fdirs{end+1} = r.dirname;
+      if (not(isempty(r)))
+        fdirs{end+1} = r.dirname;
+      else
+        fdirs{end+1} = '';
+      end
       files{end+1} = d(i).name;
     end
   end
