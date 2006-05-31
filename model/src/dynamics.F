@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.132 2006/05/03 23:34:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.133 2006/05/31 19:53:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,7 +101,9 @@ C     == Global variables ===
 #   include "OBCS_PTRACERS.h"
 #  endif
 # endif
-# include "MOM_FLUXFORM.h"
+# ifdef ALLOW_MOM_FLUXFORM
+#  include "MOM_FLUXFORM.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !CALLING SEQUENCE:

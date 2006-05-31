@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.21 2005/11/24 00:06:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.22 2006/05/31 19:53:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -207,7 +207,10 @@ C     == Local variables ==
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       DO j=1-Oly,sNy+Oly
+      IF ( calcLeith .OR. calcSmag ) THEN
+       STOP 'calcLeith or calcSmag not implemented for ADJOINT'
+      ENDIF
+      DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
           viscAh_D(i,j)=viscAhD
           viscAh_Z(i,j)=viscAhZ
@@ -230,16 +233,13 @@ c
           viscAh_ZLthD(i,j)= 0. _d 0
           viscA4_ZLthD(i,j)= 0. _d 0
         ENDDO
-       ENDDO
+      ENDDO
 #endif
 
 
 
 C     - Viscosity
       IF (useVariableViscosity) THEN
-cph(
-#ifndef ALLOW_AUTODIFF_TAMC
-cph)
 
 C-     Initialise to zero gradient of vorticity & divergence:
        DO j=1-Oly,sNy+Oly
@@ -337,6 +337,7 @@ C Velocity Reynolds Scale
            U4scl=0.
          ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
          IF (useFullLeith.and.calcleith) THEN
 C This is the vector magnitude of the vorticity gradient squared
           grdVrt=0.25 _d 0*( (vrtDx(i,j+1)*vrtDx(i,j+1)
@@ -382,7 +383,6 @@ c This approximation is good to the same order as above...
           viscA4_DlthD(i,j)=0. _d 0
          ENDIF
 
-
          IF (calcsmag) THEN
           viscAh_DSmg(i,j)=L2
      &       *sqrt(tension(i,j)**2
@@ -394,6 +394,7 @@ c This approximation is good to the same order as above...
           viscAh_DSmg(i,j)=0. _d 0
           viscA4_DSmg(i,j)=0. _d 0
          ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
@@ -448,6 +449,7 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
            U4scl=0.
          ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.and.calcleith) THEN
           grdVrt=0.25 _d 0*( (vrtDx(i-1,j)*vrtDx(i-1,j)
@@ -499,6 +501,7 @@ C but this approximation will work on cube (and differs by 4X)
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
          ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
@@ -517,11 +520,6 @@ C  BiHarmonic on Zeta points
          viscA4_Z(i,j)=min(viscA4_ZMax(i,j),viscA4_Z(i,j))
         ENDDO
        ENDDO
-cph(
-#else
-       STOP 'useVariableViscosity not implemented for ADJOINT'
-#endif /* ndef ALLOW_AUTODIFF_TAMC */
-cph)
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -532,6 +530,7 @@ cph)
         ENDDO
        ENDDO
       ENDIF
+
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
