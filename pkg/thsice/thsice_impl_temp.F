@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.5 2006/05/30 22:49:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.6 2006/06/02 02:01:02 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -80,9 +80,9 @@ C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
       DO j = jMin, jMax
        DO i = iMin, iMax
+        icFlxSW(i,j,bi,bj) = netSW(i,j)
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
           tFrzOce(i,j) = -mu_Tf*sOceMxL(i,j,bi,bj)
-          icFlxSW(i,j,bi,bj) = netSW(i,j)
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) THEN
            WRITE(6,'(A,2I4,2I2)') 'ThSI_IMPL_T: i,j=',i,j,bi,bj
