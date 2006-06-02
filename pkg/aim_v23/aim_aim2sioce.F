@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.5 2006/05/25 18:05:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.6 2006/06/02 01:59:48 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -108,7 +108,6 @@ C        model integration and just put this to get meaningfull diagnostics)
          prcAtm(i,j)     = 0. _d 0
          Qnet(i,j,bi,bj) = 0. _d 0
          EmPmR(i,j,bi,bj)= 0. _d 0
-         icFlxSW(i,j,bi,bj)=0. _d 0
          Qsw(i,j,bi,bj)  = 0. _d 0
         ELSE
          I2 = i+(j-1)*sNx
