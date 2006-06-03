@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.12 2006/03/07 15:29:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.13 2006/06/03 21:37:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,13 +62,6 @@ C     At present this option is hardwired for pkg/exf.
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif
-#ifndef ALLOW_ATM_WIND
-         WRITE(msgBuf,'(A)')
-     &        'need to define pkg/exf ALLOW_ATM_WIND'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
