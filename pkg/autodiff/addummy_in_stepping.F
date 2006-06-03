@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.33 2006/06/03 02:31:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.34 2006/06/03 02:38:10 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -181,7 +181,7 @@ c
      &       3,  adheff, 1, myIter, myThid )
         CALL MDSWRITEFIELD( 
      &       'ADJhsnow', writeBinaryPrec, globalFiles, 'RL', 
-     &       1,  adsnow, 1, myIter, myThid )
+     &       1,  adhsnow, 1, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
         CALL MDSWRITEFIELD( 
      &       'ADJuice', writeBinaryPrec, globalFiles, 'RL', 
