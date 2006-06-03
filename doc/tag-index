@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.662 2006/05/30 22:49:21 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.663 2006/06/03 21:40:08 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,6 +16,8 @@ o pkg/exf:
     exf_radiation, exf_wind
   - add new parameters and constants: longwave emissivity for ocean, ice 
     and snow, evaporation parameters over ice
+  - decouple wind/stress computation from ALLOW_BULKFORMULA: always compute
+    either wind from stress or stress from wind
 o pkg/thSIce:
 - split thsice_step_fwd.F in 2 S/R: thsice_step_temp.F & thsice_step_fwd.F
 - put i,j loops inside S/R: THSICE_ALBEDO, THSICE_SOLVE4TEMP, THSICE_EXTEND
