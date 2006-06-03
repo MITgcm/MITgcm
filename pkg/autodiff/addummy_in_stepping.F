@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.32 2006/04/09 14:46:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.33 2006/06/03 02:31:54 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -169,6 +169,26 @@ c
 # ifdef ALLOW_CLIMSSS_RELAXATION
         CALL WRITE_FLD_XY_RL ( 'ADJclimsss.',
      &       suff, adclimsss, myIter, myThid)
+# endif
+#endif
+
+#ifdef ALLOW_SEAICE
+        CALL MDSWRITEFIELD( 
+     &       'ADJarea', writeBinaryPrec, globalFiles, 'RL', 
+     &       3,  adarea, 1, myIter, myThid )
+        CALL MDSWRITEFIELD( 
+     &       'ADJheff', writeBinaryPrec, globalFiles, 'RL', 
+     &       3,  adheff, 1, myIter, myThid )
+        CALL MDSWRITEFIELD( 
+     &       'ADJhsnow', writeBinaryPrec, globalFiles, 'RL', 
+     &       1,  adsnow, 1, myIter, myThid )
+# ifdef SEAICE_ALLOW_DYNAMICS
+        CALL MDSWRITEFIELD( 
+     &       'ADJuice', writeBinaryPrec, globalFiles, 'RL', 
+     &       3,  aduice, 1, myIter, myThid )
+        CALL MDSWRITEFIELD( 
+     &       'ADJvice', writeBinaryPrec, globalFiles, 'RL', 
+     &       3,  advice, 1, myIter, myThid )
 # endif
 #endif
 c
