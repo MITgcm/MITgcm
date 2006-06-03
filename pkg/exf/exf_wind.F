@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.2 2006/05/30 22:47:08 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.3 2006/06/03 21:36:15 mlosch Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -38,8 +38,6 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
 
-#ifdef ALLOW_BULKFORMULAE
-
 c     == local variables ==
 
       integer bi,bj
@@ -53,13 +51,11 @@ c     == external functions ==
       integer  ilnblnk
       external ilnblnk
 
-#ifndef ALLOW_ATM_WIND
-      _RL       TMP1
-      _RL       TMP2
-      _RL       TMP3
-      _RL       TMP4
-      _RL       TMP5
-#endif
+      _RL       tmp1
+      _RL       tmp2
+      _RL       tmp3
+      _RL       tmp4
+      _RL       tmp5
 
 c     == end of interface ==
 
@@ -93,8 +89,6 @@ c             Wind speed and direction.
           endif
 #else  /* ifndef ALLOW_ATM_WIND */
 c
-#ifdef ALLOW_ATM_TEMP
-c
 c             The variables us, sh and rdn have to be computed from
 c             given wind stresses inverting relationship for neutral
 c             drag coeff. cdn.
@@ -127,8 +121,8 @@ c             cdn(umps); ustar can be directly computed from stress;
              us(i,j,bi,bj)   = (tmp4 + tmp5)**(1/3) +
      &            tmp3**2 * (tmp4 + tmp5)**(-1/3) - tmp3
           endif
-c         
-#endif /* ALLOW_ATM_TEMP */
+          uwind(i,j,bi,bj) = us(i,j,bi,bj)*cw(i,j,bi,bj)
+          vwind(i,j,bi,bj) = us(i,j,bi,bj)*sw(i,j,bi,bj)
 c
 #endif /* ifndef ALLOW_ATM_WIND */
 
@@ -149,6 +143,5 @@ c--   otherwise fill wspeed array for later use
        enddo
       enddo
 
-#endif /* ALLOW_BULKFORMULAE */
-
+      return
       end
