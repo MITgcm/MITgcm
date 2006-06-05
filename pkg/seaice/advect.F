@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.16 2006/03/14 11:38:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.17 2006/06/05 22:39:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE advect( UICE,VICE,HEFF,HEFFM,myThid )
+      SUBROUTINE advect( UI,VI,HEFF,HEFFM,myThid )
 C     /==========================================================\
 C     | SUBROUTINE advect                                        |
 C     | o Calculate ice advection                                |
@@ -26,8 +26,8 @@ CML#include "SEAICE_GRID.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
-      _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL UI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL VI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       INTEGER myThid
@@ -38,11 +38,8 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER K3
-      _RL  DELTT
-
-      _RL UI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
-      _RL VI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
-      _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
+      _RL DELTT
+      _RL DIFFA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
       IF(LAD.EQ.1) THEN
@@ -59,23 +56,6 @@ C NOW REARRANGE HS
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef SEAICE_CGRID
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          UI(I,J,bi,bj)=UICE(I,J,1,bi,bj)
-          VI(I,J,bi,bj)=VICE(I,J,1,bi,bj)
-         ENDDO
-        ENDDO
-#else /* not SEAICE_CGRID = BGRID */
-C average seaice velocity to c-grid
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
-          UI(I,J,bi,bj)=.5 _d 0*(UICE(I,J,1,bi,bj)+UICE(I,J+1,1,bi,bj))
-          VI(I,J,bi,bj)=.5 _d 0*(VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
-         ENDDO
-        ENDDO
-#endif /* SEAICE_CGRID */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
