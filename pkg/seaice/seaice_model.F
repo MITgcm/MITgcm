@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.33 2006/05/06 19:34:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.34 2006/06/05 22:46:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,6 +78,13 @@ C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
 #endif /* SEAICE_EXTERNAL_FORCING */
 
+#ifdef ALLOW_THSICE
+      IF ( useThSice ) THEN
+C--   Map thSice-variables to HEFF and AREA
+       CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_THSICE */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uwind = comlev1, key = ikey_dynamics
 CADJ STORE vwind = comlev1, key = ikey_dynamics
@@ -119,9 +126,18 @@ cphCADJ STORE vice   = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C NOW DO GROWTH
+#ifdef ALLOW_THSICE
+      IF ( .NOT.useThSice ) THEN
+C--   Only call growth for the generic 0-layer thermodynamics of seaice
+C--   If useThSice=.true., then the 3-layer Winton thermodynamics are
+C--   called from DO_OCEANIC_PHYSICS
+#endif /* ALLOW_THSICE */
+C     NOW DO GROWTH
 C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
-      CALL GROWTH( myTime, myIter, myThid )
+       CALL GROWTH( myTime, myIter, myThid )
+#ifdef ALLOW_THSICE
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 C--   Update overlap regions for a bunch of stuff
       _BARRIER
@@ -134,22 +150,6 @@ C--   Update overlap regions for a bunch of stuff
       _EXCH_XY_R4(Qsw  , myThid )
 #endif
       _EXCH_XYZ_R8(theta , myThid )
-
-C--   Sea ice diagnostics.
-C     <= moved to S/R do_the_model_io with other pkgs
-
-C--   Write sea ice restart files
-C     <= moved to S/R packages_write_pickup with other pkgs
-
-C---------------------------------------------------
-C OOH NOOOO we need to move the whole stuff
-C---------------------------------------------------
-#ifdef ALLOW_AUTODIFF_TAMC
-CRG CADJ store UICE,VICE,AREA,HEFF,fu,fv,EmPmR,Qnet,Qsw = comlev1_bibj
-#endif
-
-C--   Call sea-ice cost function routine
-CRG      CALL SEAICE_COST( myTime, myIter, myThid )
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.26 2006/03/20 21:36:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.27 2006/06/05 22:46:50 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -199,8 +199,13 @@ C--   Constants used by sea-ice model
       _RL         QUART            , HALF
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
 
-      INTEGER GAD_HEFF, GAD_AREA
-      PARAMETER ( GAD_HEFF = 101, GAD_AREA = 102 )
+C--   identifiers for advected properties
+      INTEGER GAD_HEFF, GAD_AREA, GAD_QICE1, GAD_QICE2, GAD_SNOW
+      PARAMETER ( GAD_HEFF  = 101, 
+     &            GAD_AREA  = 102,
+     &            GAD_QICE1 = 103,
+     &            GAD_QICE2 = 104,
+     &            GAD_SNOW  = 105 )
 
 
 CEH3 ;;; Local Variables: ***
