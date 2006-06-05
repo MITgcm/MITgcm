@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.664 2006/06/05 15:06:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.665 2006/06/05 22:54:54 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o couple pkg/thsice to pkg/seaice:
+  - modify advection in seaice to accomodate new scalar fields to be advected
+  - only muliDimAdection scheme work with seaice/thsice
+  - mapping of thsice-variables to seaice-variables, back and forth
+  - does not break the verification experiments, but does not give the
+    desired results either
+o pkg/seaice
+  - make (default) second order advection a bit less confusing?
 
 checkpoint58f_post
 o couple pkg/thsice and pkg/exf (as a preparation for coupling pkg/thsice 
