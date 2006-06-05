@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.10 2006/03/02 02:53:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.11 2006/06/05 19:23:31 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -106,7 +106,7 @@ c     == external ==
 
 c     == end of interface ==
 
-      IF ( useCubedSphereExchange ) THEN
+      IF ( usingCurvilinearGrid ) THEN
 
          if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
 
