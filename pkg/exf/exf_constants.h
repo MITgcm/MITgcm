@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.7 2006/05/30 22:47:40 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.8 2006/06/05 14:56:59 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -53,9 +53,46 @@ c     needs to be marmonized through common constants.h file
 
 c     3. empirical parameters
 
+c     umin         - minimum absolute wind speed used to evaluate
+c                    drag coefficient [m/s]
+c     atmrho       - mean atmospheric density [kg/(m*3)]
+      _RL umin
+      _RL atmrho
+      parameter ( umin           = 0.5 _d 0 
+     &          , atmrho         =        1.200    d0 )
+
+c     To invert the relationship ustar = ustar(umagn) the following
+c     parameterization is used:
+c  
+c      ustar**2 = umagn**2 * CDN(umagn)
+c  
+c                  / cquadrag_1 * umagn**2 + cquadrag_2; 0 < u < 11 m/s
+c      CDN(umagn) =
+c                  \ clindrag_1 * umagn + clindrag_2   ; u > 11 m/s
+c  
+c      clindrag_[n] - n = 1, 2 coefficients used to evaluate
+c                     LINEAR relationship of Large and Pond 1981
+c      cquadrag_[n] - n = 1, 2 coefficients used to evaluate
+c                     quadratic relationship
+c      u11          - u = 11 m/s wind speed
+c      ustofu11     - ustar = 0.3818 m/s, corresponding to u = 11 m/s
+
+      _RL clindrag_1, clindrag_2
+      _RL cquadrag_1, cquadrag_2
+      _RL u11
+      _RL ustofu11
+
+      parameter (
+     &            ustofu11    =         0.381800d0 ,
+     &            u11         =        11.      d0 ,
+     &            clindrag_1  =         0.000065d0 ,
+     &            clindrag_2  =         0.000490d0 ,
+     &            cquadrag_1  = clindrag_1/u11/2 ,
+     &            cquadrag_2  = clindrag_1*u11/2 + clindrag_2
+     &          )
+
 #ifdef ALLOW_BULKFORMULAE
 
-c     atmrho       - mean atmospheric density [kg/(m*3)]
 c     atmcp        - mean atmospheric specific heat [J/kg/deg K]
 c     flamb        - latent heat of evaporation [J/kg]
 C     flami        - latent heat of melting of pure ice [J/kg]
@@ -64,8 +101,6 @@ c                    drag coefficient
 c     cstanton_[n] - n = 1,2   coefficients used to evaluate
 c                    the Stanton number (stable/unstable cond.)
 c     dalton       - coefficient used to evaluate the Dalton number
-c     umin         - minimum absolute wind speed used to evaluate
-c                    drag coefficient [m/s]
 c     zolmin       - minimum stability parameter
 c     zref         - reference height
 c     
@@ -81,12 +116,11 @@ c     hu           - height of mean wind
 c     ht           - height of mean temperature
 c     hq           - height of mean rel. humidity
 
-      _RL atmrho,     atmcp
+      _RL atmcp
       _RL flamb, flami
       _RL cdrag_1,    cdrag_2,     cdrag_3
       _RL cstanton_1, cstanton_2
       _RL cdalton
-      _RL umin
       _RL zolmin
       _RL zref
       _RL karman
@@ -107,11 +141,9 @@ c     hq           - height of mean rel. humidity
      &            cstanton_1     =        0.0327000d0 ,
      &            cstanton_2     =        0.0180000d0 ,
      &            cdalton        =        0.0346000d0 ,
-     &            atmrho         =        1.200    d0 ,
      &            atmcp          =     1005.000    d0 ,
      &            flamb          =  2500000.000    d0 ,
      &            flami          =   334000.000    d0 ,
-     &            umin           =        0.500    d0 ,
      &            zolmin         =     -100.000    d0 ,
      &            zref           =       10.000    d0 ,
      &            karman         =        0.400    d0 ,
@@ -128,41 +160,6 @@ c     hq           - height of mean rel. humidity
      &            ht          =           2.000    d0 ,
      &            hq          =           2.000    d0
      &          )
-
-
-#ifndef ALLOW_ATM_WIND
-#ifdef  ALLOW_ATM_TEMP
-c     To invert the relationship ustar = ustar(umagn) the following
-c     parameterization is used:
-c  
-c       ustar**2 = umagn**2 * CDN(umagn)
-c  
-c                   / cquadrag_1 * umagn**2 + cquadrag_2;   0 < u < 11 m/s
-c       CDN(umagn) =
-c                   \ clindrag_1 * umagn + clindrag_2   ;   u > 11 m/s
-c  
-c       clindrag_[n] - n = 1, 2 coefficients used to evaluate
-c                      LINEAR relationship of Large and Pond 1981
-c       cquadrag_[n] - n = 1, 2 coefficients used to evaluate
-c                      quadratic relationship
-c       u11          - u = 11 m/s wind speed
-c       ustofu11     - ustar = 0.3818 m/s, corresponding to u = 11 m/s
-
-      _RL clindrag_1, clindrag_2
-      _RL cquadrag_1, cquadrag_2
-      _RL u11
-      _RL ustofu11
-
-      parameter (
-     &            ustofu11    =         0.381800d0 ,
-     &            u11         =        11.      d0 ,
-     &            clindrag_1  =         0.000065d0 ,
-     &            clindrag_2  =         0.000490d0 ,
-     &            cquadrag_1  = clindrag_1/u11/2 ,
-     &            cquadrag_2  = clindrag_1*u11/2 + clindrag_2
-     &          )
-#endif
-#endif
 
 #ifdef ALLOW_ATM_TEMP
       _RL         czol

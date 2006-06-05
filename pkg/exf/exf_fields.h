@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.14 2006/06/03 21:36:15 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.15 2006/06/05 14:56:59 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -208,13 +208,11 @@ c
       _RL hl        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-#ifdef ALLOW_BULKFORMULAE
       common /exfl_wind_r/ us, cw, sw, sh
       _RL us        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL cw        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL sw        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL sh        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       common /exf_swflux_r/ swflux
