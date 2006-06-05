@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.1 2006/06/05 17:17:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.2 2006/06/05 18:38:09 molod Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,7 +63,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Fill diagnostic for filling with negative of salt
 #ifdef ALLOW_DIAGNOSTICS
         IF (useDiagnostics)THEN
-        if(diagnostics_is_on('SALTFILL',myid) ) then
+        if(diagnostics_is_on('SALTFILL',myThid) ) then
         CALL DIAGNOSTICS_FILL(salt,'SALTFILL',0,Nr,-1,bi,bj,myThid)
         endif
         ENDIF
@@ -76,8 +76,8 @@ c ---------------------------------
         do L=Nr,2,-1
          LM1 = L-1
          dpratio= rC(L)/rC(LM1)
-         do j=jm1,jm2
-         do i=im1,im2
+         do j=1,sNy
+         do i=1,sNx
           if( salt(i,j,L,bi,bj).lt.0.0  _d 0) then
            salt(i,j,LM1,bi,bj) = salt(i,j,LM1,bi,bj) +
      .          salt(i,j,L,bi,bj)*dpratio
@@ -87,8 +87,8 @@ c ---------------------------------
          enddo
         enddo
 
-        do j=jm1,jm2
-        do i=im1,im2
+        do j=1,sNy
+        do i=1,sNx
          if(salt(i,j,1,bi,bj).lt.0.0 _d 0)
      .                  salt(i,j,1,bi,bj) = 0.0 _d 0
         enddo
@@ -101,7 +101,7 @@ c ---------------------------------
 C Fill diagnostic for filling with salt - get tendency
 #ifdef ALLOW_DIAGNOSTICS
         IF (useDiagnostics)THEN
-        if(diagnostics_is_on('SALTFILL',myid) ) then
+        if(diagnostics_is_on('SALTFILL',myThid) ) then
         CALL DIAGNOSTICS_FILL(salt,'SALTFILL',0,Nr,1,bi,bj,myThid)
         endif
         ENDIF
