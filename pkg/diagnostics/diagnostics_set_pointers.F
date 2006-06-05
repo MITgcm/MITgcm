@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.5 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.6 2006/06/05 18:05:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -52,7 +52,8 @@ C--   Initialize pointer arrays to zero:
        ENDDO
       ENDDO
 
-C--   Calculate pointers for diagnostics set to non-zero frequency
+C--   Calculate pointers for diagnostics in active output-stream
+C                                   (i.e., with defined filename)
 
       ndiagcount = 0
       nActiveMax = 0
