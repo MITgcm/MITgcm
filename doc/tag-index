@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.663 2006/06/03 21:40:08 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.664 2006/06/05 15:06:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58f_post
 o couple pkg/thsice and pkg/exf (as a preparation for coupling pkg/thsice 
   to pkg/seaice): 
   - new routines thsice_map_exf and thsice_get_exf provide the interface
