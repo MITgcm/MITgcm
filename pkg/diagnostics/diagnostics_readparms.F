@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.17 2006/03/03 15:37:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.18 2006/06/05 18:15:53 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -32,6 +32,9 @@ C     kdimLoc :: Max Number of Levels (in data.diagnostics)
 C     fdimLoc :: Max Number of Fields (in data.diagnostics)
 C     frequency :: Frequency (in s) of Output (ouput every "frequency" second)
 C     timePhase :: phase (in s) within the "frequency" period to write output
+C     averagingFreq  :: frequency (in s) for periodic averaging interval
+C     averagingPhase :: phase     (in s) for periodic averaging interval
+C     repeatCycle    :: number of averaging intervals in 1 cycle
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     filename  :: List Output Filename
@@ -50,6 +53,8 @@ C     stat_fname  :: List of statistics output Filename
       PARAMETER ( fdimLoc = 2*numperlist )
       PARAMETER ( rdimLoc = nRegions+21 )
       _RL         frequency(ldimLoc), timePhase(ldimLoc)
+      _RL         averagingFreq(ldimLoc), averagingPhase(ldimLoc)
+      INTEGER     repeatCycle(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       _RL         stat_freq(ldimLoc), stat_phase(ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
@@ -65,14 +70,15 @@ C     stat_fname  :: List of statistics output Filename
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m,nf
       INTEGER iLen, regionCount
-      _RL undef, getcon
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C--   full level output:
-      NAMELIST / diagnostics_list /
-     &     frequency, timePhase, levels, fields, filename, fileflags,
-     &     dumpatlast, diag_mnc,
+      NAMELIST / DIAGNOSTICS_LIST /
+     &     frequency, timePhase,
+     &     averagingFreq, averagingPhase, repeatCycle,
+     &     levels, fields, filename, fileflags,
+     &     dumpAtLast, diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
@@ -86,26 +92,29 @@ C--   per level statistics output:
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
 
-      undef = getcon('UNDEF')
       blk8c  = '        '
       DO k=1,LEN(blkFilName)
         blkFilName(k:k) = ' '
       ENDDO
 
       DO l = 1,ldimLoc
-        frequency(l) = 0.
-        timePhase(l) = UNSET_RL
-        filename (l) = blkFilName
+        frequency(l)  = 0.
+        timePhase(l)  = UNSET_RL
+        averagingFreq(l) = 0.
+        averagingPhase(l)= 0.
+        repeatCycle(l)   = 0
+        filename(l)   = blkFilName
 C       eight spaces:        12345678
-        fileflags(l)(1:8) = '        '
+c       fileflags(l)(1:8) = '        '
+        fileflags(l)  = blk8c
         DO k = 1,kdimLoc
-          levels (k,l) = undef
+          levels(k,l) = UNSET_RL
         ENDDO
         DO m = 1,fdimLoc
-          fields (m,l) = blk8c
+          fields(m,l) = blk8c
         ENDDO
       ENDDO
-      dumpatlast            = .FALSE.
+      dumpAtLast            = .FALSE.
       diag_mnc              = useMNC
       diag_pickup_read      = .FALSE.
       diag_pickup_write     = .FALSE.
@@ -163,11 +172,14 @@ C-    set default for statistics output according to the main flag
 
       CLOSE (ku)
 
-C     Initialise diag_choices common block (except pointers)
+C     Initialise DIAG_SELECT common block (except pointers)
       nlists = 0
       DO n = 1,numlists
         freq(n) = 0.
         phase(n) = 0.
+        averageFreq(n)  = 0.
+        averagePhase(n) = 0.
+        averageCycle(n) = 1
         nlevels(n) = 0
         nfields(n) = 0
         fnames(n) = blkFilName
@@ -177,6 +189,7 @@ C     Initialise diag_choices common block (except pointers)
         DO m = 1,numperlist
           flds(m,n) = blk8c
         ENDDO
+        fflags(n)   = blk8c
       ENDDO
 
 C     useMNC is confusing (can be T at this point & turned off later, whereas
@@ -209,16 +222,36 @@ C-     Only lists with non-empty file name (iLen>0) are considered
          ELSEIF ( frequency(l) .LT. 0. ) THEN
            phase(n) = -0.5 _d 0 * frequency(l)
          ENDIF
+         IF ( averagingFreq(l).GT.0. .AND. repeatCycle(l).GT.1 ) THEN
+           averageFreq(n)  = averagingFreq(l)
+           averagePhase(n) = averagingPhase(l)
+           averageCycle(n) = repeatCycle(l)
+         ELSEIF (averagingFreq(l).NE.0. .OR. repeatCycle(l).NE.0) THEN
+           WRITE(msgBuf,'(2A,F17.6,I3)') 'DIAGNOSTICS_READPARMS: ',
+     &       'unvalid Average-Freq & Cycle:',
+     &       averagingFreq(l), repeatCycle(l)
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+     &         ' for list l=', l, ', filename: ', filename(l)
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
+         ELSEIF ( frequency(l) .EQ. 0. ) THEN
+           averageFreq(n)  = nTimeSteps*deltaTClock
+           averagePhase(n) = phase(n)
+         ELSEIF ( frequency(l) .GT. 0. ) THEN
+           averageFreq(n)  = frequency(l)
+           averagePhase(n) = phase(n)
+         ENDIF
          fnames(n)  = filename (l)
          fflags(n)  = fileflags(l)
          nlevels(n) = 0
-         IF ( levels(1,l).NE.undef ) THEN
+         IF ( levels(1,l).NE.UNSET_RL ) THEN
            DO k=1,kdimLoc
-             IF ( levels(k,l).NE.undef .AND.
+             IF ( levels(k,l).NE.UNSET_RL .AND.
      &            nlevels(n).LT.numLevels ) THEN
                nlevels(n) = nlevels(n) + 1
                levs(nlevels(n),n) = levels(k,l)
-             ELSEIF ( levels(k,l).NE.undef ) THEN
+             ELSEIF ( levels(k,l).NE.UNSET_RL ) THEN
               WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &         'Exceed Max.Num. of Levels numLevels=', numLevels
               CALL PRINT_ERROR( msgBuf , myThid )
@@ -228,7 +261,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
               WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
      &         ' for list l=', l, ', filename: ', filename(l)
               CALL PRINT_ERROR( msgBuf , myThid )
-               STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
+              STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
              ENDIF
            ENDDO
          ELSE
@@ -419,10 +452,14 @@ C     Echo History List Data Structure
      & '-----------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
       DO n = 1,nlists
-        WRITE(msgBuf,'(2a)') 'Creating Output Stream: ',fnames(n)
+        WRITE(msgBuf,'(2a)') 'Creating Output Stream: ', fnames(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F17.6))') 'Frequency : ',freq(n),
+        WRITE(msgBuf,'(2(A,F17.6))') 'Output Frequency:', freq(n),
      &                               ' ; Phase: ', phase(n)
+        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        WRITE(msgBuf,'(2(A,F17.6),A,I3)')
+     &    ' Averaging Freq.:', averageFreq(n),
+     &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         IF ( nlevels(n).EQ.-1 ) THEN
           WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'
@@ -450,8 +487,8 @@ C     Echo History List Data Structure
         WRITE(msgBuf,'(2a)') 'Creating Stats. Output Stream: ',
      &                       diagSt_Fname(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F17.6))') 'Frequency : ',diagSt_freq(n),
-     &                               ' ; Phase: ', diagSt_phase(n)
+        WRITE(msgBuf,'(2(A,F17.6))') 'Output Frequency:',
+     &               diagSt_freq(n), ' ; Phase: ', diagSt_phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         WRITE(msgBuf,'(A)') ' Regions : '
         l = 12

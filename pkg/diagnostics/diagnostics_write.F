@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.28 2006/03/20 15:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.29 2006/06/05 18:17:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,8 +33,8 @@ c ===============
       LOGICAL   dump2fileNow, write2file
       _RL       phiSec, freqSec, wrTime
 #ifdef ALLOW_FIZHI
-      logical alarm2
-      character *9 tagname
+      LOGICAL alarm2
+      CHARACTER *9 tagname
 #endif
 
       LOGICAL  DIFF_PHASE_MULTIPLE
@@ -68,8 +68,8 @@ C       state-variable time-step:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-          IF( useFIZHI) THEN
-           write(tagname,'(A,I2.2)')'diagtag',n
+          IF ( useFIZHI ) THEN
+           WRITE(tagname,'(A,I2.2)')'diagtag',n
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
@@ -81,7 +81,7 @@ C       state-variable time-step:
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
+     &        (myTime.EQ.endTime .AND. dumpAtLast) ) THEN
             write2file = .TRUE.
             CALL DIAGNOSTICS_OUT(n,wrIter,wrTime,myThid)
           ENDIF
@@ -109,13 +109,13 @@ C       state-variable time-step:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-          IF( useFIZHI) THEN
-           write(tagname,'(A,I2.2)')'diagStg',n
+          IF ( useFIZHI ) THEN
+           WRITE(tagname,'(A,I2.2)')'diagStg',n
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
           IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpatlast) ) THEN
+     &        (myTime.EQ.endTime .AND. dumpAtLast) ) THEN
             write2file = .TRUE.
             CALL DIAGSTATS_OUTPUT(n,wrTime,wrIter,myThid)
           ENDIF
@@ -142,8 +142,8 @@ C--     Clear storage space:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-          IF( useFIZHI) THEN
-           write(tagname,'(A,I2.2)')'diagtag',n
+          IF ( useFIZHI ) THEN
+           WRITE(tagname,'(A,I2.2)')'diagtag',n
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
@@ -155,7 +155,7 @@ C--     Clear storage space:
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpatlast)
+     &        (myTime.EQ.endTime .AND. dumpAtLast)
      &       ) CALL DIAGNOSTICS_CLEAR(n,myThid)
         ENDDO
 
@@ -167,13 +167,13 @@ C--     Clear storage space:
           dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                        wrTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-          IF( useFIZHI) THEN
-           write(tagname,'(A,I2.2)')'diagStg',n
+          IF ( useFIZHI ) THEN
+           WRITE(tagname,'(A,I2.2)')'diagStg',n
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
           IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpatlast)
+     &        (myTime.EQ.endTime .AND. dumpAtLast)
      &       ) CALL DIAGSTATS_CLEAR( n, myThid )
         ENDDO
 

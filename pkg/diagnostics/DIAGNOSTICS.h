@@ -1,85 +1,102 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.12 2006/01/23 22:13:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.13 2006/06/05 18:15:53 jmc Exp $
 C $Name:  $
 
 C ======================================================================
 C  Common blocks for diagnostics package.
-C  - diagarrays contains the master list of diagnostics and parameters
+C  - DIAG_DEFINE contains the definition of all available diagnostics
 C        ndiagt :: total number of available diagnostics
-C         kdiag - number of levels associated with the diagnostic
-C         cdiag - character names
-C         tdiag - description of field in diagnostic
-C         gdiag - parser field with characteristics of the diagnostics
-C         udiag - physical units of the diagnostic field
-C  - diagnostics contains the large array containing diagnostic fields
-C         qdiag - diagnostic fields array
-C        qSdiag - storage array for diagnostics of (per level) statistics
-C         ndiag - counter for number of times diagnostic is added
-C  - diag_choices contains the user-chosen list of fields to store
-C         idiag - slot number in large diagnostic array
-C         mdiag - slot number in large diagnostic array for the mate
-C         jdiag - short-list (active diag.) to long-list (available diag.)
-C                 pointer
-C  - diag_statis  contains the user-chosen list of statistics to store
+C         kdiag :: number of levels associated with the diagnostic
+C         cdiag :: character names
+C         tdiag :: description of field in diagnostic
+C         gdiag :: parser field with CHARACTERistics of the diagnostics
+C         udiag :: physical units of the diagnostic field
+C  - DIAG_STORE  contains the large array to store diagnostic fields
+C         qdiag :: diagnostic fields array
+C        qSdiag :: storage array for diagnostics of (per level) statistics
+C         ndiag :: counter for number of times diagnostic is added
+C  - DIAG_SELECT  contains the user selection of diagnostics to write
+C         idiag :: slot number in large diagnostic array
+C         mdiag :: slot number in large diagnostic array for the mate
+C         jdiag :: short-list (active diag.) to long-list (available diag.)
+C                  pointer
+C  - DIAG_STATIS  contains the user selection of statistics to write
 C ======================================================================
 
-C diagarrays common
+C--   DIAG_DEFINE common block:
+C        ndiagt :: total number of available diagnostics
+C         kdiag :: number of levels associated with the diagnostic
+C         cdiag :: character names
+C         tdiag :: description of field in diagnostic
+C         gdiag :: parser field with CHARACTERistics of the diagnostics
+C         udiag :: physical units of the diagnostic field
 
-      integer        ndiagt
+      INTEGER        ndiagt
+      INTEGER        kdiag(ndiagMax)
+      CHARACTER*8    cdiag(ndiagMax)
+      CHARACTER*80   tdiag(ndiagMax)
+      CHARACTER*16   gdiag(ndiagMax)
+      CHARACTER*16   udiag(ndiagMax)
 
-      integer        kdiag(ndiagMax)
-      character*8    cdiag(ndiagMax)
-      character*80   tdiag(ndiagMax)
-      character*16   gdiag(ndiagMax)
-      character*16   udiag(ndiagMax)
+      COMMON / DIAG_DEFINE /
+     &  ndiagt, kdiag,
+     &  cdiag, tdiag, gdiag, udiag
 
-      common /diagarrays/ ndiagt
-      common /diagarrays/ kdiag
-      common /diagarrays/ cdiag
-      common /diagarrays/ tdiag
-      common /diagarrays/ gdiag
-      common /diagarrays/ udiag
-
-C diagnostics common
-C      qSdiag  - storage array for (per level) statistics
+C--   DIAG_STORE common block:
+C       qdiag  :: diagnostic fields array
+C       qSdiag :: storage array for (per level) statistics
+C       ndiag  :: counter for number of times diagnostic is added
+C       pdiag  :: index of current averaging interval within the averaging-cycle
 
       _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,nSx,nSy)
       _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
-      integer  ndiag(numdiags,nSx,nSy)
+      INTEGER  ndiag(numdiags,nSx,nSy)
+      INTEGER  pdiag(numlists,nSx,nSy)
 
-      common /diagnostics/ qdiag, qSdiag, ndiag
+      COMMON / DIAG_STORE / qdiag, qSdiag, ndiag, pdiag
 
 	
-C diag_choices common
-C     freq       :: frequency (in s) to write output stream # n
-C     phase      :: phase     (in s) to write output stream # n
-C     nfields(n) :: number of active diagnostics for output stream # n
-C     nActive(n) :: number of active diagnostics (including counters)
-C                   for output stream # n
-C     fflags(n)  :: character string with per-file flags
-
-      integer nlists
+C--   DIAG_SELECT common block:
+C     freq        :: frequency (in s) to write output stream # n
+C     phase       :: phase     (in s) to write output stream # n
+C     averageFreq :: frequency (in s) for periodic averaging interval
+C     averagePhase:: phase     (in s) for periodic averaging interval
+C     averageCycle:: number of averaging intervals in 1 cycle
+C     nfields(n)  :: number of active diagnostics for output stream # n
+C     nActive(n)  :: number of active diagnostics (including counters)
+C                    for output stream # n
+C     nlists      :: effective number of output streams
+C     idiag       :: slot number in large diagnostic array
+C     mdiag       :: slot number in large diagnostic array for the mate
+C     jdiag       :: short-list (active diag.) to long-list (available diag.) pointer
+C     flds(:,n)   :: list of field names in output stream # n
+C     fnames(n)   :: output file name for output stream # n
+C     fflags(n)   :: character string with per-file flags
 
       _RL freq(numlists), phase(numlists)
       _RL levs (numLevels,numlists)
-      integer nlevels(numlists)
-      integer nfields(numlists)
-      integer nActive(numlists)
-      integer idiag(numperlist,numlists)
-      integer mdiag(numperlist,numlists)
-      integer jdiag(numperlist,numlists)
-      character*8 flds (numperlist,numlists)
-      character*80 fnames(numlists)
-      character*8 fflags(numlists)
-      logical dumpatlast, diag_mdsio,  diag_mnc
-      logical diag_pickup_read,        diag_pickup_write
-      logical diag_pickup_read_mdsio,  diag_pickup_write_mdsio
-      logical diag_pickup_read_mnc,    diag_pickup_write_mnc
+      _RL averageFreq(numlists), averagePhase(numlists)
+      INTEGER averageCycle(numlists)
+      INTEGER nlevels(numlists)
+      INTEGER nfields(numlists)
+      INTEGER nActive(numlists)
+      INTEGER nlists
+      INTEGER idiag(numperlist,numlists)
+      INTEGER mdiag(numperlist,numlists)
+      INTEGER jdiag(numperlist,numlists)
+      CHARACTER*8 flds (numperlist,numlists)
+      CHARACTER*80 fnames(numlists)
+      CHARACTER*8 fflags(numlists)
+      LOGICAL dumpAtLast, diag_mdsio,  diag_mnc
+      LOGICAL diag_pickup_read,        diag_pickup_write
+      LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
+      LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
 
-      common /diag_choices/
-     &     freq, phase, levs, nlevels,
-     &     nfields, nActive, nlists,
+      COMMON / DIAG_SELECT /
+     &     freq, phase, levs,
+     &     averageFreq, averagePhase, averageCycle,
+     &     nlevels, nfields, nActive, nlists,
      &     idiag, mdiag, jdiag,
-     &     dumpatlast, diag_mdsio, diag_mnc,
+     &     dumpAtLast, diag_mdsio, diag_mnc,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc,
@@ -87,7 +104,7 @@ C     fflags(n)  :: character string with per-file flags
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C  DIAG_STATIS common block:
+C--   DIAG_STATIS common block:
 C     iSdiag :: slot number in large diagnostic array
 C     mSdiag :: slot number in large diagnostic array for the mate
 C     jSdiag :: short-list (active diag.) to long-list (available diag.)

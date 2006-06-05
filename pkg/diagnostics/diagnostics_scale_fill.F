@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.2 2005/07/11 18:59:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.3 2006/06/05 18:17:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -87,6 +87,7 @@ C we are trying to fill a valid diagnostic
          ipt = idiag(m,n)
          IF ( ndiag(ipt,bi,bj).GE.0 ) THEN
            ndId = jdiag(m,n)
+           ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    diagnostic is valid & active, do the filling:
            CALL DIAGNOSTICS_FILL_FIELD(
      I              inpFld, inpFld, scaleFact, power, 0,

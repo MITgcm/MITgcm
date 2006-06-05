@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_clear.F,v 1.1 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_clear.F,v 1.2 2006/06/05 18:17:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -29,13 +29,14 @@ C     myThid :: my Thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER m, ndId, ipt
+      INTEGER m, ndId, ipt, nLev
 
       DO m=1,nActive(listId)
        IF ( idiag(m,listId).GT.0 ) THEN
          ndId  = jdiag(m,listId)
          ipt   = idiag(m,listId)
-         CALL DIAGNOSTICS_CLRDIAG ( ndId, ipt, myThid )
+         nLev  = kdiag(ndId)*averageCycle(listId)
+         CALL DIAGNOSTICS_CLRDIAG( ipt, nLev, myThid )
        ENDIF
       ENDDO
 
@@ -47,7 +48,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C     !ROUTINE: DIAGNOSTICS_CLRDIAG
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_CLRDIAG ( ndId, ipt, myThid )
+      SUBROUTINE DIAGNOSTICS_CLRDIAG ( ipt, nLev, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -64,16 +65,17 @@ C     == Global variables ===
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     ndId   :: diagnostic Id number (in available diagnostics list)
 C     ipt    :: diagnostic pointer to storage array
+C     nLev   :: number of levels (in storage array) to reset
 C     myThid :: my Thread Id number
-      INTEGER ndId, ipt
+      INTEGER ipt, nLev
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
       INTEGER i,j,k
+      INTEGER kl
 
 C **********************************************************************
 C ****              SET DIAGNOSTIC AND COUNTER TO ZERO              ****
@@ -81,14 +83,15 @@ C **********************************************************************
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,kdiag(ndId)
+        DO k = 1,nLev
+         kl = ipt+k-1
+         ndiag(kl,bi,bj) = 0
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-           qdiag(i,j,ipt+k-1,bi,bj) = 0.0
+           qdiag(i,j,kl,bi,bj) = 0.0
           ENDDO
          ENDDO
         ENDDO
-        ndiag(ipt,bi,bj) = 0
        ENDDO
       ENDDO
 

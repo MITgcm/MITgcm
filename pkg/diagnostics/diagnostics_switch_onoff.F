@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.13 2005/10/16 18:38:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.14 2006/06/05 18:17:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,22 +41,26 @@ CEOP
 C     !LOCAL VARIABLES:
 C      newIter :: future iteration number
 C      j,m,n   :: loop index
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     INTEGER newIter
       INTEGER m, n, nd
       INTEGER bi, bj, ip, iSp
       LOGICAL time4SnapShot
       _RL     phiSec, freqSec
+      INTEGER nInterval
+      _RL     xInterval
       LOGICAL dBugFlag
 #ifdef ALLOW_FIZHI
-      logical alarm2,alarm2next
-      character *9 tagname
+      LOGICAL alarm2, alarm2next
+      CHARACTER *9 tagname
 #endif
 
       LOGICAL  DIFF_PHASE_MULTIPLE
       EXTERNAL DIFF_PHASE_MULTIPLE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      dBugFlag = debugLevel.GT.debLevB .AND. myThid.EQ.1
 
 c     newIter = 1 + myIter
       DO n = 1,nlists
@@ -69,10 +73,10 @@ C--    Select diagnostics list that uses instantaneous output
         time4SnapShot = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
      &                                       myTime, deltaTclock )
 #ifdef ALLOW_FIZHI
-        if( useFIZHI) then
-         write(tagname,'(A,I2.2)')'diagtag',n
+        IF ( useFIZHI ) THEN
+         WRITE(tagname,'(A,I2.2)')'diagtag',n
          time4SnapShot = alarm2next(tagname,deltaT)
-        endif
+        ENDIF
 #endif
 
         DO bj=myByLo(myThid), myByHi(myThid)
@@ -97,7 +101,44 @@ c             IF (ndiag(nd).NE.-1) WRITE(0,*) myIter,nd,ndiag(nd),' ->',-1
          ENDDO
         ENDDO
 
+C--    list with instantaneous output: end
        ENDIF
+
+       IF ( averageCycle(n).GT.1 ) THEN
+C--    Select diagnostics list that uses periodic averaging
+        xInterval = myTime + deltaTclock*0.5 _d 0 - averagePhase(n)
+        xInterval = xInterval / averageFreq(n)
+        IF ( xInterval.GE.0. ) THEN
+          nInterval = INT(xInterval)
+        ELSE
+          nInterval = 1 + INT( -xInterval/FLOAT(averageCycle(n)) )
+          nInterval = nInterval*averageCycle(n) + INT(xInterval) - 1
+        ENDIF
+        nInterval = MOD(nInterval,averageCycle(n))
+
+C-     check future value of pdiag:
+        IF (dBugFlag.AND.pdiag(n,1,1).NE.nInterval)
+     &    WRITE(0,'(A,I8,3(A,I3),F17.6)') 'DIAG_SWITCH_ONOFF: at it=',
+     &      myIter, ', list:', n, ' switch',
+     &      pdiag(n,1,1),' ->', nInterval, xInterval
+        IF ( nInterval.LT.0 .OR. nInterval.GE.averageCycle(n) ) THEN
+          WRITE(msgBuf,'(2A,I2,A,I4)') 'DIAGNOSTICS_SWITCH_ONOFF:',
+     &       ' error setting pdiag(n=',n,') to:', nInterval
+          CALL PRINT_ERROR( msgBuf , myThid )
+          WRITE(msgBuf,'(2A,I3,A,F17.6)') 'DIAGNOSTICS_SWITCH_ONOFF:',
+     &       ' cycle=', averageCycle(n), ', xInt=', xInterval
+          CALL PRINT_ERROR( msgBuf , myThid )
+          STOP 'ABNORMAL END: S/R DIAGNOSTICS_SWITCH_ONOFF'
+        ENDIF
+
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+           pdiag(n,bi,bj) = nInterval
+         ENDDO
+        ENDDO
+C--    list with periodic averaging: end
+       ENDIF
+
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -115,10 +156,10 @@ C--    Select diagnostics list that uses instantaneous output
      &                                       myTime, deltaTclock )
 
 #ifdef ALLOW_FIZHI
-        if( useFIZHI) then
-         write(tagname,'(A,I2.2)')'diagStg',n
+        IF ( useFIZHI ) THEN
+         WRITE(tagname,'(A,I2.2)')'diagStg',n
          time4SnapShot = alarm2next(tagname,deltaT)
-        endif
+        ENDIF
 #endif
 
         DO bj=myByLo(myThid), myByHi(myThid)

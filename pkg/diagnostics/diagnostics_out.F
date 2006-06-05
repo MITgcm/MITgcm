@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.28 2006/02/07 15:52:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.29 2006/06/05 18:17:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -45,17 +45,17 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     i,j,k :: loop indices
+C     lm    :: loop index (averageCycle)
 C     md    :: field number in the list "listId".
 C     ndId  :: diagnostics  Id number (in available diagnostics list)
 C     mate  :: counter mate Id number (in available diagnostics list)
 C     ip    :: diagnostics  pointer to storage array
 C     im    :: counter-mate pointer to storage array
-      INTEGER i, j, k
+      INTEGER i, j, k, lm
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
       CHARACTER*8 parms1
-      CHARACTER*3 mate_index
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
       _RL undef, getcon
       EXTERNAL getcon
@@ -68,7 +68,10 @@ C     im    :: counter-mate pointer to storage array
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_MDSIO
       LOGICAL glf
+      INTEGER nRec
+#endif
 #ifdef ALLOW_MNC
       INTEGER ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
@@ -89,7 +92,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ioUnit= standardMessageUnit
       undef = getcon('UNDEF')
-      glf = globalFiles
       WRITE(suff,'(I10.10)') myIter
       ilen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
@@ -120,14 +122,14 @@ C       beginning and ending times for each diagnostics period
         ib(1)  = 1
         ie(1)  = nlevels(listId)
 
-        CALL MNC_CW_ADD_GNAME('diag_levels', 1, 
+        CALL MNC_CW_ADD_GNAME('diag_levels', 1,
      &       dim, dn, ib, ie, myThid)
-        CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels', 
+        CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels',
      &       0,0, myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
-        
+
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &       'diag_levels', levs(1,listId), myThid)
 
@@ -158,8 +160,8 @@ C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
 C         The following three ztmp() loops should eventually be modified
 C         to reflect the fractional nature of levs(j,l) -- they should
 C         do something like:
-C            ztmp(j) = rC(INT(FLOOR(levs(j,l)))) 
-C                      + ( rC(INT(FLOOR(levs(j,l)))) 
+C            ztmp(j) = rC(INT(FLOOR(levs(j,l))))
+C                      + ( rC(INT(FLOOR(levs(j,l))))
 C                          + rC(INT(CEIL(levs(j,l)))) )
 C                        / ( levs(j,l) - FLOOR(levs(j,l)) )
 C         for averaged levels.
@@ -194,14 +196,29 @@ C         for averaged levels.
       ENDIF
 #endif /*  ALLOW_MNC  */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       DO md = 1,nfields(listId)
         ndId = jdiag(md,listId)
         parms1 = gdiag(ndId)(1:8)
+        mate = 0
+        mVec = 0
+        IF ( parms1(5:5).EQ.'C' ) THEN
+C-      Check for Mate of a Counter Diagnostic
+           READ(parms1,'(5X,I3)') mate
+        ELSEIF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
+C-      Check for Mate of a Vector Diagnostic
+           READ(parms1,'(5X,I3)') mVec
+        ENDIF
         IF ( idiag(md,listId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
+         DO lm=1,averageCycle(listId)
 
-          ip = ABS(idiag(md,listId))
+          ip = ABS(idiag(md,listId)) + kdiag(ndId)*(lm-1)
           im = mdiag(md,listId)
+          IF (mate.GT.0) im = im + kdiag(mate)*(lm-1)
+          IF (mVec.GT.0) im = im + kdiag(mVec)*(lm-1)
+
           IF ( ndiag(ip,1,1).EQ.0 ) THEN
 C-        Empty diagnostics case :
 
@@ -215,9 +232,15 @@ C-        Empty diagnostics case :
      &       ' (#',md,' ) in outp.Stream: ',fnames(listId)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
-            WRITE(msgBuf,'(A,I2,A)')
-     &       '- WARNING -   has not been filled (ndiag=',
-     &       ndiag(ip,1,1), ' )'
+            IF ( averageCycle(listId).GT.1 ) THEN
+             WRITE(msgBuf,'(A,2(I2,A))')
+     &        '- WARNING -   has not been filled (ndiag(lm=',lm,')=',
+     &                                            ndiag(ip,1,1), ' )'
+            ELSE
+             WRITE(msgBuf,'(A,2(I2,A))')
+     &        '- WARNING -   has not been filled (ndiag=',
+     &                                            ndiag(ip,1,1), ' )'
+            ENDIF
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             WRITE(msgBuf,'(A)')
@@ -240,34 +263,22 @@ C-        Empty diagnostics case :
           ELSE
 C-        diagnostics is not empty :
 
-            IF ( myThid.EQ.1 ) WRITE(ioUnit,'(A,I3,3A,I8,2A)')
+            IF ( debugLevel.GE.debLevA .AND. myThid.EQ.1 ) THEN
+              WRITE(ioUnit,'(A,I3,3A,I8,2A)')
      &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
      &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
-
-            IF ( parms1(5:5).EQ.'C' ) THEN
-C             Check for Mate of a Counter Diagnostic
-C             --------------------------------------
-              mate_index = parms1(6:8)
-              READ (mate_index,'(I3)') mate
-              IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,2A)')
+              IF ( mate.GT.0 ) THEN
+               WRITE(ioUnit,'(3A,I3,2A)')
      &         '       use Counter Mate for  ', cdiag(ndId),
      &         '     Diagnostic # ',mate, '  ', cdiag(mate)
-
-            ELSE
-              mate = 0
-
-C             Check for Mate of a Vector Diagnostic
-C             -------------------------------------
-              IF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
-                mate_index = parms1(6:8)
-                READ (mate_index,'(I3)') mVec
+              ELSEIF ( mVec.GT.0 ) THEN
                 IF ( im.GT.0 .AND. ndiag(MAX(1,im),1,1).GT.0 ) THEN
-                 IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,3A)')
+                 WRITE(ioUnit,'(3A,I3,3A)')
      &             '           Vector  Mate for  ', cdiag(ndId),
      &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
      &             ' exists '
                 ELSE
-                 IF ( myThid.EQ.1 ) WRITE(ioUnit,'(3A,I3,3A)')
+                 WRITE(ioUnit,'(3A,I3,3A)')
      &             '           Vector  Mate for  ', cdiag(ndId),
      &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
      &             ' not enabled'
@@ -294,31 +305,46 @@ C-        end of empty diag / not empty block
 C-----------------------------------------------------------------------
 C         Check to see if we need to interpolate before output
 C-----------------------------------------------------------------------
-         IF ( fflags(listId)(2:2).EQ.'P' ) THEN
+          IF ( fflags(listId)(2:2).EQ.'P' ) THEN
 C-        Do vertical interpolation:
-          CALL DIAGNOSTICS_INTERP_VERT(
+c          IF ( fluidIsAir ) THEN
+C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
+C      find some problems with 5-levels AIM => use it only with FIZHI
+           IF ( useFIZHI ) THEN
+            CALL DIAGNOSTICS_INTERP_VERT(
      I                     listId, md, ndId, ip, im,
      U                     nlevsout,
      U                     qtmp1,
      I                     undef,
      I                     myTime, myIter, myThid )
-         ENDIF
+           ELSE
+             WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
+     &         'INTERP_VERT not safe in this config'
+             CALL PRINT_ERROR( msgBuf , myThid )
+             WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_OUT: ',
+     &         ' for list l=', listId, ', filename: ', fnames(listId)
+             CALL PRINT_ERROR( msgBuf , myThid )
+             STOP 'ABNORMAL END: S/R DIAGNOSTICS_OUT'
+           ENDIF
+          ENDIF
 
 #ifdef ALLOW_MDSIO
 C         Prepare for mdsio optionality
           IF (diag_mdsio) THEN
+            glf = globalFiles
+            nRec = lm + (md-1)*averageCycle(listId)
             IF (fflags(listId)(1:1) .EQ. 'R') THEN
 C             Force it to be 32-bit precision
               CALL MDSWRITEFIELD_NEW(fn,precFloat32,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
             ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
 C             Force it to be 64-bit precision
               CALL MDSWRITEFIELD_NEW(fn,precFloat64,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
             ELSE
 C             This is the old default behavior
               CALL MDSWRITEFIELD_NEW(fn,writeBinaryPrec,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,md,myIter,myThid)
+     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
             ENDIF
           ENDIF
 #endif /*  ALLOW_MDSIO  */
@@ -347,7 +373,7 @@ C           XY dimensions
             dim(2)       = sNy + 2*OLy
             ib(1)        = OLx + 1
             ib(2)        = OLy + 1
-            IF (gdiag(ndId)(2:2) .EQ. 'M') THEN 
+            IF (gdiag(ndId)(2:2) .EQ. 'M') THEN
               dn(1)(1:2) = 'X'
               ie(1)      = OLx + sNx
               dn(2)(1:2) = 'Y'
@@ -368,7 +394,7 @@ C           XY dimensions
               dn(2)(1:3) = 'Yp1'
               ie(2)      = OLy + sNy + 1
             ENDIF
-            
+
 C           Z is special since it varies
             WRITE(dn(3),'(a,i6.6)') 'Zd', nlevsout
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
@@ -393,9 +419,9 @@ C           Time dimension
             ib(4)  = 1
             ie(4)  = 1
 
-            CALL MNC_CW_ADD_GNAME(d_cw_name, 4, 
+            CALL MNC_CW_ADD_GNAME(d_cw_name, 4,
      &             dim, dn, ib, ie, myThid)
-            CALL MNC_CW_ADD_VNAME(cdiag(ndId), d_cw_name, 
+            CALL MNC_CW_ADD_VNAME(cdiag(ndId), d_cw_name,
      &             4,5, myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'description',
      &             tdiag(ndId),myThid)
@@ -417,12 +443,12 @@ C           &             0.0 _d 0,myThid)
      &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
               CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
      &             cdiag(ndId), qtmp1, myThid)
-            ELSEIF ( (writeBinaryPrec .EQ. precFloat64) 
+            ELSEIF ( (writeBinaryPrec .EQ. precFloat64)
      &             .OR. (fflags(listId)(1:1) .EQ. 'D') ) THEN
               CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &             cdiag(ndId), qtmp1, myThid)
             ENDIF
-            
+
             CALL MNC_CW_DEL_VNAME(cdiag(ndId), myThid)
             CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
@@ -431,6 +457,7 @@ C           &             0.0 _d 0,myThid)
           ENDIF
 #endif /*  ALLOW_MNC  */
 
+         ENDDO
 C--     end of Processing Fld # md
         ENDIF
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.3 2005/06/26 18:23:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.4 2006/06/05 18:15:53 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,7 +50,6 @@ C     == Local variables ==
       LOGICAL flag
 
       CHARACTER*8 parms1
-      CHARACTER*3 mate_index
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 
@@ -66,7 +65,10 @@ C--   Seach for the same diag (with same freq) to see if already set
       flag = .TRUE.
       DO l=1,listId
        IF (flag .AND. freq(l) .EQ. freq(listId)
-     &          .AND. phase(l).EQ.phase(listId) ) THEN
+     &          .AND. phase(l).EQ.phase(listId)
+     &          .AND. averageFreq(l) .EQ.averageFreq(listId)
+     &          .AND. averagePhase(l).EQ.averagePhase(listId)
+     &          .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
         DO k=1,MIN(nActive(l),numperlist)
          IF (flag .AND. jdiag(k,l).GT.0) THEN
           IF ( cdiag(ndId).EQ.cdiag(jdiag(k,l)) ) THEN
@@ -83,17 +85,18 @@ C-    diagnostics already set ; use the same slot:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( flag ) THEN
-        IF (ndiagmx+kdiag(ndId).GT.numdiags) THEN
+        idiag(mId,listId) = ndiagmx + 1
+        ndiagmx = ndiagmx + kdiag(ndId)*averageCycle(listId)
+        IF ( ndiagmx.GT.numdiags ) THEN
          WRITE(msgBuf,'(A,I4,1X,A)')
      &    'SETDIAG: Not enough space for Diagnostic #',ndId,cdiag(ndId)
          CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
         ELSE
-         WRITE(msgBuf,'(A,I3,A,I4,1X,A)') 'SETDIAG: Allocate',
-     &    kdiag(ndId), ' Levels for Diagnostic #', ndId, cdiag(ndId)
+         WRITE(msgBuf,'(A,2(I3,A),I4,1X,A)') 'SETDIAG: Allocate',
+     &                   kdiag(ndId), ' x', averageCycle(listId),
+     &                ' Levels for Diagnostic #', ndId, cdiag(ndId)
          CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
         ENDIF
-        idiag(mId,listId) = ndiagmx + 1
-        ndiagmx = ndiagmx + kdiag(ndId)
       ELSE
         WRITE(msgBuf,'(A,I4,1X,2A)')
      &    '- WARNING - SETDIAG: Diagnostic #', ndId, cdiag(ndId),
@@ -107,14 +110,16 @@ c Check for Counter Diagnostic
 c ----------------------------
       mate = 0
       IF ( parms1(5:5).EQ.'C') THEN
-        mate_index = parms1(6:8)
-        READ (mate_index,'(I3)') mate
+        READ(parms1,'(5X,I3)') mate
 
 C--     Seach for the same diag (with same freq) to see if already set
         flag = .TRUE.
         DO l=1,listId
-         IF (flag .AND. freq(l).EQ.freq(listId)
-     &            .AND. phase(l).EQ.phase(listId) ) THEN
+         IF (flag .AND. freq(l) .EQ.freq(listId)
+     &            .AND. phase(l).EQ.phase(listId)
+     &            .AND. averageFreq(l) .EQ.averageFreq(listId)
+     &            .AND. averagePhase(l).EQ.averagePhase(listId)
+     &            .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
           DO k=1,MIN(nActive(l),numperlist)
            IF (flag .AND. jdiag(k,l).GT.0) THEN
             IF (cdiag(mate).EQ.cdiag(jdiag(k,l)) ) THEN
@@ -128,18 +133,19 @@ C-    diagnostics already set ; use the same slot:
         ENDDO
 
         IF ( flag ) THEN
-          IF (ndiagmx+kdiag(mate).GT.numdiags) THEN
+          mdiag(mId,listId) = ndiagmx + 1
+          ndiagmx = ndiagmx + kdiag(mate)*averageCycle(listId)
+          IF ( ndiagmx.GT.numdiags ) THEN
            WRITE(msgBuf,'(A,I4,1X,A)')
      &      'SETDIAG: Not enough space for Counter Diagnostic #',
      &      mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
           ELSE
-           WRITE(msgBuf,'(A,I3,A,I4,1X,A)') 'SETDIAG: Allocate',
-     &     kdiag(mate), ' Levels for Count.Diag #', mate, cdiag(mate)
+           WRITE(msgBuf,'(A,2(I3,A),I4,1X,A)') 'SETDIAG: Allocate',
+     &                     kdiag(mate), ' x', averageCycle(listId),
+     &                  ' Levels for Count.Diag #', mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
           ENDIF
-          mdiag(mId,listId) = ndiagmx + 1
-          ndiagmx = ndiagmx + kdiag(mate)
         ELSE
           WRITE(msgBuf,'(A,I4,1X,2A)')
      &    '- NOTE - SETDIAG: Counter Diagnostic #', mate, cdiag(mate),

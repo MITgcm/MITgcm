@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.3 2006/01/23 22:17:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.4 2006/06/05 18:17:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,6 +33,8 @@ C     !LOCAL VARIABLES:
       INTEGER md, ld, ipt, im
       INTEGER j, k, k1, k2, l
       INTEGER  dUnit, stdUnit, iLen
+      INTEGER xNew, xOld, ii, nDup
+      CHARACTER*(2) cSep
       CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(72) ccLine, ccFlds, ccList
@@ -105,16 +107,43 @@ C     write a summary diagnostics state:
      &       jdiag(md,ld),' |', flds(md,ld),'|',idiag(md,ld),' |',
      &       mdiag(md,ld),' |', kdiag(jdiag(md,ld)),' |'
            ipt = ABS(idiag(md,ld))
-           IF (ipt.NE.0) THEN
+           IF (ipt.NE.0 .AND. averageCycle(ld).GT.1) THEN
+             xOld=ndiag(ipt,1,1)
+             nDup = 1
+             cSep = ', '
+             DO l=1,averageCycle(ld)
+               ii = ipt+l*kdiag(jdiag(md,ld))
+               IF (l.EQ.averageCycle(ld)) THEN
+                 cSep = ' |'
+                 xNew=xOld+1
+               ELSE
+                 xNew=ndiag(ii,1,1)
+               ENDIF
+               IF (xNew.EQ.xOld) THEN
+                 nDup = nDup + 1
+               ELSE
+                 iLen = ILNBLNK(msgBuf)
+                 tmpBuf(1:iLen) = msgBuf(1:iLen)
+                 IF (nDup.EQ.1) THEN
+                   WRITE(msgBuf,'(A,I5,A)') tmpBuf(1:iLen),xOld,cSep
+                 ELSE
+                   WRITE(msgBuf,'(A,I5,A,I2,2A)') tmpBuf(1:iLen),xOld,
+     &              '(x',nDup,')',cSep
+                 ENDIF
+                 xOld = xNew
+                 nDup = 1
+               ENDIF
+             ENDDO
+           ELSEIF (ipt.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
             tmpBuf(1:iLen) = msgBuf(1:iLen)
             WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(ipt,1,1),' |'
-           ENDIF
-           im = mdiag(md,ld)
-           IF (im.NE.0) THEN
-            iLen = ILNBLNK(msgBuf)
-            tmpBuf(1:iLen) = msgBuf(1:iLen)
-            WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(im,1,1),' |'
+            im = mdiag(md,ld)
+            IF (im.NE.0) THEN
+             iLen = ILNBLNK(msgBuf)
+             tmpBuf(1:iLen) = msgBuf(1:iLen)
+             WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(im,1,1),' |'
+            ENDIF
            ENDIF
            iLen = ILNBLNK(msgBuf)
            WRITE(dUnit,'(A)') msgBuf(1:iLen)

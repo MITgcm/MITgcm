@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.9 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.10 2006/06/05 18:15:53 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,6 +40,10 @@ C     Zero out the qdiag array which accumulates during integration
             ENDDO
 C     Zero out the counters for the qdiag array
             ndiag(k,bi,bj) = 0
+          ENDDO
+          DO k = 1,numlists
+C     Zero out the index array for periodic averaging diagnostic
+            pdiag(k,bi,bj) = 0
           ENDDO
         ENDDO
       ENDDO

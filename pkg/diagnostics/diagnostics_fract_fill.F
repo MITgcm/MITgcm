@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.2 2005/07/11 18:59:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.3 2006/06/05 18:17:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -99,6 +99,7 @@ C we are trying to fill a valid diagnostic
          ipt = idiag(m,n)
          IF ( ndiag(ipt,bi,bj).GE.0 ) THEN
            ndId = jdiag(m,n)
+           ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    check for a counter-mate:
            mate = 0
            parms1 = gdiag(ndId)(1:8)
