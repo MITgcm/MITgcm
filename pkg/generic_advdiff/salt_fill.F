@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.2 2006/06/05 18:38:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.3 2006/06/05 20:23:13 molod Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -55,8 +55,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       external diagnostics_is_on
 
       INTEGER bi,bj,i,j,L,LM1
-      _RL tempdiag  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL dpratio
+      _RL dpratio, scale
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -64,7 +63,9 @@ C Fill diagnostic for filling with negative of salt
 #ifdef ALLOW_DIAGNOSTICS
         IF (useDiagnostics)THEN
         if(diagnostics_is_on('SALTFILL',myThid) ) then
-        CALL DIAGNOSTICS_FILL(salt,'SALTFILL',0,Nr,-1,bi,bj,myThid)
+        scale = -1. _d 0
+        CALL DIAGNOSTICS_SCALE_FILL(salt,scale,1,'SALTFILL',
+     .                                   0,Nr,-1,bi,bj,myThid)
         endif
         ENDIF
 #endif
