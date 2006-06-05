@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.9 2006/05/30 22:49:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.10 2006/06/05 22:33:50 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -135,24 +135,24 @@ CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
 
-         DO j = jMin, jMax
-          DO i = iMin, iMax
-           tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
-           sOceMxL(i,j,bi,bj) = salt (i,j,1,bi,bj)
-           v2ocMxL(i,j,bi,bj) =
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
+          sOceMxL(i,j,bi,bj) = salt (i,j,1,bi,bj)
+          v2ocMxL(i,j,bi,bj) =
      &              ( uvel(i,j,1,bi,bj)*uvel(i,j,1,bi,bj)
      &              + uvel(i+1,j,1,bi,bj)*uvel(i+1,j,1,bi,bj)
      &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
      &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj)
      &              )*0.5 _d 0
-           prcAtm(i,j) = 0.
-           icFrwAtm(i,j,bi,bj) = 0. _d 0
-           icFlxAtm(i,j,bi,bj) = 0. _d 0
-           icFlxSW (i,j,bi,bj) = 0. _d 0
-           snowPrc(i,j,bi,bj) = 0. _d 0
-           siceAlb(i,j,bi,bj) = 0. _d 0
-          ENDDO
+          prcAtm(i,j) = 0.
+          icFrwAtm(i,j,bi,bj) = 0. _d 0
+          icFlxAtm(i,j,bi,bj) = 0. _d 0
+          icFlxSW (i,j,bi,bj) = 0. _d 0
+          snowPrc(i,j,bi,bj) = 0. _d 0
+          siceAlb(i,j,bi,bj) = 0. _d 0
          ENDDO
+        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceMask = comlev1, key = iicekey
@@ -177,61 +177,69 @@ CADJ STORE qnet    = comlev1, key = iicekey
 #endif
 
 #ifdef ALLOW_BULK_FORCE
-         IF ( useBulkforce ) THEN
-           CALL THSICE_GET_PRECIP(
+        IF ( useBulkforce ) THEN
+         CALL THSICE_GET_PRECIP(
      I                  iceMask,
      O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
-         ENDIF
+        ENDIF
 #endif
 #ifdef ALLOW_EXF
-         IF ( useEXF ) THEN
-           CALL THSICE_MAP_EXF(
+        IF ( useEXF ) THEN
+         CALL THSICE_MAP_EXF(
      I                  iceMask,
      O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
-         ENDIF
+        ENDIF
 #endif
 
 
-         CALL THSICE_STEP_TEMP(
+        CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
-         CALL THSICE_STEP_FWD(
+        CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     prcAtm,
      I                     myTime, myIter, myThid )
 
-         CALL THSICE_AVE(
+        CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
 
 c      ENDDO
 c     ENDDO
 
-c       IF ( .FALSE. ) THEN
+#ifdef ALLOW_SEAICE        
+C--   If useSEAICE=.true., the stress is computed in seaice_model,
+C--   so that it does not need any further reduction
+        IF ( .NOT. useSEAICE ) THEN
+#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
-        IF ( stressReduction.GT. 0. _d 0 ) THEN
-         DO j = jMin, jMax
-          DO i = iMin+1,iMax
+         IF ( stressReduction.GT. 0. _d 0 ) THEN
+          DO j = jMin, jMax
+           DO i = iMin+1,iMax
             tauFac = stressReduction
      &             *(iceMask(i-1,j,bi,bj)+iceMask(i,j,bi,bj))*0.5 _d 0
             fu(i,j,bi,bj) = (1. _d 0 - tauFac)*fu(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
-         DO j = jMin+1, jMax
-          DO i = iMin, iMax
+          DO j = jMin+1, jMax
+           DO i = iMin, iMax
             tauFac = stressReduction
      &             *(iceMask(i,j-1,bi,bj)+iceMask(i,j,bi,bj))*0.5 _d 0
             fv(i,j,bi,bj) = (1. _d 0 - tauFac)*fv(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
+         ENDIF
+#ifdef ALLOW_SEAICE        
+C     not useSEAICE
         ENDIF
+#endif /* ALLOW_SEAICE */
 
 C--  end bi,bj loop
        ENDDO
@@ -241,6 +249,16 @@ C--  end bi,bj loop
 c     IF (useRealFreshWaterFlux) _EXCH_XY_RS(sIceLoad, myThid)
 #endif
 
+#ifdef ALLOW_SEAICE        
+      IF ( useSEAICE ) THEN
+C--   Exchange fields that are advected by seaice dynamics
+      _EXCH_XY_R8( iceMask, myThid )
+      _EXCH_XY_R8( iceHeight, myThid )
+      _EXCH_XY_R8( snowHeight, myThid )
+      _EXCH_XY_R8( Qice1, myThid )
+      _EXCH_XY_R8( Qice2, myThid )
+      ENDIF
+#endif /* ALLOW_SEAICE */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
 
