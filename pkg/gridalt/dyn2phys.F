@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.4 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.5 2006/06/05 18:41:30 molod Exp $
 C $Name:  $
 
       subroutine dyn2phys(qdyn,pedyn,im1,im2,jm1,jm2,lmdyn,Nsx,Nsy,
@@ -53,11 +53,22 @@ C***********************************************************************
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
       _RL weights(im1:im2,jm1:jm2,lmphy)
+      _RL pphy(im1:im2,jm1:jm2,lmphy)
       _RL dpkedyn, dpkephy, windsum, qd
       integer  i,j,L,Lout1,Lout2,Lphy
       _RL getcon, kappa
 
       kappa = getcon('KAPPA')
+
+C define physics grid mid level pressures
+      do Lphy = 1,lmphy
+       do j = jdim1,jdim2
+        do i = idim1,idim2
+         pphy(i,j,Lphy) = 
+     .       (pephy(i,j,Lphy,bi,bj)+pephy(i,j,Lphy+1,bi,bj))/2.
+        enddo
+       enddo
+      enddo
 
 c do loop for all dynamics (input) levels
       do L = 1,lmdyn
@@ -74,10 +85,10 @@ c Check to make sure we are above ground - if not, do nothing
           endif
           Lout2 = nlperdyn(i,j,L,bi,bj)
 c for U and V fields, need to compute for the weights:
+cinterp1  dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
+cinterp1                                  (pedyn(i,j,L+1,bi,bj)**kappa)
+          dpkedyn = pedyn(i,j,L,bi,bj)-pedyn(i,j,L+1,bi,bj)
           if(flg.eq.1)then
-cinterp1   dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
-cinterp1                                   (pedyn(i,j,L+1,bi,bj)**kappa)
-           dpkedyn = pedyn(i,j,L,bi,bj)-pedyn(i,j,L+1,bi,bj)
            windsum = 0.
            do Lphy = Lout1+1,Lout2
 cinterp1    dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
@@ -91,6 +102,12 @@ c do loop for all physics levels contained in this dynamics level
            weights(i,j,Lphy) = 1.
            if( (flg.eq.1).and.(windsum.ne.0.) )
      .                weights(i,j,Lphy)=windphy(i,j,Lphy,bi,bj)/windsum
+           if( (flg.eq.2) .and. (pedyn(i,j,L,bi,bj).lt.10000.)) then
+            weights(i,j,Lphy) = 
+     .   (qd-5. + (10.*(pedyn(i,j,L,bi,bj)-pphy(i,j,Lphy))/dpkedyn))/qd
+           elseif( (flg.eq.2) .and. (pedyn(i,j,L,bi,bj).ge.10000.)) then
+            weights(i,j,Lphy) = 1.
+           endif 
            qphy(i,j,Lphy,bi,bj) = qd * weights(i,j,Lphy)
           enddo
          endif
