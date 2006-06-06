@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.666 2006/06/06 16:40:44 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.667 2006/06/06 22:17:27 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ggl90: add parameter (minimum surface kinetic energy)
+o pkg/ggl90: 
+  - add parameter (minimum surface kinetic energy)
+  - fix bug (avoiding division by zero)
 o couple pkg/thsice to pkg/seaice:
   - modify advection in seaice to accomodate new scalar fields to be advected
   - only muliDimAdection scheme work with seaice/thsice
