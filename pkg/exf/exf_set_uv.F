@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.11 2006/06/05 19:23:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.12 2006/06/06 03:36:14 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -93,7 +93,7 @@ c     == local variables ==
       _RL     fac, x1, x2, x3, x4, y1, y2, y3, y4, dx, dy
       _RL     tmp_u (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmp_v (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      integer count0, count1
+      integer count0, count1, offset
       integer i, j, bi, bj
       integer   il, interp_method
       parameter(interp_method=2)
@@ -171,30 +171,39 @@ c     vector rotation
                   do bi = mybxlo(mythid),mybxhi(mythid)
                      do j = 1,sny
                         do i = 1,snx
-                           x1=xG(i,j,bi,bj)
-                           x2=xG(i+1,j,bi,bj)
-                           x3=xG(i,j+1,bi,bj)
-                           x4=xG(i+1,j+1,bi,bj)
+C     if yc is within dyc of North Pole then find direction from adjacent values
+                           offset=0
+                           if ( yC(i,j,bi,bj) .gt. 
+     &                          (90-dyC(i,j,bi,bj)*8.9946e-06) )
+     &                          offset=2
+                           x1=xG(i-offset,j-offset,bi,bj)
+                           x2=xG(i-offset+1,j-offset,bi,bj)
+                           x3=xG(i-offset,j-offset+1,bi,bj)
+                           x4=xG(i-offset+1,j-offset+1,bi,bj)
                            if ((x2-x1).gt.180) x2=x2-360
                            if ((x1-x2).gt.180) x2=x2+360
                            if ((x3-x1).gt.180) x3=x3-360
                            if ((x1-x3).gt.180) x3=x3+360
                            if ((x4-x1).gt.180) x4=x4-360
                            if ((x1-x4).gt.180) x4=x4+360
-                           y1=yG(i,j,bi,bj)
-                           y2=yG(i+1,j,bi,bj)
-                           y3=yG(i,j+1,bi,bj)
-                           y4=yG(i+1,j+1,bi,bj)
+                           y1=yG(i-offset,j-offset,bi,bj)
+                           y2=yG(i-offset+1,j-offset,bi,bj)
+                           y3=yG(i-offset,j-offset+1,bi,bj)
+                           y4=yG(i-offset+1,j-offset+1,bi,bj)
                            dx=0.5*(x3+x4-x1-x2)
-                           dx=dx*cos(deg2rad*yC(i,j,bi,bj))
+                           dx=dx*cos(deg2rad*yC(i-offset,j-offset,bi,bj))
                            dy=0.5*(y3+y4-y1-y2)
-                           vvec1(i,j,bi,bj)=(tmp_u(i,j,bi,bj)*dx+
-     &                          tmp_v(i,j,bi,bj)*dy)/sqrt(dx*dx+dy*dy)
+                           vvec1(i,j,bi,bj)=
+     &                          (tmp_u(i-offset,j-offset,bi,bj)*dx+
+     &                          tmp_v(i-offset,j-offset,bi,bj)*dy)/
+     &                          sqrt(dx*dx+dy*dy)
                            dx=0.5*(x2+x4-x1-x3)
-                           dx=dx*cos(deg2rad*yC(i,j,bi,bj))
+                           dx=dx*cos(deg2rad*yC(i-offset,j-offset,bi,bj))
                            dy=0.5*(y2+y4-y1-y3)
-                           uvec1(i,j,bi,bj)=(tmp_u(i,j,bi,bj)*dx+
-     &                          tmp_v(i,j,bi,bj)*dy)/sqrt(dx*dx+dy*dy)
+                           uvec1(i,j,bi,bj)=
+     &                          (tmp_u(i-offset,j-offset,bi,bj)*dx+
+     &                          tmp_v(i-offset,j-offset,bi,bj)*dy)/
+     &                          sqrt(dx*dx+dy*dy)
                         enddo
                      enddo
                   enddo
@@ -262,30 +271,39 @@ c     vector rotation
                   do bi = mybxlo(mythid),mybxhi(mythid)
                      do j = 1,sny
                         do i = 1,snx
-                           x1=xG(i,j,bi,bj)
-                           x2=xG(i+1,j,bi,bj)
-                           x3=xG(i,j+1,bi,bj)
-                           x4=xG(i+1,j+1,bi,bj)
+C     if yc is within dyc of North Pole then find direction from adjacent values
+                           offset=0
+                           if ( yC(i,j,bi,bj) .gt. 
+     &                          (90-dyC(i,j,bi,bj)*8.9946e-06) )
+     &                          offset=2
+                           x1=xG(i-offset,j-offset,bi,bj)
+                           x2=xG(i-offset+1,j-offset,bi,bj)
+                           x3=xG(i-offset,j-offset+1,bi,bj)
+                           x4=xG(i-offset+1,j-offset+1,bi,bj)
                            if ((x2-x1).gt.180) x2=x2-360
                            if ((x1-x2).gt.180) x2=x2+360
                            if ((x3-x1).gt.180) x3=x3-360
                            if ((x1-x3).gt.180) x3=x3+360
                            if ((x4-x1).gt.180) x4=x4-360
                            if ((x1-x4).gt.180) x4=x4+360
-                           y1=yG(i,j,bi,bj)
-                           y2=yG(i+1,j,bi,bj)
-                           y3=yG(i,j+1,bi,bj)
-                           y4=yG(i+1,j+1,bi,bj)
+                           y1=yG(i-offset,j-offset,bi,bj)
+                           y2=yG(i-offset+1,j-offset,bi,bj)
+                           y3=yG(i-offset,j-offset+1,bi,bj)
+                           y4=yG(i-offset+1,j-offset+1,bi,bj)
                            dx=0.5*(x3+x4-x1-x2)
-                           dx=dx*cos(deg2rad*yC(i,j,bi,bj))
+                           dx=dx*cos(deg2rad*yC(i-offset,j-offset,bi,bj))
                            dy=0.5*(y3+y4-y1-y2)
-                           vvec1(i,j,bi,bj)=(tmp_u(i,j,bi,bj)*dx+
-     &                          tmp_v(i,j,bi,bj)*dy)/sqrt(dx*dx+dy*dy)
+                           vvec1(i,j,bi,bj)=
+     &                          (tmp_u(i-offset,j-offset,bi,bj)*dx+
+     &                          tmp_v(i-offset,j-offset,bi,bj)*dy)/
+     &                          sqrt(dx*dx+dy*dy)
                            dx=0.5*(x2+x4-x1-x3)
-                           dx=dx*cos(deg2rad*yC(i,j,bi,bj))
+                           dx=dx*cos(deg2rad*yC(i-offset,j-offset,bi,bj))
                            dy=0.5*(y2+y4-y1-y3)
-                           uvec1(i,j,bi,bj)=(tmp_u(i,j,bi,bj)*dx+
-     &                          tmp_v(i,j,bi,bj)*dy)/sqrt(dx*dx+dy*dy)
+                           uvec1(i,j,bi,bj)=
+     &                          (tmp_u(i-offset,j-offset,bi,bj)*dx+
+     &                          tmp_v(i-offset,j-offset,bi,bj)*dy)/
+     &                          sqrt(dx*dx+dy*dy)
                         enddo
                      enddo
                   enddo
