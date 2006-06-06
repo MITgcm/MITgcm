@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.6 2006/06/06 16:18:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.7 2006/06/06 22:15:19 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -68,6 +68,7 @@ C     KappaE           - (local) diffusivity parameter for TKE (eq.15)
 C     buoyFreq         - buoyancy freqency
 C     TKEdissipation   - dissipation of TKE
 C     GGL90mixingLength- mixing length of scheme following Banke+Delecuse
+C         rMixingLength- inverse of mixing length
 C     totalDepth       - thickness of water column (inverse of recip_Rcol)
 C     TKEPrandtlNumber - here, an empirical function of the Richardson number
 C     rhoK, rhoKm1     - density at layer K and Km1 (relative to K)
@@ -86,6 +87,7 @@ C     gTKE             - right hand side of implicit equation
       _RL     tempU, tempV, prTemp
       _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL         rMixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     rhoK             (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoKm1           (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -126,7 +128,8 @@ C     Initialize local fields
          gTKE(I,J,K)              = 0. _d 0
          KappaE(I,J,K)            = 0. _d 0
          TKEPrandtlNumber(I,J,K)  = 0. _d 0
-         GGL90mixingLength(I,J,K) = 0. _d 0
+         GGL90mixingLength(I,J,K) = GGL90mixingLengthMin
+             rMixingLength(I,J,K) = 0. _d 0
         ENDDO
        ENDDO	
       ENDDO
@@ -184,12 +187,13 @@ C     impose upper bound for mixing length (total depth)
 C     impose minimum mixing length (to avoid division by zero)
          GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K), 
      &        GGL90mixingLengthMin)
+         rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
 C     viscosity of last timestep
          KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE
          KappaE(I,J,K) = KappaM*GGL90alpha
 C     dissipation term
          TKEdissipation = ab05*GGL90ceps
-     &        *SQRTTKE/GGL90mixingLength(I,J,K)
+     &        *SQRTTKE*rMixingLength(I,J,K)
      &        *GGL90TKE(I,J,K,bi,bj)      
 C     sum up contributions to form the right hand side
          gTKE(I,J,K) = GGL90TKE(I,J,K,bi,bj) 
@@ -305,7 +309,7 @@ C--   Center diagonal
         DO i=iMin,iMax
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
      &        + ab15*deltaTggl90*GGL90ceps*SQRT(GGL90TKE(I,J,K,bi,bj))
-     &        /GGL90mixingLength(I,J,K)
+     &        *rMixingLength(I,J,K)
          ENDDO
        ENDDO
       ENDDO
