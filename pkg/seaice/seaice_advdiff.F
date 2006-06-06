@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.6 2006/06/05 22:46:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.7 2006/06/06 19:13:34 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -84,8 +84,10 @@ C     Initialise for TAF
          DO i=1-Olx,sNx+Olx
           fld (I,J,bi,bj)    = 0. _d 0
           gFld(I,J,bi,bj)    = 0. _d 0
+#ifdef ALLOW_THSICE
           recip_area(I,J)    = 0. _d 0 
-          recip_heff(I,J)    = 0. _d 0 
+          recip_heff(I,J)    = 0. _d 0
+#endif 
          ENDDO
         ENDDO
        ENDDO
@@ -130,6 +132,7 @@ CML      IF ( SEAICEuseDynamics ) THEN
 
 
       IF ( SEAICEmultiDimAdvection ) THEN
+#ifndef ALLOW_AUTODIFF_TAMC
 C     This has to be done to comply with the time stepping in advect.F:
 C     Making sure that the following routines see the different  
 C     time levels correctly
@@ -305,6 +308,9 @@ C     with current area
        ENDDO
       ENDDO
 
+#else
+      STOP 'SEAICEmultiDimAdvection not yet implemented for adjoint'
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
       ELSE
 C--   if not multiDimAdvection
 

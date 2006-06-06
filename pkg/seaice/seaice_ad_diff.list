@@ -8,7 +8,6 @@ ostres.f
 seaice_advection.f
 seaice_advdiff.f
 seaice_check.f
-seaice_diffusion.f
 seaice_do_diags.f
 seaice_get_forcing.f
 seaice_init.f
