@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.1 2006/05/30 22:49:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.2 2006/06/06 18:52:13 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -325,7 +325,7 @@ C--   Total derivative with respect to surface temperature
            df0dT = -dflwupdT+dfshdT+dflhdT
            
            flwNet_dwn  = lwdown(i,j,bi,bj) - flwup
-           flxExceptSw = flwNet_dwn + hs(i,j,bi,bj) + hl(i,i,bi,bj)
+           flxExceptSw = flwNet_dwn + hs(i,j,bi,bj) + hl(i,j,bi,bj)
 C     
            evapLoc     = evap(i,j,bi,bj)*rhoNil
 C     This is where the copies from bulkf_formula_lay and thsice_get_bulkf
