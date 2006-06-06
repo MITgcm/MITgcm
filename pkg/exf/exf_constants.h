@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.8 2006/06/05 14:56:59 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_constants.h,v 1.9 2006/06/06 22:21:15 jmc Exp $
 c
 c
 c     ==================================================================
@@ -149,7 +149,7 @@ c     hq           - height of mean rel. humidity
      &            karman         =        0.400    d0 ,
      &            cvapor_fac     =   640380.000    d0 ,
      &            cvapor_exp     =     5107.400    d0 ,
-     &            cvapor_fac_ice = 11637800.000    d3 ,
+     &            cvapor_fac_ice = 11637800.000    d0 ,
      &            cvapor_exp_ice =     5897.800    d0 ,
      &            humid_fac   =           0.606    d0 ,
      &            gamma_blk   =           0.010    d0 ,
