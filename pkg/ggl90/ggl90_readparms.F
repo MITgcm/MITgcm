@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.3 2006/06/06 16:18:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.4 2006/06/06 19:47:36 mlosch Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -102,11 +102,6 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait for the parameters to be loaded
-      _BARRIER
-
 C Now set-up any remaining parameters that result from the input parameters 
       IF ( GGL90TKEbottom .EQ. UNSET_RL ) THEN
        GGL90TKEbottom = GGL90TKEmin
@@ -139,6 +134,62 @@ C Now set-up any remaining parameters that result from the input parameters
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
+
+C--   print TKE vertical mixing parameters to stdout for better debugging
+      WRITE(msgBuf,*) 'GGL90: GGL90dumpFreq        = ', GGL90dumpFreq
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90taveFreq        = ', GGL90taveFreq
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90mixingMaps      = ', GGL90mixingMaps
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90writeState      = ', GGL90writeState
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90ck              = ', GGL90ck
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90ceps            = ', GGL90ceps
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90alpha           = ', GGL90alpha
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90m2              = ', GGL90m2
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90TKEmin          = ', GGL90TKEmin
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90TKEsurfMin      = ', GGL90TKEsurfMin
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90TKEbottom       = ', GGL90TKEbottom
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90viscMax         = ', GGL90viscMax
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90diffMax         = ', GGL90diffMax
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90diffTKEh        = ', GGL90diffTKEh
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90mixingLengthMin = ', 
+     &                                           GGL90mixingLengthMin
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,*) 'GGL90: GGL90TKEFile         = ', GGL90TKEFile
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+      _END_MASTER(myThid)
+
+C--   Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
 #endif /* ALLOW_GGL90 */
 
