@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.150 2006/05/22 22:11:11 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.151 2006/06/07 22:33:00 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -827,6 +827,13 @@ EOF
 
 
 check_HAVE_SETRLSTK()  {
+    if test "x$HAVE_SETRLSTK" = xt ; then
+	DEFINES="$DEFINES -DHAVE_SETRLSTK"
+	return
+    fi	
+    if test ! "x$HAVE_SETRLSTK" = x ; then
+	return
+    fi
     get_fortran_c_namemangling
     cat <<EOF > genmake_tc_1.c
 $FC_NAMEMANGLE
@@ -1036,7 +1043,7 @@ HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
 HAVE_CLOC=
-HAVE_SETRLSTK=
+# HAVE_SETRLSTK=
 HAVE_STAT=
 HAVE_NETCDF=
 HAVE_ETIME=
@@ -1684,7 +1691,7 @@ rm -f genmake_t*
 
 printf "  Can we unlimit the stack size using $FC...  "
 check_HAVE_SETRLSTK
-if test "x$HAVE_SETRLSTK" != x ; then
+if test "x$HAVE_SETRLSTK" = xt ; then
     echo "yes"
 else
     echo "no"
@@ -2558,10 +2565,10 @@ ad_vars="$ad_vars FTL_TAMC_FLAGS FTL_TAF_FLAGS"
 ad_vars="$ad_vars SVD_TAMC_FLAGS SVD_TAF_FLAGS"
 for i in $ad_vars ; do
     name=$i
-    t1="t2=\$"`echo $i`
+    t1="t2=\$"`echo "$i"`
     eval $t1
     printf "%-20s = " $name >> $MAKEFILE
-    echo $t2 >> $MAKEFILE
+    echo "$t2" | sed -e 's| \+| |g' >> $MAKEFILE
 done
 
 echo "  Add the source list for AD code generation"
