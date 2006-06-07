@@ -1,0 +1,5 @@
+#! /usr/bin/env csh
+perl -i -pe 's/ \&$/ \//g' verification/*/input*/data* verification/*/input*/eedata
+perl -i -pe 's/ \&end$/ \//g' verification/*/input*/data* verification/*/input*/eedata
+perl -i -pe 's/^ \& / \//g' verification/*/input*/data* verification/*/input*/eedata
+
