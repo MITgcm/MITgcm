@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.9 2006/06/07 20:45:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.10 2006/06/07 21:13:46 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -371,7 +371,7 @@ C     ==================================================================
 
       integer narr
       _RL local(narr)
-      _RS arr(narr)
+      _RL arr(narr)
       integer k,nNz
       integer mythid
 
