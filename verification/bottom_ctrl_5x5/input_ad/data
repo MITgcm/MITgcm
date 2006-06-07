@@ -1,0 +1,81 @@
+# Model parameters
+# Continuous equation parameters
+ &PARM01
+ tRef=4.,4.,4.,4.,
+ sRef=35.,35.,35.,35.,
+ viscAz=1.E-1,
+ viscAh=1.E5,
+# viscA4=1.E16,
+# useJamartWetPoints=.TRUE.,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ diffKhT=4.E2,
+ diffKzT=1.E-4,
+ diffKhS=0.0,  
+ diffKzS=3.E-5,
+ f0=-1.1914E-04,
+ beta=1.3094E-11,
+ tAlpha=2.E-4,
+# sBeta =7.4E-4,
+ sBeta = 0.,
+ gravity=9.81,
+ gBaro=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ eosType='LINEAR',
+ writeStatePrec=64,
+ writeBinaryPrec=64,
+ readBinaryPrec=64,
+ hFacMin=.05,
+ smoothAbsFuncRange = -1.e-2,
+#momAdvection = .false.,
+#momViscosity = .false.,
+#momPressureForcing = .false.,
+ &
+
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=100,
+ cg2dTargetResidual=1.E-13,
+ &
+# Time stepping parameters
+ &PARM03
+ niter0=0,
+ ntimesteps=100,
+#startTime = 0.,
+#endTime = 7776000,
+ deltaTmom=3600.0,
+ deltaTtracer=3600.0,
+ abEps=0.1,
+ pChkptFreq= 7776000.0,
+ chkptFreq=  0.0,
+#dumpFreq=   1.0,
+ monitorFreq=1.0,
+ &
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ delX=5*200E3,
+ delY=5*200E3,
+# 1 layer
+#delZ=5001.,500.,500.,500.,
+# 2 layers
+#delZ=1000.,5000.,500.,5000.,
+# 4 layers
+ delZ=100.,400.,500.,5000.,
+#delZ=1000.,1500.,1500.,1500.,
+ &
+ &PARM05
+#bathyFile='walls.bigRidge',
+ bathyFile='noWalls.bigRidge',
+#bathyFile='box.bigRidge',
+#bathyFile='meridchannel.bigRidge',
+ hydrogThetaFile=,
+ hydrogSaltFile=,
+ zonalWindFile='windx.sin_y',
+ meridWindFile=,
+ surfQFile=,
+ EmPmRFile=,
+ &

@@ -1,0 +1,2 @@
+AD_OPTFILE='../code_ad/adjoint_staf'
+OPTFILE='../code_ad/linux_ia32_g77'
