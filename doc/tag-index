@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.667 2006/06/06 22:17:27 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.668 2006/06/07 01:43:54 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58g_post
 o pkg/ggl90: 
   - add parameter (minimum surface kinetic energy)
   - fix bug (avoiding division by zero)
