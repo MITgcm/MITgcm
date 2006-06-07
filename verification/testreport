@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.78 2006/05/22 00:14:29 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.79 2006/06/07 01:20:26 heimbach Exp $
 #  $Name:  $
 #
 
@@ -304,7 +304,6 @@ genmakemodel()
 		command="$command --mods=../code"
 	    else
 		command="$command --mods=../code_ad"
-		command="$command -adof=../../../tools/adjoint_options/adjoint_staf"
 	    fi
 	    if test "x$OPTFILE" != xNONE ; then
 		command="$command --optfile=$OPTFILE"

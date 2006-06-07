@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.1 2005/08/23 14:57:28 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.2 2006/06/07 01:20:27 heimbach Exp $
 #  $Name:  $
 #
 
@@ -12,7 +12,7 @@
 # TAF=~fastopt/bin/taf
 # STAF=staf
 
-TAF=taf
+TAF=staf
 TAMC=tamc
 
 AD_TAMC_FLAGS='-f95 -reverse -admark ad -i4 -r4 -l tamc_ad.log'

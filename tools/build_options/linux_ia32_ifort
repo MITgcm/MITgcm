@@ -15,7 +15,8 @@ F90FIXEDFORMAT='-fixed -Tf'
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort -static'
 CPP='cpp  -traditional -P'
-INCLUDES='-I/usr/include/netcdf'
+INCLUDES='-I/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/include'
+LIBS='-L/ocean/data4/ce107/netcdf-3.6.1/Linux-i686-intel8/lib -lnetcdf'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.6 2006/03/06 17:16:24 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_diva_mpi,v 1.7 2006/06/07 01:20:26 heimbach Exp $
 #  $Name:  $
 #
 
@@ -13,7 +13,7 @@
 # STAF=staf
 
 DIVA='true'
-TAF=taf
+TAF=staf
 TAMC=tamc
 
 
