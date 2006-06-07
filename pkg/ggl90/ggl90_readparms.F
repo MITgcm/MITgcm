@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.4 2006/06/06 19:47:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.5 2006/06/07 16:34:24 jmc Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -135,6 +135,7 @@ C Now set-up any remaining parameters that result from the input parameters
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
 
+#ifdef UNSAFE_INTERNAL_WRITE
 C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,*) 'GGL90: GGL90dumpFreq        = ', GGL90dumpFreq
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -185,6 +186,7 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,*) 'GGL90: GGL90TKEFile         = ', GGL90TKEFile
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+#endif /* UNSAFE_INTERNAL_WRITE */
 
       _END_MASTER(myThid)
 
