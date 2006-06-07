@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.8 2005/11/05 01:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.9 2006/06/07 20:45:48 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -44,7 +44,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer narr
-      Real arr(narr)
+      _RL arr(narr)
       integer irecord
       integer myThid
 ce

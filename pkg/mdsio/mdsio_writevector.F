@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.7 2005/11/06 01:25:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.8 2006/06/07 20:45:48 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -50,7 +50,7 @@ C Routine arguments
       logical globalfile
       character*(2) arrType
       integer narr
-      Real arr(narr)
+      _RL arr(narr)
       integer irecord
       integer myIter
       integer myThid
