@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.668 2006/06/07 01:43:54 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.669 2006/06/07 02:02:52 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint58h_post
+* Modifications for bottom topography control
+  o replace hFacC by _hFacC at various places
+  o replace ALLOW_HFACC_CONTROL by ALLOW_DEPTH_CONTROL
+  o add non-self-adjoint cg2d_nsa
+  o update autodiff support routines
+  o re-initialise hfac after ctrl_depth_ini
+  o works for 5x5 box, doesnt work for global_ocean.90x40x15
+* Adding verification for 5x5 box (4-layer) bottom topography control
 
 checkpoint58g_post
 o pkg/ggl90: 
