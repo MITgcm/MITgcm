@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.4 2005/06/22 00:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.5 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,16 +63,16 @@ C--    Add centered contribution
            rCenter = 0.5 _d 0 *rTrans(i,j)*recip_rA(i,j,bi,bj)*rkSign
            a3d(i,j,k)   = a3d(i,j,k)
      &                  - rCenter*deltaTarg(k)
-     &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k)   = b3d(i,j,k)
      &                  - rCenter*deltaTarg(k)
-     &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b3d(i,j,k-1) = b3d(i,j,k-1)
      &                  + rCenter*deltaTarg(k-1)
-     &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c3d(i,j,k-1) = c3d(i,j,k-1)
      &                  + rCenter*deltaTarg(k-1)
-     &                    *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
 

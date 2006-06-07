@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.12 2003/09/29 19:24:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.13 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -61,3 +61,12 @@ C     cg2d_s -   *same*
       _RL  cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+
+#ifdef ALLOW_CG2D_NSA
+C--   COMMON /CG2D_I_WK_R2/  extra work array common block
+C     cg2d_z - Intermediate matrix-vector product term
+C            - reduces the number of recomputation in adjoint mode
+C            - this field is superfluous if your cg2d is self-adjoint.
+      COMMON /CG2D_I_WK_R2/ cg2d_z
+      _RL  cg2d_z(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_CG2D_NSA */

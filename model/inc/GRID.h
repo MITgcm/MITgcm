@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.30 2005/07/20 22:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.31 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -313,6 +313,7 @@ C     drC    - Cell center separation along Z axis ( units of r ).
 C     drF    - Cell face separation along Z axis ( units of r ).
 C     Rcolumn  -Total thickness (in r_unit) of the fluid column
 C     R_low  - base of fluid in r_unit (Depth(m) / Pressure(Pa) at top Atmos.)
+C     xx_r_low - in TAF-sense active replacement of R_low
 C     Ro_surf- surface reference (at rest) position, r_unit.
 C     klowC  - index of the lowest "wet cell" (2D)
 C     hFac   - Fraction of cell in vertical which is open i.e how 
@@ -380,6 +381,9 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  gravitySign, rkSign, globalArea,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,hFacC,hFacW,hFacS,
+#ifdef ALLOW_DEPTH_CONTROL
+     &  xx_r_low,
+#endif /* ALLOW_DEPTH_CONTROL */
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
      &  recip_Rcol, 
@@ -409,6 +413,9 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS Ro_surf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_DEPTH_CONTROL
+      _RL xx_r_low       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_DEPTH_CONTROL */
       _RS hFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS hFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS hFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)

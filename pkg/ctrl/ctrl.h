@@ -491,7 +491,7 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_tr1_file
      &                    , xx_sst_file
      &                    , xx_sss_file
-     &                    , xx_hfacc_file
+     &                    , xx_depth_file
      &                    , xx_efluxy_file
      &                    , xx_efluxp_file
      &                    , xx_bottomdrag_file
@@ -527,7 +527,7 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_tr1_file
       character*(MAX_LEN_FNAM) xx_sst_file
       character*(MAX_LEN_FNAM) xx_sss_file
-      character*(MAX_LEN_FNAM) xx_hfacc_file
+      character*(MAX_LEN_FNAM) xx_depth_file
       character*(MAX_LEN_FNAM) xx_efluxy_file
       character*(MAX_LEN_FNAM) xx_efluxp_file
       character*(MAX_LEN_FNAM) xx_bottomdrag_file
@@ -771,6 +771,7 @@ c                         control part.
       character*( 80)   fname_tr1(2)
       character*( 80)   fname_sst(2)
       character*( 80)   fname_sss(2)
+      character*( 80)   fname_depth(2)
       character*( 80)   fname_hfacc(2)
       character*( 80)   fname_efluxy(2)
       character*( 80)   fname_efluxp(2)

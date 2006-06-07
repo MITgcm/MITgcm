@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.37 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.38 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,7 +79,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
         DO i=1,sNx+1
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &   +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &   *recip_drF(kLev)*recip_hFacW(i,j,kLev,bi,bj)
+     &   *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -177,7 +177,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
         DO i=0,sNx+1
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &   +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &   *recip_drF(kLev)*recip_hFacS(i,j,kLev,bi,bj)
+     &   *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -280,7 +280,7 @@ C     Add heat in top-layer
         DO i=1,sNx
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &     +surfaceForcingT(i,j,bi,bj)
-     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+     &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -312,7 +312,7 @@ c     IF ( usePenetratingSW ) THEN
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*recip_rhoConst
-     &    *recip_drF(klev)*recip_hFacC(i,j,kLev,bi,bj)
+     &    *recip_drF(klev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
@@ -411,7 +411,7 @@ C     Add fresh-water in top-layer
         DO i=1,sNx
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &     +surfaceForcingS(i,j,bi,bj)
-     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+     &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF

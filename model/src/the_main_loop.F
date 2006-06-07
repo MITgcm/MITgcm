@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.74 2006/05/09 18:43:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.75 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -369,6 +369,13 @@ c--
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
 # endif
 #endif /* ALLOW_SEAICE */
+c--
+#ifdef ALLOW_DEPTH_CONTROL
+CADJ INIT comlev1_cg2d
+CADJ &     = COMMON,nchklev_1*nthreads_chkpt
+CADJ INIT comlev1_cg2d_iter
+CADJ &     = COMMON,nchklev_1*nthreads_chkpt*numItersMax
+#endif
 c--
 #endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.8 2005/11/04 01:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.9 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -41,12 +41,12 @@ C- Partial-cell generalization of the Wet-point average method :
        DO J=1-Oly,sNy+Oly-1
         DO I=2-Olx,sNx+Olx
          vBarXY=(
-     &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj))
-     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj)))
-     &   / MAX( epsil, (hFacS(i, j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj))
-     &                +(hFacS(i,j+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj)) )
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)))
+     &   / MAX( epsil,(_hFacS(i, j ,k,bi,bj)+_hFacS(i-1, j ,k,bi,bj))
+     &               +(_hFacS(i,j+1,k,bi,bj)+_hFacS(i-1,j+1,k,bi,bj)) )
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(I,J,K,bi,bj)
@@ -74,12 +74,12 @@ C- Partial-cell generalization of the Wet-point average method :
        DO J=2-Oly,sNy+Oly
         DO I=1-Olx,sNx+Olx-1
          uBarXY=(
-     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj))
-     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj)))
-     &   / MAX( epsil, (hFacW( i ,j,k,bi,bj)+hFacW( i ,j-1,k,bi,bj))
-     &                +(hFacW(i+1,j,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj)) )
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj)))
+     &   / MAX( epsil,(_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
+     &               +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj)) )
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(I,J,K,bi,bj)

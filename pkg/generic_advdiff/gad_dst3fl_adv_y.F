@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.8 2005/10/18 16:03:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.9 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -52,7 +52,7 @@ C     vFld    :: velocity [m/s], meridional component
 
 c       vFld = vVel(i,j,k,bi,bj)
         vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
-     &       *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
+     &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         cfl=abs(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
         d1=(1. _d 0 -cfl*cfl)*oneSixth

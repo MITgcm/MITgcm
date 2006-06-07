@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_r_star.F,v 1.1 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_r_star.F,v 1.2 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,9 +79,9 @@ C-- Initialise arrays :
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx 
-            h0FacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj)
-            h0FacW(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)
-            h0FacS(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)
+            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO

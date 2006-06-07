@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.55 2006/05/09 16:07:52 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.56 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -283,6 +283,16 @@ C     see CG2D.h for the interface to this routine.
       lastResidual=0.
       numIters=cg2dMaxIters
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
+#ifdef ALLOW_CG2D_NSA
+C--   Call the not-self-adjoint version of cg2d
+      CALL CG2D_NSA(
+     U           cg2d_b,
+     U           cg2d_x,
+     O           firstResidual,
+     O           lastResidual,
+     U           numIters,
+     I           myThid )
+#else /* not ALLOW_CG2D_NSA = default */
       CALL CG2D(
      U           cg2d_b,
      U           cg2d_x,
@@ -290,6 +300,7 @@ c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
      O           lastResidual,
      U           numIters,
      I           myThid )
+#endif /* ALLOW_CG2D_NSA */
       _EXCH_XY_R8(cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
@@ -391,10 +402,10 @@ C-       Other than Z coordinate: no assumption on surface level index
          DO j=1,sNy
           DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dyG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dyG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dxG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dxG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(K)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
      &         -wVel(i,j,kp1,bi,bj)*maskKp1
      &        )*_rA(i,j,bi,bj)/deltaTmom
@@ -407,10 +418,10 @@ C-       Other than Z coordinate: no assumption on surface level index
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dyG(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dyG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dxG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dxG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(K)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(K)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( wVel(i,j,k  ,bi,bj)*maskC(i,j,k-1,bi,bj)
      &         -wVel(i,j,kp1,bi,bj)*maskKp1
      &        )*_rA(i,j,bi,bj)/deltaTmom

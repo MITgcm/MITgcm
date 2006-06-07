@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.184 2006/04/15 15:06:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.185 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 C
 
@@ -611,6 +611,9 @@ C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
 C     bottomDragQuadratic :: Quadratic bottom-drag coefficient (units of [r]/m)
 C               (if using zcoordinate, units becomes linear: m/s, quadratic: [-])
+C     smoothAbsFuncRange :: 1/2 of interval around zero, for which FORTRAN ABS
+C                           is to be replace by a smoother function
+C                           (affects myabs, mymin, mymax)
 C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
@@ -649,6 +652,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
+     & smoothAbsFuncRange, 
      & tCylIn, tCylOut
 
       _RL cg2dTargetResidual
@@ -768,6 +772,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic
+      _RL smoothAbsFuncRange
       _RL nh_Am2
       _RL tCylIn
       _RL tCylOut

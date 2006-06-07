@@ -42,6 +42,12 @@ c                  function contributions.
      &                objf_tracer,
      &                objf_entropy,
      &                objf_t_misfit,
+#ifdef ALLOW_COST_TRANSPORT
+     &                objf_transport,
+#endif
+#ifdef ALLOW_COST_DEPTH
+     &                objf_depth,
+#endif
      &                objf_eflux
 
       _RL  objf_atl  (nsx,nsy)
@@ -50,6 +56,12 @@ c                  function contributions.
       _RL  objf_entropy (nsx,nsy)
       _RL  objf_t_misfit (nsx,nsy)
       _RL  objf_eflux (nsx,nsy)
+#ifdef ALLOW_COST_TRANSPORT
+      _RL  objf_transport (nsx,nsy)
+#endif
+#ifdef ALLOW_COST_DEPTH
+      _RL  objf_depth (nsx,nsy)
+#endif
 
       common /cost_param_r/
      &                lastinterval
@@ -79,6 +91,12 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &                    multSalt,
      &                    multUvel,
      &                    multVvel,
+#ifdef ALLOW_COST_TRANSPORT
+     &           mult_transport,
+#endif
+#ifdef ALLOW_COST_DEPTH
+     &           mult_depth,
+#endif
      &                    multEtan
 
       _RL  mult_atl
@@ -92,6 +110,12 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
       _RL  multUvel
       _RL  multVvel
       _RL  multEtan
+#ifdef ALLOW_COST_TRANSPORT
+      _RL  mult_transport
+#endif
+#ifdef ALLOW_COST_DEPTH
+      _RL  mult_depth
+#endif
 
 #ifdef ALLOW_COST_TEST
       common /cost_test_i/

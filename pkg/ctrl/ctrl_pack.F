@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.27 2006/05/12 13:35:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.28 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,7 +126,7 @@ c--   Assign file names.
       call ctrl_set_fname(xx_tr1_file, fname_tr1, mythid)
       call ctrl_set_fname(xx_sst_file, fname_sst, mythid)
       call ctrl_set_fname(xx_sss_file, fname_sss, mythid)
-      call ctrl_set_fname(xx_hfacc_file, fname_hfacc, mythid)
+      call ctrl_set_fname(xx_depth_file, fname_depth, mythid)
       call ctrl_set_fname(xx_efluxy_file, fname_efluxy, mythid)
       call ctrl_set_fname(xx_efluxp_file, fname_efluxp, mythid)
       call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
@@ -377,20 +377,14 @@ C     place holder of obsolete variable jG
      &         weighttype, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_HFACC_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
           ivartype = 20
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "whfacc"
-# ifdef ALLOW_HFACC3D_CONTROL
-          call ctrl_set_pack_xyz(
-     &         cunit, ivartype, fname_hfacc(ictrlgrad), "maskCtrlC",
-     &         weighttype, wunit, lxxadxx, mythid)
-# else
+          write(weighttype(1:80),'(a)') "wdepth"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_hfacc(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, fname_depth(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
-# endif
-#endif
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_EFLUXY0_CONTROL
           ivartype = 21

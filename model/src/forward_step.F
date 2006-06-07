@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.141 2006/05/03 23:34:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.142 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,7 +68,7 @@ C     == Global variables ==
 # include "ctrl_dummy.h"
 # include "cost.h"
 # include "EOS.h"
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 #  include "GRID.h"
 # endif
 # ifdef ALLOW_EXF
@@ -329,7 +329,7 @@ CADJ STORE vvel               = comlev1, key = ikey_dynamics
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test
 CADJ STORE hFacC                 = comlev1, key = ikey_dynamics
 #  ifndef DISABLE_RSTAR_CODE
@@ -363,6 +363,8 @@ cph-test
 CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
 CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics
 CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics
+# endif
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
@@ -433,7 +435,7 @@ CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics
 CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
 # endif
 c
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE etaH               = comlev1, key = ikey_dynamics
 #  ifdef ALLOW_CD_CODE
 CADJ STORE etanm1             = comlev1, key = ikey_dynamics
@@ -481,7 +483,7 @@ C      Read in coupling data that I import.
 #endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE hFacC          = comlev1, key = ikey_dynamics
 CADJ STORE hFacS          = comlev1, key = ikey_dynamics
 CADJ STORE hFacW          = comlev1, key = ikey_dynamics
@@ -520,7 +522,7 @@ C--   Step forward fields and calculate time tendency terms.
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test
 CADJ STORE gU, gV  = comlev1, key = ikey_dynamics
 # endif
@@ -644,7 +646,7 @@ C     Two-dimensional only for conventional hydrostatic or
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE uvel, vvel
 CADJ &     = comlev1, key = ikey_dynamics
 CADJ STORE empmr,hfacs,hfacw
@@ -661,12 +663,16 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 #  ifndef DISABLE_RSTAR_CODE
 cph-test
 cph not clear, why this one
 CADJ STORE h0facc = comlev1, key = ikey_dynamics
 #  endif
+# endif
+# ifdef ALLOW_DEPTH_CONTROL
+CADJ STORE etan, uvel,vvel
+CADJ &     = comlev1, key = ikey_dynamics
 # endif
 #endif
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)

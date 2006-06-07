@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.8 2005/10/18 16:03:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.9 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -54,7 +54,7 @@ C       with no need to compute thetaM (might be easier to differentiate)
 
 c       uFld = uVel(i,j,k,bi,bj)
         uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
-     &       *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
+     &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         cfl=abs(uFld*deltaTloc*recip_dxC(i,j,bi,bj))
         d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
         d1=(1. _d 0 -cfl*cfl)*oneSixth

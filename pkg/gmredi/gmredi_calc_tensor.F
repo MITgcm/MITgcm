@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.22 2005/12/08 03:29:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.23 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -453,7 +453,8 @@ C-        Vertical gradients interpolated to U points
      &        +maskC( i ,j,kp1,bi,bj)*
      &           (theta( i ,j,k,bi,bj)-theta( i ,j,kp1,bi,bj))
      &       )      ) * 0.25 _d 0
-           tmp1k(i,j) = dyG(i,j,bi,bj)*drF(k)*hFacW(i,j,k,bi,bj)
+           tmp1k(i,j) = dyG(i,j,bi,bj)*drF(k)
+     &                * _hFacW(i,j,k,bi,bj)
      &                * tmp1k(i,j) * dTdz
          ENDDO
         ENDDO
@@ -571,7 +572,8 @@ C-        Vertical gradients interpolated to U points
      &        +maskC(i, j ,kp1,bi,bj)*
      &           (theta(i, j ,k,bi,bj)-theta(i, j ,kp1,bi,bj))
      &       )      ) * 0.25 _d 0
-           tmp1k(i,j) = dxG(i,j,bi,bj)*drF(k)*hFacS(i,j,k,bi,bj)
+           tmp1k(i,j) = dxG(i,j,bi,bj)*drF(k)
+     &                * _hFacS(i,j,k,bi,bj)
      &                * tmp1k(i,j) * dTdz
          ENDDO
         ENDDO

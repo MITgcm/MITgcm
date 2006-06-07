@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.184 2006/03/20 15:11:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.185 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -199,6 +199,7 @@ C--   Continuous equation parameters
      & zonal_filt_lat,
      & inAdExact,
      & balanceEmPmR, balanceQnet, balancePrintMean
+     & , smoothAbsFuncRange
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.9 2005/10/01 19:17:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.10 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -42,10 +42,10 @@ C     == Local variables ==
        DO I=2-Olx,sNx+Olx
         IF ( use_original_hFac ) THEN
          vBarXY=0.25*(
-     &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj))
-     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj)))
+     &      (vFld( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+     &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)))
          IF (upwindVorticity) THEN
           IF (vBarXY.GT.0.) THEN
            vort3u=omega3(I,J)*r_hFacZ(i,j)
@@ -58,11 +58,11 @@ C     == Local variables ==
          ENDIF
         ELSEIF ( SadournyCoriolis ) THEN
          Zm=0.5*(
-     &       vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
-     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*hFacS(i-1, j ,k,bi,bj) )
+     &       vFld( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj) )
          Zp=0.5*(
-     &       vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)
-     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacS(i-1,j+1,k,bi,bj) )
+     &       vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj) )
          IF (upwindVorticity) THEN
           IF ( (Zm+Zp) .GT.0.) THEN
            vort3u=Zm*r_hFacZ(i, j )*omega3(i, j )
@@ -96,8 +96,8 @@ c--      test a different formulation (relatively to hFac)
 
         IF (useJamartMomAdv)
      &   vBarXY = vBarXY * 4. _d 0 * hFacW(i,j,k,bi,bj)
-     &   / MAX( epsil, (hFacS(i, j ,k,bi,bj)+hFacS(i-1, j ,k,bi,bj))
-     &                +(hFacS(i,j+1,k,bi,bj)+hFacS(i-1,j+1,k,bi,bj)) )
+     &   / MAX( epsil,(_hFacS(i, j ,k,bi,bj)+_hFacS(i-1, j ,k,bi,bj))
+     &               +(_hFacS(i,j+1,k,bi,bj)+_hFacS(i-1,j+1,k,bi,bj)) )
 
         uCoriolisTerm(i,j)=
      &   +vort3u*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.22 2006/03/29 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.23 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -639,17 +639,11 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_HFACC_CONTROL
-# ifdef ALLOW_HFACC3D_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
         call ctrl_init_ctrlvar ( 
-     &       xx_hfacc_file, 20, 120, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', mythid )
-# else
-        call ctrl_init_ctrlvar ( 
-     &       xx_hfacc_file, 20, 120, 1, 1, 1,
+     &       xx_depth_file, 20, 120, 1, 1, 1,
      &       snx, sny,  1, 'c', 'xy', mythid )
-# endif /*ALLOW_HFACC3D_CONTROL*/
-#endif /* ALLOW_HFACC_CONTROL */
+#endif /* ALLOW_DEPTH_CONTROL */
 
 c----------------------------------------------------------------------
 c--

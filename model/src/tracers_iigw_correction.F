@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_iigw_correction.F,v 1.1 2006/02/23 21:00:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_iigw_correction.F,v 1.2 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,7 +82,7 @@ C-     Add Impl.IGW correction to Pot.Temperature:
           theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
      &       -dTtracerLev(k)*0.5 _d 0
      &                      *( dTr_k*dW_k(i,j) + dTrp1*dWp1(i,j) )
-     &                      *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+     &                      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
        ENDIF
@@ -98,7 +98,7 @@ C-     Add Impl.IGW correction to Salinity/Water vapor:
             salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
      &       -dTtracerLev(k)*0.5 _d 0
      &                      *( dTr_k*dW_k(i,j) + dTrp1*dWp1(i,j) )
-     &                      *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+     &                      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
        ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.4 2006/03/08 06:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.5 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,18 +70,18 @@ C-- Update the fractional thickness hFacC , hFacW & hFacS (& "recip_hFac") :
 C
 #ifdef USE_MASK_AND_NO_IF
             recip_hFacC(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
-     &        / ( hFacC(i,j,k,bi,bj) + (1.-maskC(i,j,k,bi,bj)) )
+     &        / ( _hFacC(i,j,k,bi,bj) + (1.-maskC(i,j,k,bi,bj)) )
             recip_hFacW(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
-     &        / ( hFacW(i,j,k,bi,bj) + (1.-maskW(i,j,k,bi,bj)) )
+     &        / ( _hFacW(i,j,k,bi,bj) + (1.-maskW(i,j,k,bi,bj)) )
             recip_hFacS(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
-     &        / ( hFacS(i,j,k,bi,bj) + (1.-maskS(i,j,k,bi,bj)) )
+     &        / ( _hFacS(i,j,k,bi,bj) + (1.-maskS(i,j,k,bi,bj)) )
 #else
            IF (maskC(i,j,k,bi,bj).NE.0.)
-     &      recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / hFacC(i,j,k,bi,bj)
+     &      recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / _hFacC(i,j,k,bi,bj)
            IF (maskW(i,j,k,bi,bj).NE.0.)
-     &      recip_hFacW(i,j,k,bi,bj) = 1. _d 0 / hFacW(i,j,k,bi,bj)
+     &      recip_hFacW(i,j,k,bi,bj) = 1. _d 0 / _hFacW(i,j,k,bi,bj)
            IF (maskS(i,j,k,bi,bj).NE.0.)
-     &      recip_hFacS(i,j,k,bi,bj) = 1. _d 0 / hFacS(i,j,k,bi,bj)
+     &      recip_hFacS(i,j,k,bi,bj) = 1. _d 0 / _hFacS(i,j,k,bi,bj)
 #endif
           ENDDO
          ENDDO

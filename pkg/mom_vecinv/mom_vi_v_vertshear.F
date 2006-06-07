@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.9 2005/09/28 15:53:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.10 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -123,14 +123,14 @@ c2   &                  *_maskS(I,J,K,bi,bj)
           vShearTerm(I,J)=-0.5*
      &                   (     (wBarYp*vZp+wBarYm*vZm)
      &                        +(ABS(wBarYp)*vZp-ABS(wBarYm)*vZm)
-     &                   )*recip_hFacS(i,j,k,bi,bj)
-     &                    *recip_drF(K)
-c3   &                    *recip_rAs(i,j,bi,bj)
+     &                   )*_recip_hFacS(i,j,k,bi,bj)
+     &                    * recip_drF(K)
+c3   &                    * recip_rAs(i,j,bi,bj)
         ELSE
           vShearTerm(I,J)=-0.5*(wBarYp*vZp+wBarYm*vZm)
-     &                    *recip_hFacS(i,j,k,bi,bj)
-     &                    *recip_drF(K)
-c3   &                    *recip_rAs(i,j,bi,bj)
+     &                    *_recip_hFacS(i,j,k,bi,bj)
+     &                    * recip_drF(K)
+c3   &                    * recip_rAs(i,j,bi,bj)
         ENDIF
        ENDDO
       ENDDO

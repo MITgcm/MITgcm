@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.45 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.46 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -291,11 +291,11 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
          DO i=iMin,iMax
           IF ( k.EQ.ksurfW(i,j,bi,bj) ) THEN
            gUtmp(i,j) = gUtmp(i,j)
-     &         *hFacW(i,j,k,bi,bj)/hFac_surfW(i,j,bi,bj)
+     &         *_hFacW(i,j,k,bi,bj)/hFac_surfW(i,j,bi,bj)
           ENDIF
           IF ( k.EQ.ksurfS(i,j,bi,bj) ) THEN
            gVtmp(i,j) = gVtmp(i,j)
-     &         *hFacS(i,j,k,bi,bj)/hFac_surfS(i,j,bi,bj)
+     &         *_hFacS(i,j,k,bi,bj)/hFac_surfS(i,j,bi,bj)
           ENDIF
          ENDDO
         ENDDO

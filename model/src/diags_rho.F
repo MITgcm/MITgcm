@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_rho.F,v 1.2 2005/11/05 01:00:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_rho.F,v 1.3 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,7 +66,7 @@ C     i,j :: Loop counters
       IF ( DIAGNOSTICS_IS_ON('URHOMASS',myThid) ) THEN
         DO j=1,sNy
          DO i=1,sNx+1
-           tmpFld(i,j) = uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)
+           tmpFld(i,j) = uVel(i,j,k,bi,bj)*_hFacW(i,j,k,bi,bj)
      &                 *(rhoK(i-1,j)+rhoK(i,j))*0.5 _d 0
          ENDDO
         ENDDO
@@ -76,7 +76,7 @@ C     i,j :: Loop counters
       IF ( DIAGNOSTICS_IS_ON('VRHOMASS',myThid) ) THEN
         DO j=1,sNy+1
          DO i=1,sNx
-           tmpFld(i,j) = vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)
+           tmpFld(i,j) = vVel(i,j,k,bi,bj)*_hFacS(i,j,k,bi,bj)
      &                 *(rhoK(i,j-1)+rhoK(i,j))*0.5 _d 0
          ENDDO
         ENDDO

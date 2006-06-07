@@ -31,7 +31,7 @@ c     ==================================================================
      &                  , xx_tr1_dummy
      &                  , xx_sst_dummy
      &                  , xx_sss_dummy
-     &                  , xx_hfacc_dummy
+     &                  , xx_depth_dummy
      &                  , xx_efluxy_dummy
      &                  , xx_efluxp_dummy
      &                  , xx_bottomdrag_dummy
@@ -84,7 +84,7 @@ c     ==================================================================
       _RL xx_tr1_dummy
       _RL xx_sst_dummy
       _RL xx_sss_dummy
-      _RL xx_hfacc_dummy
+      _RL xx_depth_dummy
       _RL xx_efluxy_dummy
       _RL xx_efluxp_dummy
       _RL xx_bottomdrag_dummy

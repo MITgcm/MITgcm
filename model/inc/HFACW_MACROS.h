@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/HFACW_MACROS.h,v 1.3 2001/09/21 15:13:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/HFACW_MACROS.h,v 1.4 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -30,6 +30,10 @@ CEOP
 
 #ifdef HFACW_FXY
 #define  _hFacW(i,j,k,bi,bj) hFacW(i,j,1,bi,bj)
+#endif
+
+#ifdef ALLOW_DEPTH_CONTROL
+# define _hFacW(i,j,k,bi,bj) hFacW(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
 #endif
 
 #ifndef _hFacW

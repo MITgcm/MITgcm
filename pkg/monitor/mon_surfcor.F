@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.8 2005/11/05 01:01:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.9 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -103,7 +103,7 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
              IF (ks.LE.Nr) THEN 
               tmpVal = salt(i,j,ks,bi,bj)
      &               + salt(i,j,Nr,bi,bj)*drF(Nr)*recip_drF(ks)
-     &                *hFacC(i,j,Nr,bi,bj)*recip_hFacC(i,j,ks,bi,bj)
+     &                *hFacC(i,j,Nr,bi,bj)*_recip_hFacC(i,j,ks,bi,bj)
               wS_Tile = wS_Tile
      &         + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*tmpVal
              ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.11 2005/10/22 20:17:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.12 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -133,7 +133,7 @@ C-     1rst lower diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
            b5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k-1,bi,bj)
-     &                  *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                  *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                  *kappaRX(i,j, k )*recip_drC( k )
          ENDDO
         ENDDO
@@ -143,7 +143,7 @@ C-     1rst upper diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
            d5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k+1,bi,bj)
-     &                 *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                 *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRX(i,j,k+1)*recip_drC(k+1)
          ENDDO
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.29 2006/05/03 23:35:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.30 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
@@ -122,4 +122,8 @@ CADJ STORE cMeanVVel  = tapelev3, key = ilev_3
 
 #ifdef ALLOW_COST_TRACER
 CADJ STORE objf_tracer = tapelev3, key = ilev_3
+#endif
+
+#ifdef ALLOW_COST_TRANSPORT
+CADJ STORE objf_transport = tapelev3, key = ilev_3
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hdiv.F,v 1.2 2005/09/23 19:16:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hdiv.F,v 1.3 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -55,7 +55,7 @@ C       due to the lopping. Whether we should do this is not clear!
      &     +( vFld( i ,j+1)*dxg( i ,j+1,bi,bj)*hFacS( i ,j+1,K,bi,bj)
      &       -vFld( i , j )*dxg( i , j ,bi,bj)*hFacS( i , j ,K,bi,bj) )
      &    )*recip_rA(I,J,bi,bj)
-     &     *recip_hFacC(i,j,k,bi,bj)
+     &     *_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 

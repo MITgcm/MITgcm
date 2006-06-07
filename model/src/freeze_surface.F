@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.6 2004/12/04 00:12:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.7 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,7 +58,7 @@ C     Check for water that should have frozen
           IF (theta(i,j,k,bi,bj) .LT. Tfreezing) THEN
              surfaceForcingTice(i,j,bi,bj) =
      &            ( Tfreezing - theta(i,j,k,bi,bj) )
-     &                    *drF(k)*hFacC(i,j,k,bi,bj) / dTtracerLev(k)
+     &                    *drF(k)*_hFacC(i,j,k,bi,bj) / dTtracerLev(k)
              theta(i,j,k,bi,bj) = Tfreezing
           ELSE
              surfaceForcingTice(i,j,bi,bj) = 0. _d 0

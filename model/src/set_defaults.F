@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.115 2006/03/20 15:11:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.116 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,6 +105,7 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
+      smoothAbsFuncRange  = 0. _d 0
       diffKrTDefault      = 0. _d -3
       diffKrSDefault      = 0. _d -3
       diffKrBL79surf      = 0. _d 0

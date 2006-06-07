@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.25 2005/12/15 21:08:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.26 2006/06/07 01:55:12 heimbach Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -168,8 +168,8 @@ C     ... add difference of meridional fluxes and divide by volume
            DO i=1-Olx,sNx+Olx
 C     First compute the fraction of open water for the w-control volume
 C     at the southern face
-            hFacCtmp=max(hFacC(I,J,K-1,bi,bj)-Half,0. _d 0)
-     &           +   min(hFacC(I,J,K  ,bi,bj),Half)
+            hFacCtmp=max( _hFacC(I,J,K-1,bi,bj)-Half,0. _d 0 )
+     &           +   min( _hFacC(I,J,K  ,bi,bj)     ,Half )
             IF (hFacCtmp .GT. 0.) THEN
              recip_hFacCtmp = 1./hFacCtmp
             ELSE
@@ -202,8 +202,8 @@ C Flux on Southern face
           DO I=iMin,iMax
 C     First compute the fraction of open water for the w-control volume
 C     at the southern face
-           hFacStmp=max(hFacS(I,J,K-1,bi,bj)-Half,0. _d 0)
-     &         +    min(hFacS(I,J,K  ,bi,bj),Half)
+           hFacStmp=max(_hFacS(I,J,K-1,bi,bj)-Half,0. _d 0)
+     &         +    min(_hFacS(I,J,K  ,bi,bj),Half)
            tmp_VbarZ=Half*(
      &          _hFacS(I,J,K-1,bi,bj)*vVel( I ,J,K-1,bi,bj)
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
@@ -234,8 +234,8 @@ C Flux on Western face
           DO I=iMin,iMax+1
 C     First compute the fraction of open water for the w-control volume
 C     at the western face
-           hFacWtmp=max(hFacW(I,J,K-1,bi,bj)-Half,0. _d 0)
-     &         +    min(hFacW(I,J,K  ,bi,bj),Half)
+           hFacWtmp=max(_hFacW(I,J,K-1,bi,bj)-Half,0. _d 0)
+     &         +    min(_hFacW(I,J,K  ,bi,bj),Half)
            tmp_UbarZ=Half*(
      &         _hFacW(I,J,K-1,bi,bj)*uVel( I ,J,K-1,bi,bj)
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))

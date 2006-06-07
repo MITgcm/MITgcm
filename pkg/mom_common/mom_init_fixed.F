@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.2 2005/09/29 03:33:28 jmc Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.3 2006/06/07 01:55:14 heimbach Exp $
 C$Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -40,9 +40,9 @@ C-    used for side-drag:
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            h0FacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj)
-            h0FacW(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)
-            h0FacS(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)
+            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO

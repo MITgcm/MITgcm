@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.3 2005/09/23 19:16:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.4 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -99,11 +99,11 @@ C       for the conservative form of the momentum equations.
        DO J=1-OLy,sNy+OLy-1
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
-     &           ( uFld( i , j )*uFld( i , j )*hFacW(i,j,k,bi,bj)
-     &            +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1,j,k,bi,bj) )
-     &         + ( vFld( i , j )*vFld( i , j )*hFacS(i,j,k,bi,bj)
-     &            +vFld( i ,j+1)*vFld( i ,j+1)*hFacS(i,j+1,k,bi,bj) )
-     &            )*recip_hFacC(i,j,k,bi,bj)
+     &           ( uFld( i , j )*uFld( i , j )*_hFacW(i,j,k,bi,bj)
+     &            +uFld(i+1, j )*uFld(i+1, j )*_hFacW(i+1,j,k,bi,bj) )
+     &         + ( vFld( i , j )*vFld( i , j )*_hFacS(i,j,k,bi,bj)
+     &            +vFld( i ,j+1)*vFld( i ,j+1)*_hFacS(i,j+1,k,bi,bj) )
+     &            )*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 
@@ -113,13 +113,18 @@ C       As above but including the area
         DO I=1-OLx,sNx+OLx-1
          KE(i,j) = 0.25*(
      &           (
-     &    uFld(i, j )*uFld(i, j )*hFacW(i ,j, k,bi,bj)*rAw(i ,j, bi,bj)
-     &   +uFld(i+1,j)*uFld(i+1,j)*hFacW(i+1,j,k,bi,bj)*rAw(i+1,j,bi,bj)
+     &    uFld(i, j )*uFld(i, j )
+     &        *_hFacW(i ,j, k,bi,bj)*rAw(i ,j, bi,bj)
+     &   +uFld(i+1,j)*uFld(i+1,j)
+     &        *_hFacW(i+1,j,k,bi,bj)*rAw(i+1,j,bi,bj)
      &           )  
      &         + (
-     &    vFld(i, j )*vFld(i, j )*hFacS(i, j, k,bi,bj)*rAs(i ,j, bi,bj)
-     &   +vFld(i,j+1)*vFld(i,j+1)*hFacS(i,j+1,k,bi,bj)*rAs(i,j+1,bi,bj)
-     &           )      )*recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
+     &    vFld(i, j )*vFld(i, j )
+     &        *_hFacS(i, j, k,bi,bj)*rAs(i ,j, bi,bj)
+     &   +vFld(i,j+1)*vFld(i,j+1)
+     &        *_hFacS(i,j+1,k,bi,bj)*rAs(i,j+1,bi,bj)
+     &           )      )*_recip_hFacC(i,j,k,bi,bj)
+     &                   * recip_rA(i,j,bi,bj)
         ENDDO
        ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.23 2006/05/03 23:35:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.24 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -23,6 +23,17 @@ CADJ STORE salt,theta         = comlev1, key = ikey_dynamics
 CADJ STORE uvel,vvel,wvel     = comlev1, key = ikey_dynamics
 # endif
 #endif /* NONLIN_FRSURF */
+
+#ifdef ALLOW_DEPTH_CONTROL
+CADJ STORE pmepr,surfaceforcingtice
+CADJ &     = comlev1, key=ikey_dynamics
+CADJ STORE detahdt
+CADJ &     = comlev1, key=ikey_dynamics
+CADJ STORE gs,gsnm1,gt,gtnm1,gunm1,gvnm1
+CADJ &     = comlev1, key=ikey_dynamics
+CADJ STORE theta,salt,totphihyd,wvel
+CADJ &     = comlev1, key=ikey_dynamics
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_CD_CODE
 # include "cd_code_ad_check_lev1_dir.h"

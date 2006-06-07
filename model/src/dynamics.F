@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.133 2006/05/31 19:53:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.134 2006/06/07 01:55:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -423,14 +423,14 @@ CADJ STORE gunm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gvnm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#   ifndef DISABLE_RSTAR_CODE
+#  ifndef DISABLE_RSTAR_CODE
 CADJ STORE dwtransc(:,:,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dwtransu(:,:,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dwtransv(:,:,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#   endif
+#  endif
 #  ifdef ALLOW_CD_CODE
 CADJ STORE unm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -441,6 +441,12 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vVelD(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
+# endif
+# ifdef ALLOW_DEPTH_CONTROL
+CADJ STORE  fVerU (:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE  fVerV (:,:,:) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

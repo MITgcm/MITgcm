@@ -129,4 +129,19 @@ c
 # endif
 #endif
 
+#ifdef ALLOW_DEPTH_CONTROL
+      _RL adr_low_control(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adhfacc(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adhfacs(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adhfacw(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adrecip_hfacc(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adrecip_hfacs(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adrecip_hfacw(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      common /adgrid_r/ adr_low_control, 
+     &                  adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
+      common /adgrid_r_c/ adhfacc
+      common /adgrid_r_s/ adhfacs
+      common /adgrid_r_w/ adhfacw
+#endif /* ALLOW_DEPTH_CONTROL */
+
 #endif /* ALLOW_AUTODIFF_MONITOR */

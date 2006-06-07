@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.7 2005/10/22 20:17:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.8 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -113,35 +113,35 @@ c           rUpwind= (2. _d 0*rHigh - wCFL)*ABS(rCenter)
            a5d(i,j,k)   = a5d(i,j,k)
      &                  + rC4km
      &                   *deltaTarg(k)
-     &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  - ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k)
-     &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  - ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k)
-     &                    *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                    *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  + rC4kp
      &                   *deltaTarg(k)
-     &                   *recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &                   *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  - rC4km
      &                   *deltaTarg(k-1)
-     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  + ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k-1)
-     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  + ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k-1)
-     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  - rC4kp
      &                   *deltaTarg(k-1)
-     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *_recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
          ENDDO
        ENDDO
 

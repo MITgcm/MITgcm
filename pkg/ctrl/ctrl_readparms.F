@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.23 2006/05/27 17:07:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.24 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -120,7 +120,7 @@ c--   Read the namelist input.
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sss_file,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
-     &  xx_hfacc_file,
+     &  xx_depth_file,
      &  xx_efluxy_file,
      &  xx_efluxp_file,
      &  xx_bottomdrag_file,
@@ -273,7 +273,7 @@ c
         xx_diffkr_file      = 'xx_diffkr'
         xx_kapgm_file       = 'xx_kapgm'
         xx_tr1_file         = 'xx_ptr'
-        xx_hfacc_file       = 'xx_hfacc'
+        xx_depth_file       = 'xx_depth'
         xx_efluxy_file      = 'xx_efluxy'
         xx_efluxp_file      = 'xx_efluxp'
         xx_bottomdrag_file  = 'xx_bottomdrag'

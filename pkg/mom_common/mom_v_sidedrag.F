@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.11 2005/10/12 21:07:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.12 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -114,8 +114,8 @@ C       (but this might just be what we want ...)
         hFacZClosedW = h0FacS(i,j,k,bi,bj) - h0FacS(i-1,j,k,bi,bj)
         hFacZClosedE = h0FacS(i,j,k,bi,bj) - h0FacS(i+1,j,k,bi,bj)
 #else
-        hFacZClosedW = hFacS(i,j,k,bi,bj) - hFacS(i-1,j,k,bi,bj)
-        hFacZClosedE = hFacS(i,j,k,bi,bj) - hFacS(i+1,j,k,bi,bj)
+        hFacZClosedW = _hFacS(i,j,k,bi,bj) - _hFacS(i-1,j,k,bi,bj)
+        hFacZClosedE = _hFacS(i,j,k,bi,bj) - _hFacS(i+1,j,k,bi,bj)
 #endif
         hFacZClosedW = MAX( 0. _d 0, hFacZClosedW )
         hFacZClosedE = MAX( 0. _d 0, hFacZClosedE )

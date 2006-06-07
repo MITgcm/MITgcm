@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.1 2005/10/22 19:56:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.2 2006/06/07 01:55:14 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -64,7 +64,7 @@ CEOP
 
 c       uFld = uVel(i,j,k,bi,bj)
         uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
-     &        *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
+     &        *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         uCFL = ABS(uFld*deltaTloc*recip_dxC(i,j,bi,bj))
 
         uT(i,j) = 

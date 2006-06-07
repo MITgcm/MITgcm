@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.15 2006/05/12 02:17:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.16 2006/06/07 01:55:14 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -363,22 +363,12 @@ c--   == end of interface ==
 
 #endif /* ALLOW_SSS0_CONTROL */
 
-#ifdef ALLOW_HFACC_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
       else if ( grdchkvarindex .eq. 20 ) then
-         il=ilnblnk( xx_hfacc_file )
+         il=ilnblnk( xx_depth_file )
          write(fname(1:80),'(80a)') ' '
          write(fname(1:80),'(3a,i10.10)')
-     &        yadmark, xx_hfacc_file(1:il),'.',optimcycle
-
-#ifdef ALLOW_HFACC3D_CONTROL
-
-         call active_read_xyz_loc( fname, tmpfld3d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-
-#else
+     &        yadmark, xx_depth_file(1:il),'.',optimcycle
 
          call active_read_xy_loc( fname, tmpfld2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
@@ -386,8 +376,7 @@ c--   == end of interface ==
 
          xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
-#endif /* ALLOW_HFACC3D_CONTROL */
-#endif /* ALLOW_HFACC_CONTROL */
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_EFLUXY0_CONTROL
       else if ( grdchkvarindex .eq. 21 ) then

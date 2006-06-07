@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.9 2005/10/13 04:35:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.10 2006/06/07 01:55:13 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -40,6 +40,12 @@ c--   Read the namelist input.
       namelist /cost_nml/ 
      &         mult_atl, mult_test, mult_tracer
      &       , multTheta, multSalt, multUvel, multVvel, multEtan
+#ifdef ALLOW_COST_TRANSPORT
+     &       , mult_transport
+#endif
+#ifdef ALLOW_COST_DEPTH
+     &       , mult_depth
+#endif
      &       , lastinterval
 
       _BEGIN_MASTER( myThid )
@@ -53,6 +59,12 @@ c--     Set default values.
         multUvel              =      0. _d 0
         multVvel              =      0. _d 0
         multEtan              =      0. _d 0
+#ifdef ALLOW_COST_TRANSPORT
+        mult_transport        =      0. _d 0
+#endif
+#ifdef ALLOW_COST_DEPTH
+        mult_depth            =      0. _d 0
+#endif
 
 c--     30*24*3600 = 2592000 = 1 model month
         lastinterval = 2592000.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.5 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.6 2006/06/07 01:55:13 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          DO i=1-Olx,sNx+Olx
           IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &           *hFacC(i,j,k,bi,bj)/hFac_surfC(i,j,bi,bj) 
+     &           *_hFacC(i,j,k,bi,bj)/hFac_surfC(i,j,bi,bj) 
           ENDIF
          ENDDO
         ENDDO

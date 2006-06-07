@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.5 2006/05/06 14:33:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.6 2006/06/07 01:55:13 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -56,6 +56,12 @@ c--   Initialize the tiled cost function contributions.
           objf_atl(bi,bj)  = 0. _d 0
           objf_test(bi,bj) = 0. _d 0
           objf_tracer(bi,bj) = 0. _d 0
+#ifdef ALLOW_COST_TRANSPORT
+          objf_transport(bi,bj) = 0. _d 0
+#endif
+#ifdef ALLOW_COST_DEPTH
+          objf_depth(bi,bj) = 0. _d 0
+#endif
 #ifdef ALLOW_COST_VECTOR
           do i=1,sNx
             objf_vector(i,bi,bj) = 0. _d 0

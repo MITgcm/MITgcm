@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.5 2005/12/13 16:15:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.6 2006/06/07 01:55:13 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -75,6 +75,9 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "cost.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -90,7 +93,12 @@ C     == Local variables ==
       integer bi, bj
 CEOP
 
-C--   TAMC need a stmt in front of a HPF directive
+#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics
+CADJ STORE hfacw, hfacs  = comlev1, key = ikey_dynamics
+# endif
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -103,6 +111,9 @@ C--   TAMC need a stmt in front of a HPF directive
 #ifdef ALLOW_COST_TRACER
            CALL COST_TRACER( bi, bj, myThid )
 #endif
+#ifdef ALLOW_COST_TRANSPORT
+          CALL COST_TRANSPORT( bi, bj, myTime, myIter, myThid )
+#endif /* ALLOW_COST_TRANSPORT */
 
         ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.3 2005/09/04 19:22:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.4 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -86,7 +86,7 @@ C-     1rst lower diagonal :
          DO i=iMin,iMax
           IF (maskS(i,j,k-1,bi,bj).EQ.1.)
      &     b5d(i,j,k) = -deltaTmom
-     &                  *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &                  *kappaRV(i,j, k )*recip_drC( k )
          ENDDO
         ENDDO
@@ -97,7 +97,7 @@ C-     1rst upper diagonal :
          DO i=iMin,iMax
           IF (maskS(i,j,k+1,bi,bj).EQ.1.)
      &     d5d(i,j,k) = -deltaTmom
-     &                 *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRV(i,j,k+1)*recip_drC(k+1)
          ENDDO
         ENDDO
@@ -144,16 +144,16 @@ C-          space Centered/Upwind advection scheme, Advective form:
               rUpwind = ABS(rCenter)*upwindFac
               b5d(i,j,k) = b5d(i,j,k)
      &                   - (rCenter+rUpwind)
-     &                     *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k) = c5d(i,j,k)
      &                   + (rCenter+rUpwind)
-     &                     *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
      &                   - (rCenter-rUpwind)
-     &                     *recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
      &                   + (rCenter-rUpwind)
-     &                     *recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
              ENDDO
             ENDDO
           ELSE
@@ -163,13 +163,13 @@ C-          space Centered advection scheme, Flux form:
               rCenter = 0.5 _d 0 *deltaTmom*rTrans(i,j)
      &                           *recip_rAs(i,j,bi,bj)*rkSign
               b5d(i,j,k) = b5d(i,j,k)
-     &            - rCenter*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &            - rCenter*_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k) = c5d(i,j,k)
-     &            - rCenter*recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &            - rCenter*_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
-     &            + rCenter*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &            + rCenter*_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
-     &            + rCenter*recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &            + rCenter*_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
              ENDDO
             ENDDO
             STOP 'MOM_IMPLICIT_R: Flux Form not yet finished.'

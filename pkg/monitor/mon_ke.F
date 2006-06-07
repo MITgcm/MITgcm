@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.14 2005/11/04 01:33:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.15 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -49,7 +49,7 @@ C     !LOCAL VARIABLES:
         DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
-           volTile=volTile+rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+           volTile=volTile+rA(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
 
 C- Vector Invariant form (like in pkg/mom_vecinv/mom_vi_calc_ke.F)
 c          tmpVal=0.25*( uVel( I , J ,K,bi,bj)*uVel( I , J ,K,bi,bj)
@@ -64,16 +64,16 @@ C    this is the safe way to check the energy conservation
 C    with no assumption on how grid spacing & area are defined.
            tmpVal=0.25*(
      &       uVel( i ,j,k,bi,bj)*uVel( i ,j,k,bi,bj)
-     &         *dyG( i ,j,bi,bj)*dxC( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)
+     &         *dyG( i ,j,bi,bj)*dxC( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)
      &      +uVel(i+1,j,k,bi,bj)*uVel(i+1,j,k,bi,bj)
-     &         *dyG(i+1,j,bi,bj)*dxC(i+1,j,bi,bj)*hFacW(i+1,j,k,bi,bj)
+     &         *dyG(i+1,j,bi,bj)*dxC(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)
      &      +vVel(i, j ,k,bi,bj)*vVel(i, j ,k,bi,bj)
-     &         *dxG(i, j ,bi,bj)*dyC(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)
+     &         *dxG(i, j ,bi,bj)*dyC(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)
      &      +vVel(i,j+1,k,bi,bj)*vVel(i,j+1,k,bi,bj)
-     &         *dxG(i,j+1,bi,bj)*dyC(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)
+     &         *dxG(i,j+1,bi,bj)*dyC(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)
      &        )
            volMeanTile= volMeanTile + tmpVal*drF(k)
-           tmpVal= tmpVal*recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
+           tmpVal= tmpVal*_recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
 
            theMax=max(theMax,tmpVal)
            IF (tmpVal.NE.0.) THEN

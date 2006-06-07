@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.9 2005/09/28 15:53:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.10 2006/06/07 01:55:15 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -123,14 +123,14 @@ c2   &                  *_maskW(I,J,K,bi,bj)
           uShearTerm(I,J)=-0.5*
      &                   (     (wBarXp*uZp+wBarXm*uZm)
      &                        +(ABS(wBarXp)*uZp-ABS(wBarXm)*uZm)
-     &                   )*recip_hFacW(i,j,k,bi,bj)
-     &                    *recip_drF(K)
-c3   &                    *recip_rAw(i,j,bi,bj)
+     &                   )*_recip_hFacW(i,j,k,bi,bj)
+     &                    * recip_drF(K)
+c3   &                    * recip_rAw(i,j,bi,bj)
         ELSE
           uShearTerm(I,J)=-0.5*(wBarXp*uZp+wBarXm*uZm)
-     &                    *recip_hFacW(i,j,k,bi,bj)
-     &                    *recip_drF(K)
-c3   &                    *recip_rAw(i,j,bi,bj)
+     &                    *_recip_hFacW(i,j,k,bi,bj)
+     &                    * recip_drF(K)
+c3   &                    * recip_rAw(i,j,bi,bj)
         ENDIF
        ENDDO
       ENDDO

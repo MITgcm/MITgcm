@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.15 2006/05/12 02:17:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.16 2006/06/07 01:55:14 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -517,30 +517,16 @@ c--   == end of interface ==
 
 #endif /* ALLOW_SSS0_CONTROL */
 
-#ifdef ALLOW_HFACC_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
       else if ( grdchkvarindex .eq. 20 ) then
-         il=ilnblnk( xx_hfacc_file )
+         il=ilnblnk( xx_depth_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_hfacc_file(1:il),'.',optimcycle
+     &           yadmark, xx_depth_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
-     &           xx_hfacc_file(1:il),'.',optimcycle
+     &           xx_depth_file(1:il),'.',optimcycle
          end if
-
-#ifdef ALLOW_HFACC3D_CONTROL
-
-         call active_read_xyz_loc( fname, tmpfld3d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
-
-         call active_write_xyz_loc( fname, tmpfld3d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
-#else
 
          call active_read_xy_loc( fname, tmpfld2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
@@ -552,8 +538,7 @@ c--   == end of interface ==
      &                         optimcycle,
      &                         mythid, dummy)
 
-#endif /* ALLOW_HFACC3D_CONTROL */
-#endif /* ALLOW_HFACC_CONTROL */
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_EFLUXY0_CONTROL
       else if ( grdchkvarindex .eq. 21 ) then

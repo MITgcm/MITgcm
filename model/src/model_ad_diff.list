@@ -12,6 +12,7 @@ calc_ivdc.f
 calc_phi_hyd.f
 calc_surf_dr.f
 calc_viscosity.f	
+cg2d_nsa.f
 convective_adjustment.f
 convective_adjustment_ini.f
 convective_weights.f
@@ -81,9 +82,10 @@ the_main_loop.f
 thermodynamics.f	
 timestep_tracer.f
 tracers_correction_step.f
-update_etah.f	
-update_surf_dr.f
 update_cg2d.f
+update_etah.f	
+update_masks_etc.f
+update_surf_dr.f
 swfrac.f
 calc_r_star.f
 update_r_star.f
