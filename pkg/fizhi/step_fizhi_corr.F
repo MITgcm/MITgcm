@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.15 2006/02/24 00:12:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.16 2006/06/08 19:47:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -266,6 +266,13 @@ c    Last: Increment physics state by the correction term
 
        enddo
        enddo
+
+#ifdef ALLOW_DIAGNOSTICS
+      call diagnostics_fill(uphy,'UAVE    ',0,Nrphys,0,1,1,myThid)
+      call diagnostics_fill(vphy,'UAVE    ',0,Nrphys,0,1,1,myThid)
+      call diagnostics_fill(thphy,'TAVE    ',0,Nrphys,0,1,1,myThid)
+      call diagnostics_fill(sphy,'QAVE    ',0,Nrphys,0,1,1,myThid)
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       do bj = myByLo(myThid), myByHi(myThid)
