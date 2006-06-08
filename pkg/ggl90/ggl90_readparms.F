@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.5 2006/06/07 16:34:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.6 2006/06/08 00:12:45 mlosch Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -135,58 +135,70 @@ C Now set-up any remaining parameters that result from the input parameters
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
 
-#ifdef UNSAFE_INTERNAL_WRITE
 C--   print TKE vertical mixing parameters to stdout for better debugging
-      WRITE(msgBuf,*) 'GGL90: GGL90dumpFreq        = ', GGL90dumpFreq
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') '// GGL90 configuration'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+
+      CALL WRITE_0D_R8( GGL90dumpFreq, INDEX_NONE,'GGL90dumpFreq =',
+     &'   /* GGL90 state write out interval ( s ). */')
+      CALL WRITE_0D_R8( GGL90taveFreq, INDEX_NONE,'GGL90taveFreq =',
+     &'   /* GGL90 averaging interval ( s ). */')
+      CALL WRITE_0D_L(GGL90mixingMaps,INDEX_NONE,
+     &     'GGL90mixingMAPS =', '   /* GGL90 IO flag. */')
+      CALL WRITE_0D_L(GGL90writeState,INDEX_NONE,
+     &     'GGL90writeState =', '   /* GGL90 IO flag. */')
+      CALL WRITE_0D_R8( GGL90ck, INDEX_NONE,'GGL90ck =',
+     &'   /* GGL90 viscosity parameter. */')
+      CALL WRITE_0D_R8( GGL90ceps, INDEX_NONE,'GGL90ceps =',
+     &'   /* GGL90 dissipation parameter. */')
+      CALL WRITE_0D_R8( GGL90alpha, INDEX_NONE,'GGL90alpha =',
+     &'   /* GGL90 TKE diffusivity parameter. */')
+      CALL WRITE_0D_R8( GGL90m2, INDEX_NONE,'GGL90m2 =',
+     &'   /* GGL90 wind stress to vertical stress ratio. */')
+      CALL WRITE_0D_R8( GGL90TKEmin, INDEX_NONE,'GGL90TKEmin =',
+     &'   /* GGL90 minimum kinetic energy ( m^2/s^2 ). */')
+      CALL WRITE_0D_R8( GGL90TKEsurfMin, INDEX_NONE,
+     &     'GGL90TKEsurfMin =',
+     &'   /* GGL90 minimum surface kinetic energy ( m^2/s^2 ). */')
+      CALL WRITE_0D_R8( GGL90TKEbottom, INDEX_NONE,
+     &     'GGL90TKEbottom =', 
+     &     '   /* GGL90 bottom kinetic energy ( m^2/s^2 ). */')
+      CALL WRITE_0D_R8( GGL90viscMax, INDEX_NONE,'GGL90viscMax =', 
+     &     '   /* GGL90 upper limit for viscosity ( m^2/s ). */')
+      CALL WRITE_0D_R8( GGL90diffMax, INDEX_NONE,'GGL90diffMax =', 
+     &     '   /* GGL90 upper limit for diffusivity ( m^2/s ). */')
+      CALL WRITE_0D_R8( GGL90diffTKEh, INDEX_NONE,'GGL90diffTKEh =', 
+     &     '   /* GGL90 horizontal diffusivity for TKE ( m^2/s ). */')
+      CALL WRITE_0D_R8( GGL90mixingLengthMin, INDEX_NONE,
+     &     'GGL90mixingLengthMin =', 
+     &     '   /* GGL90 minimum mixing length ( m ). */')
+      WRITE(msgBuf,'(A,A)') 'GGL90: GGL90TKEFile = ', GGL90TKEFile
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90taveFreq        = ', GGL90taveFreq
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90mixingMaps      = ', GGL90mixingMaps
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+      WRITE(msgBuf,'(A)') '// End of GGL90 config. summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90writeState      = ', GGL90writeState
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90ck              = ', GGL90ck
+     &  SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90ceps            = ', GGL90ceps
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90alpha           = ', GGL90alpha
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90m2              = ', GGL90m2
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90TKEmin          = ', GGL90TKEmin
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90TKEsurfMin      = ', GGL90TKEsurfMin
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90TKEbottom       = ', GGL90TKEbottom
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90viscMax         = ', GGL90viscMax
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90diffMax         = ', GGL90diffMax
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90diffTKEh        = ', GGL90diffTKEh
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90mixingLengthMin = ', 
-     &                                           GGL90mixingLengthMin
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,*) 'GGL90: GGL90TKEFile         = ', GGL90TKEFile
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-#endif /* UNSAFE_INTERNAL_WRITE */
+     &  SQUEEZE_RIGHT , 1)
 
       _END_MASTER(myThid)
 
