@@ -3,4 +3,5 @@
  useGMRedi=.TRUE.,
  useBulkforce=.TRUE.,
  useThSIce=.TRUE.,
+ useDiagnostics=.TRUE.,
  &
