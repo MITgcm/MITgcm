@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.79 2006/06/07 01:20:26 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.80 2006/06/08 21:39:35 jmc Exp $
 #  $Name:  $
 #
 
@@ -489,16 +489,18 @@ linkdata()
 		    fi
 		done
 	    else
-		files=`( cd ../input ; ls -1 *.bin | grep -v CVS )`
-		for i in $files ; do
-		    if test ! -d "../input/"$i ; then
-			ln -sf "../input/"$i $i
-		    fi
-		done
 		files=`( cd ../input_ad ; ls -1 | grep -v CVS )`
 		for i in $files ; do
 		    if test ! -d "../input_ad/"$i ; then
 			ln -sf "../input_ad/"$i $i
+		    fi
+		done
+		files=`( cd ../input ; ls -1 | grep -v CVS )`
+		for i in $files ; do
+		    if test ! -d "../input/"$i ; then
+		     if test ! -r $i  ; then
+			ln -sf "../input/"$i $i
+		     fi
 		    fi
 		done
 	    fi
