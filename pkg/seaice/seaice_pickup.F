@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.12 2006/06/08 23:09:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.13 2006/06/08 23:57:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,6 +22,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     == Routine arguments ==
@@ -49,12 +50,12 @@ C--    Read ice model fields
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 7, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma1,  22, myThid )
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma2,  23, myThid )
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma12, 24, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma1,  22, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma2,  23, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma12, 24, myThid )
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_MULTILEVEL */
@@ -67,12 +68,12 @@ C--    Read ice model fields
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 5, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma1,  16, myThid )
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma2,  17, myThid )
-          CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &         seaice_sigma12, 18, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma1,  16, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma2,  17, myThid )
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma12, 18, myThid )
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 #endif /* SEAICE_MULTILEVEL */
