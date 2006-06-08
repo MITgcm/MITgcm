@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.7 2006/06/08 14:15:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.8 2006/06/08 14:21:45 jmc Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -185,7 +185,7 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
      &     'GGL90mixingLengthMin =', 
      &     '   /* GGL90 minimum mixing length ( m ). */')
       iL = MAX_LEN_MBUF - 22
-      iL = MIN(iL,ILNBLNK(GGL90TKEFile))
+      iL = MIN( iL, MAX(ILNBLNK(GGL90TKEFile),1) )
       WRITE(msgBuf,'(A,A)')'GGL90: GGL90TKEFile = ',GGL90TKEFile(1:iL)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
