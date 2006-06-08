@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.37 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.38 2006/06/08 23:09:56 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,7 +42,7 @@ C     iUnit       - Work variable for IO unit number
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
-     & SEAICEuseEVP, SEAICEuseFluxForm,
+     & SEAICEuseEVP, SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & useHB87stressCoupling,
      & SEAICE_clipVelocities, SEAICE_maskRHS,
      & LAD, IMAX_TICE,
@@ -105,6 +105,7 @@ C--   set default sea ice parameters
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
       SEAICEuseEVP       = .FALSE.
+      SEAICEuseEVPpickup = .TRUE.
       SEAICEuseFluxForm  = .FALSE.
       useHB87stressCoupling = .FALSE.
       SEAICE_clipVelocities = .TRUE.

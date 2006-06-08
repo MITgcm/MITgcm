@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.27 2006/06/05 22:46:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.28 2006/06/08 23:09:56 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -14,6 +14,9 @@ C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
 C     SEAICEuseEVP      - If false, use Zhangs LSR solver for VP equations
 C                         if true use elastic viscous plastic solver  
+C     SEAICEuseEVPpickup - Set to false in order to start EVP solver with
+C                          non-EVP pickup files.  Default is true.
+C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
@@ -29,6 +32,7 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL 
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
+     &     SEAICEuseEVPpickup,
      &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
