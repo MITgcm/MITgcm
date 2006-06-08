@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/GGL90_DIAGS.h,v 1.1 2004/09/16 11:27:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/GGL90_DIAGS.h,v 1.2 2006/06/08 00:12:05 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -33,7 +33,7 @@ C----------------------------------------------------------------
 C     GGL90*tave    - Time-averaging GGL90 variables
 C----------------------------------------------------------------
 
-      _RL GGL90TKEtave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GGL90TKEtave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90diffKrtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GGL90_TAVE_DIAGS/
