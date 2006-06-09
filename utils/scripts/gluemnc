@@ -1,0 +1,226 @@
+#!/bin/bash
+# This is a shell script to combine multiple MITgcm mnc output files from 
+# different tiles into one global file.
+# All of the variables should be in one directory, where this script is run.
+#
+# To combine all state.0000000000.t*.nc files,
+#  gluemnc state.0000000000.*.nc 
+# This will result in an output file state.0000000000.glob.nc 
+# Where glob is for global.
+#
+# You can even combine all mnc files, use
+#  gluemnc *.nc
+# This will result in a series of global files,
+# state.0000000000.glob.nc state.0000000100.glob.nc, ...
+# grid.0000000000.glob.nc grid.0000000100.glob.nc, ...
+# diag.0000000000.glob.nc diag.0000000100.glob.nc, ...
+#
+# **********WARNINGS**********
+# This will probably not work at all with exch2/cubed sphere.
+# In that case, you probably can assemble all of the tiles on a face,
+# but combining faces is currently not implemented.
+#
+# Be sure you have enough disk space for the copies!  In this version
+# nothing is done to assure all of the data is copied.
+#
+# Be careful!  It will be easy to exceed the 2 GB limit for the old 32-bit
+# version of netcdf.  If you do not have large-file support or 64-bit netcdf
+# you will have to be clever in dividing up your tiled files,
+# e.g., along the time dimension before combining to global files.
+# *****************************
+#
+# Good luck and happy glueing,
+# Baylor Fox-Kemper
+
+inone=$1
+inone=${1:?"You must input mnc filenames to be glued"}
+
+for somefile in $@
+do
+  if [ ! -s $somefile ]; then
+    echo "Error: $somefile is missing or empty"
+    exit 1
+  fi
+done
+
+prels=${@%.t???.nc}
+
+for somepre in $prels
+do
+  inls=0
+  for somepres in $sprels
+  do
+    if [ "$somepre" = "$somepres" ]; then
+      inls=1
+    fi
+  done
+  if [ "$inls" = "0" ]; then
+   sprels=$sprels" "$somepre
+  fi
+done
+
+prels=$sprels
+
+for somepre in $prels
+do
+  echo Making $somepre.glob.nc...
+  Xsls=
+  Ysls=
+
+  for somefile in $@
+  do
+    if [ "${somefile%.t???.nc}" = "$somepre" ]; then
+      echo Scanning $somefile...
+      Xs=$(ncdump -vX -l 10000 $somefile | grep "X = ")
+      Xs=${Xs#*;}
+      Xs=${Xs%;*}
+      Xs=$(echo $Xs | sed s/' '//g)
+      Xsls=$Xsls$Xs" "
+
+      Ys=$(ncdump -vY -l 10000 $somefile | grep "Y = ")
+      Ys=${Ys#*;}
+      Ys=${Ys%;*}
+      Ys=$(echo $Ys | sed s/' '//g)
+      Ysls=$Ysls$Ys" "
+    fi
+  done
+
+  sYsls=
+  sXsls=
+
+  # Determine all the X locations
+  countx=0
+  for someXs in $Xsls
+  do 
+    inls=0
+    for somesXs in $sXsls
+    do
+      if [ "$someXs" = "$somesXs" ]; then
+        inls=1
+      fi
+    done
+    if [ "$inls" = "0" ]; then
+      sXsls=$sXsls$someXs" "
+      countx=$((countx))+1
+    fi
+  done
+  echo $((countx)) tiles found in x-direction.
+
+  # Determine all the Y locations
+  county=0
+  for someYs in $Ysls
+  do 
+    inls=0
+    for somesYs in $sYsls
+    do
+      if [ "$someYs" = "$somesYs" ]; then
+        inls=1
+      fi
+    done
+    if [ "$inls" = "0" ]; then
+      sYsls=$sYsls$someYs" "
+      county=$((county))+1
+    fi
+  done
+  echo $((county)) tiles found in y-direction.
+
+  countyy=1000
+  countxx=1000
+
+  for someX in $sXsls
+  do
+    countxx=$((countxx+1))
+    for somefile in $@
+    do
+      if [ "${somefile%.t???.nc}" = "$somepre" ]; then
+        Xs=$(ncdump -vX -l 10000 $somefile | grep "X = ")
+        Xs=${Xs#*;}
+        Xs=${Xs%;*}
+        Xs=$(echo $Xs | sed s/' '//g)
+
+        if [ "$someX" = $Xs ]; then
+          ./xplodemnc $somefile   
+          for somesplit in $(ls *.$somefile)
+          do
+            withY=$(ncdump -h $somesplit | grep "Y =")
+            if [ ${#withY} -gt 1 ]; then
+              echo Changing Y to record variable in $somesplit
+              ncpdq -O -a Y,T $somesplit $somesplit
+            fi
+
+            withYp1=$(ncdump -h $somesplit | grep "Yp1 =")
+            if [ ${#withYp1} -gt 1 ]; then
+              Yp1len=${withYp1#*= }
+              Yp1len=$((${Yp1len% ;}-1))
+              #  Strip off the repeated value in Yp1
+              echo Changing Yp1 to record variable in $somesplit
+              ncpdq -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit
+            fi
+          done
+        fi
+      fi
+    done
+    varls=$(ls *.$somefile)
+    varls=$(echo $varls | sed s/.$somefile/' '/g)
+    for somevar in $varls
+    do
+      echo Combining $somevar files...
+      withY=$(ncdump -h $somevar.$somepre.*.nc | grep "Y =")
+      withYp1=$(ncdump -h $somevar.$somepre.*.nc | grep "Yp1 =")
+
+      ncrcat $somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc
+
+      rm $somevar.$somepre.????.nc
+
+      if [ ${#withY} -gt 1 ]; then
+        echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
+        ncpdq -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+      fi
+
+      if [ ${#withYp1} -gt 1 ]; then
+        echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
+        ncpdq -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+      fi
+    done
+  done
+  for somevar in $varls
+  do
+    for somegloy in $(ls $somevar.$somepre.gloy.*.nc)
+    do
+      withX=$(ncdump -h $somegloy | grep "X =")
+      withXp1=$(ncdump -h $somegloy | grep "Xp1 =")
+ 
+      if [ ${#withX} -gt 1 ]; then
+        echo Changing X to record variable in $somegloy
+        ncpdq -O -a X,T $somegloy $somegloy
+      fi
+
+      if [ ${#withXp1} -gt 1 ]; then
+        Xp1len=${withXp1#*= }
+        Xp1len=$((${Xp1len% ;}-1))
+        #  Strip off the repeated value in Xp1
+        echo Changing Xp1 to record variable in $somesplit
+        ncpdq -O -a Xp1,T -F -d Xp1,1,$Xp1len $somesplit $somesplit
+      fi
+    done
+    echo Combining $somevar.gloy files...
+    ncrcat $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc      
+
+    rm $somevar.$somepre.gloy.*.nc
+
+    if [ ${#withX} -gt 1 ]; then
+      echo Changing T to record variable in $somevar.$somepre.glob.nc
+      ncpdq -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+    fi
+
+    if [ ${#withXp1} -gt 1 ]; then
+      echo Changing T to record variable in $somevar.$somepre.glob.nc
+      ncpdq -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+    fi
+  done
+  ncrcat *.$somepre.glob.nc $somepre.glob.nc
+  rm *.$somepre.????.nc
+done
+
+
+
