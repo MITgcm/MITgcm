@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.25 2005/11/05 01:00:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.26 2006/06/09 16:56:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -463,20 +463,6 @@ c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,0,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('RAZ',RAZ,1,0,0,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('XG',XG,1,0,0,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('YG',YG,1,0,0,0,myThid)
-
-C--   Require that 0 <= longitude < 360 if using exf package
-#ifdef ALLOW_EXF
-      DO bj = 1,nSy
-       DO bi = 1,nSx
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          IF (XC(i,j,bi,bj).lt.0.) XC(i,j,bi,bj)=XC(i,j,bi,bj)+360.
-          IF (XG(i,j,bi,bj).lt.0.) XG(i,j,bi,bj)=XG(i,j,bi,bj)+360.
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_EXF */
 
 C--   Now let's look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
