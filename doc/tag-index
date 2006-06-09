@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.672 2006/06/08 23:09:55 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.673 2006/06/09 00:20:30 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,7 @@ o pkg/ggl90: fix sloppy output and fix a bug
 o pkg/seaice: added SEAICEuseEVPpickup parameter
   - Set to false in order to start EVP solver with
     non-EVP pickup files when using SEAICEuseEVP
+  - fix sign error in diffusion in seaice_calc_rhs
 
 checkpoint58h_post
 * Modifications for bottom topography control
