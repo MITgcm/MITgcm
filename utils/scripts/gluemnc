@@ -205,7 +205,6 @@ do
     done
     echo Combining $somevar.gloy files...
     ncrcat $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc      
-
     rm $somevar.$somepre.gloy.*.nc
 
     if [ ${#withX} -gt 1 ]; then
@@ -217,9 +216,9 @@ do
       echo Changing T to record variable in $somevar.$somepre.glob.nc
       ncpdq -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
     fi
+  ncrcat -A $somevar.$somepre.glob.nc $somepre.glob.nc
+  rm $somevar.$somepre.glob.nc
   done
-  ncrcat *.$somepre.glob.nc $somepre.glob.nc
-  rm *.$somepre.????.nc
 done
 
 
