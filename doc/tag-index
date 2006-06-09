@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.673 2006/06/09 00:20:30 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.674 2006/06/09 16:59:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exf & curvilinear-grid: no longer modify longitude xC & xG.
 o pkg/ggl90: fix sloppy output and fix a bug
 o pkg/seaice: added SEAICEuseEVPpickup parameter
   - Set to false in order to start EVP solver with
