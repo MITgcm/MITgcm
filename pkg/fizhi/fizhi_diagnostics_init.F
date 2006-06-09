@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.10 2006/06/08 19:58:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.11 2006/06/09 16:05:28 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -448,7 +448,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'VAVE    '
       diagTitle  = 'Average Meridional Wind (m/s)'
       diagUnits  = 'm/s             '
-      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'MR      '
+      WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'ML      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
