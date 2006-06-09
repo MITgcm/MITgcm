@@ -170,7 +170,7 @@ do
 
       ncrcat $somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc
 
-      rm $somevar.$somepre.????.nc
+      rm $somevar.$somepre.t???.nc
 
       if [ ${#withY} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
