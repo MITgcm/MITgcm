@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.36 2006/03/24 16:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.37 2006/06/10 12:21:48 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -474,10 +474,10 @@ C- jmc: but ultimately, this block can/will be removed.
 
       IF ( highOrderVorticity .AND. useCubedSphereExchange ) THEN
         WRITE(msgBuf,'(2A)')
-     &   'CONFIG_CHECK: highOrderVorticity Scheme does not work',
-     &   ' on CubedSphere grid'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+     &   'CONFIG_CHECK WARNING: highOrderVorticity Scheme is not ',
+     &   'yet fully implemented on CubedSphere grid'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 
       IF ( momForcingOutAB.NE.0 .AND. momForcingOutAB.NE.1 ) THEN 
