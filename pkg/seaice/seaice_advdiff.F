@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.7 2006/06/06 19:13:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.8 2006/06/12 16:34:30 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_THSICE
+# include "THSICE_OPTIONS.h"
+#endif /* ALLOW_THSICE */
  
 CBOP
 C !ROUTINE: SEAICE_ADVDIFF
@@ -70,10 +73,13 @@ C     msgBuf    - Informational/error meesage buffer
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_THSICE
+      LOGICAL dBugFlag
+#include "THSICE_DEBUG.h"
       _RL recip_area(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif /* ALLOW_THSICE */
 CEOP
+      dBugFlag = debugLevel.GE.debLevB
+#endif /* ALLOW_THSICE */
 
       k = 1
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -169,33 +175,6 @@ C     first compute cell areas used by all tracers
          DO i=1-Olx,sNx+Olx
           xA(i,j) = _dyG(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
           yA(i,j) = _dxG(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
-#ifdef ALLOW_THSICE
-          recip_area(I,J) = 0. _d 0 
-          IF ( AREA(I,J,1,bi,bj) .GT. 0. _d 0 ) 
-     &         recip_area(I,J) = 1./AREA(I,J,1,bi,bj)
-          recip_heff(I,J) = 0. _d 0 
-          IF ( HEFF(I,J,1,bi,bj) .GT. 0. _d 0 ) 
-     &         recip_heff(I,J) = 1./HEFF(I,J,1,bi,bj)
-#endif /* ALLOW_THSICE */
-         ENDDO
-        ENDDO
-C--   Effective Thickness (Volume)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          fld(I,J,bi,bj) = HEFF(I,J,1,bi,bj)
-         ENDDO
-        ENDDO
-        CALL SEAICE_calc_rhs( 
-     I       uc, vc, fld, HEFFM, xA, yA,
-     I       SEAICEadvScheme, GAD_HEFF, bi, bj, 
-     O       gFld,
-     I       myTime, myIter, myThid )
-C     now do the "explicit" time step
-        DO j=1,sNy
-         DO i=1,sNx
-          HEFF(I,J,1,bi,bj) = HEFFM(I,J,bi,bj) * ( 
-     &         HEFF(I,J,1,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj)
-     &         )
          ENDDO
         ENDDO
 C--   Fractional area
@@ -217,11 +196,43 @@ C     now do the "explicit" time step
      &         )
          ENDDO
         ENDDO
+C--   Effective Thickness (Volume)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          fld(I,J,bi,bj) = HEFF(I,J,1,bi,bj)
+         ENDDO
+        ENDDO
+        CALL SEAICE_calc_rhs( 
+     I       uc, vc, fld, HEFFM, xA, yA,
+     I       SEAICEadvScheme, GAD_HEFF, bi, bj, 
+     O       gFld,
+     I       myTime, myIter, myThid )
+C     now do the "explicit" time step
+        DO j=1,sNy
+         DO i=1,sNx
+          HEFF(I,J,1,bi,bj) = HEFFM(I,J,bi,bj) * ( 
+     &         HEFF(I,J,1,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj)
+     &         )
+         ENDDO
+        ENDDO
 #ifdef ALLOW_THSICE
         IF ( useThSice ) THEN   
 C--   Compute conversion factors using updated thickness and area
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
+#ifdef ALLOW_DBUG_THSICE
+           IF ( dBug(i,j,bi,bj) ) THEN
+            WRITE(6,'(A,2I4,2I2,I12)') 'ICE_ADV: ij,bij,it=',
+     &                                  i,j,bi,bj,myIter
+            WRITE(6,'(2(A,1P2E14.6))') 
+     &       'ICE_ADV: uc=', uc(i,j,bi,bj), uc(i+1,j,bi,bj),
+     &             ' , vc=', vc(i,j,bi,bj), vc(i,j+1,bi,bj)
+            WRITE(6,'(2(A,1P2E14.6))')
+     &       'ICE_ADV: area_b,a=', AREA(I,J,2,bi,bj),AREA(i,j,1,bi,bj),
+     &             ' , heff_b,a=', HEFF(I,J,2,bi,bj),HEFF(i,j,1,bi,bj)
+            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: mFx=', gFld(I,J,bi,bj)
+           ENDIF
+#endif
            recip_area(I,J) = 0. _d 0 
            IF ( AREA(I,J,1,bi,bj) .GT. 0. _d 0 ) 
      &          recip_area(I,J) = 1./AREA(I,J,1,bi,bj)
@@ -231,8 +242,8 @@ C--   Compute conversion factors using updated thickness and area
           ENDDO
          ENDDO
 C--   Map HEFF to ice thickness, using the latest area
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1,sNy
+          DO i=1,sNx
            iceHeight(I,J,bi,bj) = HEFF(I,J,1,bi,bj)*recip_area(I,J)
            iceMask(I,J,bi,bj)   = AREA(I,J,1,bi,bj)
           ENDDO
@@ -254,6 +265,15 @@ C     and map total enthalpy back to enthalpy per area with
 C     with current effective thickness
          DO j=1,sNy
           DO i=1,sNx
+#ifdef ALLOW_DBUG_THSICE
+           IF ( dBug(i,j,bi,bj) ) THEN
+            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: Qice1_b,a=',
+     &             Qice1(I,J,bi,bj),
+     &        ( fld(I,J,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj) 
+     &          ) * recip_heff(I,J) 
+            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q1Fx=', gFld(I,J,bi,bj)
+           ENDIF
+#endif
            Qice1(I,J,bi,bj) = HEFFM(I,J,bi,bj) * ( 
      &          fld(I,J,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj) 
      &          ) * recip_heff(I,J) 
@@ -276,6 +296,15 @@ C     and map total enthalpy back to enthalpy per area with
 C     with current effective thickness
          DO j=1,sNy
           DO i=1,sNx
+#ifdef ALLOW_DBUG_THSICE
+           IF ( dBug(i,j,bi,bj) ) THEN
+            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: Qice2_b,a=',
+     &             Qice2(I,J,bi,bj),
+     &        ( fld(I,J,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj) 
+     &          ) * recip_heff(I,J) 
+            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(I,J,bi,bj)
+           ENDIF
+#endif
            Qice2(I,J,bi,bj) = HEFFM(I,J,bi,bj) * ( 
      &          fld(I,J,bi,bj) + SEAICE_deltaTtherm * gFld(I,J,bi,bj) 
      &          ) * recip_heff(I,J) 
