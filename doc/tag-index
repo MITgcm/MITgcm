@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.674 2006/06/09 16:59:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.675 2006/06/12 22:25:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o vector_invariant: fix highOrderVorticity(=4.th.Order) advection 
+  on CS-grid: no longer loosing mass.
 o exf & curvilinear-grid: no longer modify longitude xC & xG.
 o pkg/ggl90: fix sloppy output and fix a bug
 o pkg/seaice: added SEAICEuseEVPpickup parameter
