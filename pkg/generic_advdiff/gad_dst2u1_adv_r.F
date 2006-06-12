@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.1 2005/10/22 19:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.2 2006/06/12 16:06:28 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DST2U1_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DST2U1_ADV_R( 
+      SUBROUTINE GAD_DST2U1_ADV_R(
      I           bi,bj,k, advectionScheme,
      I           deltaTloc, rTrans, wVel,
      I           tracer,
@@ -16,7 +16,7 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 C  Calculates the area integrated vertical flux due to advection
-C  of a tracer using second-order Direct Space and Time (DST-2) 
+C  of a tracer using second-order Direct Space and Time (DST-2)
 C  interpolation (=Lax-Wendroff) or simple 1rst order upwind scheme.
 
 C !USES: ===============================================================
@@ -54,7 +54,7 @@ C  rLimit            :: centered (vs upwind) fraction
 C  wFld              :: velocity, vertical component
 C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,km1
-      _RL wFld, wCFL, rLimit
+      _RL wFld, wCFL, rLimit, wAbs
 CEOP
 
       rLimit = 0. _d 0
@@ -76,10 +76,20 @@ c        wFld = wVel(i,j,k,bi,bj)
          wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
          wCFL = ABS(wFld*deltaTloc*recip_drC(k))
 
-         wT(i,j) = maskC(i,j,kM1,bi,bj)*(
-     &     rTrans(i,j)*(Tracer(i,j,km1)+Tracer(i,j,k))*0.5 _d 0
-     &   + ( 1. _d 0 - rLimit*(1. _d 0 - wCFL) )*ABS(rTrans(i,j))
-     &                *(tracer(i,j,km1)-tracer(i,j,k))*0.5 _d 0*rkSign
+c        wT(i,j) = maskC(i,j,km1,bi,bj)*(
+c    &     rTrans(i,j)*(tracer(i,j,km1)+tracer(i,j,k))*0.5 _d 0
+c    &   + ( 1. _d 0 - rLimit*(1. _d 0 - wCFL) )*ABS(rTrans(i,j))
+c    &                *(tracer(i,j,km1)-tracer(i,j,k))*0.5 _d 0*rkSign
+c    &                                  )
+C-- above formulation produces large truncation error when:
+C    1rst.O upWind and   w*rkSign > 0 & |tracer(k-1)| << |tracer(k)|
+C                   or   w*rkSign < 0 & |tracer(k-1)| >> |tracer(k)|
+C-- change to a more robust expression:
+         wAbs = ABS(rTrans(i,j))*rkSign
+     &       *( 1. _d 0 - rLimit*(1. _d 0 - wCFL) )
+         wT(i,j) = maskC(i,j,km1,bi,bj)*(
+     &             ( rTrans(i,j)+wAbs )* 0.5 _d 0 * tracer(i,j,km1)
+     &           + ( rTrans(i,j)-wAbs )* 0.5 _d 0 * tracer(i,j,k)
      &                                  )
         ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.2 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.3 2006/06/12 16:06:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DST2U1_ADV_X
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DST2U1_ADV_X( 
+      SUBROUTINE GAD_DST2U1_ADV_X(
      I           bi,bj,k, advectionScheme,
      I           deltaTloc, uTrans, uVel,
      I           tracer,
@@ -16,7 +16,7 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 C  Calculates the area integrated zonal flux due to advection
-C  of a tracer using second-order Direct Space and Time (DST-2) 
+C  of a tracer using second-order Direct Space and Time (DST-2)
 C  interpolation (=Lax-Wendroff) or simple 1rst order upwind scheme.
 
 C !USES: ===============================================================
@@ -28,7 +28,7 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
-C  advectionScheme   :: advection scheme to use: either 2nd Order DST 
+C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
 C  uTrans            :: zonal volume transport
 C  uVel              :: zonal flow
@@ -52,7 +52,7 @@ C  rLimit            :: centered (vs upwind) fraction
 C  uFld              :: velocity [m/s], zonal component
 C  uCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL uFld, uCFL, xLimit
+      _RL uFld, uCFL, xLimit, uAbs
 CEOP
 
       xLimit = 0. _d 0
@@ -67,10 +67,18 @@ c       uFld = uVel(i,j,k,bi,bj)
      &        *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         uCFL = ABS(uFld*deltaTloc*recip_dxC(i,j,bi,bj))
 
-        uT(i,j) = 
-     &     uTrans(i,j)*(Tracer(i-1,j)+Tracer(i,j))*0.5 _d 0
-     &   + ( 1. _d 0 - xLimit*(1. _d 0 - uCFL) )*ABS(uTrans(i,j))
-     &                *(tracer(i-1,j)-tracer(i,j))*0.5 _d 0
+c       uT(i,j) =
+c    &     uTrans(i,j)*(tracer(i-1,j)+tracer(i,j))*0.5 _d 0
+c    &   + ( 1. _d 0 - xLimit*(1. _d 0 - uCFL) )*ABS(uTrans(i,j))
+c    &                *(tracer(i-1,j)-tracer(i,j))*0.5 _d 0
+C-- above formulation produces large truncation error when:
+C    1rst.O upWind and   u > 0 & |tracer(i-1,j)| << |tracer(i,j)|
+C                   or   u < 0 & |tracer(i-1,j)| >> |tracer(i,j)|
+C-- change to a more robust expression:
+        uAbs = ABS(uTrans(i,j))
+     &       *( 1. _d 0 - xLimit*(1. _d 0 - uCFL) )
+        uT(i,j) = ( uTrans(i,j)+uAbs )* 0.5 _d 0 * tracer(i-1,j)
+     &          + ( uTrans(i,j)-uAbs )* 0.5 _d 0 * tracer(i,j)
        ENDDO
       ENDDO
 
