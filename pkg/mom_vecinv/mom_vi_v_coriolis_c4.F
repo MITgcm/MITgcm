@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.7 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.8 2006/06/12 21:15:27 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -26,8 +26,12 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "GRID.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -41,15 +45,77 @@ CEOP
 
 C     == Local variables ==
       INTEGER i,j
+      _RL vort3r(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uBarXY,vort3v,Rjp,Rjm
-      _RL uBarYm,uBarYp,oneSixth
+      _RL uBarYm,uBarYp
+
+      LOGICAL northWestCorner, northEastCorner,
+     &        southWestCorner, southEastCorner
+      INTEGER myFace
+#ifdef ALLOW_EXCH2
+      INTEGER myTile
+#endif /* ALLOW_EXCH2 */
+      _RL oneSixth, oneTwelve
       LOGICAL upwindVort3
       LOGICAL fourthVort3
-
-      PARAMETER(oneSixth=1.D0/6.D0)
+      PARAMETER(oneSixth=1.D0/6.D0 , oneTwelve=1.D0/12.D0)
       PARAMETER(upwindVort3=.FALSE.)
       PARAMETER(fourthVort3=.TRUE. )
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+         vort3r(i,j) = r_hFacZ(i,j)*omega3(i,j)
+       ENDDO
+      ENDDO
+
+C--   Special stuff for Cubed Sphere
+      IF (useCubedSphereExchange) THEN
+
+#ifdef ALLOW_EXCH2
+       myTile = W2_myTileList(bi)
+       myFace = exch2_myFace(myTile)
+       southWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       southEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       northEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
+       northWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
+#else
+       myFace = bi
+       southWestCorner = .TRUE.
+       southEastCorner = .TRUE.
+       northWestCorner = .TRUE.
+       northEastCorner = .TRUE.
+#endif /* ALLOW_EXCH2 */
+       IF ( southWestCorner ) THEN
+         i = 1
+         j = 1
+         vort3r(i-1,j) = ( vort3r(i-1,j) + vort3r(i,j+1) )*0.5 _d 0
+       ENDIF
+       IF ( southEastCorner ) THEN
+         i = sNx+1
+         j = 1
+         vort3r(i+1,j) = ( vort3r(i+1,j) + vort3r(i,j+1) )*0.5 _d 0
+       ENDIF
+       IF ( northWestCorner ) THEN
+         i = 1
+         j = sNy+1
+         vort3r(i-1,j) = ( vort3r(i-1,j) + vort3r(i,j-1) )*0.5 _d 0
+       ENDIF
+       IF ( northEastCorner ) THEN
+         i = sNx+1
+         j = sNy+1
+         vort3r(i+1,j) = ( vort3r(i+1,j) + vort3r(i,j-1) )*0.5 _d 0
+       ENDIF
+
+C--   End of special stuff for Cubed Sphere.
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     DO j=2-Oly,sNy+Oly
 c      DO i=2-Olx,sNx+Olx-2
       DO j=1,sNy+1
@@ -67,21 +133,16 @@ C-      using SadournyCoriolis discretization:
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
          IF (upwindVorticity) THEN
           IF ( (uBarYm+uBarYp) .GT.0.) THEN
-           vort3v=uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
+           vort3v=uBarYm*vort3r( i ,j)
           ELSE
-           vort3v=uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j)
+           vort3v=uBarYp*vort3r(i+1,j)
           ENDIF
          ELSEIF (fourthVort3) THEN
-          Rjp = omega3(i+1,j)*r_hFacZ(i+1,j)
-     &         -oneSixth*( omega3(i+2,j)*r_hFacZ(i+2,j)
-     &                    -omega3( i ,j)*r_hFacZ( i ,j) )
-          Rjm = omega3(i,j)*r_hFacZ(i,j)
-     &         +oneSixth*( omega3(i+1,j)*r_hFacZ(i+1,j)
-     &                    -omega3(i-1,j)*r_hFacZ(i-1,j) )
+          Rjp = vort3r(i+1,j) -oneSixth*( vort3r(i+2,j)-vort3r( i ,j) )
+          Rjm = vort3r( i ,j) +oneSixth*( vort3r(i+1,j)-vort3r(i-1,j) )
           vort3v=0.5*( uBarYm*Rjm + uBarYp*Rjp )
          ELSE
-          vort3v=0.5*( uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
-     &                +uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j) )
+          vort3v=0.5*( uBarYm*vort3r( i ,j) + uBarYp*vort3r(i+1,j) )
          ENDIF
 
         ELSE
@@ -95,22 +156,18 @@ C-      not using SadournyCoriolis discretization:
      &               )
          IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
-           vort3v=omega3(i,j)*r_hFacZ(i,j)
+           vort3v=vort3r(i,j)
           ELSE
-           vort3v=omega3(i+1,j)*r_hFacZ(i+1,j)
+           vort3v=vort3r(i+1,j)
           ENDIF
          ELSEIF (fourthVort3) THEN
-          Rjp=omega3(i+2,j)*r_hFacZ(i+2,j)
-     &       -omega3(i+1,j)*r_hFacZ(i+1,j)
-          Rjm=omega3(i,j)*r_hFacZ(i,j)
-     &       -omega3(i-1,j)*r_hFacZ(i-1,j)
-          vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
-     &               +omega3(i+1,j)*r_hFacZ(i+1,j)
-     &               -1./12.*(Rjp-Rjm)
+          Rjp = vort3r(i+2,j) - vort3r(i+1,j)
+          Rjm = vort3r( i ,j) - vort3r(i-1,j)
+          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j)
+     &                -oneTwelve*(Rjp-Rjm)
      &               )
          ELSE
-          vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
-     &               +omega3(i+1,j)*r_hFacZ(i+1,j))
+          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j) )
          ENDIF
 
 C-      end if / else SadournyCoriolis
