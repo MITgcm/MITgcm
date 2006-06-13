@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.675 2006/06/12 22:25:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.676 2006/06/13 21:22:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Total number of Timers is finite (<=40): comment out 2 non-essential one
+  in the_main_loop.F to avoid Pb (e.g., when running fizhi test)
 o vector_invariant: fix highOrderVorticity(=4.th.Order) advection 
   on CS-grid: no longer loosing mass.
 o exf & curvilinear-grid: no longer modify longitude xC & xG.
