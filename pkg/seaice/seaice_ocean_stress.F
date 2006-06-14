@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.8 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.9 2006/06/14 16:08:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -244,9 +244,13 @@ C     but not saved)
 C     average wind stress over ice and ocean and apply averaged wind 
 C     stress and internal ice stresses to surface layer of ocean
            areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
+     &         * SEAICEstressFactor
            areaS = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
-           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce + FX
-           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce + FY
+     &         * SEAICEstressFactor
+           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce
+     &          + FX * SEAICEstressFactor
+           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce
+     &          + FY * SEAICEstressFactor
           END DO
          END DO
         ENDDO
@@ -283,7 +287,9 @@ C     ice cover
      &                  +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj)) 
      &         )
           areaW = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
+     &         * SEAICEstressFactor
           areaS = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
+     &         * SEAICEstressFactor
           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce
           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce
          ENDDO
