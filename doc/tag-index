@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.677 2006/06/14 16:09:00 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.678 2006/06/14 18:14:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58i_post
 o pkg/seaice: add parameter that allows to scale/turn off effect of seaice 
   on wind stress (SEAICEstressFactor defaults to 1.)
 o Total number of Timers is finite (<=40): comment out 2 non-essential one
