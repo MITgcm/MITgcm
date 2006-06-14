@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.36 2006/05/06 14:33:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.37 2006/06/14 15:30:14 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1088,7 +1088,6 @@ CCE107 PAPI summary performance
       WRITE(msgBuf,'(F10.6,A34,I8)')
      $        mflops, 'Mflop/s during timestep ', iloop
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      _END_MASTER( myThid )
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
       WRITE(msgBuf,'(F10.6,A34,I8)')
