@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.28 2006/03/30 02:33:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.29 2006/06/15 16:27:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,6 +10,9 @@ C $Name:  $
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -59,6 +62,17 @@ C     == Global variables ===
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
 # endif
+# ifdef ALLOW_EXF
+#  include "ctrl.h"
+#  include "exf_fields.h"
+#  include "exf_clim_fields.h"
+#  ifdef ALLOW_BULKFORMULAE
+#   include "exf_constants.h"
+#  endif
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -100,8 +114,8 @@ C--   dummy statement to end declaration part
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
+      IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
 #endif
  
       doDiagsRho = 0
@@ -115,6 +129,38 @@ C--   dummy statement to end declaration part
      &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) doDiagsRho = 2
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_SEAICE
+C--   Call sea ice model to compute forcing/external data fields.  In
+C     addition to computing prognostic sea-ice variables and diagnosing the
+C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
+C     also sets theta to the freezing point under sea-ice.  The implied
+C     surface heat flux is then stored in variable surfaceTendencyTice,
+C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
+C     to diagnose surface buoyancy fluxes and for the non-local transport
+C     term.  Because this call precedes model thermodynamics, temperature
+C     under sea-ice may not be "exactly" at the freezing point by the time
+C     theta is dumped or time-averaged.
+      IF ( useSEAICE ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE aqh,precip,swdown   = comlev1, key = ikey_dynamics
+CADJ STORE theta               = comlev1, key = ikey_dynamics
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
+# endif
+#endif
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
+#endif
+        CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
+        CALL SEAICE_MODEL( myTime, myIter, myThid )
+        CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
+#ifdef ALLOW_COST_ICE
+        CALL COST_ICE_TEST ( myTime, myIter, myThid )
+#endif
+      ENDIF
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
       IF ( useThSIce .AND. fluidIsWater ) THEN
@@ -537,8 +583,8 @@ C--   end bi,bj loops.
 #endif
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_LEAVE('DO_OCEANIC_PHYS',myThid)
+      IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_LEAVE('DO_OCEANIC_PHYS',myThid)
 #endif
 
       RETURN
