@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.80 2006/06/08 21:39:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.81 2006/06/15 20:31:09 jmc Exp $
 #  $Name:  $
 #
 
@@ -637,12 +637,12 @@ EOF
 
 scandirs()
 {
-    if [ $# -eq 0 ]; then
-	for arg in * ; do
-	    test -d $arg/input && echo $arg
-	done
+    if [ $# -eq 1 ]; then
+ 	for arg in * ; do
+ 	    test -d $arg/$1 && echo $arg
+ 	done
     else
-	echo $*
+ 	echo $*
     fi
 }
 
@@ -805,7 +805,11 @@ if test "x$QUICK" = xt ; then
 fi
 
 if test "x$TESTDIRS" = x ; then
-    TESTDIRS=`scandirs`
+    if test "x$ADM" = xt ; then
+	TESTDIRS=`scandirs results_ad`
+    else
+	TESTDIRS=`scandirs results`
+    fi
 fi
 
 if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
