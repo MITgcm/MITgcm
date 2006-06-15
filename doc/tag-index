@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.678 2006/06/14 18:14:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.679 2006/06/15 17:03:16 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o new routine load_fields_driver
+  handles all forcing/source term calls
+o seaice, thsice calls moved to do_oceanic_phys
+o adjoint store dir. adjusted accordingly
 
 checkpoint58i_post
 o pkg/seaice: add parameter that allows to scale/turn off effect of seaice 
