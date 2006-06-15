@@ -8,7 +8,7 @@ function [UVtot,UVtrans,U2tot,U2trans,V2tot,V2trans,errFlag]=calc2ndmom(u,v,usq,
 % uv      = time averaged product of u-wind and v-wind on cubed sphere grid at mass points
 %
 % Written by molod@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc2ndmom.m,v 1.2 2005/11/16 16:12:15 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc2ndmom.m,v 1.3 2006/06/15 19:33:32 molod Exp $
 % $Name:  $
 
 fprintf('Entering calc2ndmom: \n');
@@ -90,10 +90,10 @@ v2j=(vv2(:,:,1:nc,:)+vv2(:,:,2:nc+1,:))/2;
 %
 ui=reshape(ui,[nPg nz]);
 u2i=reshape(u2i,[nPg nz]);
-ub2i=reshape(u2i,[nPg nz]);
+ub2i=reshape(ub2i,[nPg nz]);
 vj=reshape(vj,[nPg nz]);
 v2j=reshape(v2j,[nPg nz]);
-vb2j=reshape(v2j,[nPg nz]);
+vb2j=reshape(vb2j,[nPg nz]);
 UV=reshape(uv,[nPg nz]);
 %
 % Read cos and sin of rotation angle if not provided on input
