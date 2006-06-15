@@ -1,13 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.679 2006/06/15 17:03:16 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.680 2006/06/15 20:04:31 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o new routine load_fields_driver
-  handles all forcing/source term calls
-o seaice, thsice calls moved to do_oceanic_phys
+checkpoint58j_post
+o new driver S/R: LOAD_FIELDS_DRIVER to load external forcing fields
+  from file (collects calls previously in FORWARD_STEP)
+o move call to SEAICE_MODEL from FORWARD_STEP to DO_OCEANIC_PHYS
 o adjoint store dir. adjusted accordingly
+o genmake2
+  replace target "ad_taf" by $(EXE_AD) ; add $(EXE_AD) to the make CLEAN list.
 
 checkpoint58i_post
 o pkg/seaice: add parameter that allows to scale/turn off effect of seaice 
