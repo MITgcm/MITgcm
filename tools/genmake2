@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.151 2006/06/07 22:33:00 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.152 2006/06/15 17:11:37 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2477,7 +2477,7 @@ CLEAN:
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
-	-rm -f \$(EXECUTABLE) *.txt STD* *diagnostics.log datetime
+	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.txt STD* *diagnostics.log datetime
 	-rm -rf mnc_test_*
 
 #eh3 Makefile: makefile
@@ -2585,7 +2585,7 @@ rm -f ad_files
 cat >>$MAKEFILE <<EOF
 
 # ... AD ...
-adall: ad_taf
+adall: \$(EXE_AD)
 adtaf: ad_taf_output.$FS
 adtamc: ad_tamc_output.$FS
 
@@ -2605,8 +2605,8 @@ adtafonly:
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-ad_taf: ad_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
+\${EXE_AD}: ad_taf_output.o \$(OBJFILES)
+	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
 
 ad_tamc_output.$FS: ad_input_code.$FS
 	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.$FS
