@@ -10,7 +10,10 @@ CADJ STORE tices    = tapelev4, key = ilev_4
 CADJ STORE uice     = tapelev4, key = ilev_4
 CADJ STORE vice     = tapelev4, key = ilev_4
 #  ifdef SEAICE_CGRID
-CADJ STORE dwatn = tapelev4, key = ilev_4
+CADJ STORE dwatn    = tapelev4, key = ilev_4
 CADJ STORE seaicemasku,seaicemaskv = tapelev4, key = ilev_4
 #  endif
 # endif
+#ifdef ALLOW_COST_ICE
+CADJ STORE objf_ice = tapelev4, key = ilev_4
+#endif

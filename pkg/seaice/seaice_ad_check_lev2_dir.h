@@ -14,3 +14,6 @@ CADJ STORE dwatn = tapelev2, key = ilev_2
 CADJ STORE seaicemasku,seaicemaskv = tapelev2, key = ilev_2
 #  endif
 # endif
+#ifdef ALLOW_COST_ICE
+CADJ STORE objf_ice = tapelev2, key = ilev_2
+#endif

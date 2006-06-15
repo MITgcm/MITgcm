@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.2 2006/05/22 19:27:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.3 2006/06/15 17:01:09 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -60,8 +60,9 @@ c     == end of interface ==
       nnzbar = 1
       nnzobs = 1
 cph(
-cph      nrecloc = ndaysrec
-      nrecloc = 4383
+      nrecloc = ndaysrec
+cph hard-coding for ECCO
+cph      nrecloc = 4383
 cph)
       spminloc = 0.
       spmaxloc = 1.

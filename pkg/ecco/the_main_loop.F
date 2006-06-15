@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.37 2006/06/14 15:30:14 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.38 2006/06/15 17:00:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,6 +132,7 @@ c They provide the fields to be stored.
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+#  include "SEAICE_COST.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -542,43 +543,21 @@ c**************************************
 c**************************************
 #endif
 
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('EXF_GETFORCING',myThid)
+C--   Call driver to load external forcing fields from file
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
 #endif
-      CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-      CALL EXF_GETFORCING( mytime, myiter, mythid )
-      CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-# ifdef NONLIN_FRSURF
-CADJ STORE hFacC  = comlev1, key = ikey_dynamics
-CADJ STORE SST    = comlev1, key = ikey_dynamics
-CADJ STORE SSS    = comlev1, key = ikey_dynamics
-#  ifdef SHORTWAVE_HEATING
-CADJ STORE Qsw    = comlev1, key = ikey_dynamics
-#  endif
-# endif
+      CALL TIMER_START('LOAD_FIELDS_DRIVER  [FORWARD_STEP]',myThid)
+      CALL LOAD_FIELDS_DRIVER( myTime, myIter, myThid )
+      CALL TIMER_STOP ('LOAD_FIELDS_DRIVER  [FORWARD_STEP]',myThid)
+
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined (ALLOW_AUTODIFF_MONITOR))
         CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 # endif
 #endif
-
-#ifdef ALLOW_SEAICE
-cph this simple runtime flag causes a lot of recomp.
-      IF ( useSEAICE ) THEN
-#ifndef DISABLE_DEBUGMODE
-         IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
-#endif
-         CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
-         CALL SEAICE_MODEL( myTime, myIter, myThid )
-         CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
-#ifdef ALLOW_COST_ICE
-         CALL COST_ICE_TEST ( myTime, myIter, myThid )
-#endif
-      ENDIF
-#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS
@@ -597,18 +576,6 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
          CALL EBM_DRIVER ( myTime, myIter, myThid )
          CALL TIMER_STOP ('EBM                [FORWARD_STEP]',mythid)
         ENDIF
-#endif
-
-#ifdef ALLOW_PTRACERS
-# ifdef ALLOW_GCHEM
-        IF ( useGCHEM ) THEN 
-#ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
-     &        CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
-#endif /* ALLOW_DEBUG */
-         CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
-        ENDIF
-# endif
 #endif
 
 C--     Step forward fields and calculate time tendency terms.

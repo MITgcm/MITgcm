@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.1 2005/09/01 05:34:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.2 2006/06/15 17:01:09 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -86,8 +86,8 @@ c     == end of interface ==
      &             / deltaTClock ) 
 
 cph(
-c      print *, 'ph-ice B ', myiter, theta(18,24,1,1,1),
-c     &     area(18,24,1,1,1), heff(18,24,1,1,1)
+      print *, 'ph-ice B ', myiter, theta(4,4,1,1,1),
+     &     area(4,4,1,1,1), heff(4,4,1,1,1)
 cph)
          if ( cost_ice_flag .eq. 1 ) then
 c     sea-ice volume
@@ -211,6 +211,10 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
             STOP 'ABNORMAL END: S/R COST_ICE'
          endif
       endif
+
+cph(
+      print *, 'ph-ice C ', myiter, objf_ice(1,1)
+cph)
 
 #endif /* ALLOW_COST_ICE */
 
