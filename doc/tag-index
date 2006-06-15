@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.680 2006/06/15 20:04:31 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.681 2006/06/15 23:36:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o rename pkg aim_ocn_coupler to atm_ocn_coupler (later on, will be used without aim)
 
 checkpoint58j_post
 o new driver S/R: LOAD_FIELDS_DRIVER to load external forcing fields
