@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.2 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.3 2006/06/16 14:44:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -18,10 +18,16 @@ C Calculates the fractional thickness at vorticity points
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "EEPARAMS.h"
+c # include "EEPARAMS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -41,6 +47,13 @@ C  r_hFacZ              :: reciprocal
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
+C  hZoption   :: forward mode option to select the way hFacZ is computed:
+C                0 : = minimum of 4 hFacW,hFacS arround (consistent with
+C                    definition of partial cell & mask near topography)
+C                1 : = minimum of 2 average (hFacW)_j,(hFacS)_i
+C                2 : = average of 4 hFacW,hFacS arround (consistent with
+C                    how free surface affects hFacW,hFacS it using r* and
+C                    without topography)
       INTEGER I,J
 #ifdef ALLOW_DEPTH_CONTROL
       _RL hFacZOpen(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -52,8 +65,16 @@ C  i,j                  :: loop indices
 # endif /* USE_SMOOTH_MIN */
 #else
       _RL hFacZOpen
-#endif /* ALLOW_DEPTH_CONTROL */
+      INTEGER hZoption
+      LOGICAL northWestCorner, northEastCorner,
+     &        southWestCorner, southEastCorner
+      INTEGER myFace
+#ifdef ALLOW_EXCH2
+      INTEGER myTile
+#endif /* ALLOW_EXCH2 */
 CEOP
+      PARAMETER ( hZoption = 0 )
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_DEPTH_CONTROL
@@ -148,27 +169,220 @@ CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 
 #else /* not ALLOW_DEPTH_CONTROL */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    Initialize hFacZ:
+c     DO j=1-Oly,sNy+Oly
+c      DO i=1-Olx,sNx+Olx
+c        hFacZ(i,j)=0.
+c      ENDDO
+c     ENDDO
+
+C--   1rst row & column are not computed: fill with zero
       DO i=1-Olx,sNx+Olx
-       hFacZ(i,1-Oly)=0.
-       r_hFacZ(i,1-Oly)=0.
+        hFacZ(i,1-Oly)=0.
+      ENDDO
+      DO j=2-Oly,sNy+Oly
+        hFacZ(1-Olx,j)=0.
       ENDDO
 
-      DO j=2-Oly,sNy+Oly
-       hFacZ(1-Olx,j)=0.
-       r_hFacZ(1-Olx,j)=0.
-       DO i=2-Olx,sNx+Olx
-        hFacZOpen=min(_hFacW(i,j,k,bi,bj),
-     &                _hFacW(i,j-1,k,bi,bj))
-        hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
-        hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
-        hFacZ(i,j)=hFacZOpen
+C--   Calculate open water fraction at vorticity points
+
+      IF ( hZoption.EQ.2 ) THEN
+        DO j=2-Oly,sNy+Oly
+         DO i=2-Olx,sNx+Olx
+c         hFacZOpen=
+c    &               ( _hFacW(i, j ,k,bi,bj)*rAw(i, j ,bi,bj)
+c    &                +_hFacW(i,j-1,k,bi,bj)*rAw(i,j-1,bi,bj) )
+c    &             + ( _hFacS( i ,j,k,bi,bj)*rAs( i ,j,bi,bj)
+c    &                +_hFacS(i-1,j,k,bi,bj)*rAs(i-1,j,bi,bj) )
+c         hFacZ(i,j) = 0.25 _d 0 * hFacZOpen*recip_rAz(i,j,bi,bj)
+          hFacZOpen=
+     &               ( _hFacW(i, j ,k,bi,bj)
+     &                +_hFacW(i,j-1,k,bi,bj) )
+     &             + ( _hFacS( i ,j,k,bi,bj)
+     &                +_hFacS(i-1,j,k,bi,bj) )
+          hFacZ(i,j) = 0.25 _d 0 * hFacZOpen
+         ENDDO
+        ENDDO
+      ELSEIF ( hZoption.EQ.1 ) THEN
+        DO j=2-Oly,sNy+Oly
+         DO i=2-Olx,sNx+Olx
+c         hFacZOpen=MIN(
+c    &                  _hFacW(i, j ,k,bi,bj)*rAw(i, j ,bi,bj)
+c    &                + _hFacW(i,j-1,k,bi,bj)*rAw(i,j-1,bi,bj)
+c    &                , _hFacS( i ,j,k,bi,bj)*rAs( i ,j,bi,bj)
+c    &                + _hFacS(i-1,j,k,bi,bj)*rAs(i-1,j,bi,bj)
+c    &                 )
+c         hFacZ(i,j) = 0.5 _d 0 * hFacZOpen*recip_rAz(i,j,bi,bj)
+          hFacZOpen=MIN(
+     &                  _hFacW(i, j ,k,bi,bj)
+     &                + _hFacW(i,j-1,k,bi,bj)
+     &                , _hFacS( i ,j,k,bi,bj)
+     &                + _hFacS(i-1,j,k,bi,bj)
+     &                 )
+          hFacZ(i,j) = 0.5 _d 0 * hFacZOpen
+         ENDDO
+        ENDDO
+      ELSE
+        DO j=2-Oly,sNy+Oly
+         DO i=2-Olx,sNx+Olx
+          hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
+     &                  _hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=MIN(_hFacS(i,j,k,bi,bj),hFacZOpen)
+          hFacZOpen=MIN(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
+          hFacZ(i,j)=hFacZOpen
+         ENDDO
+        ENDDO
+      ENDIF
+
+C---+----1----+----2----+----3----+----4
+C     Special stuff for Cubed Sphere
+      IF ( useCubedSphereExchange .AND. hZoption.GE.1 ) THEN
+
+#ifdef ALLOW_EXCH2
+        myTile = W2_myTileList(bi)
+        myFace = exch2_myFace(myTile)
+        southWestCorner = exch2_isWedge(myTile).EQ.1
+     &               .AND. exch2_isSedge(myTile).EQ.1
+        southEastCorner = exch2_isEedge(myTile).EQ.1
+     &              .AND. exch2_isSedge(myTile).EQ.1
+        northEastCorner = exch2_isEedge(myTile).EQ.1
+     &              .AND. exch2_isNedge(myTile).EQ.1
+        northWestCorner = exch2_isWedge(myTile).EQ.1
+     &              .AND. exch2_isNedge(myTile).EQ.1
+#else
+        myFace = bi
+        southWestCorner = .TRUE.
+        southEastCorner = .TRUE.
+        northWestCorner = .TRUE.
+        northEastCorner = .TRUE.
+#endif /* ALLOW_EXCH2 */
+
+
+        IF ( southWestCorner ) THEN
+         i=1
+         j=1
+         IF ( hZoption.EQ.1 ) THEN
+          hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
+     &                  _hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=MIN(_hFacS(i,j,k,bi,bj),hFacZOpen)
+          hFacZ(i,j)=hFacZOpen
+         ELSE
+          IF ( MOD(myFace,2).EQ.1 ) THEN
+            hFacZOpen=
+     &               ( _hFacW(i,j-1,k,bi,bj)
+     &                +_hFacS( i ,j,k,bi,bj) )
+     &               + _hFacW(i, j ,k,bi,bj)
+          ELSE
+            hFacZOpen=
+     &               ( _hFacW(i, j ,k,bi,bj)
+     &                +_hFacW(i,j-1,k,bi,bj) )
+     &               + _hFacS( i ,j,k,bi,bj)
+          ENDIF
+          hFacZ(i,j) = hFacZOpen / 3. _d 0
+         ENDIF
+        ENDIF
+
+        IF ( southEastCorner ) THEN
+         I=sNx+1
+         J=1
+C-    to get the same truncation, independent from the face Nb:
+         IF ( hZoption.EQ.1 ) THEN
+          hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
+     &                  _hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=MIN(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
+          hFacZ(i,j)=hFacZOpen
+         ELSE
+          IF ( myFace.EQ.4 ) THEN
+            hFacZOpen=
+     &               ( _hFacS(i-1,j,k,bi,bj)
+     &                +_hFacW(i,j-1,k,bi,bj) )
+     &               + _hFacW(i, j ,k,bi,bj)
+          ELSEIF ( myFace.EQ.6 ) THEN
+            hFacZOpen=
+     &               ( _hFacW(i,j-1,k,bi,bj)
+     &                +_hFacW(i, j ,k,bi,bj) )
+     &               + _hFacS(i-1,j,k,bi,bj)
+          ELSE
+            hFacZOpen=
+     &               ( _hFacW(i, j ,k,bi,bj)
+     &                +_hFacS(i-1,j,k,bi,bj) )
+     &               + _hFacW(i,j-1,k,bi,bj)
+          ENDIF
+          hFacZ(i,j) = hFacZOpen / 3. _d 0
+         ENDIF
+        ENDIF
+
+        IF ( northWestCorner ) THEN
+         i=1
+         j=sNy+1
+C-    to get the same truncation, independent from the face Nb:
+         IF ( hZoption.EQ.1 ) THEN
+          hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
+     &                  _hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=MIN(_hFacS(i,j,k,bi,bj),hFacZOpen)
+          hFacZ(i,j)=hFacZOpen
+         ELSE
+          IF ( myFace.EQ.1 ) THEN
+            hFacZOpen=
+     &               ( _hFacS( i ,j,k,bi,bj)
+     &                +_hFacW(i, j ,k,bi,bj) )
+     &               + _hFacW(i,j-1,k,bi,bj)
+          ELSEIF ( myFace.EQ.5 ) THEN
+            hFacZOpen=
+     &               ( _hFacW(i, j ,k,bi,bj)
+     &                +_hFacW(i,j-1,k,bi,bj) )
+     &               + _hFacS( i ,j,k,bi,bj)
+          ELSE
+            hFacZOpen=
+     &               ( _hFacW(i,j-1,k,bi,bj)
+     &                +_hFacS( i ,j,k,bi,bj) )
+     &               + _hFacW(i, j ,k,bi,bj)
+          ENDIF
+          hFacZ(i,j) = hFacZOpen / 3. _d 0
+         ENDIF
+        ENDIF
+
+        IF ( northEastCorner ) THEN
+         i=sNx+1
+         j=sNy+1
+         IF ( hZoption.EQ.1 ) THEN
+          hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
+     &                  _hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=MIN(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
+          hFacZ(i,j)=hFacZOpen
+         ELSE
+          IF ( MOD(myFace,2).EQ.1 ) THEN
+            hFacZOpen=
+     &               ( _hFacW(i,j-1,k,bi,bj)
+     &                +_hFacW(i, j ,k,bi,bj) )
+     &               + _hFacS(i-1,j,k,bi,bj)
+          ELSE
+            hFacZOpen=
+     &               ( _hFacW(i, j ,k,bi,bj)
+     &                +_hFacS(i-1,j,k,bi,bj) )
+     &               + _hFacW(i,j-1,k,bi,bj)
+          ENDIF
+          hFacZ(i,j) = hFacZOpen / 3. _d 0
+         ENDIF
+        ENDIF
+
+      ENDIF
+C---+----1----+----2----+----3----+----4
+
+C--   Calculate reciprol:
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         IF (hFacZ(i,j).EQ.0.) THEN
-         r_hFacZ(i,j)=0.
+         r_hFacZ(i,j) = 0.
         ELSE
-         r_hFacZ(i,j)=1./hFacZ(i,j)
+         r_hFacZ(i,j) = 1. _d 0/hFacZ(i,j)
         ENDIF
        ENDDO
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_DEPTH_CONTROL */
 
       RETURN
