@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.39 2005/05/24 00:02:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.40 2006/06/18 00:12:20 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -147,6 +147,7 @@ C Fill array of model levels closest to a given pressure value
       nsubmax = pchecklevs(2)
       Lup = pchecklevs(3)
 
+CCC   cumfric = .true.
       cumfric = .false.
 
 C **********************************************************************        
