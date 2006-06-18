@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.12 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.13 2006/06/18 23:27:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -6,9 +6,9 @@ C $Name:  $
 CBOP
 C     !ROUTINE: GAD_IMPLICIT_R
 C     !INTERFACE:
-      SUBROUTINE GAD_IMPLICIT_R( 
+      SUBROUTINE GAD_IMPLICIT_R(
      I      implicitAdvection, advectionScheme, tracerIdentity,
-     I      kappaRX, wVel, tracer, 
+     I      kappaRX, wVel, tracer,
      U      gTracer,
      I      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION:
@@ -69,7 +69,8 @@ C errCode   :: > 0 if singular matrix
       _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL wFld     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rTrans   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rTransKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 #ifdef ALLOW_DIAGNOSTICS
@@ -104,7 +105,7 @@ C--   Initialise
       diagonalNumber = 1
 
 C--   Non-Linear Advection scheme: keep a local copy of tracer field
-      IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT .OR. 
+      IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT .OR.
      &     advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
         IF ( multiDimAdvection ) THEN
          DO k=1,Nr
@@ -182,26 +183,28 @@ C--    Compute transport
         IF (k.EQ.1) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-            rTrans(i,j) = 0.
+            wFld(i,j)   = 0. _d 0
+            rTrans(i,j) = 0. _d 0
           ENDDO
          ENDDO
         ELSE
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-            rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
-     &                   *maskC(i,j,k-1,bi,bj)
+            wFld(i,j)   = wVel(i,j,k,bi,bj)
+            rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskC(i,j,k-1,bi,bj)
           ENDDO
          ENDDO
 #ifdef ALLOW_GMREDI
 C--   Residual transp = Bolus transp + Eulerian transp
-          IF (useGMRedi)
-     &      CALL GMREDI_CALC_WFLOW(
-     &                    rTrans, bi, bj, k, myThid)
+         IF (useGMRedi)
+     &     CALL GMREDI_CALC_WFLOW(
+     U                 wFld, rTrans,
+     I                 k, bi, bj, myThid )
 #endif /* ALLOW_GMREDI */
         ENDIF
         DO j=jMin,jMax
           DO i=iMin,iMax
-c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj) 
+c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj)
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
      &      + dTtracerLev(1)*recip_rA(i,j,bi,bj)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -305,7 +308,7 @@ C         otherwise counter is not incremented !!
           ELSE
             DO j=1,sNy
              DO i=1,sNx
-               df(i,j) = 
+               df(i,j) =
      &              rA(i,j,bi,bj)
      &            * KappaRX(i,j,k)*recip_drC(k)
      &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
