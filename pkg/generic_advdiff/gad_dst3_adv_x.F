@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.7 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.8 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
-      SUBROUTINE GAD_DST3_ADV_X( 
+      SUBROUTINE GAD_DST3_ADV_X(
      I           bi,bj,k,deltaTloc,
-     I           uTrans, uVel,
+     I           uTrans, uFld,
      I           maskLocW, tracer,
      O           uT,
      I           myThid )
@@ -27,18 +27,18 @@ C     == Routine arguments ==
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
-C     uFld   :: velocity [m/s], zonal component 
+C     uLoc   :: velocity [m/s], zonal component
       INTEGER i,j
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
-      _RL uFld
+      _RL uLoc
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
@@ -57,10 +57,10 @@ c     _RL Rjjm,Rjjp
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
-c       uFld = uVel(i,j,k,bi,bj)
-        uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
+c       uLoc = uFld(i,j)
+        uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
      &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-        cfl=abs(uFld*deltaTloc*recip_dxC(i,j,bi,bj))
+        cfl=abs(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
 #ifdef ALLOW_MATRIX

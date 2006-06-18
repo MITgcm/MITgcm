@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.3 2006/06/12 16:06:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.4 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_DST2U1_ADV_X
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST2U1_ADV_X(
      I           bi,bj,k, advectionScheme,
-     I           deltaTloc, uTrans, uVel,
+     I           deltaTloc, uTrans, uFld,
      I           tracer,
      O           uT,
      I           myThid )
@@ -31,14 +31,14 @@ C  k                 :: vertical level
 C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
 C  uTrans            :: zonal volume transport
-C  uVel              :: zonal flow
+C  uFld              :: zonal flow
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
       INTEGER advectionScheme
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -49,10 +49,10 @@ C  uT                :: zonal advective flux
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  rLimit            :: centered (vs upwind) fraction
-C  uFld              :: velocity [m/s], zonal component
+C  uLoc              :: velocity [m/s], zonal component
 C  uCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL uFld, uCFL, xLimit, uAbs
+      _RL uLoc, uCFL, xLimit, uAbs
 CEOP
 
       xLimit = 0. _d 0
@@ -62,10 +62,10 @@ CEOP
        uT(1-Olx,j)=0.
        DO i=1-Olx+1,sNx+Olx
 
-c       uFld = uVel(i,j,k,bi,bj)
-        uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
+c       uLoc = uFld(i,j)
+        uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
      &        *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-        uCFL = ABS(uFld*deltaTloc*recip_dxC(i,j,bi,bj))
+        uCFL = ABS(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
 
 c       uT(i,j) =
 c    &     uTrans(i,j)*(tracer(i-1,j)+tracer(i,j))*0.5 _d 0

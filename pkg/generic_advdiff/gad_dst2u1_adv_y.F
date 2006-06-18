@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_y.F,v 1.3 2006/06/12 16:06:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_y.F,v 1.4 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_DST2U1_ADV_Y
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST2U1_ADV_Y(
      I           bi,bj,k, advectionScheme, deltaTloc,
-     I           vTrans, vVel,
+     I           vTrans, vFld,
      I           tracer,
      O           vT,
      I           myThid )
@@ -31,13 +31,13 @@ C  k                 :: vertical level
 C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
 C  vTrans            :: meridional volume transport
-C  vVel              :: meridional flow
+C  vFld              :: meridional flow
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj, k, advectionScheme
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -48,10 +48,10 @@ C  vT                :: meridional advective flux
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  yLimit            :: centered (vs upwind) fraction
-C  vFld              :: velocity [m/s], meridional component
+C  vLoc              :: velocity [m/s], meridional component
 C  vCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL vFld, vCFL, yLimit, vAbs
+      _RL vLoc, vCFL, yLimit, vAbs
 CEOP
 
       yLimit = 0. _d 0
@@ -63,10 +63,10 @@ CEOP
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
 
-c       vFld = vVel(i,j,k,bi,bj)
-        vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c       vLoc = vFld(i,j)
+        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
      &        *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-        vCFL = ABS(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
+        vCFL = ABS(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
 
 c       vT(i,j) =
 c    &     vTrans(i,j)*(tracer(i,j-1)+tracer(i,j))*0.5 _d 0

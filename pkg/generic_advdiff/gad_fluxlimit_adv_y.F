@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.8 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.9 2006/06/18 23:31:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C !ROUTINE: GAD_FLUXLIMIT_ADV_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_FLUXLIMIT_ADV_Y( 
+      SUBROUTINE GAD_FLUXLIMIT_ADV_Y(
      I           bi,bj,k,deltaTloc,
-     I           vTrans, vVel,
+     I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
      I           myThid )
@@ -36,13 +36,13 @@ C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
 C  vTrans            :: meridional volume transport
-C  vVel              :: meridional flow
+C  vFld              :: meridional flow
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -55,10 +55,10 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  Cr                :: slope ratio
 C  Rjm,Rj,Rjp        :: differences at j-1,j,j+1
-C  vFld              :: velocity [m/s], meridional component
+C  vLoc              :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
-      _RL vFld
+      _RL vLoc
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -71,8 +71,8 @@ CEOP
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
 
-c       vFld = vVel(i,j,k,bi,bj)
-        vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c       vLoc = vFld(i,j)
+        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
      &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
@@ -92,11 +92,11 @@ c       vFld = vVel(i,j,k,bi,bj)
          ENDIF
         ENDIF
         Cr=Limiter(Cr)
-        vT(i,j) = 
+        vT(i,j) =
      &   vTrans(i,j)*(Tracer(i,j)+Tracer(i,j-1))*0.5 _d 0
      &   -0.5*(
      &        (1-Cr)*ABS(vTrans(i,j))
-     &        +vTrans(i,j)*vFld*deltaTloc
+     &        +vTrans(i,j)*vLoc*deltaTloc
      &         *recip_dyC(i,j,bi,bj)*Cr
      &        )*Rj
        ENDDO

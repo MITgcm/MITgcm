@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.9 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.10 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
-      SUBROUTINE GAD_DST3FL_ADV_Y( 
+      SUBROUTINE GAD_DST3FL_ADV_Y(
      I           bi,bj,k,deltaTloc,
-     I           vTrans, vVel,
+     I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
      I           myThid )
@@ -25,17 +25,17 @@ C     == Routine arguments ==
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
-C     vFld    :: velocity [m/s], meridional component
+C     vLoc    :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Rjm,Rj,Rjp,cfl,d0,d1,psiP,psiM,thetaP,thetaM
-      _RL vFld
+      _RL vLoc
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
 
@@ -50,10 +50,10 @@ C     vFld    :: velocity [m/s], meridional component
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
-c       vFld = vVel(i,j,k,bi,bj)
-        vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c       vLoc = vFld(i,j)
+        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
      &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-        cfl=abs(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
+        cfl=abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
         d1=(1. _d 0 -cfl*cfl)*oneSixth
 

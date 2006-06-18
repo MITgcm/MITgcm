@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.6 2005/10/22 20:12:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.7 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C !ROUTINE: GAD_DST3FL_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DST3FL_ADV_R( 
+      SUBROUTINE GAD_DST3FL_ADV_R(
      I           bi,bj,k,dTarg,
-     I           rTrans, wVel,
+     I           rTrans, wFld,
      I           tracer,
      O           wT,
      I           myThid )
@@ -32,13 +32,13 @@ C  bi,bj             :: tile indices
 C  k                 :: vertical level
 C  deltaTloc         :: local time-step (s)
 C  rTrans            :: vertical volume transport
-C  wVel              :: vertical flow
+C  wFld              :: vertical flow
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
@@ -50,12 +50,12 @@ C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  km1               :: =max( k-1 , 1 )
-C  wFld              :: velocity, vertical component
+C  wLoc              :: velocity, vertical component
 C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,kp1,km1,km2
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
-      _RL wFld
+      _RL wLoc
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
 
@@ -72,9 +72,9 @@ C  wCFL              :: Courant-Friedrich-Levy number
         Rjm=(tracer(i,j,km2)-tracer(i,j,km1))
      &         *maskC(i,j,km1,bi,bj)
 
-c       wFld = wVel(i,j,k,bi,bj)
-        wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
-        cfl=abs(wFld*dTarg*recip_drC(k))
+c       wLoc = wFld(i,j)
+        wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
+        cfl=abs(wLoc*dTarg*recip_drC(k))
         d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
         d1=(1. _d 0 -cfl*cfl)*oneSixth
 

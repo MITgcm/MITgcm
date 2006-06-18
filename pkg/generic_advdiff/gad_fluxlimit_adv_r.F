@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.9 2005/10/22 20:12:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.10 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C !ROUTINE: GAD_FLUXLIMIT_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_FLUXLIMIT_ADV_R( 
+      SUBROUTINE GAD_FLUXLIMIT_ADV_R(
      I           bi,bj,k,dTarg,
-     I           rTrans, wVel,
+     I           rTrans, wFld,
      I           tracer,
      O           wT,
      I           myThid )
@@ -38,13 +38,13 @@ C !INPUT PARAMETERS: ===================================================
 C  bi,bj              :: tile indices
 C  k                  :: vertical level
 C  rTrans             :: vertical volume transport
-C  wVel               :: vertical flow
+C  wFld               :: vertical flow
 C  tracer             :: tracer field
 C  myThid             :: thread number
       INTEGER bi,bj,k
       _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
@@ -60,10 +60,10 @@ C  km2                :: =max( k-2 , 1 )
 C  bi,bj              :: tile indices or (1,1) depending on use
 C  Cr                 :: slope ratio
 C  Rjm,Rj,Rjp         :: differences at i-1,i,i+1
-C  wFld               :: velocity, vertical component
+C  wLoc               :: velocity, vertical component
       INTEGER i,j,kp1,km1,km2
       _RL Cr,Rjm,Rj,Rjp
-      _RL wFld
+      _RL wLoc
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -82,8 +82,8 @@ CEOP
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
 
-c        wFld = wVel(i,j,k,bi,bj)
-         wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
+c        wLoc = wFld(i,j)
+         wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
          Rjp=(tracer(i,j,kp1)-tracer(i,j,k))
      &        *maskC(i,j,kp1,bi,bj)
          Rj= (tracer(i,j,k)  -tracer(i,j,kM1))
@@ -108,7 +108,7 @@ c        wFld = wVel(i,j,k,bi,bj)
      &     rTrans(i,j)*
      &        (tracer(i,j,k)+tracer(i,j,kM1))*0.5 _d 0
      &    +(ABS(rTrans(i,j))*(1-Cr)
-     &      +rTrans(i,j)*wFld*dTarg*recip_drC(k)
+     &      +rTrans(i,j)*wLoc*dTarg*recip_drC(k)
      &                  *Cr
      &     )*Rj*0.5 _d 0                )
         ENDDO

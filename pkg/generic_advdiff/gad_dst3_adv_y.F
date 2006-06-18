@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.7 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.8 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
-      SUBROUTINE GAD_DST3_ADV_Y( 
+      SUBROUTINE GAD_DST3_ADV_Y(
      I           bi,bj,k,deltaTloc,
-     I           vTrans, vVel,
+     I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
      I           myThid )
@@ -27,18 +27,18 @@ C     == Routine arguments ==
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
-C     vFld    :: velocity [m/s], meridional component
+C     vLoc    :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Rjm,Rj,Rjp,cfl,d0,d1
       _RL psiP,psiM,thetaP,thetaM
-      _RL vFld
+      _RL vLoc
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
@@ -59,10 +59,10 @@ c     _RL Rjjm,Rjjp
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
-c       vFld = vVel(i,j,k,bi,bj)
-        vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c       vLoc = vFld(i,j)
+        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
      &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-        cfl=abs(vFld*deltaTloc*recip_dyC(i,j,bi,bj))
+        cfl=abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
 #ifdef ALLOW_MATRIX
@@ -72,7 +72,7 @@ c       vFld = vVel(i,j,k,bi,bj)
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
          psiP=0.
-        ELSE   
+        ELSE
          thetaP=(Rjm+smallNo)/(smallNo+Rj)
          psiP=d0+d1*thetaP
         ENDIF
@@ -90,14 +90,14 @@ c       vFld = vVel(i,j,k,bi,bj)
      &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
 #ifdef ALLOW_MATRIX
-        ELSE     
+        ELSE
           vT(i,j)=
      &     0.5*(vTrans(i,j)+abs(vTrans(i,j)))
      &        *( Tracer(i,j-1) + (d0*Rj+d1*Rjm) )
      &    +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
      &        *( Tracer(i, j ) - (d0*Rj+d1*Rjp) )
         ENDIF
-#endif /* ALLOW_MATRIX */     
+#endif /* ALLOW_MATRIX */
 
        ENDDO
       ENDDO

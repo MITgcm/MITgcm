@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.2 2006/06/12 16:06:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.3 2006/06/18 23:31:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_DST2U1_ADV_R
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST2U1_ADV_R(
      I           bi,bj,k, advectionScheme,
-     I           deltaTloc, rTrans, wVel,
+     I           deltaTloc, rTrans, wFld,
      I           tracer,
      O           wT,
      I           myThid )
@@ -32,14 +32,14 @@ C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
 C  deltaTloc         :: local time-step (s)
 C  rTrans            :: vertical volume transport
-C  wVel              :: vertical flow
+C  wFld              :: vertical flow
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
       INTEGER advectionScheme
       _RL deltaTloc
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
@@ -51,10 +51,10 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  km1               :: =max( k-1 , 1 )
 C  rLimit            :: centered (vs upwind) fraction
-C  wFld              :: velocity, vertical component
+C  wLoc              :: velocity, vertical component
 C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,km1
-      _RL wFld, wCFL, rLimit, wAbs
+      _RL wLoc, wCFL, rLimit, wAbs
 CEOP
 
       rLimit = 0. _d 0
@@ -72,9 +72,9 @@ CEOP
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
 
-c        wFld = wVel(i,j,k,bi,bj)
-         wFld = rTrans(i,j)*recip_rA(i,j,bi,bj)
-         wCFL = ABS(wFld*deltaTloc*recip_drC(k))
+c        wLoc = wFld(i,j)
+         wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
+         wCFL = ABS(wLoc*deltaTloc*recip_drC(k))
 
 c        wT(i,j) = maskC(i,j,km1,bi,bj)*(
 c    &     rTrans(i,j)*(tracer(i,j,km1)+tracer(i,j,k))*0.5 _d 0
