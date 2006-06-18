@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.18 2005/05/04 22:15:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.19 2006/06/18 00:14:28 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -160,7 +160,7 @@ c         Physics works top-down. so -> need to flip arrays
         enddo
         enddo
         call dyn2phys(theta,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,2,tempphy)
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
