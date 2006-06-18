@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.104 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.105 2006/06/18 23:22:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,8 +117,8 @@ C     myThid - Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
-C     uTrans, vTrans, rTrans - Per block temporaries holding flow 
-C                              transport
+C     uFld, vFld, wFld       - Local copy of velocity field (3 components)
+C     uTrans, vTrans, rTrans - Per block temporaries holding flow transport
 C                              o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o rTrans: Vertical transport
@@ -132,7 +132,7 @@ C     kappaRT,       - Total diffusion in vertical at level k, for T and S
 C     kappaRS          (background + spatially varying, isopycnal term).
 C     kappaRTr       - Total diffusion in vertical at level k, 
 C                      for each passive Tracer
-C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer  
+C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer
 C     useVariableK   = T when vertical diffusion is not constant
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
@@ -142,6 +142,9 @@ C     kDown, km1       are switched with layer to be the appropriate
 C                      index into fVerTerm.
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -414,46 +417,51 @@ C--       kDown  Cycles through 2,1 to point to current layer
 CADJ STORE rTransKp1(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
-C--       Get temporary terms used by tendency routines
+C--       Get temporary terms used by tendency routines :
+C-        Calculate horizontal "volume transport" through tracer cell face
           CALL CALC_COMMON_FACTORS (
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
-     O         xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I         myThid)
+     I         uVel, vVel,
+     O         uFld, vFld, uTrans, vTrans, xA, yA,
+     I         k,bi,bj, myThid )
 
+C-        Calculate vertical "volume transport" through tracer cell face
           IF (k.EQ.1) THEN
-C- Surface interface :
+C-         Surface interface :
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             rTrans(i,j) = 0.
+             wFld(i,j)   = 0. _d 0
+             maskUp(i,j) = 0. _d 0
+             rTrans(i,j) = 0. _d 0
             ENDDO
            ENDDO
           ELSE
-C- Interior interface :
+C-         Interior interface :
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             rTrans(i,j) = rTrans(i,j)*maskC(i,j,k-1,bi,bj)
+             wFld(i,j)   = wVel(i,j,k,bi,bj)
+             maskUp(i,j) = maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
+             rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskUp(i,j)
             ENDDO
            ENDDO
           ENDIF
 
 #ifdef ALLOW_GMREDI
-
 C--   Residual transp = Bolus transp + Eulerian transp
           IF (useGMRedi) THEN
             CALL GMREDI_CALC_UVFLOW(
-     &            uTrans, vTrans, bi, bj, k, myThid) 
+     U                  uFld, vFld, uTrans, vTrans,
+     I                  k, bi, bj, myThid )
             IF (K.GE.2) CALL GMREDI_CALC_WFLOW(
-     &                    rTrans, bi, bj, k, myThid) 
+     U                  wFld, rTrans,
+     I                  k, bi, bj, myThid )
           ENDIF
-
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte 
-#ifdef GM_BOLUS_ADVEC
+# ifdef GM_BOLUS_ADVEC
 CADJ STORE uTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
+# endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_GMREDI */
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -496,9 +504,10 @@ CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-           CALL CALC_GT(
+          CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I         xA, yA, maskUp, uFld, vFld, wFld,
+     I         uTrans, vTrans, rTrans, rTransKp1,
      I         kappaRT,
      U         fVerT,
      I         myTime,myIter,myThid)
@@ -506,14 +515,14 @@ CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
           IF ( AdamsBashforth_T ) THEN
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
-     I         gtNm(1-Olx,1-Oly,1,1,1,m2), 
+     I         gtNm(1-Olx,1-Oly,1,1,1,m2),
      U         gT,
      I         myIter, myThid)
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
-     I         theta, 
+     I         theta,
      U         gT,
      I         myIter, myThid)
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -528,9 +537,10 @@ CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-           CALL CALC_GS(
+          CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I         xA, yA, maskUp, uFld, vFld, wFld,
+     I         uTrans, vTrans, rTrans, rTransKp1,
      I         kappaRS,
      U         fVerS,
      I         myTime,myIter,myThid)
@@ -538,14 +548,14 @@ CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
           IF ( AdamsBashforth_S ) THEN
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
-     I         gsNm(1-Olx,1-Oly,1,1,1,m2), 
+     I         gsNm(1-Olx,1-Oly,1,1,1,m2),
      U         gS,
      I         myIter, myThid)
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
-     I         salt, 
+     I         salt,
      U         gS,
      I         myIter, myThid)
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -566,11 +576,12 @@ CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
            CALL PTRACERS_INTEGRATE(
-     I         bi,bj,k,
-     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     U         fVerP,
-     I         kappaRTr,
-     I         myIter,myTime,myThid)
+     I          bi,bj,k,
+     I          xA, yA, maskUp, uFld, vFld, wFld,
+     I          uTrans, vTrans, rTrans, rTransKp1,
+     I          kappaRTr,
+     U          fVerP,
+     I          myTime,myIter,myThid)
          ENDIF
 #endif /* ALLOW_PTRACERS */
 
@@ -623,7 +634,7 @@ C--     Implicit vertical advection & diffusion
         IF ( tempImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempAdvScheme, GAD_TEMPERATURE,
-     I         kappaRk, wVel, theta, 
+     I         kappaRk, wVel, theta,
      U         gT,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
@@ -667,7 +678,7 @@ c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
         IF ( saltImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltAdvScheme, GAD_SALINITY,
-     I         kappaRk, wVel, salt, 
+     I         kappaRk, wVel, salt,
      U         gS,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
@@ -688,7 +699,7 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #ifdef ALLOW_PTRACERS
         IF     ( usePTRACERS ) THEN
 C--     Vertical advection/diffusion (implicit) for passive tracers
-           CALL PTRACERS_IMPLICIT( 
+           CALL PTRACERS_IMPLICIT(
      U                             kappaRk,
      I                             bi, bj, myTime, myIter, myThid )
         ENDIF
@@ -734,7 +745,7 @@ C--   end bi,bj loops.
 #endif /* ALLOW_DEBUG */
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
+         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_LEAVE('THERMODYNAMICS',myThid)
 #endif
 

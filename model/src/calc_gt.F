@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.50 2006/03/07 15:28:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.51 2006/06/18 23:22:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,37 +7,38 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CALC_GT
 C     !INTERFACE:
-      SUBROUTINE CALC_GT( 
+      SUBROUTINE CALC_GT(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I           xA, yA, maskUp, uFld, vFld, wFld,
+     I           uTrans, vTrans, rTrans, rTransKp1,
      I           KappaRT,
      U           fVerT,
      I           myTime,myIter,myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_GT                                        
-C     | o Calculate the temperature tendency terms.               
+C     | SUBROUTINE CALC_GT
+C     | o Calculate the temperature tendency terms.
 C     *==========================================================*
-C     | A procedure called EXTERNAL_FORCING_T is called from      
-C     | here. These procedures can be used to add per problem     
-C     | heat flux source terms.                                   
-C     | Note: Although it is slightly counter-intuitive the       
-C     |       EXTERNAL_FORCING routine is not the place to put    
-C     |       file I/O. Instead files that are required to        
-C     |       calculate the external source terms are generally   
-C     |       read during the model main loop. This makes the     
-C     |       logisitics of multi-processing simpler and also     
-C     |       makes the adjoint generation simpler. It also       
-C     |       allows for I/O to overlap computation where that    
-C     |       is supported by hardware.                           
-C     | Aside from the problem specific term the code here        
-C     | forms the tendency terms due to advection and mixing      
-C     | The baseline implementation here uses a centered          
-C     | difference form for the advection term and a tensorial    
-C     | divergence of a flux form for the diffusive term. The     
-C     | diffusive term is formulated so that isopycnal mixing and 
-C     | GM-style subgrid-scale terms can be incorporated b simply 
-C     | setting the diffusion tensor terms appropriately.         
+C     | A procedure called EXTERNAL_FORCING_T is called from
+C     | here. These procedures can be used to add per problem
+C     | heat flux source terms.
+C     | Note: Although it is slightly counter-intuitive the
+C     |       EXTERNAL_FORCING routine is not the place to put
+C     |       file I/O. Instead files that are required to
+C     |       calculate the external source terms are generally
+C     |       read during the model main loop. This makes the
+C     |       logisitics of multi-processing simpler and also
+C     |       makes the adjoint generation simpler. It also
+C     |       allows for I/O to overlap computation where that
+C     |       is supported by hardware.
+C     | Aside from the problem specific term the code here
+C     | forms the tendency terms due to advection and mixing
+C     | The baseline implementation here uses a centered
+C     | difference form for the advection term and a tensorial
+C     | divergence of a flux form for the diffusive term. The
+C     | diffusive term is formulated so that isopycnal mixing and
+C     | GM-style subgrid-scale terms can be incorporated b simply
+C     | setting the diffusion tensor terms appropriately.
 C     *==========================================================*
 C     \ev
 
@@ -58,29 +59,42 @@ C     == GLobal variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fVerT   :: Flux of temperature (T) in the vertical 
-C                direction at the upper(U) and lower(D) faces of a cell.
-C     maskUp  :: Land mask used to denote base of the domain.
-C     xA      :: Tracer cell face area normal to X
-C     yA      :: Tracer cell face area normal to X
-C     uTrans  :: Zonal volume transport through cell face
-C     vTrans  :: Meridional volume transport through cell face
-C     rTrans  ::   Vertical volume transport at interface k
+C     bi, bj,   :: tile indices
+C     iMin,iMax :: loop range for called routines
+C     jMin,jMax :: loop range for called routines
+C     k         :: vertical index
+C     kM1       :: =k-1 for k>1, =1 for k=1
+C     kUp       :: index into 2 1/2D array, toggles between 1|2
+C     kDown     :: index into 2 1/2D array, toggles between 2|1
+C     xA        :: Tracer cell face area normal to X
+C     yA        :: Tracer cell face area normal to X
+C     maskUp    :: Land mask used to denote base of the domain.
+C     uFld,vFld :: Local copy of horizontal velocity field
+C     wFld      :: Local copy of vertical velocity field
+C     uTrans    :: Zonal volume transport through cell face
+C     vTrans    :: Meridional volume transport through cell face
+C     rTrans    ::   Vertical volume transport at interface k
 C     rTransKp1 :: Vertical volume transport at inteface k+1
-C     bi, bj, iMin, iMax, jMin, jMax :: Range of points for which calculation
-C                                       results will be set.
-C     myThid :: Instance number for this innvocation of CALC_GT
-      _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER k,kUp,kDown,kM1
+C     KappaRT   :: Vertical diffusion for Tempertature
+C     fVerT     :: Flux of temperature (T) in the vertical direction
+C                  at the upper(U) and lower(D) faces of a cell.
+C     myTime    :: current time
+C     myIter    :: current iteration number
+C     myThid    :: my Thread Id. number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k,kUp,kDown,kM1
+      _RS xA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS yA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskUp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL wFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uTrans (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vTrans (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTrans (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVerT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -131,8 +145,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         m2 = 1 + MOD( iterNb ,2)
         CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I           uVel, vVel, wVel,
+     I           xA, yA, maskUp, uFld, vFld, wFld,
+     I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKhT, diffK4T, KappaRT,
      I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
@@ -142,8 +156,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I           uVel, vVel, wVel,
+     I           xA, yA, maskUp, uFld, vFld, wFld,
+     I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKhT, diffK4T, KappaRT, gtNm1, theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
