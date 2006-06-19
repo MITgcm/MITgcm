@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.25 2006/05/30 22:47:40 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.26 2006/06/19 23:20:48 jmc Exp $
 c
 c
 c     ==================================================================
@@ -35,6 +35,9 @@ c     year in seconds
 
 c     Calendar data.
       _RL     repeatPeriod
+
+c     Monitor Frequency (s)
+      _RL     exf_monFreq
 
 c     Sea-water albedo
       _RL     exf_albedo
@@ -304,8 +307,8 @@ C                           instead of _YEAR for useExfYearlyFields
 
       common /exf_param_r/
      &                     year2sec,          windstressmax,
-     &                     repeatPeriod,      exf_albedo,
-     &                     ocean_emissivity,
+     &                     repeatPeriod,      exf_monFreq,
+     &                     exf_albedo,        ocean_emissivity,
      &                     ice_emissivity,    snow_emissivity,
      &                     hfluxperiod,       hfluxstartdate,
      &                     atempperiod,       atempstartdate,

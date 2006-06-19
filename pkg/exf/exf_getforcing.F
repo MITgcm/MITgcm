@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.23 2006/05/25 18:32:56 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.24 2006/06/19 23:20:48 jmc Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -236,6 +236,9 @@ c     Therefore, we do it exactly here:
 
 c     Diagnostics output
       call exf_diagnostics_fill( mytime, myiter, mythid )
+
+c     Monitor output
+      call exf_monitor( mytime, myiter, mythid )
 
 c     Map the forcing fields onto the corresponding model fields.
       call exf_mapfields( mytime, myiter, mythid )

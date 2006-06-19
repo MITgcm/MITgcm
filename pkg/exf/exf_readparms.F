@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.32 2006/06/05 22:51:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.33 2006/06/19 23:20:48 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -177,6 +177,7 @@ c     Surface flux data.
 c     Set default values.
 
       year2sec           = 365.*86400.
+      exf_monFreq        = monitorFreq
 
 c     Calendar data.
       hfluxstartdate1    = 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.7 2006/05/25 18:32:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.8 2006/06/19 23:20:48 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: EXF_MONITOR
 
 C     !INTERFACE:
       SUBROUTINE EXF_MONITOR(
-     I     myIter, myTime, myThid )
+     I               myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Print some statistics about input forcing fields.
@@ -18,12 +18,16 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "EESUPPORT.h"
+#include "PARAMS.h"
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
+#endif
 #include "GRID.h"
 #ifdef ALLOW_MONITOR
 # include "MONITOR.h"
 #endif
+#include "exf_param.h"
 #include "exf_fields.h"
 #include "exf_clim_fields.h"
 
@@ -35,8 +39,63 @@ CEOP
 
 #ifdef ALLOW_MONITOR
 
-C       Print some statistics about input forcing fields
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
+C     == Local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_MNC
+      INTEGER k
+#endif
+
+      IF ( DIFFERENT_MULTIPLE(exf_monFreq,myTime,deltaTclock)
+     &   ) THEN
+
+        IF (monitor_stdio) THEN
+          mon_write_stdout = .TRUE.
+        ELSE
+          mon_write_stdout = .FALSE.
+        ENDIF
+        mon_write_mnc = .FALSE.
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. monitor_mnc) THEN
+          DO k = 1,MAX_LEN_MBUF
+            mon_fname(k:k) = ' '
+          ENDDO
+          mon_fname(1:11) = 'monitor_exf'
+          CALL MNC_CW_APPEND_VNAME(
+     &         'T', '-_-_--__-__t', 0,0, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+          CALL MNC_CW_I_W_S(
+     &        'I',mon_fname,1,1,'T', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+          mon_write_mnc = .TRUE.
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
+#ifdef ALLOW_USE_MPI
+        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
+     &       mon_write_stdout ) THEN
+#else /* ALLOW_USE_MPI */
+        IF ( mon_write_stdout ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(A)') '// Begin MONITOR EXF statistics'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          _END_MASTER(myThid)
+        ENDIF
+
         CALL MON_SET_PREF('exf',myThid)
+        CALL MON_OUT_I ('_tsnumber', myIter,mon_string_none,myThid)
+        CALL MON_OUT_RL('_time_sec', myTime,mon_string_none,myThid)
+
+C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,ustress,'_ustress',
      &       maskH,maskH,rAw,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,vstress,'_vstress',
@@ -95,6 +154,29 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,climsss,'_climsss',
      &       maskH,maskH,rA ,drF,myThid)
 #endif
+
+#ifdef ALLOW_USE_MPI
+        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
+     &       mon_write_stdout ) THEN
+#else /* ALLOW_USE_MPI */
+        IF ( mon_write_stdout ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(A)') '// End MONITOR EXF statistics'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          _END_MASTER(myThid)
+        ENDIF
+
+        mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
+
+      ENDIF
 
 #endif /* ALLOW_MONITOR */
 
