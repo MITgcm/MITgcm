@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.4 2006/06/18 23:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.5 2006/06/19 14:40:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -62,9 +62,9 @@ CEOP
        uT(1-Olx,j)=0.
        DO i=1-Olx+1,sNx+Olx
 
-c       uLoc = uFld(i,j)
-        uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
-     &        *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+        uLoc = uFld(i,j)
+c       uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
+c    &        *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         uCFL = ABS(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
 
 c       uT(i,j) =

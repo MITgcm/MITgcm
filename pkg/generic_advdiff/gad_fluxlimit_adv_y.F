@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.9 2006/06/18 23:31:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.10 2006/06/19 14:40:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -71,9 +71,9 @@ CEOP
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
 
-c       vLoc = vFld(i,j)
-        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
-     &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+        vLoc = vFld(i,j)
+c       vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c    &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)

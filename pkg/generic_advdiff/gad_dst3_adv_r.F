@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.7 2006/06/18 23:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.8 2006/06/19 14:40:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -80,8 +80,8 @@ C  wCFL              :: Courant-Friedrich-Levy number
         Rjm=(tracer(i,j,km2)-tracer(i,j,km1))
      &         *maskC(i,j,km1,bi,bj)
 
-c       wLoc = wFld(i,j)
-        wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
+        wLoc = wFld(i,j)
+c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
         cfl=abs(wLoc*dTarg*recip_drC(k))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth

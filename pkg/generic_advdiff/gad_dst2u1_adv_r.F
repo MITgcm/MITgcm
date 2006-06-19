@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.3 2006/06/18 23:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_r.F,v 1.4 2006/06/19 14:40:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -72,8 +72,8 @@ CEOP
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
 
-c        wLoc = wFld(i,j)
-         wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
+         wLoc = wFld(i,j)
+c        wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
          wCFL = ABS(wLoc*deltaTloc*recip_drC(k))
 
 c        wT(i,j) = maskC(i,j,km1,bi,bj)*(

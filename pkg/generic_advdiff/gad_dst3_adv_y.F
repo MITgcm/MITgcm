@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.8 2006/06/18 23:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.9 2006/06/19 14:40:43 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -59,9 +59,9 @@ c     _RL Rjjm,Rjjp
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
-c       vLoc = vFld(i,j)
-        vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
-     &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+        vLoc = vFld(i,j)
+c       vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+c    &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         cfl=abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
