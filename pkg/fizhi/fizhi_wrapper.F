@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.31 2006/05/18 23:04:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.32 2006/06/19 23:37:34 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -48,12 +48,14 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL tempLdiag(sNx,sNy,Nrphys,Nsx,Nsy)
        _RL tempLdiag2(sNx,sNy,Nrphys,Nsx,Nsy)
        _RL tempdiag(sNx,sNy,Nsx,Nsy)
-       _RL slp(sNx,sNy)
+       _RL slp(sNx,sNy),meantemp(sNx,sNy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        _RL tempij(1-olx:sNx+olx,1-oly:sNy+oly)
+       _RL grav, getcon
 
+       grav = getcon('GRAVITY')
        idim1 = 1-OLx
        idim2 = sNx+OLx
        jdim1 = 1-OLy
@@ -233,14 +235,16 @@ c Do not use a zero field as the top edge pressure for interpolation
        if(diagnostics_is_on('SLP     ',myThid) ) then
         do j = 1,sNy
         do i = 1,sNx
-         tempdiag(i,j,bi,bj) = Phihydlow(i,j,bi,bj)
-        do L = 1,Nrphys+1
-         tempLdiag(i,j,L,bi,bj) = pephy4fiz(i,j,L,bi,bj)
-         tempLdiag2(i,j,L,bi,bj) = thphy(i,j,L,bi,bj)
+         tempdiag(i,j,bi,bj) = topoZ(i,j,bi,bj)*grav
+        do L = 1,Nrphys
+         tempLdiag(i,j,L,bi,bj) = pephy4fiz(i,j,L,bi,bj)/100.
+         tempLdiag2(i,j,L,bi,bj) = thphy(i,j,L,bi,bj) *
+     .        (1.+0.609*sphy(i,j,L,bi,bj))
+        enddo
+        tempLdiag(i,j,Nrphys+1,bi,bj)=pephy4fiz(i,j,Nrphys+1,bi,bj)/100.
         enddo
         enddo
-        enddo
-        call slprs(tempdiag,tempLdiag(1,1,1,bi,bj),
+        call slprs(tempdiag(1,1,bi,bj),tempLdiag(1,1,1,bi,bj),
      .  tempLdiag2(1,1,1,bi,bj),fracland(1,1,bi,bj),sNx,sNy,Nrphys,slp)
         do j = 1,sNy
         do i = 1,sNx

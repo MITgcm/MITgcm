@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/slprs.F,v 1.2 2006/05/18 22:14:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/slprs.F,v 1.3 2006/06/19 23:37:34 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
       subroutine slprs (PHIS,PLE,THZ,lwmask,im,jm,lm,SLP)
-C***********************************************************************        
+C**********************************************************************        
 C  INPUT                                                                        
 C    PHIS .... SURFACE GEOPOTENTIAL (M2/S2)                                     
 C    THZ ..... POTENTIAL TEMPERATURE (K) ON  Model LEVELS                       
@@ -63,7 +63,7 @@ C*                   COMPUTE SEA LEVEL PRESSURE                        *
 C***********************************************************************        
                                                                                 
       do i=1,im*jm                                                           
-      if( lwmask(i).eq.0.0 ) then
+      if( lwmask(i).ne.0.0 ) then
       TM(I) = TM(I) * (PLE(I,LM+1)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
       else
       TM(I) = THZ(I,LM)*(PLE(I,LM+1)/1000.)**AK + BETA*PHIS(I)/(TWO*G)
