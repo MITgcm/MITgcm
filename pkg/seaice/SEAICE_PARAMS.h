@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.29 2006/06/14 16:08:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.30 2006/06/19 15:51:11 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -39,6 +39,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP, 
+     &     SEAICEuseEVPpickup,
      &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
