@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.35 2005/11/04 01:33:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.36 2006/06/19 23:18:29 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -99,7 +99,7 @@ C       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
 
 #ifdef ALLOW_EXF
 C       Print some statistics about input forcing fields
-        CALL EXF_MONITOR( myIter, myTime, myThid )
+c       CALL EXF_MONITOR( myIter, myTime, myThid )
 #endif /* ALLOW_EXF */
 
 #ifdef ALLOW_SEAICE
