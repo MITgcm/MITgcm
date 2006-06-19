@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.2 2006/02/21 17:20:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.3 2006/06/19 15:48:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -113,6 +113,8 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER i,j,k
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -239,6 +241,8 @@ C--   Calculate velocity field "volume transports" through
 C--   tracer cell faces.
       DO j=jMin,jMax
        DO i=iMin,iMax
+        uFld(i,j) = uVel(i,j,bi,bj)
+        vFld(i,j) = vVel(i,j,bi,bj)
         uTrans(i,j) = uVel(i,j,bi,bj)*xA(i,j)
         vTrans(i,j) = vVel(i,j,bi,bj)*yA(i,j)
        ENDDO
@@ -343,19 +347,19 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &        .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme,
-     I         SEAICE_deltaTtherm,uTrans,uVel,localTij,
+     I         SEAICE_deltaTtherm,uTrans,uFld,localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uVel, maskLocW, localTij,
+     I         uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_X(      bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uVel, maskLocW, localTij,
+     I         uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uVel, maskLocW, localTij,
+     I         uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSE
           STOP 
@@ -501,19 +505,19 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &        .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme,
-     I         SEAICE_deltaTtherm,vTrans,vVel,localTij,
+     I         SEAICE_deltaTtherm,vTrans,vFld,localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vVel, maskLocS, localTij,
+     I         vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_Y(      bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vVel, maskLocS, localTij,
+     I         vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vVel, maskLocS, localTij,
+     I         vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSE
           STOP 
