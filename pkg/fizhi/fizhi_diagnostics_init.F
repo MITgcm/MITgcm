@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.11 2006/06/09 16:05:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.12 2006/06/19 16:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -751,13 +751,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      .  'Estimated Cloud Liquid Water used in Radiation (mg/kg)'
       diagUnits = 'mg/kg           '
       diagCode = 'SM      ML      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName = 'SLP     '
-      diagTitle = 'Time-Averaged Sea-Level Pressure  (mb)'
-      diagUnits = 'hPa             '
-      diagCode = 'SM      L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
