@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.682 2006/06/19 01:06:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.683 2006/06/19 15:56:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix SEAICEuseEVPpickup parameter (put it in a commom block)
+o generic_advdiff: DST advection S/R : use local copy of velocity to compute CFL
+   (problems ? with gradient check in bottom_ctrl_5x5 adjoint test)
 o tracer advection: 
  - clean-up and simplify calc_common_factors.F
  - make a local copy of velocity and pass it (as u,v,r_Trans) to DST tracer 
