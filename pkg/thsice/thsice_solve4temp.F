@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.11 2006/06/06 22:10:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.12 2006/06/20 21:33:51 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -209,15 +209,17 @@ C compute ice temperatures
       Tice(1) = 0.5 _d 0 *(-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/a1
       Tice(2) = (Lfresh-qicen(2)) / cpice
 
-      IF (Tice(1).GT.0. _d 0 ) THEN 
-       WRITE (standardMessageUnit,*) 'BBerr: Tice(1) > 0'
+      IF (Tice(1).GT.0. _d 0 ) THEN
+       WRITE (standardMessageUnit,'(A,I12,1PE14.6)') 
+     &       ' BBerr: Tice(1) > 0 ; it=', myIter, qicen(1)
        WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
-     &      'BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
+     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
       ENDIF
       IF ( Tice(2).GT.0. _d 0) THEN
-       WRITE (standardMessageUnit,*) 'BBerr: Tice(2) > 0'
+       WRITE (standardMessageUnit,'(A,I12,1PE14.6)') 
+     &       ' BBerr: Tice(2) > 0 ; it=', myIter, qicen(2)
        WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
-     &      'BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
+     &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
       ENDIF
 #ifdef ALLOW_DBUG_THSICE
       IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
@@ -340,10 +342,10 @@ C If no convergence, then repeat.
          IF ( useBlkFlx .AND. k.EQ.nitMaxTsf
      &                  .AND. ABS(dTsf).GE.Terrmax ) THEN
             WRITE (6,'(A,4I4,I12,F15.9)')
-     &                 ' BB: thermw conv err: i,j,it,hi=',i,j,bi,bj,
+     &                 ' BB: not converge: i,j,it,hi=',i,j,bi,bj,
      &                                                    myIter,hi
-            WRITE (6,*) 'BB: thermw conv err: Tsf, dTsf=', Tsf,dTsf
-            WRITE (6,*) 'BB: thermw conv err: flx0,dfdT=',flx0,df0dT
+            WRITE (6,*) 'BB: not converge: Tsf, dTsf=', Tsf,dTsf
+            WRITE (6,*) 'BB: not converge: flx0,dfdT=',flx0,df0dT
             IF (Tsf.LT.-70. _d 0) STOP
          ENDIF
 
@@ -400,11 +402,11 @@ C (This should not happen for reasonable values of i0.)
 
       IF (Tice(1) .GE. Tmlt1) THEN
         WRITE (6,'(A,2I4,2I3,1P2E14.6)')
-     &   'BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,Tice(1),Tmlt1
+     &   ' BBerr - Bug: IceT(1) > Tmlt',i,j,bi,bj,Tice(1),Tmlt1
       ENDIF
       IF (Tice(2) .GE. 0. _d 0) THEN
        WRITE (6,'(A,2I4,2I3,1P2E14.6)')
-     &   'BBerr - Bug: IceT(2) > 0',i,j,bi,bj,Tice(2)
+     &   ' BBerr - Bug: IceT(2) > 0',i,j,bi,bj,Tice(2)
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
