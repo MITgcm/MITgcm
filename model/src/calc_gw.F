@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.26 2006/06/07 01:55:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.27 2006/06/20 20:57:37 baylor Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -9,7 +9,8 @@ CBOP
 C     !ROUTINE: CALC_GW
 C     !INTERFACE:
       SUBROUTINE CALC_GW(
-     I                    myTime, myIter, myThid )
+     I         KappaRU, KappaRV, 
+     I         myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R CALC_GW
@@ -34,9 +35,13 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     KappaRU:: vertical viscosity at U points
+C     KappaRV:: vertical viscosity at V points
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: Thread number for this instance of the routine.
+      _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -69,7 +74,8 @@ C     i,j,k - Loop counters
       _RS  recip_hFacCtmp
       _RL slipSideFac
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
-
+      _RL vischere
+      _RL visc4here
       _RL  Half
       PARAMETER(Half=0.5D0)
 CEOP
@@ -209,11 +215,12 @@ C     at the southern face
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
            Flx_NS(I,J,bi,bj)=
      &     tmp_VbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I,J-1,K,bi,bj))
-     &    -viscAhW*_recip_dyC(I,J,bi,bj)
+     &    -viscAh_W(I,J,K,bi,bj)*_recip_dyC(I,J,bi,bj)
      &       *(hFacStmp*(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
      &        +(1. _d 0 - hFacStmp)*(1. _d 0 - slipSideFac)
      &         *wVel(I,J,K,bi,bj))
-     &    +viscA4W*_recip_dyC(I,J,bi,bj)*(del2w(I,J)-del2w(I,J-1))
+     &    +viscA4_W(I,J,K,bi,bj)
+     &      *_recip_dyC(I,J,bi,bj)*(del2w(I,J)-del2w(I,J-1))
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
      &    *sqCosFacV(j,bi,bj)
@@ -241,11 +248,12 @@ C     at the western face
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
            Flx_EW(I,J,bi,bj)=
      &     tmp_UbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I-1,J,K,bi,bj))
-     &    -viscAhW*_recip_dxC(I,J,bi,bj)
+     &    -viscAh_W(I,J,K,bi,bj)*_recip_dxC(I,J,bi,bj)
      &      *(hFacWtmp*(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
      &       +(1 _d 0 - hFacWtmp)*(1 _d 0 - slipSideFac)
      &        *wVel(I,J,K,bi,bj) )
-     &    +viscA4W*_recip_dxC(I,J,bi,bj)*(del2w(I,J)-del2w(I-1,J))
+     &    +viscA4_W(I,J,K,bi,bj)
+     &      *_recip_dxC(I,J,bi,bj)*(del2w(I,J)-del2w(I-1,J))
 #ifdef COSINEMETH_III
      &                *sqCosFacU(j,bi,bj)
 #else
@@ -262,12 +270,17 @@ CML     &       *wVel(I,J,K,bi,bi) + hFacWtmp*wVel(I-1,J,K,bi,bj) )
 C Flux on Lower face
          DO J=jMin,jMax
           DO I=iMin,iMax
+C Interpolate vert viscosity to W points
+           vischere=0.125*(kappaRU(I,J,K)  +kappaRU(I+1,J,K)
+     &                    +kappaRU(I,J,Kp1)+kappaRU(I+1,J,Kp1)
+     &                    +kappaRV(I,J,K)  +kappaRV(I,J+1,K)
+     &                    +kappaRV(I,J,Kp1)+kappaRV(I,J+1,Kp1))
            Flx_Up(I,J,bi,bj)=Flx_Dn(I,J,bi,bj)
            tmp_WbarZ=Half*(wVel(I,J,K,bi,bj)
      &         +wOverRide*wVel(I,J,Kp1,bi,bj))
            Flx_Dn(I,J,bi,bj)=
      &     tmp_WbarZ*tmp_WbarZ
-     &    -viscAr*recip_drF(K)
+     &    -vischere*recip_drF(K)
      &       *( wVel(I,J,K,bi,bj)-wOverRide*wVel(I,J,Kp1,bi,bj) )
           ENDDO
          ENDDO

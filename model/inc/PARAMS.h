@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.185 2006/06/07 01:55:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.186 2006/06/20 20:57:37 baylor Exp $
 C $Name:  $
 C
 
@@ -484,6 +484,7 @@ C                 momentum laterally ( m^2/s )
 C     viscAhW   :: Eddy viscosity coeff. for mixing of vertical
 C                 momentum laterally, no effect for hydrostatic
 C                 model, defaults to viscAh if unset ( m^2/s )
+C                 Not used if variable horiz. viscosity is used.
 C     viscAr    :: Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
@@ -491,6 +492,7 @@ C                 momentum laterally ( m^4/s )
 C     viscA4W   :: Biharmonic viscosity coeff. for mixing of vertical
 C                 momentum laterally, no effect for hydrostatic
 C                 model, defaults to viscA4 if unset ( m^2/s )
+C                 Not used if variable horiz. viscosity is used.
 C     viscAhD   :: Eddy viscosity coeff. for mixing of momentum laterally
 C                  (act on Divergence part) ( m^2/s )
 C     viscAhZ   :: Eddy viscosity coeff. for mixing of momentum laterally
