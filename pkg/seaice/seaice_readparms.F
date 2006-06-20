@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.39 2006/06/14 16:08:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.40 2006/06/20 20:56:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,7 +49,8 @@ C--   SEAICE parameters
      & SEAICEadvScheme,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm,
-     & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
+     & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
+     & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, 
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
@@ -69,8 +70,7 @@ C--   SEAICE parameters
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ, 
-     & SEAICE_tave_mnc
-c    & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
+     & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -115,6 +115,7 @@ C--   set default sea ice parameters
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = dTtracerLev(1)
+      SEAICE_monFreq     = monitorFreq
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
@@ -338,11 +339,6 @@ C-    Set Output type flags :
       SEAICE_mon_stdio  = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-C-------
-C-    seaice Monitor is (unfortunately) not independent from the main monitor
-C       => turn off MNC flags for now
-        SEAICE_mon_mnc  = .FALSE.
-C-------
         IF ( .NOT.outputTypesInclusive
      &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive

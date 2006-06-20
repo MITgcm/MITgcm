@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.30 2006/06/19 15:51:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.31 2006/06/20 20:56:04 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -30,7 +30,7 @@ C     SEAICE_mon_stdio  :: write monitor to std-outp
 C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
-      LOGICAL 
+      LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseFluxForm, useHB87stressCoupling, 
@@ -93,6 +93,7 @@ C     SEAICE_deltaTdyn   - Seaice timestep for dynamic solver          (s)
 C     SEAICE_deltaTevp   - Seaice timestep for EVP solver              (s)
 C     SEAICE_elasticParm - parameter that sets relaxation timescale
 C                          T = SEAICE_elasticParm * SEAICE_deltaTdyn
+C     SEAICE_monFreq     - SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
@@ -150,7 +151,8 @@ C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
-      _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
+      _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
+      _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
@@ -170,7 +172,8 @@ C
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_deltaTevp, SEAICE_elasticParm,
-     &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
+     &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
+     &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,

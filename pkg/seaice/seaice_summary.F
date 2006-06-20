@@ -1,61 +1,64 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.5 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.6 2006/06/20 20:56:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-      SUBROUTINE SEAICE_SUMMARY( mythid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_SUMMARY                                |
-C     | o Summarize pkg/seaice parameters.                       |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: SEAICE_SUMMARY
+      SUBROUTINE SEAICE_SUMMARY( myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_SUMMARY
+C     | o Summarize pkg/seaice parameters.
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
-
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SEAICE_PARAMS.h"
 
-c     == routine arguments ==
+C     !INPUT PARAMETERS:
+C     == routine arguments ==
+C     myThid  - thread number for this instance of the routine.
+      INTEGER myThid
+CEOP
 
-c     mythid  - thread number for this instance of the routine.
+C     !LOCAL VARIABLES:
+C     == local variables ==
+      INTEGER  il
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      integer mythid
+C     == external ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNk
 
-c     == local variables ==
-
-      integer  il
-      character*(max_len_mbuf) msgbuf
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-c     == end of interface ==
+C     == end of interface ==
 
       _BARRIER
       _BEGIN_MASTER(myThid)
 
-      write(msgbuf,'(a)')
+      WRITE(msgBuf,'(A)')
      &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &'// Seaice configuration (SEAICE_PARM01) >>> START <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
       CALL WRITE_0D_L ( SEAICEwriteState,  INDEX_NONE,
      & 'SEAICEwriteState  =', ' /* write sea ice state to file */')
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
@@ -78,7 +81,7 @@ c     == end of interface ==
      & 'IMAX_TICE         =', ' /* iterations for ice heat budget */')
       CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
      & 'SEAICEadvScheme   =', ' /* advection scheme for thickness */')
-      IF ( SEAICEadvScheme .EQ. 2 ) 
+      IF ( SEAICEadvScheme .EQ. 2 )
      & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
      & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
       CALL WRITE_0D_R8( SEAICE_deltaTtherm,INDEX_NONE,
@@ -89,22 +92,24 @@ c     == end of interface ==
       CALL WRITE_0D_R8( SEAICE_deltaTevp  ,INDEX_NONE,
      & 'SEAICE_deltaTevp  =', ' /* EVP timestep */')
 #endif
+      CALL WRITE_0D_R8( SEAICE_monFreq,  INDEX_NONE,
+     & 'SEAICE_monFreq  =',' /* monitor frequency */')
       CALL WRITE_0D_R8( SEAICE_dumpFreq   ,INDEX_NONE,
      & 'SEAICE_dumpFreq   =', ' /* dump frequency */')
       CALL WRITE_0D_R8( SEAICE_taveFreq   ,INDEX_NONE,
      & 'SEAICE_taveFreq   =', ' /* time-averaging frequency */')
+      CALL WRITE_0D_L ( SEAICE_mon_stdio,  INDEX_NONE,
+     & 'SEAICE_mon_stdio  =',' /* write monitor to std-outp */')
       CALL WRITE_0D_L ( SEAICE_dump_mdsio,  INDEX_NONE,
      & 'SEAICE_dump_mdsio =',' /* write snap-shot   using MDSIO */')
       CALL WRITE_0D_L ( SEAICE_tave_mdsio,  INDEX_NONE,
      & 'SEAICE_tave_mdsio =',' /* write TimeAverage using MDSIO */')
-c     CALL WRITE_0D_L ( SEAICE_mon_stdio,  INDEX_NONE,
-c    & 'SEAICE_mon_stdio  =',' /* write monitor to std-outp */')
+      CALL WRITE_0D_L ( SEAICE_mon_mnc,  INDEX_NONE,
+     & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
       CALL WRITE_0D_L ( SEAICE_dump_mnc,  INDEX_NONE,
      & 'SEAICE_dump_mnc   =',' /* write snap-shot   using MNC */')
       CALL WRITE_0D_L ( SEAICE_tave_mnc,  INDEX_NONE,
      & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
-c     CALL WRITE_0D_L ( SEAICE_mon_mnc,  INDEX_NONE,
-c    & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
       CALL WRITE_0D_R8( SEAICE_initialHEFF,INDEX_NONE,
      & 'SEAICE_initialHEFF=', ' /* initial sea-ice thickness */')
       CALL WRITE_0D_R8( SEAICE_drag       ,INDEX_NONE,
@@ -143,18 +148,18 @@ c    & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
      & 'SEAICE_shortwave  =', ' /* penetration shortwave radiation */')
       CALL WRITE_0D_R8( SEAICE_freeze     ,INDEX_NONE,
      & 'SEAICE_freeze     =', ' /* freezing temp. of sea water */')
-      write(msgbuf,'(a)')
+      WRITE(msgBuf,'(a)')
      &'Initial sea-ice thickness is read from file:'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
       il = ilnblnk(HeffFile)
-      write(msgbuf,'(a,a,a)')
+      WRITE(msgBuf,'(A,A,A)')
      &'   >>  ',HeffFile(1:il),'  <<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
       WRITE(msgBuf,'(A)')   '    ;     '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
       CALL WRITE_0D_R8( LSR_ERROR         ,INDEX_NONE,
      & 'LSR_ERROR         =', ' /* sets accuracy of LSR solver */')
       CALL WRITE_0D_R8( DIFF1             ,INDEX_NONE,
@@ -175,22 +180,22 @@ c    & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
      & 'MIN_TICE          =', ' /* minimum ice temperature */')
       CALL WRITE_0D_R8( SEAICE_EPS        ,INDEX_NONE,
      & 'SEAICE_EPS        =', ' /* reduce derivative singularities */')
-      write(msgbuf,'(a)')
+      WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &'// Seaice configuration (SEAICE_PARM01) >>> END <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(msgBuf,'(A)')
 
       _END_MASTER(myThid)
       _BARRIER
 
-      return
-      end
+      RETURN
+      END
