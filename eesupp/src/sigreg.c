@@ -1,5 +1,5 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.4 2006/05/23 14:55:19 edhill Exp $
+ * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.5 2006/06/20 03:13:54 edhill Exp $
  * $Name:  $
 
 //BOP
@@ -25,11 +25,9 @@
 #include <signal.h>
 #include <errno.h>
 #include <ucontext.h>
-#endif
 
 int * ip;
 
-#ifdef HAVE_SIGREG
 static void killhandler(
     unsigned int sn, siginfo_t  si, struct ucontext *sc )
 {
