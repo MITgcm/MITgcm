@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.20 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.21 2006/06/20 20:57:06 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,7 @@ C     == Local variables ==
       ELSE
         pf(1:1) = 'R'
       ENDIF
-      
+
       IF (SEAICEwriteState) THEN
 
         IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
@@ -373,6 +373,11 @@ C      Reset averages to zero
       ENDIF
       
 #endif /* ALLOW_TIMEAVE */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   do SEAICE monitor output : print some statistics about seaice fields
+      CALL SEAICE_MONITOR( myTime, myIter, myThid )
 
       RETURN
       END
