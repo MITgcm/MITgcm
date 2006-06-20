@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.23 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.24 2006/06/20 22:55:08 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -630,7 +630,7 @@ C--   Time-average
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       CALL GMREDI_DIAGNOSTICS_DRIVER(bi,bj,myThid)
+        CALL GMREDI_DIAGNOSTICS_FILL(bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diagnostics_driver.F,v 1.5 2006/03/02 21:10:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.1 2006/06/20 22:55:08 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE GMREDI_DIAGNOSTICS_DRIVER(
+      SUBROUTINE GMREDI_DIAGNOSTICS_FILL(
      I             bi, bj, myThid )
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_DIAGNOSTICS_DRIVER
+C     | SUBROUTINE GMREDI_DIAGNOSTICS_FILL
 C     | o fill GM-Redi diagnostics
 C     *==========================================================*
 C     | note: formerly was part of S/R GMREDI_CALC_TENSOR
