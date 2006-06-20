@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.94 2006/05/05 19:00:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.95 2006/06/20 20:19:03 baylor Exp $
 C $Name:  $
 
 CBOI
@@ -311,8 +311,10 @@ C/\  | | | |
 C/\  | | | |-CALC_PHI_HYD       :: Integrate the hydrostatic relation.
 C/\  | | | |-MOM_FLUXFORM       :: Flux form mom eqn. package ( see
 C/\  | | | |                       pkg/mom_fluxform ).
+C/\  | | | | |-MOM_CALC_VISC    :: Calculate Horizontal Viscosities
 C/\  | | | |-MOM_VECINV         :: Vector invariant form mom eqn. package ( see
 C/\  | | | |                       pkg/mom_vecinv   ).
+C/\  | | | | |-MOM_CALC_VISC    :: Calculate Horizontal Viscosities
 C/\  | | | |-TIMESTEP           :: Step momentum fields forward in time
 C/\  | | | |-OBCS_APPLY_UV      :: Open bndy. package (see pkg/obcs ).
 C/\  | | | |
