@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.36 2006/06/19 23:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.37 2006/06/20 19:33:21 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -18,14 +18,14 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "EESUPPORT.h"
-#include "DYNVARS.h"
 #include "GRID.h"
 #include "MONITOR.h"
+#include "DYNVARS.h"
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
@@ -36,7 +36,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_MBUF) msgBuf   
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dT
       _RL statsTemp(6)
 c     INTEGER time_as_int
@@ -44,35 +44,14 @@ c     INTEGER time_as_int
       INTEGER i
 #endif
 
-      dT=deltaTclock
+      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTclock) ) THEN
 
-      IF (DIFFERENT_MULTIPLE(monitorFreq,myTime,dT)) THEN
-        
-C       Dynamics field monitor start 
-        _BEGIN_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
-        IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
-#endif /* ALLOW_USE_MPI */
-          
-          IF (monitor_stdio) THEN
-            WRITE(msgBuf,'(2A)') '// ==========================',
-     &           '============================='
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-            WRITE(msgBuf,'(A)') 
-     &           '// Begin MONITOR dynamic field statistics'
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
-     &           SQUEEZE_RIGHT , 1)
-            WRITE(msgBuf,'(2A)') '// ==========================',
-     &           '============================='
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-            mon_write_stdout = .TRUE.
-          ENDIF
-          
-#ifdef ALLOW_USE_MPI
+        IF (monitor_stdio) THEN
+          mon_write_stdout = .TRUE.
+        ELSE
+          mon_write_stdout = .FALSE.
         ENDIF
-#endif /* ALLOW_USE_MPI */
-        _END_MASTER(myThid)
-        
+        mon_write_mnc = .FALSE.
 #ifdef ALLOW_MNC
         IF (useMNC .AND. monitor_mnc) THEN
           DO i = 1,MAX_LEN_MBUF
@@ -88,7 +67,30 @@ C       Dynamics field monitor start
           mon_write_mnc = .TRUE.
         ENDIF
 #endif /*  ALLOW_MNC  */
-        
+
+C       Dynamics field monitor start
+#ifdef ALLOW_USE_MPI
+        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
+     &       mon_write_stdout ) THEN
+#else /* ALLOW_USE_MPI */
+        IF ( mon_write_stdout ) THEN
+#endif /* ALLOW_USE_MPI */
+
+          _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(2A)') '// ==========================',
+     &           '============================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)')
+     &           '// Begin MONITOR dynamic field statistics'
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
+     &           SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(2A)') '// ==========================',
+     &           '============================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          _END_MASTER(myThid)
+
+        ENDIF
+
 C       Print the time to make grepping the stdout easier
         CALL MON_SET_PREF('time',myThid)
         CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
@@ -96,16 +98,6 @@ C       Print the time to make grepping the stdout easier
 C       - cause floating point error on some platform (cf Martin Losch)
 C       time_as_int = NINT( myTime )
 C       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
-
-#ifdef ALLOW_EXF
-C       Print some statistics about input forcing fields
-c       CALL EXF_MONITOR( myIter, myTime, myThid )
-#endif /* ALLOW_EXF */
-
-#ifdef ALLOW_SEAICE
-C       Print some statistics about pkg/seaice fields
-        IF (useSEAICE) CALL SEAICE_MONITOR( myIter, myTime, myThid )
-#endif /* ALLOW_SEAICE */
 
 C       Print the basic statistics of model state variables
         CALL MON_SET_PREF('dynstat',myThid)
@@ -122,7 +114,7 @@ C       Print the basic statistics of model state variables
      &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
      &       maskC,hFacC,rA ,drF,myThid)
-       
+
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('advcfl',myThid)
         dT=MAX(dTtracerLev(1),deltaTmom)
@@ -135,7 +127,7 @@ C       Print the numerical stablility parameters for current state
 C       Print stats for KE
         CALL MON_KE(myIter, myThid)
 
-C       Print stats for (relative,absolute) Vorticity AND Pot.Vort. 
+C       Print stats for (relative,absolute) Vorticity AND Pot.Vort.
         CALL MON_VORT3(myIter, myThid)
 
 C       Print stats for surface correction terms (Linear Free-Surf)
@@ -143,27 +135,25 @@ C       Print stats for surface correction terms (Linear Free-Surf)
 
 C       Check that solution is within reasonable bounds
         CALL MON_SOLUTION( statsTemp, myTime, myIter, myThid )
-       
-        IF (mon_write_stdout) THEN
-C         Dynamics field monitor finish
-          _BEGIN_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
-          IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
-#endif /* ALLOW_USE_MPI */
-            WRITE(msgBuf,'(2A)') '// ==========================',
-     &           '============================='
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-            WRITE(msgBuf,'(A)') 
-     &           '// End MONITOR dynamic field statistics'
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
-     &           SQUEEZE_RIGHT , 1)
-            WRITE(msgBuf,'(2A)') '// ==========================',
-     &           '============================='
-            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-#ifdef ALLOW_USE_MPI
-          ENDIF
-#endif /* ALLOW_USE_MPI */
 
+C       Dynamics field monitor finish
+#ifdef ALLOW_USE_MPI
+        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
+     &       mon_write_stdout ) THEN
+#else /* ALLOW_USE_MPI */
+        IF ( mon_write_stdout ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(2A)') '// ==========================',
+     &           '============================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(A)')
+     &           '// End MONITOR dynamic field statistics'
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
+     &           SQUEEZE_RIGHT , 1)
+          WRITE(msgBuf,'(2A)') '// ==========================',
+     &           '============================='
+          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
           _END_MASTER(myThid)
         ENDIF
 
