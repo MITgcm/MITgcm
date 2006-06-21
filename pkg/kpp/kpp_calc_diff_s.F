@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_s.F,v 1.1 2004/10/22 01:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_s.F,v 1.2 2006/06/21 22:58:31 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -66,7 +66,7 @@ C-    do level k=kArg only :
          DO j=jMin,jMax
           DO i=iMin,iMax
             KappaRS(i,j,k) = KappaRS(i,j,k)
-     &                 + ( KPPdiffKzT(i,j,kArg,bi,bj)
+     &                 + ( KPPdiffKzS(i,j,kArg,bi,bj)
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &                     - diffKr(i,j,kArg,bi,bj) )
 #else
