@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_aim.F,v 1.1 2006/01/22 15:50:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_aim.F,v 1.2 2006/06/22 14:10:29 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -96,9 +96,8 @@ C       ALHC  = latent heat of condensation        [J/g]
 C       ALHF  = latent heat of freezing            [J/g]
 C       SBC   = Stefan-Boltzmann constant
 C      EMISloc :: longwave surface emissivity
-      LOGICAL aim_energPrecip
 c     _RL FWIND0, CHS, VGUST, DTHETA, dTstab, FSTAB
-      _RL ALHC, ALHF, RD, CP, SBC, EMISloc
+      _RL P0, ALHC, ALHF, RD, CP, SBC, EMISloc
       EQUIVALENCE ( ocean_emissivity , EMISloc )
       EQUIVALENCE ( Lvap   , ALHC )
       EQUIVALENCE ( Lfresh , ALHF )
@@ -112,7 +111,7 @@ C    DENVV   :: surface flux (sens,lat.) coeff. (=Rho*|V|) [kg/m2/s]
 C    CDENVV  :: surf. heat flux (sens.,lat.) coeff including stability effect
 C    ALHevp  :: Latent Heat of evaporation
       _RL PSA(NGP)
-      _RL DENVV(NGP), SPEED0(NGP), PRD, VG2, factWind2
+      _RL DENVV(NGP), PRD
       _RL  Shf0(NGP), dShf(NGP), Evp0(NGP)
       _RL  Slr0(NGP), dSlr(NGP)
       _RL  TSFC(NGP), TSKIN(NGP)
@@ -123,23 +122,26 @@ C    ALHevp  :: Latent Heat of evaporation
       INTEGER J
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      aim_energPrecip = .TRUE.
       PSA(1) = 1. _d 0
+      P0 = 1. _d +5
 C---
 
       ALHevp = ALHC
 C     Evap of snow/ice: account for Latent Heat of freezing :
-      IF ( aim_energPrecip ) ALHevp = ALHC + ALHF
+c     IF ( aim_energPrecip .OR. useThSIce ) ALHevp = ALHC + ALHF
+      IF ( iceornot.GE.1 ) ALHevp = ALHC + ALHF
 
 C     1.4 Density * wind speed (including gustiness factor)
 
       PRD = P0/RD
-      VG2 = VGUST*VGUST
-      factWind2 = FWIND0*FWIND0
+c     VG2 = VGUST*VGUST
+c     factWind2 = FWIND0*FWIND0
 
       DO J=1,NGP
 c       SPEED0(J)=SQRT(factWind2*Vsurf2(J)+VG2)
 c       DENVV(J)=(PRD*PSA(J)/T0(J))*SPEED0(J)
+C-- assuming input file "WspeedFile" contains the time-average "SPEED0"
+C     from AIM output (aimPhytave: fields # 15 ; aimDiag: WINDS ) :
         DENVV(J)=(PRD*PSA(J)/T0(J))*Vsurf(J)
       ENDDO
 
