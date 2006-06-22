@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.15 2006/02/24 18:55:28 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.16 2006/06/22 14:44:47 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -124,108 +124,110 @@ C     I0     - Temps used in calculating string length
       INTEGER  ivarr(1)
       REAL*8   dvarr(1)
 
-      ivarr(1) = ival
-      dvarr(1) = dval
-
-      msgBuf = ' '
-      lBuf   = 0
-
-      DO i = 1,100
-        mon_vname(i:i) = ' '
-      ENDDO
-
-      I0 = IFNBLNK(mon_head)
-      I1 = ILNBLNK(mon_head)
-      IL = I1-I0+1
-      IF ( IL .GT. 0 .AND. lBuf+IL+1 .LE. MAX_LEN_MBUF ) THEN
-        msgBuf(1:IL) = mon_head
-        lBuf = IL+1
-        msgBuf(lBuf:lBuf) = ' '
-      ENDIF
-      
-      IF ( mon_pref(1:mon_prefL) .NE. mon_string_none .AND.
-     &     lBuf+mon_prefL+1      .LE. MAX_LEN_MBUF ) THEN
-        lBuf = lBuf+1
-        msgBuf(lBuf:lBuf+mon_prefL-1) = mon_pref(1:mon_prefL)
-        lBuf = lBuf+mon_prefL-1
-        mon_vname(1:mon_prefL) = mon_pref(1:mon_prefL)
-        nvname = mon_prefL
-      ELSE
-        nvname = 0
-      ENDIF
-
-      I0 = IFNBLNK(pref)
-      I1 = ILNBLNK(pref)
-      IL = I1-I0+1
-      IF ( IL .GT. 0 ) THEN
-        IF ( pref(I0:I1) .NE. mon_string_none .AND. 
-     &       lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
-          lBuf = lBuf+1
-          msgBuf(lBuf:lBuf+IL-1) = pref(I0:I1)
-          lBuf = lBuf+IL-1
-          mon_vname((nvname+1):(nvname+IL)) = pref(I0:I1)
-          nvname = nvname + IL
-        ENDIF
-      ENDIF
-
-      I0 = IFNBLNK(foot)
-      I1 = ILNBLNK(foot)
-      IL = I1-I0+1
-      IF ( IL .GT. 0 ) THEN
-        IF ( foot(I0:I1) .NE. mon_string_none .AND. 
-     &       lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
-          lBuf = lBuf+1
-          msgBuf(lBuf:lBuf+IL-1) = foot(I0:I1)
-          lBuf = lBuf+IL-1
-          mon_vname((nvname+1):(nvname+IL)) = foot(I0:I1)
-          nvname = nvname + IL
-        ENDIF
-      ENDIF
-
-C     write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
-C     write(*,*) 'mon_write_mnc = ''', mon_write_mnc, ''''
-C     write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
-
-      msgBuf(35:35) = '='
-
       _BEGIN_MASTER(myThid)
+
 #ifdef ALLOW_USE_MPI
-        IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+      IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
 #endif /* ALLOW_USE_MPI */
 
-          IF (mon_write_stdout) THEN
-            IF (itype .EQ. 1)
-     &           WRITE(msgBuf(36:57),'(1X,I21)')       ival
-            IF (itype .EQ. 2)
-     &           WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
-C    &           WRITE(msgBuf(35:57),'(1X,1P1E22.13E3)') dval
-
-C           Note that the above call fixes problems where there is
-C           insufficient space in the output format to handle variables
-C           such as 1.234500000E107 which, although they are wildly
-C           large, they may actually happen in some situations.  But,
-C           changing the monitor output format also means changing the
-C           routines that parse the monitor output for testreport.
-
-            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+        ivarr(1) = ival
+        dvarr(1) = dval
+        
+        msgBuf = ' '
+        lBuf   = 0
+        
+        DO i = 1,100
+          mon_vname(i:i) = ' '
+        ENDDO
+        
+        I0 = IFNBLNK(mon_head)
+        I1 = ILNBLNK(mon_head)
+        IL = I1-I0+1
+        IF ( IL .GT. 0 .AND. lBuf+IL+1 .LE. MAX_LEN_MBUF ) THEN
+          msgBuf(1:IL) = mon_head
+          lBuf = IL+1
+          msgBuf(lBuf:lBuf) = ' '
+        ENDIF
+        
+        IF ( mon_pref(1:mon_prefL) .NE. mon_string_none .AND.
+     &       lBuf+mon_prefL+1      .LE. MAX_LEN_MBUF ) THEN
+          lBuf = lBuf+1
+          msgBuf(lBuf:lBuf+mon_prefL-1) = mon_pref(1:mon_prefL)
+          lBuf = lBuf+mon_prefL-1
+          mon_vname(1:mon_prefL) = mon_pref(1:mon_prefL)
+          nvname = mon_prefL
+        ELSE
+          nvname = 0
+        ENDIF
+        
+        I0 = IFNBLNK(pref)
+        I1 = ILNBLNK(pref)
+        IL = I1-I0+1
+        IF ( IL .GT. 0 ) THEN
+          IF ( pref(I0:I1) .NE. mon_string_none .AND. 
+     &         lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
+            lBuf = lBuf+1
+            msgBuf(lBuf:lBuf+IL-1) = pref(I0:I1)
+            lBuf = lBuf+IL-1
+            mon_vname((nvname+1):(nvname+IL)) = pref(I0:I1)
+            nvname = nvname + IL
           ENDIF
+        ENDIF
+        
+        I0 = IFNBLNK(foot)
+        I1 = ILNBLNK(foot)
+        IL = I1-I0+1
+        IF ( IL .GT. 0 ) THEN
+          IF ( foot(I0:I1) .NE. mon_string_none .AND. 
+     &         lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
+            lBuf = lBuf+1
+            msgBuf(lBuf:lBuf+IL-1) = foot(I0:I1)
+            lBuf = lBuf+IL-1
+            mon_vname((nvname+1):(nvname+IL)) = foot(I0:I1)
+            nvname = nvname + IL
+          ENDIF
+        ENDIF
 
+C       write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
+C       write(*,*) 'mon_write_mnc = ''', mon_write_mnc, ''''
+C       write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
+        
+        msgBuf(35:35) = '='
+        
+        IF (mon_write_stdout) THEN
+          IF (itype .EQ. 1)
+     &         WRITE(msgBuf(36:57),'(1X,I21)')       ival
+          IF (itype .EQ. 2)
+     &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
+C       &           WRITE(msgBuf(35:57),'(1X,1P1E22.13E3)') dval
+          
+C         Note that the above call fixes problems where there is
+C         insufficient space in the output format to handle variables
+C         such as 1.234500000E107 which, although they are wildly large,
+C         they may actually happen in some situations.  But, changing
+C         the monitor output format also means changing the routines
+C         that parse the monitor output for testreport.
+
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+        ENDIF
+        
 #ifdef ALLOW_MNC
-          IF (useMNC .AND. mon_write_mnc) THEN
-            CALL MNC_CW_APPEND_VNAME(
-     &           mon_vname, '-_-_--__-__t', 0,0, myThid)
-            IF (itype .EQ. 1)
-     &           CALL MNC_CW_I_W(
-     &           'I',mon_fname,1,1,mon_vname, ivarr, myThid)
-            IF (itype .EQ. 2)
-     &           CALL MNC_CW_RL_W(
-     &           'D',mon_fname,1,1,mon_vname, dvarr, myThid)
-          ENDIF
+        IF (useMNC .AND. mon_write_mnc) THEN
+          CALL MNC_CW_APPEND_VNAME(
+     &         mon_vname, '-_-_--__-__t', 0,0, myThid)
+          IF (itype .EQ. 1)
+     &         CALL MNC_CW_I_W(
+     &         'I',mon_fname,1,1,mon_vname, ivarr, myThid)
+          IF (itype .EQ. 2)
+     &         CALL MNC_CW_RL_W(
+     &         'D',mon_fname,1,1,mon_vname, dvarr, myThid)
+        ENDIF
 #endif /*  ALLOW_MNC  */
 
 #ifdef ALLOW_USE_MPI
-        ENDIF
+      ENDIF
 #endif /* ALLOW_USE_MPI */
+
       _END_MASTER(myThid)
 
       RETURN
