@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.105 2006/06/18 23:22:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.106 2006/06/22 21:31:09 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -316,7 +316,6 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-cph-test
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -497,11 +496,21 @@ CADJ STORE kvz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #   endif
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
+C
+#ifdef ALLOW_AUTODIFF_TAMC 
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
+cph-test
+CADJ STORE uFld(:,:), vFld(:,:), wFld(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE uTrans(:,:), vTrans(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE xA(:,:), yA(:,:)                = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+C
          IF ( tempStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvert(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL CALC_GT(
@@ -534,7 +543,7 @@ CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL CALC_GS(
