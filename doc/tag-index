@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.684 2006/06/20 21:20:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.685 2006/06/22 19:39:21 baylor Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Pass variable viscosities (vertical and horizontal, e.g., KPP or Leith) 
+   to W momentum equation in nonhydrostatic and quasihydrostatic runs.  
 o make exf_monitor & seaice_monitor independant of the main (dynamics) monitor.
 o pkg/seaice: fix SEAICEuseEVPpickup parameter (put it in a commom block)
 o generic_advdiff: DST advection S/R : use local copy of velocity to compute CFL
