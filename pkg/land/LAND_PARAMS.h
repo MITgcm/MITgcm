@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.5 2005/09/10 20:40:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.6 2006/06/23 00:49:27 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -6,7 +6,7 @@ C     *==========================================================*
 C     | LAND_PARAMS.h
 C     | o Header file for LAND package parameters:
 C     |   - basic parameter ( I/O frequency, etc ...)
-C     |   - physical constants 
+C     |   - physical constants
 C     |   - vertical discretization
 C     *==========================================================*
 
@@ -18,13 +18,13 @@ C     land_calc_snow :: step forward snow thickness
 C     land_calc_alb  :: compute albedo of snow over land
 C     land_oldPickup :: restart from an old pickup (= before checkpoint 52l_pre)
       COMMON /LAND_PAR_L/
-     &    land_calc_grT, land_calc_grW, 
+     &    land_calc_grT, land_calc_grW,
      &    land_impl_grT, land_calc_snow,
      &    land_calc_alb, land_oldPickup,
-     &     land_timeave_mnc, land_snapshot_mnc,
-     &     land_pickup_write_mnc, land_pickup_read_mnc,
-     &     land_timeave_mdsio, land_snapshot_mdsio,
-     &     land_pickup_write_mdsio, land_pickup_read_mdsio
+     &    land_timeave_mnc, land_snapshot_mnc, land_mon_mnc,
+     &    land_pickup_write_mnc, land_pickup_read_mnc,
+     &    land_timeave_mdsio, land_snapshot_mdsio, land_mon_stdio,
+     &    land_pickup_write_mdsio
       LOGICAL land_calc_grT
       LOGICAL land_calc_grW
       LOGICAL land_impl_grT
@@ -32,16 +32,16 @@ C     land_oldPickup :: restart from an old pickup (= before checkpoint 52l_pre)
       LOGICAL land_calc_alb
       LOGICAL land_oldPickup
       LOGICAL
-     &     land_timeave_mnc, land_snapshot_mnc,
-     &     land_pickup_write_mnc, land_pickup_read_mnc,
-     &     land_timeave_mdsio, land_snapshot_mdsio,
-     &     land_pickup_write_mdsio, land_pickup_read_mdsio
+     &    land_timeave_mnc, land_snapshot_mnc, land_mon_mnc,
+     &    land_pickup_write_mnc, land_pickup_read_mnc,
+     &    land_timeave_mdsio, land_snapshot_mdsio, land_mon_stdio,
+     &    land_pickup_write_mdsio
 
 C--   COMMON /LAND_PAR_C/: Character valued parameters
 C     land_grT_iniFile  :: File containing initial ground Temp.
 C     land_grW_iniFile  :: File containing initial ground Water.
 C     land_snow_iniFile :: File containing initial snow thickness.
-      COMMON /LAND_PAR_C/ 
+      COMMON /LAND_PAR_C/
      &    land_grT_iniFile, land_grW_iniFile, land_snow_iniFile
       CHARACTER*(MAX_LEN_FNAM) land_grT_iniFile
       CHARACTER*(MAX_LEN_FNAM) land_grW_iniFile
@@ -71,12 +71,12 @@ C     albWarmSnow     :: albedo of warm (=wet) new snow (Tsfc = 0)
 C     albOldSnow      :: albedo of old snow (snowAge > 35.d)
 C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
-      COMMON /LAND_PAR_R/ 
+      COMMON /LAND_PAR_R/
      &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
      &    land_grdLambda, land_heatCs, land_CpWater,
      &    land_wTauDiff, land_waterCap, land_fractRunOff,
-     &    land_rhoLiqW, 
-     &    land_rhoSnow, land_Lfreez, recip_Lfreez, 
+     &    land_rhoLiqW,
+     &    land_rhoSnow, land_Lfreez, recip_Lfreez,
      &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
      &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
@@ -91,12 +91,12 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 C--   COMMON /LAND_GRID_R/: layer dependent parameters
 C     land_dzF        :: layer thickness
 C     land_rec_dzC    :: reciprol vertical spacing (from center to center)
-      COMMON /LAND_GRID_R/ 
+      COMMON /LAND_GRID_R/
      &    land_dzF, land_rec_dzC
 
       _RL land_dzF(land_nLev), land_rec_dzC(land_nLev)
 
-#endif /* ALLOW_LAND */ 
+#endif /* ALLOW_LAND */
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

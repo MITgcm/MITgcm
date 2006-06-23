@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.9 2005/09/10 20:40:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.10 2006/06/23 00:49:27 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -14,7 +14,7 @@ C     | S/R LAND_READPARMS
 C     | o Read Land package parameters
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -31,7 +31,7 @@ C-- size for MITgcm & Land package :
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==       
+C     == Routine Arguments ==
 C     myThid     ::  Number of this instance
       INTEGER myThid
 CEOP
@@ -41,7 +41,7 @@ CEOP
 C Functions
       INTEGER ILNBLNK
 
-C     == Local Variables == 
+C     == Local Variables ==
 C     msgBuf     :: Informational/error meesage buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
@@ -68,14 +68,14 @@ C     land_diagFreq  :: Frequency^-1 for diagnostic output (s)
 C     land_monFreq   :: Frequency^-1 for monitor    output (s)
 C     land_dzF       :: layer thickness
       NAMELIST /LAND_MODEL_PAR/
-     &    land_calc_grT, land_calc_grW, 
+     &    land_calc_grT, land_calc_grW,
      &    land_impl_grT, land_calc_snow,
-     &    land_calc_alb, land_oldPickup, 
+     &    land_calc_alb, land_oldPickup,
      &    land_grT_iniFile, land_grW_iniFile, land_snow_iniFile,
      &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
      &    land_dzF,
-     &     land_timeave_mnc, land_snapshot_mnc,
-     &     land_pickup_write_mnc, land_pickup_read_mnc
+     &    land_timeave_mnc, land_snapshot_mnc, land_mon_mnc,
+     &    land_pickup_write_mnc, land_pickup_read_mnc
 
 
 C--   Physical constants :
@@ -101,19 +101,19 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    land_grdLambda, land_heatCs, land_CpWater,
      &    land_wTauDiff, land_waterCap, land_fractRunOff,
      &    land_rhoLiqW,
-     &    land_rhoSnow, land_Lfreez, 
+     &    land_rhoSnow, land_Lfreez,
      &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
      &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
-      land_calc_grT = .TRUE. 
+      land_calc_grT = .TRUE.
       land_calc_grW = .TRUE.
-      land_impl_grT = .TRUE. 
-      land_calc_snow= .TRUE. 
-      land_calc_alb = .TRUE. 
-      land_oldPickup= .FALSE. 
+      land_impl_grT = .TRUE.
+      land_calc_snow= .TRUE.
+      land_calc_alb = .TRUE.
+      land_oldPickup= .FALSE.
       land_grT_iniFile = ' '
       land_grW_iniFile = ' '
       land_snow_iniFile= ' '
@@ -124,11 +124,13 @@ C-    Set default value:
 #ifdef ALLOW_MNC
       land_timeave_mnc       = timeave_mnc .AND. useMNC
       land_snapshot_mnc      = snapshot_mnc .AND. useMNC
+      land_mon_mnc           = monitor_mnc .AND. useMNC
       land_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
       land_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
 #else
       land_timeave_mnc       = .FALSE.
       land_snapshot_mnc      = .FALSE.
+      land_mon_mnc           = .FALSE.
       land_pickup_write_mnc  = .FALSE.
       land_pickup_read_mnc   = .FALSE.
 #endif
@@ -156,9 +158,9 @@ C-    layer thickness:
        land_dzF(k) = -1.
        land_rec_dzC(k) = -1.
       ENDDO
-      
+
       _BEGIN_MASTER(myThid)
-      
+
       WRITE(msgBuf,'(A)') ' LAND_READPARMS: opening data.land'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
@@ -173,10 +175,10 @@ C-    Parameters for Land model:
 C-    Physical Constants for Land package
       READ(UNIT=iUnit,NML=LAND_PHYS_PAR)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &   ' LAND_READPARMS: finished reading data.land'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
- 
+
 C--   Close the open data file
       CLOSE(iUnit)
 
@@ -191,7 +193,7 @@ C-    derive other parameters:
        IF (tmpvar.GT.0. _d 0) land_rec_dzC(k) = 2. _d 0 / tmpvar
        tmpvar = land_dzF(k)
       ENDDO
-      IF ( land_Lfreez.NE. 0. _d 0 ) THEN 
+      IF ( land_Lfreez.NE. 0. _d 0 ) THEN
         recip_Lfreez = 1. _d 0 / land_Lfreez
       ELSE
         recip_Lfreez = 0. _d 0
@@ -236,32 +238,30 @@ C-    If land_monFreq is > 0, then must compile the monitor pkg
 #endif /* ALLOW_MONITOR */
 
 #ifdef ALLOW_MNC
-      land_timeave_mnc      =
-     &     land_timeave_mnc .AND. useMNC
-      land_snapshot_mnc     =
-     &     land_snapshot_mnc .AND. useMNC
-      land_pickup_write_mnc =
-     &     land_pickup_write_mnc .AND. useMNC
-      land_pickup_read_mnc  =
-     &     land_pickup_read_mnc .AND. useMNC
+      land_timeave_mnc      = useMNC .AND. land_timeave_mnc
+      land_snapshot_mnc     = useMNC .AND. land_snapshot_mnc
+      land_mon_mnc          = useMNC .AND. land_mon_mnc
+      land_pickup_write_mnc = useMNC .AND. land_pickup_write_mnc
+      land_pickup_read_mnc  = useMNC .AND. land_pickup_read_mnc
 
-      land_timeave_mdsio      = (.NOT. land_timeave_mnc)
-     &     .OR. outputTypesInclusive
-      land_snapshot_mdsio     = (.NOT. land_snapshot_mnc)
-     &     .OR. outputTypesInclusive
-      land_pickup_write_mdsio = (.NOT. land_pickup_write_mnc)
-     &     .OR. outputTypesInclusive
-      land_pickup_read_mdsio  = (.NOT. land_pickup_read_mnc)
-     &     .OR. outputTypesInclusive
+      land_timeave_mdsio      = (.NOT.land_timeave_mnc)
+     &                      .OR. outputTypesInclusive
+      land_snapshot_mdsio     = (.NOT.land_snapshot_mnc)
+     &                      .OR. outputTypesInclusive
+      land_mon_stdio          = (.NOT.land_mon_mnc)
+     &                      .OR. outputTypesInclusive
+      land_pickup_write_mdsio = (.NOT.land_pickup_write_mnc)
+     &                      .OR. outputTypesInclusive
 #else
       land_timeave_mnc        = .FALSE.
       land_snapshot_mnc       = .FALSE.
+      land_mon_mnc            = .FALSE.
       land_pickup_write_mnc   = .FALSE.
       land_pickup_read_mnc    = .FALSE.
       land_timeave_mdsio      = .TRUE.
       land_snapshot_mdsio     = .TRUE.
+      land_mon_stdio          = .TRUE.
       land_pickup_write_mdsio = .TRUE.
-      land_pickup_read_mdsio  = .TRUE.
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -280,13 +280,13 @@ C--   Print out parameter values :
 C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( land_calc_grT, INDEX_NONE,
      &                 'land_calc_grT =',
-     &   ' /* step forward ground Temp. on/off flag */')       
+     &   ' /* step forward ground Temp. on/off flag */')
        CALL WRITE_0D_L( land_calc_grW, INDEX_NONE,
      &                 'land_calc_grW =',
-     &   ' /* step forward soil moiture on/off flag */')       
+     &   ' /* step forward soil moiture on/off flag */')
        CALL WRITE_0D_L( land_impl_grT, INDEX_NONE,
      &                 'land_impl_grT =',
-     &   ' /* solve ground temperature implicitly */')       
+     &   ' /* solve ground temperature implicitly */')
        CALL WRITE_0D_L( land_calc_snow, INDEX_NONE,
      &                 'land_calc_snow =',
      &   ' /* step forward snow thickness */')
@@ -295,8 +295,8 @@ C- namelist LAND_MODEL_PAR:
      &   ' /* compute land+snow albedo */')
       iL = ILNBLNK( land_grT_iniFile )
 c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
-      IF ( iL.GE.1 ) THEN 
-       WRITE(msgBuf,'(A,A)') 'land_grT_iniFile = ', 
+      IF ( iL.GE.1 ) THEN
+       WRITE(msgBuf,'(A,A)') 'land_grT_iniFile = ',
      &                       '/* Initial ground-Temp Input-File */'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,'(16X,A)') land_grT_iniFile(1:iL)
@@ -305,8 +305,8 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       ENDIF
       iL = ILNBLNK( land_grW_iniFile )
-      IF ( iL.GE.1 ) THEN 
-       WRITE(msgBuf,'(A,A)') 'land_grW_iniFile = ', 
+      IF ( iL.GE.1 ) THEN
+       WRITE(msgBuf,'(A,A)') 'land_grW_iniFile = ',
      &                       '/* Initial soil-Water Input-File */'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
@@ -315,8 +315,8 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       ENDIF
       iL = ILNBLNK( land_snow_iniFile )
-      IF ( iL.GE.1 ) THEN 
-       WRITE(msgBuf,'(A,A)') 'land_snow_iniFile= ', 
+      IF ( iL.GE.1 ) THEN
+       WRITE(msgBuf,'(A,A)') 'land_snow_iniFile= ',
      &                  '/* Initial snow thickness Input-File */'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
@@ -336,10 +336,19 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
      &   ' /* layer thickness ( m ) */')
        CALL WRITE_1D_R8(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
      &  ,' /* recip. vertical spacing (m-1) */')
+      CALL WRITE_0D_L( land_timeave_mdsio, INDEX_NONE,
+     &     'land_timeave_mdsio =',' /* use MDSIO for Tave output */')
       CALL WRITE_0D_L( land_timeave_mnc, INDEX_NONE,
      &     'land_timeave_mnc =',' /* use MNC for Tave output */')
+      CALL WRITE_0D_L( land_snapshot_mdsio, INDEX_NONE,
+     &     'land_snapshot_mdsio =',
+     &     ' /* use MDSIO for snapshot output */')
       CALL WRITE_0D_L( land_snapshot_mnc, INDEX_NONE,
      &     'land_snapshot_mnc =',' /* use MNC for snapshot output */')
+      CALL WRITE_0D_L( land_mon_stdio, INDEX_NONE,
+     &     'land_mon_stdio =',' /* use STDOUT for monitor output */')
+      CALL WRITE_0D_L( land_mon_mnc, INDEX_NONE,
+     &     'land_mon_mnc =',' /* use MNC for monitor output */')
       CALL WRITE_0D_L( land_pickup_write_mnc, INDEX_NONE,
      &     'land_pickup_write_mnc =',
      &     ' /* use MNC for writing pickups */')
@@ -386,7 +395,7 @@ C- namelist LAND_PHYS_PAR:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
- 
+
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
