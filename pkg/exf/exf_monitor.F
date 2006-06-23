@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.8 2006/06/19 23:20:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.9 2006/06/23 00:50:21 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -20,16 +20,16 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-# include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
-#ifdef ALLOW_MONITOR
-# include "MONITOR.h"
-#endif
 #include "exf_param.h"
 #include "exf_fields.h"
 #include "exf_clim_fields.h"
+#ifdef ALLOW_MONITOR
+# include "MONITOR.h"
+#endif
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myIter
@@ -48,48 +48,53 @@ C     == Local variables ==
       INTEGER k
 #endif
 
-      IF ( DIFFERENT_MULTIPLE(exf_monFreq,myTime,deltaTclock)
+      IF ( DIFFERENT_MULTIPLE(exf_monFreq,myTime,deltaTClock)
      &   ) THEN
 
-        IF (monitor_stdio) THEN
-          mon_write_stdout = .TRUE.
-        ELSE
-          mon_write_stdout = .FALSE.
-        ENDIF
-        mon_write_mnc = .FALSE.
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. monitor_mnc) THEN
-          DO k = 1,MAX_LEN_MBUF
-            mon_fname(k:k) = ' '
-          ENDDO
-          mon_fname(1:11) = 'monitor_exf'
-          CALL MNC_CW_APPEND_VNAME(
-     &         'T', '-_-_--__-__t', 0,0, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-          CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'T', myIter, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
-          mon_write_mnc = .TRUE.
-        ENDIF
-#endif /*  ALLOW_MNC  */
-
 #ifdef ALLOW_USE_MPI
-        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
-     &       mon_write_stdout ) THEN
-#else /* ALLOW_USE_MPI */
-        IF ( mon_write_stdout ) THEN
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
 #endif /* ALLOW_USE_MPI */
           _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// Begin MONITOR EXF statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF (monitor_stdio) THEN
+            mon_write_stdout = .TRUE.
+          ELSE
+            mon_write_stdout = .FALSE.
+          ENDIF
+          mon_write_mnc = .FALSE.
+#ifdef ALLOW_MNC
+          IF (useMNC .AND. monitor_mnc) THEN
+            DO k = 1,MAX_LEN_MBUF
+              mon_fname(k:k) = ' '
+            ENDDO
+            mon_fname(1:11) = 'monitor_exf'
+            CALL MNC_CW_APPEND_VNAME(
+     &           'T', '-_-_--__-__t', 0,0, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+            CALL MNC_CW_I_W_S(
+     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+            mon_write_mnc = .TRUE.
+          ENDIF
+#endif /* ALLOW_MNC */
+
+          IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// Begin MONITOR EXF statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
           _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
         CALL MON_SET_PREF('exf',myThid)
         CALL MON_OUT_I ('_tsnumber', myIter,mon_string_none,myThid)
@@ -156,26 +161,32 @@ C       Print some statistics about input forcing fields
 #endif
 
 #ifdef ALLOW_USE_MPI
-        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
-     &       mon_write_stdout ) THEN
-#else /* ALLOW_USE_MPI */
-        IF ( mon_write_stdout ) THEN
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
 #endif /* ALLOW_USE_MPI */
           _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// End MONITOR EXF statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// End MONITOR EXF statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
+          mon_write_stdout = .FALSE.
+          mon_write_mnc    = .FALSE.
+
           _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-
+C     endif different multiple
       ENDIF
 
 #endif /* ALLOW_MONITOR */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.4 2006/06/20 20:57:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.5 2006/06/23 00:50:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,15 +20,12 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-# include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
+#include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 #ifdef ALLOW_MONITOR
 # include "MONITOR.h"
 #endif
-#include "SEAICE_PARAMS.h"
-#include "SEAICE.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myIter
@@ -45,48 +42,53 @@ C     == Local variables ==
       INTEGER i,j,bi,bj
       _RL TMP_DIAG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
-      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTclock)
+      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
      &   ) THEN
 
-        IF (SEAICE_mon_stdio) THEN
-          mon_write_stdout = .TRUE.
-        ELSE
-          mon_write_stdout = .FALSE.
-        ENDIF
-        mon_write_mnc = .FALSE.
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. SEAICE_mon_mnc) THEN
-          DO i = 1,MAX_LEN_MBUF
-            mon_fname(i:i) = ' '
-          ENDDO
-          mon_fname(1:14) = 'monitor_seaice'
-          CALL MNC_CW_APPEND_VNAME(
-     &         'T', '-_-_--__-__t', 0,0, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-          CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'T', myIter, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
-          mon_write_mnc = .TRUE.
-        ENDIF
-#endif /* ALLOW_MNC */
-
 #ifdef ALLOW_USE_MPI
-        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
-     &       mon_write_stdout ) THEN
-#else /* ALLOW_USE_MPI */
-        IF ( mon_write_stdout ) THEN
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
 #endif /* ALLOW_USE_MPI */
           _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// Begin MONITOR SEAICE statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF (SEAICE_mon_stdio) THEN
+            mon_write_stdout = .TRUE.
+          ELSE
+            mon_write_stdout = .FALSE.
+          ENDIF
+          mon_write_mnc = .FALSE.
+#ifdef ALLOW_MNC
+          IF (useMNC .AND. SEAICE_mon_mnc) THEN
+            DO i = 1,MAX_LEN_MBUF
+              mon_fname(i:i) = ' '
+            ENDDO
+            mon_fname(1:14) = 'monitor_seaice'
+            CALL MNC_CW_APPEND_VNAME(
+     &           'T', '-_-_--__-__t', 0,0, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+            CALL MNC_CW_I_W_S(
+     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+            mon_write_mnc = .TRUE.
+          ENDIF
+#endif /* ALLOW_MNC */
+
+          IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &             '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// Begin MONITOR SEAICE statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &             '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
           _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
         CALL MON_SET_PREF('seaice',myThid)
         CALL MON_OUT_I ('_tsnumber', myIter,mon_string_none,myThid)
@@ -149,26 +151,32 @@ C       Print some statistics about input forcing fields
      &       maskH,maskH,rA ,drF,myThid)
 
 #ifdef ALLOW_USE_MPI
-        IF ( ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) .AND.
-     &       mon_write_stdout ) THEN
-#else /* ALLOW_USE_MPI */
-        IF ( mon_write_stdout ) THEN
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
 #endif /* ALLOW_USE_MPI */
           _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// End MONITOR SEAICE statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// End MONITOR SEAICE statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
+          mon_write_stdout = .FALSE.
+          mon_write_mnc    = .FALSE.
+
           _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-
+C     endif different multiple
       ENDIF
 
 #endif /* ALLOW_MONITOR */

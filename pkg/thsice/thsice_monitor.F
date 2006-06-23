@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.11 2005/11/04 01:34:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.12 2006/06/23 00:50:22 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -17,12 +17,13 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #ifdef ALLOW_MONITOR
-#include "MONITOR.h"
+# include "MONITOR.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -60,46 +61,59 @@ C     == Local variables ==
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( 
+      IF (
      &   DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,deltaTclock)
      &   .OR. myIter.EQ.nIter0 ) THEN
 
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-        IF ( thSIce_mon_stdio ) mon_write_stdout = .TRUE.
+#ifdef ALLOW_USE_MPI
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
 
+          IF ( thSIce_mon_stdio ) THEN
+            mon_write_stdout = .TRUE.
+          ELSE
+            mon_write_stdout = .FALSE.
+          ENDIF
+          mon_write_mnc    = .FALSE.
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. thSIce_mon_mnc) THEN
-          DO k = 1,MAX_LEN_MBUF
-            mon_fname(k:k) = ' '
-          ENDDO
-          mon_fname(1:12) = 'monitor_sice'
-          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-          CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'iter', myIter, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
-          CALL MNC_CW_RL_W_S(
-     &        'D',mon_fname,1,1,'T', myTime, myThid)
-          mon_write_mnc = .TRUE.
-        ENDIF
-#endif /*  ALLOW_MNC  */
+          IF (useMNC .AND. thSIce_mon_mnc) THEN
+            DO k = 1,MAX_LEN_MBUF
+              mon_fname(k:k) = ' '
+            ENDDO
+            mon_fname(1:12) = 'monitor_sice'
+            CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+            CALL MNC_CW_I_W_S(
+     &          'I',mon_fname,1,1,'iter', myIter, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+            CALL MNC_CW_RL_W_S(
+     &          'D',mon_fname,1,1,'T', myTime, myThid)
+            mon_write_mnc = .TRUE.
+          ENDIF
+#endif /* ALLOW_MNC */
 
-        IF (mon_write_stdout) THEN
-         _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(A)')
-     &    '// ======================================================='
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-          WRITE(msgBuf,'(A)') '// Begin MONITOR Therm.SeaIce statistics'
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-          WRITE(msgBuf,'(A)')
-     &    '// ======================================================='
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-         _END_MASTER(myThid)
+          IF (mon_write_stdout) THEN
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(A)')
+     &             '// Begin MONITOR Therm.SeaIce statistics'
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          ENDIF
+
+          _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
         CALL MON_SET_PREF('thSI_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
-        
+
 C-- Ice area and Ice thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
@@ -199,7 +213,7 @@ c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
         mon_var='Tic1_max'
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
-         
+
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
@@ -220,26 +234,38 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
-        IF (mon_write_stdout) THEN
-         _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(A)')
-     &    '// ======================================================='
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-          WRITE(msgBuf,'(A)') '// End MONITOR Therm.SeaIce statistics'
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-          WRITE(msgBuf,'(A)')
-     &    '// ======================================================='
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-         _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF (mon_write_stdout) THEN
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(A)')
+     &             '// End MONITOR Therm.SeaIce statistics'
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          ENDIF
+
+          mon_write_stdout = .FALSE.
+          mon_write_mnc    = .FALSE.
+
+          _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
+#endif /* ALLOW_USE_MPI */
 
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-
+C     endif different multiple
       ENDIF
 
 #endif /* ALLOW_MONITOR */
 #endif /* ALLOW_THSICE */
-      
+
       RETURN
       END

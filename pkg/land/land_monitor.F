@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.9 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.10 2006/06/23 00:50:21 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -10,20 +10,18 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Do land global and Hemispheric diagnostic
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "LAND_SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
 #include "LAND_PARAMS.h"
 #include "LAND_VARS.h"
 #ifdef ALLOW_MONITOR
-#include "MONITOR.h"
+# include "MONITOR.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -50,14 +48,14 @@ C     mon_var    :: Variable sufix name
 C     mon_sufx   :: Latitude band sufix
 C     n, k       :: loop counter
 C     yBand      :: latitude separation
-C     locDr      :: thickness (= 1. here) 
+C     locDr      :: thickness (= 1. here)
 C     theMin     :: lat. band minimum value
 C     theMax     :: lat. band maximum value
 C     theMean    :: lat. band mean value
 C     theVar     :: lat. band variance
 C     theVol     :: lat. band volume (or area if locDr=1.)
 C     theMeanG   :: global mean value
-C     theVarG    :: global variance 
+C     theVarG    :: global variance
 C     theVolG    :: global volume (or area if locDr=1.)
 C     theEng     :: lat. band energy content
 C     theEnergy  :: total energy
@@ -78,51 +76,61 @@ C     theEnergy  :: total energy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,deltaTclock)
+      IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,deltaTClock)
      &     .OR. myIter.EQ.nIter0 ) THEN
-
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-        IF (monitor_stdio) THEN
-          mon_write_stdout = .TRUE.
-        ENDIF
-
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. monitor_mnc) THEN
-          DO k = 1,MAX_LEN_MBUF
-            mon_fname(k:k) = ' '
-          ENDDO
-          mon_fname(1:12) = 'monitor_land'
-          CALL MNC_CW_APPEND_VNAME(
-     &         'T', '-_-_--__-__t', 0,0, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-          CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'T', myIter, myThid)
-          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
-          mon_write_mnc = .TRUE.
-        ENDIF
-#endif /*  ALLOW_MNC  */
 
         DO k=1,land_nLev
           locDr(k)= 1.
         ENDDO
 
-       _BEGIN_MASTER(myThid)
-        IF (mon_write_stdout) THEN
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// Begin MONITOR Land statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+#ifdef ALLOW_USE_MPI
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+         IF ( land_mon_stdio ) THEN
+           mon_write_stdout = .TRUE.
+         ELSE
+           mon_write_stdout = .FALSE.
+         ENDIF
+         mon_write_mnc    = .FALSE.
+#ifdef ALLOW_MNC
+         IF ( useMNC .AND. land_mon_mnc ) THEN
+           DO k = 1,MAX_LEN_MBUF
+             mon_fname(k:k) = ' '
+           ENDDO
+           mon_fname(1:12) = 'monitor_land'
+           CALL MNC_CW_APPEND_VNAME(
+     &          'T', '-_-_--__-__t', 0,0, myThid)
+           CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+           CALL MNC_CW_I_W_S(
+     &         'I',mon_fname,1,1,'T', myIter, myThid)
+           CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+           mon_write_mnc = .TRUE.
+         ENDIF
+#endif /* ALLOW_MNC */
+
+         IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// Begin MONITOR Land statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
+          _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
-       _END_MASTER(myThid)
+#endif /* ALLOW_USE_MPI */
 
         CALL MON_SET_PREF('land_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
-        
+
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, nLatBnd, yBand,
@@ -153,7 +161,7 @@ C-- Snow thickness :
           WRITE(msgBuf,'(A,1PE16.9,A,0P9F7.2)') '%MON LAND : Area=',
      &      theVolG, ' ; Lat sep=', (yBand(n),n=2,nLatBnd)
           CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-          WRITE(msgBuf,'(A,1P9E16.9)') '%MON LAND : LatA=', 
+          WRITE(msgBuf,'(A,1P9E16.9)') '%MON LAND : LatA=',
      &                              (theVol(n),n=1,nLatBnd)
           CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
           _END_MASTER(myThid)
@@ -167,7 +175,7 @@ C-- Total Energy :
      I                myThid )
         theEnergy = 0.
         DO n=1,nLatBnd
-         theEng(n) = theEng(n) + theMean(n)*theVol(n) 
+         theEng(n) = theEng(n) + theMean(n)*theVol(n)
          theEnergy = theEnergy + theEng(n)
         ENDDO
         mon_var='TotEnerg'
@@ -231,7 +239,7 @@ C-- 1rst level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
         CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
-         
+
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 2, nLatBnd, yBand,
@@ -259,7 +267,7 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
         CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
-         
+
 C-- Soil water content (level 1+2):
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 0, nLatBnd, yBand,
@@ -287,27 +295,38 @@ c       mon_var='grdW_max'
 c       CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
 c       CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 c       CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
-         
-       _BEGIN_MASTER(myThid)
-        IF (mon_write_stdout) THEN
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(A)') '// End MONITOR Land statistics'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
-          WRITE(msgBuf,'(2A)') '// ===========================',
-     &         '============================'
-          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+
+#ifdef ALLOW_USE_MPI
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+          _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF (mon_write_stdout) THEN
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(A)') '// End MONITOR Land statistics'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+            WRITE(msgBuf,'(2A)') '// ===========================',
+     &           '============================'
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
+
+          mon_write_stdout = .FALSE.
+          mon_write_mnc    = .FALSE.
+
+          _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
         ENDIF
-       _END_MASTER(myThid)
+#endif /* ALLOW_USE_MPI */
 
-        mon_write_stdout = .FALSE.
-        mon_write_mnc    = .FALSE.
-
+C     endif different multiple
       ENDIF
 
 #endif /* ALLOW_MONITOR */
 #endif /* ALLOW_LAND */
-      
+
       RETURN
       END
