@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.10 2005/11/08 15:53:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.11 2006/06/23 00:33:42 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,12 +17,8 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "EESUPPORT.h"
-#include "DYNVARS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
