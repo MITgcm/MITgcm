@@ -13,7 +13,7 @@ function [vit] = find_all_iters_per_var(fall,vnames,vit)
 %
 %
 %  Ed Hill
-%  $Id: find_all_iters_per_var.m,v 1.1 2005/10/23 20:45:09 edhill Exp $
+%  $Id: find_all_iters_per_var.m,v 1.2 2006/06/24 22:08:06 edhill Exp $
 
 if isempty(vit) || not(isfield(vit,'tdname')) || isempty(vit.tdname)
   vit.tdname = 'T';
@@ -23,6 +23,7 @@ if isempty(vit) || not(isfield(vit,'tvname')) || isempty(vit.tvname)
 end
 
 for ii = 1:length(fall)
+  %  ii
   nc = netcdf(fall{ii},'read');
   
   if isempty(vnames)
@@ -51,7 +52,14 @@ for ii = 1:length(fall)
         vit.vars.(allv{jj}) = [];
       end
     else
+      %  allv
       for jj = 1:length(allv)
+        %  allv{jj}
+        %  nc{allv{jj}}
+        if isempty(nc{allv{jj}})
+          vit.vars.(allv{jj}) = [];
+          continue;
+        end
         if isempty(intersect( ncnames(dim(nc{allv{jj}})), vit.tdname ))
           vit.vars.(allv{jj}) = [];
         else
