@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.10 2006/06/05 22:33:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.11 2006/06/25 22:31:02 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -67,7 +67,7 @@ C-     needs new Ice Fraction in halo region to apply wind-stress reduction
        jMin = 1-OLy
        jMax = sNy+OLy-1
 #ifdef ATMOSPHERIC_LOADING
-      ELSEIF ( useRealFreshWaterFlux ) THEN
+      ELSEIF ( useRealFreshWaterFlux .AND. .NOT.useSEAICE ) THEN
 C-     needs sea-ice loading in part of the halo regions for grad.Phi0surf
 C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
        iMin = 0
@@ -211,16 +211,13 @@ CADJ STORE qnet    = comlev1, key = iicekey
 c      ENDDO
 c     ENDDO
 
-#ifdef ALLOW_SEAICE        
-C--   If useSEAICE=.true., the stress is computed in seaice_model,
-C--   so that it does not need any further reduction
-        IF ( .NOT. useSEAICE ) THEN
-#endif /* ALLOW_SEAICE */
+C--   note: If useSEAICE=.true., the stress is computed in seaice_model,
+C--   and stressReduction is always set to zero
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
-         IF ( stressReduction.GT. 0. _d 0 ) THEN
+        IF ( stressReduction.GT. 0. _d 0 ) THEN
           DO j = jMin, jMax
            DO i = iMin+1,iMax
             tauFac = stressReduction
@@ -235,30 +232,28 @@ CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
             fv(i,j,bi,bj) = (1. _d 0 - tauFac)*fv(i,j,bi,bj)
            ENDDO
           ENDDO
-         ENDIF
-#ifdef ALLOW_SEAICE        
-C     not useSEAICE
         ENDIF
-#endif /* ALLOW_SEAICE */
 
 C--  end bi,bj loop
        ENDDO
       ENDDO
 
-#ifdef ATMOSPHERIC_LOADING
-c     IF (useRealFreshWaterFlux) _EXCH_XY_RS(sIceLoad, myThid)
-#endif
 
-#ifdef ALLOW_SEAICE        
+#ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
 C--   Exchange fields that are advected by seaice dynamics
-      _EXCH_XY_R8( iceMask, myThid )
-      _EXCH_XY_R8( iceHeight, myThid )
-      _EXCH_XY_R8( snowHeight, myThid )
-      _EXCH_XY_R8( Qice1, myThid )
-      _EXCH_XY_R8( Qice2, myThid )
+        _EXCH_XY_R8( iceMask, myThid )
+        _EXCH_XY_R8( iceHeight, myThid )
+        _EXCH_XY_R8( snowHeight, myThid )
+        _EXCH_XY_R8( Qice1, myThid )
+        _EXCH_XY_R8( Qice2, myThid )
+#ifdef ATMOSPHERIC_LOADING
+        IF (useRealFreshWaterFlux)
+     &  _EXCH_XY_RS( sIceLoad, myThid )
+#endif
       ENDIF
 #endif /* ALLOW_SEAICE */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
 

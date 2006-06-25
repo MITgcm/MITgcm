@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.8 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.9 2006/06/25 22:31:02 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -130,6 +130,7 @@ C--   Default values (parameters)
       sMxL_default    = 35. _d 0
       vMxL_default    = 5. _d -2
       stressReduction = 1. _d 0
+      IF ( useSEAICE ) stressReduction = 0. _d 0
       thSIce_taveFreq = taveFreq
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
@@ -191,6 +192,22 @@ C     Set I/O parameters
      &       thSIce_pickup_write_mdsio = .FALSE.
       ENDIF
 #endif
+
+C--   Check parameter consistency:
+      IF ( useSEAICE .AND. stressReduction.NE.0. _d 0 ) THEN
+C--     If useSEAICE=.true., the stress is computed in seaice_model,
+C--     so that it does not need any further reduction
+        WRITE(msgBuf,'(2A)')
+     &   'THSICE_READPARMS: if useSEAICE, stress will be computed',
+     &   ' by SEAICE pkg => no reduction'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'THSICE_READPARMS: WARNING: reset stressReduction to zero'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+        stressReduction = 0. _d 0
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
