@@ -1,11 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.687 2006/06/25 22:42:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.688 2006/06/25 22:48:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/thsice with pkg/seaice dynamics:
-  fix domain of computation (interior only, required for exf) and do exchanges
+- fix domain of computation (interior only, required for exf) and do exchanges
+- seaice-dynamics forcing: add atmospheric and seaice loading to SSH gradient
 o towards a standard way of dealing with multi-threading in MONITOR
   and ${PKG}_MONITOR (all except ptracers_monitor) subroutines.
 o Pass variable viscosities (vertical and horizontal, e.g., KPP or Leith) 
