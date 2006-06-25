@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.3 2006/06/06 22:27:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.4 2006/06/25 22:22:38 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -59,9 +59,11 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     === Local variables ===
+C     hsLocal, hlLocal :: sensible & latent heat flux over sea-ice
 
       _RL     aln
 
+      _RL     hsLocal, hlLocal
       integer iter
       _RL     delq
       _RL     deltap
@@ -213,12 +215,13 @@ C     coefficients.
            tau    = tau*us(i,j,bi,bj)/sh(i,j,bi,bj)
 
            evapLoc       = -tau*qstar/ustar
-           hl(i,j,bi,bj) = -lath*evapLoc
-           hs(i,j,bi,bj) = atmcp*tau*tstar/ustar
+           hlLocal = -lath*evapLoc
+           hsLocal = atmcp*tau*tstar/ustar
 #ifndef EXF_READ_EVAP
 cdm             evap(i,j,bi,bj)    = tau*qstar/ustar
 cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
-           evap(i,j,bi,bj)    = -recip_rhonil*evapLoc
+C jmc: do not reset evap which contains evaporation over ice-free ocean fraction
+c          evap(i,j,bi,bj)    = -recip_rhonil*evapLoc
 #endif
 
 C---  surf.Temp derivative of turbulent Fluxes
@@ -241,7 +244,7 @@ C--   Total derivative with respect to surface temperature
            df0dT = -dflwupdT+dfshdT+dflhdT
 
            flwNet_dwn  = lwdown(i,j,bi,bj) - flwup
-           flxExceptSw = flwNet_dwn + hs(i,j,bi,bj) + hl(i,j,bi,bj)
+           flxExceptSw = flwNet_dwn + hsLocal + hlLocal
 
           endif
 
