@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.6 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.7 2006/06/25 22:35:17 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -23,7 +23,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 
@@ -134,6 +134,23 @@ C--     Read initial conditions:
 #ifdef COUPLE_MODEL
         _EXCH_XY_R8(dFdT, myThid)
 #endif
+
+#ifdef ATMOSPHERIC_LOADING
+C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
+        IF ( useSEAICE ) THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+               sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
+     &                               + iceHeight(i,j,bi,bj)*rhoi
+     &                               )*iceMask(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ATMOSPHERIC_LOADING */
 
 #endif /* ALLOW_THSICE */
 
