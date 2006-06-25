@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.25 2006/02/27 17:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.26 2006/06/25 23:06:24 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -60,67 +60,95 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER       diagNum
-      CHARACTER*8   diagName
-      CHARACTER*16  diagCode
-      CHARACTER*16  diagUnits
+C     rTitle     :: r-coordinate title
+C     eTitle     :: free-surface title
+C     fTitle     :: fixed boundary title
+C     pTitle     :: "Phi"  title
+C     sTitle     :: "salt" title
+      INTEGER        diagNum
+      CHARACTER*8    diagName
+      CHARACTER*16   diagCode
+      CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
-      CHARACTER*2   rUnit2c
-      CHARACTER*4   tUnit4c, sUnit4c
+      CHARACTER*2    rUnit2c
+      CHARACTER*4    tUnit4c, sUnit4c
+      CHARACTER*(10) rTitle, eTitle, fTitle
+      CHARACTER*(20) pTitle, sTitle
 
       CHARACTER*(16) DIAGS_MK_UNITS
       EXTERNAL DIAGS_MK_UNITS
+      CHARACTER*(80) DIAGS_MK_TITLE
+      EXTERNAL DIAGS_MK_TITLE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     For each output variable,
-C     specify Name (cdiag, 8c), Descriptions (tdiag, *c), Units (udiag, 16c) 
+C     specify Name (cdiag, 8c), Descriptions (tdiag, *c), Units (udiag, 16c)
 C         and Type/Parms (location on C grid, 2D/3D, ...) (gdiag, 16c)
 C----------------------------------------------------------------------
 
       IF ( usingPCoords ) THEN
         rUnit2c= 'Pa'
+        rTitle = ' Pressure '
+        pTitle = ' Geopotential       '
       ELSE
         rUnit2c= 'm '
+        rTitle = ' Height   '
+        pTitle = 'Pressure Pot.(p/rho)'
       ENDIF
       IF ( fluidIsAir ) THEN
         tUnit4c= 'K   '
         sUnit4c= 'g/kg'
+        sTitle = ' Specific Humidity  '
 #ifdef ALLOW_FIZHI
-      IF(useFIZHI)THEN
-        sUnit4c= 'kg/kg'
-      ENDIF
+        IF (useFIZHI) sUnit4c= 'kg/kg'
 #endif /* ALLOW_FIZHI */
       ELSE
         tUnit4c= 'degC'
         sUnit4c= 'psu '
+        sTitle = ' Salinity           '
+      ENDIF
+C-    free-surface (eTitle) and fixed-boundary (fTitle) position:
+      IF ( fluidIsAir ) THEN
+        eTitle = ' Surface  '
+        fTitle = ' Top      '
+      ELSEIF ( usingPCoords ) THEN
+        eTitle = ' Bottom   '
+        fTitle = ' Surface  '
+      ELSE
+        eTitle = ' Surface  '
+        fTitle = ' Bottom   '
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    state variables of the main code (and related quadratic var):
 
       diagName  = 'ETAN    '
-      diagTitle = 'Perturbation of Surface (pressure, height) (Pa,m)'
+      diagTitle = DIAGS_MK_TITLE( eTitle//rTitle//' Anomaly', myThid )
+c     IF ( fluidIsWater .AND. usingZCoords )
+c    &diagTitle = 'Sea Surface Elevation'
       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'ETANSQ  '
-      diagTitle = 'Square of Perturbation of Sfc position (r_unit^2)'
+      diagTitle = DIAGS_MK_TITLE( 'Square of '//eTitle//rTitle
+     I                          //' Anomaly', myThid )
       diagUnits = DIAGS_MK_UNITS( rUnit2c//'^2', myThid )
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DETADT2 '
-      diagTitle = 'Square of Eta (Surf.P,SSH) Tendency ((r_unit/s)^2)'
+      diagTitle = DIAGS_MK_TITLE( 'Square of '//eTitle//rTitle
+     I                          //' Anomaly Tendency', myThid )
       diagUnits = DIAGS_MK_UNITS( rUnit2c//'^2/s^2', myThid )
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'THETA   '
-      diagTitle = 'Potential Temperature (degC,K)'
+      diagTitle = 'Potential Temperature'
       diagUnits = DIAGS_MK_UNITS( tUnit4c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -134,14 +162,14 @@ c     CALL DIAGNOSTICS_ADD2LIST( diagNum,
 c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SALT    '
-      diagTitle = 'Salt or Water Vapor mixing ratio'
+      diagTitle = DIAGS_MK_TITLE( sTitle,  myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'RELHUM  '
-      diagTitle = 'Relative Humidity               '
+      diagTitle = 'Relative Humidity'
       diagUnits = 'percent         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -154,12 +182,14 @@ c     diagCode  = 'SM      M1      '
 c     CALL DIAGNOSTICS_ADD2LIST( diagNum,
 c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      IF ( fluidIsWater ) THEN
       diagName  = 'SALTanom'
       diagTitle = 'Salt anomaly (=SALT-35; g/kg)'
       diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      ENDIF
 
       diagName  = 'UVEL    '
       diagTitle = 'Zonal Component of Velocity (m/s)'
@@ -183,25 +213,27 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'THETASQ '
-      diagTitle = 'Square of Potential Temperature (K^2)'
+      diagTitle = 'Square of Potential Temperature'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'^2', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SALTSQ  '
-      diagTitle = 'Square of Salt or Water Vapor mix rat (g^2/kg^2)'
+      diagTitle = DIAGS_MK_TITLE( 'Square of '//sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      IF ( fluidIsWater ) THEN
       diagName  = 'SALTSQan'
       diagTitle = 'Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)'
       diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      ENDIF
 
       diagName  = 'UVELSQ  '
       diagTitle = 'Square of Zonal Comp of Velocity (m^2/s^2)'
@@ -218,7 +250,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WVELSQ  '
-      diagTitle = 'Square of Vertical Comp of Velocity (m^2/s^2)'
+      diagTitle = 'Square of Vertical Comp of Velocity'
       diagUnits = DIAGS_MK_UNITS( rUnit2c//'^2/s^2', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -239,14 +271,14 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WU_VEL  '
-      diagTitle = 'Vertical Transport of Zonal Momentum (m^2/s^2)'
+      diagTitle = 'Vertical Transport of Zonal Momentum'
       diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
       diagCode  = 'WU      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WV_VEL  '
-      diagTitle ='Vertical Transport of Meridional Momentum (m^2/s^2)'
+      diagTitle ='Vertical Transport of Meridional Momentum'
       diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
       diagCode  = 'WV      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -267,21 +299,21 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WVELMASS'
-      diagTitle = 'Vertical Mass-Weighted Comp of Velocity (m/s)'
+      diagTitle = 'Vertical Mass-Weighted Comp of Velocity'
       diagUnits = DIAGS_MK_UNITS( rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UTHMASS '
-      diagTitle = 'Zonal Mass-Weight Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Zonal Mass-Weight Transp of Pot Temp'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VTHMASS '
-      diagTitle = 'Meridional Mass-Weight Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Meridional Mass-Weight Transp of Pot Temp'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -295,77 +327,85 @@ c    I          diagName, diagCode, diagUnits, diagTitle, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'USLTMASS'
-      diagTitle = 'Zonal Mass-Weight Transp of Salt '
+      diagTitle = DIAGS_MK_TITLE( 'Zonal Mass-Weight Transp of '
+     I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VSLTMASS'
-      diagTitle = 'Meridional Mass-Weight Transp of Salt'
+      diagTitle = DIAGS_MK_TITLE( 'Meridional Mass-Weight Transp of '
+     I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WSLTMASS'
-      diagTitle = 'Vertical Mass-Weight Transp of Salt '
+      diagTitle = DIAGS_MK_TITLE( 'Vertical Mass-Weight Transp of '
+     I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UVELTH  '
-      diagTitle = 'Zonal Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Zonal Transport of Pot Temp'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VVELTH  '
-      diagTitle = 'Meridional Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Meridional Transport of Pot Temp'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WVELTH  '
-      diagTitle = 'Vertical Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Vertical Transport of Pot Temp'
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UVELSLT '
-      diagTitle = 'Zonal Transp of Salt '
+      diagTitle = DIAGS_MK_TITLE( 'Zonal Transport of '
+     I                          //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VVELSLT '
-      diagTitle = 'Meridional Transp of Salt '
+      diagTitle = DIAGS_MK_TITLE( 'Meridional Transport of '
+     I                          //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'WVELSLT '
-      diagTitle = 'Vertical Transp of Salt '
+      diagTitle = DIAGS_MK_TITLE( 'Vertical Transport of '
+     I                          //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UVELPHI '
-      diagTitle = 'Zonal Transp of Geopotential Height (m2/s2.m/s)'
+      diagTitle = DIAGS_MK_TITLE( 'Zonal Transp of '
+     I                 //pTitle//' Anomaly', myThid )
       diagUnits = 'm^3/s^3         '
       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'VVELPHI '
-      diagTitle = 'Meridional Transp of Geopotential Height (m2/s2.m/s)'
+      diagTitle = DIAGS_MK_TITLE( 'Meridional Transp of '
+     I                 //pTitle//' Anomaly', myThid )
       diagUnits = 'm^3/s^3         '
       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -409,28 +449,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIHYD  '
-      diagTitle = 'Hydrostatic (ocean) pressure / (atmos) geo-Potential'
+      diagTitle = DIAGS_MK_TITLE( 'Hydrostatic '
+     I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^2/s^2         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIHYDSQ'
-      diagTitle = 'Square of Hyd. (ocean) press / (atmos) geoPotential'
+      diagTitle = DIAGS_MK_TITLE( 'Square of Hyd. '
+     I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^4/s^4         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIBOT  '
-      diagTitle = 'ocean bottom pressure / top. atmos geo-Potential'
+c     diagTitle = 'ocean bottom pressure / top. atmos geo-Potential'
+      diagTitle = DIAGS_MK_TITLE( fTitle
+     I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^2/s^2         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIBOTSQ'
-      diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
+c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
+      diagTitle = DIAGS_MK_TITLE( 'Square of '//fTitle
+     I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^4/s^4         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -453,14 +499,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   surface fluxes:
       diagName  = 'TAUX    '
-      diagTitle = 'zonal surface wind stress, >0 increases uVel    '
+      diagTitle = 'zonal surface wind stress, >0 increases uVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'SU      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TAUY    '
-      diagTitle = 'meridional surf. wind stress, >0 increases vVel '
+      diagTitle = 'meridional surf. wind stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'SV      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -488,38 +534,40 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SFLUX   '
-      diagTitle = 'net surface salt flux, >0 increases salt        '
+      diagTitle = 'net surface salt flux, >0 increases salt'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SRELAX  '
-      diagTitle = 'surface salinity relaxation, >0 increases salt  '
+      diagTitle = 'surface salinity relaxation, >0 increases salt'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-#ifdef SHORTWAVE_HEATING
       diagName  = 'SWFLUX  '
-      diagTitle = 'net upward SW radiation, >0 increases theta     '
+      diagTitle = 'net upward SW radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'PRESSURE'
-      diagTitle = 'Atmospheric Pressure (Pa)     '
+C-    will be changed to an isomorphic name, such as:
+c     diagName  = 'RCENTER '
+c     diagTitle = 'Cell-Center r-Position (Pressure, Height) (Pa,m)'
+      diagTitle = DIAGS_MK_TITLE( 'Cell-Center '//rTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'RSURF   '
-      diagTitle = 'Surface (Pressure, Height) (Pa,m)'
+c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
+      diagTitle = DIAGS_MK_TITLE( eTitle//rTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -540,15 +588,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TOTTTEND'
-      diagTitle = 'Tendency of Potential Temperature (degC,K)'
-      diagUnits = 'deg K/sec'
+      diagTitle = 'Tendency of Potential Temperature'
+      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'TOTSTEND'
-      diagTitle = 'Tendency of Salt or Water Vapor mixing ratio'
-      diagUnits = 'kg/kg-sec'
+      diagTitle = DIAGS_MK_TITLE('Tendency of '//sTitle, myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )

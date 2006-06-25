@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.30 2006/02/16 23:03:16 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.31 2006/06/25 23:06:24 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,8 +33,8 @@ C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
 C            = 4 :: fill-in state variable tendency diagnostics the second time
 C     myThid     :: my Thread Id number
-      INTEGER selectVars 
-      INTEGER myThid 
+      INTEGER selectVars
+      INTEGER myThid
 
 #ifdef ALLOW_DIAGNOSTICS
 C     !LOCAL VARIABLES:
@@ -49,7 +49,7 @@ C     == Local variables ==
 #endif
       INTEGER i,j,K,bi,bj
       INTEGER km1
-      
+
       tmpFac = 1. _d 0
 
       IF ( selectVars.EQ.2 .OR. selectVars.EQ.3 ) THEN
@@ -72,16 +72,16 @@ C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_SCALE_FILL(etaN,tmpFac,2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
-      
+
 #ifdef EXACT_CONSERV
         CALL DIAGNOSTICS_SCALE_FILL(dEtaHdt,tmpFac,2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
 #endif
-      
+
         CALL DIAGNOSTICS_FILL(uVel, 'UVEL    ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(vVel, 'VVEL    ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(wVel, 'WVEL    ',0,Nr,0,1,1,myThid)
-      
+
         CALL DIAGNOSTICS_SCALE_FILL(uVel,tmpFac,2,
      &                              'UVELSQ  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_SCALE_FILL(vVel,tmpFac,2,
@@ -113,7 +113,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'UV_VEL_C',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('UV_VEL_Z',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -130,7 +130,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'UV_VEL_Z',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('WU_VEL  ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -188,7 +188,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'UVELTH  ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('VVELTH  ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -204,7 +204,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'VVELTH  ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('WVELTH  ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -221,7 +221,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WVELTH  ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('UVELSLT ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -237,7 +237,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'UVELSLT ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('VVELSLT ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -270,7 +270,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WVELSLT ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('UVELPHI ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -286,7 +286,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'UVELPHI ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('VVELPHI ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -302,7 +302,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'VVELPHI ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('PRESSURE',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -361,7 +361,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTVTEND',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -377,7 +377,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -416,7 +416,7 @@ C--   fill tracer state-var diagnostics:
            dummy1 = theta(i,j,k,bi,bj) * ((rc(k)/100.)/1000.)**kappa
            dummy2 = rc(k) / 100.
            call qsat(dummy1,dummy2,dummy3,dummy4,.false.)
-           tmpMk(i,j,K,bi,bj) = hfacC(i,j,K,bi,bj) * 
+           tmpMk(i,j,K,bi,bj) = hfacC(i,j,K,bi,bj) *
      .                    salt(i,j,k,bi,bj) * 100. / dummy3
           enddo
          enddo
@@ -431,7 +431,7 @@ C--   fill tracer state-var diagnostics:
      &                              'THETASQ ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_SCALE_FILL(salt,tmpFac,2,
      &                              'SALTSQ  ',0,Nr,0,1,1,myThid)
-      
+
 c       IF ( DIAGNOSTICS_IS_ON('SST     ',myThid) ) THEN
 c        DO bj = myByLo(myThid), myByHi(myThid)
 c         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -444,7 +444,7 @@ c         ENDDO
 c        ENDDO
 c        CALL DIAGNOSTICS_FILL(tmp1k,'SST     ',0,1,0,1,1,myThid)
 c       ENDIF
-      
+
 c       IF ( DIAGNOSTICS_IS_ON('SSS     ',myThid) ) THEN
 c        DO bj = myByLo(myThid), myByHi(myThid)
 c         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -458,7 +458,9 @@ c        ENDDO
 c        CALL DIAGNOSTICS_FILL(tmp1k,'SSS     ',0,1,0,1,1,myThid)
 c       ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('SALTanom',myThid) ) THEN
+        IF ( fluidIsWater .AND.
+     &       ( DIAGNOSTICS_IS_ON('SALTanom',myThid)
+     &     .OR.DIAGNOSTICS_IS_ON('SALTSQan',myThid) ) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
@@ -470,25 +472,11 @@ c       ENDIF
            ENDDO
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL(tmpMk,'SALTanom',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL( tmpMk,'SALTanom',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_SCALE_FILL(tmpMk,tmpFac,2,
+     &                                'SALTSQan',0,Nr,0,1,1,myThid)
         ENDIF
-      
-        IF ( DIAGNOSTICS_IS_ON('SALTSQan',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO K=1,Nr
-            DO j = 1,sNy
-             DO i = 1,sNx
-               tmpMk(i,j,K,bi,bj) = (salt(i,j,K,bi,bj)-35. _d 0)
-     &                             *(salt(i,j,K,bi,bj)-35. _d 0)
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(tmpMk,'SALTSQan',0,Nr,0,1,1,myThid)
-        ENDIF
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( DIAGNOSTICS_IS_ON('UVELMASS',myThid) ) THEN
@@ -497,7 +485,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            DO K=1,Nr
             DO j = 1,sNy
               DO i = 1,sNx
-                tmpMk(i,j,K,bi,bj) 
+                tmpMk(i,j,K,bi,bj)
      &               = uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
               ENDDO
             ENDDO
@@ -513,7 +501,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            DO K=1,Nr
             DO j = 1,sNy
               DO i = 1,sNx
-                tmpMk(i,j,K,bi,bj) 
+                tmpMk(i,j,K,bi,bj)
      &               = vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
               ENDDO
             ENDDO
@@ -558,7 +546,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'VTHMASS ',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('WTHMASS ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -609,7 +597,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'VSLTMASS',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('WSLTMASS',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -626,7 +614,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WSLTMASS',0,Nr,0,1,1,myThid)
         ENDIF
-      
+
 C--   fill tracer state-var diagnostics: end
       ENDIF
 
@@ -666,7 +654,7 @@ C       this means that diag fill is called from inside the bi-bj loop
           ENDDO
          ENDDO
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -682,7 +670,7 @@ C       this means that diag fill is called from inside the bi-bj loop
           ENDDO
          ENDDO
         ENDIF
-      
+
         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -703,6 +691,6 @@ C--   fill state tendency diagnostics the second time: end
       ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */
-      
-      RETURN 
+
+      RETURN
       END
