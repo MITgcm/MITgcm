@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.10 2006/05/06 19:13:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.11 2006/06/25 22:33:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
@@ -48,6 +49,7 @@ C     i,j,bi,bj - Loop counters
       _RL RHOICE, RHOAIR, SINWIN, COSWIN
       _RL PSTAR, AAA
       _RL U1, V1
+      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C--   FIRST SET UP BASIC CONSTANTS
       RHOICE = SEAICE_rhoIce
@@ -168,18 +170,42 @@ C     interpolate to V point
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Compute surface pressure at z==0:
+C-    use actual sea surface height for tilt computations
+        DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+          ENDDO
+        ENDDO
+#ifdef ATMOSPHERIC_LOADING
+C-    add atmospheric loading and Sea-Ice loading
+        IF ( useRealFreshWaterFlux ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = phiSurf(i,j)
+     &                   + ( pload(i,j,bi,bj)
+     &                      +sIceLoad(i,j,bi,bj)*gravity
+     &                     )*recip_rhoConst
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = phiSurf(i,j)
+     &                   + pload(i,j,bi,bj)*recip_rhoConst
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ATMOSPHERIC_LOADING */
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
 C--   NOW ADD IN TILT
-C--   use actual sea surface height for tilt computations
           FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
-     &         -seaiceMassU(I,J,bi,bj)*gravity* _recip_dxC(I,J,bi,bj)
-     &         *( etaN(I,J,bi,bj)-etaN(I-1,J,bi,bj) )
-     &         
+     &         -seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
+     &         *( phiSurf(i,j)-phiSurf(i-1,j) )
           FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
-     &         -seaiceMassV(I,J,bi,bj)*gravity* _recip_dyC(I,J,bi,bj)
-     &         *( etaN(I,J,bi,bj)-etaN(I,J-1,bi,bj) )
-     &         
+     &         -seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
+     &         *( phiSurf(i,j)-phiSurf(i,j-1) )
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
@@ -241,7 +267,7 @@ C NOW DO MODIFIED EULER STEP
          ENDDO
         ENDDO
        ENDDO
-       
+
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
        CALL SEAICE_LSR( 2, myThid )
 #ifdef SEAICE_ALLOW_EVP
