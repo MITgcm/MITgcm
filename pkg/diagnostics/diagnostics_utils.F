@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.22 2005/07/11 16:20:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.23 2006/06/25 23:03:55 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -220,7 +220,78 @@ C     !LOCAL VARIABLES:
 
       RETURN
       END
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: DIAGS_MK_TITLE
+
+C     !INTERFACE:
+      CHARACTER*80 FUNCTION DIAGS_MK_TITLE(
+     I                            diagTitleInPieces, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION DIAGS_MK_TITLE
+C     | o Return the diagnostic title string (80c) removing
+C     |   consecutive blanks from the input string
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+C     diagTitleInPieces :: string for diagnostic units: in several
+C                          pieces, with blanks in between
+C     myThid            ::  my Thread Id number
+      CHARACTER*(*) diagTitleInPieces
+      INTEGER      myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL flag
+      INTEGER i,j,n
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DIAGS_MK_TITLE = '                                        '
+     &               //'                                        '
+      n = LEN(diagTitleInPieces)
+
+      j = 0
+      flag = .FALSE.
+      DO i=1,n
+       IF (diagTitleInPieces(i:i) .NE. ' ' ) THEN
+         IF ( flag ) THEN
+           j = j+1
+           IF (j.LE.80) DIAGS_MK_TITLE(j:j) = ' '
+         ENDIF
+         j = j+1
+         IF ( j.LE.80 ) DIAGS_MK_TITLE(j:j) = diagTitleInPieces(i:i)
+         flag = .FALSE.
+       ELSE
+         flag = j.GE.1
+       ENDIF
+      ENDDO
+
+      IF ( j.GT.80 ) THEN
+         WRITE(msgBuf,'(2A,I4,A)') '**WARNING** ',
+     &   'DIAGS_MK_TITLE: too long (',j,' >80) input string'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(3A)') '**WARNING** ',
+     &   'DIAGS_MK_TITLE: input=', diagTitleInPieces
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 CBOP 0
 C     !ROUTINE: diagnostics_get_pointers
 C     !INTERFACE:
