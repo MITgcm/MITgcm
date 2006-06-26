@@ -1,0 +1,73 @@
+*** ad_taf_output.f	2005-09-29 15:17:45.000000000 -0400
+--- ad_taf_output.fmod	2005-09-29 15:40:24.000000000 -0400
+***************
+*** 78470,78492 ****
+            close(unit=76)
+          else
+            idivbeg = nchklev_3
+!           idivend = nchklev_3+(-1)
+          endif
+        endif
+        call mpi_bcast( idivbeg,1,mpi_integer,0,mpi_comm_world,iers )
+        call mpi_bcast( idivend,1,mpi_integer,0,mpi_comm_world,iers )
+  
+  C----------------------------------------------
+- C write divided adjoint control file
+- C----------------------------------------------
+-       if (iproc .eq. 0) then
+-         open(unit=76,file='divided.ctrl',form='formatted')
+-         idivaux = 2*idivend-idivbeg
+-         write(unit=76,fmt=*) idivend,idivaux
+-         close(unit=76)
+-       endif
+- 
+- C----------------------------------------------
+  C OPEN TAPE onetape
+  C----------------------------------------------
+        call adopen ( mythid,
+--- 78470,78482 ----
+            close(unit=76)
+          else
+            idivbeg = nchklev_3
+!           idivend = MAX(nchklev_3-1,0)
+          endif
+        endif
+        call mpi_bcast( idivbeg,1,mpi_integer,0,mpi_comm_world,iers )
+        call mpi_bcast( idivend,1,mpi_integer,0,mpi_comm_world,iers )
+  
+  C----------------------------------------------
+  C OPEN TAPE onetape
+  C----------------------------------------------
+        call adopen ( mythid,
+***************
+*** 82624,82632 ****
+--- 82614,82642 ----
+       $1368 )
+  
+          endif
++ 
++ C----------------------------------------------
++ C update divided adjoint control file
++ C----------------------------------------------
++       if (iproc .eq. 0) then
++         open(unit=76,file='divided.ctrl',form='formatted')
++         write(unit=76,fmt=*) ilev_3-1,idivend
++         close(unit=76)
++       endif
++ 
+        end do
+  
+  C----------------------------------------------
++ C write divaided adjoint control file
++ C----------------------------------------------
++       if (iproc .eq. 0) then
++         open(unit=76,file='divided.ctrl',form='formatted')
++         idivaux = MAX(2*idivend-idivbeg,0)
++         write(unit=76,fmt=*) idivend,idivaux
++         close(unit=76)
++       endif
++ 
++ C----------------------------------------------
+  C write snapshot
+  C----------------------------------------------
+        if (idivend .ge. 1) then
