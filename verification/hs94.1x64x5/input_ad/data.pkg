@@ -5,4 +5,5 @@
  &PACKAGES
  useSHAP_FILT = .TRUE., 
  useGrdchk    = .TRUE.,
+ useMYPACKAGE = .TRUE.,
  &
