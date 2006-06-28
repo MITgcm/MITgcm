@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.50 2006/05/24 00:47:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.51 2006/06/28 21:24:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -272,6 +272,10 @@ C Initialize FIZHI state variables
       IF (debugMode) CALL DEBUG_CALL('MATRIX_INIT',myThid)
 #endif
       IF ( useMATRIX ) CALL MATRIX_INIT( myThid )
+#endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_VARIA(mythid)
 #endif
 
 #ifdef ALLOW_DEBUG

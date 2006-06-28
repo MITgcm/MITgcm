@@ -1,0 +1,7 @@
+
+C----------------------------------------
+C subroutine  mypackage_diagnostics_fill
+C----------------------------------------
+CADJ SUBROUTINE mypackage_diagnostics_fill INPUT  = 1,2,3
+CADJ SUBROUTINE mypackage_diagnostics_fill OUTPUT =
+

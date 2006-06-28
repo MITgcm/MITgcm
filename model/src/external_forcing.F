@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.38 2006/06/07 01:55:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.39 2006/06/28 21:24:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,6 +70,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_U(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -168,6 +174,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_V(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -273,6 +285,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -404,6 +422,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN

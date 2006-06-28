@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.49 2006/05/24 00:47:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.50 2006/06/28 21:24:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -266,15 +266,15 @@ C     IF (useDIC)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_INIT_FIXED( myThid )
-      ENDIF
+      IF ( useDiagnostics ) CALL DIAGNOSTICS_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_EMBED_FILES
-      IF ( useEMBED_FILES ) THEN
-        CALL EMBED_FILES_INIT( mythid )
-      ENDIF
+      IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( mythid )
+#endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(mythid)
 #endif
 
       RETURN

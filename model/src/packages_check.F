@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.34 2006/05/26 03:06:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.35 2006/06/28 21:24:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -176,6 +176,12 @@ CEOP
 #else
       IF (useDiagnostics)
      &   CALL PACKAGES_CHECK_ERROR('DIAGNOSTICS', myThid )
+#endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
+#else
+      IF (useMYPACKAGE) CALL PACKAGES_CHECK_ERROR('MYPACKAGE', myThid)
 #endif
 
       RETURN

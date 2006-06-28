@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.46 2006/03/24 22:58:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.47 2006/06/28 21:24:55 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -199,6 +199,10 @@ C -- initialize Therm.Sea-Ice parameters
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) CALL RBCS_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) CALL MYPACKAGE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CTRL
