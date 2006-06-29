@@ -14,6 +14,8 @@ verticklabelO = abs(vertickO);  % Have depth as positive quantity.
 timtick = [0:1:12];
 timticklabel = {0:1:12};
 
+clabelv = [];
+
 % Title parameters.
 FigureTitle      = 1;   % Put on figure title.
 SubplotTitle     = 1;   % Put on subplot title.
@@ -24,6 +26,11 @@ SubplotAvg       = 0;   % Put on subplot averaging information.
 SubplotPst       = 0;   % Put on subplot plotStyle information.
 SubplotMinMax    = 0;   % Put on subplot minimum and maximum.
 SubplotModelTime = 0;   % Put on subplot model time.
+SubplotTitleOverride = '';
+
+XLabel = '';
+YLabel = '';
+Edges  = 0;
 
 UseColorbar       = 0;  % Throw on a colorbar.
 UseNiceTickLabels = 1;  % Use nice tick labels (otherwise default)
@@ -31,7 +38,9 @@ UseNiceTickLabels = 1;  % Use nice tick labels (otherwise default)
 Orientation = 'tall';      % Options: 'landscape', 'tall'
 Box         = 'on';        % Options: 'on', 'off'
 Grid        = 'on';        % Options: 'on', 'off'
-Coast       = 0;
+Coast       = 0;           % Earth coast line:  0 (off), 1 (on)
+TickDir     = 'in';        % Options: 'in','out'
+Shading     = '';
 
 CaxisFixed  = 1;   % Use fixed color axis.
 CaxisMinMax = 1;   % Use minimum and maximum for color axis.
@@ -57,20 +66,30 @@ dym   = .08;       % Gap between subplots vertically.
 titlefac = 0.5;    % Fractional distance from first subplot to top.
 
 % Fontsizes.
-fs_title    = 14;   % Font size:  Title.
-fs_sptitle  = 14;   % Font size:  Subplot title.
-fs_colorbar = 10;   % Font size:  Colorbar.
-fs_axis     = 12;   % Font size:  Axes.
-fs_tick     = 12;   % Font size:  Tick label.
-fs_clabel   = 9;    % Font size:  Contour label.
+fs_title     = 14;   % Font size:  Title.
+fs_sptitle   = 14;   % Font size:  Subplot title.
+fs_colorbar  = 10;   % Font size:  Colorbar.
+fs_axis      = 12;   % Font size:  Axes.
+fs_axislabel = 12;   % Font size:  Axes label.
+fs_tick      = 12;   % Font size:  Tick label.
+fs_clabel    = 10;   % Font size:  Contour label.
+fs_textbox   = 10;
 
 % Line details.
-linecolors = {'b','r','k','g','c','m','y'};
-linewidth = .6;
-cmap = 'jet';
+linecolors = {'b','r','k','g','c','m','y','b--','r--','k--','g--','c--'};
+linewidth = .5;
+cmap = 'jet'; % 'jet','solid-dashed','BW'
 cmapcenter0 = 0;
 labelspacing = 300;
 
 % Axis ranges.
+xlim = [];
+ylim = [];
 ylimO = [-5200,0];
 ylimA = [0,100000];
+
+offset = 0;
+
+% Text box
+TextBox = '';
+TextPos = [0,0];

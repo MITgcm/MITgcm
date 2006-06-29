@@ -31,12 +31,12 @@ XX(find(abs(XX) > 179.99)) = 180;
 XX = reshape(XX,XXdim);
 
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
- X=XX*180/pi;
- Y=YY*180/pi;
+ convert=(180/pi);
 else
- X=XX;
- Y=YY;
+ convert=1;
 end
+X=XX;
+Y=YY;
 Q=C;
 
 if ndims(Q)==2 & size(Q,1)==6*size(Q,2)
@@ -64,16 +64,16 @@ if size(X,1)==size(Q,1)
  X(:,end,[2 4 6])=X(:,1,[3 5 1]);
  X(:,end,[1 3 5])=squeeze(X(1,end:-1:1,[3 5 1]));
  X(end,:,[2 4 6])=squeeze(X(end:-1:1,1,[4 6 2]));
- X(1,end,[1 3 5]) = X(1,1,1);
- X(end,1,[2 4 6]) = X(end,end,2);
+ X(1,end,[1 3 5])=X(1,1,1);
+ X(end,1,[2 4 6])=X(end,end,2);
  Y(end+1,:,:)=NaN;
  Y(:,end+1,:)=NaN;
  Y(end,:,[1 3 5])=Y(1,:,[2 4 6]);
  Y(:,end,[2 4 6])=Y(:,1,[3 5 1]);
  Y(:,end,[1 3 5])=squeeze(Y(1,end:-1:1,[3 5 1]));
  Y(end,:,[2 4 6])=squeeze(Y(end:-1:1,1,[4 6 2]));
- Y(1,end,[1 3 5]) = Y(end,end,1);
- Y(end,1,[2 4 6]) = Y(1,1,2);
+ Y(1,end,[1 3 5])=Y(end,end,1);
+ Y(end,1,[2 4 6])=Y(1,1,2);
 end
 [nx ny nt]=size(X);
 
@@ -89,18 +89,18 @@ hny=ceil(ny/2);
 
 for k=1:6;
  i=1:hnx;
- x=longitude(X(i,:,k));
+ x=longitude(convert.*X(i,:,k))./convert;
  pcolor(x,Y(i,:,k),Q(i,:,k))
- axis([-180 180 -90 90])
+ axis([-180 180 -90 90]./convert);
  hold on
- if max(max(max(x)))>180
-  pcolor(x-360,Y(i,:,k),Q(i,:,k))
+ if max(max(max(x)))>180./convert
+  pcolor(x-360./convert,Y(i,:,k),Q(i,:,k))
  end
  i=hnx:nx;
- x=longitude(X(i,:,k));
+ x=longitude(convert.*X(i,:,k))./convert;
  pcolor(x,Y(i,:,k),Q(i,:,k))
- if max(max(max(x)))>180
-  pcolor(x-360,Y(i,:,k),Q(i,:,k))
+ if max(max(max(x)))>180./convert
+  pcolor(x-360./convert,Y(i,:,k),Q(i,:,k))
  end
 end
 hold off

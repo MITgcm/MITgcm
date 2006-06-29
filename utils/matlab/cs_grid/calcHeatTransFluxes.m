@@ -63,6 +63,9 @@ function HT = calcHeatTransFluxes(varargin);
 %           HT.ylatHT,HT.HTatm(:,1),'b',...
 %           HT.ylatHT,HT.HTtot(:,1),'r'); grid on;
 
+StorageAtm = 1;
+StorageOcn = 1;
+
 % Default constants (can be overriden).
 LhVap = 2501;
 grav = 9.81;
@@ -111,8 +114,12 @@ ohc = reshape(og.HFacC(1:6*nc,1:nc,1:onr),[6*nc*nc,onr]);
 ahc = reshape(ag.HFacC(1:6*nc,1:nc,1:anr),[6*nc*nc,anr]);
 
 % Temperature fields.
-ot = reshape(od.Ttave(1:6*nc,1:nc,1:onr,i_time),[6*nc*nc,onr,nt]);
-at = reshape(ad.Ttave(1:6*nc,1:nc,1:anr,i_time),[6*nc*nc,anr,nt]);
+if StorageOcn
+    ot = reshape(od.Ttave(1:6*nc,1:nc,1:onr,i_time),[6*nc*nc,onr,nt]);
+end
+if StorageAtm
+    at = reshape(ad.Ttave(1:6*nc,1:nc,1:anr,i_time),[6*nc*nc,anr,nt]);
+end
 
 % Aim fields.
 toaSW  = reshape(   sd.TSRtave(1:6*nc,1:nc,i_time),[6*nc*nc,nt]);
@@ -162,7 +169,9 @@ for izon = 1:ydim+1
         % ??? HFacC for surface fluxes? How to deal with runoff / land?
         Ft_Zon(izon,it) = sum(Ft(ii,it).*ac(ii));
         Fs_Zon(izon,it) = sum(Fs(ii,it).*ac(ii));
-        HA(izon,it) = sum(aHeat.*((at(ii,:,it).*ahc(ii,:))*adrf).*ac(ii));
+        if StorageAtm
+            HA(izon,it) = sum(aHeat.*((at(ii,:,it).*ahc(ii,:))*adrf).*ac(ii));
+        end
         HO(izon,it) = sum(oHeat.*((ot(ii,:,it).*ohc(ii,:))*odrf).*ac(ii));
     end
 end
@@ -170,7 +179,9 @@ end
 % Calculate change in heat content (this means that the heat transport is
 % calculated for time(2:end-1) only, hence subsetting fluxes as well).
 for it = 2:length(time)-1
-    dHAdt(:,it-1) = (HA(:,it+1)-HA(:,it-1))./(time(it+1)-time(it-1));
+    if StorageAtm
+        dHAdt(:,it-1) = (HA(:,it+1)-HA(:,it-1))./(time(it+1)-time(it-1));
+    end
     dHOdt(:,it-1) = (HO(:,it+1)-HO(:,it-1))./(time(it+1)-time(it-1));
 end
 Ft_Zon = Ft_Zon(:,2:end-1);

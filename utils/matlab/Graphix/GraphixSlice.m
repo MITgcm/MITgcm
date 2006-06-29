@@ -93,17 +93,20 @@ elseif isequal(slc,'Zon')
     if isequal(datasize(1:2),size(XC))
         if isequal(flu,'O'),                nBas = 0; end
         if ismember(flu,{'A','I','C','L'}), nBas = 0; end
-        %ny = 64;
+        if Dim == 2 & length(size(data)) == 3
+            data = reshape(data,[size(data,1),size(data,2),1,size(data,3)]);
+        end
         [data,maskzon,Ylat,areazon] = ...
             calcZonalAvgCube(data,ny,YC,RAC,HFacC);
         if isequal(avg,'Tse')
-            data=data(:,:,1);  xax=years;  yax=Ylat; pltslc='timlat';
+            data=data(:,:,1); xax=itr.*tst./31104000;
+            yax=Ylat;         pltslc='timlat';
         elseif isequal(avg,'Tyr')
-            data=data(:,:,1);  xax=[0:12]; yax=Ylat; pltslc='timlat';
+            data=data(:,:,1);  xax=[0:12];   yax=Ylat; pltslc='timlat';
         elseif isequal(pst,'Lin')
-            data=data(:,:,1)'; xax=Ylat;   yax=NaN;  pltslc='latfld';
+            data=data(:,:,1)'; xax=Ylat;     yax=NaN;  pltslc='latfld';
         else
-            data=data(:,:,1)'; xax=Ylat;   yax=ZC;   pltslc='lathgt';
+            data=data(:,:,1)'; xax=Ylat;     yax=ZC;   pltslc='lathgt';
         end
     elseif isequal(datasize(1:2),[length(XL),length(YL)])
         if ~isequal(pst,'Lin')
@@ -114,7 +117,7 @@ elseif isequal(slc,'Zon')
     else
         error('Incorrect dimensions for slc = ''Zon''');
     end
-
+    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                   i,j,k=#                               %

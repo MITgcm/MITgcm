@@ -1,10 +1,10 @@
-function [data,xax,yax,time,pltslc] = ...
+function [data,xax,yax,time,pltslc,XG,YG] = ...
     GraphixLoad(fil,fln,trl,dat,dad,grd,itr,tst,flu,ddf,gdf,avg,slc,pst,...
                 LoadGridData,GraphixDebug,GridSuffix,ZcordFile,Index,...
                 Dim,Vector,Mate,uFld,vFld,gmfile,KwxFld,KwyFld,Grads,...
                 Year0Iter,SecPerYear,Months,PlotFld,XL,YL,ThetaToActT,...
                 ThetaToThetaEc,DataIn,SecMom,TFld,T2Fld,EtaFld,Eta2Fld,...
-                u2Fld,v2Fld);
+                u2Fld,v2Fld,DevFromMean,WFld,W2Fld);
 
 % Load parameters.
 GraphixGenParam;
@@ -103,13 +103,16 @@ elseif ismember(fln,{'Bol','Psi','Res'})
               
 % Second moments -- This can eventually be made more elegant.
 elseif ~isequal(SecMom,'')
-    if ismember(SecMom,{'T','Eta'})
+    if ismember(SecMom,{'T','Eta','W'})
         if isequal(SecMom,'Eta')
             data  = LocalLoad([dad,'/',fil],EtaFld ,itr,ddf,nc,DataIn)./100  ;
             data2 = LocalLoad([dad,'/',fil],Eta2Fld,itr,ddf,nc,DataIn)./10000;
         elseif ismember(SecMom,{'T','ActT'})
             data  = LocalLoad([dad,'/',fil],TFld ,itr,ddf,nc,DataIn);
             data2 = LocalLoad([dad,'/',fil],T2Fld,itr,ddf,nc,DataIn);
+        elseif isequal(SecMom,'W')
+            data  = LocalLoad([dad,'/',fil],WFld ,itr,ddf,nc,DataIn);
+            data2 = LocalLoad([dad,'/',fil],W2Fld,itr,ddf,nc,DataIn);
         end
         data  = GraphixAverage(data ,fln,avg,months,ddf,Dim);
         data2 = GraphixAverage(data2,fln,avg,months,ddf,Dim);
@@ -176,6 +179,7 @@ else
             end
             if ii == 1, eval(['data = '     ,Index{ii},' d;']);
             else,       eval(['data = data ',Index{ii},' d;']); end
+            data(data==1e15)=0; % Set no values to zeros.
         end
         GraphixDebug_Local(GraphixDebug,'data','load',data);
         data = GraphixAverage(data,fln,avg,months,ddf,Dim);
@@ -232,6 +236,17 @@ else
     GraphixDebug_Local(GraphixDebug,'yax' ,'slice',yax);
 end
 
+if DevFromMean
+    if size(xax,1) == 1
+        datazon = mean(data,2);
+        for ii = 1:length(xax)
+            data(:,ii) = data(:,ii) - datazon;
+        end
+    else
+        error('DevFromMean for cube grid not yet implemented!');
+    end
+end
+
 %-------------------------------------------------------------------------%
 %                            Local functions                              %
 %-------------------------------------------------------------------------%
@@ -244,7 +259,7 @@ function data = LocalLoad(fil,fln,itr,dfm,nc,DataIn)
     if isempty(DataIn)
         if isempty(dir([fil,'*'])), ls([fil,'*']); end
         if isequal(dfm,'MDS'),     data = rdmds(fil,itr);
-        elseif isequal(dfm,'MNC'), data = rdmnc([fil,'.*'],fln,itr);
+        elseif isequal(dfm,'MNC'), data = rdmnc([fil,'.*'],fln,'iter',itr);
         else error(['Unrecognized data type:  ',dfm]); end
     else
         data = DataIn;
@@ -253,7 +268,7 @@ function data = LocalLoad(fil,fln,itr,dfm,nc,DataIn)
         eval(['data = data.',fln,';']);
         data = data(1:6.*nc,1:nc,:,:);
     end
-
+    
 function GraphixDebug_Local(GraphixDebug,arrayname,operation,data)
 	if GraphixDebug
         disp(['  Debug -- ''',arrayname,''' size after',...

@@ -62,6 +62,7 @@ if UseNiceTickLabels
         set(gca,'yticklabel',yticklabel);
     end
 end
+set(gca,'tickdir',TickDir);
 
 % Add box and grid as desired.
 eval(['box ' ,Box ,';']);
@@ -84,9 +85,18 @@ end
 
 % Add coast as appropriate.
 if Coast
-    %m_proj('Mercator','lat',90,'lon',[-180,177.5]);
     m_proj('Equidistant Cylindrical','lat',90,'lon',[-180 180]);
     m_coast('color',[0 0 0]);
-    %m_grid('box','on')
-    %draw_coast(1.)
+end
+
+% Add cube lines.
+if Edges
+    drawedges(XG{inrow}{incol},YG{inrow}{incol});
+end
+
+% Add text box
+if ~isequal(TextBox,'')
+    h = text(TextPos(1),TextPos(2),TextBox,'units','normalized',...
+             'backgroundcolor',[1,1,1],'edgecolor',[0,0,0],'fontsize',...
+             fs_textbox,'verticalalignment','bottom');
 end

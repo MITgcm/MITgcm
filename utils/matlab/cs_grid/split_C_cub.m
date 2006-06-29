@@ -8,14 +8,15 @@ function [v6t] = split_C_cub(v3d,kad)
 %  => output is v6t(ny+2,ny+2,[nr],6)
 %----------------------------------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/split_C_cub.m,v 1.1 2005/09/15 16:22:24 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/split_C_cub.m,v 1.2 2006/06/29 18:50:27 enderton Exp $
 % $Name:  $
 
 if nargin < 2, kad=1; end
 if kad~=0 & kad~=1 & kad~=2, fprintf('kad= %f => Bad value',kad); return;end
 %--
 dims=size(v3d);
-nx=dims(1); ny=dims(2);
+nx=dims(1);
+ny=dims(2);
 nyp=ny+1; n2p=ny+2; nye=ny+kad;
 if length(dims) == 2, 
  nr=1; 

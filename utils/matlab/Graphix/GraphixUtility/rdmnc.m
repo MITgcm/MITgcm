@@ -157,7 +157,8 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
         dims = ncnames(dim(nc{cvar}));        % Dimensions
         adj = 0;
         if dims{1} == 'T'
-            if isempty(find(fii)), return, end
+            
+            if isempty(find(fii)), disp('Iters not found'); return, end
             
             tmpdata = nc{cvar}(fii,:);
             if ismember('Zd000001' ,dims), adj = adj - 1; end

@@ -130,8 +130,8 @@ aimV0rangeA = [5,13];
 aimV0contourA = [5:1:13];
 
 aimT0unitsA = 'K';
-aimT0rangeA = [250,311];
-aimT0contourA = [250:5:311];
+aimT0rangeA = [230,311];
+aimT0contourA = [230:5:311];
 
 aimQ0unitsA = 'g/kg';
 aimQ0rangeA = [0,17];

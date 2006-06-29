@@ -60,6 +60,10 @@ if isequal(flu,'O') && ~isempty(ylimO) && ...
    isequal(pltslc{inrow}{incol}(4:6),'hgt'), set(gca,'ylim',ylimO); end
 if isequal(flu,'A') && ~isempty(ylimA) && ...
    isequal(pltslc{inrow}{incol}(4:6),'hgt'), set(gca,'ylim',ylimA); end
+if ~isempty(xlim), set(gca,'xlim',xlim); end
+if ~isempty(ylim) && isequal(pltslc{inrow}{incol}(4:6),'fld')
+    set(gca,'ylim',ylim); end
+
 
 % If this is a Dimension-height plot, the axis must be flipped.
 if ismember(pltslc{inrow}{incol},{'lonhgt','lathgt'}) && isequal(flu,'A')

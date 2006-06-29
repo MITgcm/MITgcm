@@ -1,6 +1,6 @@
 function ifig = GraphixPlot(plotparam,plotparamvalue,pagename,page,data,...
-                            xax,yax,time,pltslc,outputdir,LoadGridData,...
-                            SavePlots,GraphixDebug);
+                            xax,yax,XG,YG,time,pltslc,outputdir,...
+                            LoadGridData,SavePlots,GraphixDebug);
 
 % Function: GraphixPlot
 % Author:   Daniel Enderton
@@ -36,7 +36,7 @@ diagrunparam  = ReadVariables('GraphixRunDefaults.m');
 nrow = length(page);
 
 % Initiate figure, with number 'ifig', set oreiention.
-figure; clf; set(gca,'fontsize',fs_tick); 
+figure; clf; set(gca,'fontsize',fs_tick);
 
 % Loop over subplots and make plots.
 for inrow = 1:nrow
@@ -44,9 +44,6 @@ for inrow = 1:nrow
     ntrl = length(page{inrow}); if ntrl ~= 1, ntrl = ntrl - 1; end
     if ntrl == 1, cmp = 'Sep'; else, cmp = page{inrow}{end}; end
     if ntrl == 1, ncol = 1; elseif isequal(cmp,'Sbs'), ncol = ntrl; else ncol = 1; end
-    
-    dx = (1-dxl-dxr-(ncol-1)*dxm)/ncol;
-    dy = (1-dyb-dyt-(nrow-1)*dym)/nrow;
     
     for incol = 1:ncol
         
@@ -83,7 +80,7 @@ for inrow = 1:nrow
             % 'GraphixFieldParam[A,O,I,C]').
             if ~isequal(cmp,'Dif')
                 try, contint; catch
-                    try, eval(['contint = ',fln    ,'contour',flu,';']);
+                    try, eval(['contint = ',fln,'contour',flu,';']);
                     catch
                     	disp(['***Warning***  No contour information for ',fln]);
                         disp(['               Using 10 generic contour levels.']);
@@ -92,14 +89,16 @@ for inrow = 1:nrow
                 end
             else, try, contint; catch, contint = 10; end, end
             try, units; catch
-                try, eval(['units = ',fln    ,'units',flu,';']);
+                try, eval(['units = ',fln,'units',flu,';']);
                 catch,
                 	disp(['***Warning***  No unit information found for ',fln]);
                     disp(['               Using question mark.']);
                     units = '?';
                 end
             end
-            
+                
+            dx = (1-dxl-dxr-(ncol-1)*dxm)/ncol;
+            dy = (1-dyb-dyt-(nrow-1)*dym)/nrow;
             xi = dxl + (incol-1)*(dx+dxm);
             yi = 1-dyt-inrow*dy-(inrow-1)*dym;
             
@@ -107,13 +106,18 @@ for inrow = 1:nrow
             if GraphixDebug, disp(['  GraphixDebug:  Subplot:  ',mat2str([nrow,ncol,isp])]); end
             if GraphixDebug, disp(['  GraphixDebug:  SP Range: ',mat2str([xi,yi,dx,dy])]); end
             subplot(nrow,ncol,isp); hold on;
-            set(gca,'position',[xi,yi,dx,dy],'fontsize',fs_axis);
+            set(gca,'position',[xi,yi,dx,dy],'fontsize',fs_axis,...
+                'TickDir',TickDir);
             
             if Coast
                 fac = pi./180;
                 xax{inrow}{incol} = xax{inrow}{incol}.*fac;
                 yax{inrow}{incol} = yax{inrow}{incol}.*fac;
             else, fac = 1; end
+            
+            if isempty(clabelv)
+                clabelv = contint;
+            end
             
             % (Re)set axes and color axis -- Accounts for things like a possible
             % colorbar, or trimming the axis in certain ways.
@@ -123,7 +127,8 @@ for inrow = 1:nrow
             GraphixPlotResetAxes;
             GraphixPlotMisc;
             GraphixPlotTitles;
-            clear contint units crange
+            
+            clear contint units crange clabelv
         end
     end
 end

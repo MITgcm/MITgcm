@@ -46,6 +46,8 @@ if isequal(avg,'Non')
 elseif isequal(avg,'Avg')
     if     isequal(Dim,2), temp = meanovernan(data,3);
     elseif isequal(Dim,3), temp = meanovernan(data,4); end
+elseif isequal(avg,'Tse')
+    temp = data;
 else
 	for imon = 1:12
         if isequal(Dim,2)
@@ -78,10 +80,8 @@ end
 % that these options are for a contour plot of a property which is only a
 % function of latitude, that is you can only use  this for a zonally
 % averaged to i=# slice of a 2D field.
-if ismember(avg,{'Non','Avg'})
+if ismember(avg,{'Non','Avg','Tse'})
     dummy = 1;
-elseif isequal(avg,'Tse')
-    temp = data;
 elseif isequal(avg,'Tyr')
     temp = dataMonAvg;
     temp(:,:,13) = temp(:,:,1);

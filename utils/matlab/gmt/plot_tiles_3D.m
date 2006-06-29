@@ -30,7 +30,7 @@ function [rv] = plot_tiles_3D(tdat,vname,tvals,iz, opts)
 %
 %
 %  Ed Hill
-%  $Id: plot_tiles_3D.m,v 1.3 2006/01/04 02:47:47 edhill Exp $
+%  $Id: plot_tiles_3D.m,v 1.4 2006/06/29 18:50:27 enderton Exp $
 
 
 %  For debugging:
@@ -108,7 +108,8 @@ for itile = 1:tnall
     alltimes = union(alltimes,tdat(1).var.(opts.tvname));
   end
 end
-
+tvals
+alltimes
 if isvector(tvals) && not(isempty(alltimes))
   timelist = intersect(tvals,alltimes);
 else
@@ -125,20 +126,19 @@ end
 %====================================================================
 %  Plot the tiles one-at-a-time in 3D
 
-alltimes
-tvals
-tnall
 itime = 1;
 figure(opts.fignum)
-for tval = [ timelist ]
+for tval = 1%[ timelist ]
   for itile = [ tnall ]
     
-    itime = find(tval == tdat(itile).var.(opts.tvname));
+    %itime = find(tval == tdat(itile).var.(opts.tvname));
+    itime = 1;
 
     fac = pi/180;
     corn = zeros([ size(tdat(itile).var.XG) 3 ]);
     [ corn(:,:,1), corn(:,:,2), corn(:,:,3) ] = ...
         sph2cart( fac*tdat(itile).var.YG, fac*tdat(itile).var.XG, 1 );
+    
     %  plot3( corn(:,:,1), corn(:,:,2), corn(:,:,3), '-o' ), axis equal
     %  plot( tdat(itile).var.XG, tdat(itile).var.YG, '-o' )
     
@@ -147,7 +147,7 @@ for tval = [ timelist ]
         sph2cart( fac*tdat(itile).var.XC, fac*tdat(itile).var.YC, 1 );
     
     surf( cen(:,:,1), cen(:,:,2), cen(:,:,3), ...
-          squeeze(tdat(itile).var.Temp(:,:,1,itime)) )
+          squeeze(tdat(itile).var.YC(:,:,1,itime)) )
     if itile == 1
       hold on
       axis equal
@@ -163,7 +163,7 @@ for tval = [ timelist ]
     
   end
   % disp(sprintf('  plotting tile %d',itile));
-  pause(opts.delay);
+  %pause(opts.delay);
 
 end
 hold off

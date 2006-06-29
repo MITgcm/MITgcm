@@ -4,7 +4,8 @@ ScontourO = [30:.5:37.5];
 
 TunitsO = 'C';
 TrangeO = [-4,34];
-TcontourO = [-4:1:5,6:4:34];
+%TcontourO = [-4:1:5,6:4:34];
+TcontourO = [0:2:36];
 
 ConvunitsO = '0-1';
 ConvrangeO = [0,1];

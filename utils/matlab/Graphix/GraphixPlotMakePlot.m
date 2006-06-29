@@ -9,7 +9,15 @@ if isequal(cmp,'Dif')
 else
     plotdata = data{inrow}{incol};
 end
-
+plotdata = plotdata + offset;
+% [min(plotdata(:)),max(plotdata(:))]
+% size(plotdata)
+% size(xax{inrow}{incol})
+% size(yax{inrow}{incol})
+% plotdata
+% x = xax{inrow}{incol};
+% y = yax{inrow}{incol};
+% save('Dump.mat','plotdata','x','y');
 
 % Make gridded plot.  This should be fixed up to allow for non-constant
 % height intervals, imagesc makes everything equally spaced in the vertical
@@ -19,6 +27,9 @@ if isequal(pst,'Grd')
         merccube_mod(xax{inrow}{incol},yax{inrow}{incol},plotdata);
     else
         imagesc(xax{inrow}{incol},yax{inrow}{incol},plotdata);
+    end
+    if isequal(Shading,'interp')
+        shading interp;
     end
     
 % Make interpolated plot.
@@ -51,8 +62,8 @@ elseif isequal(pst,'Con')
                                  plotdata,cint,['k',lst]);
                 set(h,'linewidth',lw);
                 if UseConLabel
-                    clabel(cs,h,'fontsize',fs_clabel,'rotation',0,...
-                           'labelspacing',labelspacing);
+                    clabel(cs,h,clabelv,'fontsize',fs_clabel,'rotation',...
+                           0,'labelspacing',labelspacing);
                 end
                 hold on;
             end
@@ -61,9 +72,10 @@ elseif isequal(pst,'Con')
         [cs,h] = contour(xax{inrow}{incol},...
                          yax{inrow}{incol},...
                          plotdata,contint);
+        return
         set(h,'linewidth',linewidth);
         if UseConLabel
-            clabel(cs,h,'fontsize',fs_clabel,'rotation',0,...
+            clabel(cs,h,clabelv,'fontsize',fs_clabel,'rotation',0,...
                    'labelspacing',labelspacing);
         end
     end
@@ -74,7 +86,7 @@ elseif isequal(pst,'Cnf')
     try   [cs,h] = contourf(xax{inrow}{incol},yax{inrow}{incol},plotdata,contint);
     catch [cs,h] = contourf(xax{inrow}{incol},yax{inrow}{incol},plotdata); end
     if UseCnfLabel
-        clabel(cs,h,'fontsize',fs_clabel,'rotation',0,...
+        clabel(cs,h,clabelv,'fontsize',fs_clabel,'rotation',0,...
                'labelspacing',labelspacing);
     end
     

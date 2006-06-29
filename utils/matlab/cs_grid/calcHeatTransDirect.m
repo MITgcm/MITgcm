@@ -101,12 +101,16 @@ u  = reshape(d.uVeltave(1:6*nc,1:nc,:,i_time),[6*nc*nc,nr,nt]);
 v  = reshape(d.vVeltave(1:6*nc,1:nc,:,i_time),[6*nc*nc,nr,nt]);
 ut = reshape(d.UTtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 vt = reshape(d.VTtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
-uq = reshape(d.UStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
-vq = reshape(d.VStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
+if isequal(flu,'A'),
+    uq = reshape(d.UStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
+    vq = reshape(d.VStave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
+end
 hu = reshape(d.hUtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 hv = reshape(d.hVtave(1:6*nc,1:nc,:,i_time)  ,[6*nc*nc,nr,nt]);
 t  = d.Ttave(1:6*nc,1:nc,:,i_time);
-q  = d.Stave(1:6*nc,1:nc,:,i_time);
+if isequal(flu,'A'),
+    q  = d.Stave(1:6*nc,1:nc,:,i_time);
+end
 
 % Load broken line information.  Compute (tracer point) cell area between
 % broken lines for each basin.  There are nbkl broken lines and nbkl+1
