@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.24 2006/05/25 18:32:55 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.25 2006/06/29 15:41:58 mlosch Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -56,165 +56,165 @@ c     == end of interface ==
       imax = snx+olx
 
       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       do bi = itlo,ithi
 
-          do j = jmin,jmax
-            do i = imin,imax
+        do j = jmin,jmax
+         do i = imin,imax
 c
-c             Heat flux.
-              if ( ( hflux(i,j,bi,bj) .GT. 1600. .OR.
-     &               hflux(i,j,bi,bj) .LT. -500. ) .AND.
-     &              maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: hflux out of range for i,j,it= ',
-     &                i, j, myiter, hflux(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     Heat flux.
+          if ( ( hflux(i,j,bi,bj) .GT. 1600. .OR.
+     &         hflux(i,j,bi,bj) .LT. -500. ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: hflux out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, hflux(i,j,bi,bj)
+           exferr = 1
+          endif
 c
-c             Salt flux.
-              if ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: sflux out of range for i,j,it= ',
-     &                i, j, myiter, sflux(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     Salt flux.
+          if ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: sflux out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, sflux(i,j,bi,bj)
+           exferr = 1
+          endif
 c
-c             Zonal wind stress.
-              if ( ABS(ustress(i,j,bi,bj)) .GT. 2.7 .AND.
-     &             maskW(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: ustress out of range for i,j,it= ',
-     &                i, j, myiter, ustress(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     Zonal wind stress.
+          if ( ABS(ustress(i,j,bi,bj)) .GT. 2.7 .AND.
+     &         maskW(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: ustress out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, ustress(i,j,bi,bj)
+           exferr = 1
+          endif
 c
-c             Meridional wind stress.
-              if ( ABS(vstress(i,j,bi,bj)) .GT. 2.3 .AND.
-     &             maskS(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: vstress out of range for i,j,it= ',
-     &                i, j, myiter, vstress(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     Meridional wind stress.
+          if ( ABS(vstress(i,j,bi,bj)) .GT. 2.3 .AND.
+     &         maskS(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: vstress out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, vstress(i,j,bi,bj)
+           exferr = 1
+          endif
 c
 #ifdef ALLOW_ATM_WIND
-c             zonal wind speed
-              if ( ABS(uwind(i,j,bi,bj)) .GT. 100. .AND.
-     &             maskW(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: uwind out of range for i,j,it= ',
-     &                i, j, myiter, uwind(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     zonal wind speed
+          if ( ABS(uwind(i,j,bi,bj)) .GT. 100. .AND.
+     &         maskW(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: uwind out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, uwind(i,j,bi,bj)
+           exferr = 1
+          endif
 c
-c             zonal wind speed
-              if ( ABS(vwind(i,j,bi,bj)) .GT. 100. .AND.
-     &             maskS(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: vwind out of range for i,j,it= ',
-     &                i, j, myiter, vwind(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     zonal wind speed
+          if ( ABS(vwind(i,j,bi,bj)) .GT. 100. .AND.
+     &         maskS(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: vwind out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, vwind(i,j,bi,bj)
+           exferr = 1
+          endif
 #endif
 c
-c             wind speed modulus
-              if ( ( wspeed(i,j,bi,bj) .LT. 0. .OR.
-     &              wspeed(i,j,bi,bj) .GT. 100. ) .AND.
-     &              maskS(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &              'EXF WARNING: wspeed out of range for i,j,it= ',
-     &              i, j, myiter, wspeed(i,j,bi,bj)
-                 exferr = 1
-              endif
-
+c     wind speed modulus
+          if ( ( wspeed(i,j,bi,bj) .LT. 0. .OR.
+     &         wspeed(i,j,bi,bj) .GT. 100. ) .AND.
+     &         maskS(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: wspeed out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, wspeed(i,j,bi,bj)
+           exferr = 1
+          endif
+          
 #ifdef ALLOW_ATM_TEMP
-c             2-m air temperature
-              if ( (atemp(i,j,bi,bj) .LT. 183 .OR.
-     &             atemp(i,j,bi,bj) .GT. 343 ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(2A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: atemp + exf_offset_atemp ',
-     &                'out of range for i,j,it= ',
-     &                i, j, myiter, atemp(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     2-m air temperature
+          if ( (atemp(i,j,bi,bj) .LT. 183 .OR.
+     &         atemp(i,j,bi,bj) .GT. 343 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(2A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: atemp + exf_offset_atemp ',
+     &          'out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, atemp(i,j,bi,bj)
+           exferr = 1
+          endif
 c
-c             2-m specific humidity
-              if ( (aqh(i,j,bi,bj) .LT. 0. .OR.
-     &             aqh(i,j,bi,bj) .GT. 0.1 ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: aqh out of range for i,j,it= ',
-     &                i, j, myiter, aqh(i,j,bi,bj)
-                 exferr = 1
-              endif
-c
-c             precipitation rate
-              if ( (precip(i,j,bi,bj) .LT. 0. .OR.
-     &             precip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: precip out of range for i,j,it= ',
-     &                i, j, myiter, precip(i,j,bi,bj)
-                 exferr = 1
-              endif
-c
-c             snow
-              if ( (snowprecip(i,j,bi,bj) .LT. 0. .OR.
-     &             snowprecip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &             'EXF WARNING: snowprecip out of range for i,j,it= ',
-     &             i, j, myiter, snowprecip(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     2-m specific humidity
+          if ( (aqh(i,j,bi,bj) .LT. 0. .OR.
+     &         aqh(i,j,bi,bj) .GT. 0.1 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: aqh out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, aqh(i,j,bi,bj)
+           exferr = 1
+          endif
+c     
+c     precipitation rate
+          if ( (precip(i,j,bi,bj) .LT. 0. .OR.
+     &         precip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: precip out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, precip(i,j,bi,bj)
+           exferr = 1
+          endif
+c     
+c     snow
+          if ( (snowprecip(i,j,bi,bj) .LT. 0. .OR.
+     &         snowprecip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(2A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: snowprecip out of range ', 
+     &          'for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, snowprecip(i,j,bi,bj)
+           exferr = 1
+          endif
 #endif
 
 #ifdef SHORTWAVE_HEATING
-c             Short wave radiative flux.
-              if ( (swflux(i,j,bi,bj) .GT. 1. .OR.
-     &             swflux(i,j,bi,bj) .LT. -1000. ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: swflux out of range for i,j,it= ',
-     &                i, j, myiter, swflux(i,j,bi,bj)
-                 exferr = 1
-              endif
+c     Short wave radiative flux.
+          if ( (swflux(i,j,bi,bj) .GT. 1. .OR.
+     &         swflux(i,j,bi,bj) .LT. -1000. ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: swflux out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, swflux(i,j,bi,bj)
+           exferr = 1
+          endif
 #endif
 
 #ifdef ALLOW_RUNOFF
-c             Runoff.
-              if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
-     &             runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
-     &             maskC(i,j,1,bi,bj) .NE. 0. ) then
-                 write(standardmessageunit,'(A,3(1X,I6),2X,D22.15)')
-     &                'EXF WARNING: runoff out of range for i,j,it= ',
-     &                i, j, myiter, runoff(i,j,bi,bj)
-                 write(standardmessageunit,'(A)')
-     &                'Please note that input units for runoff are'
-                 write(standardmessageunit,'(A)')
-     &                'm/s not m/yr.  If input file is in m/yr, set'
-                 write(standardmessageunit,'(A)')
-     &                'exf_inscal_runoff=3.170979198E-8'
-                 write(standardmessageunit,'(A)')
-     &                'in the data.exf input file.'
-                 exferr = 1
-              endif
+c     Runoff.
+          if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
+     &         runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: runoff out of range for bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, runoff(i,j,bi,bj)
+           write(standardmessageunit,'(A)')
+     &          'Please note that input units for runoff are'
+           write(standardmessageunit,'(A)')
+     &          'm/s not m/yr.  If input file is in m/yr, set'
+           write(standardmessageunit,'(A)')
+     &          'exf_inscal_runoff=3.170979198E-8'
+           write(standardmessageunit,'(A)')
+     &          'in the data.exf input file.'
+           exferr = 1
+          endif
 #endif
-
-              if ( exferr .NE. 0 ) then
-               write(standardmessageunit,'(A)')
-     &                'EXF WARNING: If you think these values are OK '
-               write(standardmessageunit,'(A)')
-     &                'EXF WARNING: then set useExfCheckRange=.FALSE.'
-               STOP 'in S/R exf_check_range'
-              endif
-
-            enddo
-          enddo
-c
+         enddo
         enddo
+c     
+       enddo
       enddo
+
+      if ( exferr .NE. 0 ) then
+       write(standardmessageunit,'(A)')
+     &      'EXF WARNING: If you think these values are OK '
+       write(standardmessageunit,'(A)')
+     &      'EXF WARNING: then set useExfCheckRange=.FALSE.'
+       STOP 'in S/R exf_check_range'
+      endif
 
       end
