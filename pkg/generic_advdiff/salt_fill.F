@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.3 2006/06/05 20:23:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.4 2006/06/29 16:14:36 dimitri Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -51,8 +51,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_DIAGNOSTICS
       logical  diagnostics_is_on
       external diagnostics_is_on
+#endif
 
       INTEGER bi,bj,i,j,L,LM1
       _RL dpratio, scale
