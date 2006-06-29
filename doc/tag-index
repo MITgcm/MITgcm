@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.689 2006/06/26 00:16:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.690 2006/06/29 15:42:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf/exf_check_range.F
+ - add tile index to diagnostics and move stop statement to the very 
+   end of the routine. 
 o pkg/diagnostics: (diagnostics_main_init.F)
   define title of isomorphic variables according to the current config.
 o pkg/thsice with pkg/seaice dynamics:
