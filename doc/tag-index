@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.690 2006/06/29 15:42:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.691 2006/06/30 12:05:42 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf modifications to interpolation and rotation routines for more
+   reasonable treatment of North Pole singularity: for tracers North Pole
+   value is set to northernmost zonal-mean value, for zonal velocity it is
+   set to zero, and for meridional velocity it is set to northernmost value.
 o pkg/exf/exf_check_range.F
  - add tile index to diagnostics and move stop statement to the very 
    end of the routine. 

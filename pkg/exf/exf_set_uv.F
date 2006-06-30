@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.13 2006/06/06 14:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.14 2006/06/30 12:05:42 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -94,9 +94,9 @@ c     == local variables ==
       _RL     tmp_u (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmp_v (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer count0, count1, offset
+      parameter(offset=0)
       integer i, j, bi, bj
       integer   il, interp_method
-      parameter(interp_method=2)
       integer year0, year1
 
 c     == external ==
@@ -154,12 +154,14 @@ C     Complete filenames with YR or _YEAR extension
               vvecfile0 = vvecfile
             endif
 c     scalar interpolation to (xC,yC) locations
+            interp_method=12
             call exf_interp( uvecfile0, exf_iprec
      &          , tmp_u, count0, xC, yC
      &          , uvec_lon0,uvec_lon_inc
      &          , uvec_lat0,uvec_lat_inc
      &          , uvec_nlon,uvec_nlat,interp_method,mythid
      &          )
+            interp_method=22
             call exf_interp( vvecfile0, exf_iprec
      &          , tmp_v, count0, xC, yC
      &          , vvec_lon0,vvec_lon_inc
@@ -171,11 +173,11 @@ c     vector rotation
               do bi = mybxlo(mythid),mybxhi(mythid)
                 do j = 1,sny
                   do i = 1,snx
-C     if yc is within dyc of North Pole then find direction from adjacent values
-                    offset=0
-                    if ( yC(i,j,bi,bj) .gt. 
-     &                  (90-dyC(i,j,bi,bj)*8.9946e-06) )
-     &                  offset=2
+Cdm   if yc is within dyc of North Pole then find direction from adjacent values
+Cdm                 offset=0
+Cdm                 if ( yC(i,j,bi,bj) .gt. 
+Cdm  &                  (90-dyC(i,j,bi,bj)*8.9946e-06) )
+Cdm  &                  offset=2
                     x1=xG(i-offset,j-offset,bi,bj)
                     x2=xG(i-offset+1,j-offset,bi,bj)
                     x3=xG(i-offset,j-offset+1,bi,bj)
@@ -256,12 +258,14 @@ C     Complete filenames with YR or _YEAR extension
               vvecfile1 = vvecfile
             endif
 c     scalar interpolation to (xC,yC) locations
+            interp_method=12
             call exf_interp( uvecfile1, exf_iprec
      &          , tmp_u, count1, xC, yC
      &          , uvec_lon0,uvec_lon_inc
      &          , uvec_lat0,uvec_lat_inc
      &          , uvec_nlon,uvec_nlat,interp_method,mythid
      &          )
+            interp_method=22
             call exf_interp( vvecfile1, exf_iprec
      &          , tmp_v, count1, xC, yC
      &          , vvec_lon0,vvec_lon_inc
@@ -273,11 +277,11 @@ c     vector rotation
               do bi = mybxlo(mythid),mybxhi(mythid)
                 do j = 1,sny
                   do i = 1,snx
-C     if yc is within dyc of North Pole then find direction from adjacent values
-                    offset=0
-                    if ( yC(i,j,bi,bj) .gt. 
-     &                  (90-dyC(i,j,bi,bj)*8.9946e-06) )
-     &                  offset=2
+Cdm   if yc is within dyc of North Pole then find direction from adjacent values
+Cdm                 offset=0
+Cdm                 if ( yC(i,j,bi,bj) .gt. 
+Cdm  &                  (90-dyC(i,j,bi,bj)*8.9946e-06) )
+Cdm  &                  offset=2
                     x1=xG(i-offset,j-offset,bi,bj)
                     x2=xG(i-offset+1,j-offset,bi,bj)
                     x3=xG(i-offset,j-offset+1,bi,bj)
@@ -343,6 +347,7 @@ c     Interpolate linearly onto the current time.
       ELSE
 c     IF ( .NOT. useCubedSphereExchange )
 
+       interp_method=12
         call exf_set_gen(
      &      uvecfile, uvecstartdate, uvecperiod,
      I      uvecstartdate1, uvecstartdate2,
@@ -352,6 +357,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &      uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
      &      uvec_nlon, uvec_nlat, xC, yC, interp_method,
      &      mycurrenttime, mycurrentiter, mythid )
+        interp_method=22
         call exf_set_gen(
      &      vvecfile, vvecstartdate, vvecperiod,
      I      vvecstartdate1, vvecstartdate2,

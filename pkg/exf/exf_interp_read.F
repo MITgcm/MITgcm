@@ -1,22 +1,9 @@
 #include "EXF_OPTIONS.h"
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C Flux Coupler using                       C
-C Bilinear interpolation of forcing fields C
-C                                          C
-C B. Cheng (12/2002)                       C
-C                                          C
-C added Bicubic (bnc 1/2003)               C
-C                                          C
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
        SUBROUTINE exf_interp_read(
-     I   infile,
-     I   filePrec,
+     I   infile, filePrec,
      O   arrayin,
-     I   irecord, xG, yG,
-     I   lon_0, lon_inc,
-     I   lat_0, lat_inc,
-     I   nx_in, ny_in, method, mythid)
+     I   irecord, nx_in, ny_in, mythid)
 
       implicit none
 
@@ -24,14 +11,8 @@ C     infile       = name of the input file (direct access binary)
 C     filePrec     = file precicision (currently not used, assumes real*4)
 C     arrout       = output arrays (different for each processor)
 C     irecord      = record number in global file
-C     xG,yG        = coordinates for output grid
-C     lon_0, lat_0 = lon and lat of sw corner of global input grid
-C     lon_inc      = scalar x-grid increment
-C     lat_inc      = vector y-grid increments
 C     nx_in, ny_in = input x-grid and y-grid size
-C     method       = 1 for bilinear 2 for bicubic
 C     mythid       = thread id
-C
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -54,11 +35,7 @@ C subroutine variables
       character*(*) infile
       integer       filePrec, irecord, nx_in, ny_in
       real*4        arrayin(-1:nx_in+2 ,      -1:ny_in+2)
-      _RS           xG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL           lon_0, lon_inc
-      _RL           lat_0, lat_inc(ny_in-1)
-      integer       method, mythid
+      integer       mythid
 
 C Functions
       integer MDS_RECLEN
@@ -146,6 +123,5 @@ C broadcast to all processes
 #ifdef _BYTESWAPIO
        call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
 #endif /* _BYTESWAPIO */
-
 
       END

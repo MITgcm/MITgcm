@@ -52,7 +52,8 @@ C     lon_0, lat_0 = lon and lat of sw corner of global input grid
 C     lon_inc      = scalar x-grid increment
 C     lat_inc      = vector y-grid increments
 C     nx_in, ny_in = input x-grid and y-grid size
-C     method       = 1 for bilinear 2 for bicubic
+C     method       = 1,11,21 for bilinear; 2,12,22 for bicubic
+C                    1,2 for tracer; 11,12 for U; 21,22 for V
 C     mythid       = thread id
 C
 
@@ -71,7 +72,6 @@ C subroutine variables
       integer       method, mythid
 
 C local variables
-c     real*8   ne_fac,nw_fac,se_fac,sw_fac
       integer  e_ind(snx,sny),w_ind(snx,sny)
       integer  n_ind(snx,sny),s_ind(snx,sny)
       real*8   px_ind(4), py_ind(4), ew_val(4)
@@ -81,7 +81,7 @@ c     real*8   ne_fac,nw_fac,se_fac,sw_fac
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS      threeSixtyRS
+      _RS      threeSixtyRS, NorthValue
       PARAMETER ( threeSixtyRS = 360. )
 
 C     put xG in interval [ lon_0 , lon_0+360 [
@@ -98,13 +98,9 @@ C     put xG in interval [ lon_0 , lon_0+360 [
       enddo
 
        call exf_interp_read(
-     I   infile,
-     I   filePrec,
+     I   infile, filePrec,
      O   arrayin,
-     I   irecord, xG, yG,
-     I   lon_0, lon_inc,
-     I   lat_0, lat_inc,
-     I   nx_in, ny_in, method, mythid)
+     I   irecord, nx_in, ny_in, mythid)
       _BARRIER
 
 C     _BEGIN_MASTER( myThid )
@@ -120,8 +116,10 @@ C setup input grid
        do j=2,ny_in
         y_in(j) = y_in(j-1) + lat_inc(j-1)
        enddo
-       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
-       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
+c       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
+c       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
+       y_in(ny_in+1) = min( y_in(ny_in) + lat_inc(ny_in-1), 90 )
+       y_in(ny_in+2) = min( y_in(ny_in) + 2.*lat_inc(ny_in-1), 90)
 
 C enlarge boundary
        do j=1,ny_in
@@ -137,8 +135,47 @@ C enlarge boundary
         arrayin(i,ny_in+2) = arrayin(i,ny_in) 
        enddo
 
-C     _END_MASTER( myThid )
+C     For tracer (method=1,2) set to northernmost zonal-mean value
+C     at 90N to avoid sharp zonal gradients near the Pole.
+C     For U (method=11,12) set to zero at 90N to minimize velocity
+C     gradient at North Pole
+C     For V (method=11,12) set to northernmost zonal value at 90N,
+C     as is already done above in order to allow cross-PoleArctic flow
+       if (y_in(ny_in+1).eq.90) then
+        if (method.eq.1 .or. method.eq.2) then
+         NorthValue = 0
+         do i=1,nx_in
+          NorthValue = NorthValue + arrayin(i,ny_in)
+         enddo
+         NorthValue = NorthValue / nx_in
+         do i=-1,nx_in+2
+          arrayin(i,ny_in+1) = NorthValue
+         enddo
+        elseif (method.eq.11 .or. method.eq.12) then
+         do i=-1,nx_in+2
+          arrayin(i,ny_in+1) = 0
+         enddo
+        endif
+       endif
+       if (y_in(ny_in+2).eq.90) then
+        if (method.eq.1 .or. method.eq.2) then
+         NorthValue = 0
+         do i=1,nx_in
+          NorthValue = NorthValue + arrayin(i,ny_in)
+         enddo
+         NorthValue = NorthValue / nx_in
+         do i=-1,nx_in+2
+          arrayin(i,ny_in+2) = NorthValue
+         enddo
+        elseif (method.eq.11 .or. method.eq.12) then
+         do i=-1,nx_in+2
+          arrayin(i,ny_in+2) = 0
+         enddo
+        endif
+       endif
 
+C     _END_MASTER( myThid )
+       
       do bj = mybylo(mythid), mybyhi(mythid)
        do bi = mybxlo(mythid), mybxhi(mythid)
 
@@ -186,7 +223,7 @@ C compute interpolation indices
          enddo
         enddo
 
-        if (method .eq. 1) then
+        if (method.eq.1 .or. method.eq.11 .or. method.eq.21) then
 
 C bilinear interpolation
          sp = 2
@@ -207,7 +244,7 @@ C bilinear interpolation
            enddo
           enddo
          enddo
-        elseif (method .eq. 2) then
+        elseif (method .eq. 2 .or. method.eq.12 .or. method.eq.22) then
 
 C bicubic interpolation
          sp = 4
