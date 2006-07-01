@@ -79,6 +79,7 @@ C local variables
       real*8   lagran
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
+      real*8   ninety      PARAMETER ( ninety = 90. )
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS      threeSixtyRS, NorthValue
@@ -118,8 +119,8 @@ C setup input grid
        enddo
 c       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
 c       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
-       y_in(ny_in+1) = min( y_in(ny_in) + lat_inc(ny_in-1), 90 )
-       y_in(ny_in+2) = min( y_in(ny_in) + 2.*lat_inc(ny_in-1), 90)
+       y_in(ny_in+1) = min( y_in(ny_in) + lat_inc(ny_in-1), ninety )
+       y_in(ny_in+2) = min( y_in(ny_in) + 2.*lat_inc(ny_in-1), ninety )
 
 C enlarge boundary
        do j=1,ny_in
@@ -141,7 +142,7 @@ C     For U (method=11,12) set to zero at 90N to minimize velocity
 C     gradient at North Pole
 C     For V (method=11,12) set to northernmost zonal value at 90N,
 C     as is already done above in order to allow cross-PoleArctic flow
-       if (y_in(ny_in+1).eq.90) then
+       if (y_in(ny_in+1).eq.ninety) then
         if (method.eq.1 .or. method.eq.2) then
          NorthValue = 0
          do i=1,nx_in
@@ -157,7 +158,7 @@ C     as is already done above in order to allow cross-PoleArctic flow
          enddo
         endif
        endif
-       if (y_in(ny_in+2).eq.90) then
+       if (y_in(ny_in+2).eq.ninety) then
         if (method.eq.1 .or. method.eq.2) then
          NorthValue = 0
          do i=1,nx_in
