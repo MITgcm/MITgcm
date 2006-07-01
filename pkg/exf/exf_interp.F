@@ -79,7 +79,8 @@ C local variables
       real*8   lagran
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
-      real*8   ninety      PARAMETER ( ninety = 90. )
+      real*8   ninety
+      PARAMETER ( ninety = 90. )
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS      threeSixtyRS, NorthValue
