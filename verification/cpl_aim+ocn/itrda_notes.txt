@@ -1,13 +1,24 @@
 
-The commands to run this on ITRDA are:
+The commands to run this short test on ITRDA are:
+
+a) with g77 (GNU) compiler:
 
   qsub -I -l nodes=3
   cd MITgcm/verification/cpl_aim+ocn/
-  source /usr/local/pkg/modules/modules-3.1.6/init/bash 
+  source /usr/local/pkg/modules/modules-3.1.6/init/bash
   module add mpich/gnu
   ./run_cpl_test_itrda 0
   ./run_cpl_test_itrda 1
   ./run_cpl_test_itrda 2
   ./run_cpl_test_itrda 3
 
+b) with ifc (intel) compiler:
+ same as (a) except:
+  module add mpich/intel
 
+c) with pgf77 (pgi) compiler:
+ same as (a) except:
+  module add mpich/pgi
+
+Note: to run 1 test after the other, need to unload the previous modules:
+  module purge
