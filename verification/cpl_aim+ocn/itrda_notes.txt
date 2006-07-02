@@ -4,7 +4,7 @@ The commands to run this on ITRDA are:
   qsub -I -l nodes=3
   cd MITgcm/verification/cpl_aim+ocn/
   source /usr/local/pkg/modules/modules-3.1.6/init/bash 
-  module add mpich-gnu
+  module add mpich/gnu
   ./run_cpl_test_itrda 0
   ./run_cpl_test_itrda 1
   ./run_cpl_test_itrda 2
