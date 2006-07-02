@@ -107,35 +107,39 @@ C     put xG in interval [ lon_0 , lon_0+360 [
 
 C     _BEGIN_MASTER( myThid )
 
-C setup input grid
-       do i=-1,nx_in+2
-        x_in(i) = lon_0 + (i-1)*lon_inc
-       enddo
+C setup input longitude grid
+      do i=-1,nx_in+2
+       x_in(i) = lon_0 + (i-1)*lon_inc
+      enddo
 
-       y_in(0) = lat_0 - lat_inc(1)
-       y_in(-1)= lat_0 - 2.*lat_inc(1)
-       y_in(1) = lat_0
-       do j=2,ny_in
-        y_in(j) = y_in(j-1) + lat_inc(j-1)
-       enddo
-c       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
-c       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
-       y_in(ny_in+1) = min( y_in(ny_in) + lat_inc(ny_in-1), ninety )
-       y_in(ny_in+2) = min( y_in(ny_in) + 2.*lat_inc(ny_in-1), ninety )
+C setup input latitude grid
+      y_in(0) = lat_0 - lat_inc(1)
+      y_in(-1)= lat_0 - 2.*lat_inc(1)
+      y_in(1) = lat_0
+      do j=2,ny_in
+       y_in(j) = y_in(j-1) + lat_inc(j-1)
+      enddo
+      do j=ny_in+1,ny_in+2
+       if (y_in(j-1).eq.ninety) then
+        y_in(j) = 2 * ninety - y_in(j-2)
+       else
+        y_in(j) = min( y_in(j-1)+lat_inc(ny_in-1), ninety )
+       endif
+      enddo
 
 C enlarge boundary
-       do j=1,ny_in
-        arrayin(0,j)       = arrayin(nx_in,j)
-        arrayin(-1,j)      = arrayin(nx_in-1,j)
-        arrayin(nx_in+1,j) = arrayin(1,j)
-        arrayin(nx_in+2,j) = arrayin(2,j)
-       enddo
-       do i=-1,nx_in+2
-        arrayin(i,0)       = arrayin(i,1)
-        arrayin(i,-1)      = arrayin(i,1)
-        arrayin(i,ny_in+1) = arrayin(i,ny_in)
-        arrayin(i,ny_in+2) = arrayin(i,ny_in) 
-       enddo
+      do j=1,ny_in
+       arrayin(0,j)       = arrayin(nx_in,j)
+       arrayin(-1,j)      = arrayin(nx_in-1,j)
+       arrayin(nx_in+1,j) = arrayin(1,j)
+       arrayin(nx_in+2,j) = arrayin(2,j)
+      enddo
+      do i=-1,nx_in+2
+       arrayin(i,0)       = arrayin(i,1)
+       arrayin(i,-1)      = arrayin(i,1)
+       arrayin(i,ny_in+1) = arrayin(i,ny_in)
+       arrayin(i,ny_in+2) = arrayin(i,ny_in) 
+      enddo
 
 C     For tracer (method=1,2) set to northernmost zonal-mean value
 C     at 90N to avoid sharp zonal gradients near the Pole.
@@ -143,38 +147,24 @@ C     For U (method=11,12) set to zero at 90N to minimize velocity
 C     gradient at North Pole
 C     For V (method=11,12) set to northernmost zonal value at 90N,
 C     as is already done above in order to allow cross-PoleArctic flow
-       if (y_in(ny_in+1).eq.ninety) then
+      do j=ny_in,ny_in+2
+       if (y_in(j).eq.ninety) then
         if (method.eq.1 .or. method.eq.2) then
          NorthValue = 0
          do i=1,nx_in
-          NorthValue = NorthValue + arrayin(i,ny_in)
+          NorthValue = NorthValue + arrayin(i,j)
          enddo
          NorthValue = NorthValue / nx_in
          do i=-1,nx_in+2
-          arrayin(i,ny_in+1) = NorthValue
+          arrayin(i,j) = NorthValue
          enddo
         elseif (method.eq.11 .or. method.eq.12) then
          do i=-1,nx_in+2
-          arrayin(i,ny_in+1) = 0
+          arrayin(i,j) = 0
          enddo
         endif
        endif
-       if (y_in(ny_in+2).eq.ninety) then
-        if (method.eq.1 .or. method.eq.2) then
-         NorthValue = 0
-         do i=1,nx_in
-          NorthValue = NorthValue + arrayin(i,ny_in)
-         enddo
-         NorthValue = NorthValue / nx_in
-         do i=-1,nx_in+2
-          arrayin(i,ny_in+2) = NorthValue
-         enddo
-        elseif (method.eq.11 .or. method.eq.12) then
-         do i=-1,nx_in+2
-          arrayin(i,ny_in+2) = 0
-         enddo
-        endif
-       endif
+      enddo
 
 C     _END_MASTER( myThid )
        
