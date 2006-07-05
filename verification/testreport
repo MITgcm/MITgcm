@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.82 2006/06/18 21:20:51 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.83 2006/07/05 22:39:57 jmc Exp $
 #  $Name:  $
 #
 
@@ -11,7 +11,8 @@ usage()
     echo
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
-    echo "  (-mpi)                   use MPI input files"
+    echo "  (-mth)                   run multi threaded (using eedata.mth)"
+    echo "  (-mpi)                   compile and run using MPI"
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
@@ -335,20 +336,18 @@ makeclean()
 {
     # makeclean directory
     if test "x$NOCLEAN" = xt ; then
-	echo "make CLEAN skipped!"
+	echo "make Clean skipped!"
     else
 	(
 	    cd $1;
-	    if test -e output.txt ; then
-		rm -f output.txt
-	    fi
-	    printf 'make CLEAN ... ' 2>&1
+	    #if test -e output.txt ; then rm -f output.txt ; fi
 	    if test -r Makefile ; then
-		$MAKE CLEAN >> make.log 2>&1
+		printf 'clean build-dir: make Clean ... ' 2>&1
+		$MAKE Clean >> make.log 2>&1
 		RETVAL=$?
 		if test "x$RETVAL" != x0 ; then
 		    tail make.log
-		    echo "makeclean: \"make CLEAN\" failed" 1>&2
+		    echo "makeclean: \"make Clean\" failed" 1>&2
 		    cp make.log $CDIR"/make.log"
 		    return 1
 		fi
@@ -359,15 +358,23 @@ makeclean()
     fi
 }
 
-postclean()
+run_clean()
 {
-    # postclean directory
-    if test "x$POSTCLEAN" = xt ; then
+    # run_clean directory
+    if test "x$NOCLEAN" = xt ; then
+	echo "run_clean skipped!"
+    else
 	(
 	    cd $1;
-	    if test -r Makefile ; then
-		$MAKE CLEAN >> /dev/null 2>&1
-	    fi
+	    printf 'clean run-dir ... ' 2>&1
+	    # part of what is done after "make clean" when doing "make CLEAN"
+	    find . -name "*.meta" -exec rm {} \;
+	    find . -name "*.data" -exec rm {} \;
+	    find . -name "fort.*" -exec rm {} \;
+	    find . -type l -exec rm {} \;
+	    rm -f $EXECUTABLE *.txt STD* *diagnostics.log datetime
+	    rm -rf mnc_test_*
+	    echo successful 1>&2
 	    exit 0
 	)
     fi
@@ -475,37 +482,44 @@ symlink_mpifiles()
 
 linkdata()
 {
-    # linkdata flag
+    # linkdata run_dir input_dir_1 input_dir_2 ...
     #
     # symbolically link data files to run directory
-    if test "x$1" = x1 ; then
+    if test -d $1 ; then
 	(
-	    cd $2
-	    if test "x$ADM" = x ; then
-		files=`( cd ../input ; ls -1 | grep -v CVS )`
-		for i in $files ; do
-		    if test ! -d "../input/"$i -a ! -f $i ; then
-			ln -sf "../input/"$i $i
+	    cd $1 ; shift
+	    if test -r "../"$1"/eedata.mth" ; then
+	    # found eedata.mth in 1rst input dir and it is readable
+		if test "x$MULTI_THREAD" = "xt" ; then
+		# multi-threaded test: remove symbolic link & link eedata.mth
+		    if test -h eedata ; then rm -f eedata ; fi
+		    if test ! -r eedata ; then 
+			ln -sf "../"$1"/eedata.mth" eedata ;
+			printf 'eedata.mth ' 1>&2
 		    fi
-		done
-	    else
-		files=`( cd ../input_ad ; ls -1 | grep -v CVS )`
-		for i in $files ; do
-		    if test ! -d "../input_ad/"$i ; then
-			ln -sf "../input_ad/"$i $i
-		    fi
-		done
-		if test -d "../input" ; then
-		  files=`( cd ../input ; ls -1 | grep -v CVS )`
-		  for i in $files ; do
-		    if test ! -d "../input/"$i ; then
-		     if test ! -r $i  ; then
-			ln -sf "../input/"$i $i
-		     fi
-		    fi
-		  done
+		else
+		# not multi-threaded test: remove eedata symbolic link
+		    if test -h eedata ; then rm -f eedata ; fi
 		fi
 	    fi
+	    for ldir in $* ; do
+		if test -d "../"$ldir ; then
+                    printf 'ldir='${ldir} 1>&2
+		    files=`( cd "../"$ldir ; ls -1 | grep -v CVS )`
+		    for i in $files ; do
+			if test ! -d "../"$ldir/$i ; then
+			    if test ! -r $i  ; then
+				printf ' '$i 1>&2
+				ln -sf "../"$ldir"/"$i $i
+			    fi
+			fi
+		    done
+		    if test -x "../"$ldir"/"prepare_run ; then
+			"../"$ldir"/"prepare_run
+		    fi
+		    printf ' ; ' 1>&2
+		fi
+	    done
 	)
     fi
 }
@@ -522,12 +536,23 @@ runmodel()
 	# make output.txt
 	echo
 	rm -f run.log
-        if test $OUTPUTFILE -ot $EXECUTABLE ; then
-	   ( eval $COMMAND ) > run.log 2>&1
-	   RETVAL=$?
+        if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
+	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log
+	    ln -sf "../"$builddir"/"$EXECUTABLE .
 	else
-           echo " $OUTPUTFILE is up to date " > run.log 2>&1
-	   RETVAL=0
+            touch run.log
+	fi
+        if test ! -x $EXECUTABLE ; then
+		echo " no executable:" $EXECUTABLE >> run.log
+		RETVAL=8
+	else
+            if test $OUTPUTFILE -ot $EXECUTABLE ; then
+		( eval $COMMAND ) >> run.log 2>&1
+		RETVAL=$?
+	    else
+     		echo " $OUTPUTFILE is up to date " >> run.log 2>&1
+		RETVAL=0
+	    fi
 	fi
 	# echo "COMMAND='$COMMAND'"
 	# echo "pwd='"`pwd`"'"
@@ -688,6 +713,7 @@ if test "x$CC" = x ; then
 fi
 JOBS=
 MPI=f
+MULTI_THREAD=f
 OUTDIR=
 DELDIR=
 
@@ -774,6 +800,8 @@ for ac_option ; do
 	    POSTCLEAN=t ;;
 
 	-mpi) MPI=t ;;
+
+	-mth) MULTI_THREAD=t ;;
 
 	-adm | -ad) ADM=t ;;
 
@@ -939,10 +967,12 @@ for dir in $TESTDIRS ; do
     #  Cleanup only!
     if test "x$CLEANUP" = xt ; then
 	if test -r $dir/build/Makefile ; then
+            echo '  ------  clean dir:' $dir/build
 	    ( cd $dir/build ; make CLEAN )
 	fi
-	if test -r $dir/input/Makefile ; then
-	    ( cd $dir/input ; make CLEAN )
+	if test -d $dir/run/CVS ; then
+            echo '  ------  clean dir:' $dir/run
+	    run_clean $dir/run
 	fi
 	(
 	    cd $dir
@@ -969,36 +999,22 @@ for dir in $TESTDIRS ; do
 
     # Check for additional types of monitor output
 
-    builddir="input"
-    rundir="input"
-    use_seperate_build=0
-    if test -d $dir/build -a -r $dir/build ; then
-	builddir="build"
-	rundir="build"
-	use_seperate_build=1
-	linkdata $use_seperate_build $dir/$rundir
+    builddir="build"
+    if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
+    rundir="run"
+   #rundir=$builddir
+    if test ! -d $dir/$rundir ; then
+	rundir=$builddir
     fi
     
-    #  Check whether there are "extra runs" for this testdir
-    extra_runs=
-    if test "x$ADM" = x -a "x$use_seperate_build" = x1 ; then
-	ex_run_dirs=`( cd $dir ; echo input.* )`
-	echo "ex_run_dirs='$ex_run_dirs'"
-	for exd in $ex_run_dirs ; do
-	    name=`echo $exd | sed -e 's/input.//g'`
-	    outf="$dir/results/output.txt.$name"
-	    if test -f $outf -a -r $outf ; then
-		extra_runs="$extra_runs $name"
-	    fi
-	done
-    fi
-
     if test "x$ADM" = x ; then
 	code_dir=code
 	CODE_DIR=$dir/code
+        input_dirs='input'
     else
 	code_dir=code_ad
 	CODE_DIR=$dir/code_ad
+        input_dirs='input_ad input'
     fi
     BUILD_DIR=$dir/$builddir
 
@@ -1006,10 +1022,39 @@ for dir in $TESTDIRS ; do
 	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
 	continue
     fi
+    if test ! -r $dir"/input/eedata.mth" -a "x$MULTI_THREAD" = "xt" ; then
+	echo "can't find \"$dir/input/eedata.mth\" -- skipping $dir"
+	continue
+    fi
+
+    #  Check whether there are "extra runs" for this testdir
+    extra_runs=
+    if test "x$ADM" = x ; then
+	ex_run_dirs=`( cd $dir ; echo input.* )`
+	#echo "ex_run_dirs='$ex_run_dirs'"
+	for exd in $ex_run_dirs ; do
+	    name=`echo $exd | sed -e 's/input.//g'`
+	    outf="$dir/results/output.txt.$name"
+            if test -f $outf -a -r $outf ; then
+		if test "x$MULTI_THREAD" = "xt" ; then 
+		    if test -r $dir"/"$exd"/eedata.mth" ; then
+			extra_runs="$extra_runs $name"
+		    #else echo $dir"/"$exd"/eedata.mth: not found"
+		    fi
+		else
+		    extra_runs="$extra_runs $name"
+		fi
+	    fi
+	done
+    fi
 
     echo "-------------------------------------------------------------------------------"
     echo
-    echo "Experiment:  $dir"
+    if test "x$extra_runs" = "x" ; then 
+       echo "Experiment:  $dir"
+    else
+       echo "Experiment:  $dir ; extra_runs=$extra_runs"
+    fi
     echo
     unset genmake makedepend make run
     results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
@@ -1020,14 +1065,17 @@ for dir in $TESTDIRS ; do
     CDIR=`pwd`"/$rel_CDIR"
     
     if test "x$CLEANUP" = xt ; then
-	makeclean $dir/$builddir
+	echo '====>>> this is to check that we never go through this part <<< ==='
+	makeclean $dir/$builddir \
+	    && run_clean $dir/$rundir
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
+	    && run_clean $dir/$rundir \
             && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
-	    && linkdata $use_seperate_build $dir/$rundir \
+	    && linkdata $dir/$rundir $input_dirs \
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput $dir $rundir`
     fi
@@ -1051,27 +1099,8 @@ for dir in $TESTDIRS ; do
 	    mkdir $rel_CDIR
 	    CDIR=`pwd`"/$rel_CDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
-	    for ldir in input.$ex input ; do
-		(
-		    cd "$dir/$ldir" > /dev/null 2>&1
-		    ls -1 2>/dev/null \
-			| sed -e 's|^CVS$||g' | sed -e 's|^output.txt$||g'
-		) > tr_exrun_links
-		(
-		    cd "$dir/tr_run.$ex"
-		    cat ../../tr_exrun_links | while read i ; do
-			if test ! "x$i" = x ; then
-			    test ! -r $i  &&  ln -s "../"$ldir"/"$i $i
-			fi
-		    done
-		)
-		test -e tr_exrun_links  &&  rm -f tr_exrun_links
-	    done
-	    ldir=build
-	    (
-		cd $dir/tr_run.$ex
-		test ! -e mitgcmuv  &&  ln -s "../"$ldir"/"mitgcmuv .
-	    )
+ 	    run_clean $dir/tr_run.$ex
+            linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput $dir tr_run.$ex "."$ex`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
@@ -1084,6 +1113,9 @@ for dir in $TESTDIRS ; do
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
 	    echo "tdir='$dir.$ex'" >> $CDIR"/summary.txt"
+	    if test "x$POSTCLEAN" = xt ; then
+ 		run_clean $dir/tr_run.$ex
+	    fi
 	done
     else
 	fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
@@ -1099,7 +1131,11 @@ for dir in $TESTDIRS ; do
 			   >> $CDIR"/summary.txt"
     fi
 
-    postclean $dir/$builddir
+    #postclean $dir/$builddir
+    if test "x$POSTCLEAN" = xt ; then
+ 	makeclean $dir/$builddir \
+ 	    && run_clean $dir/$rundir
+    fi
     
     echo "-------------------------------------------------------------------------------"
     
