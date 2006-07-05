@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.8 2006/06/12 16:34:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.9 2006/07/05 08:23:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,11 +72,11 @@ C     msgBuf    - Informational/error meesage buffer
       _RL gfld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_area(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_THSICE
       LOGICAL dBugFlag
 #include "THSICE_DEBUG.h"
-      _RL recip_area(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
       dBugFlag = debugLevel.GE.debLevB
 #endif /* ALLOW_THSICE */
