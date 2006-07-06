@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.106 2006/06/22 21:31:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.107 2006/07/06 00:22:30 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -500,9 +500,12 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC 
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test
-CADJ STORE uFld(:,:), vFld(:,:), wFld(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE uTrans(:,:), vTrans(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE xA(:,:), yA(:,:)                = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE uFld(:,:), vFld(:,:), wFld(:,:)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE uTrans(:,:), vTrans(:,:)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE xA(:,:), yA(:,:)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
