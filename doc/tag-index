@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.692 2006/07/06 00:29:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.693 2006/07/06 00:33:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58k_post
 o testreport:
  - always build in dir. "build" (if not there, mkdir build instead of building 
    & running in input)
