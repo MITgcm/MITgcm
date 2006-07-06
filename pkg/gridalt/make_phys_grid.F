@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.6 2006/06/30 19:08:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.7 2006/07/06 13:47:28 molod Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -228,12 +228,12 @@ c    of the dynamics grid onto the physics grid
         enddo
 c
 c  All done adding layers - if we need more to make numlevphys, put
-c     them as thin (0.1 mb) layers near the top
+c     them as thin (1 mb) layers near the top
        if(nlphys.lt.numlevphys)then
         nlevs = numlevphys-nlphys
-        dpphys(i,j,nlphys,bi,bj) = dpphys(i,j,nlphys,bi,bj)-10. * nlevs
+        dpphys(i,j,nlphys,bi,bj) = dpphys(i,j,nlphys,bi,bj)-100. * nlevs
         do Lnew = nlphys+1,numlevphys
-         dpphys(i,j,Lnew,bi,bj) = 10.
+         dpphys(i,j,Lnew,bi,bj) = 100.
         enddo
         nlperdyn(i,j,Nr,bi,bj) = numlevphys
        endif
