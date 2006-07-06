@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.691 2006/06/30 12:05:42 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.692 2006/07/06 00:29:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport:
+ - always build in dir. "build" (if not there, mkdir build instead of building 
+   & running in input)
+ - run in dir run (if it exists), in build otherwise.
+ - call prepare_run (if input/prepare_run exists)
+ - run multi-threaded test (with new option: "-mth") if file input/eedata.mth exists.
 o pkg/exf modifications to interpolation and rotation routines for more
    reasonable treatment of North Pole singularity: for tracers North Pole
    value is set to northernmost zonal-mean value, for zonal velocity it is
