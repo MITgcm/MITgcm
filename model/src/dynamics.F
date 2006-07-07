@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.135 2006/06/20 20:57:37 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.136 2006/07/07 20:10:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,20 +115,20 @@ C      |-- CALC_GRAD_PHI_SURF
 C      |
 C      |-- CALC_VISCOSITY
 C      |
-C      |-- CALC_PHI_HYD  
+C      |-- CALC_PHI_HYD
 C      |
-C      |-- MOM_FLUXFORM  
+C      |-- MOM_FLUXFORM
 C      |
-C      |-- MOM_VECINV    
+C      |-- MOM_VECINV
 C      |
-C      |-- TIMESTEP      
+C      |-- TIMESTEP
 C      |
-C      |-- OBCS_APPLY_UV 
+C      |-- OBCS_APPLY_UV
 C      |
-C      |-- MOM_U_IMPLICIT_R      
-C      |-- MOM_V_IMPLICIT_R      
+C      |-- MOM_U_IMPLICIT_R
+C      |-- MOM_V_IMPLICIT_R
 C      |
-C      |-- IMPLDIFF      
+C      |-- IMPLDIFF
 C      |
 C      |-- OBCS_APPLY_UV
 C      |
@@ -193,7 +193,7 @@ C                      index into fVerTerm.
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
 
- 
+
 C---    The algorithm...
 C
 C       "Correction Step"
@@ -308,10 +308,10 @@ cph)
           fVerU  (i,j,2) = 0. _d 0
           fVerV  (i,j,1) = 0. _d 0
           fVerV  (i,j,2) = 0. _d 0
-          phiHydF (i,j)  = 0. _d 0 
-          phiHydC (i,j)  = 0. _d 0 
+          phiHydF (i,j)  = 0. _d 0
+          phiHydC (i,j)  = 0. _d 0
           dPhiHydX(i,j)  = 0. _d 0
-          dPhiHydY(i,j)  = 0. _d 0 
+          dPhiHydY(i,j)  = 0. _d 0
           phiSurfX(i,j)  = 0. _d 0
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0
@@ -349,7 +349,7 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
      I         bi,bj,iMin,iMax,jMin,jMax,
      I         etaN,
      O         phiSurfX,phiSurfY,
-     I         myThid )                         
+     I         myThid )
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -539,7 +539,7 @@ C--     end of dynamics k loop (1:Nr)
 C--     Implicit Vertical advection & viscosity
 #if (defined (INCLUDE_IMPLVERTADV_CODE) && defined (ALLOW_MOM_COMMON))
         IF ( momImplVertAdv ) THEN
-          CALL MOM_U_IMPLICIT_R( kappaRU, 
+          CALL MOM_U_IMPLICIT_R( kappaRU,
      I                           bi, bj, myTime, myIter, myThid )
           CALL MOM_V_IMPLICIT_R( kappaRV,
      I                           bi, bj, myTime, myIter, myThid )
@@ -597,7 +597,30 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
         ENDIF
 #endif    /* ALLOW_CD_CODE */
 C--     End implicit Vertical advection & viscosity
- 
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Step forward W field in N-H algorithm
+        IF ( nonHydrostatic ) THEN
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('CALC_GW', myThid )
+#endif
+         CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
+         CALL CALC_GW(
+     I                 bi,bj, KappaRU, KappaRV,
+     I                 myTime, myIter, myThid )
+        ENDIF
+        IF ( nonHydrostatic.OR.implicitIntGravWave )
+     &   CALL TIMESTEP_WVEL( bi,bj, myTime, myIter, myThid )
+        IF ( nonHydrostatic )
+     &   CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    end of bi,bj loops
        ENDDO
       ENDDO
 
@@ -606,28 +629,6 @@ C--     End implicit Vertical advection & viscosity
        CALL OBCS_PRESCRIBE_EXCHANGES(myThid)
       ENDIF
 #endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Step forward W field in N-H algorithm
-      IF ( nonHydrostatic ) THEN
-#ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('CALC_GW', myThid )
-#endif
-         CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
-         CALL CALC_GW(
-     I         KappaRU, KappaRV, 
-     I         myTime, myIter, myThid )
-      ENDIF
-      IF ( nonHydrostatic.OR.implicitIntGravWave ) 
-     &   CALL TIMESTEP_WVEL( myTime, myIter, myThid )
-      IF ( nonHydrostatic )
-     &   CALL TIMER_STOP ('CALC_GW          [DYNAMICS]',myThid)
-#endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 Cml(
 C     In order to compare the variance of phiHydLow of a p/z-coordinate
@@ -652,7 +653,7 @@ Cml)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-      
+
 #ifdef ALLOW_DEBUG
       If ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
