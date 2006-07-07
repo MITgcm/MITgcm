@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.83 2006/07/05 22:39:57 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.84 2006/07/07 21:47:35 jmc Exp $
 #  $Name:  $
 #
 
@@ -18,8 +18,9 @@ usage()
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
-    echo "  (-t|-tdir) STRING        list of test dirs to use"
-    echo "                             (DEF=\"\" which builds all)"
+    echo "  (-t|-tdir) STRING        list of group and/or exp. dirs to test"
+    echo "                             (recognized groups: basic, tutorials)"
+    echo "                             (DEF=\"\" which test all)"
     echo "  (-b|-bash) STRING        preferred location of a \"bash\" or"
     echo "                             Bourne-compatible \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
@@ -840,7 +841,35 @@ if test "x$TESTDIRS" = x ; then
     else
 	TESTDIRS=`scandirs results`
     fi
+else
+    #- expand group of experiments:
+    LIST=" "
+    for xx in $TESTDIRS
+    do
+      case $xx in
+	'basic') LIST=${LIST}" aim.5l_cs front_relax global_ocean.90x40x15"
+		 LIST=${LIST}" hs94.128x64x5 tutorial_barotropic_gyre"
+		 LIST=${LIST}" tutorial_global_oce_biogeo tutorial_plume_on_slope"
+		;;
+	'tutorials')
+		 LIST=${LIST}" "`ls | grep 'tutorial_'` ;;
+	*)	 LIST=${LIST}" "$xx ;;
+      esac
+    done 
+    #echo 'LIST='${LIST}'<'
+    #- remove duplicate and non-directory:
+    TESTDIRS=" "
+    for xx in $LIST
+    do
+	if test -d $xx ; then
+	    yy=`echo $TESTDIRS | grep -c $xx`
+	    if test $yy = 0 ; then TESTDIRS=${TESTDIRS}" "$xx ; fi
+	else
+	    echo " -- skip \"$xx\" : not a directory !"
+	fi
+    done 
 fi
+#echo 'TESTDIRS='${TESTDIRS}'<'
 
 if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
     OPTFILE=$MITGCM_OF
