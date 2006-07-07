@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.89 2006/03/24 16:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.90 2006/07/07 17:06:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -413,13 +413,13 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &'   /* Run starting timestep number  */')
       CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
      &'   /* Number of timesteps */')
-      CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltatTmom =',
+      CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
      &'   /* FreeSurface equation timestep ( s ) */')
       CALL WRITE_1D_R8( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
      &'   /* Tracer equation timestep ( s ) */')
-      CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltatTClock  =',
+      CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltaTClock  =',
      &'   /* Model clock timestep ( s ) */')
       CALL WRITE_0D_R8( cAdjFreq, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')
