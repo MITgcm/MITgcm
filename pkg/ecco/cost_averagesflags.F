@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.3 2006/07/07 22:53:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -8,17 +8,22 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.2 2004/10/11 16:3
      I                               mytime,
      I                               mythid,
      O                               first,
+     O                               last,
      O                               startofday,
      O                               startofmonth,
+     O                               startofyear,
      O                               inday,
      O                               inmonth,
-     O                               last,
+     O                               inyear,
      O                               endofday,
      O                               endofmonth,
+     O                               endofyear,
      O                               sum1day,
      O                               dayrec,
      O                               sum1mon,
-     O                               monrec
+     O                               monrec,
+     O                               sum1year,
+     O                               yearrec
      &                             )
 
 c     ==================================================================
@@ -55,15 +60,20 @@ c     == routine arguments ==
       logical first
       logical startofday
       logical startofmonth
+      logical startofyear
       logical inday
       logical inmonth
+      logical inyear
       logical last
       logical endofday
       logical endofmonth
+      logical endofyear
       integer sum1day
       integer dayrec
       integer sum1mon
       integer monrec
+      integer sum1year
+      integer yearrec
 
 c     == local variables ==
 
@@ -77,10 +87,13 @@ c     == local variables ==
       integer targetdate2
       integer mydateday
       integer mydatemonth
+      integer mydateyear
       integer nextdateday
       integer nextdatemonth
+      integer nextdateyear
       integer prevdateday
       integer prevdatemonth
+      integer prevdateyear
 
       logical equal
 
@@ -113,6 +126,7 @@ c--   The very first model step?
         first  = .true.
         dayrec = 0
         monrec = 0
+        yearrec = 0
       else
         first = .false.
       endif
@@ -233,6 +247,56 @@ c--   Determine sum1mon and monrec explicitly.
      &    cal_NumInts( targetdate, mydate, timediff, mythid ) + 1
       else
         sum1mon = 0
+      endif
+
+c--   Start of a Year?
+      mydateyear   = int(mydate(1)/10000)
+      prevdateyear = int(prevdate(1)/10000)
+      if ( mydateyear .ne. prevdateyear ) then
+        startofyear = .true.
+      else
+        startofyear = .false.
+      endif
+
+c--   End of a Year?
+      mydateyear   = int(mydate(1)/10000)
+      nextdateyear = int(nextdate(1)/10000)
+      if ( mydateyear .ne. nextdateyear ) then
+        endofyear = .true.
+      else
+        endofyear = .false.
+      endif
+
+c--   In a calendar year? As coded here, inyear can not be true
+c--   for either the first or the last timestep in the year.
+c--   So the cases are mutually exclusive.
+      if ( ( mydateyear .eq. prevdateyear ) .and.
+     &     ( mydateyear .eq. nextdateyear )       ) then
+        inyear = .true.
+      else
+        inyear = .false.
+      endif
+
+c--   Determine sum1year and yearrec explicitly.
+      if ( last .or. endofyear ) then
+        if ( (mydate(1)/10000)*100 .eq. 
+     &        (modelstartdate(1)/10000)*100 ) then
+          call cal_CopyDate( modelstartdate, targetdate, mythid )
+          yearrec  = 1
+        else
+          targetdate1 = (mydate(1)/10000)*100+1
+          targetdate2 = 0
+          call cal_FullDate( targetdate1, targetdate2, targetdate,
+     &                       mythid )
+          yearrec  = mydate(1)/10000 - modelstartdate(1)/10000 + 1
+        endif
+c
+        call cal_TimeInterval( modelstep, 'secs', timediff, mythid )
+
+        sum1year = 
+     &    cal_NumInts( targetdate, mydate, timediff, mythid ) + 1
+      else
+        sum1year = 0
       endif
 
       end

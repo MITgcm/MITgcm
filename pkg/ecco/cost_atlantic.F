@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.3 2005/05/05 23:54:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.4 2006/07/07 22:53:35 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -63,11 +63,14 @@ c     == local variables ==
       logical first
       logical startofday
       logical startofmonth
+      logical startofyear
       logical inday
       logical inmonth
+      logical inyear
       logical last
       logical endofday
       logical endofmonth
+      logical endofyear
 
       _RL        p5
       parameter( p5 = 0.5 )
@@ -104,13 +107,15 @@ c     == end of interface ==
 c--   Get the time flags and record numbers for the time averaging.
 
       call cost_AveragesFlags(
-     I                         myiter,  mytime,     mythid,
-     O                         first,   startofday, startofmonth,
-     O                         inday,   inmonth,
-     O                         last,    endofday,   endofmonth,
-     O                         sum1day, dayrec,
-     O                         sum1mon, monrec
-     &                        )
+     I                    myiter,     mytime,       mythid,
+     O                    first,      last, 
+     O                    startofday, startofmonth, startofyear,
+     O                    inday,      inmonth,      inyear,
+     O                    endofday,   endofmonth,   endofyear,
+     O                    sum1day,    dayrec,
+     O                    sum1mon,    monrec,
+     O                    sum1year,   yearrec
+     &                  )
 
 ce      print*,' cost_AveragesFields:       myiter = ', myiter
 ce      print*,' cost_AveragesFields:       mytime = ', mytime

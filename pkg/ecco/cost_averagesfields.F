@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.11 2006/05/06 14:33:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.12 2006/07/07 22:53:35 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -38,6 +38,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "CG2D.h"
 
 #include "optim.h"
@@ -69,11 +70,15 @@ c     == local variables ==
       logical first
       logical startofday
       logical startofmonth
+      logical startofyear
       logical inday
       logical inmonth
+      logical inyear
       logical last
       logical endofday
       logical endofmonth
+      logical endofyear
+      logical intmp
 
       integer ilps, ils,ilt
 
@@ -109,12 +114,14 @@ c     == end of interface ==
 c--   Get the time flags and record numbers for the time averaging.
 
       call cost_averagesflags(
-     I                    myiter,  mytime,     mythid,
-     O                    first,   startofday, startofmonth,
-     O                    inday,   inmonth,
-     O                    last,    endofday,   endofmonth,
-     O                    sum1day, dayrec,
-     O                    sum1mon, monrec
+     I                    myiter,     mytime,       mythid,
+     O                    first,      last, 
+     O                    startofday, startofmonth, startofyear,
+     O                    inday,      inmonth,      inyear,
+     O                    endofday,   endofmonth,   endofyear,
+     O                    sum1day,    dayrec,
+     O                    sum1mon,    monrec,
+     O                    sum1year,   yearrec
      &                  )
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
@@ -322,114 +329,25 @@ c--     Accumulate ubar and vbar.
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-c--   Next, do the averages for velocitty.
-      if (first) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i =  imin,imax
-                  hfluxbar(i,j,bi,bj)=hflux(i,j,bi,bj)
-                enddo
-              enddo
-          enddo
-        enddo
-      else if (last) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i = imin,imax
-                  hfluxbar(i,j,bi,bj)  = 
-     &              ( hfluxbar (i,j,bi,bj) + hflux(i,j,bi,bj) )
-     &              /float(nTimeSteps)
-                enddo
-              enddo
-          enddo
-        enddo
-
-c--     Save hfluxbar 
-        if (optimcycle .ge. 0) then
-          ils=ilnblnk( hfluxbarfile )
-          write(fnamehfluxbar,'(2a,i10.10)') hfluxbarfile(1:ils),'.',
-     &                                             optimcycle
-        endif
-    
-        call active_write_xy( fnamehfluxbar, hfluxbar, 1,
-     &       optimcycle,   mythid, xx_hflux_mean_dummy)
-    
-      else if ( .not. (first) .and.
-     &          .not. (last )       ) then
-c--     Accumulate ubar and vbar.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i =  imin,imax
-                  hfluxbar(i,j,bi,bj) = 
-     &              hfluxbar(i,j,bi,bj) + hflux(i,j,bi,bj)
-                enddo
-            enddo
-          enddo 
-       enddo
-      else
-        stop   ' ... stopped in cost_averagesfields; hfluxbar part.'
-      endif
-
+cph: this is one mean over whole integration:
+      intmp = (.NOT. first) .and. (.NOT. last)
+      call cost_averagesgeneric(
+     &     hfluxbarfile, 
+     &     hfluxbar, qnet, xx_hflux_mean_dummy,
+     &     first, last, .false., .false., intmp,
+     &     ntimesteps, 1, 1, mythid )
 #endif
 
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-c--   Next, do the averages for velocitty.
-      if (first ) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i =  imin,imax
-                  sfluxbar(i,j,bi,bj) = sflux(i,j,bi,bj)
-                enddo
-              enddo
-          enddo
-        enddo
-      else if (last) then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i = imin,imax
-                  sfluxbar(i,j,bi,bj)  = (sfluxbar (i,j,bi,bj) +
-     &                                  sflux(i,j,bi,bj)   )/
-     &                                 float(nTimeSteps)
-                enddo
-              enddo
-          enddo
-        enddo
-
-
-c--     Save sfluxbar
-        if (optimcycle .ge. 0) then
-          ils=ilnblnk( sfluxbarfile )
-          write(fnamesfluxbar,'(2a,i10.10)') sfluxbarfile(1:ils),'.',
-     &                                             optimcycle
-        endif
-
-        call active_write_xy( fnamesfluxbar, sfluxbar, 1,
-     &       optimcycle,  mythid, xx_sflux_mean_dummy)
-
-      else if ( .not. (first) .and.
-     &          .not. (last )       ) then
-c--     Accumulate ubar and vbar.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-              do j = jmin,jmax
-                do i =  imin,imax
-                  sfluxbar(i,j,bi,bj) = sfluxbar (i,j,bi,bj) +
-     &                                sflux (i,j,bi,bj)
-                enddo
-              enddo
-          enddo
-        enddo
-      else
-        print*
-        stop   ' ... stopped in cost_averagesfields; sfluxbar part.'
-      endif
-
+cph: these are annual means
+      call cost_averagesgeneric(
+     &     sfluxbarfile, 
+     &     sfluxbar, empmr, xx_sflux_mean_dummy,
+     &     first, last, startofyear, endofyear, inyear,
+     &     sum1year, yearrec, 1, mythid )
 #endif
+
+
 
 #ifdef ALLOW_SEAICE
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.24 2006/05/12 13:35:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.25 2006/07/07 22:53:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -86,7 +86,9 @@ c--   Read the namelist input.
      &                   mult_atemp, mult_aqh, 
      &                   mult_precip, mult_swflux, mult_swdown,
      &                   mult_uwind, mult_vwind,
-     &                   mult_hmean, mult_h, mult_temp, mult_salt,
+     &                   mult_hmean, mult_h, 
+     &                   mult_tp, mult_ers, mult_gfo, 
+     &                   mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss,
      &                   mult_ctdt, mult_ctds, 
      &                   mult_ctdtclim, mult_ctdsclim, 
@@ -215,7 +217,10 @@ c--     Set default values.
         mult_uwind            =      0. _d 0
         mult_vwind            =      0. _d 0
         mult_hmean            =      0. _d 0
-        mult_h                =      0. _d 0
+        mult_h                =      1. _d 0
+        mult_tp               =      0. _d 0
+        mult_ers              =      0. _d 0
+        mult_gfo              =      0. _d 0
         mult_temp             =      0. _d 0
         mult_salt             =      0. _d 0
         mult_temp0            =      0. _d 0

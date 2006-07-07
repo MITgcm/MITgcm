@@ -55,9 +55,11 @@ c     == local variables ==
       integer levoff
       integer ilsalt
 
-      _RL fctilemm
-      _RL tmpx
-      _RL sumcos
+      _RL tmpx, tmpx2
+      _RL fctilemm(nSx,nSy)
+      _RL sumcos(nSx,nSy)
+      _RL sumtot
+      _RL fctiletot
 
 
       character*(80) fnamesflux
@@ -95,7 +97,7 @@ c--   Read tiled data.
      &    sfluxbarfile(1:ilsalt),'.',optimcycle
       endif
 
-      irec = 1
+      do irec = 1, MAX(1,nyearsrec)
 
 c--     Read time averages and the monthly mean data.
         call active_read_xy( fnamesflux, tmpfld2d, irec,
@@ -106,28 +108,50 @@ c--     Read time averages and the monthly mean data.
         do bj = jtlo,jthi
           do bi = itlo,ithi
             kk = 1
-            fctilemm = 0. _d 0
-            sumcos   = 0. _d 0
+            fctilemm(bi,bj) = 0. _d 0
+            sumcos(bi,bj)   = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
                 tmpx=tmpfld2d(i,j,bi,bj)
                 if (maskC(i,j,kk,bi,bj) .ne. 0.) then
-                   fctilemm = fctilemm + tmpx
+                   fctilemm(bi,bj) = fctilemm(bi,bj) + tmpx
      &                  *cos(yc(i,j,bi,bj)*deg2rad)
-                   sumcos = sumcos + cos(yc(i,j,bi,bj)*deg2rad)
+                   sumcos(bi,bj) = sumcos(bi,bj) 
+     &                  + cos(yc(i,j,bi,bj)*deg2rad)
                    num_sfluxmm(bi,bj) = num_sfluxmm(bi,bj) + 1
                 endif
               enddo
             enddo
-
-            _GLOBAL_SUM_R8( sumcos , myThid )
-            if (sumcos.eq.0.) sumcos = 1.
-
-            fctilemm = fctilemm / sumcos
-            objf_sfluxmm(bi,bj) = wsfluxmm(bi,bj) * fctilemm
-
           enddo
         enddo
+
+        sumtot    = 0.
+        fctiletot = 0.
+        do bj = jtlo,jthi
+           do bi = itlo,ithi
+              sumtot    = sumtot + sumcos(bi,bj) 
+              fctiletot = fctiletot + fctilemm(bi,bj) 
+           enddo
+        enddo
+       _GLOBAL_SUM_R8( sumtot , myThid )
+       _GLOBAL_SUM_R8( fctiletot , myThid )
+       
+       if (sumtot.eq.0.) sumtot = 1.
+
+       do bj = jtlo,jthi
+          do bi = itlo,ithi
+             fctilemm(bi,bj) = fctilemm(bi,bj) / sumtot
+             objf_sfluxmm(bi,bj) = objf_sfluxmm(bi,bj)
+     &            + (fctilemm(bi,bj)/wmean_sflux/nyearsrec)**2
+          enddo
+       enddo
+
+c-- diagnostic: imbalance per year:
+       tmpx2 =  wsfluxmm(1,1) * fctiletot / sumtot
+       write(standardmessageunit,'(A,I5,D22.15)')
+     &      ' --> bal_sfluxmm    =', irec, tmpx2
+
+      enddo
 
 #endif
 
