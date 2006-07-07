@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.23 2006/07/07 22:53:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.24 2006/07/07 23:04:13 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -815,7 +815,7 @@ c--   Each process has calculated the global part for itself.
         no_hmean = num_hmean
 
         f_hfluxmm2 = mult_hfluxmm
-     &       *(f_hfluxmm-1.0)*(f_hfluxmm-1.0)
+     &       *(f_hfluxmm+1.0)*(f_hfluxmm+1.0)
      &       /(wmean_hflux*wmean_hflux)
 
         f_sfluxmm2 = mult_sfluxmm*f_sfluxmm
