@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.22 2006/05/31 19:53:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.23 2006/07/07 18:52:10 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -72,6 +72,9 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "NH_VARS.h"
+#endif
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -90,6 +93,7 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER I,J
+      INTEGER kp1
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac
@@ -412,6 +416,27 @@ C  BiHarmonic on Div.u points
          viscA4_DMax(i,j)=min(viscA4GridMax*L4rdt,viscA4Max)
          viscA4_D(i,j)=min(viscA4_DMax(i,j),viscA4_D(i,j))
 
+#ifdef ALLOW_NONHYDROSTATIC 
+C     /* Pass Viscosities to calc_gw, if constant, not necessary */
+
+         kp1  = MIN(k+1,Nr)
+
+         if (k .eq. 1) then
+          viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
+          viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
+
+          viscAh_W(i,j,k,bi,bj)=viscAh_D(i,j) /* These values dont get used */
+          viscA4_W(i,j,k,bi,bj)=viscA4_D(i,j)
+         else
+C Note that previous call of this function has already added half.
+          viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
+          viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
+
+          viscAh_W(i,j,k,bi,bj)=viscAh_W(i,j,k,bi,bj)+0.5*viscAh_D(i,j)
+          viscA4_W(i,j,k,bi,bj)=viscA4_W(i,j,k,bi,bj)+0.5*viscA4_D(i,j)
+         endif
+#endif /* ALLOW_NONHYDROSTATIC */
+
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
          IF (useAreaViscLength) THEN
@@ -531,13 +556,16 @@ C  BiHarmonic on Zeta points
        ENDDO
       ENDIF
 
-
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
        CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAHD ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_D,'VISCA4D ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscAh_Z,'VISCAHZ ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_Z,'VISCA4Z ',k,1,2,bi,bj,myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+       CALL DIAGNOSTICS_FILL(viscAh_W,'VISCAHW ',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_W,'VISCA4W ',k,1,2,bi,bj,myThid)
+#endif
 
        CALL DIAGNOSTICS_FILL(viscAh_DMax,'VAHDMAX ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DMax,'VA4DMAX ',k,1,2,bi,bj,myThid)

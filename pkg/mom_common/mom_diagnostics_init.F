@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.7 2005/09/29 18:36:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.8 2006/07/07 18:52:10 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -67,6 +67,20 @@ C--   add diagnostics for viscosity coefficients:
       diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VISCAHW '
+      diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (W Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VISCA4W '
+      diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (W Pt)'
+      diagUnits = 'm^4/s           '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
