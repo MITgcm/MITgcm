@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.5 2006/05/11 21:43:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.6 2006/07/07 21:54:04 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -116,9 +116,9 @@ cph)
             do j = jmin,jmax
               do i = imin,imax
                  IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                2.0/sqrt(wtheta(k,bi,bj))) 
+     &                5.0/sqrt(wthetaLev(i,j,k,bi,bj))) 
      &                tmpfld3d(i,j,k,bi,bj)=
-     &                sign(2.0/sqrt(wtheta(k,bi,bj)),
+     &                sign(5.0/sqrt(wthetaLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
               enddo
             enddo
@@ -180,9 +180,9 @@ c--   Temperature field.
             do j = jmin,jmax
               do i = imin,imax
                  IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                2.0/sqrt(wsalt(k,bi,bj))) 
+     &                5.0/sqrt(wsaltLev(i,j,k,bi,bj))) 
      &                tmpfld3d(i,j,k,bi,bj)=
-     &                sign(2.0/sqrt(wsalt(k,bi,bj)),
+     &                sign(5.0/sqrt(wsaltLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
 c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or. 
 c     $                abs(yc(i,j,bi,bj)-84) .gt. 2 )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.17 2006/05/12 13:40:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.18 2006/07/07 21:53:58 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -67,6 +67,11 @@ c     == local variables ==
       _RL ratio
       _RL dummy
 
+      logical lwtheta2InUse
+      logical lwsalt2InUse
+      logical lwthetaLevInUse
+      logical lwsaltLevInUse
+
 c     == external ==
 
       integer  ifnblnk
@@ -75,6 +80,11 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
+
+      lwtheta2InUse   = .false.
+      lwsalt2InUse    = .false.
+      lwthetaLevInUse = .false.
+      lwsaltLevInUse  = .false.
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -267,6 +277,17 @@ c--       is no need to add the zonal and meridional directions.
             wtheta(k,bi,bj)   = wti(k)
             wsalt (k,bi,bj)   = wsi(k)
             wcurrent(k,bi,bj) = wvi(k)
+c--
+            if (wtheta(k,bi,bj) .ne. 0.) then
+              wtheta(k,bi,bj) = ratio/wtheta(k,bi,bj)/wtheta(k,bi,bj)
+            else
+              wtheta(k,bi,bj) = 0.0 _d 0
+            endif
+            if (wsalt(k,bi,bj) .ne. 0.) then
+              wsalt(k,bi,bj) = ratio/wsalt(k,bi,bj)/wsalt(k,bi,bj)
+            else
+              wsalt(k,bi,bj) = 0.0 _d 0
+            endif
           enddo
 
           do k = 1,nr
@@ -299,6 +320,7 @@ c--       is no need to add the zonal and meridional directions.
       enddo
 
 #ifdef ALLOW_SALT0_COST_CONTRIBUTION
+      lwsaltLevInUse = .true.
       if ( salt0errfile .NE. ' ' ) then
          call mdsreadfield( salt0errfile, 32, 'RL', Nr,
      &         wsaltLev, 1, mythid)
@@ -311,8 +333,8 @@ c--           Test for missing values.
               if ( wsaltLev(i,j,k,bi,bj).eq.0 ) then
                  wsaltLev(i,j,k,bi,bj) = 0. _d 0
               else
-                 wsaltLev(i,j,k,bi,bj)=frame(i,j)/(
-     $                wsaltLev(i,j,k,bi,bj)*wsaltLev(i,j,k,bi,bj) )
+                 wsaltLev(i,j,k,bi,bj)=frame(i,j)*maskC(i,j,k,bi,bj)/
+     $              ( wsaltLev(i,j,k,bi,bj)*wsaltLev(i,j,k,bi,bj) )
               endif
              enddo
             enddo
@@ -325,8 +347,8 @@ c--           Test for missing values.
            do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
-                wsaltLev(i,j,k,bi,bj)=ratio/(wsalt(k,bi,bj)
-     $               *wsalt(k,bi,bj)) *frame(i,j)
+               wsaltLev(i,j,k,bi,bj)=
+     $             wsalt(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
              enddo
             enddo
            enddo
@@ -338,6 +360,7 @@ c--           Test for missing values.
 #endif
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
+      lwthetaLevInUse = .true.
       if ( temp0errfile .NE. ' ' ) then
          call mdsreadfield( temp0errfile, 32, 'RL', Nr,
      &         wthetaLev, 1, mythid)
@@ -350,8 +373,8 @@ c--           Test for missing values.
               if ( wthetaLev(i,j,k,bi,bj).eq.0 ) then
                  wthetaLev(i,j,k,bi,bj) = 0. _d 0
               else
-                 wthetaLev(i,j,k,bi,bj)=frame(i,j)/(
-     $                wthetaLev(i,j,k,bi,bj)*wthetaLev(i,j,k,bi,bj) )
+                 wthetaLev(i,j,k,bi,bj)=frame(i,j)*maskC(i,j,k,bi,bj)/
+     $              ( wthetaLev(i,j,k,bi,bj)*wthetaLev(i,j,k,bi,bj) )
               endif
              enddo
             enddo
@@ -364,8 +387,8 @@ c--           Test for missing values.
            do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
-                wthetaLev(i,j,k,bi,bj)=ratio/(wtheta(k,bi,bj)
-     $               *wtheta(k,bi,bj)) *frame(i,j)
+               wthetaLev(i,j,k,bi,bj)=
+     $             wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
              enddo
             enddo
            enddo
@@ -380,6 +403,7 @@ c--           Test for missing values.
      defined (ALLOW_CTDS_COST_CONTRIBUTION)|| \
      defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION))
 
+      lwsalt2InUse = .true.
       if ( salterrfile .NE. ' ' ) then
          call mdsreadfield( salterrfile, 32, 'RL', Nr, wsalt2, 1,
      &                      mythid)
@@ -391,11 +415,11 @@ c--           Test for missing values.
              do i = imin,imax
 c--           Test for missing values.
               if (wsalt(k,bi,bj).eq.0 .and. 
-     $            wsalt2(i,j,k,bi,bj).eq.0) then
+     $             wsalt2(i,j,k,bi,bj).eq.0) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wsalt2(i,j,k,bi,bj)=frame(i,j)/
-     $                  ( wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj) )
+                 wsalt2(i,j,k,bi,bj)=frame(i,j)*maskC(i,j,k,bi,bj)/
+     $              ( wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj) )
               endif
              enddo
             enddo
@@ -408,8 +432,8 @@ c--           Test for missing values.
            do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
-                wsalt2(i,j,k,bi,bj)=ratio/(wsalt(k,bi,bj)
-     $               *wsalt(k,bi,bj)) *frame(i,j)
+                wsalt2(i,j,k,bi,bj)=
+     $             wsalt(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
              enddo
             enddo
            enddo
@@ -423,6 +447,7 @@ c--           Test for missing values.
      defined (ALLOW_CTDTCLIM_COST_CONTRIBUTION) || \
      defined (ALLOW_XBT_COST_CONTRIBUTION))
 
+      lwtheta2InUse = .true.
       if ( temperrfile .NE. ' ' ) then
          call mdsreadfield( temperrfile, 32, 'RL', Nr, wtheta2, 1,
      &                      mythid)
@@ -436,7 +461,7 @@ c--           Test for missing values.
      $            wtheta2(i,j,k,bi,bj).eq.0) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
-                 wtheta2(i,j,k,bi,bj)= frame(i,j)/
+                 wtheta2(i,j,k,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
      $                  ( wtheta2(i,j,k,bi,bj)*wtheta2(i,j,k,bi,bj) )
               endif
              enddo
@@ -453,8 +478,8 @@ c--           Test for missing values.
               if (wtheta(k,bi,bj).eq.0 ) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else                
-                 wtheta2(i,j,k,bi,bj) = ratio/(wtheta(k,bi,bj)
-     $                *wtheta(k,bi,bj))*frame(i,j)
+                 wtheta2(i,j,k,bi,bj) = 
+     $              wtheta(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
               endif
              enddo
             enddo
@@ -469,20 +494,37 @@ c--           Test for missing values.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                wsst(i,j,bi,bj) = 0. _d 0
-                wsss(i,j,bi,bj) = 0. _d 0
+#if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
+              if ( lwtheta2InUse ) then
+                wsst(i,j,bi,bj) = wtheta2(i,j,k,bi,bj)
+              elseif ( lwthetaLevInUse ) then
+                wsst(i,j,bi,bj) = wthetaLev(i,j,k,bi,bj)
               else
-cph                wsst(i,j,bi,bj) = wtheta(k,bi,bj)*10.
-cph                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*10.
-cph       factor 5. by D Stammer
-                wsst(i,j,bi,bj) = wtheta(k,bi,bj)*frame(i,j)
-                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*frame(i,j)
+                wsst(i,j,bi,bj) = 
+     &              wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
               endif
+#endif
+#if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
+              if ( lwsalt2InUse ) then
+                wsss(i,j,bi,bj) = wsalt2(i,j,k,bi,bj)
+              elseif ( lwsaltLevInUse ) then
+                wsss(i,j,bi,bj) = wsaltLev(i,j,k,bi,bj)
+              else
+                wsss(i,j,bi,bj) =
+     &              wsalt(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
+              endif
+#endif
             enddo
           enddo
         enddo
       enddo
+#if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
+      call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
+#endif
+#if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
+      call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
+#endif
+
 #ifdef ALLOW_EGM96_ERROR_DIAG
 c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
@@ -533,7 +575,7 @@ c--   Read T/P SSH anomaly rms field. Data in units of centimeters.
             do i = imin,imax
 c--           Unit conversion to meters. ERS error is set to
 c--           T/P error + 5cm
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+              if (maskC(i,j,k,bi,bj) .eq. 0.) then
                 wtp (i,j,bi,bj) = 0. _d 0
                 wers(i,j,bi,bj) = 0. _d 0
               else
@@ -996,12 +1038,6 @@ c--   Units have to be checked!
               if (wers(i,j,bi,bj) .ne. 0.) then
                 wers(i,j,bi,bj) = 1./wers(i,j,bi,bj)/wers(i,j,bi,bj)
               endif
-              if (wsst(i,j,bi,bj) .ne. 0.) then
-                wsst(i,j,bi,bj) = 1./wsst(i,j,bi,bj)/wsst(i,j,bi,bj)
-              endif
-              if (wsss(i,j,bi,bj) .ne. 0.) then
-                wsss(i,j,bi,bj) = 1./wsss(i,j,bi,bj)/wsss(i,j,bi,bj)
-              endif
               if (wp(i,j,bi,bj) .ne. 0.) then
                 wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
               endif
@@ -1138,19 +1174,6 @@ cph(
               endif
 cph)
             enddo
-          enddo
-
-          do k = 1,nr
-            if (wtheta(k,bi,bj) .ne. 0.) then
-              wtheta(k,bi,bj) = ratio/wtheta(k,bi,bj)/wtheta(k,bi,bj)
-            else
-              wtheta(k,bi,bj) = 0.0 _d 0
-            endif
-            if (wsalt(k,bi,bj) .ne. 0.) then
-              wsalt(k,bi,bj) = ratio/wsalt(k,bi,bj)/wsalt(k,bi,bj)
-            else
-              wsalt(k,bi,bj) = 0.0 _d 0
-            endif
           enddo
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
@@ -1304,14 +1327,6 @@ c
       call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
 #elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
       call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
-#endif
-
-#if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
-      call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
-#endif
-
-#if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
-      call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
 #endif
 
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
