@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.24 2006/07/07 23:04:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.25 2006/07/09 04:34:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -817,11 +817,13 @@ c--   Each process has calculated the global part for itself.
         f_hfluxmm2 = mult_hfluxmm
      &       *(f_hfluxmm+1.0)*(f_hfluxmm+1.0)
      &       /(wmean_hflux*wmean_hflux)
-
+cph(
+cph        f_sfluxmm2 = mult_sfluxmm
+cph     &       *f_sfluxmm*f_sfluxmm
+cph     &       /(wmean_sflux*wmean_sflux)
         f_sfluxmm2 = mult_sfluxmm*f_sfluxmm
-
+cph)
         fc = fc + f_hfluxmm2 + f_sfluxmm2
-
 
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_hfluxmm2           =',f_hfluxmm2
@@ -880,9 +882,9 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
         write(ifc,*) 'f_swdownsmoo =', f_swdownsmoo, no_swdown
         write(ifc,*) 'f_ssh =', f_ssh, no_ssh
-        write(ifc,*) 'f_tp  =', f_ssh, no_tp
-        write(ifc,*) 'f_ers =', f_ssh, no_ers
-        write(ifc,*) 'f_gfo =', f_ssh, no_gfo
+        write(ifc,*) 'f_tp  =', f_tp, no_tp
+        write(ifc,*) 'f_ers =', f_ers, no_ers
+        write(ifc,*) 'f_gfo =', f_gfo, no_gfo
         write(ifc,*) 'f_sst =', f_sst, no_sst
         write(ifc,*) 'f_tmi =', f_tmi, no_tmi
         write(ifc,*) 'f_sss =', f_sss, no_sss

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.18 2006/07/07 21:53:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.19 2006/07/09 04:34:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -130,6 +130,7 @@ c--   Initialize variance (weight) fields.
               wsss    (i,j,bi,bj) = 0. _d 0
               wtp     (i,j,bi,bj) = 0. _d 0
               wers    (i,j,bi,bj) = 0. _d 0
+              wgfo    (i,j,bi,bj) = 0. _d 0
               wp      (i,j,bi,bj) = 0. _d 0
               wudrift (i,j,bi,bj) = 0. _d 0
               wvdrift (i,j,bi,bj) = 0. _d 0
@@ -348,7 +349,7 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
                wsaltLev(i,j,k,bi,bj)=
-     $             wsalt(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
+     $             wsalt(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
              enddo
             enddo
            enddo
@@ -433,7 +434,7 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
                 wsalt2(i,j,k,bi,bj)=
-     $             wsalt(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
+     $             wsalt(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
              enddo
             enddo
            enddo
@@ -479,7 +480,7 @@ c--           Test for missing values.
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else                
                  wtheta2(i,j,k,bi,bj) = 
-     $              wtheta(k,bi,bj))*frame(i,j)*maskC(i,j,k,bi,bj)
+     $              wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
               endif
              enddo
             enddo
@@ -578,11 +579,13 @@ c--           T/P error + 5cm
               if (maskC(i,j,k,bi,bj) .eq. 0.) then
                 wtp (i,j,bi,bj) = 0. _d 0
                 wers(i,j,bi,bj) = 0. _d 0
+                wgfo(i,j,bi,bj) = 0. _d 0
               else
                 wtp (i,j,bi,bj) = ( wtp(i,j,bi,bj) * 0.01 * 0.5 )
      &                            *frame(i,j)
                 wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
      &                            *frame(i,j)
+                wgfo(i,j,bi,bj) = wers(i,j,bi,bj)
               endif
 cph-indonesian(
               if ( xC(i,j,bi,bj) .GT. 120. .AND.
@@ -591,6 +594,7 @@ cph-indonesian(
      &             yC(i,j,bi,bj) .LT.  10. ) then
                  wtp(i,j,bi,bj)  = wtp(i,j,bi,bj)*100.
                  wers(i,j,bi,bj) = wers(i,j,bi,bj)*100.
+                 wgfo(i,j,bi,bj) = wgfo(i,j,bi,bj)*100.
               endif
 cph-indonesian)
             enddo
@@ -1037,6 +1041,9 @@ c--   Units have to be checked!
               endif
               if (wers(i,j,bi,bj) .ne. 0.) then
                 wers(i,j,bi,bj) = 1./wers(i,j,bi,bj)/wers(i,j,bi,bj)
+              endif
+              if (wgfo(i,j,bi,bj) .ne. 0.) then
+                wgfo(i,j,bi,bj) = 1./wgfo(i,j,bi,bj)/wgfo(i,j,bi,bj)
               endif
               if (wp(i,j,bi,bj) .ne. 0.) then
                 wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
