@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.1 2006/07/09 22:37:54 edhill Exp $
+#  $Name:  $
+#
+
+#  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.
+#  It fixes the ' \' versus ' &' terminator problem but some 
+#  namelist problems remain.  The biggest seems to be the inability
+#  of current gfortran versions to support namelist syntax such as:
+#
+#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
+#
+#  which results in run-time errors.
+
+
+FC=gfortran
+CC=gcc
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
+# CPP='gcc -E -traditional -P -'
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    #  "warning: -Wuninitialized is not supported without -O"
+    FFLAGS='-Wunused'
+    FOPTIM='-O3 -funroll-loops'
+else
+    #  Try to follow IEEE-754
+    has_sse2=f
+    grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+    if test "x$has_sse2" = xt ; then
+	FFLAGS='-Wunused -mfpmath=sse -msse -msse2'
+    else
+	FFLAGS='-Wunused -ffloat-store'
+    fi
+    #  echo 'FFLAGS="'$FFLAGS'"'
+    FOPTIM='-O0 -malign-double'
+fi
+
+if test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+fi
+
