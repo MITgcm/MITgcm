@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.30 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.31 2006/07/11 23:58:47 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -102,7 +102,11 @@ CADJ STORE pload1  = tapelev2, key = ilev_2
 
 #ifdef ALLOW_THSICE
 # include "thsice_ad_check_lev2_dir.h"
-#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_RBCS
+# include "rbcs_ad_check_lev2_dir.h"
+#endif /* ALLOW_rbcs */
 
 #ifdef ALLOW_EBM
 CADJ STORE fu    = tapelev2, key = ilev_2

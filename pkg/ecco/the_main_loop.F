@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.38 2006/06/15 17:00:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.39 2006/07/11 23:58:47 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,6 +139,9 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
+# endif
+# ifdef ALLOW_RBCS
+#  include "RBCS.h"
 # endif
 # ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #  include "mpif.h"
