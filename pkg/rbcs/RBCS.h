@@ -61,4 +61,21 @@ c number of mask to read
      &          RBC_ptracers
 #endif
 
+      COMMON /RBCFFIELDS/
+     &                 rbct0, rbcs0,
+     &                 rbct1, rbcs1
+      _RS  rbct0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  rbct1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  rbcs0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  rbcs1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+#ifdef ALLOW_PTRACERS
+       COMMON /RBCFFTRACER/
+     &               rbcptracer0, rbcptracer1
+       _RS rbcptracer0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+     &              PTRACERS_num)
+       _RS rbcptracer1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+     &              PTRACERS_num)
+#endif
+
 #endif
