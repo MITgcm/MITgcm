@@ -38,13 +38,13 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
 
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-             k=1
+             k=1,Nr
               DO j=1-Oly,sNy+OLy
                 DO i=1-Olx,sNx+Olx
-                 rbct0(i,j,bi,bj) = 0. _d 0
-                 rbcs0(i,j,bi,bj) = 0. _d 0
-                 rbct1(i,j,bi,bj) = 0. _d 0
-                 rbcs1(i,j,bi,bj) = 0. _d 0
+                 rbct0(i,j,k,bi,bj) = 0. _d 0
+                 rbcs0(i,j,k,bi,bj) = 0. _d 0
+                 rbct1(i,j,k,bi,bj) = 0. _d 0
+                 rbcs1(i,j,k,bi,bj) = 0. _d 0
                 ENDDO
               ENDDO
           ENDDO
