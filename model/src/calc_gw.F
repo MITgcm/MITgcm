@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.30 2006/07/11 12:51:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.31 2006/07/12 12:27:38 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -225,12 +225,12 @@ C Viscous Flux on Western face
              flx_EW(i,j)=
      &       - (viscAh_W(i,j,k,bi,bj)+viscAh_W(i-1,j,k,bi,bj))*halfRL
      &              *(wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
-c    &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
-     &              *_recip_dxC(i,j,bi,bj)*rThickC_W(i,j)
+     &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
+cOld &              *_recip_dxC(i,j,bi,bj)*rThickC_W(i,j)
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i-1,j,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i-1,j))
-c    &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
-     &              *_recip_dxC(i,j,bi,bj)*rThickC_W(i,j)
+     &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
+cOld &              *_recip_dxC(i,j,bi,bj)*drC(k)
 #ifdef COSINEMETH_III
      &              *sqCosFacU(j,bi,bj)
 #else
@@ -244,12 +244,12 @@ C Viscous Flux on Southern face
              flx_NS(i,j)=
      &       - (viscAh_W(i,j,k,bi,bj)+viscAh_W(i,j-1,k,bi,bj))*halfRL
      &              *(wVel(i,j,k,bi,bj)-wVel(i,j-1,k,bi,bj))
-c    &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
-     &              *_recip_dyC(i,j,bi,bj)*rThickC_S(i,j)
+     &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
+cOld &              *_recip_dyC(i,j,bi,bj)*rThickC_S(i,j)
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i,j-1,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i,j-1))
-c    &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
-     &              *_recip_dyC(i,j,bi,bj)*rThickC_S(i,j)
+     &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
+cOld &              *_recip_dyC(i,j,bi,bj)*drC(k)
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
      &              *sqCosFacV(j,bi,bj)
@@ -271,25 +271,25 @@ C     Interpolate vert viscosity to center of tracer-cell (level k):
              flx_Dn(i,j) =
      &          - viscLoc*( wVel(i,j,kp1,bi,bj)*wOverRide
      &                     -wVel(i,j, k ,bi,bj) )*rkSign
-c    &                   *recip_drF(k)*rA(i,j,bi,bj)
-     &                   *recip_drF(k)
+     &                   *recip_drF(k)*rA(i,j,bi,bj)
+cOld &                   *recip_drF(k)
            ENDDO
           ENDDO
 C     Tendency is minus divergence of viscous fluxes:
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            gwDiss(i,j) =
-c    &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
-c    &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
-c    &           + ( flx_Dn(i,j)-flxDisUp(i,j) )*rkSign
-c    &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
              gwDiss(i,j) =
-     &        -(
-     &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
-     &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
-     &          +                      ( flxDisUp(i,j)-flx_Dn(i,j) )
-     &         )*recip_rThickC(i,j)
-c    &         )*recip_drC(k)
+     &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
+     &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
+     &           + ( flx_Dn(i,j)-flxDisUp(i,j) )*rkSign
+     &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+cOld         gwDiss(i,j) =
+cOld &        -(
+cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
+cOld &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
+cOld &          +                      ( flxDisUp(i,j)-flx_Dn(i,j) )
+c    &         )*recip_rThickC(i,j)
+cOld &         )*recip_drC(k)
 C--        prepare for next level (k+1)
              flxDisUp(i,j)=flx_Dn(i,j)
            ENDDO
@@ -319,8 +319,8 @@ C     transport through Western face area:
              uTrans = (
      &          drF(k-1)*_hFacW(i,j,k-1,bi,bj)*uVel(i,j,k-1,bi,bj)
      &        + drF( k )*_hFacW(i,j, k ,bi,bj)*uVel(i,j, k ,bi,bj)
-c    &                )*halfRL*_dyG(i,j,bi,bj)
-     &                )*halfRL
+     &                )*halfRL*_dyG(i,j,bi,bj)
+cOld &                )*halfRL
              flx_EW(i,j)=
      &         uTrans*(wVel(i,j,k,bi,bj)+wVel(i-1,j,k,bi,bj))*halfRL
            ENDDO
@@ -332,8 +332,8 @@ C     transport through Southern face area:
              vTrans = (
      &          drF(k-1)*_hFacS(i,j,k-1,bi,bj)*vVel(i,j,k-1,bi,bj)
      &         +drF( k )*_hFacS(i,j, k ,bi,bj)*vVel(i,j, k ,bi,bj)
-c    &                )*halfRL*_dxG(i,j,bi,bj)
-     &                )*halfRL
+     &                )*halfRL*_dxG(i,j,bi,bj)
+cOld &                )*halfRL
              flx_NS(i,j)=
      &         vTrans*(wVel(i,j,k,bi,bj)+wVel(i,j-1,k,bi,bj))*halfRL
            ENDDO
@@ -345,25 +345,25 @@ C Advective Flux on Lower face of W-Cell (= at tracer-cell center, level k)
      &                           +wVel(i,j,kp1,bi,bj)*wOverRide )
 C     transport through Lower face area:
              rTrans = tmp_WbarZ*rA(i,j,bi,bj)
-c            flx_Dn(i,j) = rTrans*tmp_WbarZ
-             flx_Dn(i,j) = tmp_WbarZ*tmp_WbarZ
+             flx_Dn(i,j) = rTrans*tmp_WbarZ
+cOld         flx_Dn(i,j) = tmp_WbarZ*tmp_WbarZ
            ENDDO
           ENDDO
 C     Tendency is minus divergence of advective fluxes:
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            gW(i,j,k,bi,bj) =
-c    &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
-c    &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
-c    &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign
-c    &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
              gW(i,j,k,bi,bj) =
-     &        -(
-     &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
-     &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
-     &          +                      ( flxAdvUp(i,j)-flx_Dn(i,j) )
-     &         )*recip_rThickC(i,j)
-c    &         )*recip_drC(k)
+     &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
+     &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
+     &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign
+     &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+cOld         gW(i,j,k,bi,bj) =
+cOld &        -(
+cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
+cOld &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
+cOld &          +                      ( flxAdvUp(i,j)-flx_Dn(i,j) )
+c    &         )*recip_rThickC(i,j)
+cOld &         )*recip_drC(k)
 C--          prepare for next level (k+1)
              flxAdvUp(i,j)=flx_Dn(i,j)
            ENDDO
