@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.696 2006/07/08 00:29:20 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.697 2006/07/12 00:01:53 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58l_post
 o take bi,bj loops outside calc_gw to fix Pb with local array KappaRU,V
 o commit code to make SST/SSS weights spatially variable
   (based on either variable in-situ or variable initial T/S weights)
@@ -15,6 +16,8 @@ o pkg/ecco:
     (sflxumm, sfluxmm2, bal_sfluxmm)
   * for SSH anomaly, separate more cleanly contrib from T/P, ERS, GFO,
     including separate counting and multipliers
+o pkg/rbcs
+  * add all necessary infrastructure for pkg/rbcs levN adjoint checkpointing
 
 checkpoint58k_post
 o testreport:
