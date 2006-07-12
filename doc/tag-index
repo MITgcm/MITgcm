@@ -1,11 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.697 2006/07/12 00:01:53 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.698 2006/07/12 14:29:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o calc_gw: true flux-form, account for horizontal grid spacing.
+  update rotating_tank results, but not plume_on_slope (affected at 
+  truncation level, 11 digits).
+
 checkpoint58l_post
-o take bi,bj loops outside calc_gw to fix Pb with local array KappaRU,V
+o calc_gw: 
+ - take bi,bj loops outside calc_gw to fix Pb with local array KappaRU,V
+ - remove side-drag for now (need to fix it); update plume_on_slope results.
+ - fix for partial-cell & non-uniform dz; update plume_on_slope results.
 o commit code to make SST/SSS weights spatially variable
   (based on either variable in-situ or variable initial T/S weights)
 o pkg/ecco:
