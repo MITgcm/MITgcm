@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.187 2006/06/28 21:24:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.188 2006/07/13 02:48:18 jmc Exp $
 C $Name:  $
 C
 
@@ -254,6 +254,7 @@ C     saltStepping  :: Turns salinity equation time-stepping off
 C     useConstantF  :: Coriolis parameter set to f0
 C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
 C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
+C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
 C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
@@ -325,7 +326,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, useNHMTerms,
-     & useConstantF, useBetaPlaneF, useSphereF,
+     & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
      & SadournyCoriolis, upwindVorticity, highOrderVorticity,
@@ -382,6 +383,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF
       LOGICAL useSphereF
+      LOGICAL use3dCoriolis
       LOGICAL useCDscheme
       LOGICAL useEnergyConservingCoriolis
       LOGICAL useJamartWetPoints
