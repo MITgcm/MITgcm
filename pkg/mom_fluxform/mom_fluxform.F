@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.36 2006/05/04 12:29:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.37 2006/07/13 03:02:48 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -31,7 +31,7 @@ CBOP
 C !ROUTINE: MOM_FLUXFORM
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_FLUXFORM( 
+      SUBROUTINE MOM_FLUXFORM(
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        KappaRU, KappaRV,
      U        fVerU, fVerV,
@@ -52,7 +52,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "MOM_FLUXFORM.h"
@@ -98,7 +98,7 @@ C  fZon                 :: zonal fluxes
 C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k-1 & k
       INTEGER i,j
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER imomkey
 #endif
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -110,8 +110,8 @@ C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k-1 & k
       _RL fVrUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVrDw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     afFacMom     :: Tracer parameters for turning terms on and off.
-C     vfFacMom        
-C     pfFacMom        afFacMom - Advective terms 
+C     vfFacMom
+C     pfFacMom        afFacMom - Advective terms
 C     cfFacMom        vfFacMom - Eddy viscosity terms
 C     mtFacMom        pfFacMom - Pressure terms
 C                     cfFacMom - Coriolis terms
@@ -169,7 +169,7 @@ CEOP
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          imomkey = (act0 + 1) 
+          imomkey = (act0 + 1)
      &                    + act1*max0
      &                    + act2*max0*max1
      &                    + act3*max0*max1*max2
@@ -432,7 +432,7 @@ C-    endif momAdvection.
 C---  Calculate eddy fluxes (dissipation) between cells for zonal flow.
 
 C     Bi-harmonic term del^2 U -> v4F
-        IF (biharmonic) 
+        IF (biharmonic)
      &  CALL MOM_U_DEL2U(bi,bj,k,uFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
@@ -476,7 +476,7 @@ C--   Tendency is minus divergence of the fluxes
         ENDIF
 #endif
 
-C-- No-slip and drag BCs appear as body forces in cell abutting topography 
+C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_U_SIDEDRAG(
@@ -634,7 +634,7 @@ C-    endif momAdvection.
       IF (momViscosity) THEN
 C---  Calculate eddy fluxes (dissipation) between cells for meridional flow.
 C     Bi-harmonic term del^2 V -> v4F
-        IF (biharmonic) 
+        IF (biharmonic)
      &  CALL MOM_V_DEL2V(bi,bj,k,vFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
@@ -678,7 +678,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         ENDIF
 #endif
 
-C-- No-slip and drag BCs appear as body forces in cell abutting topography 
+C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_V_SIDEDRAG(
@@ -784,7 +784,7 @@ c     ELSE
       ENDIF
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -f'*w)
-      IF ( nonHydrostatic.OR.quasiHydrostatic ) THEN
+      IF ( use3dCoriolis ) THEN
         CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax

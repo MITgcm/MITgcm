@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.1 2006/03/20 14:20:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.2 2006/07/13 03:02:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -41,7 +41,7 @@ C  myThid        :: my Thread Id number
       INTEGER myThid
 
 C !OUTPUT/MODIFIED VARIABLES: ==========================================
-C  effectiveBuoy :: Density anomaly 
+C  effectiveBuoy :: Density anomaly
       _RL effectiveBuoy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C !LOCAL VARIABLES: ====================================================
@@ -55,20 +55,22 @@ CEOP
 C-    to reproduce old (wrong) results:
 c     scalingFactor=gravitySign*recip_gravity
 
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      IF ( use3dCoriolis ) THEN
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
          effectiveBuoy(i,j)=effectiveBuoy(i,j)
      &    +scalingFactor*
      &     fCoriCos(i,j,bi,bj)*
-     &       ( angleCosC(i,j,bi,bj)*0.5 _d 0 * 
+     &       ( angleCosC(i,j,bi,bj)*0.5 _d 0 *
      &                (uFld(i,j,k,bi,bj)+uFld(i+1,j,k,bi,bj))
      &        -angleSinC(i,j,bi,bj)*0.5 _d 0 *
      &                (vFld(i,j,k,bi,bj)+vFld(i,j+1,k,bi,bj))
      &       )
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
-      IF (useNHMTerms) THEN
+      IF ( useNHMTerms ) THEN
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
          effectiveBuoy(i,j)=effectiveBuoy(i,j)

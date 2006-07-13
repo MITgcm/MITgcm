@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.57 2006/03/30 19:51:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.58 2006/07/13 03:02:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -627,7 +627,7 @@ C--   end if momAdvection
       ENDIF
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -f'*w)
-      IF ( nonHydrostatic.OR.quasiHydrostatic ) THEN
+      IF ( use3dCoriolis ) THEN
         CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,uCf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
