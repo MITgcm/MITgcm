@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.32 2006/07/13 03:01:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.33 2006/07/13 14:26:50 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -144,7 +144,7 @@ C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate 
              recip_rThickC(i,j) = 0.
            ELSE
              recip_rThickC(i,j) = 1. _d 0 /
-     &        ( drF(k-1)*halfRS +
+     &        ( drF(k-1)*halfRS
      &        + drF( k )*MIN( _hFacC(i,j, k ,bi,bj), halfRS )
      &        )
            ENDIF
