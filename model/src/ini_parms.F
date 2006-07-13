@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.186 2006/07/07 17:10:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.187 2006/07/13 02:58:03 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -168,7 +168,7 @@ C--   Continuous equation parameters
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
-     & useConstantF,
+     & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
@@ -188,7 +188,7 @@ C--   Continuous equation parameters
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, ivdc_kappa,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
-     & tempAdvScheme, tempVertAdvScheme, 
+     & tempAdvScheme, tempVertAdvScheme,
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
      & useCDscheme, useJamartWetPoints, useJamartMomAdv, useNHMTerms,
@@ -1064,27 +1064,28 @@ C-     No horizontal grid is specified => use Cartesian grid as default:
      &                    SQUEEZE_RIGHT , myThid)
        usingCartesianGrid = .TRUE.
       ENDIF
-C--   Make metric term settings consistent with underlying grid.
+C--   Make metric term & Coriolis settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
-       metricTerms = .FALSE.
-       useNHMTerms = .FALSE.
+       metricTerms   = .FALSE.
+       useNHMTerms   = .FALSE.
        useBetaPlaneF = .TRUE.
       ENDIF
-      IF ( usingCylindricalGrid) THEN
-       useNHMTerms = .FALSE.
+      IF ( usingCylindricalGrid ) THEN
+       useNHMTerms   = .FALSE.
        useBetaPlaneF = .TRUE.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       ENDIF
-      IF ( usingSphericalPolarGrid ) THEN
-       useSphereF    = .TRUE.
-      ENDIF
       IF ( usingCurvilinearGrid ) THEN
-       useSphereF    = .TRUE.
-       metricTerms = .FALSE.
-       useNHMTerms = .FALSE.
+       metricTerms   = .FALSE.
       ENDIF
+      IF ( useConstantF ) useBetaPlaneF = .FALSE.
+      IF ( useConstantF )  useSphereF   = .FALSE.
+      IF ( useBetaPlaneF ) useSphereF   = .FALSE.
+      IF ( usingCartesianGrid .OR. usingCylindricalGrid
+     &     .OR. .NOT.(nonHydrostatic.OR.quasiHydrostatic) )
+     &                    use3dCoriolis = .FALSE.
 
 C--   Set default for latitude-band where relaxation to climatology applies
 C     note: done later (once domain size is known) if using CartesianGrid

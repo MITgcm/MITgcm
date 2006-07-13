@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.1 2006/03/17 16:12:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.2 2006/07/13 02:58:03 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,7 @@ C--   On/Off flags for each terms of the momentum equation
       momViscosity = momStepping .AND. momViscosity
       momForcing   = momStepping .AND. momForcing
       useCoriolis  = momStepping .AND. useCoriolis
+      use3dCoriolis= useCoriolis .AND. use3dCoriolis
       useCDscheme  = momStepping .AND. useCDscheme
       momPressureForcing= momStepping .AND. momPressureForcing
       implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
