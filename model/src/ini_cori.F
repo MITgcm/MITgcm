@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.22 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.23 2006/07/13 03:00:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,18 +10,18 @@ C     !ROUTINE: INI_CORI
 C     !INTERFACE:
       SUBROUTINE INI_CORI( myThid )
 C     !DESCRIPTION:
-C     Initialise coriolis term.                               
+C     Initialise coriolis term.
 
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "GRID.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif
@@ -31,11 +31,11 @@ C     !INPUT/OUTPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-C     bi,bj  - Loop counters
-C     I,J,K
-C     facGrid - Factor for grid to meter conversion
-      INTEGER bi, bj
-      INTEGER  I, J
+C     bi,bj   :: Tile Indices counters
+C     i, j    :: Loop counters
+C     facGrid :: Factor for grid to meter conversion
+      INTEGER bi,bj
+      INTEGER i, j
       _RL facGrid
 
 C     Initialise coriolis parameter
@@ -43,28 +43,29 @@ C     Initialise coriolis parameter
 C       Constant F case
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO J=1-Oly,sNy+Oly
-                DO I=1-Olx,sNx+Olx
-                  fCori(i,j,bi,bj)=f0
-                  fCoriG(i,j,bi,bj)=f0
-                  fCoriCos(i,j,bi,bj)=0.
-                ENDDO
+            DO j=1-Oly,sNy+Oly
+              DO i=1-Olx,sNx+Olx
+                fCori(i,j,bi,bj)  = f0
+                fCoriG(i,j,bi,bj) = f0
+                fCoriCos(i,j,bi,bj)=0. _d 0
               ENDDO
+            ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useBetaPlaneF ) THEN
 C       Beta plane case
         facGrid = 1. _d 0
-        IF ( usingSphericalPolarGrid ) facGrid = deg2rad*rSphere
+        IF ( usingSphericalPolarGrid
+     &     .OR. usingCurvilinearGrid ) facGrid = deg2rad*rSphere
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO J=1-Oly,sNy+Oly
-                DO I=1-Olx,sNx+Olx
-                  fCori(i,j,bi,bj)=f0+beta*_yC(i,j,bi,bj)*facGrid
-                  fCoriG(i,j,bi,bj)=f0+beta*yG(i,j,bi,bj)*facGrid
-                  fCoriCos(i,j,bi,bj)=0.
-                ENDDO
+            DO j=1-Oly,sNy+Oly
+              DO i=1-Olx,sNx+Olx
+                fCori(i,j,bi,bj)  = f0+beta*_yC(i,j,bi,bj)*facGrid
+                fCoriG(i,j,bi,bj) = f0+beta* yG(i,j,bi,bj)*facGrid
+                fCoriCos(i,j,bi,bj)=0. _d 0
               ENDDO
+            ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useSphereF ) THEN
@@ -72,16 +73,16 @@ C       Spherical case
 C       Note in this case we assume yC is in degrees.
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO J=1-Oly,sNy+Oly
-                DO I=1-Olx,sNx+Olx
-                  fCori(i,j,bi,bj)=
+            DO j=1-Oly,sNy+Oly
+              DO i=1-Olx,sNx+Olx
+                fCori(i,j,bi,bj)  =
      &                 2. _d 0*omega*sin(_yC(i,j,bi,bj)*deg2rad)
-                  fCoriG(i,j,bi,bj)=
+                fCoriG(i,j,bi,bj) =
      &                 2. _d 0*omega*sin(yG(i,j,bi,bj)*deg2rad)
-                  fCoriCos(i,j,bi,bj)=
+                fCoriCos(i,j,bi,bj)=
      &                 2. _d 0*omega*cos(_yC(i,j,bi,bj)*deg2rad)
-                ENDDO
               ENDDO
+            ENDDO
           ENDDO
         ENDDO
 c       CALL WRITE_FLD_XY_RL('fCoriC',' ',fCori ,  0,myThid)
@@ -91,13 +92,13 @@ c       CALL WRITE_FLD_XY_RL('fCorCs',' ',fCoriCos,0,myThid)
 C       Special custom form
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO J=1-Oly,sNy+Oly
-                DO I=1-Olx,sNx+Olx
-                  fCori(i,j,bi,bj)=0.
-                  fCoriG(i,j,bi,bj)=0.
-                  fCoriCos(i,j,bi,bj)=0.
-                ENDDO
+            DO j=1-Oly,sNy+Oly
+              DO i=1-Olx,sNx+Olx
+                fCori(i,j,bi,bj)  = 0. _d 0
+                fCoriG(i,j,bi,bj) = 0. _d 0
+                fCoriCos(i,j,bi,bj)=0. _d 0
               ENDDO
+            ENDDO
           ENDDO
         ENDDO
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
@@ -131,30 +132,52 @@ C    with 2 polar faces + 4 equatorials:
       ENDIF
 
 #ifdef ALLOW_MONITOR
-      mon_write_stdout = .FALSE.
-      mon_write_mnc    = .FALSE.
-      IF (monitor_stdio) THEN
-        mon_write_stdout = .TRUE.
-      ENDIF
-      
+#ifdef ALLOW_USE_MPI
+      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+        IF (monitor_stdio) THEN
+          mon_write_stdout = .TRUE.
+        ELSE
+          mon_write_stdout = .FALSE.
+        ENDIF
+        mon_write_mnc = .FALSE.
 #ifdef ALLOW_MNC
-      IF (useMNC .AND. monitor_mnc) THEN
-        DO i = 1,MAX_LEN_MBUF
-          mon_fname(i:i) = ' '
-        ENDDO
-        mon_fname(1:12) = 'monitor_grid'
-        CALL MNC_CW_SET_UDIM(mon_fname, 1, myThid)
-        mon_write_mnc = .TRUE.
-      ENDIF
+        IF (useMNC .AND. monitor_mnc) THEN
+          DO i = 1,MAX_LEN_MBUF
+            mon_fname(i:i) = ' '
+          ENDDO
+          mon_fname(1:12) = 'monitor_grid'
+          CALL MNC_CW_SET_UDIM(mon_fname, 1, myThid)
+          mon_write_mnc = .TRUE.
+        ENDIF
 #endif /*  ALLOW_MNC  */
-      
+
+        _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+
       CALL MON_PRINTSTATS_RS(1,fCori,'fCori',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriG,'fCoriG',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriCos,'fCoriCos',myThid)
 
-      mon_write_stdout = .FALSE.
-      mon_write_mnc    = .FALSE.
-#endif
+#ifdef ALLOW_USE_MPI
+      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        _BEGIN_MASTER(myThid)
+
+        mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
+
+        _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+#endif /* ALLOW_MONITOR */
 
       RETURN
       END
