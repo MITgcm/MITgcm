@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.8 2006/07/07 18:52:10 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.9 2006/07/13 21:30:12 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -358,6 +358,20 @@ C--    add diagnostics of tendencies from each terms
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
 
 #endif /* ALLOW_MOM_VECINV */
+
+#ifdef ALLOW_NONHYDROSTATIC
+C-     vertical momentum tendencies
+       IF ( usingPCoords ) THEN
+         diagUnits = 'Pa/s^2          '
+       ELSE
+         diagUnits = 'm/s^2           '
+       ENDIF
+       diagName  = 'WSidDrag'
+       diagTitle = 'Vertical momentum tendency from Side Drag'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C--    add diagnostics of advective & viscous flux :
        IF ( usingPCoords ) THEN
