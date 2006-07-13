@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.698 2006/07/12 14:29:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.699 2006/07/13 22:23:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o calc_gw: 
+ - add cosFacU in zonal viscous flux (harmonic.visc.).
+ - put back side-drag (call new S/R MOM_W_SIDEDRAG) and output.txt.
+   of tutorial_plume_on_slope.
+o obcs_calc.F : fix index Pb in OBSeta & OBNeta (Thanks to Gianmaria).
 o calc_gw: true flux-form, account for horizontal grid spacing.
   update rotating_tank results, but not plume_on_slope (affected at 
   truncation level, 11 digits).
