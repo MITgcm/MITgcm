@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.12 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.13 2006/07/13 22:04:41 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -153,7 +153,7 @@ C         Northern OB
               OBNw(I,K,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBNeta(J,bi,bj)=0.
+              OBNeta(I,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
@@ -188,7 +188,7 @@ C         Southern OB
               OBSw(I,K,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBSeta(J,bi,bj)=0.
+              OBSeta(I,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
