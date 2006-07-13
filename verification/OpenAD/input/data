@@ -4,8 +4,8 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef = 15*20.,
- sRef = 15*35.,
+ tRef = 1*20.,
+ sRef = 1*35.,
  viscAr=1.E-3,
  viscAh=5.E5,
  diffKhT=0.0, 
@@ -14,18 +14,20 @@
  diffKrS=3.E-5,
  rhonil=1035.,
  gravity=9.81,
- eosType = 'POLY3',
- ivdc_kappa=100.,
- implicitDiffusion=.TRUE.,
- useOldFreezing=.TRUE.,
- useRealFreshWaterFlux=.TRUE.,
- useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
+ eosType = 'JMD95Z',
+ ivdc_kappa=0.,
+ implicitDiffusion=.FALSE.,
+ allowFreezing=.FALSE.,
+ useRealFreshWaterFlux=.FALSE.,
+ useCDscheme=.FALSE.,
+ tempStepping=.FALSE.,
+ saltStepping=.FALSE.,
 # turn on looped cells
- hFacMin=.05,
+ hFacMin=.1,
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
+ debugmode=.true.,
  &
 
 # Elliptic solver parameters
@@ -36,13 +38,13 @@
 
 # Time stepping parameters
  &PARM03
- nIter0 =      0,
- nTimeSteps = 20,
+ nIter0 =       0,
+ nTimeSteps = 10,
 # 100 years of integration will yield a reasonable flow field
 # startTime  =          0.,
 # endTime    = 3110400000.,
  deltaTmom = 1200.0,
- tauCD =     321428.,
+# tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
 # if you are using a version later than checkpoint45d on the main branch
@@ -54,8 +56,9 @@
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,
  dumpFreq=   864000.,
- taveFreq=   311040000.,
- taveFreq=   864000.,
+ adjDumpFreq= 432000.,
+# taveFreq=   311040000.,
+# taveFreq=   864000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
 # 2 months restoring timescale for temperature
@@ -71,9 +74,7 @@
  &PARM04
  usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
- delR= 50., 70., 100., 140., 190., 
-       240., 290., 340., 390., 440., 
-       490., 540., 590., 640., 690.,
+ delR= 4000., 
  phiMin=-80.,
  dySpacing=4.,
  dxSpacing=4.,
@@ -84,12 +85,11 @@
  bathyFile=      'bathymetry.bin',
  hydrogThetaFile='lev_t.bin',
  hydrogSaltFile= 'lev_s.bin',
- zonalWindFile=  'trenberth_taux.bin',
- meridWindFile=  'trenberth_tauy.bin',
- thetaClimFile=  'lev_sst.bin',
- saltClimFile=   'lev_sss.bin',
- surfQFile=      'ncep_qnet.bin',
- the_run_name=   'global_ocean.90x40x15',
+# zonalWindFile=  'trenberth_taux.bin',
+# meridWindFile=  'trenberth_tauy.bin',
+# thetaClimFile=  'lev_sst.bin',
+# saltClimFile=   'lev_sss.bin',
+# surfQFile=      'ncep_qnet.bin',
 # fresh water flux is turned off, uncomment next line to turn on
 # (not recommened together with surface salinity restoring)
 # EmPmRFile=      'ncep_emp.bin',

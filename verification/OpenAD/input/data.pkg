@@ -1,7 +1,10 @@
+#
+# ********
 # Packages
+# ********
  &PACKAGES
- useGMRedi=.FALSE.,
- usePTRACERS=.FALSE.,
- useMNC=.FALSE.,
+ useGMRedi    = .FALSE.,
+ useKPP       = .FALSE.,
+ useGrdchk    = .FALSE.,
+ useMNC       = .FALSE.,
  &
-  
