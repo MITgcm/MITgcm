@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.10 2005/12/08 15:44:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.11 2006/07/13 20:48:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,10 +10,10 @@ C     !INTERFACE:
      I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_SURF_DR                                   
-C     | o Calculate the new surface level thickness according to  
-C     |   the surface r-position  (Non-Linear Free-Surf)          
-C     | o take decision if grid box becomes too thin or too thick 
+C     | SUBROUTINE CALC_SURF_DR
+C     | o Calculate the new surface level thickness according to
+C     |   the surface r-position  (Non-Linear Free-Surf)
+C     | o take decision if grid box becomes too thin or too thick
 C     *==========================================================*
 C     \ev
 
@@ -49,7 +49,7 @@ C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,bi,bj
       INTEGER ks, numbWrite, numbWrMax
-      _RL hFacInfMOM, Rmin_tmp, hFactmp, adjust_nb_pt, adjust_volum
+      _RL hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
       CHARACTER*(MAX_LEN_MBUF) suff

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_surf_dr.F,v 1.1 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_surf_dr.F,v 1.2 2006/07/13 20:48:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,10 +9,10 @@ C     !INTERFACE:
       SUBROUTINE INI_SURF_DR( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_SURF_DR                                   
-C     | o Calculate the new surface level thickness according to  
-C     |   the surface r-position  (Non-Linear Free-Surf)          
-C     | o take decision if grid box becomes too thin or too thick 
+C     | SUBROUTINE INI_SURF_DR
+C     | o Calculate the new surface level thickness according to
+C     |   the surface r-position  (Non-Linear Free-Surf)
+C     | o take decision if grid box becomes too thin or too thick
 C     *==========================================================*
 C     \ev
 
@@ -35,20 +35,11 @@ C     myThid :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
-C     rSurftmp     :: free surface r-position that is used to compute hFac_surf
-C     adjust_nb_pt :: Nb of grid points where rSurf is adjusted (hFactInf)
-C     adjust_volum :: adjustment effect on the volume (domain size)
-C     numbWrite    :: count the Number of warning written on STD-ERR file
-C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,bi,bj
-      INTEGER ks, numbWrite, numbWrMax
-      _RL hFacInfMOM, Rmin_tmp, hFactmp, adjust_nb_pt, adjust_volum
-      _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS hhm, hhp
-      CHARACTER*(MAX_LEN_MBUF) suff
+      INTEGER ks
+      _RL hFacInfMOM, Rmin_tmp
+c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
-      DATA numbWrite / 0 /
-      numbWrMax = Nx*Ny
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -59,7 +50,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-- Initialise arrays :
          DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx 
+          DO i=1-Olx,sNx+Olx
            hFac_surfC(i,j,bi,bj) = 0.
            hFac_surfW(i,j,bi,bj) = 0.
            hFac_surfS(i,j,bi,bj) = 0.
@@ -76,7 +67,7 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
              Rmin_tmp = rF(ks+1)
              IF ( ks.EQ.ksurfW(i,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i-1,j,bi,bj))
-             IF ( ks.EQ.ksurfW(i+1,j,bi,bj)) 
+             IF ( ks.EQ.ksurfW(i+1,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i+1,j,bi,bj))
              IF ( ks.EQ.ksurfS(i,j,bi,bj))
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j-1,bi,bj))
@@ -84,7 +75,7 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
      &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j+1,bi,bj))
 
              Rmin_surf(i,j,bi,bj) =
-     &        MAX( MAX(rF(ks+1),R_low(i,j,bi,bj)) + hFacInf*drF(ks),  
+     &        MAX( MAX(rF(ks+1),R_low(i,j,bi,bj)) + hFacInf*drF(ks),
      &                                Rmin_tmp + hFacInfMOM*drF(ks)
      &           )
            ENDIF
@@ -95,7 +86,7 @@ C-    end bi,bj loop.
         ENDDO
        ENDDO
 
-       _EXCH_XY_R8( Rmin_surf, myThid ) 
+       _EXCH_XY_R8( Rmin_surf, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* NONLIN_FRSURF */
