@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.33 2006/07/13 14:26:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.34 2006/07/13 21:32:38 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -30,6 +30,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #include "NH_VARS.h"
 
@@ -58,6 +59,7 @@ C     xA            :: W-Cell face area normal to X
 C     yA            :: W-Cell face area normal to Y
 C     rThickC_W     :: thickness (in r-units) of W-Cell at Western Edge
 C     rThickC_S     :: thickness (in r-units) of W-Cell at Southern Edge
+C     rThickC_C     :: thickness (in r-units) of W-Cell (centered on W pt)
 C     recip_rThickC :: reciprol thickness of W-Cell (centered on W-point)
 C     flx_NS        :: vertical momentum flux, meridional direction
 C     flx_EW        :: vertical momentum flux, zonal direction
@@ -71,6 +73,7 @@ C     i,j,k         :: Loop counters
       _RS    yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_W    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_S    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    rThickC_C    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    recip_rThickC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    flx_NS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    flx_EW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -134,12 +137,6 @@ C--   Compute grid factor arround a W-point:
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate !
-           rThickC_W(i,j) =
-     &          drF(k-1)*MAX( _hFacW(i,j,k-1,bi,bj)-halfRS, zeroRS )
-     &        + drF( k )*MIN( _hFacW(i,j,k  ,bi,bj), halfRS )
-           rThickC_S(i,j) =
-     &          drF(k-1)*MAX( _hFacS(i,j,k-1,bi,bj)-halfRS, zeroRS )
-     &        + drF( k )*MIN( _hFacS(i,j, k ,bi,bj), halfRS )
            IF ( maskC(i,j,k,bi,bj).EQ.0. ) THEN
              recip_rThickC(i,j) = 0.
            ELSE
@@ -148,10 +145,27 @@ C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate 
      &        + drF( k )*MIN( _hFacC(i,j, k ,bi,bj), halfRS )
      &        )
            ENDIF
+c          IF (momViscosity) THEN
+#ifdef NONLIN_FRSURF
+           rThickC_C(i,j) = 
+     &          drF(k-1)*MAX( h0FacC(i,j,k-1,bi,bj)-halfRS, zeroRS )
+     &        + drF( k )*MIN( h0FacC(i,j,k  ,bi,bj), halfRS )
+#else
+           rThickC_C(i,j) = 
+     &          drF(k-1)*MAX( _hFacC(i,j,k-1,bi,bj)-halfRS, zeroRS )
+     &        + drF( k )*MIN( _hFacC(i,j,k  ,bi,bj), halfRS )
+#endif
+           rThickC_W(i,j) =
+     &          drF(k-1)*MAX( _hFacW(i,j,k-1,bi,bj)-halfRS, zeroRS )
+     &        + drF( k )*MIN( _hFacW(i,j,k  ,bi,bj), halfRS )
+           rThickC_S(i,j) =
+     &          drF(k-1)*MAX( _hFacS(i,j,k-1,bi,bj)-halfRS, zeroRS )
+     &        + drF( k )*MIN( _hFacS(i,j, k ,bi,bj), halfRS )
 C     W-Cell Western face area:
            xA(i,j) = _dyG(i,j,bi,bj)*rThickC_W(i,j)
 C     W-Cell Southern face area:
            yA(i,j) = _dxG(i,j,bi,bj)*rThickC_S(i,j)
+c          ENDIF
          ENDDO
         ENDDO
 
@@ -227,6 +241,7 @@ C Viscous Flux on Western face
      &              *(wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
 cOld &              *_recip_dxC(i,j,bi,bj)*rThickC_W(i,j)
+     &              *cosFacU(j,bi,bj)
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i-1,j,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i-1,j))
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
@@ -234,7 +249,7 @@ cOld &              *_recip_dxC(i,j,bi,bj)*drC(k)
 #ifdef COSINEMETH_III
      &              *sqCosFacU(j,bi,bj)
 #else
-     &              *CosFacU(j,bi,bj)
+     &              *cosFacU(j,bi,bj)
 #endif
            ENDDO
           ENDDO
@@ -246,6 +261,9 @@ C Viscous Flux on Southern face
      &              *(wVel(i,j,k,bi,bj)-wVel(i,j-1,k,bi,bj))
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
 cOld &              *_recip_dyC(i,j,bi,bj)*rThickC_S(i,j)
+#ifdef ISOTROPIC_COS_SCALING
+     &              *cosFacV(j,bi,bj)
+#endif
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i,j-1,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i,j-1))
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
@@ -254,7 +272,7 @@ cOld &              *_recip_dyC(i,j,bi,bj)*drC(k)
 #ifdef COSINEMETH_III
      &              *sqCosFacV(j,bi,bj)
 #else
-     &              *CosFacV(j,bi,bj)
+     &              *cosFacV(j,bi,bj)
 #endif
 #endif
            ENDDO
@@ -298,15 +316,18 @@ C--        prepare for next level (k+1)
 
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-c         CALL MOM_W_SIDEDRAG(
-c    I        bi,bj,k,
-c    O        gwAdd,
-c    I        myThid)
-c         DO j=jMin,jMax
-c          DO i=iMin,iMax
-c           gwDiss(i,j) = gwDiss(i,j) + gwAdd(i,j)
-c          ENDDO
-c         ENDDO
+          CALL MOM_W_SIDEDRAG(
+     I               bi,bj,k,
+     I               wVel, del2w,
+     I               rThickC_C, recip_rThickC,
+     I               viscAh_W, viscA4_W,
+     O               gwAdd,
+     I               myThid )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            gwDiss(i,j) = gwDiss(i,j) + gwAdd(i,j)
+           ENDDO
+          ENDDO
         ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
