@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.31 2006/07/12 12:27:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.32 2006/07/13 03:01:21 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -382,7 +382,7 @@ C--          prepare for next level (k+1)
            ENDDO
           ENDDO
         ENDIF
-        IF ( useCoriolis ) THEN
+        IF ( use3dCoriolis ) THEN
           CALL MOM_W_CORIOLIS_NH(
      I               bi,bj,k,
      I               uVel, vVel,
