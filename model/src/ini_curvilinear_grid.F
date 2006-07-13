@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.26 2006/06/09 16:56:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.27 2006/07/13 02:59:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,7 @@ C     == Local variables ==
       INTEGER bi,bj, myIter
       INTEGER I,J
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL anglesAreSet
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
@@ -144,6 +145,7 @@ C--   Set everything to zero everywhere
         CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',RAS, myThid)
         CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleCS',angleCosC,myThid)
         CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleSN',angleSinC,myThid)
+        anglesAreSet = .TRUE.
 
         _END_MASTER(myThid)
 
@@ -319,6 +321,7 @@ cs-   end block
       ENDIF
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
       CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
+      anglesAreSet = .FALSE.
 
 c     write(10) XC
 c     write(10) YC
@@ -423,6 +426,9 @@ C--   Only do I/O if I am the master thread
          CALL READSYMTILE_RS(fName,18,angleSinC,bi,bj,buf,myThid)
          iL = ILNBLNK(tmpBuf)
          WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'AngleSN'
+         anglesAreSet = .TRUE.
+        ELSE
+         anglesAreSet = .FALSE.
         ENDIF
 
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -457,6 +463,17 @@ c     CALL EXCH_Z_XY_RS(DYU,myThid)
 #ifdef ALLOW_MNC
       ENDIF
 #endif /* ALLOW_MNC */
+
+C--   Stop if Angle have not been loaded but are needed :
+      _BEGIN_MASTER(myThid)
+      IF ( .NOT.anglesAreSet .AND. use3dCoriolis ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'INI_CURVILINEAR_GRID: Angle of CurvilinearGrid not set',
+     &   ' but needed for 3-D Coriolis'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
+      ENDIF
+      _END_MASTER(myThid)
 
 c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,0,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,0,0,myThid)
