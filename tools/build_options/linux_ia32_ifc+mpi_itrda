@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.5 2005/08/23 22:08:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.6 2006/07/13 19:56:13 heimbach Exp $
 #
 # adapted to itrda.acesgrid.org
 # Note:
@@ -8,13 +8,13 @@
 # setenv LD_LIBRARY_PATH /usr/local/pkg/ifc/ifc-8.0.034/lib
 # is required
 
-FC='mpif77'
-CC='mpicc'
-LINK='mpif77'
+FC='ifort'
+CC='ifort'
+LINK='ifort'
 INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include -I/usr/local/pkg/mpich/mpich-intel/include/'
-LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
+LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib -L/usr/local/pkg/netcdf/ -lnetcdf'
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=1'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI'
 CPP='cpp  -traditional -P'
 
 NOOPTFLAGS='-O0'
@@ -24,12 +24,12 @@ NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 else
    #FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
     FOPTIM='-O0 -noalign'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
 fi
 
 NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
