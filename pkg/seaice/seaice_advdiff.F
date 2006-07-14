@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.9 2006/07/05 08:23:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.10 2006/07/14 12:56:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -185,7 +185,7 @@ C--   Fractional area
         ENDDO
         CALL SEAICE_calc_rhs( 
      I       uc, vc, fld, HEFFM, xA, yA,
-     I       SEAICEadvScheme, GAD_AREA, bi, bj, 
+     I       SEAICEadvSchArea, GAD_AREA, bi, bj, 
      O       gFld,
      I       myTime, myIter, myThid )
 C     now do the "explicit" time step
@@ -204,7 +204,7 @@ C--   Effective Thickness (Volume)
         ENDDO
         CALL SEAICE_calc_rhs( 
      I       uc, vc, fld, HEFFM, xA, yA,
-     I       SEAICEadvScheme, GAD_HEFF, bi, bj, 
+     I       SEAICEadvSchHeff, GAD_HEFF, bi, bj, 
      O       gFld,
      I       myTime, myIter, myThid )
 C     now do the "explicit" time step
@@ -257,7 +257,7 @@ C     Compute total enthalphy in cell
          ENDDO
          CALL SEAICE_calc_rhs( 
      I        uc, vc, fld, HEFFM, xA, yA,
-     I        SEAICEadvScheme, GAD_QICE1, bi, bj, 
+     I        SEAICEadvSchEnth, GAD_QICE1, bi, bj, 
      O        gFld,
      I        myTime, myIter, myThid )
 C     now do the "explicit" time step
@@ -288,7 +288,7 @@ C     Compute total enthalphy in cell, using old effective thickness
          ENDDO
          CALL SEAICE_calc_rhs( 
      I        uc, vc, fld, HEFFM, xA, yA,
-     I        SEAICEadvScheme, GAD_QICE2, bi, bj, 
+     I        SEAICEadvSchEnth, GAD_QICE2, bi, bj, 
      O        gFld,
      I        myTime, myIter, myThid )
 C     now do the "explicit" time step
@@ -319,7 +319,7 @@ C     Compute  effective snow thickness
          ENDDO
          CALL SEAICE_calc_rhs( 
      I        uc, vc, fld, HEFFM, xA, yA,
-     I        SEAICEadvScheme, GAD_SNOW, bi, bj, 
+     I        SEAICEadvSchSnow, GAD_SNOW, bi, bj, 
      O        gFld,
      I        myTime, myIter, myThid )
 C     now do the "explicit" time step

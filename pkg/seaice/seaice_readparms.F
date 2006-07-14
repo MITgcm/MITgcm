@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.40 2006/06/20 20:56:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.41 2006/07/14 12:56:46 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,8 +45,8 @@ C--   SEAICE parameters
      & SEAICEuseEVP, SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & useHB87stressCoupling,
      & SEAICE_clipVelocities, SEAICE_maskRHS,
-     & LAD, IMAX_TICE,
-     & SEAICEadvScheme,
+     & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
+     & SEAICEadvSchHeff, SEAICEadvSchEnth, SEAICEadvSchSnow,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
@@ -112,6 +112,10 @@ C--   set default sea ice parameters
       SEAICE_clipVelocities = .TRUE.
       SEAICE_maskRHS     = .FALSE.
       SEAICEadvScheme    = 2
+      SEAICEadvSchArea   = UNSET_I
+      SEAICEadvSchHeff   = UNSET_I
+      SEAICEadvSchEnth   = UNSET_I
+      SEAICEadvSchSnow   = UNSET_I
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = dTtracerLev(1)
@@ -301,6 +305,18 @@ C     yet been tried nor thought through.
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
+C     Set advection schemes to some sensible values if not done 
+C     in data.seaice
+      IF ( SEAICEadvSchArea .EQ. UNSET_I ) 
+     &     SEAICEadvSchArea = SEAICEadvScheme
+      IF ( SEAICEadvScheme .NE. SEAICEadvSchArea )
+     &     SEAICEadvScheme  = SEAICEadvSchArea
+      IF ( SEAICEadvSchHeff .EQ. UNSET_I ) 
+     &     SEAICEadvSchHeff = SEAICEadvSchArea
+      IF ( SEAICEadvSchEnth .EQ. UNSET_I )
+     &     SEAICEadvSchEnth = SEAICEadvSchArea
+      IF ( SEAICEadvSchSnow .EQ. UNSET_I )
+     &     SEAICEadvSchSnow = SEAICEadvSchHeff
 
 #ifndef SEAICE_EXTERNAL_FORCING
       IF ( FluxForcingStart  .EQ. -99999. .OR.
