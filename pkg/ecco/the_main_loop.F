@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.39 2006/07/11 23:58:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.40 2006/07/14 22:34:17 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1156,6 +1156,17 @@ c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
       call cost_forcing( myiter, mytime, mythid )
       call timer_stop ('cost_forcing       [ECCO SPIN-DOWN]', mythid)
 
+c--   Compute cost function contribution of SSH.
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_ssh',myThid)
+#endif
+      call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+      call cost_ssh( myiter, mytime, mythid )
+      call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+#endif
+
 c--   Compute cost function contribution of Temperature and Salinity.
 #ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB ) 
@@ -1193,17 +1204,6 @@ c--   Compute cost function contribution of Temperature and Salinity.
       call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
       call cost_curmtr( myiter, mytime, mythid )
       call timer_stop ('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
-#endif
-
-c--   Compute cost function contribution of SSH.
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('cost_ssh',myThid)
-#endif
-      call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
-      call cost_ssh( myiter, mytime, mythid )
-      call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
 #endif
 
 c--   Compute cost function contribution of drifter's velocities.

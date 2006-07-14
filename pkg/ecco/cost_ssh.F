@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.9 2006/07/07 22:53:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.10 2006/07/14 22:34:17 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -43,6 +43,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#include "DYNVARS.h"
 
 c     == routine arguments ==
 
@@ -193,6 +194,21 @@ c--   Do a global summation.
       endif
 
       offset = offset / offset_sum      
+
+c--   psmean+offset is stored in etaN, for use in cost_profiles
+c        when considering ssh anomalies ... assuming that
+c        etan has no other use beyond this point
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1,sny
+            do i = 1,snx
+              etaN(i,j,bi,bj)=offset+psmean(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+      _EXCH_XY_R8( etaN, mythid )
+
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
 

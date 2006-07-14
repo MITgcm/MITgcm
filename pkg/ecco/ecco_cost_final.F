@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.25 2006/07/09 04:34:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.26 2006/07/14 22:34:17 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -75,7 +75,7 @@ c     == local variables ==
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
       _RL f_eddytau
-      _RL f_profiles(NFILESPROFMAX,4)
+      _RL f_profiles(NFILESPROFMAX,6)
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
       _RL no_uwind, no_vwind
@@ -96,7 +96,7 @@ c     == local variables ==
       _RL no_kapgm, no_diffkr
       _RL no_eddytau
       _RL no_hmean
-      _RL no_profiles(NFILESPROFMAX,4)
+      _RL no_profiles(NFILESPROFMAX,6)
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -194,7 +194,7 @@ c     == end of interface ==
       f_eddytau = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         f_profiles(num_file,num_var)= 0. _d 0
        enddo
       enddo
@@ -263,7 +263,7 @@ c     == end of interface ==
       no_eddytau = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         no_profiles(num_file,num_var)= 0. _d 0
        enddo
       enddo
@@ -337,7 +337,7 @@ c--   Sum up all contributions.
      &         + mult_eddytau * objf_eddytau(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
           fc = fc
      &            + mult_profiles(num_file,num_var)
      &            *objf_profiles(num_file,num_var,bi,bj)
@@ -418,7 +418,7 @@ c--   Sum up all contributions.
           f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
           f_profiles(num_file,num_var)=f_profiles(num_file,num_var)
      &            +objf_profiles(num_file,num_var,bi,bj)
        enddo
@@ -483,7 +483,7 @@ c--   Sum up all contributions.
           no_eddytau = no_eddytau + num_eddytau(bi,bj) 
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
           no_profiles(num_file,num_var)=no_profiles(num_file,num_var)
      &            +num_profiles(num_file,num_var,bi,bj)
        enddo
@@ -575,7 +575,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_eddytau , myThid )
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         _GLOBAL_SUM_R8(f_profiles(num_file,num_var), myThid )
        enddo
       enddo
@@ -644,7 +644,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_eddytau , myThid )
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         _GLOBAL_SUM_R8(no_profiles(num_file,num_var), myThid )
        enddo
       enddo
@@ -798,7 +798,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_eddytau =', f_eddytau
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         if (no_profiles(num_file,num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
@@ -916,7 +916,7 @@ cph)
         write(ifc,*) 'f_eddytau =', f_eddytau, no_eddytau
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
-       do num_var=1,4
+       do num_var=1,6
         if (no_profiles(num_file,num_var).GT.0) then
          IL  = ILNBLNK( profilesfiles(num_file) )
          write(ifc,*) profilesfiles(num_file)(1:IL), 
