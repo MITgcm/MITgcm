@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.6 2006/07/14 22:12:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.7 2006/07/14 23:32:37 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -43,7 +43,7 @@ C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
       integer bi,bj,iG,jG,err,fid
       _RL tmp_lon
-      _RL prof_traj1D(NLEVELMAX)
+      _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
 c     == end of interface ==
  
@@ -59,12 +59,28 @@ c     == end of interface ==
 
        do K=1,NLEVELMAX
        prof_traj1D(k)=0.
+       prof_traj1D_mean(k)=0.
        prof_mask1D_cur(k,bi,bj)=0.
        prof_data1D(k)=0.
        prof_weights1D(k)=0.
        enddo
 
       if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
+cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+       if (num_var.EQ.6) then
+              call profiles_interp(prof_traj1D_mean,
+     & prof_lon(num_file,prof_num,bi,bj),
+     & prof_lat(num_file,prof_num,bi,bj),
+     & num_var,num_file,mytime,bi,bj,myThid)
+       else
+#endif 
+        do K=1,ProfDepthNo(num_file,bi,bj)
+        prof_traj1D_mean(K)=0.
+        enddo
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+       endif
+#endif
           call active_read_profile(num_file,
      &ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
      &prof_num,.false.,optimcycle,bi,bj,mythid,
@@ -77,9 +93,10 @@ c     == end of interface ==
      & ProfDepthNo(num_file,bi,bj),prof_weights1D,bi,bj,myThid)
       do K=1,ProfDepthNo(num_file,bi,bj)
          objf_profiles(num_file,num_var,bi,bj)=
-     & objf_profiles(num_file,num_var,bi,bj)
-     &     +prof_weights1D(K)*(prof_traj1D(K)-prof_data1D(K))*
-     &     (prof_traj1D(K)-prof_data1D(K))*prof_mask1D_cur(K,bi,bj)
+     & objf_profiles(num_file,num_var,bi,bj) 
+     &   +prof_weights1D(K)*prof_mask1D_cur(K,bi,bj)
+     &   *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
+     &   *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
       if (prof_weights1D(K).GT.0.) then
          num_profiles(num_file,num_var,bi,bj)=
      & num_profiles(num_file,num_var,bi,bj)+prof_mask1D_cur(K,bi,bj)
