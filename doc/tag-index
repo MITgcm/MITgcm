@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.700 2006/07/14 13:01:31 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.701 2006/07/14 20:20:36 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o profiles: now ok for mutli-threaded case
 o seaice: add 4 parameters for different advection schemes for area, 
   (effective) seaice thickness, enthalphy, and snow height. Their default
   is the standard parameter SEAICEadvScheme
