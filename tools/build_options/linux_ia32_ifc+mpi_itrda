@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.6 2006/07/13 19:56:13 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_itrda,v 1.7 2006/07/14 19:17:25 heimbach Exp $
 #
 # adapted to itrda.acesgrid.org
 # Note:
@@ -8,13 +8,13 @@
 # setenv LD_LIBRARY_PATH /usr/local/pkg/ifc/ifc-8.0.034/lib
 # is required
 
-FC='ifort'
-CC='ifort'
-LINK='ifort'
+FC='mpif77'
+CC='mpicc'
+LINK='mpif77'
 INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include -I/usr/local/pkg/mpich/mpich-intel/include/'
-LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib -L/usr/local/pkg/netcdf/ -lnetcdf'
+LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
 
 NOOPTFLAGS='-O0'

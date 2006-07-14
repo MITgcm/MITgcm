@@ -11,7 +11,7 @@
 
 FC=mpif77
 CC=mpicc
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
+DEFINES='-DWORDLENGTH=4'
 LINK=mpif77
 CPP='cpp  -traditional -P'
 INCLUDES='-I/usr/local/pkg/mpich/mpich-intel/include -I/usr/local/pkg/ifc/ifc-8.1.018/include'
@@ -22,9 +22,9 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 else
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 fi
 
 
