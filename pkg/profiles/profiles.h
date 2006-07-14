@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.3 2006/07/14 20:19:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.4 2006/07/14 22:12:23 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -24,24 +24,24 @@ C===========================================================
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
 
-      logical vec_quantities(NFILESPROFMAX,4,nsx,nsy)
+      logical vec_quantities(NFILESPROFMAX,6,nsx,nsy)
       integer fidforward(NFILESPROFMAX,nsx,nsy), 
      & fidadjoint(NFILESPROFMAX,nsx,nsy), 
      & fidtangent(NFILESPROFMAX,nsx,nsy)
       integer fiddata(NFILESPROFMAX,nsx,nsy)
-      character*(6) prof_names(4)
-      character*(10) prof_namesmask(4)
-      character*(12) prof_namesweight(4)
+      character*(8) prof_names(6)
+      character*(12) prof_namesmask(6)
+      character*(14) prof_namesweight(6)
 
-      _RL profiles_data_buff(NLEVELMAX,1000,4,nsx,nsy)
-      _RL profiles_weight_buff(NLEVELMAX,1000,4,nsx,nsy)
+      _RL profiles_data_buff(NLEVELMAX,1000,6,nsx,nsy)
+      _RL profiles_weight_buff(NLEVELMAX,1000,6,nsx,nsy)
       integer profiles_minind_buff(nsx,nsy)
       integer profiles_maxind_buff(nsx,nsy)
       integer profiles_curfile_buff(nsx,nsy)
 
       integer profilesfile_equi_type
       integer prof_num_var_tot(NFILESPROFMAX,nsx,nsy)
-      integer prof_num_var_cur(NFILESPROFMAX,4,nsx,nsy)
+      integer prof_num_var_cur(NFILESPROFMAX,6,nsx,nsy)
 
 C===========================================================
 C Common Blocks

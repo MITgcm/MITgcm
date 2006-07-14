@@ -45,7 +45,7 @@ c1) creation :
      & varid(1))
       err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,0)
 
-      do num_var=1,4
+      do num_var=1,6
       err = NF_INQ_VARID(fid1,prof_names(num_var), varid0 )
       if (err.EQ.NF_NOERR) then
 

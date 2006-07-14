@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.3 2006/07/14 20:19:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.4 2006/07/14 22:12:24 gforget Exp $
 
 #include "PROFILES_OPTIONS.h"
 
@@ -52,7 +52,7 @@ c--     Set default values.
         enddo
 
         do num_file=1,NFILESPROFMAX
-         do num_var=1,4
+         do num_var=1,6
           mult_profiles(num_file,num_var) = 0. _d 0
          enddo
         enddo
@@ -61,14 +61,20 @@ c--     Set default values.
       prof_names(2)='prof_S'
       prof_names(3)='prof_U'
       prof_names(4)='prof_V'
+      prof_names(5)='prof_ptr'
+      prof_names(6)='prof_ssh'
       prof_namesmask(1)='prof_Tmask'
       prof_namesmask(2)='prof_Smask'
       prof_namesmask(3)='prof_Umask'
       prof_namesmask(4)='prof_Vmask'
+      prof_namesmask(5)='prof_ptrmask'
+      prof_namesmask(6)='prof_sshmask'
       prof_namesweight(1)='prof_Tweight'
       prof_namesweight(2)='prof_Sweight'
       prof_namesweight(3)='prof_Uweight'
       prof_namesweight(4)='prof_Vweight'
+      prof_namesweight(5)='prof_ptrweight'
+      prof_namesweight(6)='prof_sshweight'
       profilesfile_equi_type=2
 
 c--     Next, read the cost data file.

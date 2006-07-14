@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.5 2006/07/14 20:19:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.6 2006/07/14 22:12:24 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -38,6 +38,10 @@ C ==================== Global Variables ===========================
 #else
       integer NLEVELMAX
       parameter (NLEVELMAX=1)
+#endif
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
 #endif
 C ==================== Routine Variables ==========================
       _RL  mytime
@@ -178,6 +182,33 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskS(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskS(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskS(prof_i+1,prof_j+1,k,bi,bj) !NZ 
+       elseif (type_cur.EQ.5) then
+#ifdef ALLOW_PTRACERS
+cgf if this gets used, an additional common block could be defined, containing
+cgf the pTracer number (now 1, hard-coded), that would be read from the .nc input file
+               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,1) !SO
+               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,1) !SE
+               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,1) !NO
+               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,1) !NZ
+#else
+               tab_coeffs1(1,1)=0 !SO
+               tab_coeffs1(1,2)=0 !SE
+               tab_coeffs1(2,1)=0 !NO
+               tab_coeffs1(2,2)=0 !NZ
+#endif
+               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
+               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
+               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
+               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
+       elseif (type_cur.EQ.6) then
+               tab_coeffs1(1,1)=etan(prof_i,prof_j,bi,bj) !SO
+               tab_coeffs1(1,2)=etan(prof_i+1,prof_j,bi,bj) !SE
+               tab_coeffs1(2,1)=etan(prof_i,prof_j+1,bi,bj) !NO
+               tab_coeffs1(2,2)=etan(prof_i+1,prof_j+1,bi,bj) !NZ
+               tab_coeffs3(1,1)=maskC(prof_i,prof_j,1,bi,bj) !SO
+               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,1,bi,bj) !SE
+               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,1,bi,bj) !NO
+               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,1,bi,bj) !NZ
         else
                tab_coeffs1(1,1)=0.
                tab_coeffs1(2,1)=0.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.5 2006/07/14 20:19:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.6 2006/07/14 22:12:23 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -54,7 +54,7 @@ c--   == end of interface ==
 
       do m=1,NLEVELMAX
       do l=1,1000
-      do k=1,4
+      do k=1,6
       profiles_data_buff(m,l,k,bi,bj)=0
       profiles_weight_buff(m,l,k,bi,bj)=0
       enddo
@@ -208,7 +208,7 @@ c      DO bj = myByLo(myThid), myByHi(myThid)
       print*,"fid dimid ProfNo(num_file,bi,bj)",fid, dimid, 
      & num_file, ProfNo(num_file,bi,bj)
 
-      do k=1,4
+      do k=1,6
       prof_num_var_cur(num_file,k,bi,bj)=0
       enddo
       prof_num_var_tot(num_file,bi,bj)=0
@@ -253,6 +253,26 @@ c3) detect available data types
      & prof_num_var_tot(num_file,bi,bj)
       else
       vec_quantities(num_file,4,bi,bj)=.FALSE.
+      endif
+      err = NF_INQ_VARID(fid,'prof_ptr', varid1 )
+      if (err.EQ.NF_NOERR) then
+      vec_quantities(num_file,5,bi,bj)=.TRUE.
+      prof_num_var_tot(num_file,bi,bj)=
+     & prof_num_var_tot(num_file,bi,bj)+1
+      prof_num_var_cur(num_file,5,bi,bj)=
+     & prof_num_var_tot(num_file,bi,bj)
+      else
+      vec_quantities(num_file,5,bi,bj)=.FALSE.
+      endif
+      err = NF_INQ_VARID(fid,'prof_ssh', varid1 )
+      if (err.EQ.NF_NOERR) then
+      vec_quantities(num_file,6,bi,bj)=.TRUE.
+      prof_num_var_tot(num_file,bi,bj)=
+     & prof_num_var_tot(num_file,bi,bj)+1
+      prof_num_var_cur(num_file,6,bi,bj)=
+     & prof_num_var_tot(num_file,bi,bj)
+      else
+      vec_quantities(num_file,6,bi,bj)=.FALSE.
       endif
 
 
@@ -324,7 +344,7 @@ c      ENDDO
 C===========================================================
       else
       ProfNo(num_file,bi,bj)=0
-      do k=1,4
+      do k=1,6
       prof_num_var_cur(num_file,k,bi,bj)=0
       vec_quantities(num_file,k,bi,bj)=.FALSE.
       enddo

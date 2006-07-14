@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.4 2006/07/14 20:19:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.5 2006/07/14 22:12:24 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -64,7 +64,7 @@ c implies that a forward loop is calling
       vec_count(2)=
      & profiles_maxind_buff(bi,bj)-profiles_minind_buff(bi,bj)+1
 
-      do kkk=1,4
+      do kkk=1,6
       if (vec_quantities(fNb,kkk,bi,bj).EQV..TRUE.) then
       err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_names(kkk), 
      & varid1 )
