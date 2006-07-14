@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.84 2006/07/07 21:47:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.85 2006/07/14 22:00:51 jmc Exp $
 #  $Name:  $
 #
 
@@ -111,9 +111,9 @@ testoutput_for_prop()
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: grep "$2" $1/results/output.txt$5 1>&2
+	echo testoutput_for_prop: grep "$2" $1/results/output.$5 1>&2
     fi
-    grep "$2" $1/results/output.txt$5 | sed 's/.*=//' | cat -n > tmp2.txt
+    grep "$2" $1/results/output.$5 | sed 's/.*=//' | cat -n > tmp2.txt
     lncntB=`wc -l tmp2.txt | awk '{print $1}' `
     if [ $lncntB -lt 3 ]; then
 	if [ $verbose -gt 0 ]; then
@@ -1063,7 +1063,7 @@ for dir in $TESTDIRS ; do
 	#echo "ex_run_dirs='$ex_run_dirs'"
 	for exd in $ex_run_dirs ; do
 	    name=`echo $exd | sed -e 's/input.//g'`
-	    outf="$dir/results/output.txt.$name"
+	    outf="$dir/results/output.$name.txt"
             if test -f $outf -a -r $outf ; then
 		if test "x$MULTI_THREAD" = "xt" ; then 
 		    if test -r $dir"/"$exd"/eedata.mth" ; then
@@ -1106,7 +1106,7 @@ for dir in $TESTDIRS ; do
 	    && makemodel $dir/$builddir && make=Y \
 	    && linkdata $dir/$rundir $input_dirs \
 	    && runmodel $dir/$rundir && run=Y \
-	    && results=`testoutput $dir $rundir`
+	    && results=`testoutput $dir $rundir "txt"`
     fi
     
     echo
@@ -1131,7 +1131,7 @@ for dir in $TESTDIRS ; do
  	    run_clean $dir/tr_run.$ex
             linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
-		&& results=`testoutput $dir tr_run.$ex "."$ex`
+		&& results=`testoutput $dir tr_run.$ex ${ex}".txt"`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
