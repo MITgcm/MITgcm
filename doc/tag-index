@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.702 2006/07/14 22:06:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.703 2006/07/14 22:14:28 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o profiles: adding ptracer and ssh
 o testreport: change multi-test output-file name 
   (from output.txt.{name} to output.{name}.txt)
 o profiles: now ok for mutli-threaded case
