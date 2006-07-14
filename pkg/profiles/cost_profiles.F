@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.4 2006/05/06 15:14:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.5 2006/07/14 20:19:36 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -51,49 +51,49 @@ c     == end of interface ==
       DO bj = myByLo(myThid), myByHi(myThid)
 
       do num_file=1,NFILESPROFMAX
-      fid=fiddata(num_file)
+      fid=fiddata(num_file,bi,bj)
       do prof_num=1,NOBSGLOB
-      if (prof_num.LE.ProfNo(num_file)) then
+      if (prof_num.LE.ProfNo(num_file,bi,bj)) then
 
       do num_var=1,4
 
        do K=1,NLEVELMAX
        prof_traj1D(k)=0.
-       prof_mask1D_cur(k)=0.
+       prof_mask1D_cur(k,bi,bj)=0.
        prof_data1D(k)=0.
        prof_weights1D(k)=0.
        enddo
 
-      if (vec_quantities(num_file,num_var).EQV..TRUE.) then
+      if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
           call active_read_profile(num_file,
-     &profdepthno(num_file),prof_traj1D,num_var,
-     &prof_num,.false.,optimcycle,mythid,
-     &profiles_dummy(num_file,num_var))
+     &ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
+     &prof_num,.false.,optimcycle,bi,bj,mythid,
+     &profiles_dummy(num_file,num_var,bi,bj))
       call profiles_readvector(num_file,num_var,
-     & prof_ind_glob(num_file,prof_num),profdepthno(num_file),
-     & prof_data1D,myThid)
+     & prof_ind_glob(num_file,prof_num,bi,bj),
+     & ProfDepthNo(num_file,bi,bj),prof_data1D,bi,bj,myThid)
       call profiles_readvector(num_file,-num_var,
-     & prof_ind_glob(num_file,prof_num),profdepthno(num_file),
-     & prof_weights1D,myThid)
-      do K=1,profdepthno(num_file)
+     & prof_ind_glob(num_file,prof_num,bi,bj),
+     & ProfDepthNo(num_file,bi,bj),prof_weights1D,bi,bj,myThid)
+      do K=1,ProfDepthNo(num_file,bi,bj)
          objf_profiles(num_file,num_var,bi,bj)=
      & objf_profiles(num_file,num_var,bi,bj)
      &     +prof_weights1D(K)*(prof_traj1D(K)-prof_data1D(K))*
-     &     (prof_traj1D(K)-prof_data1D(K))*prof_mask1D_cur(K)
+     &     (prof_traj1D(K)-prof_data1D(K))*prof_mask1D_cur(K,bi,bj)
       if (prof_weights1D(K).GT.0.) then
          num_profiles(num_file,num_var,bi,bj)=
-     & num_profiles(num_file,num_var,bi,bj)+prof_mask1D_cur(K)
+     & num_profiles(num_file,num_var,bi,bj)+prof_mask1D_cur(K,bi,bj)
       endif
       enddo
       endif
 
       enddo !do num_var... 
-      endif !if (prof_num.LE.ProfNo(num_file)) then
+      endif !if (prof_num.LE.ProfNo(num_file,bi,bj)) then
       enddo !do prof_num=..
-      if (ProfNo(num_file).GT.0) then
+      if (ProfNo(num_file,bi,bj).GT.0) then
         do num_var=1,4
           print*,'bi,bj,prof_num,num_var ',bi,bj,
-     & ProfNo(num_file),num_var
+     & ProfNo(num_file,bi,bj),num_var
           print*,prof_names(num_var),
      & objf_profiles(num_file,num_var,bi,bj),
      & num_profiles(num_file,num_var,bi,bj)

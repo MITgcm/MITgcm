@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.4 2006/05/06 15:14:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.5 2006/07/14 20:19:36 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -17,6 +17,8 @@ C     o==========================================================o
      I type_cur,
      I file_cur,
      I mytime,
+     I bi,
+     I bj,
      I myThid
      & )
 
@@ -54,9 +56,6 @@ C ==================== Local Variables ==========================
       integer prof_i,prof_j
       _RL lon_tmp1,lon_tmp2,lon_1,lon_2,lat_1,lat_2,tmp_coeff
 c--   == end of interface ==
-
-      DO bi = myBxLo(myThid), myBxHi(myThid)
-      DO bj = myByLo(myThid), myByHi(myThid)
 
        prof_i=-10
        prof_j=-10
@@ -221,26 +220,26 @@ cgf) spatial interpolation
 cgf vertical interpolation:
       do kk=1,NLEVELMAX
          traj_cur_out(kk)=0
-         prof_mask1D_cur(kk)=0
+         prof_mask1D_cur(kk,bi,bj)=0
       enddo
-      do kk=1,profdepthno(file_cur)
+      do kk=1,ProfDepthNo(file_cur,bi,bj)
 c case 1: above first grid center=> first grid center value 
-        if (prof_depth(file_cur,kk).LT.-rC(1)) then
+        if (prof_depth(file_cur,kk,bi,bj).LT.-rC(1)) then
           traj_cur_out(kk)=traj_cur(1)
-          prof_mask1D_cur(kk)=mask_cur(1)
+          prof_mask1D_cur(kk,bi,bj)=mask_cur(1)
 c case 2: just below last grid center=> last cell value
-        elseif (prof_depth(file_cur,kk).GE.-rC(nr)) then
-          if ( prof_depth(file_cur,kk) .LT. 
+        elseif (prof_depth(file_cur,kk,bi,bj).GE.-rC(nr)) then
+          if ( prof_depth(file_cur,kk,bi,bj) .LT. 
      &    (-rC(nr)+drC(nr)/2) ) then  
             traj_cur_out(kk)=traj_cur(nr)
-            prof_mask1D_cur(kk)=mask_cur(nr)
+            prof_mask1D_cur(kk,bi,bj)=mask_cur(nr)
           endif
 c case 3: between two grid centers
         else
           kcur=0
           do k=1,nr-1
-            if ((prof_depth(file_cur,kk).GE.-rC(k)).AND.
-     &      (prof_depth(file_cur,kk).LT.-rC(k+1))) then
+            if ((prof_depth(file_cur,kk,bi,bj).GE.-rC(k)).AND.
+     &      (prof_depth(file_cur,kk,bi,bj).LT.-rC(k+1))) then
               kcur=k
             endif
           enddo
@@ -250,25 +249,23 @@ c case 3: between two grid centers
           endif
           if (mask_cur(kcur+1).EQ.1.) then
 c  subcase 1: 2 wet points=>linear interpolation
-            tmp_coeff=(prof_depth(file_cur,kk)+rC(kcur))/
+            tmp_coeff=(prof_depth(file_cur,kk,bi,bj)+rC(kcur))/
      &      (-rC(kcur+1)+rC(kcur))
             traj_cur_out(kk)=(1-tmp_coeff)*traj_cur(kcur)
      &      +tmp_coeff*traj_cur(kcur+1)
-            prof_mask1D_cur(kk)=1
+            prof_mask1D_cur(kk,bi,bj)=1
             if (mask_cur(kcur).EQ.0.) then
       print*,"profiles_interp unexpected case: stop 2"
       stop
             endif
-          elseif (prof_depth(file_cur,kk).LT.-rF(kcur+1)) then
+          elseif (prof_depth(file_cur,kk,bi,bj).LT.-rF(kcur+1)) then
 c  subcase 2: only 1 wet point just above=>upper cell value
             traj_cur_out(kk)=traj_cur(kcur)
-            prof_mask1D_cur(kk)=mask_cur(kcur)
+            prof_mask1D_cur(kk,bi,bj)=mask_cur(kcur)
           endif
         endif
       enddo
 
-      ENDDO
-      ENDDO
 
 #endif
 

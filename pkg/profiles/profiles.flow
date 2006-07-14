@@ -1,6 +1,6 @@
 C----------------------------------------
 C subroutine profiles_readvector
 C----------------------------------------
-CADJ SUBROUTINE  profiles_readvector   INPUT  =   1,2,3,4,6
-CADJ SUBROUTINE  profiles_readvector   DEPEND  =  1,2,3,4
+CADJ SUBROUTINE  profiles_readvector   INPUT  =   1,2,3,4,6,7,8
+CADJ SUBROUTINE  profiles_readvector   DEPEND  =  1,2,3,4,6,7
 CADJ SUBROUTINE  profiles_readvector   OUTPUT =   5

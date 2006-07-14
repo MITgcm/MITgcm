@@ -11,7 +11,7 @@ C     o==========================================================o
 
       subroutine active_read_profile_rl(
      I                                fid,
-     I                           active_num_file,
+     I                                active_num_file,
      I                                nactive_var,
      O                                active_var,
      I                                active_varnum,
@@ -20,6 +20,8 @@ C     o==========================================================o
      I                                irecglob,
      I                                theSimulationMode,
      I                                myOptimIter,
+     I                                bi,
+     I                                bj,
      I                                mythid
      &                              )
 
@@ -49,7 +51,7 @@ c     == routine arguments ==
       integer  irec, irecglob,active_varnum
       integer  theSimulationMode
       integer  myOptimIter
-      integer  mythid
+      integer  bi,bj,mythid
       integer  nactive_var,active_num_file
       _RL   active_var(nactive_var)
       _RL   active_data_t(nactive_var)
@@ -76,14 +78,15 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
       
-      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum)
+     & ,varid1)
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
-     & prof_mask1D_cur)
+     & prof_mask1D_cur(1,bi,bj))
 
       else
 
-      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
@@ -91,14 +94,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       do ivar=1,nactive_var
       active_var(ivar)=vec_tmp(ivar)
       enddo
-      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+2 )
+      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+2 )
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
       do ivar=1,nactive_var
-      prof_mask1D_cur(ivar)=vec_tmp(ivar)
+      prof_mask1D_cur(ivar,bi,bj)=vec_tmp(ivar)
       enddo
 
       endif 
@@ -148,8 +151,8 @@ c       Set active_var to zero.
       else
 
 
-      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
@@ -170,8 +173,8 @@ c       Store the result on disk.
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
-      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 
 c       Set active_var to zero.
@@ -206,8 +209,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       else
 
-      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
@@ -233,8 +236,8 @@ c     ==================================================================
 
 
       subroutine active_write_profile_rl(
-     I                                fid,
-     I                           active_num_file,
+     I                                 fid,
+     I                                 active_num_file,
      I                                 nactive_var,
      I                                 active_var,
      I                                 active_varnum,
@@ -242,6 +245,8 @@ c     ==================================================================
      I                                 irecglob,
      I                                 theSimulationMode,
      I                                 myOptimIter,
+     I                                 bi,
+     I                                 bj,
      I                                 mythid
      &                               )
 
@@ -269,7 +274,7 @@ c     == routine arguments ==
       integer  ivar, irec, irecglob,active_varnum
       integer  theSimulationMode
       integer  myOptimIter
-      integer  mythid
+      integer  bi,bj,mythid
       integer  nactive_var,active_num_file
       _RL   active_var(nactive_var)
       real*8 vec_tmp(nactive_var+1)
@@ -302,9 +307,10 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 
-      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum), 
+     & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
-     & prof_mask1D_cur)
+     & prof_mask1D_cur(1,bi,bj))
 
       err = NF_INQ_VARID(fid,'prof_ind_glob', varid1 )
       err = NF_PUT_VAR1_INT(fid, varid1 , vec_start(2),
@@ -320,18 +326,18 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
-      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
       do ivar=1,nactive_var
-      vec_tmp(ivar)=prof_mask1D_cur(ivar)
+      vec_tmp(ivar)=prof_mask1D_cur(ivar,bi,bj)
       enddo
       vec_tmp(nactive_var+1)=irecglob
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
-      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+2 )
+      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+2 )
      & vec_tmp
 
       endif
@@ -377,8 +383,8 @@ c       Add active_var to data.
       else
 
 
-      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      read(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
@@ -400,8 +406,8 @@ c       Store the result on disk.
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
-      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 
       endif
@@ -440,8 +446,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
-      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file)
-     & +prof_num_var_cur(active_num_file,active_varnum)-1)*2+1 )
+      write(fid,rec=( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     & +prof_num_var_cur(active_num_file,active_varnum,bi,bj)-1)*2+1 )
      & vec_tmp
 
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.3 2006/05/06 15:14:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.4 2006/07/14 20:19:36 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -10,7 +10,7 @@ C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
       SUBROUTINE profiles_readvector(fNb, vNb, irec, 
-     & vec_loc_length, vec_loc , myThid)
+     & vec_loc_length, vec_loc , bi,bj, myThid)
 
       implicit none
 
@@ -24,7 +24,7 @@ C ==================== Global Variables ===========================
 #include "profiles.h"
 #endif
 C ==================== Routine Variables ==========================
-      integer vec_loc_length, vNb, k, kk, kkk
+      integer vec_loc_length, vNb, k, kk, kkk,bi,bj
       integer irec, fNb, myThid,err,varid1,tmpprofno
       _RL vec_loc(vec_loc_length)
 
@@ -35,41 +35,44 @@ C ==================== Routine Variables ==========================
 c--   == end of interface ==
 
 
-      if ( (irec.LT.profiles_minind_buff).OR.
-     &  (irec.GT.profiles_maxind_buff).OR.
-     & (profiles_curfile_buff.NE.fNb) ) then
-      err = NF_INQ_DIMID(fiddata(fNb),'iPROF', varid1)
-      err = NF_INQ_DIMLEN(fiddata(fNb), varid1, tmpprofno)
+      if ( (irec.LT.profiles_minind_buff(bi,bj)).OR.
+     &  (irec.GT.profiles_maxind_buff(bi,bj)).OR.
+     & (profiles_curfile_buff(bi,bj).NE.fNb) ) then
+      err = NF_INQ_DIMID(fiddata(fNb,bi,bj),'iPROF', varid1)
+      err = NF_INQ_DIMLEN(fiddata(fNb,bi,bj), varid1, tmpprofno)
 
-      if (profiles_curfile_buff.NE.fNb) then
+      if (profiles_curfile_buff(bi,bj).NE.fNb) then
 c no asumption on whether a forward or a backward loop is calling
-      profiles_minind_buff=max(1,irec-500+1)
-      profiles_maxind_buff=min(tmpprofno,irec+500)
-      elseif (irec.LT.profiles_minind_buff) then
+      profiles_minind_buff(bi,bj)=max(1,irec-500+1)
+      profiles_maxind_buff(bi,bj)=min(tmpprofno,irec+500)
+      elseif (irec.LT.profiles_minind_buff(bi,bj)) then
 c implies that a backward loop is calling      
-      profiles_minind_buff=max(1,irec-999)
-      profiles_maxind_buff=irec
+      profiles_minind_buff(bi,bj)=max(1,irec-999)
+      profiles_maxind_buff(bi,bj)=irec
       else
 c implies that a forward loop is calling
-      profiles_minind_buff=irec
-      profiles_maxind_buff=min(tmpprofno,irec+999)
+      profiles_minind_buff(bi,bj)=irec
+      profiles_maxind_buff(bi,bj)=min(tmpprofno,irec+999)
       endif
 
-      print*,"buffer readvector",profiles_minind_buff,
-     & profiles_maxind_buff,irec,profno(fNb),tmpprofno
+      print*,"buffer readvector",profiles_minind_buff(bi,bj),
+     & profiles_maxind_buff(bi,bj),irec,profNo(fNb,bi,bj),tmpprofno
 
       vec_start(1)=1
-      vec_start(2)=profiles_minind_buff
+      vec_start(2)=profiles_minind_buff(bi,bj)
       vec_count(1)=vec_loc_length
-      vec_count(2)=profiles_maxind_buff-profiles_minind_buff+1
+      vec_count(2)=
+     & profiles_maxind_buff(bi,bj)-profiles_minind_buff(bi,bj)+1
 
       do kkk=1,4
-      if (vec_quantities(fNb,kkk).EQV..TRUE.) then
-      err = NF_INQ_VARID(fiddata(fNb),prof_names(kkk), varid1 )
-      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, 
+      if (vec_quantities(fNb,kkk,bi,bj).EQV..TRUE.) then
+      err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_names(kkk), 
+     & varid1 )
+      err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start, 
      & vec_count, vec_tmp1)
-      err = NF_INQ_VARID(fiddata(fNb),prof_namesweight(kkk), varid1 )
-      err = NF_GET_VARA_DOUBLE(fiddata(fNb), varid1 , vec_start, 
+      err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_namesweight(kkk)
+     & , varid1 )
+      err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start, 
      & vec_count, vec_tmp2)
 
       if (err.NE.NF_NOERR) then
@@ -79,27 +82,28 @@ c implies that a forward loop is calling
 
       do k=1,vec_count(1) 
       do kk=1,vec_count(2) 
-      profiles_data_buff(k,kk,kkk)=vec_tmp1((kk-1)*vec_count(1)+k)
-      profiles_weight_buff(k,kk,kkk)=vec_tmp2((kk-1)*vec_count(1)+k)
+      profiles_data_buff(k,kk,kkk,bi,bj)=vec_tmp1((kk-1)*vec_count(1)+k)
+      profiles_weight_buff(k,kk,kkk,bi,bj)=vec_tmp2((kk-1)*vec_count(1)
+     & +k)
       enddo
       enddo 
       endif
       enddo
 
-      profiles_curfile_buff=fNb
+      profiles_curfile_buff(bi,bj)=fNb
       endif
 
 cgf ...now, get vec_loc from the buffer
       if (vNb.LT.0) then
            do k=1,vec_loc_length
-           vec_loc(k)=
-     & profiles_weight_buff(k,irec-profiles_minind_buff+1,-vNb)
+           vec_loc(k)= profiles_weight_buff
+     & (k,irec-profiles_minind_buff(bi,bj)+1,-vNb,bi,bj)
            enddo
 
        else
            do k=1,vec_loc_length
-           vec_loc(k)=
-     & profiles_data_buff(k,irec-profiles_minind_buff+1,vNb)
+           vec_loc(k)=profiles_data_buff
+     & (k,irec-profiles_minind_buff(bi,bj)+1,vNb,bi,bj)
            enddo
        endif 
 

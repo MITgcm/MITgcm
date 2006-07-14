@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.2 2006/05/06 14:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.3 2006/07/14 20:19:36 gforget Exp $
 
 #include "PROFILES_OPTIONS.h"
 
@@ -73,7 +73,7 @@ c
 
       do num_file=1,50
          do num_var=1,10
-            profiles_dummy(num_file,num_var)=0. _d 0
+            profiles_dummy(num_file,num_var,bi,bj)=0. _d 0
          enddo
       enddo
 
