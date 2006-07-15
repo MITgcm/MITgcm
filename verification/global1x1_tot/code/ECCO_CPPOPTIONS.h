@@ -100,6 +100,10 @@ C       >>> Cost function contributions
       defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
 #  define ALLOW_SSH_COST_CONTRIBUTION
 # endif
+# undef ALLOW_SSH_TOT
+# ifndef ALLOW_EGM96_ERROR_DIAG
+#  undef ALLOW_SSH_TOT
+# endif
 
 # define ALLOW_XBT_COST_CONTRIBUTION
 # define ALLOW_CTDT_COST_CONTRIBUTION
