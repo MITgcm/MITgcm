@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.704 2006/07/14 22:34:57 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.705 2006/07/15 01:23:19 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o ecco, option to compute cost for total ssh (mean+anom)
 o consistent with addition of ptracer and ssh in pkg/profiles
 o profiles: adding ptracer and ssh
 o testreport: change multi-test output-file name 
