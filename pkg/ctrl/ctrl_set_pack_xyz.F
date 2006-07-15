@@ -193,7 +193,7 @@ cph(
 cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = delZnorm
+                        cbuff(cbuffindex) = 1/delZnorm
      &                       * globfld3d(i,bi,ip,j,bj,jp,k)
 # ifdef CTRL_PACK_PRECISE
      &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
