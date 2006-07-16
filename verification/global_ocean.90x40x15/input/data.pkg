@@ -1,7 +1,6 @@
 # Packages
  &PACKAGES
  useGMRedi=.TRUE.,
- usePTRACERS=.TRUE.,
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
  &
   
