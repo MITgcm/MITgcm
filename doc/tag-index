@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.705 2006/07/15 01:23:19 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.706 2006/07/16 00:27:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o make "tutorial_global_oce_latlon" from standard "global_ocean.90x40x15" exp.
+   keep global_ocean.90x40x15 (for AD testing) with former secondary test 
+   (".qshyd") as the main test (mv output.qshyd.txt to output.txt)
+o CVS modules: update MITgcm_verif_basic; remove MITgcm_verif_ocean & _verif_atmos;
+    add MITgcm_tutorials (= code + all the tutorials)
 o ecco, option to compute cost for total ssh (mean+anom)
 o consistent with addition of ptracer and ssh in pkg/profiles
 o profiles: adding ptracer and ssh
