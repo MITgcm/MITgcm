@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.85 2006/07/14 22:00:51 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.86 2006/07/16 04:02:49 jmc Exp $
 #  $Name:  $
 #
 
@@ -847,9 +847,9 @@ else
     for xx in $TESTDIRS
     do
       case $xx in
-	'basic') LIST=${LIST}" aim.5l_cs front_relax global_ocean.90x40x15"
-		 LIST=${LIST}" hs94.128x64x5 tutorial_barotropic_gyre"
-		 LIST=${LIST}" tutorial_global_oce_biogeo tutorial_plume_on_slope"
+	'basic') LIST=${LIST}" aim.5l_cs hs94.128x64x5 ideal_2D_oce"
+		 LIST=${LIST}" lab_sea tutorial_baroclinic_gyre"
+		 LIST=${LIST}" tutorial_global_oce_latlon tutorial_plume_on_slope"
 		;;
 	'tutorials')
 		 LIST=${LIST}" "`ls | grep 'tutorial_'` ;;
