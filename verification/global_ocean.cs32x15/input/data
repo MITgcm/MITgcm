@@ -7,7 +7,7 @@
  tRef=15*20.,
  sRef=15*35.,
  viscAh =3.E5,
-#- biharmonic Viscosity: this is close to the stability limit with deltaTmom=20mn
+#- biharmonic Viscosity: 3.e15 is close to the stability limit with deltaTmom=20mn
 #viscA4 =3.E15,
  viscAr =1.E-3,
  diffKhT=0.,
@@ -73,9 +73,8 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
  delR= 50., 70., 100., 140., 190.,
        240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,
