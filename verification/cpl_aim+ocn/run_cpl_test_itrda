@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.6 2006/07/02 22:12:37 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.7 2006/07/17 01:34:23 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -19,15 +19,13 @@ fi
 kpr=$1
 dir=`pwd`
 
-#- only works from a 3 nodes PBS bach session ( qsub -I -l nodes=3:p4 )
-#  on myrinet cluster:
-#xx=`hostname | sed 's/[0-9]/X/g'`
-#if test $xx != 'myrinet-X-XX'
-#then
-#  echo ' hostname='`hostname`
-#  echo 'for now, works only on myrinet cluster'
-#  exit 9
-#fi
+#- only works from a 3 nodes PBS bach session ( qsub -I -l nodes=3 )
+#  on ACES cluster (tested on itrda).
+# need to be on one computer node, 
+#  and with the correct module loaded (i.e, one of the 3):
+# > module load mpich/gnu
+# > module load mpich/intel
+# > module load mpich/pgi
 if test 'dummy'$PBS_NODEFILE = 'dummy'
 then
   echo ' $PBS_NODEFILE not defined'
@@ -125,17 +123,20 @@ fi
 
 if test $kpr = 2
 then
+  /bin/rm -r -f rank_0 rank_1 rank_2
+  echo 'CP dir:' input_cpl '->' rank_0
   cp -p -r input_cpl rank_0
-  cp -p -r input_ocn rank_1
-  cp -p -r input_atm rank_2
 
+  echo 'CP dir:' input_ocn '->' rank_1
+  cp -p -r input_ocn rank_1
   cd rank_1
-  ./IMPORT_INPUT_FILES
+  ./prepare_run
   cd $dir
 
+  echo 'CP dir:' input_atm '->' rank_2
+  cp -p -r input_atm rank_2
   cd rank_2
-  ./SHARE_OCN_GRID '../rank_1'
-  ./IMPORT_INPUT_FILES
+  ./prepare_run
   cd $dir
 
 fi

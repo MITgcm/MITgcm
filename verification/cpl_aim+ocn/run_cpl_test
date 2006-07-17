@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.8 2006/03/30 02:13:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.9 2006/07/17 01:34:23 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -115,17 +115,19 @@ fi
 if test $kpr = 2
 then
   /bin/rm -r -f rank_0 rank_1 rank_2
+  echo 'CP dir:' input_cpl '->' rank_0
   cp -p -r input_cpl rank_0
-  cp -p -r input_ocn rank_1
-  cp -p -r input_atm rank_2
 
+  echo 'CP dir:' input_ocn '->' rank_1
+  cp -p -r input_ocn rank_1
   cd rank_1
-  ./IMPORT_INPUT_FILES
+  ./prepare_run
   cd $dir
 
+  echo 'CP dir:' input_atm '->' rank_2
+  cp -p -r input_atm rank_2
   cd rank_2
-  ./SHARE_OCN_GRID '../rank_1'
-  ./IMPORT_INPUT_FILES
+  ./prepare_run
   cd $dir
 
 fi
