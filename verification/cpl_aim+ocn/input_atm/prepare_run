@@ -1,0 +1,42 @@
+#! /bin/sh
+
+#-- Import input files from experiment aim.5l_cs/input.thSI
+#-- Import grid-files from experiment tutorial_held_suarez_cs
+#   this reduce the disk space required when downloading this set-up
+
+dirAtm=`pwd`
+impDir='../../aim.5l_cs/input.thSI'
+
+echo 'Import Input files from dir:' $impDir
+cd $impDir
+
+listF=`ls *.bin`
+for xx in $listF
+do
+ if test -f $dirAtm/$xx
+ then echo 'file' $xx ' already exists'
+ else echo ' cp ' $xx
+  cp -p -i $xx $dirAtm
+ fi 
+done
+echo ''
+
+cd $dirAtm
+
+impDir='../../tutorial_held_suarez_cs/input'
+
+echo 'Import Grid-files from dir:' $impDir
+cd $impDir
+
+listF=`ls *.face00?.bin`
+for xx in $listF
+do
+ if test -f $dirAtm/$xx
+ then echo 'file' $xx ' already exists'
+ else echo ' cp ' $xx
+  cp -p -i $xx $dirAtm
+ fi 
+done
+echo ''
+
+cd $dirAtm
