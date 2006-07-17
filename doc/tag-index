@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.707 2006/07/16 03:59:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.708 2006/07/17 01:54:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58m_post
 o add a Non-Hydroatatic test (with 3-D Coriolis, NHMTerms, biharmonic Visc.
    and side-drag) on CS-grid : global_ocean.cs32x15.viscA4
 o make "tutorial_global_oce_latlon" from standard "global_ocean.90x40x15" exp.
