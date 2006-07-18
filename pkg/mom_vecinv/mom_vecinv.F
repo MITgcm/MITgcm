@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.58 2006/07/13 03:02:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.59 2006/07/18 03:23:30 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -37,6 +37,10 @@ C     == Global variables ==
 #include "GRID.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==
@@ -98,6 +102,9 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
       LOGICAL harmonic,biharmonic,useVariableViscosity
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER imomkey
+#endif
 
 #ifdef ALLOW_MNC
       INTEGER offsets(9)
@@ -112,6 +119,23 @@ C--   (at least in part)
       fVerU(1,1,kUp) = fVerU(1,1,kUp)
       fVerV(1,1,kUp) = fVerV(1,1,kUp)
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = k - 1
+          max0 = Nr
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          imomkey = (act0 + 1)
+     &                    + act1*max0
+     &                    + act2*max0*max1
+     &                    + act3*max0*max1*max2
+     &                    + act4*max0*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock)
 
@@ -209,6 +233,11 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
       IF (momViscosity) THEN
 C--    For viscous term, compute horizontal divergence, tension & strain
 C      and mask relative vorticity (free-slip case):
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE vort3(:,:) = 
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
