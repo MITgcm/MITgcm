@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.4 2006/05/20 21:39:18 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.5 2006/07/18 18:24:20 edhill Exp $
 
 #  Ed Hill
 
@@ -92,6 +92,21 @@ echo
 
 echo "Running testreport using:"
 comm="./testreport -adm $IEEE -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+ 
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+export OMP_NUM_THREADS=2
+comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth"
 echo "  \"$comm\""
 echo "======================"
 echo
