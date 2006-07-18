@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.107 2006/07/06 00:22:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.108 2006/07/18 04:43:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -450,13 +450,18 @@ C--   Residual transp = Bolus transp + Eulerian transp
             CALL GMREDI_CALC_UVFLOW(
      U                  uFld, vFld, uTrans, vTrans,
      I                  k, bi, bj, myThid )
-            IF (K.GE.2) CALL GMREDI_CALC_WFLOW(
+            IF (K.GE.2) THEN
+              CALL GMREDI_CALC_WFLOW(
      U                  wFld, rTrans,
      I                  k, bi, bj, myThid )
+            ENDIF
           ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte 
+CADJ STORE wfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte 
 # ifdef GM_BOLUS_ADVEC
+CADJ STORE ufld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE vfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE uTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
