@@ -27,7 +27,6 @@ CEOP
 
 #ifdef ALLOW_RBCS
 
-
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj
@@ -36,19 +35,20 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER iTracer
 #endif
 
-        DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-             k=1,Nr
-              DO j=1-Oly,sNy+OLy
-                DO i=1-Olx,sNx+Olx
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k=1,Nr
+            DO j=1-Oly,sNy+OLy
+              DO i=1-Olx,sNx+Olx
                  rbct0(i,j,k,bi,bj) = 0. _d 0
                  rbcs0(i,j,k,bi,bj) = 0. _d 0
                  rbct1(i,j,k,bi,bj) = 0. _d 0
                  rbcs1(i,j,k,bi,bj) = 0. _d 0
-                ENDDO
               ENDDO
+            ENDDO
           ENDDO
-         ENDDO
+        ENDDO
+      ENDDO
 
 #ifdef ALLOW_PTRACERS
 C     Loop over tracers
