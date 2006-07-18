@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.41 2006/06/18 23:27:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.42 2006/07/18 03:23:50 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -200,6 +200,7 @@ C     uninitialised but inert locations.
         rTransKp1(i,j)= 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
         localTij(i,j) = 0. _d 0
+        wfld(i,j)    = 0. _d 0
 #endif
        ENDDO
       ENDDO
@@ -710,6 +711,13 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
         IF ( k.EQ.1 ) THEN
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE rtrans(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ STORE wfld(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C- Surface interface :
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -721,8 +729,15 @@ C- Surface interface :
          ENDDO
 
         ELSE
-C- Interior interface :
 
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE rtrans(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ STORE wfld(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C- Interior interface :
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
