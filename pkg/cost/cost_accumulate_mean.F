@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.3 2005/12/13 16:15:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.4 2006/07/19 14:17:01 dfer Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,7 @@ C     myThid - Thread number for this instance of the routine.
       integer bi, bj
       integer myThid
 
-#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
+#ifdef ALLOW_COST
 C     == Local variables
       _RL thetaRef
 
