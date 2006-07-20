@@ -77,6 +77,8 @@ depend:
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
 	$(CPP) $(CPPFLAGS) $(INCLUDEDIRS) > $@
+xerbla.f: xerbla.F
+        $(CPP) $(INCLUDEDIRS) > $@
 .f.o:
 	$(FC) $(FFLAGS) -c $<
 
