@@ -78,7 +78,7 @@ depend:
 .F.f:
 	$(CPP) $(CPPFLAGS) $(INCLUDEDIRS) > $@
 xerbla.f: xerbla.F
-        $(CPP) $(INCLUDEDIRS) > $@
+	$(CPP) $(INCLUDEDIRS) > $@
 .f.o:
 	$(FC) $(FFLAGS) -c $<
 
