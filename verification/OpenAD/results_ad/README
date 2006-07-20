@@ -1,0 +1,42 @@
+19-Jul-2006
+heimbach@mit.edu
+
+Gradient checks for 10 timesteps:
+#################################
+
+  i    j    k         ADJ-TAF      FIN.DIFF.     1-FIN.DIFF./ADJ-TAF 
+---------------                   ADJ-OPENAD     1-FIN.DIFF./ADJ-OPENAD
+
+43    2    1   -.128160793E-02 -.128137693E-02 0.180249002E-03
+                               -.128137717E-02 0.187298482E-06
+
+44    2    1   -.153620861E-02 -.153645379E-02 -.159600563E-03
+                               -.153645402E-02  .149695335E-06
+
+(see also output_tlm.txt for tangent linear gradient checks)
+
+Summary for 500 timesteps run:
+##############################
+
+            TAF       OpenAD
+------------------------------
+exec. size: 88MB      44MB    (based on same nchklev_1)
+run time:   30.5sec   434.sec (based on ALL, without grdchk)
+
+gradients:
+
+  i    j    k         ADJ-TAF      FIN.DIFF.     1-FIN.DIFF./ADJ-TAF
+---------------                   ADJ-OPENAD     1-FIN.DIFF./ADJ-OPENAD
+
+ 43    2    1   0.116866710E-04 0.117749266E-04 -.755181911E-02
+                                0.117749251E-04 -.127389345E-06
+
+ 44    2    1   0.928106560E-05 0.935664840E-05 -.814376283E-02
+                                0.935664688E-05 -.162451358E-06
+
+ 45    2    1   0.377254744E-05 0.381944022E-05 -.124300040E-01
+                                0.381943873E-05 -.390109674E-06
+
+ 46    2    1   -.141894966E-05 -.139456419E-05 0.171855825E-01
+                                -.139456553E-05 0.960872738E-06
+
