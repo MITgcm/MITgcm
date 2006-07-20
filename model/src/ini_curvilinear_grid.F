@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.27 2006/07/13 02:59:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.28 2006/07/20 23:11:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,8 +10,8 @@ C     !INTERFACE:
       SUBROUTINE INI_CURVILINEAR_GRID( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_CURVILINEAR_GRID                           
-C     | o Initialise curvilinear coordinate system                
+C     | SUBROUTINE INI_CURVILINEAR_GRID
+C     | o Initialise curvilinear coordinate system
 C     *==========================================================*
 C     | Curvilinear grid settings are read from a file rather
 C     | than coded in-line as for cartesian and spherical polar.
@@ -78,30 +78,30 @@ C--   Set everything to zero everywhere
 
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          XC(i,j,bi,bj)=0.
-          YC(i,j,bi,bj)=0.
-          XG(i,j,bi,bj)=0.
-          YG(i,j,bi,bj)=0.
-          DXC(i,j,bi,bj)=0.
-          DYC(i,j,bi,bj)=0.
-          DXG(i,j,bi,bj)=0.
-          DYG(i,j,bi,bj)=0.
-          DXF(i,j,bi,bj)=0.
-          DYF(i,j,bi,bj)=0.
-          DXV(i,j,bi,bj)=0.
-          DYU(i,j,bi,bj)=0.
-          RA(i,j,bi,bj)=0.
-          RAZ(i,j,bi,bj)=0.
-          RAW(i,j,bi,bj)=0.
-          RAS(i,j,bi,bj)=0.
+          xC(i,j,bi,bj)=0.
+          yC(i,j,bi,bj)=0.
+          xG(i,j,bi,bj)=0.
+          yG(i,j,bi,bj)=0.
+          dxC(i,j,bi,bj)=0.
+          dyC(i,j,bi,bj)=0.
+          dxG(i,j,bi,bj)=0.
+          dyG(i,j,bi,bj)=0.
+          dxF(i,j,bi,bj)=0.
+          dyF(i,j,bi,bj)=0.
+          dxV(i,j,bi,bj)=0.
+          dyU(i,j,bi,bj)=0.
+          rA(i,j,bi,bj)=0.
+          rAz(i,j,bi,bj)=0.
+          rAw(i,j,bi,bj)=0.
+          rAs(i,j,bi,bj)=0.
           tanPhiAtU(i,j,bi,bj)=0.
           tanPhiAtV(i,j,bi,bj)=0.
           angleCosC(i,j,bi,bj)=1.
           angleSinC(i,j,bi,bj)=0.
           cosFacU(J,bi,bj)=1.
           cosFacV(J,bi,bj)=1.
-          sqcosFacU(J,bi,bj)=1.
-          sqcosFacV(J,bi,bj)=1.
+          sqCosFacU(J,bi,bj)=1.
+          sqCosFacV(J,bi,bj)=1.
          ENDDO
         ENDDO
 
@@ -127,41 +127,38 @@ C--   Set everything to zero everywhere
         CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
         CALL MNC_CW_SET_CITER(mncFn, 2, -1, -1, -1, myThid)
         CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'XC', XC,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'XG', XG,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'YC', YC,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'YG', YG,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxC',DXC, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyC',DYC, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxF',DXF, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyF',DYF, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxG',DXG, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyG',DYG, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxV',DXV, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyU',DYU, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rA', RA,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAz',RAZ, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAw',RAW, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',RAS, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XC', xC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XG', xG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YC', yC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YG', yG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxC',dxC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyC',dyC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxF',dxF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyF',dyF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxG',dxG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyG',dyG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxV',dxV, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyU',dyU, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rA', rA,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAz',rAz, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAw',rAw, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',rAs, myThid)
         CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleCS',angleCosC,myThid)
         CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleSN',angleSinC,myThid)
         anglesAreSet = .TRUE.
 
         _END_MASTER(myThid)
 
-        CALL EXCH_XY_RS(XC,myThid)
-        CALL EXCH_XY_RS(YC,myThid)
-#ifdef HRCUBE
-        CALL EXCH_XY_RS(DXF,myThid)
-        CALL EXCH_XY_RS(DYF,myThid)
-#endif
-        CALL EXCH_XY_RS(RA,myThid )
-        CALL EXCH_Z_XY_RS(XG,myThid)
-        CALL EXCH_Z_XY_RS(YG,myThid)
-        CALL EXCH_Z_XY_RS(RAZ,myThid)
-        CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
-        CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
-        CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+        CALL EXCH_XY_RS(xC,myThid)
+        CALL EXCH_XY_RS(yC,myThid)
+        CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
+        CALL EXCH_XY_RS(rA,myThid )
+        CALL EXCH_Z_XY_RS(xG,myThid)
+        CALL EXCH_Z_XY_RS(yG,myThid)
+        CALL EXCH_Z_XY_RS(rAz,myThid)
+        CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
+        CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
+        CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
         CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
       ELSE
@@ -173,96 +170,68 @@ C     read the raw grid data from files
 #ifdef OLD_GRID_IO
 
 C-    Cell centered quantities
-      CALL MDSREADFIELD('LONC.bin',readBinaryPrec,'RS',1,XC,  1,myThid)
-      CALL MDSREADFIELD('LATC.bin',readBinaryPrec,'RS',1,YC,  1,myThid)
-      _EXCH_XY_R4(XC,myThid)
-      _EXCH_XY_R4(YC,myThid)
+      CALL MDSREADFIELD('LONC.bin',readBinaryPrec,'RS',1,xC,  1,myThid)
+      CALL MDSREADFIELD('LATC.bin',readBinaryPrec,'RS',1,yC,  1,myThid)
+      _EXCH_XY_R4(xC,myThid)
+      _EXCH_XY_R4(yC,myThid)
 
-      CALL MDSREADFIELD('DXF.bin',readBinaryPrec,'RS',1,DXF,  1,myThid)
-      CALL MDSREADFIELD('DYF.bin',readBinaryPrec,'RS',1,DYF,  1,myThid)
-C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
-cs!   this is not correct! <= need paired exchange for DXF,DYF
-      _EXCH_XY_R4(DXF,myThid)
-      _EXCH_XY_R4(DYF,myThid)
-      IF (useCubedSphereExchange) THEN
-cs! fix overlaps:
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,Olx
-          DXF(1-i,j,bi,bj)=DXF(i,j,bi,bj)
-          DXF(sNx+i,j,bi,bj)=DXF(sNx+1-i,j,bi,bj)
-          DYF(1-i,j,bi,bj)=DYF(i,j,bi,bj)
-          DYF(sNx+i,j,bi,bj)=DYF(sNx+1-i,j,bi,bj)
-         ENDDO
-        ENDDO
-        DO j=1,Oly
-         DO i=1,sNx
-          DXF(i,1-j,bi,bj)=DXF(i,j,bi,bj)
-          DXF(i,sNy+j,bi,bj)=DXF(i,sNy+1-j,bi,bj)
-          DYF(i,1-j,bi,bj)=DYF(i,j,bi,bj)
-          DYF(i,sNy+j,bi,bj)=DYF(i,sNy+1-j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ENDIF
-cs
+      CALL MDSREADFIELD('DXF.bin',readBinaryPrec,'RS',1,dxF,  1,myThid)
+      CALL MDSREADFIELD('DYF.bin',readBinaryPrec,'RS',1,dyF,  1,myThid)
+      CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
 
-      CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,RA,  1,myThid)
-      _EXCH_XY_R4(RA,myThid )
+      CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,rA,  1,myThid)
+      _EXCH_XY_R4(rA,myThid )
 
 C-    Corner quantities
-C       *********** this are not degbugged ************
-      CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,XG,  1,myThid)
-      CALL MDSREADFIELD('LATG.bin',readBinaryPrec,'RS',1,YG,  1,myThid)
+      CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,xG,  1,myThid)
+      CALL MDSREADFIELD('LATG.bin',readBinaryPrec,'RS',1,yG,  1,myThid)
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       bi=3
       bj=1
-      YG(1,sNy+1,bj,1)=YG(1,1,bi,1)
+      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
       bj=bj+2
-      YG(1,sNy+1,bj,1)=YG(1,1,bi,1)
+      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
       bj=bj+2
-      YG(1,sNy+1,bj,1)=YG(1,1,bi,1)
+      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
       bi=6
       bj=2
-      YG(sNx+1,1,bj,1)=YG(1,1,bi,1)
+      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
       bj=bj+2
-      YG(sNx+1,1,bj,1)=YG(1,1,bi,1)
+      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
       bj=bj+2
-      YG(sNx+1,1,bj,1)=YG(1,1,bi,1)
+      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
 cs-   end block
       ENDIF
-      CALL EXCH_Z_XY_RS(XG,myThid)
-      CALL EXCH_Z_XY_RS(YG,myThid)
+      CALL EXCH_Z_XY_RS(xG,myThid)
+      CALL EXCH_Z_XY_RS(yG,myThid)
 
-      CALL MDSREADFIELD('DXV.bin',readBinaryPrec,'RS',1,DXV,  1,myThid)
-      CALL MDSREADFIELD('DYU.bin',readBinaryPrec,'RS',1,DYU,  1,myThid)
+      CALL MDSREADFIELD('DXV.bin',readBinaryPrec,'RS',1,dxV,  1,myThid)
+      CALL MDSREADFIELD('DYU.bin',readBinaryPrec,'RS',1,dyU,  1,myThid)
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
+C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
 cs!   this is not correct <= need paired exchange for dxv,dyu
       IF (.NOT.useCubedSphereExchange) THEN
-      CALL EXCH_Z_XY_RS(DXV,myThid)
-      CALL EXCH_Z_XY_RS(DYU,myThid)
+      CALL EXCH_Z_XY_RS(dxV,myThid)
+      CALL EXCH_Z_XY_RS(dyU,myThid)
       ELSE
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 cs! fix overlaps:
         DO j=1,sNy
          DO i=1,Olx
-          DXV(1-i,j,bi,bj)=DXV(1+i,j,bi,bj)
-          DXV(sNx+i,j,bi,bj)=DXV(i,j,bi,bj)
-          DYU(1-i,j,bi,bj)=DYU(1+i,j,bi,bj)
-          DYU(sNx+i,j,bi,bj)=DYU(i,j,bi,bj)
+          dxV(1-i,j,bi,bj)=dxV(1+i,j,bi,bj)
+          dxV(sNx+i,j,bi,bj)=dxV(i,j,bi,bj)
+          dyU(1-i,j,bi,bj)=dyU(1+i,j,bi,bj)
+          dyU(sNx+i,j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO
         ENDDO
         DO j=1,Oly
          DO i=1-Olx,sNx+Olx
-          DXV(i,1-j,bi,bj)=DXV(i,1+j,bi,bj)
-          DXV(i,sNy+j,bi,bj)=DXV(i,j,bi,bj)
-          DYU(i,1-j,bi,bj)=DYU(i,1+j,bi,bj)
-          DYU(i,sNy+j,bi,bj)=DYU(i,j,bi,bj)
+          dxV(i,1-j,bi,bj)=dxV(i,1+j,bi,bj)
+          dxV(i,sNy+j,bi,bj)=dxV(i,j,bi,bj)
+          dyU(i,1-j,bi,bj)=dyU(i,1+j,bi,bj)
+          dyU(i,sNy+j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -270,75 +239,63 @@ cs! fix overlaps:
 cs-   end block
       ENDIF
 
-      CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,RAZ,  1,myThid)
+      CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,rAz,  1,myThid)
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-      CALL EXCH_Z_XY_RS(RAZ , myThid )
+      CALL EXCH_Z_XY_RS(rAz , myThid )
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        RAZ(sNx+1,1,bi,bj)=RAZ(1,1,bi,bj)
-        RAZ(1,sNy+1,bi,bj)=RAZ(1,1,bi,bj)
+        rAz(sNx+1,1,bi,bj)=rAz(1,1,bi,bj)
+        rAz(1,sNy+1,bi,bj)=rAz(1,1,bi,bj)
        ENDDO
       ENDDO
 cs-   end block
       ENDIF
-      CALL EXCH_Z_XY_RS(RAZ,myThid)
+      CALL EXCH_Z_XY_RS(rAz,myThid)
 
 C-    Staggered (u,v pairs) quantities
-      CALL MDSREADFIELD('DXC.bin',readBinaryPrec,'RS',1,DXC,  1,myThid)
-      CALL MDSREADFIELD('DYC.bin',readBinaryPrec,'RS',1,DYC,  1,myThid)
-      CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
+      CALL MDSREADFIELD('DXC.bin',readBinaryPrec,'RS',1,dxC,  1,myThid)
+      CALL MDSREADFIELD('DYC.bin',readBinaryPrec,'RS',1,dyC,  1,myThid)
+      CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
 
-      CALL MDSREADFIELD('RAW.bin',readBinaryPrec,'RS',1,RAW,  1,myThid)
-      CALL MDSREADFIELD('RAS.bin',readBinaryPrec,'RS',1,RAS,  1,myThid)
+      CALL MDSREADFIELD('RAW.bin',readBinaryPrec,'RS',1,rAw,  1,myThid)
+      CALL MDSREADFIELD('RAS.bin',readBinaryPrec,'RS',1,rAs,  1,myThid)
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J = 1,sNy
-c        RAW(sNx+1,J,bi,bj)=RAW(1,J,bi,bj)
-c        RAS(J,sNy+1,bi,bj)=RAS(J,1,bi,bj)
+c        rAw(sNx+1,J,bi,bj)=rAw(1,J,bi,bj)
+c        rAs(J,sNy+1,bi,bj)=rAs(J,1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
 cs-   end block
       ENDIF
-      CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
+      CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
 
-      CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,DXG,  1,myThid)
-      CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,DYG,  1,myThid)
-      IF (useCubedSphereExchange) THEN
-cs-   this block needed by cubed sphere until we write more useful I/O routines
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1,sNy
-c        DYG(sNx+1,J,bi,bj)=DYG(1,J,bi,bj)
-c        DXG(J,sNy+1,bi,bj)=DXG(J,1,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-cs-   end block
-      ENDIF
-      CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+      CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,dxG,  1,myThid)
+      CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,dyG,  1,myThid)
+      CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
       CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
       anglesAreSet = .FALSE.
 
-c     write(10) XC
-c     write(10) YC
-c     write(10) DXF
-c     write(10) DYF
-c     write(10) RA
-c     write(10) XG
-c     write(10) YG
-c     write(10) DXV
-c     write(10) DYU
-c     write(10) RAZ
-c     write(10) DXC
-c     write(10) DYC
-c     write(10) RAW
-c     write(10) RAS
-c     write(10) DXG
-c     write(10) DYG
+c     write(10) xC
+c     write(10) yC
+c     write(10) dxF
+c     write(10) dyF
+c     write(10) rA
+c     write(10) xG
+c     write(10) yG
+c     write(10) dxV
+c     write(10) dyU
+c     write(10) rAz
+c     write(10) dxC
+c     write(10) dyC
+c     write(10) rAw
+c     write(10) rAs
+c     write(10) dxG
+c     write(10) dyG
 
 #else /* ifndef OLD_GRID_IO */
 
@@ -369,54 +326,54 @@ C--   Only do I/O if I am the master thread
      &                      SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)') '  =>'
 
-        CALL READSYMTILE_RS(fName,1,XC,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,1,xC,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'XC'
-        CALL READSYMTILE_RS(fName,2,YC,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
+        CALL READSYMTILE_RS(fName,2,yC,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'YC'
-        CALL READSYMTILE_RS(fName,3,DXF,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'yC'
+        CALL READSYMTILE_RS(fName,3,dxF,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXF'
-        CALL READSYMTILE_RS(fName,4,DYF,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxF'
+        CALL READSYMTILE_RS(fName,4,dyF,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYF'
-        CALL READSYMTILE_RS(fName,5,RA,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyF'
+        CALL READSYMTILE_RS(fName,5,rA,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'RA'
-        CALL READSYMTILE_RS(fName,6,XG,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rA'
+        CALL READSYMTILE_RS(fName,6,xG,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'XG'
-        CALL READSYMTILE_RS(fName,7,YG,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'xG'
+        CALL READSYMTILE_RS(fName,7,yG,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'YG'
-        CALL READSYMTILE_RS(fName,8,DXV,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'yG'
+        CALL READSYMTILE_RS(fName,8,dxV,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DXV'
-        CALL READSYMTILE_RS(fName,9,DYU,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dxV'
+        CALL READSYMTILE_RS(fName,9,dyU,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DYU'
-        CALL READSYMTILE_RS(fName,10,RAZ,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dyU'
+        CALL READSYMTILE_RS(fName,10,rAz,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'RAZ'
-        CALL READSYMTILE_RS(fName,11,DXC,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAz'
+        CALL READSYMTILE_RS(fName,11,dxC,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXC'
-        CALL READSYMTILE_RS(fName,12,DYC,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxC'
+        CALL READSYMTILE_RS(fName,12,dyC,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYC'
-        CALL READSYMTILE_RS(fName,13,RAW,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyC'
+        CALL READSYMTILE_RS(fName,13,rAw,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'RAW'
-        CALL READSYMTILE_RS(fName,14,RAS,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rAw'
+        CALL READSYMTILE_RS(fName,14,rAs,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'RAS'
-        CALL READSYMTILE_RS(fName,15,DXG,bi,bj,buf,myThid)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAs'
+        CALL READSYMTILE_RS(fName,15,dxG,bi,bj,buf,myThid)
         iL = ILNBLNK(msgBuf)
-        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'DXG'
-        CALL READSYMTILE_RS(fName,16,DYG,bi,bj,buf,myThid)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxG'
+        CALL READSYMTILE_RS(fName,16,dyG,bi,bj,buf,myThid)
         iL = ILNBLNK(tmpBuf)
-        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'DYG'
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyG'
 
         iLen = ILNBLNK(horizGridFile)
         IF ( iLen.GT.0 ) THEN
@@ -439,23 +396,19 @@ C--   Only do I/O if I am the master thread
 
       _END_MASTER(myThid)
 
-      CALL EXCH_XY_RS(XC,myThid)
-      CALL EXCH_XY_RS(YC,myThid)
-C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
-#ifdef HRCUBE
-      CALL EXCH_XY_RS(DXF,myThid)
-      CALL EXCH_XY_RS(DYF,myThid)
-#endif
-      CALL EXCH_XY_RS(RA,myThid )
-      CALL EXCH_Z_XY_RS(XG,myThid)
-      CALL EXCH_Z_XY_RS(YG,myThid)
-C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
-c     CALL EXCH_Z_XY_RS(DXV,myThid)
-c     CALL EXCH_Z_XY_RS(DYU,myThid)
-      CALL EXCH_Z_XY_RS(RAZ,myThid)
-      CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
-      CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
-      CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
+      CALL EXCH_XY_RS(xC,myThid)
+      CALL EXCH_XY_RS(yC,myThid)
+      CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
+      CALL EXCH_XY_RS(rA,myThid )
+      CALL EXCH_Z_XY_RS(xG,myThid)
+      CALL EXCH_Z_XY_RS(yG,myThid)
+C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
+c     CALL EXCH_Z_XY_RS(dxV,myThid)
+c     CALL EXCH_Z_XY_RS(dyU,myThid)
+      CALL EXCH_Z_XY_RS(rAz,myThid)
+      CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
+      CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
+      CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
       CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
 #endif /* OLD_GRID_IO */
@@ -475,48 +428,48 @@ C--   Stop if Angle have not been loaded but are needed :
       ENDIF
       _END_MASTER(myThid)
 
-c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('RAZ',RAZ,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('XG',XG,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('YG',YG,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('dxV',dxV,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('dyU',dyU,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('rAz',rAz,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('xG',xG,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('yG',yG,1,0,0,0,myThid)
 
 C--   Now let's look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
          myIter = 1
+         CALL PLOT_FIELD_XYRL( xC      , 'Current xC      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( yC      , 'Current yC      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( dxF     , 'Current dxF     ' ,
+     &        myIter, myThid )
          CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( YC      , 'Current YC      ' ,
+         CALL PLOT_FIELD_XYRL( dyF     , 'Current dyF     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXF     , 'Current DXF     ' ,
+         CALL PLOT_FIELD_XYRL( rA      , 'Current rA      ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
+         CALL PLOT_FIELD_XYRL( xG      , 'Current xG      ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYF     , 'Current DYF     ' ,
+         CALL PLOT_FIELD_XYRL( yG      , 'Current yG      ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( RA      , 'Current RA      ' ,
+         CALL PLOT_FIELD_XYRL( dxV     , 'Current dxV     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( XG      , 'Current XG      ' ,
+         CALL PLOT_FIELD_XYRL( dyU     , 'Current dyU     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( YG      , 'Current YG      ' ,
+         CALL PLOT_FIELD_XYRL( rAz     , 'Current rAz     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXV     , 'Current DXV     ' ,
+         CALL PLOT_FIELD_XYRL( dxC     , 'Current dxC     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYU     , 'Current DYU     ' ,
+         CALL PLOT_FIELD_XYRL( dyC     , 'Current dyC     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( RAZ     , 'Current RAZ     ' ,
+         CALL PLOT_FIELD_XYRL( rAw     , 'Current rAw     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXC     , 'Current DXC     ' ,
+         CALL PLOT_FIELD_XYRL( rAs     , 'Current rAs     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYC     , 'Current DYC     ' ,
+         CALL PLOT_FIELD_XYRL( dxG     , 'Current dxG     ' ,
      &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( RAW     , 'Current RAW     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( RAS     , 'Current RAS     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DXG     , 'Current DXG     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( DYG     , 'Current DYG     ' ,
+         CALL PLOT_FIELD_XYRL( dyG     , 'Current dyG     ' ,
      &        myIter, myThid )
          CALL PLOT_FIELD_XYRL(angleCosC, 'Current AngleCS ' ,
      &        myIter, myThid )
@@ -597,7 +550,7 @@ C     Figure out offset of tile within face
        ENDDO
       ENDDO
       CLOSE( dUnit )
-      
+
 #else /* ALLOW_EXCH2 */
 
       CALL MDSFINDUNIT( dUnit, myThid )
