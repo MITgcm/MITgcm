@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.5 2006/07/18 18:24:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.6 2006/07/20 17:33:20 edhill Exp $
 
 #  Ed Hill
 
@@ -96,17 +96,12 @@ echo "  \"$comm\""
 echo "======================"
 echo
 $comm | tail -100
- 
-echo
-echo "======================"
-echo "Cleaning test directories:"
-./testreport -clean > /dev/null 2>&1
-echo "======================"
-echo
 
+# skip clean since there is no overlap between AD and MTH tests
+ 
 echo "Running testreport using:"
 export OMP_NUM_THREADS=2
-comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth"
+comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
