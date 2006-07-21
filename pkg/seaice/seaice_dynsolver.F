@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.11 2006/06/25 22:33:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.12 2006/07/21 19:24:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -111,13 +111,12 @@ C     dynamic masking of areas with no ice
          ENDDO
         ENDDO
        ENDDO
-       _EXCH_XY_R8( seaiceMaskU, myThid )
-       _EXCH_XY_R8( seaiceMaskV, myThid )
+       CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
       ENDIF
 
 C--   NOW SET UP FORCING FIELDS
 
-C--   Wind stress is computed on center of C-grid cell and interpolated 
+C--   Wind stress is computed on center of C-grid cell and interpolated
 C     to U and V points later
 C     locations from wind on tracer locations
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -309,6 +308,7 @@ c in open water areas (drift of zero thickness ice)
        ENDDO
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
+
 #endif /* SEAICE_CGRID */
       RETURN
       END
