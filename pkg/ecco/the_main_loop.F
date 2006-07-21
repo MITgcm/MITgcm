@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.40 2006/07/14 22:34:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.41 2006/07/21 14:21:00 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -318,13 +318,15 @@ CCE107 Initial call for PAPI
 #else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
 #endif
-      WRITE(msgBuf,'(A34,F10.6)')
-     $        'Mflop/s before timestepping:', mflops
+      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
+     $     'Mflop/s before timestepping:', mflops, ' ', mflops*proc_time
+     $     /(real_time + 1E-36)
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
-      WRITE(msgBuf,'(A34,F10.6)')
-     $        'IPC before timestepping:', ipc
+      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
+     $     'IPC before timestepping:', ipc, ' ', ipc*proc_time
+     $     /(real_time + 1E-36)
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
       _END_MASTER( myThid )
@@ -1055,13 +1057,15 @@ CCE107 PAPI summary performance
 #else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
 #endif
-      WRITE(msgBuf,'(F10.6,A34,I8)')
-     $        mflops, 'Mflop/s during timestep ', iloop
+      WRITE(msgBuf,'(F10.6,A,F10.6,A34,I8)')
+     $     mflops, ' ', mflops*proc_time/(real_time + 1E-36),
+     $     'Mflop/s during timestep ', iloop 
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
-      WRITE(msgBuf,'(F10.6,A34,I8)')
-     $        ipc, 'IPC during timestep ', iloop
+      WRITE(msgBuf,'(F10.6,A,F10.6,A34,I8)')
+     $     ipc, ' ', ipc*proc_time/(real_time + 1E-36),
+     $     'IPC during timestep ', iloop 
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
       _END_MASTER( myThid )
