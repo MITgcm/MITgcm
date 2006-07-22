@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.16 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.17 2006/07/22 03:53:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,10 +12,10 @@ C     !INTERFACE:
      I                             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INTEGR_CONTINUITY                                 
-C     | o Integrate the continuity Eq : compute vertical velocity 
-C     |   and free surface "r-anomaly" (etaN) to satisfy  
-C     |   exactly the convervation of the Total Volume            
+C     | SUBROUTINE INTEGR_CONTINUITY
+C     | o Integrate the continuity Eq : compute vertical velocity
+C     |   and free surface "r-anomaly" (etaN) to satisfy
+C     |   exactly the convervation of the Total Volume
 C     *==========================================================*
 C     \ev
 
@@ -43,7 +43,7 @@ C     myThid  :: Thread number for this instance of the routine.
       INTEGER myThid
       INTEGER bi,bj
       _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy) 
+      _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
 C     !LOCAL VARIABLES:
 C     Local variables in common block
@@ -67,7 +67,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Compute the Divergence of The Barotropic Flow :
 
-C-    Initialise 
+C-    Initialise
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
          hDivFlow(i,j)      = 0. _d 0
@@ -77,7 +77,7 @@ C-    Initialise
       ENDDO
 
       DO k=1,Nr
-       
+
 C-    Calculate velocity field "volume transports" through tracer cell faces
         DO j=1,sNy+1
          DO i=1,sNx+1
@@ -88,7 +88,7 @@ C-    Calculate velocity field "volume transports" through tracer cell faces
          ENDDO
         ENDDO
 
-C-    Integrate vertically the Horizontal Divergence 
+C-    Integrate vertically the Horizontal Divergence
         DO j=1,sNy
          DO i=1,sNx
            hDivFlow(i,j) = hDivFlow(i,j)
@@ -130,11 +130,17 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
           ENDDO
-         ENDDO      
+         ENDDO
        ELSE
+C--    Needs to get valid PmEpR (for T,S forcing) also in overlap regions
+C       (e.g., if using KPP) => set over full index range
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
          DO j=1,sNy
           DO i=1,sNx
-            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                           -facEmP*EmPmR(i,j,bi,bj)
           ENDDO
@@ -147,13 +153,13 @@ C------------------------------------
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (exactConserv .AND. myTime.NE.startTime) THEN
-C--   Update etaN at the end of the time step : 
+C--   Update etaN at the end of the time step :
 C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
 
        IF (implicDiv2Dflow.EQ. 0. _d 0) THEN
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-           etaN(i,j,bi,bj) = etaH(i,j,bi,bj) 
+           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
          ENDDO
         ENDDO
        ELSE
@@ -168,7 +174,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
 #ifdef ALLOW_OBCS
 C--    Apply OBC to etaN if NonLin-FreeSurf, reset to zero otherwise:
        IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
-#endif /* ALLOW_OBCS */            
+#endif /* ALLOW_OBCS */
 
       ENDIF
 
@@ -198,14 +204,14 @@ C--    Integrate continuity vertically for vertical velocity
      I                       bi, bj, k, uFld, vFld,
      O                       wVel,
      I                       myThid )
- 
+
 #ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myTime.NE.baseTime .AND.
      &      useRealFreshWaterFlux .AND. usingPCoords ) THEN
 
           DO j=1,sNy
            DO i=1,sNx
-             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
+             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
      &         +convertEmP2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -216,7 +222,7 @@ C--    Integrate continuity vertically for vertical velocity
 #ifdef ALLOW_OBCS
 C--    Apply OBC to W if in N-H mode, reset to zero otherwise:
        IF ( useOBCS ) CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
-#endif /* ALLOW_OBCS */            
+#endif /* ALLOW_OBCS */
 
 C-    End DO k=Nr,1,-1
       ENDDO

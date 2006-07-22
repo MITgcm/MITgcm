@@ -1,20 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.35 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.36 2006/07/22 03:53:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: EXTERNAL_FORCING_SURF
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_SURF( 
+      SUBROUTINE EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE EXTERNAL_FORCING_SURF                          
-C     | o Determines forcing terms based on external fields       
-C     |   relaxation terms etc.                                   
+C     | SUBROUTINE EXTERNAL_FORCING_SURF
+C     | o Determines forcing terms based on external fields
+C     |   relaxation terms etc.
 C     *==========================================================*
 C     \ev
 
@@ -33,7 +33,7 @@ C     === Global variables ===
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
 #include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */ 
+#endif /* ALLOW_SHELFICE */
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj  :: tile indices
@@ -41,25 +41,26 @@ C     iMin,iMax, jMin,jMax :: Range of points for calculation
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: Thread no. that called this routine.
-      _RL myTime
-      INTEGER myIter
-      INTEGER myThid
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     i,j    :: loop indices
+C     ks     :: index of surface interface layer
       INTEGER i,j
-C     number of surface interface layer
       INTEGER ks
+CEOP
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
-CEOP
 
       IF ( usingPCoords ) THEN
-       ks        = Nr 
+       ks        = Nr
       ELSE
        ks        = 1
       ENDIF
@@ -73,23 +74,23 @@ C--   Start with surface restoring term :
         DO i = iMin, iMax
 #ifdef ALLOW_SEAICE
 C     Do not restore under sea-ice
-C     Heat Flux (restoring term) : 
-          surfaceForcingT(i,j,bi,bj) = 
+C     Heat Flux (restoring term) :
+          surfaceForcingT(i,j,bi,bj) =
      &      -lambdaThetaClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-C     Salt Flux (restoring term) : 
+C     Salt Flux (restoring term) :
           surfaceForcingS(i,j,bi,bj) =
      &      -lambdaSaltClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
 #else /* ifndef ALLOW_SEAICE */
-C     Heat Flux (restoring term) : 
-          surfaceForcingT(i,j,bi,bj) = 
+C     Heat Flux (restoring term) :
+          surfaceForcingT(i,j,bi,bj) =
      &      -lambdaThetaClimRelax(i,j,bi,bj)
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-C     Salt Flux (restoring term) : 
+C     Salt Flux (restoring term) :
           surfaceForcingS(i,j,bi,bj) =
      &      -lambdaSaltClimRelax(i,j,bi,bj)
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
@@ -135,13 +136,13 @@ C     of surf.thickness (hFac): account for change in surf.thickness
 C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
         tmpFac = HeatCapacity_Cp*recip_horiVertRatio*rhoConst
         CALL DIAGNOSTICS_SCALE_FILL(
-     &           surfaceForcingT(1-Olx,1-Oly,bi,bj),tmpFac,1,
+     &           surfaceForcingT(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'TRELAX  ',0, 1,2,bi,bj,myThid)
 
 C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
         tmpFac = recip_horiVertRatio*rhoConst
         CALL DIAGNOSTICS_SCALE_FILL(
-     &           surfaceForcingS(1-Olx,1-Oly,bi,bj),tmpFac,1,
+     &           surfaceForcingS(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'SRELAX  ',0, 1,2,bi,bj,myThid)
 
        ENDIF
@@ -168,10 +169,10 @@ C--   Surface Fluxes :
          DO i = iMin, iMax
 
 C     Zonal wind stress fu:
-          surfaceForcingU(i,j,bi,bj) = 
+          surfaceForcingU(i,j,bi,bj) =
      &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
 C     Meridional wind stress fv:
-          surfaceForcingV(i,j,bi,bj) = 
+          surfaceForcingV(i,j,bi,bj) =
      &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
 C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
@@ -180,22 +181,22 @@ C     Net heat flux Qnet:
      &          -Qsw(i,j,bi,bj)
 #endif
      &         ) *recip_Cp*horiVertRatio*recip_rhoConst
-C     Net Salt Flux : 
+C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
 
          ENDDO
       ENDDO
-        
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Fresh-water flux 
 
-C-    Apply mask on Fresh-Water flux 
-C      (needed for SSH forcing, whether or not exactConserv is used) 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Fresh-water flux
+
+C-    Apply mask on Fresh-Water flux
+C      (needed for SSH forcing, whether or not exactConserv is used)
       IF ( useRealFreshWaterFlux ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskH(i,j,bi,bj) 
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskH(i,j,bi,bj)
          ENDDO
         ENDDO
       ENDIF
@@ -204,8 +205,8 @@ C      (needed for SSH forcing, whether or not exactConserv is used)
 c NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
 c     to stay consitent with volume change (=d/dt etaH).
       IF ( staggerTimeStep ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -214,8 +215,8 @@ c     to stay consitent with volume change (=d/dt etaH).
       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
 
-c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes 
-c   the water column height ; temp., salt, (tracer) flux associated 
+c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
+c   the water column height ; temp., salt, (tracer) flux associated
 c   with this input/output of water is added here to the surface tendency.
 c
 
@@ -259,7 +260,7 @@ c- converts EmPmR to salinity tendency using surface local salinity
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
-       ELSE 
+       ELSE
 c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
         DO j = jMin, jMax
          DO i = iMin, iMax
@@ -321,7 +322,7 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
        IF ( useSHELFICE) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj) 
+          phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
      &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
          ENDDO
         ENDDO
