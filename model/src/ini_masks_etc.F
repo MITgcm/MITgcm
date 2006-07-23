@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.31 2006/02/07 11:47:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.32 2006/07/23 23:32:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,14 +10,14 @@ C     !INTERFACE:
       SUBROUTINE INI_MASKS_ETC( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_MASKS_ETC                                  
-C     | o Initialise masks and topography factors                 
+C     | SUBROUTINE INI_MASKS_ETC
+C     | o Initialise masks and topography factors
 C     *==========================================================*
-C     | These arrays are used throughout the code and describe    
-C     | the topography of the domain through masks (0s and 1s)    
-C     | and fractional height factors (0<hFac<1). The latter      
-C     | distinguish between the lopped-cell and full-step         
-C     | topographic representations.                              
+C     | These arrays are used throughout the code and describe
+C     | the topography of the domain through masks (0s and 1s)
+C     | and fractional height factors (0<hFac<1). The latter
+C     | distinguish between the lopped-cell and full-step
+C     | topographic representations.
 C     *==========================================================*
 C     \ev
 
@@ -35,24 +35,17 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_MASKS_ETC
+C     myThid  ::  Number of this instance of INI_MASKS_ETC
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables in common ==
-C     tmpfld  - Temporary array used to compute & write Total Depth
-C               has to be in common for multi threading
-      COMMON / LOCAL_INI_MASKS_ETC / tmpfld
-      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj   :: tile indices
+C     I,J,K   :: Loop counters
+C     tmpfld  :: Temporary array used to compute & write Total Depth
+      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER bi, bj
-      INTEGER  I, J, K
-#ifdef ALLOW_NONHYDROSTATIC
-      INTEGER Km1
-      _RL hFacUpper,hFacLower
-#endif
+      INTEGER I, J, K
       _RL hFacCtmp
       _RL hFacMnSz
       _RL tileArea
@@ -162,15 +155,15 @@ C       Note: if no fluid (continent) ==> ksurf = Nr+1
          DO I=1-Olx,sNx+Olx
           tmpfld(I,J,bi,bj) = 0.
           ksurfC(I,J,bi,bj) = Nr+1
-          maskH(i,j,bi,bj) = 0.
+          maskH(I,J,bi,bj) = 0.
           Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
           DO K=Nr,1,-1
            Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
      &                        + drF(k)*hFacC(I,J,K,bi,bj)
            IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
             ksurfC(I,J,bi,bj) = k
-            maskH(i,j,bi,bj) = 1.
-            tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
+            maskH(I,J,bi,bj) = 1.
+            tmpfld(I,J,bi,bj) = tmpfld(I,J,bi,bj) + 1.
            ENDIF
           ENDDO
           kLowC(I,J,bi,bj) = 0
@@ -185,11 +178,11 @@ C - end bi,bj loops.
        ENDDO
       ENDDO
 
-C     CALL PLOT_FIELD_XYRS( tmpfld, 
+C     CALL PLOT_FIELD_XYRS( tmpfld,
 C    &         'Model Depths K Index' , 1, myThid )
-      CALL PLOT_FIELD_XYRS(R_low, 
+      CALL PLOT_FIELD_XYRS(R_low,
      &         'Model R_low (ini_masks_etc)', 1, myThid)
-      CALL PLOT_FIELD_XYRS(Ro_surf, 
+      CALL PLOT_FIELD_XYRS(Ro_surf,
      &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
@@ -205,7 +198,7 @@ C         Inverse of fluid column thickness (1/r_unit)
           IF ( tmpfld(i,j,bi,bj) .LE. 0. ) THEN
            recip_Rcol(i,j,bi,bj) = 0.
           ELSE
-           recip_Rcol(i,j,bi,bj) = 1. / tmpfld(i,j,bi,bj)
+           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpfld(i,j,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -280,25 +273,25 @@ C     Masks and reciprocals of hFac[CWS]
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
-           IF (HFacC(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_HFacC(I,J,K,bi,bj) = 1. / HFacC(I,J,K,bi,bj)
+           IF (hFacC(I,J,K,bi,bj) .NE. 0. ) THEN
+            recip_hFacC(I,J,K,bi,bj) = 1. _d 0 / hFacC(I,J,K,bi,bj)
             maskC(I,J,K,bi,bj) = 1.
            ELSE
-            recip_HFacC(I,J,K,bi,bj) = 0.
+            recip_hFacC(I,J,K,bi,bj) = 0.
             maskC(I,J,K,bi,bj) = 0.
            ENDIF
-           IF (HFacW(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_HFacW(I,J,K,bi,bj) = 1. / HFacW(I,J,K,bi,bj)
+           IF (hFacW(I,J,K,bi,bj) .NE. 0. ) THEN
+            recip_hFacW(I,J,K,bi,bj) = 1. _d 0 / hFacW(I,J,K,bi,bj)
             maskW(I,J,K,bi,bj) = 1.
            ELSE
-            recip_HFacW(I,J,K,bi,bj) = 0.
+            recip_hFacW(I,J,K,bi,bj) = 0.
             maskW(I,J,K,bi,bj) = 0.
            ENDIF
-           IF (HFacS(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_HFacS(I,J,K,bi,bj) = 1. / HFacS(I,J,K,bi,bj)
+           IF (hFacS(I,J,K,bi,bj) .NE. 0. ) THEN
+            recip_hFacS(I,J,K,bi,bj) = 1. _d 0 / hFacS(I,J,K,bi,bj)
             maskS(I,J,K,bi,bj) = 1.
            ELSE
-            recip_HFacS(I,J,K,bi,bj) = 0.
+            recip_hFacS(I,J,K,bi,bj) = 0.
             maskS(I,J,K,bi,bj) = 0.
            ENDIF
           ENDDO
@@ -318,11 +311,6 @@ C-    Calculate surface k index for interface W & S (U & V points)
 C - end bi,bj loops.
        ENDDO
       ENDDO
-C     _EXCH_XYZ_R4(recip_HFacC    , myThid )
-C     _EXCH_XYZ_R4(recip_HFacW    , myThid )
-C     _EXCH_XYZ_R4(recip_HFacS    , myThid )
-C     _EXCH_XYZ_R4(maskW    , myThid )
-C     _EXCH_XYZ_R4(maskS    , myThid )
 
 C     Calculate recipricols grid lengths
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -330,75 +318,38 @@ C     Calculate recipricols grid lengths
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           IF ( dxG(I,J,bi,bj) .NE. 0. )
-     &    recip_dxG(I,J,bi,bj)=1.d0/dxG(I,J,bi,bj)
+     &    recip_dxG(I,J,bi,bj)=1. _d 0/dxG(I,J,bi,bj)
           IF ( dyG(I,J,bi,bj) .NE. 0. )
-     &    recip_dyG(I,J,bi,bj)=1.d0/dyG(I,J,bi,bj)
+     &    recip_dyG(I,J,bi,bj)=1. _d 0/dyG(I,J,bi,bj)
           IF ( dxC(I,J,bi,bj) .NE. 0. )
-     &    recip_dxC(I,J,bi,bj)=1.d0/dxC(I,J,bi,bj)
+     &    recip_dxC(I,J,bi,bj)=1. _d 0/dxC(I,J,bi,bj)
           IF ( dyC(I,J,bi,bj) .NE. 0. )
-     &    recip_dyC(I,J,bi,bj)=1.d0/dyC(I,J,bi,bj)
+     &    recip_dyC(I,J,bi,bj)=1. _d 0/dyC(I,J,bi,bj)
           IF ( dxF(I,J,bi,bj) .NE. 0. )
-     &    recip_dxF(I,J,bi,bj)=1.d0/dxF(I,J,bi,bj)
+     &    recip_dxF(I,J,bi,bj)=1. _d 0/dxF(I,J,bi,bj)
           IF ( dyF(I,J,bi,bj) .NE. 0. )
-     &    recip_dyF(I,J,bi,bj)=1.d0/dyF(I,J,bi,bj)
+     &    recip_dyF(I,J,bi,bj)=1. _d 0/dyF(I,J,bi,bj)
           IF ( dxV(I,J,bi,bj) .NE. 0. )
-     &    recip_dxV(I,J,bi,bj)=1.d0/dxV(I,J,bi,bj)
+     &    recip_dxV(I,J,bi,bj)=1. _d 0/dxV(I,J,bi,bj)
           IF ( dyU(I,J,bi,bj) .NE. 0. )
-     &    recip_dyU(I,J,bi,bj)=1.d0/dyU(I,J,bi,bj)
+     &    recip_dyU(I,J,bi,bj)=1. _d 0/dyU(I,J,bi,bj)
           IF ( rA(I,J,bi,bj) .NE. 0. )
-     &    recip_rA(I,J,bi,bj)=1.d0/rA(I,J,bi,bj)
+     &    recip_rA(I,J,bi,bj)=1. _d 0/rA(I,J,bi,bj)
           IF ( rAs(I,J,bi,bj) .NE. 0. )
-     &    recip_rAs(I,J,bi,bj)=1.d0/rAs(I,J,bi,bj)
+     &    recip_rAs(I,J,bi,bj)=1. _d 0/rAs(I,J,bi,bj)
           IF ( rAw(I,J,bi,bj) .NE. 0. )
-     &    recip_rAw(I,J,bi,bj)=1.d0/rAw(I,J,bi,bj)
+     &    recip_rAw(I,J,bi,bj)=1. _d 0/rAw(I,J,bi,bj)
           IF ( rAz(I,J,bi,bj) .NE. 0. )
-     &    recip_rAz(I,J,bi,bj)=1.d0/rAz(I,J,bi,bj)
+     &    recip_rAz(I,J,bi,bj)=1. _d 0/rAz(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C     Do not need these since above denominators are valid over full range
-C     _EXCH_XY_R4(recip_dxG, myThid )
-C     _EXCH_XY_R4(recip_dyG, myThid )
-C     _EXCH_XY_R4(recip_dxC, myThid )
-C     _EXCH_XY_R4(recip_dyC, myThid )
-C     _EXCH_XY_R4(recip_dxF, myThid )
-C     _EXCH_XY_R4(recip_dyF, myThid )
-C     _EXCH_XY_R4(recip_dxV, myThid )
-C     _EXCH_XY_R4(recip_dyU, myThid )
-C     _EXCH_XY_R4(recip_rAw, myThid )
-C     _EXCH_XY_R4(recip_rAs, myThid )
 
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Calculate the reciprocal hfac distance/volume for W cells
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         Km1=max(K-1,1)
-         hFacUpper=drF(Km1)/(drF(Km1)+drF(K))
-         IF (Km1.EQ.K) hFacUpper=0.
-         hFacLower=drF(K)/(drF(Km1)+drF(K))
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
-            IF (hFacC(I,J,K,bi,bj).LE.0.5) THEN
-            recip_hFacU(I,J,K,bi,bj)=
-     &         hFacUpper+hFacLower*hFacC(I,J,K,bi,bj)
-            ELSE
-             recip_hFacU(I,J,K,bi,bj)=1.
-            ENDIF
-           ELSE
-            recip_hFacU(I,J,K,bi,bj)=0.
-           ENDIF
-           IF (recip_hFacU(I,J,K,bi,bj).NE.0.)
-     &      recip_hFacU(I,J,K,bi,bj)=1./recip_hFacU(I,J,K,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-C     _EXCH_XY_R4(recip_hFacU, myThid )
-#endif
-C
+c #ifdef ALLOW_NONHYDROSTATIC
+C--   Calculate "recip_hFacU" = reciprocal hfac distance/volume for W cells
+C     not used ; computed locally in CALC_GW
+c #endif
+
       RETURN
       END

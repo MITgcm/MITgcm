@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.31 2006/06/07 01:55:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.32 2006/07/23 23:32:50 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -352,7 +352,7 @@ C              averaging but are just a convient quantity for I/O,
 C              diagnostics etc.. As such xc is in m for cartesian 
 C              coordinates but degrees for spherical polar.
 C     yC     - Y-coordinate of center of cell f[X,Y].
-C     yG     - Y-coordinate of corner of cell ( c-grid vorticity point) f[X,Y]. 
+C     yG     - Y-coordinate of corner of cell ( c-grid vorticity point) f[X,Y].
 C     xC0, yC0 - West edge x coord  ( metres or degrees )
 C                South edge y coord ( metres or degrees )
 C     rA     - R-face are f[X,Y] ( m^2 ).
@@ -377,7 +377,7 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GRID_R/
-     &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
+     &  cosfacU,cosfacV,sqCosfacU,sqCosfacV,
      &  gravitySign, rkSign, globalArea,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,hFacC,hFacW,hFacS,
@@ -386,8 +386,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
 #endif /* ALLOW_DEPTH_CONTROL */
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
-     &  recip_Rcol, 
-     &  recip_hFacC,recip_hFacW,recip_hFacS, 
+     &  recip_Rcol,
+     &  recip_hFacC,recip_hFacW,recip_hFacS,
      &  saFac,
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
      &  maskH, maskC,maskW,maskS,
@@ -398,8 +398,8 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  fCori, fCoriG, fCoriCos
       _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
       _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqcosfacU(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqcosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqCosfacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqCosfacV(1-Oly:sNy+Oly,nSx,nSy)
       _RL gravitySign
       _RL rkSign
       _RL globalArea
@@ -464,9 +464,3 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-
-#ifdef ALLOW_NONHYDROSTATIC
-      COMMON /GRID_NH/
-     &  recip_hFacU
-      _RS recip_hFacU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-#endif

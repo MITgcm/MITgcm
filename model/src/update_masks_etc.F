@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.1 2006/06/07 01:45:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.2 2006/07/23 23:32:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,9 +9,9 @@ C     !INTERFACE:
       SUBROUTINE UPDATE_MASKS_ETC( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE UPDATE_MASKS_ETC                                  
-C     | o Re-initialise masks and topography factors after a new 
-C     |   hFacC has been calculated by the minimizer                 
+C     | SUBROUTINE UPDATE_MASKS_ETC
+C     | o Re-initialise masks and topography factors after a new
+C     |   hFacC has been calculated by the minimizer
 C     *==========================================================*
 C     | These arrays are used throughout the code and describe    
 C     | the topography of the domain through masks (0s and 1s)    
@@ -43,25 +43,13 @@ C     myThid -  Number of this instance of INI_MASKS_ETC
 
 #ifdef ALLOW_DEPTH_CONTROL
 C     !LOCAL VARIABLES:
-C     == Local variables in common ==
-C     tmpfld  - Temporary array used to compute & write Total Depth
-C               has to be in common for multi threading
-      COMMON / LOCAL_INI_MASKS_ETC / tmpfld
-      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     == Local variables ==
-C     bi,bj  - Loop counters
+C     bi,bj   :: Loop counters
 C     I,J,K
+C     tmpfld  :: Temporary array used to compute & write Total Depth
       INTEGER bi, bj
-      INTEGER  I, J, K
-#ifdef ALLOW_NONHYDROSTATIC
-      INTEGER Km1
-      _RL hFacUpper,hFacLower
-#endif
-#ifdef ALLOW_NONHYDROSTATIC
-CML   new auxilliary variable
-      _RL recip_hFacU_tmp
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-#endif
+      INTEGER I, J, K
+      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) suff
 Cml(
       INTEGER Im1, Jm1
@@ -174,9 +162,9 @@ C    &         'Model Depths K Index' , 1, myThid )
 CML I assume that R_low is not changed anywhere else in the code
 CML and since it is not changed in this routine, we don't need to 
 CML print it again.
-CML      CALL PLOT_FIELD_XYRS(R_low, 
+CML      CALL PLOT_FIELD_XYRS(R_low,
 CML     &         'Model R_low (ini_masks_etc)', 1, myThid)
-      CALL PLOT_FIELD_XYRS(Ro_surf, 
+      CALL PLOT_FIELD_XYRS(Ro_surf,
      &         'Model Ro_surf (update_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
@@ -190,7 +178,7 @@ C         Inverse of fluid column thickness (1/r_unit)
           IF ( tmpfld(i,j,bi,bj) .LE. 0. ) THEN
            recip_Rcol(i,j,bi,bj) = 0.
           ELSE
-           recip_Rcol(i,j,bi,bj) = 1. / tmpfld(i,j,bi,bj)
+           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpfld(i,j,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -238,10 +226,10 @@ Cml              hFacS(I,J,K,bi,bj)=
               hFacS(I,J,K,bi,bj)=maskS(I,J,K,bi,bj)*
 #ifdef USE_SMOOTH_MIN
      &           smoothMin_R4(hFacC(I,J,K,bi,bj),hFacC(I,Jm1,K,bi,bj))
-#else            
+#else
      &                    MIN(hFacC(I,J,K,bi,bj),hFacC(I,Jm1,K,bi,bj))
 #endif /* USE_SMOOTH_MIN */
-           ENDIF	
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -303,7 +291,7 @@ Cml   optimization!
           DO I=1-Olx,sNx+Olx
            IF (hFacC(I,J,K,bi,bj) .NE. 0. ) THEN
 Cml           IF (maskC(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_hFacC(I,J,K,bi,bj) = 1. / hFacC(I,J,K,bi,bj)
+            recip_hFacC(I,J,K,bi,bj) = 1. _d 0 / hFacC(I,J,K,bi,bj)
 Cml            maskC(I,J,K,bi,bj) = 1.
            ELSE
             recip_hFacC(I,J,K,bi,bj) = 0.
@@ -311,7 +299,7 @@ Cml            maskC(I,J,K,bi,bj) = 0.
            ENDIF
            IF (hFacW(I,J,K,bi,bj) .NE. 0. ) THEN
 Cml           IF (maskW(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_hFacW(I,J,K,bi,bj) = 1. / Hfacw(I,J,K,bi,bj)
+            recip_hFacW(I,J,K,bi,bj) = 1. _d 0 / hFacw(I,J,K,bi,bj)
 Cml            maskW(I,J,K,bi,bj) = 1.
            ELSE
             recip_hFacW(I,J,K,bi,bj) = 0.
@@ -319,7 +307,7 @@ Cml            maskW(I,J,K,bi,bj) = 0.
            ENDIF
            IF (hFacS(I,J,K,bi,bj) .NE. 0. ) THEN
 Cml           IF (maskS(I,J,K,bi,bj) .NE. 0. ) THEN
-            recip_hFacS(I,J,K,bi,bj) = 1. / hFacS(I,J,K,bi,bj)
+            recip_hFacS(I,J,K,bi,bj) = 1. _d 0 / hFacS(I,J,K,bi,bj)
 Cml            maskS(I,J,K,bi,bj) = 1.
            ELSE
             recip_hFacS(I,J,K,bi,bj) = 0.
@@ -361,54 +349,12 @@ Cml           IF (hFacS(I,J,K,bi,bj).NE.0.) THEN
 C - end bi,bj loops.
        ENDDO
       ENDDO
-C     _EXCH_XYZ_R4(recip_hFacC    , myThid )
-C     _EXCH_XYZ_R4(recip_hFacW    , myThid )
-C     _EXCH_XYZ_R4(recip_hFacS    , myThid )
-C     _EXCH_XYZ_R4(maskW    , myThid )
-C     _EXCH_XYZ_R4(maskS    , myThid )
 
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Calculate the reciprocal hfac distance/volume for W cells
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         Km1=max(K-1,1)
-CML   Changed if-statement
-         IF (Km1.EQ.K) THEN
-            hFacUpper=0.
-         ELSE
-            hFacUpper=drF(Km1)/(drF(Km1)+drF(K))
-         ENDIF
-         hFacLower=drF(K)/(drF(Km1)+drF(K))
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           recip_hFacU_tmp = 0.
-           IF (hFacC(I,J,K,bi,bj).EQ.0.) THEN
-              recip_hFacU_tmp=0.
-           ELSEIF(hFacC(I,J,K,bi,bj).GT.0. 
-     &             .AND. hFacC(I,J,K,bi,bj).LE.0.5) THEN
-            recip_hFacU_tmp=
-     &         hFacUpper+hFacLower*hFacC(I,J,K,bi,bj)
-           ELSEIF (hFacC(I,J,K,bi,bj).GT.0.5) THEN
-            recip_hFacU_tmp=1.
-           ELSE
-            WRITE(msgBuf,'(A,3I4)') 'negative hFacC at ',I,J,K
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &           SQUEEZE_RIGHT , 1)
-           ENDIF
-           IF (recip_hFacU_tmp.NE.0.) THEN
-            recip_hFacU(I,J,K,bi,bj)=1./recip_hFacU_tmp
-           ELSE
-            recip_hFacU(I,J,K,bi,bj)=0.
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-C     _EXCH_XY_R4(recip_hFacU, myThid )
-#endif
-C
+c #ifdef ALLOW_NONHYDROSTATIC
+C--   Calculate "recip_hFacU" = reciprocal hfac distance/volume for W cells
+C     not used ; computed locally in CALC_GW
+c #endif
+
 #endif /* ALLOW_DEPTH_CONTROL */
       RETURN
       END
@@ -447,7 +393,7 @@ Cml      smoothMin_R8 = MIN(a,b)
       end
 
       _RS function smoothAbs_R4( x )
-      
+
       implicit none
 C     === Global variables ===
 #include "SIZE.h"
@@ -484,7 +430,7 @@ c
       end 
 
       _RL function smoothAbs_R8( x )
-      
+
       implicit none
 C     === Global variables ===
 #include "SIZE.h"
@@ -507,7 +453,7 @@ c     limit of smoothMin(a,b) = min(a,b)
             sf  = 0.D0
             rsf = 0.D0
          end if
-c     
+c
          if ( x .ge. smoothAbsFuncRange ) then
             smoothAbs_R8 = x
          else if ( x .le. -smoothAbsFuncRange ) then
@@ -532,7 +478,7 @@ Cml#endif /* ALLOW_DEPTH_CONTROL */
 Cml      subroutine limit_hfacc_to_one( hf )
 Cml
 Cml      _RL hf
-Cml      
+Cml
 Cml      if ( hf .gt. 1. _d 0 ) then
 Cml       hf = 1. _d 0
 Cml      endif
@@ -543,7 +489,7 @@ Cml
 Cml      subroutine adlimit_hfacc_to_one( hf, adhf )
 Cml
 Cml      _RL hf, adhf
-Cml      
+Cml
 Cml      return
 Cml      end
 
@@ -557,13 +503,4 @@ cadj SUBROUTINE dummy_in_hfac INFLUENCED
 cadj SUBROUTINE dummy_in_hfac ADNAME  = addummy_in_hfac
 cadj SUBROUTINE dummy_in_hfac FTLNAME = g_dummy_in_hfac
 #endif /* ALLOW_DEPTH_CONTROL */
-
-
-
-
-
-
-
-
-
 
