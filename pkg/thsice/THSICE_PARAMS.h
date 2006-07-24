@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.6 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.7 2006/07/24 20:30:54 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -33,8 +33,9 @@ C     Lfresh    ::   latent heat of melting of pure ice (J/kg)
 C .. Enthalpy
 C     qsnow     ::   snow enthalpy (J/kg)
 C .. Albedo
-C     albColdSnow :: albedo of cold (=dry) new snow (Tsfc < -10)
+C     albColdSnow :: albedo of cold (=dry) new snow (Tsfc < tempSnowAlb)
 C     albWarmSnow :: albedo of warm (=wet) new snow (Tsfc = 0)
+C     tempSnowAlb :: temperature transition from ColdSnow to WarmSnow Alb. (oC)
 C     albOldSnow  :: albedo of old snow (snowAge > 35.d)
 C     albIceMax   :: max albedo of bare ice (thick ice)
 C     albIceMin   :: minimum ice albedo (very thin ice)
@@ -71,9 +72,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albColdSnow, albWarmSnow, albOldSnow,
+     &  albColdSnow, albWarmSnow, tempSnowAlb,
+     &  albOldSnow, hNewSnowAge, snowAgTime,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
-     &  hNewSnowAge, snowAgTime,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
      &  Tf0kel, Tmlt1,
@@ -95,13 +96,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL  qsnow
       _RL  albColdSnow
       _RL  albWarmSnow
+      _RL  tempSnowAlb
       _RL  albOldSnow
+      _RL  hNewSnowAge
+      _RL  snowAgTime
       _RL  albIceMax
       _RL  albIceMin
       _RL  hAlbIce
       _RL  hAlbSnow
-      _RL  hNewSnowAge
-      _RL  snowAgTime
       _RL  i0
       _RL  ksolar
       _RL  saltice

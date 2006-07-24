@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.4 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.5 2006/07/24 20:30:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -109,11 +109,15 @@ C-end LANL albedo calculation
 C--   GISS model albedo calculation
 c     albice = 0.7 _d 0
 
-C-    New snow: (linear) transition between -10.oC and 0.oC
+C-    New snow: (linear) transition between tempSnowAlb (oC) and 0.oC
 C      from cold/dry snow albedo to warm/wet snow albedo
-      albNewSnow = albColdSnow
+      IF ( tempSnowAlb.LT.0. _d 0 ) THEN
+        albNewSnow = albColdSnow
      &      + (albWarmSnow - albColdSnow)
-     &       *MAX( 0. _d 0, 1. _d 0 + MIN(Tsf/10. _d 0, 0. _d 0) )
+     &       *MAX( 0. _d 0, MIN(1. _d 0 - Tsf/tempSnowAlb, 1. _d 0) )
+      ELSE
+        albNewSnow = albColdSnow
+      ENDIF
 C-    albedo of snow is function of snow-age (make age units into days):
       albsno = albOldSnow
      &       +(albNewSnow-albOldSnow)*EXP(-0.2 _d 0*age/86400. _d 0)

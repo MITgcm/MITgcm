@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.9 2006/06/25 22:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.10 2006/07/24 20:30:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,8 +49,8 @@ C--   Th-Sea-ICE parameter
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albColdSnow, albWarmSnow, albOldSnow,
-     &  hNewSnowAge, snowAgTime,
+     &  albColdSnow, albWarmSnow, tempSnowAlb,
+     &  albOldSnow, hNewSnowAge, snowAgTime,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
@@ -96,6 +96,7 @@ C--   Default values (constants)
       qsnow    = Lfresh
       albColdSnow= 0.85 _d 0
       albWarmSnow= 0.70 _d 0
+      tempSnowAlb= -10. _d 0
       albOldSnow = 0.55 _d 0
       albIceMax  = 0.65 _d 0
       albIceMin  = 0.20 _d 0
@@ -227,13 +228,14 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: qsnow   =',qsnow
       WRITE(iUnit,*) 'ThSI: albColdSnow=',albColdSnow
       WRITE(iUnit,*) 'ThSI: albWarmSnow=',albWarmSnow
+      WRITE(iUnit,*) 'ThSI: tempSnowAlb=',tempSnowAlb
       WRITE(iUnit,*) 'ThSI: albOldSnow =',albOldSnow
+      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
+      WRITE(iUnit,*) 'ThSI: snowAgTime =',snowAgTime
       WRITE(iUnit,*) 'ThSI: albIceMax =',albIceMax
       WRITE(iUnit,*) 'ThSI: albIceMin =',albIceMin
       WRITE(iUnit,*) 'ThSI: hAlbIce   =',hAlbIce
       WRITE(iUnit,*) 'ThSI: hAlbSnow  =',hAlbSnow
-      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
-      WRITE(iUnit,*) 'ThSI: snowAgTime =',snowAgTime
       WRITE(iUnit,*) 'ThSI: i0      =',i0
       WRITE(iUnit,*) 'ThSI: ksolar  =',ksolar
       WRITE(iUnit,*) 'ThSI: saltice =',saltice
