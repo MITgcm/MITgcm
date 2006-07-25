@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.7 2005/04/06 18:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.8 2006/07/25 22:22:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,7 +48,7 @@ C     I,J,K
       _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL oldPhi  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL count, rmspp, rmsppold 
+      _RL count, rmspp, rmsppold
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -56,11 +56,11 @@ CEOP
       iMax = sNx+OLx
       jMin = 1-OLy
       jMax = sNy+OLy
-      
+
       WRITE(msgBuf,'(a)')
      &     'Start initial hydrostatic pressure computation'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &     SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , myThid)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k = 1,Nr
@@ -105,14 +105,14 @@ C     for each level save old pressure and compute new pressure
            ENDDO
            CALL CALC_PHI_HYD(
      I          bi, bj, iMin, iMax, jMin, jMax, k,
-     I          theta, salt, 
+     I          theta, salt,
      U          phiHydF,
      O          phiHydC, dPhiHydX, dPhiHydY,
      I          startTime, nIter0, myThid)
 C     compute convergence criterion
            DO j=jMin,jMax
             DO i=iMin,iMax
-             rmspp = rmspp 
+             rmspp = rmspp
      &            + (totPhiHyd(i,j,k,bi,bj)-oldPhi(i,j))**2
              count = count + maskC(i,j,k,bi,bj)
             ENDDO
@@ -125,7 +125,7 @@ Cml        WRITE(msgBuf,'(I10.10)') npiter
 Cml        CALL WRITE_FLD_XYZ_RL( 'POLD.',msgBuf,pold,npiter,myThid)
 Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
         _GLOBAL_SUM_R8( rmspp, myThid )
-        _GLOBAL_SUM_R8( count, myThid )  
+        _GLOBAL_SUM_R8( count, myThid )
         IF ( count .EQ. 0. ) THEN
            rmspp = 0. _d 0
         ELSE
@@ -133,8 +133,8 @@ Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
         ENDIF
         WRITE(msgBuf,'(a,i2,a,e20.13)')
      &       'Iteration ', npiter, ', RMS-difference = ', rmspp
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &       SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
 
 C --   end npiter loop
        ENDDO
@@ -142,29 +142,29 @@ C     print some diagnostics
        IF ( rmspp .ne. 0. ) THEN
         IF ( rmspp .EQ. rmsppold ) THEN
          WRITE(msgBuf,'(A)')
-     &      'Initial hydrostatic pressure did not converge perfectly,' 
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &        SQUEEZE_RIGHT , 1)
+     &      'Initial hydrostatic pressure did not converge perfectly,'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid)
          WRITE(msgBuf,'(A)')
      &      'but the RMS-difference is constant, indicating that the'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &        SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid)
          WRITE(msgBuf,'(A)')
-     &      'algorithm converged within machine precision.'    
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &        SQUEEZE_RIGHT , 1)
+     &      'algorithm converged within machine precision.'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid)
         ELSE
          WRITE(msgBuf,'(A,I2,A)')
-     &       'Initial hydrostatic pressure did not converge after ', 
+     &       'Initial hydrostatic pressure did not converge after ',
      &          npiter-1, ' steps'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PRESSURE'
         ENDIF
        ENDIF
        WRITE(msgBuf,'(A)')
-     &     'Initial hydrostatic pressure converged.' 
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &      SQUEEZE_RIGHT , 1)
+     &     'Initial hydrostatic pressure converged.'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , myThid)
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -174,14 +174,14 @@ C     print a message and DO nothing
        WRITE(msgBuf,'(A,A)')
      &        'Pressure is predetermined for buoyancyRelation ',
      &        buoyancyRelation(1:11)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &      SQUEEZE_RIGHT , 1)
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , myThid)
 
       ENDIF
 
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &     SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , myThid)
 
-      RETURN 
+      RETURN
       END
