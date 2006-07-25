@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.28 2006/07/20 23:11:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.29 2006/07/25 22:15:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,6 +108,8 @@ C--   Set everything to zero everywhere
        ENDDO
       ENDDO
 
+C--   Everyone must wait for the initialisation to be done
+      _BARRIER
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. readgrid_mnc) THEN
