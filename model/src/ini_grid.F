@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.27 2005/11/07 18:26:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.28 2006/07/25 22:23:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,11 +19,12 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "GRID.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif
@@ -82,47 +83,69 @@ C     Set up horizontal grid and coordinate system
       ENDIF
 
 #ifdef ALLOW_MONITOR
-      mon_write_stdout = .FALSE.
-      mon_write_mnc    = .FALSE.
-      IF (monitor_stdio) THEN
-        mon_write_stdout = .TRUE.
-      ENDIF
-      
+#ifdef ALLOW_USE_MPI
+      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        _BEGIN_MASTER(myThid)
+C--   only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+        IF (monitor_stdio) THEN
+          mon_write_stdout = .TRUE.
+        ELSE
+          mon_write_stdout = .FALSE.
+        ENDIF
+        mon_write_mnc = .FALSE.
 #ifdef ALLOW_MNC
-      IF (useMNC .AND. monitor_mnc) THEN
-        DO i = 1,MAX_LEN_MBUF
-          mon_fname(i:i) = ' '
-        ENDDO
-        mon_fname(1:12) = 'monitor_grid'
-        CALL MNC_CW_SET_UDIM(mon_fname, 1, myThid)
-        mon_write_mnc = .TRUE.
-      ENDIF
+        IF (useMNC .AND. monitor_mnc) THEN
+          DO i = 1,MAX_LEN_MBUF
+            mon_fname(i:i) = ' '
+          ENDDO
+          mon_fname(1:12) = 'monitor_grid'
+          CALL MNC_CW_SET_UDIM(mon_fname, 1, myThid)
+          mon_write_mnc = .TRUE.
+        ENDIF
 #endif /*  ALLOW_MNC  */
-      
+
+        _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+
 C     Print out statistics of each horizontal grid array (helps when
 C     debugging)
-      CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
-      CALL MON_PRINTSTATS_RS(1,XG,'XG',myThid)
-      CALL MON_PRINTSTATS_RS(1,DXC,'DXC',myThid)
-      CALL MON_PRINTSTATS_RS(1,DXF,'DXF',myThid)
-      CALL MON_PRINTSTATS_RS(1,DXG,'DXG',myThid)
-      CALL MON_PRINTSTATS_RS(1,DXV,'DXV',myThid)
-      CALL MON_PRINTSTATS_RS(1,YC,'YC',myThid)
-      CALL MON_PRINTSTATS_RS(1,YG,'YG',myThid)
-      CALL MON_PRINTSTATS_RS(1,DYC,'DYC',myThid)
-      CALL MON_PRINTSTATS_RS(1,DYF,'DYF',myThid)
-      CALL MON_PRINTSTATS_RS(1,DYG,'DYG',myThid)
-      CALL MON_PRINTSTATS_RS(1,DYU,'DYU',myThid)
-      CALL MON_PRINTSTATS_RS(1,RA,'RA',myThid)
-      CALL MON_PRINTSTATS_RS(1,RAW,'RAW',myThid)
-      CALL MON_PRINTSTATS_RS(1,RAS,'RAS',myThid)
-      CALL MON_PRINTSTATS_RS(1,RAZ,'RAZ',myThid)
+      CALL MON_PRINTSTATS_RS(1,xC,'XC',myThid)
+      CALL MON_PRINTSTATS_RS(1,xG,'XG',myThid)
+      CALL MON_PRINTSTATS_RS(1,dxC,'DXC',myThid)
+      CALL MON_PRINTSTATS_RS(1,dxF,'DXF',myThid)
+      CALL MON_PRINTSTATS_RS(1,dxG,'DXG',myThid)
+      CALL MON_PRINTSTATS_RS(1,dxV,'DXV',myThid)
+      CALL MON_PRINTSTATS_RS(1,yC,'YC',myThid)
+      CALL MON_PRINTSTATS_RS(1,yG,'YG',myThid)
+      CALL MON_PRINTSTATS_RS(1,dyC,'DYC',myThid)
+      CALL MON_PRINTSTATS_RS(1,dyF,'DYF',myThid)
+      CALL MON_PRINTSTATS_RS(1,dyG,'DYG',myThid)
+      CALL MON_PRINTSTATS_RS(1,dyU,'DYU',myThid)
+      CALL MON_PRINTSTATS_RS(1,rA,'RA',myThid)
+      CALL MON_PRINTSTATS_RS(1,rAw,'RAW',myThid)
+      CALL MON_PRINTSTATS_RS(1,rAs,'RAS',myThid)
+      CALL MON_PRINTSTATS_RS(1,rAz,'RAZ',myThid)
       CALL MON_PRINTSTATS_RS(1,angleCosC,'AngleCS',myThid)
       CALL MON_PRINTSTATS_RS(1,angleSinC,'AngleSN',myThid)
 
-      mon_write_stdout = .FALSE.
-      mon_write_mnc    = .FALSE.
-#endif
+#ifdef ALLOW_USE_MPI
+      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        _BEGIN_MASTER(myThid)
+
+        mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
+
+        _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+#endif /* ALLOW_MONITOR */
 
       RETURN
       END
