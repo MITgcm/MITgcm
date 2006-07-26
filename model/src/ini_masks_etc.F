@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.32 2006/07/23 23:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.33 2006/07/26 22:01:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,10 +220,14 @@ C     hFacW and hFacS (at U and V points)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO K=1, Nr
          DO J=1-Oly,sNy+Oly
+          hFacW(1-OLx,J,K,bi,bj)= 0.
           DO I=2-Olx,sNx+Olx
            hFacW(I,J,K,bi,bj)=
      &       MIN(hFacC(I,J,K,bi,bj),hFacC(I-1,J,K,bi,bj))
           ENDDO
+         ENDDO
+         DO I=1-Olx,sNx+Olx
+           hFacS(I,1-OLy,K,bi,bj)= 0.
          ENDDO
          DO J=2-Oly,sNy+oly
           DO I=1-Olx,sNx+Olx
@@ -348,7 +352,7 @@ C     Calculate recipricols grid lengths
 
 c #ifdef ALLOW_NONHYDROSTATIC
 C--   Calculate "recip_hFacU" = reciprocal hfac distance/volume for W cells
-C     not used ; computed locally in CALC_GW
+C NOTE:  not used ; computed locally in CALC_GW
 c #endif
 
       RETURN
