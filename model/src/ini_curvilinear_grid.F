@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.29 2006/07/25 22:15:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.30 2006/07/26 23:52:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+C- note: default is to use "new" grid files (OLD_GRID_IO undef)
+C   but can still use (on 1 cpu, with MDSIO) OLD_GRID_IO and EXCH2 independently
+#undef OLD_GRID_IO
 
 CBOP
 C     !ROUTINE: INI_CURVILINEAR_GRID
@@ -34,14 +37,6 @@ C     === Global variables ===
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-
-#ifndef ALLOW_EXCH2
-C- note: default is to use "new" grid files (OLD_GRID_IO undef) with EXCH2
-C    but can still use (on 1 cpu) OLD_GRID_IO and EXCH2 independently
-#ifdef ALLOW_MDSIO
-#define OLD_GRID_IO
-#endif
-#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -110,61 +105,6 @@ C--   Set everything to zero everywhere
 
 C--   Everyone must wait for the initialisation to be done
       _BARRIER
-
-#ifdef ALLOW_MNC
-      IF (useMNC .AND. readgrid_mnc) THEN
-
-        _BEGIN_MASTER(myThid)
-        DO i = 1,80
-          mncFn(i:i) = ' '
-        ENDDO
-        write(mncFn,'(a)') 'mitgrid'
-        DO i = 1,MAX_LEN_MBUF
-          msgBuf(i:i) = ' '
-        ENDDO
-        WRITE(msgBuf,'(2A)') msgBuf,' ; Reading grid info using MNC'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        CALL MNC_FILE_CLOSE_ALL_MATCHING(mncFn, myThid)
-        CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
-        CALL MNC_CW_SET_CITER(mncFn, 2, -1, -1, -1, myThid)
-        CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'XC', xC,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'XG', xG,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'YC', yC,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'YG', yG,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxC',dxC, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyC',dyC, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxF',dxF, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyF',dyF, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxG',dxG, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyG',dyG, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxV',dxV, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyU',dyU, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rA', rA,  myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAz',rAz, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAw',rAw, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',rAs, myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleCS',angleCosC,myThid)
-        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleSN',angleSinC,myThid)
-        anglesAreSet = .TRUE.
-
-        _END_MASTER(myThid)
-
-        CALL EXCH_XY_RS(xC,myThid)
-        CALL EXCH_XY_RS(yC,myThid)
-        CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
-        CALL EXCH_XY_RS(rA,myThid )
-        CALL EXCH_Z_XY_RS(xG,myThid)
-        CALL EXCH_Z_XY_RS(yG,myThid)
-        CALL EXCH_Z_XY_RS(rAz,myThid)
-        CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
-        CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
-        CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
-        CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
-
-      ELSE
-#endif
 
 C     Here we make no assumptions about grid symmetry and simply
 C     read the raw grid data from files
@@ -262,18 +202,6 @@ C-    Staggered (u,v pairs) quantities
 
       CALL MDSREADFIELD('RAW.bin',readBinaryPrec,'RS',1,rAw,  1,myThid)
       CALL MDSREADFIELD('RAS.bin',readBinaryPrec,'RS',1,rAs,  1,myThid)
-      IF (useCubedSphereExchange) THEN
-cs-   this block needed by cubed sphere until we write more useful I/O routines
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1,sNy
-c        rAw(sNx+1,J,bi,bj)=rAw(1,J,bi,bj)
-c        rAs(J,sNy+1,bi,bj)=rAs(J,1,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
-cs-   end block
-      ENDIF
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
 
       CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,dxG,  1,myThid)
@@ -304,6 +232,48 @@ c     write(10) dyG
 C--   Only do I/O if I am the master thread
       _BEGIN_MASTER(myThid)
 
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. readgrid_mnc) THEN
+C--   read NetCDF files:
+
+        DO i = 1,80
+          mncFn(i:i) = ' '
+        ENDDO
+        write(mncFn,'(a)') 'mitgrid'
+        DO i = 1,MAX_LEN_MBUF
+          msgBuf(i:i) = ' '
+        ENDDO
+        WRITE(msgBuf,'(2A)') msgBuf,' ; Reading grid info using MNC'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(mncFn, myThid)
+        CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
+        CALL MNC_CW_SET_CITER(mncFn, 2, -1, -1, -1, myThid)
+        CALL MNC_CW_SET_UDIM(mncFn, 1, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XC', xC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'XG', xG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YC', yC,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'YG', yG,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxC',dxC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyC',dyC, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxF',dxF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyF',dyF, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxG',dxG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyG',dyG, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dxV',dxV, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'dyU',dyU, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rA', rA,  myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAz',rAz, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAw',rAw, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'rAs',rAs, myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleCS',angleCosC,myThid)
+        CALL MNC_CW_RS_R('D',mncFn,0,0,'AngleSN',angleSinC,myThid)
+        anglesAreSet = .TRUE.
+
+      ELSE
+C--   read Binary files:
+#endif /* ALLOW_MNC */
+
       DO bj = 1,nSy
        DO bi = 1,nSx
         iG=bi+(myXGlobalLo-1)/sNx
@@ -328,61 +298,61 @@ C--   Only do I/O if I am the master thread
      &                      SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)') '  =>'
 
-        CALL READSYMTILE_RS(fName,1,xC,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,1,xC,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
-        CALL READSYMTILE_RS(fName,2,yC,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,2,yC,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'yC'
-        CALL READSYMTILE_RS(fName,3,dxF,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,3,dxF,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxF'
-        CALL READSYMTILE_RS(fName,4,dyF,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,4,dyF,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyF'
-        CALL READSYMTILE_RS(fName,5,rA,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,5,rA,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rA'
-        CALL READSYMTILE_RS(fName,6,xG,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,6,xG,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'xG'
-        CALL READSYMTILE_RS(fName,7,yG,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,7,yG,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'yG'
-        CALL READSYMTILE_RS(fName,8,dxV,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,8,dxV,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dxV'
-        CALL READSYMTILE_RS(fName,9,dyU,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,9,dyU,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dyU'
-        CALL READSYMTILE_RS(fName,10,rAz,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,10,rAz,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAz'
-        CALL READSYMTILE_RS(fName,11,dxC,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,11,dxC,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxC'
-        CALL READSYMTILE_RS(fName,12,dyC,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,12,dyC,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyC'
-        CALL READSYMTILE_RS(fName,13,rAw,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,13,rAw,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rAw'
-        CALL READSYMTILE_RS(fName,14,rAs,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,14,rAs,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAs'
-        CALL READSYMTILE_RS(fName,15,dxG,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,15,dxG,buf,bi,bj,myThid)
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxG'
-        CALL READSYMTILE_RS(fName,16,dyG,bi,bj,buf,myThid)
+        CALL READSYMTILE_RS(fName,16,dyG,buf,bi,bj,myThid)
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyG'
 
         iLen = ILNBLNK(horizGridFile)
         IF ( iLen.GT.0 ) THEN
-         CALL READSYMTILE_RS(fName,17,angleCosC,bi,bj,buf,myThid)
+         CALL READSYMTILE_RS(fName,17,angleCosC,buf,bi,bj,myThid)
          iL = ILNBLNK(msgBuf)
          WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'AngleCS'
-         CALL READSYMTILE_RS(fName,18,angleSinC,bi,bj,buf,myThid)
+         CALL READSYMTILE_RS(fName,18,angleSinC,buf,bi,bj,myThid)
          iL = ILNBLNK(tmpBuf)
          WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'AngleSN'
          anglesAreSet = .TRUE.
@@ -395,6 +365,10 @@ C--   Only do I/O if I am the master thread
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_MNC
+      ENDIF
+#endif /* ALLOW_MNC */
 
       _END_MASTER(myThid)
 
@@ -414,10 +388,6 @@ c     CALL EXCH_Z_XY_RS(dyU,myThid)
       CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
 
 #endif /* OLD_GRID_IO */
-
-#ifdef ALLOW_MNC
-      ENDIF
-#endif /* ALLOW_MNC */
 
 C--   Stop if Angle have not been loaded but are needed :
       _BEGIN_MASTER(myThid)
@@ -482,15 +452,24 @@ C--   Now let's look at all these beasts
       RETURN
       END
 
-C --------------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE READSYMTILE_RS(fName,irec,array,bi,bj,buf,myThid)
-C     /==========================================================\
-C     | SUBROUTINE READSYMTILE_RS                                |
-C     |==========================================================|
-C     \==========================================================/
+CBOP
+C     !ROUTINE: READSYMTILE_RS
+C     !INTERFACE:
+      SUBROUTINE READSYMTILE_RS(
+     I                           fName, irec,
+     U                           array, buf,
+     I                           bi,bj, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE READSYMTILE_RS
+C     *==========================================================*
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -499,17 +478,20 @@ C     === Global variables ===
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       CHARACTER*(*) fName
       INTEGER irec
       _RS array(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      INTEGER bi,bj,myThid
 #ifdef ALLOW_EXCH2
       _RL buf(1:sNx*nSx*nPx+1)
 #else
       _RL buf(1:sNx+1,1:sNy+1)
 #endif /* ALLOW_EXCH2 */
+      INTEGER bi,bj, myThid
+CEOP
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER I,J,dUnit, iLen
       INTEGER length_of_rec
