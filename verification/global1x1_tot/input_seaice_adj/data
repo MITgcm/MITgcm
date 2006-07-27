@@ -35,7 +35,6 @@
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.true.,
- eosType='JMD95Z',
  readBinaryPrec=32,
  writeBinaryPrec=32,
  saltStepping=.TRUE.,
@@ -45,18 +44,27 @@
  implicitViscosity=.true.,
 # allowFreezing=.TRUE.,
  globalFiles=.false.,
-#ph(
  useSingleCpuIO=.TRUE.,
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
- exactConserv=.TRUE.,
+ useNHMTerms=.FALSE.,
 ### usePickupBeforeC54=.TRUE.,
  tempAdvScheme = 3,
  saltAdvScheme = 3,
-### hFacMin=0.2,
-### hFacMinDz = 50,
-#ph)
  debugLevel=1, 
+#ph(
+ eosType='JMD95P',
+ rotationPeriod=86164.,
+ rhoConst=1035.,
+ rhoConstFresh=999.8,
+## convertFW2Salt = 35.,
+ useRealFreshWaterFlux=.TRUE.,
+ exactConserv=.TRUE.,
+## hFacMin=.1,
+## hFacMinDz=30.,
+## hFacInf=0.2,
+## hFacSup=2.0,
+## nonlinFreeSurf=2,
+#ph)
  /
 
 # **************************
@@ -71,8 +79,6 @@
 # Time stepping parameters
 # ************************
  &PARM03
- calendarDumps=.TRUE.,
-#
  nIter0 = 1,
 # 1 month 31*24
 # nTimeSteps=744,
@@ -83,7 +89,7 @@
 # 2 years
 # nTimeSteps=17440,
 # 11 years
-### nTimeSteps=96398,
+# nTimeSteps=96398,
 # 12 years
 # nTimeSteps=105120,
 # 13 years

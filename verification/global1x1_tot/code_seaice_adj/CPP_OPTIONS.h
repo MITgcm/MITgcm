@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code_seaice_adj/Attic/CPP_OPTIONS.h,v 1.2 2005/06/16 15:40:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code_seaice_adj/Attic/CPP_OPTIONS.h,v 1.3 2006/07/27 01:34:40 heimbach Exp $
 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -8,6 +8,16 @@ C will be compiled.
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
+
+C********* RELEVANT CHANGES *********
+ 
+C o Nonlinear free surface
+cph#define NONLIN_FRSURF
+ 
+C o NEW OPTION to disable rStar (z*) code
+cph#define DISABLE_RSTAR_CODE
+                                                                                                                             
+C********* RELEVANT CHANGES *********
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP

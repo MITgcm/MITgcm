@@ -59,9 +59,9 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_1
       integer    nchklev_2
       integer    nchklev_3
-      parameter( nchklev_1      =  72 )
-      parameter( nchklev_2      =  42 )
-      parameter( nchklev_3      =  42 )
+      parameter( nchklev_1      =  48 )
+      parameter( nchklev_2      =  60 )
+      parameter( nchklev_3      =  48 )
 c  change to these values for very short test runs:
 cph      parameter( nchklev_1      =  24 )
 cph      parameter( nchklev_2      =  4 )
@@ -117,7 +117,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey, ikppkey, iicekey
+     &        itdkey, idynkey, igmkey, ikppkey
 
 c     ==================================================================
 c     END OF HEADER TAMC

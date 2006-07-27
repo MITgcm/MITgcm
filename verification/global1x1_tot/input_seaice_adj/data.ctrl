@@ -3,9 +3,11 @@
 # *********************
  &ctrl_nml
 #
+### doMainUnpack = .FALSE.,
  doinitxx = .TRUE.,
  doPackDiag = .TRUE.,
  doZscalePack = .TRUE.,
+ delZexp = 1.,
 #
  xx_theta_file='xx_theta',
  xx_salt_file='xx_salt',
