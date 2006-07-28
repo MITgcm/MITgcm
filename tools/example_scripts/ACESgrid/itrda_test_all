@@ -23,7 +23,7 @@ while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
     sleep 300
     minutes=$(( $minutes + 5 ))
 
-    for i in g77 ifc pgf77 ; do
+    for i in g77 ifort pgf77 ; do
 
 	JOB="eh3_"$i
         comm="echo \$M_$i"
