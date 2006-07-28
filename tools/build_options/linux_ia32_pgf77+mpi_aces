@@ -1,25 +1,36 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.2 2005/01/13 00:35:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.3 2006/07/28 15:17:05 edhill Exp $
 #  $Name:  $
+#
+#  These are the build options used with the PGI compiler for the
+#  daily testing on ACES (which are initiated by cron jobs on the "ao"
+#  head node).
+#
+#  Please note the appropriate module command:
+#
+#    module add mpich/pgi
 #
 
 
 FC='mpif77'
 CC='mpicc'
-DEFINES='-DWORDLENGTH=4 -DALLOW_USE_MPI -DALWAYS_USE_MPI'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+INCLUDES='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
 CPP='cpp  -traditional -P'
 LINK='mpif77'
-INCLUDEDIRS='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
+LIBS='-L/usr/local/pkg/mpich/mpich-pgi/lib -L/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/lib'
 
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
+    # FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform'
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+    # FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
 

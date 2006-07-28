@@ -1,31 +1,49 @@
 #!/bin/bash
 #
-#  Ed Hill
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.4 2006/07/28 15:17:05 edhill Exp $
 #
-#  tested on faulks, 20030818
+#  These are the build options used with the Intel 8.x compiler for the
+#  daily testing on ACES (which are initiated by cron jobs on the "ao"
+#  head node).
 #
-#  Build options for the intel 8.0 fortran compiler
-#  the compiler is now called ifort (not ifc) and it appears to
-#  need -DWORDLENGTH=1 and not -DWORDLENGTH=4 (which is what ifc 6.0) used to have.
+#  Please note that the appropriate module commands:
+#
+#    module add mpich/intel
+#
+#  will add /usr/local/pkg/ifc/ifc-8.0.034/lib to LD_LIBRARY_PATH
+#  which is needed by any executables generated with this optfile.
+#  The PBS -V option for exporting environment variables may also be
+#  helpful if you encounter missing-library problems.  Or,
+#  alternatively, one may choose to link with one of the intel
+#  "-static" or "-i-static" flags.
 
 
-FC=mpif77
-CC=mpicc
-DEFINES='-DWORDLENGTH=4'
-LINK=mpif77
+FC='mpif77'
+CC='mpicc'
+LINK='mpif77'
+INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include -I/usr/local/pkg/mpich/mpich-intel/include/'
+LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
-INCLUDES='-I/usr/local/pkg/mpich/mpich-intel/include -I/usr/local/pkg/ifc/ifc-8.1.018/include'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
-#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
-#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+    #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 else
-    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+    # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
+    FOPTIM='-O0 -noalign'
+    # FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
+    # FLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 fi
 
-
-
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
