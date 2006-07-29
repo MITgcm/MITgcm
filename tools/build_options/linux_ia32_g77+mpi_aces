@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_aces,v 1.1 2006/07/28 15:17:04 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_aces,v 1.2 2006/07/29 17:24:49 jmc Exp $
 #  $Name:  $
 #
-#  These are the build options used with the PGI compiler for the
+#  These are the build options used with the GNU compiler for the
 #  daily testing on ACES (which are initiated by cron jobs on the "ao"
 #  head node).
 #
