@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.95 2006/06/20 20:19:03 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.96 2006/07/29 21:02:12 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -655,6 +655,9 @@ C--   Write timer statistics
        CALL TIMER_PRINTALL( myThid )
        CALL COMM_STATS
       ENDIF
+
+C--   Check threads synchronization :
+      CALL BAR_CHECK( 9, myThid )
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('THE_MODEL_MAIN',myThid)

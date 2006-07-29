@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.45 2006/03/17 16:12:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.46 2006/07/29 21:02:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,6 +85,15 @@ C     == Routine arguments ==
       INTEGER myThid
 CEOP
 
+C-    here is a way to deliberately break the barrier syncronization
+C     by adding a BARRIER on thread XXX only ; Used to test BAR_CHECK.
+c     IF ( myThid.EQ.XXX ) THEN
+c       _BARRIER
+c       CALL SYSTEM('sleep 1')
+c     ENDIF
+C--   Check barrier synchronization:
+      CALL BAR_CHECK( 2, myThid )
+
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
@@ -169,6 +178,9 @@ C--   Post component-model configuration information to coupler
 C     and get config. info for other component(s).
       IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
 #endif
+
+C--   Check barrier synchronization:
+      CALL BAR_CHECK( 3, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

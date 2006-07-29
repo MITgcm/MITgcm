@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.50 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.51 2006/07/29 21:02:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -340,5 +340,9 @@ C--   Finally summarise the model state
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_VARIA',myThid)
 #endif
+
+C--   Check barrier synchronization:
+      CALL BAR_CHECK( 4, myThid )
+
       RETURN
       END
