@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.50 2006/06/28 21:24:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.51 2006/07/29 21:00:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,8 +11,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE PACKAGES_INIT_FIXED                            
-C     | o Does initialisation of package-related fixed fields     
+C     | SUBROUTINE PACKAGES_INIT_FIXED
+C     | o Does initialisation of package-related fixed fields
 C     *==========================================================*
 C     \ev
 
@@ -48,8 +48,6 @@ C       |-- SHAP_FILT_INIT_FIZED
 C       |
 C       |-- ZONAL_FILT_INIT
 C       |
-C       |-- ATM_DIAGNOSTICS_INIT
-C       |
 C       |-- AIM_INITIALISE
 C       |
 C       |-- GRIDALT_INITIALISE
@@ -73,6 +71,8 @@ C       |
 C       |-- THSICE_INIT_FIXED
 C       |
 C       |-- SHELFICE_INIT_FIXED
+C       |
+C       |-- MYPACKAGE_INIT_FIXED
 C       |
 C       |-- CPL_INIT_FIXED
 C       |
@@ -99,6 +99,7 @@ CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+C-    needs to call DIAGNOSTICS_INIT_EARLY before all package-diag-init calls
         CALL DIAGNOSTICS_INIT_EARLY( myThid )
         CALL DIAGNOSTICS_MAIN_INIT( myThid )
       ENDIF
@@ -252,7 +253,6 @@ C     IF (useDIC)
       IF (useRBCS) CALL RBCS_INIT_FIXED(mythid)
 #endif
 
-
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
 #endif
@@ -261,20 +261,21 @@ C     IF (useDIC)
       IF (useShelfIce) CALL SHELFICE_INIT_FIXED( myThid )
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(mythid)
+#endif
+
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
+C-    needs to call DIAGNOSTICS_INIT_FIXED after all package-diag-init calls
       IF ( useDiagnostics ) CALL DIAGNOSTICS_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_EMBED_FILES
       IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( mythid )
-#endif
-
-#ifdef ALLOW_MYPACKAGE
-      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(mythid)
 #endif
 
       RETURN
