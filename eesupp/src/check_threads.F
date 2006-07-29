@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.13 2004/03/27 03:51:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.14 2006/07/29 20:58:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -93,6 +93,9 @@ C       but this causes KAP to insert a call to mppjoin - which then deadlocks!
        GOTO 10
       ENDIF
    11 CONTINUE
+
+C--   check barrier synchronization: 1rst (initial) call.
+      CALL BAR_CHECK( 1, myThid )
 
       RETURN
       END
