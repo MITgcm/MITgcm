@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.16 2005/12/22 00:56:49 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.17 2006/07/29 22:57:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -77,7 +77,7 @@ C      forked within mpirun - now thats an open standard!
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
-     &        'S/R INI_PROCS: MPI_INIT return code',
+     &        'S/R EEBOOT_MINIMAL: MPI_INIT return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
@@ -110,7 +110,7 @@ C--    Get my process number
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
-     &        'S/R INI_PROCS: MPI_COMM_RANK return code',
+     &        'S/R EEBOOT_MINIMAL: MPI_COMM_RANK return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
@@ -132,8 +132,8 @@ C      find out about processes that did not start up.
        CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
-     &        'S/R INI_PROCS: MPI_BARRIER return code',
+        WRITE(msgBuffer,'(A,I6)')
+     &        'S/R EEBOOT_MINIMAL: MPI_BARRIER return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
@@ -143,8 +143,8 @@ C--    Get number of MPI processes
        CALL MPI_COMM_SIZE ( MPI_COMM_MODEL, mpiNProcs, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
-     &        'S/R INI_PROCS: MPI_COMM_SIZE return code',
+        WRITE(msgBuffer,'(A,I6)')
+     &        'S/R EEBOOT_MINIMAL: MPI_COMM_SIZE return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
@@ -154,8 +154,13 @@ C--    Get number of MPI processes
 C--    Can not have more processes than compile time MAX_NO_PROCS
        IF ( numberOfProcs .GT. MAX_NO_PROCS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A)')
-     &  'S/R INI_PROCS: No. of processes too large'
+        WRITE(msgBuffer,'(A,2I6)')
+     &    'S/R EEBOOT_MINIMAL: Nb. of processes exceeds MAX_NO_PROCS',
+     &    numberOfProcs, MAX_NO_PROCS
+        CALL PRINT_ERROR( msgBuffer , myThid)
+        WRITE(msgBuffer,'(2A)')
+     &    ' Needs to increase MAX_NO_PROCS',
+     &    ' in file "EEPARAMS.h" and to re-compile'
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
@@ -166,8 +171,8 @@ C      is an exact match makes things easier.
        IF ( numberOfProcs .NE. nPx*nPy ) THEN
         eeBootError = .TRUE.
         nptmp = nPx*nPy
-        WRITE(msgBuffer,'(A,2I5)')
-     &  'S/R INI_PROCS: No. of processes not equal to nPx*nPy',
+        WRITE(msgBuffer,'(A,2I6)')
+     &  'S/R EEBOOT_MINIMAL: No. of processes not equal to nPx*nPy',
      &  numberOfProcs, nptmp
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
