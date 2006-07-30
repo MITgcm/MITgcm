@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.11 2005/07/09 17:19:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.12 2006/07/30 01:19:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,7 +50,7 @@ C       \end{tabular}
 C     \end{center}
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -58,18 +58,23 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      INTEGER myThid
 CEOP
 
-      integer n
+C     !LOCAL VARIABLES:
+      INTEGER n
 
-      do n=1,ndiagMax
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER( myThid )
+
+      DO n=1,ndiagMax
         kdiag(n) = 0
         cdiag(n) = '        '
         gdiag(n) = '                '
         udiag(n) = '                '
         tdiag(n) = ' '
-      enddo
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     For each output variable,
@@ -186,10 +191,13 @@ C----------------------------------------------------------------------
       udiag(22) = 'count           '
       gdiag(22) = 'SM  D   L1      '
 
-c-    set the total number of available diagnostics
+C-    set the total number of available diagnostics
       ndiagt = 22
 
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _END_MASTER( myThid )
+      _BARRIER
 
       RETURN
       END
