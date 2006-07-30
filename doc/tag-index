@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.708 2006/07/17 01:54:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.709 2006/07/30 01:04:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o change default MAX_NO_THREADS from 32 to 4 ; 
+  and stop cleanly when MAX_NO_THREADS is too small. 
+o add S/R BAR_CHECK to check multi-threaded barrier synchronization
 
 checkpoint58m_post
 o add a Non-Hydroatatic test (with 3-D Coriolis, NHMTerms, biharmonic Visc.
