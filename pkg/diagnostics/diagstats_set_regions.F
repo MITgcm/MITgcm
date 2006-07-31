@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.2 2006/01/24 02:59:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.3 2006/07/31 16:26:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -42,6 +42,7 @@ C     == Local variables ==
       INTEGER ioUnit
       INTEGER k, nbReg
       _RS     tmpVar(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      COMMON / SET_REGIONS_LOCAL / tmpVar
 #else
       LOGICAL flag
 #endif
@@ -62,8 +63,10 @@ C--   Initialize region-mask array to zero:
         ENDDO
        ENDDO
       ENDDO
+      ioUnit = -1
 
       _BEGIN_MASTER( myThid )
+      ioUnit = standardMessageUnit
 C--   Check size & parameter first:
       IF ( (diagSt_regMaskFile.NE.' ' .AND. nSetRegMskFile.EQ.0)
      & .OR.(diagSt_regMaskFile.EQ.' ' .AND. nSetRegMskFile.GT.0) ) THEN
@@ -83,18 +86,18 @@ C--   Check size & parameter first:
 
 C--   Read region-mask from file
       IF ( diagSt_regMaskFile .NE. ' ' ) THEN
+       _BARRIER
        iLen = ILNBLNK(diagSt_regMaskFile)
-       ioUnit = standardMessageUnit
-       IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(2A)')
+       IF (ioUnit.GE.0 ) WRITE(ioUnit,'(2A)')
      &   ' DIAGSTATS_SET_REGIONS: start reading region-mask file: ',
      &   diagSt_regMaskFile(1:iLen)
        DO k=1,nSetRegMskFile
 C       _BEGIN_MASTER( myThid )
-         IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(A,I3)')
+         IF (ioUnit.GE.0 )  WRITE(ioUnit,'(A,I3)')
      &   ' DIAGSTATS_SET_REGIONS:  reading set k=',k
          CALL READ_REC_XY_RS( diagSt_regMaskFile, tmpVar, k,
      &                        nIter0, myThid )
-         IF (debugLevel.GE.debLevB) WRITE(ioUnit,'(A,I3,A)')
+         IF (ioUnit.GE.0 ) WRITE(ioUnit,'(A,I3,A)')
      &   ' DIAGSTATS_SET_REGIONS:          set k=',k,' <= done'
 C       _END_MASTER( myThid )
         _EXCH_XY_RS( tmpVar, myThid )

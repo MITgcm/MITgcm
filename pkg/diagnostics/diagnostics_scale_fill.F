@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.3 2006/06/05 18:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill.F,v 1.4 2006/07/31 16:26:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -72,8 +72,8 @@ C ===============
       INTEGER region2fill(0:nRegions)
 
       IF ( bibjFlg.EQ.0 ) THEN
-        bi = 1
-        bj = 1
+        bi = myBxLo(myThid)
+        bj = myByLo(myThid)
       ELSE
         bi = biArg
         bj = bjArg
