@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.86 2006/07/16 04:02:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.87 2006/07/31 20:48:41 jmc Exp $
 #  $Name:  $
 #
 
@@ -91,14 +91,14 @@ testoutput_for_prop()
 {
     # testoutput_for_prop dir s1 label subdir extension
     #
-    #  compares files in $dir/$subdir/output.txt and $dir/results/output.txt
+    #  compares files $dir/$subdir/$OUTPUTFILE and $dir/results/output.txt
     #  using search strings s1 and text label 
 
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: grep "$2" $1/$4/output.txt 1>&2
+	echo testoutput_for_prop: grep "$2" $1/$4/$OUTPUTFILE 1>&2
     fi
-    if [ -r $1/$4/output.txt ]; then
-	grep "$2" $1/$4/output.txt | sed 's/.*=//' | cat -n > tmp1.txt
+    if [ -r $1/$4/$OUTPUTFILE ]; then
+	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > tmp1.txt
 	lncntA=`wc -l tmp1.txt | awk '{print $1}' `
 	if [ $lncntA -lt 3 ]; then
 	    if [ $verbose -gt 0 ]; then
@@ -107,7 +107,7 @@ testoutput_for_prop()
 	    return 99
 	fi
     else
-	echo testoutput_for_prop: output.txt from model run was not readable 1>&2
+	echo testoutput_for_prop: $OUTPUTFILE from model run was not readable 1>&2
 	return 99
     fi
     if [ $debug -gt 0 ]; then
@@ -129,12 +129,12 @@ testoutput_for_prop()
     fi
     has_nan=`cat tmp1.txt | grep -i nan | wc -l`
     if [ $has_nan -gt 0  ] ; then
-	echo testoutput_for_prop: output.txt contains $has_nan NaN values  1>&2
+	echo testoutput_for_prop: $OUTPUTFILE contains $has_nan NaN values  1>&2
 	return 99
     fi
     has_inf=`cat tmp1.txt | grep -i inf | wc -l`
     if [ $has_inf -gt 0  ] ; then
-	echo testoutput_for_prop: output.txt contains $has_inf Inf values  1>&2
+	echo testoutput_for_prop: $OUTPUTFILE contains $has_inf Inf values  1>&2
 	return 99
     fi
     if [ $debug -gt 0 ]; then
@@ -184,9 +184,9 @@ dashnum()
 testoutput_ad()
 {
     grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $5}' > t05.txt
-    grep $3 $1/$2/output_adm.txt | awk '{print NR " " $5}' > t15.txt
+    grep $3 $1/$2/$OUTPUTFILE | awk '{print NR " " $5}' > t15.txt
     grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $6}' > t06.txt
-    grep $3 $1/$2/output_adm.txt | awk '{print NR " " $6}' > t16.txt
+    grep $3 $1/$2/$OUTPUTFILE | awk '{print NR " " $6}' > t16.txt
     join t05.txt t15.txt > t5.txt
     join t06.txt t16.txt > t6.txt
     echo "-1" >> t5.txt
@@ -341,7 +341,7 @@ makeclean()
     else
 	(
 	    cd $1;
-	    #if test -e output.txt ; then rm -f output.txt ; fi
+	    #if test -e $OUTPUTFILE ; then rm -f $OUTPUTFILE ; fi
 	    if test -r Makefile ; then
 		printf 'clean build-dir: make Clean ... ' 2>&1
 		$MAKE Clean >> make.log 2>&1
@@ -561,11 +561,7 @@ runmodel()
 	    tail run.log
 	    echo successful 1>&2
 	    # === Reduce the size of the testing emails!
-	    # if test "x$ADM" = x ; then
-	    #   cp output.txt $CDIR"/output.txt"
-	    # else
-	    #   cp output_adm.txt $CDIR"/output_adm.txt"
-	    # fi
+	    #cp $OUTPUTFILE $CDIR"/"$OUTPUTFILE
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
 	else
@@ -883,12 +879,11 @@ else
     OUTPUTFILE="output.txt"
 fi
 
-if test "x$ADM" = xt -a "x$COMMAND" = x ; then
-    COMMAND="./$EXECUTABLE > $OUTPUTFILE"
-fi
-
 if test "x$COMMAND" = x ; then
     COMMAND="./$EXECUTABLE > $OUTPUTFILE"
+fi
+if test "x$MPI" = xt ; then
+    OUTPUTFILE="STDOUT.0000"
 fi
 
 #echo "OK"
