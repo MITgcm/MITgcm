@@ -16,21 +16,10 @@ HERE='/home/edhill/test_outp'
 cd $HERE
 
 FC=g77
-RUNIT=$HERE"/runit_"$FC
 MF=$HERE"/mf_"$FC
 cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
-
-cat << EOF > $RUNIT
-#!/bin/bash
-
-$EXE
-
-cp STDOUT.0000 output.txt
-
-EOF
-chmod a+x $RUNIT
 
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
@@ -49,6 +38,7 @@ cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
 
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_aces"
-# ./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT -a 'edhill@mitgcm.org'
-./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT
+# ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE" -a 'edhill@mitgcm.org'
+echo ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE"
+./testreport -j 2 -mpi -of $OPTFILE -command "$EXE"
 
