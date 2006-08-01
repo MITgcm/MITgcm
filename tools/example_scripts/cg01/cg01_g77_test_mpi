@@ -31,7 +31,7 @@ cat << EOF > $RUNIT
 
 $EXE
 
-cp STDOUT.0000 output.txt
+#cp STDOUT.0000 output.txt
 
 EOF
 chmod a+x $RUNIT
