@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.6 2005/08/18 19:29:51 stephd Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.7 2006/08/02 22:41:42 jmc Exp $
 C$Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -27,7 +27,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
 
-         _BEGIN_MASTER( mythid )
+C jmc: simpler to put MASTER thread directive within individual S/R :
+C      that leave the choice, for each S/R, to do either single (master) 
+C      thread tasks or Multi-threaded tasks.
+c        _BEGIN_MASTER( mythid )
 ccccccccccccccccccccccccccc
 c initialize parameters   c
 ccccccccccccccccccccccccccc
@@ -42,7 +45,7 @@ ccccccccccccccccccccccccccc
           print*,'QQ read cfc atmos data'
           call CFC_ATMOS( myThid )
 #endif /* ALLOW_CFC */
-          _END_MASTER( mythid )
+c         _END_MASTER( mythid )
 
 #ifdef ALLOW_DIAGNOSTICS
 C     Define diagnostics Names :
