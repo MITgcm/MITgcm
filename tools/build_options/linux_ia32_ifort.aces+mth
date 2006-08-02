@@ -1,13 +1,15 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces+mth,v 1.1 2006/07/27 23:48:43 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces+mth,v 1.2 2006/08/02 20:14:50 jmc Exp $
 #
-# needs to load intel compiler version 9:
-# > module load ifc/9.0.021 icc/9.0.021 intel/9.0
-# and set for 2 threads:
-# > export OMP_NUM_THREADS=2 (sh,bash)
-# or:
-# > setenv OMP_NUM_THREADS 2 (csh,tcsh)
+# get 1 node with 2 cpu : qsub -I -l nodes=1:ppn=2
+# on computer node:
+#  needs to load intel compiler version 9:
+#  > module load ifc/9.0.021 icc/9.0.021 intel/9.0
+#  and set for 2 threads:
+#  > export OMP_NUM_THREADS=2 (sh,bash)
+#  or:
+#  > setenv OMP_NUM_THREADS 2 (csh,tcsh)
 
 FC='ifort'
 CC='icc'
