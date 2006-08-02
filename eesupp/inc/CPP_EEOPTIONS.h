@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.24 2006/03/03 18:36:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.25 2006/08/02 02:14:49 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -46,11 +46,18 @@ C
 C     ALWAYS - indicates the choice will be fixed at compile time
 C              so no run-time option will be present
 
-C     Flag used to indicate whether Fortran formatted write
+C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
 C     safe, on Sun it is not possible - if you are unsure then
 C     undef this option.
-#undef  FMTFTN_IO_THREADSAFE
+#undef FMTFTN_IO_THREAD_SAFE
+
+C--   Flag used to indicate whether Binary write to Local file (i.e.,
+C     a different file for each tile) and read are thread-safe.
+#undef LOCBIN_IO_THREAD_SAFE
+
+C--   Flag to turn off the writing of error message to ioUnit zero
+#undef DISABLE_WRITE_TO_UNIT_ZERO
 
 C--   Control MPI based parallel processing
 CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
@@ -58,7 +65,7 @@ CXXX To use MPI, use an appropriate genmake2 options file or use
 CXXX genmake2 -mpi .
 CXXX #undef  ALLOW_USE_MPI
 CXXX #undef  ALWAYS_USE_MPI
- 
+
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
 #define ALLOW_ASYNC_COMMUNICATION
@@ -84,13 +91,13 @@ C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
- 
+
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
 
 C--   Control XY periodicity in processor to grid mappings
-C     Note: Model code does not need to know whether a domain is 
+C     Note: Model code does not need to know whether a domain is
 C           periodic because it has overlap regions for every box.
 C           Model assume that these values have been
 C           filled in some way.
