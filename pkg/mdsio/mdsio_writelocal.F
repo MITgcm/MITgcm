@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.3 2005/11/02 14:49:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.4 2006/08/02 02:55:21 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       SUBROUTINE MDS_WRITELOCAL(
      I   fName,
      I   filePrec,
-     I   globalFile,
+     I   globFile,
      I   arrType,
      I   nNz,
      I   arr,
@@ -19,7 +19,7 @@ C Arguments:
 C
 C fName		string	base name for file to written
 C filePrec	integer	number of bits per word in file (32 or 64)
-C globalFile	logical	selects between writing a global or tiled file
+C globFile	logical	selects between writing a global or tiled file
 C arrType	char(2)	declaration of "arr": either "RS" or "RL"
 C nNz		integer	size of third dimension: normally either 1 or Nr
 C arr		RS/RL	array to write, arr(:,:,nNz,:,:)
@@ -65,9 +65,10 @@ C Global variables / common blocks
 C Routine arguments
       character*(*) fName
       integer filePrec
-      logical globalFile
+      logical globFile
       character*(2) arrType
       integer nNz
+c     real arr(*)
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz)
       integer bi, bj
       integer irecord
@@ -84,7 +85,8 @@ C Local variables
       integer dimList(3,3),ndims
       integer length_of_rec
       logical fileIsOpen
-      character*(max_len_mbuf) msgbuf
+      logical globalFile, iAmDoingIO
+      character*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       integer tn
 #endif /* ALLOW_EXCH2 */
@@ -98,38 +100,74 @@ C Local variables
 #endif
 C     ------------------------------------------------------------------
 
+      IL = ILNBLNK( fName )
+      iAmDoingIO = .TRUE.
+      globalFile = globFile
+
+#ifndef LOCBIN_IO_THREAD_SAFE
+      IF ( nThreads.GT.1 ) THEN
+C-    do not assume safe Muti-Threaded Binary IO (even to tiled file)
+C      => stop here
+        iAmDoingIO = .FALSE.
+        WRITE(msgBuf,'(2A)') 'MDS_WRITELOCAL: no Multi-Threaded IO',
+     &                  ' with #undef LOCBIN_IO_THREAD_SAFE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
+      ENDIF
+#endif /* ndef LOCBIN_IO_THREAD_SAFE */
+
+      IF ( nThreads.GT.1 .AND. globFile ) THEN
+C-    do not assume safe Muti-Threaded Binary IO to a single global file
+C      => switch to tiled file
+        globalFile = .FALSE.
+        IF ( debugLevel.GE.debLevA .AND. IL.GT.0 ) THEN
+         WRITE(msgBuf,'(A,I10,A,2I5,A)') 
+     &    'MDS_WRITELOCAL (it=', myIter, ' ; bi,bj=', bi,bj, 
+     &    ' ): No global-file multi-threaded IO'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(2A)') 
+     &    'MDS_WRITELOCAL: => write tiled file: ', fName(1:IL)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+        ENDIF
+      ENDIF
+
 C Only do I/O if I am the master thread
-      _BEGIN_MASTER( myThid )
+C jmc: No MASTER thread only within multi-threaded bi,bj loops
+C      => will loose output from all non-master-thread tiles
+c     _BEGIN_MASTER( myThid )
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
-       write(msgbuf,'(a,i9.8)')
+       write(msgBuf,'(a,i9.8)')
      &   ' MDS_WRITELOCAL: argument irecord = ',irecord
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , mythid)
-       write(msgbuf,'(a)')
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid)
+       write(msgBuf,'(a)')
      &   ' MDS_WRITELOCAL: invalid value for irecord'
-       call print_error( msgbuf, mythid )
+       CALL PRINT_ERROR( msgBuf, myThid )
        stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
       endif
 
+      IF ( iAmDoingIO ) THEN 
+
 C Assume nothing
       fileIsOpen=.FALSE.
-      IL=ILNBLNK( fName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit, mythid )
+      CALL MDSFINDUNIT( dUnit, myThid )
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
        write(dataFName,'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
-        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
         open( dUnit, file=dataFName, status='unknown',
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        else
-        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
         open( dUnit, file=dataFName, status=_OLD_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
@@ -146,12 +184,12 @@ C If we are writing to a tiled MDS file then we open each one here
          write(dataFName,'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
-          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
-          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
           open( dUnit, file=dataFName, status=_OLD_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -172,38 +210,38 @@ C If we are writing to a tiled MDS file then we open each one here
            endif
            if (filePrec .eq. precFloat32) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG4toRS( j,1,1,k,nNz, r4seg, .FALSE., arr )
+             CALL MDS_SEG4toRS( j,1,1,k,nNz, r4seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG4toRL( j,1,1,k,nNz, r4seg, .FALSE., arr )
+             CALL MDS_SEG4toRL( j,1,1,k,nNz, r4seg, .FALSE., arr )
             else
-             write(msgbuf,'(a)')
+             write(msgBuf,'(a)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
-             call print_error( msgbuf, mythid )
+             CALL PRINT_ERROR( msgBuf, myThid )
              stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
             endif
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4( sNx, r4seg )
+            CALL MDS_BYTESWAPR4( sNx, r4seg )
 #endif
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG8toRS( j,1,1,k,nNz, r8seg, .FALSE., arr )
+             CALL MDS_SEG8toRS( j,1,1,k,nNz, r8seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG8toRL( j,1,1,k,nNz, r8seg, .FALSE., arr )
+             CALL MDS_SEG8toRL( j,1,1,k,nNz, r8seg, .FALSE., arr )
             else
-             write(msgbuf,'(a)')
+             write(msgBuf,'(a)')
      &         ' MDS_WRITELOCAL: illegal value for arrType'
-             call print_error( msgbuf, mythid )
+             CALL PRINT_ERROR( msgBuf, myThid )
              stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
             endif
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( sNx, r8seg )
+            CALL MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             write(dUnit,rec=irec) r8seg
            else
-            write(msgbuf,'(a)')
+            write(msgBuf,'(a)')
      &        ' MDS_WRITELOCAL: illegal value for filePrec'
-            call print_error( msgbuf, mythid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
            endif
 C End of j loop
@@ -211,9 +249,9 @@ C End of j loop
 C End of k loop
          enddo
         else
-         write(msgbuf,'(a)')
+         write(msgBuf,'(a)')
      &     ' MDS_WRITELOCAL: I should never get to this point'
-         call print_error( msgbuf, mythid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
         endif
 C If we were writing to a tiled MDS file then we close it here
@@ -250,8 +288,8 @@ C       to stay consistent with global file structure
          dimList(3,3)=Nr
          ndims=3
          if (nNz .EQ. 1) ndims=2
-         call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+         CALL MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, myThid )
         endif
 C End of bi,bj loops
 c      enddo
@@ -269,27 +307,27 @@ C We can not do this operation using threads (yet) because of the
 C "barrier" at the next step. The barrier could be removed but
 C at the cost of "safe" distributed I/O.
        if (nThreads.NE.1) then
-        write(msgbuf,'(a,a)')
+        write(msgBuf,'(a,a)')
      &    ' MDS_WRITELOCAL: A threads version of this routine',
      &    ' does not exist.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)')
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        write(msgBuf,'(a)')
      &    ' MDS_WRITELOCAL: This needs to be fixed...'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i3.2)')
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        write(msgBuf,'(a,i3.2)')
      &    ' MDS_WRITELOCAL: nThreads = ',nThreads
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)')
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        write(msgBuf,'(a)')
      &    ' MDS_WRITELOCAL: Stopping because you are using threads'
-        call print_error( msgbuf, mythid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         stop 'ABNORMAL END: S/R MDS_WRITELOCAL'
        endif
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
-       _BARRIER
+c      _BARRIER
        write(metaFName,'(2a)') fName(1:IL),'.meta'
        dimList(1,1)=Nx
        dimList(2,1)=1
@@ -302,13 +340,15 @@ C writing their data before we update the meta-file
        dimList(3,3)=Nr
        ndims=3
        if (nNz .EQ. 1) ndims=2
-       call MDSWRITEMETA( metaFName, dataFName,
-     &   filePrec, ndims, dimList, irecord, myIter, mythid )
+       CALL MDSWRITEMETA( metaFName, dataFName,
+     &   filePrec, ndims, dimList, irecord, myIter, myThid )
        fileIsOpen=.TRUE.
       endif
 
-      _END_MASTER( myThid )
+c     _END_MASTER( myThid )
+C-    end if iAmDoingIO
+      ENDIF
 
 C     ------------------------------------------------------------------
-      return
-      end
+      RETURN
+      END
