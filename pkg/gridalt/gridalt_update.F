@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.9 2005/07/07 23:18:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.10 2006/08/03 19:03:15 molod Exp $
 C $Name:  $
 
        subroutine gridalt_update(myThid)
@@ -60,6 +60,7 @@ c
 c
         enddo
         enddo
+
        endif
 
 #endif
@@ -72,7 +73,7 @@ c
          do L = 1,Nrphys
           do j = j1,j2
           do i = i1,i2
-           temparr(i,j,L,bi,bj) = dpphys(i,j,L,bi,bj) * 1.e-2
+           temparr(i,j,L,bi,bj) = dpphys(i,j,L,bi,bj) * 1. _d -2
           enddo
           enddo
          enddo
