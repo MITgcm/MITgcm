@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.8 2005/05/21 23:50:13 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.9 2006/08/03 23:29:02 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -105,7 +105,7 @@ C **********************************************************************
         tmpdiag(i,j) = rfu(i,j,L)*86400
        enddo
        enddo
-       call diagnostics_fill(tmpdiag,'RFU     ',L,1,3,bi,bj,myid)
+C      call diagnostics_fill(tmpdiag,'RFU     ',L,1,3,bi,bj,myid)
       endif
 
       if(diagnostics_is_on('RFV     ',myid) ) then
@@ -114,7 +114,7 @@ C **********************************************************************
         tmpdiag(i,j) = rfv(i,j,L)*86400
        enddo
        enddo
-       call diagnostics_fill(tmpdiag,'RFV     ',L,1,3,bi,bj,myid)
+C      call diagnostics_fill(tmpdiag,'RFV     ',L,1,3,bi,bj,myid)
       endif
 
       if(diagnostics_is_on('RFT     ',myid) ) then
@@ -123,7 +123,7 @@ C **********************************************************************
         tmpdiag(i,j) = rft(i,j,L)*86400
        enddo
        enddo
-       call diagnostics_fill(tmpdiag,'RFT     ',L,1,3,bi,bj,myid)
+C      call diagnostics_fill(tmpdiag,'RFT     ',L,1,3,bi,bj,myid)
       endif
 
       enddo
