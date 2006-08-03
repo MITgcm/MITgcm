@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.10 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.11 2006/08/03 21:21:23 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -13,11 +13,11 @@ C     *==========================================================*
 C     | S/R AIM_READPARMS
 C     | o Read AIM physics package parameters
 C     *==========================================================*
-C     | Initialized parameter in common blocks: 
+C     | Initialized parameter in common blocks:
 C     |  FORCON, SFLCON, CNVCON, LSCCON, RADCON, VDICON
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -34,20 +34,20 @@ C-   Constants for sub-grid-scale physics
 #include "com_sflcon.h"
 #include "com_cnvcon.h"
 #include "com_lsccon.h"
-#include "com_radcon.h"  
-#include "com_vdicon.h"  
+#include "com_radcon.h"
+#include "com_vdicon.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==       
-C     myThid -  Number of this instance
+C     == Routine Arguments ==
+C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_AIM
 
-C     == Local Variables == 
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     == Local Variables ==
+C     msgBuf      :: Informational/error meesage buffer
+C     iUnit       :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
@@ -76,7 +76,7 @@ C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       NAMELIST /AIM_PARAMS/
-     &    aim_useFMsurfBC, aim_useMMsurfFc, 
+     &    aim_useFMsurfBC, aim_useMMsurfFc,
      &    aim_surfPotTemp, aim_energPrecip, aim_splitSIOsFx,
      &    aim_MMsufx, aim_MMsufxLength,
      &    aim_LandFile, aim_albFile, aim_vegFile,
@@ -111,7 +111,7 @@ C      hSnowWetness :: snow depth (m) corresponding to maximum wetness
      &    SOLC, ALBSEA, ALBICE, ALBSN,
      &    SDALB, SWCAP, SWWIL, hSnowWetness
 
-C--   Constants for surface fluxes (common SFLCON) : 
+C--   Constants for surface fluxes (common SFLCON) :
 C      FWIND0 = ratio of near-sfc wind to lowest-level wind
 C      FTEMP0 = weight for near-sfc temperature extrapolation (0-1) :
 C               1 : linear extrapolation from two lowest levels
@@ -147,7 +147,7 @@ C      SMF    = ratio between secondary and primary mass flux at cloud-base
      &    PSMIN, TRCNV, QBL, RHBL, RHIL, ENTMAX, SMF
 
 
-C--   Constants for large-scale condendation (common LSCCON) : 
+C--   Constants for large-scale condendation (common LSCCON) :
 C      TRLSC  = Relaxation time (in hours) for specific humidity
 C      RHLSC  = Maximum relative humidity threshold (at sigma=1)
 C      DRHLSC = Vertical range of relative humidity threshold
@@ -182,9 +182,9 @@ C      ABLCL2 = abs. of clouds       in "window" band,       for dw = 1 g/kg
      &    RHCL1,  RHCL2,  QACL1,  QACL2,  ALBCL,
      &    EPSSW,  EPSLW,  EMISFC,
      &    ABSDRY, ABSAER, ABSWV1, ABSWV2, ABSCL1, ABSCL2,
-     &    ABLWIN, ABLCO2, ABLWV1, ABLWV2, ABLCL1, ABLCL2 
+     &    ABLWIN, ABLCO2, ABLWV1, ABLWV2, ABLCL1, ABLCL2
 
-C--   Constants for vertical dif. and sh. conv. (common VDICON) : 
+C--   Constants for vertical dif. and sh. conv. (common VDICON) :
 C      TRSHC  = relaxation time (in hours) for shallow convection
 C      TRVDI  = relaxation time (in hours) for moisture diffusion
 C      TRVDS  = relaxation time (in hours) for super-adiab. conditions
@@ -196,7 +196,7 @@ C      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
-      
+
       WRITE(msgBuf,'(A)') ' AIM_READ_PHYSPARMS: opening data.aimphys'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
@@ -213,7 +213,7 @@ C-    Constants for boundary forcing
 
 C-    Constants for surface fluxes
       READ(UNIT=iUnit,NML=AIM_PAR_SFL)
- 
+
 C-    Constants for convection
       READ(UNIT=iUnit,NML=AIM_PAR_CNV)
 
@@ -226,10 +226,10 @@ C-    Constants for radiation
 C-    Constants for vertical diffusion and sh. conv.
       READ(UNIT=iUnit,NML=AIM_PAR_VDI)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &   ' AIM_READ_PHYSPARMS: finished reading data.aimphys'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
- 
+
 C--   Close the open data file
       CLOSE(iUnit)
 
@@ -263,45 +263,28 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
 #endif /* ALLOW_AIM_TAVE */
 
 #ifdef ALLOW_MNC
-      aim_timeave_mnc      =
-     &     aim_timeave_mnc .AND. useMNC
-      aim_snapshot_mnc     =
-     &     aim_snapshot_mnc .AND. useMNC
-      aim_pickup_write_mnc =
-     &     aim_pickup_write_mnc .AND. useMNC
-      aim_pickup_read_mnc  =
-     &     aim_pickup_read_mnc .AND. useMNC
-
-      aim_timeave_mdsio      = (.NOT. aim_timeave_mnc)
-     &     .OR. outputTypesInclusive
-      aim_snapshot_mdsio     = (.NOT. aim_snapshot_mnc)
-     &     .OR. outputTypesInclusive
-      aim_pickup_write_mdsio = (.NOT. aim_pickup_write_mnc)
-     &     .OR. outputTypesInclusive
-      aim_pickup_read_mdsio  = (.NOT. aim_pickup_read_mnc)
-     &     .OR. outputTypesInclusive
-#else
-C     Stop if MNC is not compiled-in and aim_*_mnc=.TRUE.
-      IF ( aim_timeave_mnc .OR. aim_snapshot_mnc
-     &     .OR. aim_pickup_write_mnc .OR. aim_pickup_read_mnc ) THEN
-        WRITE(msgBuf,'(2A)') 
-     &       'AIM_READPARMS: one or more aim_*_mnc vars is .TRUE. ',
-     &       'but ALLOW_MNC is undefined'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(2A)') 'Please re-compile with the MNC ',
-     &       'package enabled'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R AIM_READPARMS'
-      ENDIF
+      aim_timeave_mnc        = useMNC .AND. aim_timeave_mnc
+      aim_snapshot_mnc       = useMNC .AND. aim_snapshot_mnc
+      aim_pickup_write_mnc   = useMNC .AND. aim_pickup_write_mnc
+      aim_pickup_read_mnc    = useMNC .AND. aim_pickup_read_mnc
+#else /* ALLOW_MNC */
       aim_timeave_mnc        = .FALSE.
       aim_snapshot_mnc       = .FALSE.
       aim_pickup_write_mnc   = .FALSE.
       aim_pickup_read_mnc    = .FALSE.
-      aim_timeave_mdsio      = .TRUE.
-      aim_snapshot_mdsio     = .TRUE.
-      aim_pickup_write_mdsio = .TRUE.
-      aim_pickup_read_mdsio  = .TRUE.
 #endif /* ALLOW_MNC */
+      aim_snapshot_mnc       = .FALSE.
+C jmc: temporary turn off aim_snapshot_mnc, until the 2 Pbs get fixed:
+C     1) multi-tiles set-up, files "aim_state.t*.nc" are all identical
+C     2) error when writing "aim_tend": "vtype 'aim_dT_RSW' is not defined"
+      aim_timeave_mdsio      = (.NOT. aim_timeave_mnc)
+     &                     .OR. outputTypesInclusive
+      aim_snapshot_mdsio     = (.NOT. aim_snapshot_mnc)
+     &                     .OR. outputTypesInclusive
+      aim_pickup_write_mdsio = (.NOT. aim_pickup_write_mnc)
+     &                     .OR. outputTypesInclusive
+      aim_pickup_read_mdsio  = (.NOT. aim_pickup_read_mnc)
+     &                     .OR. outputTypesInclusive
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -318,29 +301,29 @@ C--   Print out parameter values :
 
        CALL WRITE_0D_L( useLand, INDEX_NONE,
      &                 'useLand =',
-     &'   /* use Land package for surf.BC over land  */')       
+     &'   /* use Land package for surf.BC over land  */')
 
 C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_useFMsurfBC, INDEX_NONE,
      &                 'aim_useFMsurfBC =',
-     &'   /* F.Molteni surf. BC scheme on/off flag */')       
+     &'   /* F.Molteni surf. BC scheme on/off flag */')
        CALL WRITE_0D_L( aim_useMMsurfFc, INDEX_NONE,
      &                 'aim_useMMsurfFc =',
-     &'   /* Monthly Mean surf. Forcing on/off flag */')       
+     &'   /* Monthly Mean surf. Forcing on/off flag */')
        CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
      &                 'aim_surfPotTemp =',
-     &'   /* Surf Temp file in Pot.Temp on/off flag */')       
+     &'   /* Surf Temp file in Pot.Temp on/off flag */')
        CALL WRITE_0D_L( aim_energPrecip, INDEX_NONE,
      &                 'aim_energPrecip =',
-     &  ' /* account for energy of precip. on/off flag */')       
+     &  ' /* account for energy of precip. on/off flag */')
        CALL WRITE_0D_L( aim_splitSIOsFx, INDEX_NONE,
      &                 'aim_splitSIOsFx =',
-     &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')       
+     &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')
        CALL WRITE_0D_R8(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
      &    ' /* stratospheric-drag damping time scale (s) */')
        CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
      &                 'aim_clrSkyDiag =',
-     &  ' /* do clear-sky radiation diagnostics */')       
+     &  ' /* do clear-sky radiation diagnostics */')
        CALL WRITE_0D_R8( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
      &  '   /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_R8( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
@@ -435,11 +418,11 @@ C- namelist AIM_PAR_RAD:
        CALL WRITE_0D_R8( ALBCL, INDEX_NONE,'AIM_RAD:  ALBCL =',
      &  '   /*  cloud albedo (for cloud cover = 1) */')
        CALL WRITE_0D_R8( EPSSW, INDEX_NONE,'AIM_RAD:  EPSSW =',
-     &  '   /*  fract. of inc.solar rad. absorbed by ozone */')   
+     &  '   /*  fract. of inc.solar rad. absorbed by ozone */')
        CALL WRITE_0D_R8( EPSLW, INDEX_NONE,'AIM_RAD:  EPSLW =',
-     &  '   /*  fract. of sfc LW emitted directly to space */')   
+     &  '   /*  fract. of sfc LW emitted directly to space */')
        CALL WRITE_0D_R8( EMISFC,INDEX_NONE,'AIM_RAD: EMISFC =',
-     &  '   /*  longwave surface emissivity */')   
+     &  '   /*  longwave surface emissivity */')
 
        WRITE(msgBuf,'(A)')
      &  ' AIM_RAD : ShortWave absorptivities (for dp = 10^5 Pa) :'
@@ -487,7 +470,7 @@ C- namelist AIM_PAR_VDI:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
- 
+
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
