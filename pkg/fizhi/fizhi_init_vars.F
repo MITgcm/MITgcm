@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.19 2006/06/18 00:14:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.20 2006/08/03 19:04:49 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -64,7 +64,7 @@ c    All Fizhi alarms must be on for the first time step of a segment
 
       if( .not.alarm('moist') .or. .not.alarm('turb')   .or.
      .    .not.alarm('radsw') .or. .not.alarm('radlw') ) then
-       print *,' Cant Start Fizhi experiment at ',nymd,' ',nhms
+       write(15,*) ' Cant Start Fizhi experiment at ',nymd,' ',nhms
        stop
       endif
 
@@ -168,7 +168,6 @@ c         Physics works top-down. so -> need to flip arrays
         enddo
         enddo
         enddo
-
         call dyn2phys(salt,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
      . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
         do L = 1,Nrphys
