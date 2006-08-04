@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.58 2006/05/09 19:11:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.59 2006/08/04 22:16:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,12 +37,12 @@ C     !USES:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid - Thread number for this instance of the routine.
-C     myIter - Iteration number
-C     myTime - Current time of simulation ( s )
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
       INTEGER myThid
       INTEGER myIter
-      _RL     myTime
 CEOP
 
 
@@ -90,9 +90,9 @@ C     Do AIM time averages
      &     CALL AIM_WRITE_TAVE( myTime, myIter, myThid )
 #endif
 #ifdef ALLOW_LAND
-C     Do LAND time averages
+C     Do LAND output
       IF ( useLAND )
-     &     CALL LAND_WRITE_DIAGS( myTime, myIter, myThid )
+     &     CALL LAND_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_OBCS
