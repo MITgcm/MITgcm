@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.4 2004/07/08 15:51:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.5 2006/08/04 22:27:46 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -248,8 +248,8 @@ c         WVSurf(I2,myThid) = WVI(K,2)
        ENDDO
       ENDDO
       IF (myIter.EQ.nIter0) 
-     &  CALL AIM_WRITE_LOCAL('aim_WeightSurf','',1,WVSurf(1,myThid),
-     &                        bi,bj,1,myIter,myThid)
+     &  CALL AIM_WRITE_PHYS( 'aim_WeightSurf', '', 1, WVSurf,
+     &                       1, bi, bj, 1, myIter, myThid )
 
 #endif /* ALLOW_AIM */
 
