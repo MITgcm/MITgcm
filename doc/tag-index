@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.709 2006/07/30 01:04:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.710 2006/08/04 23:36:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o multi-threading and IO:
+  - all threads call READ_FLD S/R (needed if using SingleCpuIO): 
+    (no BEGIN_MASTER/ END_MASTER around the call, but inside MDSIO S/R.
+  - barrier before and after reading.
+  - stop if other than master is calling MDS_WRITELOCAL (if #undef IO_THREAD_SAFE)
+  - avoid using MDS_WRITELOCAL for LAND pkg output.
+  - new S/R AIM_WRITE_PHYS (replaces AIM_WRITE_LOCAL) to write AIM physics
+    common-block variables ; Allows multi-threading with master-thread IO.
 o change default MAX_NO_THREADS from 32 to 4 ; 
   and stop cleanly when MAX_NO_THREADS is too small. 
 o add S/R BAR_CHECK to check multi-threaded barrier synchronization
