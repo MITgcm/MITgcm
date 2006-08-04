@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.5 2005/11/08 02:14:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.6 2006/08/04 00:40:43 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -11,13 +10,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_PNH                                        
-C     | o Set model initial non-hydrostatic potential.             
+C     | SUBROUTINE INI_PNH
+C     | o Set model initial non-hydrostatic potential.
 C     *==========================================================*
-C     | There are several options for setting the initial         
+C     | There are several options for setting the initial
 C     | NH-potential (=Pressure/rhoConst) anomaly:
-C     |  1. Inline code                                           
-C     |  2. Three-dimensional data from a file.                     
+C     |  1. Inline code
+C     |  2. Three-dimensional data from a file.
 C     *==========================================================*
 C     \ev
 
@@ -41,7 +40,6 @@ C     == Local variables ==
       INTEGER bi,bj,I,J,K
 CEOP
 
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C--   Initialise surface position anomaly to zero
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -55,14 +53,13 @@ C--   Initialise surface position anomaly to zero
         ENDDO
        ENDDO
       ENDDO
-C     Read an initial state
-c     IF (phiNHinitFile .NE. ' ') THEN
-c      _BEGIN_MASTER( myThid )
-c      CALL READ_FLD_XY_RL( phiNHinitFile, ' ', phi_nh, 0, myThid )
-c      _END_MASTER(myThid)
-c     _EXCH_XYZ_R8(phi_nh, myThid)
-c     ENDIF
 
+C--   Read an initial state
+c     IF (phiNHinitFile .NE. ' ') THEN
+c      _BARRIER
+c      CALL READ_FLD_XY_RL( phiNHinitFile, ' ', phi_nh, 0, myThid )
+c      _EXCH_XYZ_RL(phi_nh, myThid)
+c     ENDIF
 
 #endif /* ALLOW_NONHYDROSTATIC */
       RETURN
