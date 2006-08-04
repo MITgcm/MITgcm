@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.8 2004/07/06 00:54:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.9 2006/08/04 00:50:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,13 +36,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_PSURF 
+C     myThid ::  Number of this instance of INI_PSURF
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J
+C     bi,bj  :: tiles indices
+C     I,J    :: Loop counters
       INTEGER bi, bj
       INTEGER  I,  J
 CEOP
@@ -59,15 +59,14 @@ C--   Initialise surface position anomaly to zero
       ENDDO
 C     Read an initial state
       IF (pSurfInitFile .NE. ' ') THEN
-       _BEGIN_MASTER( myThid )
+       _BARRIER
        CALL READ_FLD_XY_RL( pSurfInitFile, ' ', etaN, 0, myThid )
-       _END_MASTER(myThid)
+C      fill the overlap (+ BARRIER)
+       _EXCH_XY_R8(etaN, myThid)
       ENDIF
-C
-      _EXCH_XY_R8(etaN, myThid)
 
 #ifdef ALLOW_CD_CODE
-C--   By default, initialize etaNm1 with etaN : 
+C--   By default, initialize etaNm1 with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
@@ -82,7 +81,7 @@ C     _EXCH_XY_R8(etaNm1, myThid)
 #endif
 
 #ifdef EXACT_CONSERV
-C--   By default, initialize etaH with etaN : 
+C--   By default, initialize etaH with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
