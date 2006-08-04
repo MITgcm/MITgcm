@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/Attic/read_write_rec.F,v 1.1 2005/11/02 15:37:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/Attic/read_write_rec.F,v 1.2 2006/08/04 02:48:05 jmc Exp $
 C $Name:  $
 #include "RW_OPTIONS.h"
 
@@ -74,7 +74,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 C
 C     IF (myIter.GE.0) THEN
@@ -125,7 +125,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 C
 C     IF (myIter.GE.0) THEN
@@ -176,7 +176,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -228,7 +228,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -279,7 +279,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 C
 C     IF (myIter.GE.0) THEN
@@ -330,7 +330,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 C
 C     IF (myIter.GE.0) THEN
@@ -381,7 +381,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -433,7 +433,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -488,7 +488,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -544,7 +544,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -600,7 +600,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C
@@ -656,7 +656,7 @@ C Local
       CHARACTER*(2) fType
       INTEGER nNz
 C     INTEGER IL
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 C

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xy_rl.F,v 1.2 2005/08/22 23:00:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xy_rl.F,v 1.3 2006/08/04 02:48:05 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -26,7 +26,7 @@ C Local
       INTEGER nNz
       INTEGER irec
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 C
 C--   Build file name
 C     Name has form 'prefix.suffix'

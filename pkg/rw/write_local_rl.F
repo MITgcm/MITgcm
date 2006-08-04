@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.4 2005/11/04 01:33:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.5 2006/08/04 02:48:05 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -28,7 +28,7 @@ C Common
 C Local
       CHARACTER*(2) fType
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
-      CHARACTER*(80) fullName
+      CHARACTER*(MAX_LEN_FNAM) fullName
 
 C--   Build file name
 C     Name has form 'prefix.suffix'
