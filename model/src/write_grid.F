@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.20 2005/11/08 23:01:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.21 2006/08/04 01:27:31 jmc Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -36,10 +36,10 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     tmpfld  - Temporary array used to compute & write Total Depth
-C               has to be in common for multi threading
-C     ?aja: not sure why the COMMON block is necessary - should ask JMC?
-c     COMMON / LOCAL_INI_MASKS_ETC / tmpfld
+C     tmpfld :: Temporary array used to compute & write Total Depth ;
+C               loaded in multi-threaded way but written by single (master)
+C               thread => needs to be in common to be shared by all threads
+      COMMON / LOCAL_WRITE_GRID / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,bi,bj
       LOGICAL writegrid_mdsio
@@ -52,15 +52,16 @@ C     Calculate the fluid thickness in R coordinates as seen by the
 C     model.  This may differ from what the user specified due to
 C     partial cells, etc.
       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-C             Total fluid column thickness (r_unit) :
-              tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-            ENDDO
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+C     Total fluid column thickness (r_unit) :
+            tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
           ENDDO
-        ENDDO
+         ENDDO
+       ENDDO
       ENDDO
+      _BARRIER
 
       writegrid_mdsio = .TRUE.
 #ifdef ALLOW_MNC
@@ -71,21 +72,19 @@ C             Total fluid column thickness (r_unit) :
 
       IF ( writegrid_mdsio ) THEN
 
-C       _BEGIN_MASTER( myThid )
-
 C     Write horizontal grid arrays
-        CALL WRITE_FLD_XY_RS( 'XC',' ',XC,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'YC',' ',YC,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'XG',' ',XG,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'YG',' ',YG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'XC',' ',xC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'YC',' ',yC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'XG',' ',xG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'YG',' ',yG,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'RAZ',' ',rAz,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,-1,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXG',' ',dxG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYG',' ',dyG,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXC',' ',dxC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYC',' ',dyC,-1,myThid)
         IF ( usingCurvilinearGrid ) THEN
           CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,-1,myThid)
           CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,-1,myThid)
@@ -110,9 +109,9 @@ C     Write vertical grid arrays
      &                                0,0, 1, -1, myThid)
 #endif /* ALLOW_MDSIO */
 
-C       _END_MASTER(myThid)
-
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF ( useMNC .AND. writegrid_mnc ) THEN
@@ -162,6 +161,7 @@ c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacC',HFacC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacW',HFacW,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacS',HFacS,myThid)
+
         _END_MASTER(myThid)
 
       ENDIF
@@ -169,6 +169,3 @@ c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
