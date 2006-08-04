@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.11 2006/08/03 21:21:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.12 2006/08/04 23:38:49 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -273,10 +273,6 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
       aim_pickup_write_mnc   = .FALSE.
       aim_pickup_read_mnc    = .FALSE.
 #endif /* ALLOW_MNC */
-      aim_snapshot_mnc       = .FALSE.
-C jmc: temporary turn off aim_snapshot_mnc, until the 2 Pbs get fixed:
-C     1) multi-tiles set-up, files "aim_state.t*.nc" are all identical
-C     2) error when writing "aim_tend": "vtype 'aim_dT_RSW' is not defined"
       aim_timeave_mdsio      = (.NOT. aim_timeave_mnc)
      &                     .OR. outputTypesInclusive
       aim_snapshot_mdsio     = (.NOT. aim_snapshot_mnc)
