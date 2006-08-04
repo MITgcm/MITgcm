@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.17 2006/06/09 16:05:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.18 2006/08/04 17:03:58 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -95,7 +95,7 @@ C Construct Pressures on physics and dynamics grids
          Lbotij = ksurfC(i,j,bi,bj)
          do L = Lbotij+1,Nr+1
           pedyn(i,j,L,bi,bj) = pedyn(i,j,L-1,bi,bj) -
-     .                        drF(L-1)*hfacC(i,j,L-1,bi,bj)
+     .               drF(L-1)* rStarExpC(i,j,bi,bj)*hfacC(i,j,L-1,bi,bj)
          enddo
 c Do not use a zero field as the top edge pressure for interpolation
          if(pedyn(i,j,Nr+1,bi,bj).lt.1.e-5)
