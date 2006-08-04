@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.8 2006/07/25 22:22:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.9 2006/08/04 00:45:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,10 +57,13 @@ CEOP
       jMin = 1-OLy
       jMax = sNy+OLy
 
+      _BEGIN_MASTER( myThid )
       WRITE(msgBuf,'(a)')
      &     'Start initial hydrostatic pressure computation'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , myThid)
+      _END_MASTER( myThid )
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k = 1,Nr
@@ -131,14 +134,17 @@ Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
         ELSE
            rmspp = sqrt(rmspp/count)
         ENDIF
+        _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(a,i2,a,e20.13)')
      &       'Iteration ', npiter, ', RMS-difference = ', rmspp
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
+        _END_MASTER( myThid )
 
 C --   end npiter loop
        ENDDO
 C     print some diagnostics	
+       _BEGIN_MASTER( myThid )
        IF ( rmspp .ne. 0. ) THEN
         IF ( rmspp .EQ. rmsppold ) THEN
          WRITE(msgBuf,'(A)')
@@ -165,23 +171,28 @@ C     print some diagnostics
      &     'Initial hydrostatic pressure converged.'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
+       _END_MASTER( myThid )
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c-- else of if useDynP_inEos_Zc
       ELSE
 C     print a message and DO nothing
+       _BEGIN_MASTER( myThid )
        WRITE(msgBuf,'(A,A)')
      &        'Pressure is predetermined for buoyancyRelation ',
      &        buoyancyRelation(1:11)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
+       _END_MASTER( myThid )
 
       ENDIF
 
+      _BEGIN_MASTER( myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , myThid)
+      _END_MASTER( myThid )
 
       RETURN
       END
