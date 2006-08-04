@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.19 2006/03/28 04:26:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.20 2006/08/04 23:17:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -42,7 +42,7 @@ CEndOfInterface
 C     == Local variables ==
       INTEGER I,J,K, I2,Katm
       _RL DDTT
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(80) suff
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -59,195 +59,218 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 
 C--  mean surf. temp. change:
-       DO J=1,NGP
+      DO J=1,NGP
          dTsurf(J,1,myThid) = fMask1(J,1,myThid)*dTsurf(J,1,myThid)
      &                      + fMask1(J,2,myThid)*dTsurf(J,2,myThid)
      &                      + fMask1(J,3,myThid)*dTsurf(J,3,myThid)
          dTsurf(J,1,myThid) = ABS(dTsurf(J,1,myThid))
-       ENDDO
+      ENDDO
 
       IF ( DIFFERENT_MULTIPLE(aim_tendFreq,
      &                        myTime+deltaTClock,deltaTClock)
      &   ) THEN
+C---  Write Tendencies to files :
 
        IF ( aim_snapshot_mdsio ) THEN
+C-    using MDSIO based S/R
+         WRITE(suff,'(A1,I10.10)') '.', myIter+1
 
-       WRITE(suff,'(I10.10)') myIter+1
-
-C--   Write Tendencies to files :
-       CALL AIM_WRITE_LOCAL('aim_dT_RSW.',suff,Nr,TT_RSW(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dT_RLW.',suff,Nr,TT_RLW(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dT_CNV.',suff,Nr,TT_CNV(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dT_PBL.',suff,Nr,TT_PBL(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dT_LSC.',suff,Nr,TT_LSC(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dQ_CNV.',suff,Nr,QT_CNV(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dQ_PBL.',suff,Nr,QT_PBL(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aim_dQ_LSC.',suff,Nr,QT_LSC(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
+         CALL AIM_WRITE_PHYS( 'aim_dT_RSW', suff, Nr, TT_RSW,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dT_RLW', suff, Nr, TT_RLW,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dT_CNV', suff, Nr, TT_CNV,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dT_PBL', suff, Nr, TT_PBL,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dT_LSC', suff, Nr, TT_LSC,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dQ_CNV', suff, Nr, QT_CNV,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dQ_PBL', suff, Nr, QT_PBL,
+     &                         0, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aim_dQ_LSC', suff, Nr, QT_LSC,
+     &                         0, bi, bj, 1, myIter, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
-C--   write clear-sky tendencies to files :
-       IF ( aim_clrSkyDiag ) THEN
-        CALL AIM_WRITE_LOCAL('aim_dT_clskySW.',suff,Nr,
-     &                     TT_SWclr(1,1,myThid),bi,bj,1,myIter,myThid)
-        CALL AIM_WRITE_LOCAL('aim_dT_clskyLW.',suff,Nr,
-     &                     TT_LWclr(1,1,myThid),bi,bj,1,myIter,myThid)
-       ENDIF
+C-    write clear-sky tendencies to files :
+         IF ( aim_clrSkyDiag ) THEN
+          CALL AIM_WRITE_PHYS( 'aim_dT_clskySW', suff, Nr, TT_SWclr,
+     &                         0, bi, bj, 1, myIter, myThid )
+          CALL AIM_WRITE_PHYS( 'aim_dT_clskyLW', suff, Nr, TT_LWclr,
+     &                         0, bi, bj, 1, myIter, myThid )
+         ENDIF
 #endif /* ALLOW_CLR_SKY_DIAG */
 
+C-    end if aim_snapshot_mdsio
        ENDIF
 
 #ifdef ALLOW_MNC
-       IF ( useMNC .AND. aim_snapshot_mnc ) THEN
+c      IF ( useMNC .AND. aim_snapshot_mnc ) THEN
+C-    using MNC S/R
+       IF ( .FALSE. ) THEN
+C jmc: temporary turn off this part until this get fixed:
+C      > MNC_CW_RL_W ERROR: vtype 'aim_dT_RSW' is not defined
 
-         WRITE(suff,'(a)') 'aim_tend'
-         CALL MNC_CW_SET_UDIM(suff, -1, myThid)
-         CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
-         CALL MNC_CW_SET_UDIM(suff, 0, myThid)
-         CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
+         IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
+          WRITE(suff,'(a)') 'aim_tend'
+          CALL MNC_CW_SET_UDIM(suff, -1, myThid)
+          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM(suff, 0, myThid)
+          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
+         ENDIF
 
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_RSW',TT_RSW,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_RLW',TT_RLW,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_CNV',TT_CNV,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_PBL',TT_PBL,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dT_LSC',TT_LSC,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_CNV',QT_CNV,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_PBL',QT_PBL,myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,'aim_dQ_LSC',QT_LSC,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dT_RSW',TT_RSW,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dT_RLW',TT_RLW,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dT_CNV',TT_CNV,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dT_PBL',TT_PBL,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dT_LSC',TT_LSC,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dQ_CNV',QT_CNV,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dQ_PBL',QT_PBL,myThid)
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,'aim_dQ_LSC',QT_LSC,myThid)
 
+C-    end if aim_snapshot_mnc
        ENDIF
-#endif
+#endif /* ALLOW_MNC */
 
+C---  end writing tendencies
       ENDIF
 
-      IF ( DIFFERENT_MULTIPLE(aim_diagFreq,
-     &                        myTime+deltaTClock,deltaTClock)
+      IF ( DIFFERENT_MULTIPLE( aim_diagFreq,
+     &                         myTime+deltaTClock, deltaTClock )
      &   ) THEN
+C---  Write Physics Fields
 
        IF ( aim_snapshot_mdsio ) THEN
+C-    using MDSIO based S/R
 
-       WRITE(suff,'(I10.10)') myIter+1
+         WRITE(suff,'(A1,I10.10)') '.', myIter+1
 
 C--   Write Relative Humidity :
-       CALL AIM_WRITE_LOCAL('aim_RelHum.',suff,Nr,RH(1,1,myThid),
-     &                      bi,bj,1,myIter,myThid)
+         CALL AIM_WRITE_PHYS( 'aim_RelHum', suff, Nr, RH,
+     &                         0, bi, bj, 1, myIter, myThid )
 
 C--   Write AIM Physics diagnostics (2D, all in 1 file) :
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,DRAG(1,0,myThid),
-     &                      bi,bj, 1,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SPEED0(1,myThid),
-     &                      bi,bj, 2,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,TSR(1,myThid),
-     &                      bi,bj, 3,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,OLR(1,myThid),
-     &                      bi,bj, 4,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SSR(1,0,myThid),
-     &                      bi,bj, 5,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SLR(1,0,myThid),
-     &                      bi,bj, 6,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SHF(1,0,myThid),
-     &                      bi,bj, 7,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EVAP(1,0,myThid),
-     &                      bi,bj, 8,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,PRECNV(1,myThid),
-     &                      bi,bj, 9,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,PRECLS(1,myThid),
-     &                      bi,bj,10,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,CLOUDC(1,myThid),
-     &                      bi,bj,11,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,CLTOP(1,myThid),
-     &                      bi,bj,12,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,CBMF(1,myThid),
-     &                      bi,bj,13,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,T0(1,myThid),
-     &                      bi,bj,14,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,Q0(1,myThid),
-     &                      bi,bj,15,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EnPrec(1,myThid),
-     &                      bi,bj,16,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,alb1(1,0,myThid),
-     &                      bi,bj,17,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,dTsurf(1,1,myThid),
-     &                      bi,bj,18,myIter,myThid)
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, DRAG,
+     &                         1, bi, bj, 1, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, SPEED0,
+     &                         1, bi, bj, 2, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, TSR,
+     &                         1, bi, bj, 3, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, OLR,
+     &                         1, bi, bj, 4, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SSR,
+     &                         1, bi, bj, 5, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SLR,
+     &                         1, bi, bj, 6, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SHF,
+     &                         1, bi, bj, 7, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, EVAP,
+     &                         1, bi, bj, 8, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, PRECNV,
+     &                         1, bi, bj, 9, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, PRECLS,
+     &                         1, bi, bj,10, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CLOUDC,
+     &                         1, bi, bj,11, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CLTOP,
+     &                         1, bi, bj,12, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CBMF,
+     &                         1, bi, bj,13, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, T0,
+     &                         1, bi, bj,14, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, Q0,
+     &                         1, bi, bj,15, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, EnPrec,
+     &                         1, bi, bj,16, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, alb1,
+     &                         1, bi, bj,17, myIter, myThid )
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 3, dTsurf,
+     &                         1, bi, bj,18, myIter, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
 C--   write clear-sky radiative fluxes to files :
-      IF ( aim_clrSkyDiag ) THEN
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,TSWclr(1,myThid),
-     &                      bi,bj, 19,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,OLWclr(1,myThid),
-     &                      bi,bj, 20,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SSWclr(1,myThid),
-     &                      bi,bj, 21,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SLWclr(1,myThid),
-     &                      bi,bj, 22,myIter,myThid)
-      ENDIF
+         IF ( aim_clrSkyDiag ) THEN
+          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, TSWclr,
+     &                         1, bi, bj,19, myIter, myThid )
+          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, OLWclr,
+     &                         1, bi, bj,20, myIter, myThid )
+          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, SSWclr,
+     &                         1, bi, bj,21, myIter, myThid )
+          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, SLWclr,
+     &                         1, bi, bj,22, myIter, myThid )
+         ENDIF
 #endif /* ALLOW_CLR_SKY_DIAG */
-C--
+
+C-    end if aim_snapshot_mdsio
        ENDIF
 
 #ifdef ALLOW_MNC
        IF ( useMNC .AND. aim_snapshot_mnc ) THEN
+C-    using MNC S/R
 
-         WRITE(suff,'(a)') 'aim_state'
-         CALL MNC_CW_SET_UDIM(suff, -1, myThid)
-         CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
-         CALL MNC_CW_SET_UDIM(suff, 0, myThid)
-         CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
+         IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
+c         WRITE(suff,'(a)') 'aim_phys'
+          WRITE(suff,'(a)') 'aim_state'
+          CALL MNC_CW_SET_UDIM(suff, -1, myThid)
+          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM(suff, 0, myThid)
+          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
+         ENDIF
 
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_DRAG0',DRAG(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SPEED0',SPEED0(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_TSR',TSR(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_OLR',OLR(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SSR0',SSR(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SLR0',SLR(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SHF0',SHF(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_EVAP0',EVAP(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_PRECNV',PRECNV(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_PRECLS',PRECLS(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_CLOUDC',CLOUDC(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_CLTOP',CLTOP(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_CBMF',CBMF(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_T0',T0(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_Q0',Q0(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_EnPrec',EnPrec(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_alb10',alb1(1,0,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_dTsurf1',dTsurf(1,1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+#ifdef ALLOW_CLR_SKY_DIAG
+C--   write clear-sky radiative fluxes to files :
+        IF ( aim_clrSkyDiag ) THEN
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_TSWclr',TSWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_OLWclr',OLWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SSWclr',SSWclr(1,myThid),myThid)
-         CALL MNC_CW_RL_W(pf,suff,0,0,
+         CALL MNC_CW_RL_W(pf,suff,bi,bj,
      &        'aim_SLWclr',SLWclr(1,myThid),myThid)
+        ENDIF
+#endif /* ALLOW_CLR_SKY_DIAG */
 
+C     end if aim_snapshot_mnc
        ENDIF
-#endif
+#endif /* ALLOW_MNC */
 
+C--   end writing Physics Fields
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
