@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.21 2005/11/03 16:26:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.22 2006/08/04 01:22:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,7 @@ CEOP
 
 C-    Safety check:
       IF ( nPx*nPy.NE.1 .AND. globalFiles ) THEN
+        _BEGIN_MASTER( myThid )
 c       WRITE(msgBuf,'(2A)')
 c    &   'INI_MODEL_IO: globalFiles=TRUE is not safe',
 c    &   ' in Multi-processors (MPI) run'
@@ -58,11 +59,15 @@ C-----
      &   ' use instead "useSingleCpuIO=.TRUE."'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
+        _END_MASTER( myThid )
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Flags specific to RW and MDSIO
+
+C-    Only Master-thread updates IO-parameter in Common blocks:
+      _BEGIN_MASTER( myThid )
 
 C     Set globalFiles flag for READ_WRITE_FLD package
       CALL SET_WRITE_GLOBAL_FLD( globalFiles )
@@ -71,6 +76,9 @@ C     Set globalFiles flag for READ_WRITE_REC package
 C     Set globalFiles flag for READ_WRITE_PICKUP 
       CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
 
+      _END_MASTER( myThid )
+C-    Everyone else must wait for the IO-parameters to be set
+      _BARRIER
 
 C-    MNC model-io initialisation
 
