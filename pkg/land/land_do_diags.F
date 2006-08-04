@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.8 2006/03/01 23:13:28 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_do_diags.F,v 1.9 2006/08/04 22:13:31 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: LAND_DO_DIAGS
 C     !INTERFACE:
-      SUBROUTINE LAND_DO_DIAGS( 
+      SUBROUTINE LAND_DO_DIAGS(
      I                land_frc, bi,bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -14,8 +14,11 @@ C     *==========================================================*
 C     | S/R LAND_DO_DIAGS
 C     | o Calculate Land diagnostics
 C     *==========================================================*
+C     | note: snap-shot output have been moved to a better place
+C     |       and are now written from LAND_OUTPUT
+C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -46,112 +49,8 @@ CEOP
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
-C     == Local Variables == 
-      INTEGER k, iterWr
-      CHARACTER*(MAX_LEN_MBUF) suff
-#ifdef ALLOW_MNC
-      CHARACTER*(80) fmnc
-      CHARACTER*(1) pf
-#endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      IF ( DIFFERENT_MULTIPLE( land_diagFreq,
-     &                         myTime+land_deltaT, land_deltaT )
-     &  .OR. dumpInitAndLast.AND.( myTime+land_deltaT.EQ.endTime )
-     &   ) THEN 
-
-        iterWr = myIter+1
-
-        IF ( land_snapshot_mdsio ) THEN
-
-       WRITE(suff,'(I10.10)') iterWr
-
-c      _BARRIER
-c      _BEGIN_MASTER( myThid )
-
-       DO k=1,land_nLev
-C--   Write ground Temp and soil moisture :
-        CALL WRITE_LOCAL_RL('land_groundT','I10',1,
-     &       land_groundT(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_enthalp','I10',1,
-     &       land_enthalp(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_groundW','I10',1,
-     &       land_groundW(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
-       ENDDO
-        CALL WRITE_LOCAL_RL('land_skinT', 'I10',1,
-     &       land_skinT(1-OLx,1-OLy,bi,bj),  bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_hSnow', 'I10',1,
-     &       land_hSnow(1-OLx,1-OLy,bi,bj),  bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_snAge', 'I10',1,
-     &       land_snowAge(1-OLx,1-OLy,bi,bj),bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_RunOff','I10',1,
-     &       land_runOff(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_enRnOf','I10',1,
-     &       land_enRnOf(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
-
-        CALL WRITE_LOCAL_RL('land_HeatFx','I10',1,
-     &       land_HeatFlx(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_frWaFx','I10',1,
-     &       land_Pr_m_Ev(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
-        CALL WRITE_LOCAL_RL('land_EnWaFx','I10',1,
-     &       land_EnWFlux(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
-
-c      _END_MASTER( myThid )
-c      _BARRIER
-
-        ENDIF
-
-#ifdef ALLOW_MNC
-        IF ( land_snapshot_mnc ) THEN
-
-          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-            pf(1:1) = 'D'
-          ELSE
-            pf(1:1) = 'R'
-          ENDIF
-          DO k = 1,80
-            fmnc(k:k) = ' '
-          ENDDO
-          WRITE(fmnc,'(a)') 'land'
-
-          CALL MNC_CW_SET_UDIM(fmnc, -1, myThid)
-          CALL MNC_CW_RL_W_S('D',fmnc,0,0,'T', myTime, myThid)
-          CALL MNC_CW_SET_UDIM(fmnc, 0, myThid)
-C         TODO: Why does JMC use iterWr instead of myIter ???
-          CALL MNC_CW_I_W_S('I',fmnc,0,0,'iter', iterWr, myThid)
-
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_groundT', land_groundT, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_enthalp', land_enthalp, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_groundW', land_groundW, myThid)
-
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_skinT', land_skinT, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_hSnow', land_hSnow, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_snAge', land_snowAge, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_RunOff', land_runOff, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_enRnOf', land_enRnOf, myThid)
-
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_HeatFx', land_HeatFlx, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_frWaFx', land_Pr_m_Ev, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
-     &         'land_EnWaFx', land_EnWFlux, myThid)
-          
-        ENDIF
-#endif
-
-      ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     == Local Variables ==
+      INTEGER k
 
 #ifdef ALLOW_LAND_TAVE
 
