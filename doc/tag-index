@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.710 2006/08/04 23:36:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.711 2006/08/06 01:46:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o add "_d 0" to real constant of pkg/cfc subroutines ; 
+   update exp. cfc_exemple & tutorial_cfc_offline output files.
 o multi-threading and IO:
   - all threads call READ_FLD S/R (needed if using SingleCpuIO): 
     (no BEGIN_MASTER/ END_MASTER around the call, but inside MDSIO S/R.
