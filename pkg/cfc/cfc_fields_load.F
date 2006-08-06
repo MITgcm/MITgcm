@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.5 2005/05/04 19:57:16 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.6 2006/08/06 01:29:12 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace
@@ -15,12 +14,11 @@ C     |==========================================================|
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS.h"
 #include "GCHEM.h"
 #include "CFC.h"
 
@@ -58,6 +56,7 @@ cQQQ need to check timing
          CALL LEF_ZERO( atmosp1,myThid )
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
+         _BARRIER
        ENDIF
 
 
@@ -69,13 +68,15 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
        Imytm=int(myTime*rdt+0.5)
        Ifprd=int(externForcingPeriod*rdt+0.5)
        Ifcyc=int(externForcingCycle*rdt+0.5)
-       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+       Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
 
 
        intime0=int(Iftm/Ifprd)
        intime1=mod(intime0+1,nForcingPeriods)
-       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-       bWght=1.-aWght
+       aWght=float( Iftm-Ifprd*intime0 )
+       bWght=float( Ifprd )
+       aWght=aWght/bWght
+       bWght=1. _d 0 - aWght
 
        intime0=intime0+1
        intime1=intime1+1
@@ -88,13 +89,14 @@ cswd QQ  need nIter0+1 since chem forcing after time step
      &    ) THEN
 
 
-        _BEGIN_MASTER(myThid)
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
+        _BEGIN_MASTER(myThid)
         WRITE(*,*)
      &    'S/R EXTERNAL_FIELDS_LOAD: Reading new cfc data',
      &                 myTime,myIter
+       _END_MASTER(myThid)
 
        IF ( WindFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( WindFile,wspeed0,intime0,
@@ -115,7 +117,6 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
        ENDIF
 
-       _END_MASTER(myThid)
 C
        _EXCH_XY_R4(wspeed0, myThid )
        _EXCH_XY_R4(wspeed1, myThid )
@@ -134,23 +135,23 @@ C
              WIND(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
      &                        +aWght*wspeed1(i,j,bi,bj)
            ELSE
-             WIND(i,j,bi,bj) = 5.d0*maskC(i,j,1,bi,bj)
+             WIND(i,j,bi,bj) = 5. _d 0*maskC(i,j,1,bi,bj)
            ENDIF
 c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
 c following Wannikof (1992)
-           pisvel(i,j,bi,bj)  =(0.31*wind(i,j,bi,bj)**2)/3.6e5
+           pisvel(i,j,bi,bj)=(0.31 _d 0*wind(i,j,bi,bj)**2)/3.6 _d 5
            IF ( AtmospFile .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
      &                        +aWght*atmosp1(i,j,bi,bj)
            ELSE
-             ATMOSP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
+             ATMOSP(i,j,bi,bj) = maskC(i,j,1,bi,bj)
            ENDIF
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
            ELSE
-            FIce(i,j,bi,bj) =0.d0
+            FIce(i,j,bi,bj) =0. _d 0
            ENDIF
           ENDDO
          ENDDO

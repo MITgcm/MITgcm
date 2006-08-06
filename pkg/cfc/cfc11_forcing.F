@@ -1,5 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc11_forcing.F,v 1.8 2006/08/06 01:29:12 jmc Exp $
+C $Name:  $
+
 C modified for external_forcing_DIC.F  August 1999
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 c
 c modified swd Oct 01 and Feb 02, for use as package for c40_patch1
 c modified to use with c44 and ptracers: swd May 2002
@@ -8,6 +10,8 @@ c modified for cfc: swd Sep 2003
 C
 
 #include "GCHEM_OPTIONS.h"
+#define OCMIP_GRAD
+#undef STEPH_GRAD
 
 CStartOfInterFace
       SUBROUTINE CFC11_FORCING( PTR_CFC11, GCFC11, 
@@ -22,12 +26,11 @@ C     |==========================================================|
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CFC.h"
-#include "GCHEM.h"
+c#include "GCHEM.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
@@ -49,7 +52,9 @@ C     == Local variables ==
        _RL dtinc, aWght, bWght
        _RL ACFC11north, ACFC11south
        INTEGER maxYear
+#ifdef STEPH_GRAD
        _RL a1, a2
+#endif
        _RL yNorth, ySouth
        
 
@@ -59,7 +64,7 @@ C     == Local variables ==
           ENDDO
          ENDDO
 
-c find atmospheric CFC
+C find atmospheric CFC
        myYear=float(myIter-PTRACERS_Iter0)*deltaTclock
      &                       /(360.d0*24.d0*3600.d0)
        lastYear=1+int(myYear+0.5)
@@ -81,10 +86,9 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
        endif
 c      print*,'ACFC11north,ACFC11south', ACFC11north,ACFC11south,
 c    &                                   lastYear,thisYear
-c provide gradient between N and S values
-#define OCMIP_GRAD
-#undef STEPH_GRAD
-c STEPH'S INITIAL VERSION
+C provide gradient between N and S values
+
+C STEPH'S INITIAL VERSION
 #ifdef STEPH_GRAD
        DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -125,7 +129,7 @@ c OCMIP VERSION
 c         print*,'QQ cfc11', j, ATMOSCFC11(1,j,bi,bj)
        ENDDO
 #endif
-c cfc11 air-sea interaction
+C cfc11 air-sea interaction
        CALL CFC11_SURFFORCING( PTR_CFC11, SURCFC11,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
@@ -139,6 +143,5 @@ c cfc11 air-sea interaction
 #endif
 #endif
 
-c
        RETURN
        END

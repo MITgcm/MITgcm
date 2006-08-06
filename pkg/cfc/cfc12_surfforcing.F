@@ -1,4 +1,6 @@
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_surfforcing.F,v 1.3 2006/08/06 01:29:12 jmc Exp $
+C $Name:  $
+
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace
@@ -12,11 +14,11 @@ C     |==========================================================|
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
+#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "CFC.h"
 
 C     == Routine arguments ==
@@ -36,7 +38,7 @@ C I, J, K - Loop counters
 C Solubility relation coefficients
       _RL SchmidtNocfc12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SolCFC12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL cfc12sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL cfc12sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fluxcfc12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Csat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -47,7 +49,7 @@ C Solubility relation coefficients
 C calculate SCHMIDT NO. for O2
         DO j=jMin,jMax
           DO i=iMin,iMax
-            IF (hFacC(i,j,k,bi,bj).NE.0.) THEN
+            IF (maskC(i,j,k,bi,bj).NE.0.) THEN
 C calculate SCHMIDT NO. for CFC12
               SchmidtNocfc12(i,j) = 
      &            sca_12_1 
@@ -56,7 +58,7 @@ C calculate SCHMIDT NO. for CFC12
      &          + sca_12_4 * theta(i,j,k,bi,bj)*theta(i,j,k,bi,bj) 
      &                *theta(i,j,k,bi,bj)
 c calculate solubility for CFC12
-              ttemp=( theta(i,j,k,bi,bj) + 273.16)* 0.01
+              ttemp=( theta(i,j,k,bi,bj) + 273.16 _d 0)* 0.01 _d 0
               ttemp2=( B3_12 * ttemp + B2_12 )*
      &            ttemp + B1_12 
               SolCFC12(i,j)
@@ -66,21 +68,21 @@ c calculate solubility for CFC12
      &           +  A4_12 * ttemp * ttemp
      &           +  Salt(i,j,k,bi,bj)* ttemp2 )
 c     conversion from mol/(l * atm) to mol/(m^3 * atm)
-              SolCFC12(i,j) = 1000. * SolCFC12(i,j)
+              SolCFC12(i,j) = 1000. _d 0 * SolCFC12(i,j)
 c     conversion from mol/(m^3 * atm) to mol/(m3 * pptv)
-              SolCFC12(i,j) = 1.0e-12 * SolCFC12(i,j)
+              SolCFC12(i,j) = 1. _d -12 * SolCFC12(i,j)
 C Determine surface flux (Fcfc12)
               Csat(i,j) = SolCFC12(i,j)*AtmosP(i,j,bi,bj)
      &                     *AtmosCFC12(i,j,bi,bj)
-              Kwexch(i,j) = (1.0 - fice(i,j,bi,bj))*pisvel(i,j,bi,bj)
-     &                    / sqrt(SchmidtNoCFC12(i,j)/660.0)
+              Kwexch(i,j) = (1. _d 0 - fice(i,j,bi,bj))
+     &                    * pisvel(i,j,bi,bj)
+     &                    / sqrt(SchmidtNoCFC12(i,j)/660. _d 0)
               FluxCFC12(i,j) =
      &        Kwexch(i,j)*(Csat(i,j) - PTR_CFC12(i,j,1))
 
             ELSE
-              FluxCFC12(i,j) = 0.d0
+              FluxCFC12(i,j) = 0. _d 0
             ENDIF
-
 
           ENDDO
         ENDDO
@@ -98,4 +100,3 @@ C update surface tendencies
 
         RETURN
         END
-
