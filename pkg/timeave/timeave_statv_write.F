@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.37 2006/03/20 15:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.38 2006/08/06 23:30:33 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: TIMEAVE_STATV_WRITE
 
 C     !INTERFACE:
-      SUBROUTINE TIMEAVE_STATV_WRITE(myTime, myIter, myThid)
+      SUBROUTINE TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     At the end of average period, write the time-average
@@ -18,16 +18,12 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.
@@ -39,6 +35,12 @@ C     myTime - Current time of simulation ( s )
 CEOP
 
 #ifdef ALLOW_TIMEAVE
+C     Functions:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
+
 C     !LOCAL VARIABLES:
 C     suff         :: Hold suffix part of a filename
 C     TimeAve      :: total time over average
@@ -70,7 +72,7 @@ C     Final Time Averages and Dump Files if needed
         WRITE(suff,'(I10.10)') myIter
 
         DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C         Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(uFluxtave,TimeAve_full,1 ,bi,bj,myThid)
@@ -118,12 +120,11 @@ C         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
      &         bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(ConvectCountTave,TimeAve_full,Nr,
      &         bi,bj,myThid)
-        ENDDO
+         ENDDO
         ENDDO
 
 C       Write to files
         _BARRIER
-C       _BEGIN_MASTER( myThid )
 
         IF (timeave_mdsio) THEN
 
@@ -196,20 +197,24 @@ C         Reread IO error counter
 
 C         Check for IO errors
           IF ( endIOErrCount .NE. beginIOErrCount ) THEN
+C-          any thread that detects an error should report
             WRITE(msgBuf,'(A)')  'S/R WRITE_TIME_AVERAGES'
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')  'Error writing out data'
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
           ELSE
+C-          normal case: 1 message is enough
+            _BEGIN_MASTER( myThid )
             WRITE(msgBuf,'(A,I10)')
      &           '// Time-average data written, t-step', myIter
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT, 1 )
+     &           SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(A)')  ' '
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT, 1 )
+     &           SQUEEZE_RIGHT, myThid )
+            _END_MASTER( myThid )
           ENDIF
 
         ENDIF
@@ -287,7 +292,6 @@ C         CALL MNC_CW_RL_W(pf,'tave',0,0,'hFacStave',hFacStave,myThid)
         ENDIF
 #endif /* ALLOW_MNC */
 
-C       _END_MASTER( myThid )
         _BARRIER
 
         DO bj = myByLo(myThid), myByHi(myThid)
