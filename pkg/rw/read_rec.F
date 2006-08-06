@@ -1,0 +1,546 @@
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_rec.F,v 1.1 2006/08/06 18:06:17 jmc Exp $
+C $Name:  $
+#include "RW_OPTIONS.h"
+
+C--  File read_write_rec.F: Routines to handle mid-level I/O interface.
+C--   Contents
+C--   o READ_REC_XY_RS
+C--   o READ_REC_XY_RL
+C--   o READ_REC_XYZ_RS
+C--   o READ_REC_XYZ_RL
+C--   o READ_REC_3D_RS
+C--   o READ_REC_3D_RL
+C--   o READ_REC_XZ_RS
+C--   o READ_REC_XZ_RL
+C--   o READ_REC_YZ_RS
+C--   o READ_REC_YZ_RL
+
+CBOP
+C     !ROUTINE: READ_REC_XY_RS
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XY_RS( fName,field,iRec,myIter,myThid)
+C     !DESCRIPTION: \bv
+C READ_REC_XY_RS is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RS'
+      nNz=1
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_XY_RL
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XY_RL( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_XY_RL is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RL'
+      nNz=1
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_XYZ_RS
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XYZ_RS( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_XYZ_RS is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RS'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_XYZ_RL
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XYZ_RL( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_XYZ_RL is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RL'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_3D_RS
+C     !INTERFACE:
+      SUBROUTINE READ_REC_3D_RS(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C READ_REC_3D_RS is a "front-end" interface to the low-level I/O routines.
+C  read a full 3D field (nNz levels) from record number "iRec"
+C   in binary file "fName" (precision "fPrec", generally =32 or 64).
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      INTEGER fPrec
+      INTEGER nNz
+      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nNz,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RS'
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, fPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_3D_RL
+C     !INTERFACE:
+      SUBROUTINE READ_REC_3D_RL(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C READ_REC_3D_RL is a "front-end" interface to the low-level I/O routines.
+C  read a full 3D field (nNz levels) from record number "iRec"
+C   in binary file "fName" (precision "fPrec", generally =32 or 64).
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      INTEGER fPrec
+      INTEGER nNz
+      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nNz,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RL'
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELD( fName, fPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_XZ_RS
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XZ_RS( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_XZ_RS is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RS field(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RS'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELDXZ( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_XZ_RL
+C     !INTERFACE:
+      SUBROUTINE READ_REC_XZ_RL( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_XZ_RL is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RL field(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RL'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELDXZ( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_YZ_RS
+C     !INTERFACE:
+      SUBROUTINE READ_REC_YZ_RS( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_YZ_RS is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RS field(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RS'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELDYZ( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: READ_REC_YZ_RL
+C     !INTERFACE:
+      SUBROUTINE READ_REC_YZ_RL( fName,field,iRec,myIter,myThid)
+
+C     !DESCRIPTION: \bv
+C READ_REC_YZ_RL is a "front-end" interface to the low-level I/O
+C routines.
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      _RL field(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C     !LOCAL VARIABLES:
+C Local
+      CHARACTER*(2) fType
+      INTEGER nNz
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      fType='RL'
+      nNz=Nr
+#ifdef ALLOW_MDSIO
+      CALL MDSREADFIELDYZ( fName, readBinaryPrec, fType,
+     &     nNz, field, iRec, myThid )
+#endif
+      RETURN
+      END
