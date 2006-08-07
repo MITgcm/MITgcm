@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.2 2005/11/02 14:51:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.3 2006/08/07 20:30:28 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -68,6 +68,8 @@ C Local variables
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
+
+      STOP 'S/R MDS_READTILE: not maintained'
 
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
