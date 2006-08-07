@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.6 2006/07/20 17:33:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.7 2006/08/07 23:26:46 jmc Exp $
 
 #  Ed Hill
 
@@ -101,6 +101,7 @@ $comm | tail -100
  
 echo "Running testreport using:"
 export OMP_NUM_THREADS=2
+export KMP_STACKSIZE=400m
 comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
