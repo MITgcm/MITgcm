@@ -1,23 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.1 2006/06/28 21:26:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
 
-CBOP
-C     !ROUTINE: MYPACKAGE_INIT
-C     !INTERFACE:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MYPACKAGE_INIT_VARIA
+
+C !INTERFACE:
       SUBROUTINE MYPACKAGE_INIT_VARIA( myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE MYPACKAGE_INIT_VARIA
-C     | o Routine to initialize MYPACKAGE variables
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Initialize MYPACKAGE variables
+
 C     !USES:
       IMPLICIT NONE
-
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -25,7 +22,6 @@ C     === Global variables ===
 #include "MYPACKAGE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP

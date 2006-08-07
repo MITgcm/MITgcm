@@ -1,31 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_fixed.F,v 1.1 2006/06/28 21:26:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_fixed.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
 
-CBOP
-C     !ROUTINE: MYPACKAGE_INIT_FIXED
-C     !INTERFACE:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MYPACKAGE_INIT_FIXED
+
+C !INTERFACE:
       SUBROUTINE MYPACKAGE_INIT_FIXED( myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE MYPACKAGE_INIT_FIXED
-C     | o Routine to initialize MYPACKAGE variables 
-C     |   that are kept fixed during the run.
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Initialize MYPACKAGE variables that are kept fixed during the run.
+
 C     !USES:
       IMPLICIT NONE
-
-C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "MYPACKAGE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP

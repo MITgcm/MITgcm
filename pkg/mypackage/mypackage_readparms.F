@@ -1,26 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.1 2006/06/28 21:26:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
 
-      SUBROUTINE MYPACKAGE_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE MYPACKAGE_READPARMS                              |
-C     | o Routine to initialize MYPACKAGE variables and constants.  |
-C     |==========================================================|
-C     | Initialize MYPACKAGE parameters, read in data.mypackage     |
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MYPACKAGE_READPARMS
 
-C     === Global variables ===
+C !INTERFACE:
+      SUBROUTINE MYPACKAGE_READPARMS( myThid )
+
+C     !DESCRIPTION:
+C     Initialize MYPACKAGE variables and constants.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "MYPACKAGE.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_MYPACKAGE
 

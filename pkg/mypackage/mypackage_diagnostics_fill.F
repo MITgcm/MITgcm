@@ -1,37 +1,35 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/Attic/mypackage_diagnostics_fill.F,v 1.1 2006/06/28 21:26:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/Attic/mypackage_diagnostics_fill.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
 
-CStartOfInterface
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MYPACKAGE_DIAGNOSTICS_FILL
+
+C !INTERFACE:
       SUBROUTINE MYPACKAGE_DIAGNOSTICS_FILL(
      I             bi, bj, myThid )
-C     /==========================================================\
-C     | SUBROUTINE MYPACKAGE_DIAGNOSTICS_FILL                    |
-C     | o Calculate tensor elements for GM/Redi tensor.          |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
 
-C     == Global variables ==
+C     !DESCRIPTION:
+C     Provide the information for the diagnostics
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MYPACKAGE.h"
 
-C     == Routine arguments ==
-C
+C     !INPUT PARAMETERS:
       INTEGER bi,bj
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_MYPACKAGE
 
-C     == Local variables ==
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
+C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
