@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.9 2006/05/25 18:05:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.10 2006/08/07 20:20:01 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -148,6 +148,11 @@ C          temp. is fct of salinity) ; but would be better somewhere else.
          ENDDO
         ENDDO
         IF ( myIter.EQ.nIter0 ) THEN
+#ifndef LOCBIN_IO_THREAD_SAFE
+C-      should used a modified MDS_WRITETILE that works in multi-threaded
+C         with array in common block. For now, just do nothing.
+         IF ( nThreads.EQ.1 ) THEN
+#endif
 C-- Over-write the initial T,S_MxL files with the correct fields
           CALL WRITE_LOCAL_RL( 'ice_tOceMxL', 'I10', 1,
      &                         tOceMxL(1-Olx,1-Oly,bi,bj),
@@ -155,6 +160,9 @@ C-- Over-write the initial T,S_MxL files with the correct fields
           CALL WRITE_LOCAL_RL( 'ice_sOceMxL', 'I10', 1,
      &                         sOceMxL(1-Olx,1-Oly,bi,bj),
      &                         bi, bj, 1, myIter, myThid )
+#ifndef LOCBIN_IO_THREAD_SAFE
+         ENDIF
+#endif
         ENDIF
       ELSE
 C-- Use ocean mixed layer Temp as Atmos. SST (instead of prescribed Temp)
