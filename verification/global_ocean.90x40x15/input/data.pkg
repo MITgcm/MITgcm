@@ -1,6 +1,5 @@
-# Packages
+# Packages (lines beginning "#" are comments)
  &PACKAGES
  useGMRedi=.TRUE.,
-#useMNC=.TRUE.,
+ useMNC=.TRUE.,
  &
-  
