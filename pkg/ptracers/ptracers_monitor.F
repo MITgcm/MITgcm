@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.11 2006/06/23 00:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.12 2006/08/08 21:24:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PTRACERS_MONITOR
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_MONITOR(
-     I                myIter, myTime, myThid )
+     I                    myIter, myTime, myThid )
 
 C !DESCRIPTION:
 C writes out ptracer statistics
@@ -27,11 +27,11 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
 C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
+      _RL     myTime
       INTEGER myIter
-      _RL myTime
       INTEGER myThid
 
 C     === Functions ====
@@ -44,96 +44,109 @@ C     === Functions ====
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  ip                   :: ptracer number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf   
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_MBUF) suff
-      _RL dT
-      integer ip
+      INTEGER ip
 CEOP
 
-      dT=deltaTclock
+      IF ( DIFFERENT_MULTIPLE( PTRACERS_monitorFreq,myTime,deltaTClock )
+     &   ) THEN
 
-      IF ( DIFFERENT_MULTIPLE( PTRACERS_monitorFreq,myTime,dT ) ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-       mon_write_stdout = .FALSE.
-       mon_write_mnc    = .FALSE.
-       _BARRIER
 
-C     Ptracers field monitor start 
-       _BEGIN_MASTER(myThid)
+C--   Ptracers field monitor start
 #ifdef ALLOW_USE_MPI
-       IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
 #endif /* ALLOW_USE_MPI */
-        
-        IF (PTRACERS_monitor_stdio) THEN
-         WRITE(msgBuf,'(2A)') '// ==========================',
-     &        '============================='
-         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-         WRITE(msgBuf,'(A)')
-     &        '// Begin MONITOR ptracer field statistics'
-         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
-     &        SQUEEZE_RIGHT , 1)
-         WRITE(msgBuf,'(2A)') '// ==========================',
-     &        '============================='
-         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-         mon_write_stdout = .TRUE.
-        ENDIF
-        
+          _BEGIN_MASTER(myThid)
+C-    only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+          IF (monitor_stdio) THEN
+            mon_write_stdout = .TRUE.
+          ELSE
+            mon_write_stdout = .FALSE.
+          ENDIF
+          mon_write_mnc    = .FALSE.
+#ifdef ALLOW_MNC
+          IF (useMNC .AND. PTRACERS_monitor_mnc) THEN
+            WRITE(mon_fname,'(A)') 'monitor_ptracer'
+            CALL MNC_CW_APPEND_VNAME(
+     &           'T', '-_-_--__-__t', 0,0, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+            CALL MNC_CW_I_W_S(
+     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+            mon_write_mnc = .TRUE.
+          ENDIF
+#endif /*  ALLOW_MNC  */
+
+          IF ( mon_write_stdout ) THEN
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(A)')
+     &             '// Begin MONITOR ptracer field statistics'
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+            WRITE(msgBuf,'(2A)') '// ==========================',
+     &             '============================='
+            CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+          ENDIF
+
+        _END_MASTER(myThid)
 #ifdef ALLOW_USE_MPI
        ENDIF
 #endif /* ALLOW_USE_MPI */
-        _END_MASTER(myThid)
 
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. PTRACERS_monitor_mnc) mon_write_mnc = .TRUE.
-#endif /*  ALLOW_MNC  */
-
-        IF ( PTRACERS_monitorFreq .NE. monitorFreq ) THEN
-C     repeat printing of time to make grepping easier, default is not
-C     to do this, because the default is to use the same monitorFreq
-C     for ptracers as for the dynamics variables.
+C--   Ptracers field monitor : compute stats & write
+       IF ( PTRACERS_monitorFreq .NE. monitorFreq
+     &     .OR. (useMNC.AND.PTRACERS_monitor_mnc) ) THEN
+C      repeat printing of time to make grepping easier, default is not
+C      to do this, because the default is to use the same monitorFreq
+C      for ptracers as for the dynamics variables.
          CALL MON_SET_PREF('trctime',myThid)
          CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
          CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
-        ENDIF
-C       Print the basic statistics of ptracer variables
+       ENDIF
+C      Print the basic statistics of ptracer variables
        CALL MON_SET_PREF('trcstat_',myThid)
        DO ip = 1, PTRACERS_numInUse
-         _BEGIN_MASTER(myThid)
          WRITE(suff,'(A7,I2.2)') 'ptracer',ip
-         _END_MASTER(myThid)
-         _BARRIER
+c        WRITE(suff,'(A7,I3.3)') 'ptrac_', ip
          CALL MON_PRINTSTATS_RL(
      &        Nr, ptracer(1-Olx,1-Oly,1,1,1,ip),
      &        suff, maskC,hFacC,rA ,drF,myThid)
        ENDDO
 
-       IF (PTRACERS_monitor_stdio) THEN
-C     Ptracers field monitor finish
+C--   Ptracers field monitor finish
+#ifdef ALLOW_USE_MPI
+       IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
         _BEGIN_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
-        IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
-#endif /* ALLOW_USE_MPI */
+C-    only the master thread is allowed to switch On/Off mon_write_stdout
+C     & mon_write_mnc (since it's the only thread that uses those flags):
+
+        IF ( mon_write_stdout ) THEN
          WRITE(msgBuf,'(2A)') '// ==========================',
      &        '============================='
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &        '// End MONITOR ptracers field statistics'
-         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit,
-     &        SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
          WRITE(msgBuf,'(2A)') '// ==========================',
      &        '============================='
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-#ifdef ALLOW_USE_MPI
         ENDIF
-#endif /* ALLOW_USE_MPI */
 
         mon_write_stdout = .FALSE.
-        
-        _END_MASTER(myThid)
-       ENDIF
+        mon_write_mnc    = .FALSE.
 
-       mon_write_stdout = .FALSE.
-       mon_write_mnc    = .FALSE.
+        _END_MASTER(myThid)
+#ifdef ALLOW_USE_MPI
+       ENDIF
+#endif /* ALLOW_USE_MPI */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     endif different multiple
       ENDIF
