@@ -1,46 +1,61 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.11 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.12 2006/08/08 03:14:33 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: AIM_INITIALISE
+C     !INTERFACE:
       SUBROUTINE AIM_INITIALISE( myThid )
+C     !DESCRIPTION: \bv
 C     *==================================================================*
 C     | S/R AIM_INITIALISE
 C     *==================================================================*
 C     | Initialisation of AIM atmospheric physics package :
 C     | 1) call iniphys (=> set parameters to default value)
-C     | 2) read AIM parameters 
+C     | 2) read AIM parameters
 C     *==================================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
-C     -------------- Global variables ------------------------------------
-#include "SIZE.h" 
+C     === Global variables ===
+#include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "DYNVARS.h"
 #include "AIM_PARAMS.h"
 #include "AIM_FFIELDS.h"
 c #include "AIM_GRID.h"
-#include "AIM_DIAGS.h"
+c #include "AIM_DIAGS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_AIM
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     HSG  - Cell face in vertical
-C     pGround - Lower boundary pressure
-C     i, j, k, bi,bj  - Loop counters
+C     HSG     :: Cell face in vertical
+C     pGround :: Lower boundary pressure
+C     bi,bj   :: Tile indices
+C     i, j, k :: Loop counters
       _RL HSG(0:Nr)
       _RL pGround, tmpPgrnd
-      INTEGER i, j, K, bi, bj
+      INTEGER bi, bj
+      INTEGER i, j, k
       INTEGER Katm
+CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid )
 
 C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_useFMsurfBC = .TRUE.
@@ -85,23 +100,19 @@ C--  Set default value for atmos. physics parameters:
        Katm = _KD2KA( k )
        HSG(Katm) = rF(k)/pGround
 
-c     DO bj = myByLo(myThid), myByHi(myThid)
-c      DO bi = myBxLo(myThid), myBxHi(myThid)
+      _END_MASTER ( myThid )
 
 C--   set default value for all atmos. physics parameter:
-        CALL INPHYS( HSG, myThid )
-
-c      ENDDO
-c     ENDDO
+      CALL INPHYS( HSG, myThid )
 
 C--   Read AIM parameters (from file data.aimphys):
       CALL AIM_READPARMS( myThid )
 
 C--   set energy fractions in LW bands as a function of temperature:
 C     initialize common block RADFIX (originally called from FORDATE in SPEEDY)
-      _BEGIN_MASTER(myThid)  
-       CALL RADSET( myThid)
-      _END_MASTER ( myThid)  
+      _BEGIN_MASTER(myThid )
+       CALL RADSET( myThid )
+      _END_MASTER ( myThid )
 
 C--   Set truncSurfP : used to correct for truncation (because of hFacMin)
 C      of surface reference pressure Ro_surf that affects Surf.Temp.
@@ -111,7 +122,7 @@ C      of surface reference pressure Ro_surf that affects Surf.Temp.
         DO j=1,sNy
          DO i=1,sNx
           tmpPgrnd = MIN(truncSurfP(i,j,bi,bj),atm_Po)
-          truncSurfP(i,j,bi,bj)= 
+          truncSurfP(i,j,bi,bj)=
      &     ( Ro_surf(i,j,bi,bj)/tmpPgrnd )**atm_kappa
          ENDDO
         ENDDO
@@ -125,12 +136,12 @@ C      of surface reference pressure Ro_surf that affects Surf.Temp.
         ENDIF
        ENDDO
       ENDDO
-      
+
 C--   Initialise Land Fraction (in AIM_FFIELDS.h):
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx  
+         DO i=1-Olx,sNx+Olx
           aim_landFr   (i,j,bi,bj) = 0.
          ENDDO
         ENDDO
@@ -138,6 +149,7 @@ C--   Initialise Land Fraction (in AIM_FFIELDS.h):
       ENDDO
 
       IF ( aim_LandFile .NE. ' '  ) THEN
+         _BARRIER
          CALL READ_REC_XY_RS(aim_LandFile,aim_landFr,1,nIter0,myThid)
       ENDIF
 
@@ -148,10 +160,13 @@ C--   Initialise Land Fraction (in AIM_FFIELDS.h):
 #endif /*  ALLOW_MNC  */
 
 #ifdef ALLOW_DIAGNOSTICS
-      if ( useDiagnostics ) then
-        call aim_diagnostics_init( myThid )
-      endif
+      IF ( useDiagnostics ) THEN
+        CALL AIM_DIAGNOSTICS_INIT( myThid )
+      ENDIF
 #endif
+
+C--   Everyone else must wait for the parameters to be set
+      _BARRIER
 
 #endif /* ALLOW_AIM */
 
