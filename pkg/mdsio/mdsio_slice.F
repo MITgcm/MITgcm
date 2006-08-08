@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.11 2005/11/02 14:49:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.12 2006/08/08 22:20:04 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -687,7 +687,8 @@ C If global file was opened then close it
 
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
-       _BARRIER
+c      _BARRIER
+C- jmc: No BARRIER within BEGIN_/END_MASTER:  breaks synchronisation !!!
 
       _END_MASTER( myThid )
 
@@ -905,7 +906,8 @@ C If global file was opened then close it
 
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
-       _BARRIER
+c      _BARRIER
+C- jmc: No BARRIER within BEGIN_/END_MASTER:  breaks synchronisation !!!
 
       _END_MASTER( myThid )
 
