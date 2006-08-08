@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.6 2005/12/14 16:42:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.7 2006/08/08 23:28:38 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
  
@@ -101,6 +101,7 @@ C Now calculate whether it is time to update the forcing arrays
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
+       _BARRIER
        _BEGIN_MASTER(myThid)
 
 C      If the above condition is met then we need to read in
@@ -279,8 +280,9 @@ C     However, we do not have exchange routines for vertical
 C     slices and they are not planned, either, so the approriate fields
 C     are exchanged after the open boundary conditions have been 
 C     applied. (in DYNAMICS and DO_FIELDS_BLOCKING_EXCHANGES)
-C
-C     time to read new data?
+       _BARRIER
+
+C     end if time to read new data
       ENDIF
 
 C     if not periodicForcing
@@ -289,10 +291,11 @@ C     if not periodicForcing
        bWght = 1. _d 0
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
+        _BARRIER
         _BEGIN_MASTER(myThid)
 C      Read constant boundary conditions only for myIter = nIter0
         WRITE(msgBuf,'(1X,A,I10,1P1E20.12)')
-     &       'OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &       'OBCS_EXTERNAL_FIELDS_LOAD: Reading initial data:',
      &       myIter, myTime
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid)
@@ -415,6 +418,7 @@ C     end if (usePTRACERS)
         ENDIF
 #endif /* ALLOW_PTRACERS */
         _END_MASTER(myThid)
+        _BARRIER
 C     endif myIter .EQ. nIter0
        ENDIF
 C     endif for periodicForcing
@@ -551,7 +555,7 @@ CEOP
           ENDDO
          ENDDO
         ENDDO
-       ENDDO	
+       ENDDO
 
       RETURN
       END
