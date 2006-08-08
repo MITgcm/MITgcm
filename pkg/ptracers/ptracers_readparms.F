@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.24 2006/05/23 23:32:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.25 2006/08/08 21:20:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -69,6 +69,8 @@ C                          are written to post-processing files.
      &     PTRACERS_pickup_write_mnc,
      &     PTRACERS_pickup_read_mnc
 
+      _BEGIN_MASTER(myThid)
+
 C     This routine has been called by the main model so we set our
 C     internal flag to indicate we are in business
       PTRACERSisON=.TRUE.
@@ -101,11 +103,11 @@ C     Set defaults values for parameters in PTRACERS.h
       ENDDO
       PTRACERS_useRecords       = .FALSE.
 #ifdef ALLOW_MNC
-      PTRACERS_timeave_mnc      = timeave_mnc .AND. useMNC
-      PTRACERS_snapshot_mnc     = snapshot_mnc .AND. useMNC
-      PTRACERS_monitor_mnc      = monitor_mnc .AND. useMNC
-      PTRACERS_pickup_write_mnc = pickup_write_mnc .AND. useMNC
-      PTRACERS_pickup_read_mnc  = pickup_read_mnc .AND. useMNC
+      PTRACERS_timeave_mnc      = useMNC .AND. timeave_mnc
+      PTRACERS_snapshot_mnc     = useMNC .AND. snapshot_mnc
+      PTRACERS_monitor_mnc      = useMNC .AND. monitor_mnc
+      PTRACERS_pickup_write_mnc = useMNC .AND. pickup_write_mnc
+      PTRACERS_pickup_read_mnc  = useMNC .AND. pickup_read_mnc
 #else
       PTRACERS_timeave_mnc      = .FALSE.
       PTRACERS_snapshot_mnc     = .FALSE.
@@ -115,10 +117,9 @@ C     Set defaults values for parameters in PTRACERS.h
 #endif
 
 C     Open and read the data.ptracers file
-      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' PTRACERS_READPARMS: opening data.ptracers'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
       CALL OPEN_COPY_DATA_FILE(
      I                   'data.ptracers', 'PTRACERS_READPARMS',
      O                   iUnit,
@@ -126,15 +127,11 @@ C     Open and read the data.ptracers file
       READ(UNIT=iUnit,NML=PTRACERS_PARM01)
       WRITE(msgBuf,'(A)')
      &  ' PTRACERS_READPARMS: finished reading data.ptracers'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
 
 C     Close the open data file
       CLOSE(iUnit)
-      _END_MASTER(myThid)
-
-C     Everyone else must wait for the parameters to be loaded
-      _BARRIER
 
 C     Now set-up any remaining parameters that result from the input
 C     parameters
@@ -150,7 +147,7 @@ C     Check we are not trying to use more tracers than allowed
      &       ' PTRACERS_READPARMS: You requested ',PTRACERS_numInUse,
      &       ' tracers at run time when only ',PTRACERS_num,
      &       ' were specified at compile time. Naughty! '
-        CALL PRINT_ERROR(msgBuf, 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
 C     Check that enough parameters were specified
@@ -160,7 +157,7 @@ C     Check that enough parameters were specified
      &         ' PTRACERS_READPARMS: ',
      &         'No advect. scheme specified for tracer #',
      &         iTracer
-          CALL PRINT_ERROR(msgBuf, 1)
+          CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
         ENDIF
       ENDDO
@@ -169,10 +166,10 @@ C     Check that enough parameters were specified
        IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
         WRITE(msgBuf,'(A)')
      &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A,I2,A)') 'PTRACERS_READPARMS:',
      &   ' but pTracers_ImplVertAdv(',iTracer,' ) is TRUE'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
        ENDIF
       ENDDO
@@ -190,16 +187,11 @@ C     Check that enough parameters were specified
       ENDDO
 
 #ifdef ALLOW_MNC
-      PTRACERS_timeave_mnc      = 
-     &     PTRACERS_timeave_mnc      .AND. useMNC
-      PTRACERS_snapshot_mnc     = 
-     &     PTRACERS_snapshot_mnc     .AND. useMNC
-      PTRACERS_monitor_mnc      = 
-     &     PTRACERS_monitor_mnc      .AND. useMNC .AND. monitor_mnc
-      PTRACERS_pickup_write_mnc = 
-     &     PTRACERS_pickup_write_mnc .AND. useMNC
-      PTRACERS_pickup_read_mnc  = 
-     &     PTRACERS_pickup_read_mnc  .AND. useMNC
+      PTRACERS_timeave_mnc      = useMNC .AND. PTRACERS_timeave_mnc
+      PTRACERS_snapshot_mnc     = useMNC .AND. PTRACERS_snapshot_mnc
+      PTRACERS_monitor_mnc      = useMNC .AND. PTRACERS_monitor_mnc
+      PTRACERS_pickup_write_mnc = useMNC .AND. PTRACERS_pickup_write_mnc
+      PTRACERS_pickup_read_mnc  = useMNC .AND. PTRACERS_pickup_read_mnc
 
       PTRACERS_timeave_mdsio      = (.NOT. PTRACERS_timeave_mnc)
      &     .OR. outputTypesInclusive
@@ -211,7 +203,6 @@ C     Check that enough parameters were specified
      &     .OR. outputTypesInclusive
       PTRACERS_pickup_read_mdsio  = (.NOT. PTRACERS_pickup_read_mnc)
      &     .OR. outputTypesInclusive
-
 #else
       PTRACERS_timeave_mnc        = .FALSE.
       PTRACERS_snapshot_mnc       = .FALSE.
@@ -228,11 +219,11 @@ C     Check that enough parameters were specified
 C--   Print a summary of pTracer parameter values:
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)') '// PTRACERS parameters '
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
       CALL WRITE_0D_I( PTRACERS_numInUse, INDEX_NONE,
      &   'PTRACERS_numInUse =',
      &   ' /* number of tracers */')
@@ -247,7 +238,7 @@ C--   Print a summary of pTracer parameter values:
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
       CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
      &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
-      
+
       CALL WRITE_0D_L( PTRACERS_timeave_mnc, INDEX_NONE,
      &     'PTRACERS_timeave_mnc =',
      &     ' /* use MNC for Tave output */')
@@ -255,17 +246,17 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_snapshot_mnc =',
      &     ' /* use MNC for snapshot output */')
       CALL WRITE_0D_L( PTRACERS_pickup_write_mnc, INDEX_NONE,
-     &     'PTRACERS_pickup_write_mnc =', 
+     &     'PTRACERS_pickup_write_mnc =',
      &     ' /* use MNC for writing pickups */')
       CALL WRITE_0D_L( PTRACERS_pickup_read_mnc, INDEX_NONE,
-     &     'PTRACERS_pickup_read_mnc =', 
+     &     'PTRACERS_pickup_read_mnc =',
      &     ' /* use MNC for reading pickups */')
 
       DO iTracer=1,PTRACERS_numInUse
         WRITE(msgBuf,'(A)') ' -----------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A,I4)') ' tracer number : ',iTracer
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
         CALL WRITE_0D_I( PTRACERS_advScheme(iTracer), INDEX_NONE,
      &     'PTRACERS_advScheme =', ' /* Advection Scheme */')
         CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
@@ -288,7 +279,12 @@ C--   Print a summary of pTracer parameter values:
 
       ENDDO
         WRITE(msgBuf,'(A)') ' -----------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
+      _END_MASTER(myThid)
+C     Everyone else must wait for the parameters to be loaded
+      _BARRIER
+
 #endif /* ALLOW_PTRACERS */
 
       RETURN
