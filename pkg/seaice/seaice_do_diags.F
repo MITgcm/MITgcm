@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.21 2006/06/20 20:57:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.22 2006/08/09 04:33:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,7 +47,8 @@ C     == Local variables ==
 
         IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
      &       ) THEN
-            
+
+          _BARRIER
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
             CALL MNC_CW_SET_UDIM('sice', -1, myThid)
@@ -77,8 +78,6 @@ C     == Local variables ==
 #endif
           IF (SEAICE_dump_mdsio) THEN
             WRITE(suff,'(I10.10)') myIter
-            _BARRIER
-            _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
@@ -88,18 +87,16 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
-             CALL WRITE_FLD_XY_Rs('SIGMA1.',suff,seaice_sigma1,
+             CALL WRITE_FLD_XY_RS('SIGMA1.',suff,seaice_sigma1,
      &            myIter,myThid)
-             CALL WRITE_FLD_XY_Rs('SIGMA2.',suff,seaice_sigma2,
+             CALL WRITE_FLD_XY_RS('SIGMA2.',suff,seaice_sigma2,
      &            myIter,myThid)
-             CALL WRITE_FLD_XY_Rs('SIGMA12.',suff,seaice_sigma12,
+             CALL WRITE_FLD_XY_RS('SIGMA12.',suff,seaice_sigma12,
      &            myIter,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
-            _END_MASTER( myThid )
-            _BARRIER
           ENDIF
-          
+
 #ifdef SEAICE_DEBUG
        CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( vwind , 'Current vwind ', myIter, myThid )
@@ -128,13 +125,9 @@ C     == Local variables ==
               ENDDO
             ENDDO
           ENDDO
-
+          _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            _BARRIER
-            _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'UICE.',suff,arr,myIter,myThid)
-            _END_MASTER( myThid )
-            _BARRIER
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
@@ -143,9 +136,10 @@ C     == Local variables ==
 #endif
 #ifdef SEAICE_DEBUG
           _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ', 
+          CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ',
      &         myIter, myThid )
 #endif
+          _BARRIER
 
           DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -156,12 +150,9 @@ C     == Local variables ==
               ENDDO
             ENDDO
           ENDDO
+          _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            _BARRIER
-            _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'VICE.',suff,arr,myIter,myThid)
-            _END_MASTER( myThid )
-            _BARRIER
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
@@ -170,10 +161,11 @@ C     == Local variables ==
 #endif
 #ifdef SEAICE_DEBUG
           _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ', 
+          CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ',
      &         myIter, myThid )
 #endif
-          
+          _BARRIER
+
           DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
               DO j=1-Oly,sNy+Oly
@@ -183,12 +175,9 @@ C     == Local variables ==
               ENDDO
             ENDDO
           ENDDO
+          _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            _BARRIER
-            _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'HEFF.',suff,arr,myIter,myThid)
-            _END_MASTER( myThid )
-            _BARRIER
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
@@ -200,7 +189,8 @@ C     == Local variables ==
           CALL PLOT_FIELD_XYRS( arr   , 'Current heff  ',
      &         myIter, myThid )
 #endif
-          
+          _BARRIER
+
           DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
               DO j=1-Oly,sNy+Oly
@@ -210,12 +200,9 @@ C     == Local variables ==
               ENDDO
             ENDDO
           ENDDO
+          _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            _BARRIER
-            _BEGIN_MASTER( myThid )
             CALL WRITE_FLD_XY_RS( 'AREA.',suff,arr,myIter,myThid)
-            _END_MASTER( myThid )
-            _BARRIER
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
@@ -227,6 +214,7 @@ C     == Local variables ==
           CALL PLOT_FIELD_XYRS( arr   , 'Current area  ',
      &         myIter, myThid )
 #endif
+          _BARRIER
 
          ENDIF
       ENDIF
@@ -306,7 +294,9 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
+c      IF (myIter.EQ.10) WRITE(0,*) myThid, dumpFiles
 
+       _BARRIER
 #ifdef ALLOW_MNC
        IF (useMNC .AND. SEAICE_tave_mnc) THEN
          CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
@@ -337,8 +327,6 @@ C    &        myTime,myThid)
 #endif
        IF (SEAICE_tave_mdsio) THEN
          WRITE(suff,'(I10.10)') myIter
-         _BARRIER
-         _BEGIN_MASTER( myThid )
          CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('EmPmRtave.',suff,EmPmRtave,myIter,myThid)
@@ -348,10 +336,9 @@ C    &        myTime,myThid)
          CALL WRITE_FLD_XY_RL('VICEtave.' ,suff,VICEtave ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
-         _END_MASTER( myThid )
-         _BARRIER
        ENDIF
-       
+       _BARRIER
+
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -369,9 +356,9 @@ C      Reset averages to zero
          ENDDO
         ENDDO
        ENDDO
-       
+
       ENDIF
-      
+
 #endif /* ALLOW_TIMEAVE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
