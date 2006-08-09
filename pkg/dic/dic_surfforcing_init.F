@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.7 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.8 2006/08/09 01:31:56 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -77,11 +77,12 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
        intime0=intime0+1
        intime1=intime1+1
        
+       _BARRIER
        _BEGIN_MASTER(myThid)
-
         WRITE(*,*)
      &    'S/R EXTERNAL_FIELDS_LOAD: Reading new dic data',
      &                 intime0, intime1
+       _END_MASTER(myThid)
 
       IF ( SilicaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
@@ -95,8 +96,6 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
          call OFFLINE_FIELDS_LOAD( otime, nIter0, myThid )
 #endif
 
-       _END_MASTER(myThid)
-C
        _EXCH_XY_R4(silica0, myThid )
        _EXCH_XY_R4(silica1, myThid )
 

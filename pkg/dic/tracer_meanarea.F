@@ -31,8 +31,6 @@ C !LOCAL VARIABLES: ====================================================
       _RL sumarea
 CEOP
 
-      _BEGIN_MASTER(myThid)
-
        sumarea= 0. _d 0
        gsm_tracer= 0. _d 0
 
@@ -52,12 +50,6 @@ CEOP
         _GLOBAL_SUM_R8(gsm_tracer,myThid)
         _GLOBAL_SUM_R8(sumarea,myThid)
         gsm_tracer=gsm_tracer/sumarea
-
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait 
-      _BARRIER 
-
 
        RETURN
        END
