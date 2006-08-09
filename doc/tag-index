@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.711 2006/08/06 01:46:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.712 2006/08/09 16:02:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o lot of small changes for multi-threaded. Most tests (using OMP & ifort) pass. 
+  - still problems with pkgs: mnc, exp2, dic, cal, exf (and probably more); 
+  - still BEGIN_MASTER/END_MASTER to remove around READ/WRITE_FLD S/R calls
+    to work with SingleCpuIO.
 o add "_d 0" to real constant of pkg/cfc subroutines ; 
    update exp. cfc_exemple & tutorial_cfc_offline output files.
 o multi-threading and IO:
@@ -30,7 +35,7 @@ o consistent with addition of ptracer and ssh in pkg/profiles
 o profiles: adding ptracer and ssh
 o testreport: change multi-test output-file name 
   (from output.txt.{name} to output.{name}.txt)
-o profiles: now ok for mutli-threaded case
+o profiles: now ok for mutli-tiles case
 o seaice: add 4 parameters for different advection schemes for area, 
   (effective) seaice thickness, enthalphy, and snow height. Their default
   is the standard parameter SEAICEadvScheme
