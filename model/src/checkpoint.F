@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.66 2006/05/03 15:38:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.67 2006/08/09 02:23:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,7 +30,7 @@ C     !INPUT PARAMETERS:
 CEOP
       COMMON /PCKP_GBLFLS/ globalFile
       LOGICAL globalFile
-      
+
       globalFile = flag
 
       RETURN
@@ -40,7 +40,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_CHECKPOINT
 C     !INTERFACE:
-      SUBROUTINE READ_CHECKPOINT( 
+      SUBROUTINE READ_CHECKPOINT(
      I     myIter, myThid )
 
 C     !DESCRIPTION:
@@ -74,7 +74,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     oldPrec :: Temp. for hold I/O precision information
-C     prec    
+C     prec    :: pickup-file precision
 C     fn      :: Temp. for building file name.
       INTEGER prec
       INTEGER i, nj
@@ -97,13 +97,13 @@ C     Suffix for pickup files
         WRITE(suff,'(A10)') pickupSuff
       ENDIF
       WRITE(fn,'(A,A10)') 'pickup.',suff
-      
+
 C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
 C     _BEGIN_MASTER( myThid )
 
       IF (pickup_read_mdsio) THEN
-      
+
 #ifdef OLD_STYLE_WITH_MANY_FILES
 
 C       Force 64-bit IO
@@ -125,7 +125,7 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter,myThid)
         CALL READ_REC_XYZ_RL( 'gsNm1',  gsNm1, 1,myIter,myThid)
         CALL READ_REC_XY_RL (  'etaN',   etaN, 1,myIter,myThid)
-        
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN
           CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
@@ -136,9 +136,9 @@ c         CALL READ_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
 
 C       Reset default IO precision
         readBinaryPrec = oldPrec
-      
+
 #else /* OLD_STYLE_WITH_MANY_FILES */
-      
+
         prec = precFloat64
 
 #ifdef ALLOW_MDSIO
@@ -165,7 +165,7 @@ C       Read model fields
             CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
           ENDIF
 #endif
-        ELSE 
+        ELSE
 #ifdef ALLOW_ADAMSBASHFORTH_3
           j = 3
           IF ( startFromPickupAB2 ) j = 2
@@ -210,11 +210,11 @@ C       Read model fields
           IF (exactConserv) THEN
             CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,nj*Nr+2,myThid)
           ENDIF
-          IF (nonlinFreeSurf .GT. 0) THEN 
+          IF (nonlinFreeSurf .GT. 0) THEN
             CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   nj*Nr+3,myThid)
           ENDIF
 #endif
-        ENDIF 
+        ENDIF
 
         IF ( useDynP_inEos_Zc ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
@@ -234,7 +234,7 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr,    gW,2,myThid)
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
       ENDIF
-      
+
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_read_mnc) THEN
         WRITE(fn,'(A)') 'pickup'
@@ -279,7 +279,7 @@ c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
 
 C     _END_MASTER( myThid )
       _BARRIER
-      
+
 C     Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       _EXCH_XYZ_R8(theta , myThid )
@@ -317,7 +317,7 @@ c       _EXCH_XYZ_R8(gW    , myThid )
         _EXCH_XYZ_R8(gwNm1 , myThid )
       ENDIF
 #endif
-      
+
       RETURN
       END
 
@@ -384,10 +384,10 @@ C                       checkpoint (that will be permanent if permCheckPoint=T)
 #ifdef ALLOW_CAL
        IF ( useCAL ) THEN
          CALL CAL_TIME2DUMP( pChkPtFreq, deltaTClock,
-     U                       permCheckPoint, 
+     U                       permCheckPoint,
      I                       myTime, myIter, myThid )
          CALL CAL_TIME2DUMP( chkPtFreq,  deltaTClock,
-     U                       tempCheckPoint, 
+     U                       tempCheckPoint,
      I                       myTime, myIter, myThid )
        ENDIF
 #endif
@@ -411,8 +411,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_CHECKPOINT_NOW
 C     !INTERFACE:
-      SUBROUTINE WRITE_CHECKPOINT_NOW( 
-     I     permCheckPoint, myTime, 
+      SUBROUTINE WRITE_CHECKPOINT_NOW(
+     I     permCheckPoint, myTime,
      I     myIter, myThid )
 
 C     !DESCRIPTION:
@@ -469,15 +469,15 @@ C     Write model fields
       ELSE
         WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
       ENDIF
-          
+
 C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
 C     _BEGIN_MASTER( myThid )
-      
+
       IF (pickup_write_mdsio) THEN
 
 #ifdef OLD_STYLE_WITH_MANY_FILES
-      
+
 C       Force 64-bit IO
         oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
@@ -505,9 +505,9 @@ c         CALL WRITE_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
 #endif
 C       Reset binary precision
         writeBinaryPrec = oldPrec
-        
+
 #else /* OLD_STYLE_WITH_MANY_FILES */
-      
+
         prec = precFloat64
         lgf = globalFile
 
@@ -631,27 +631,32 @@ c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
 
+      _BEGIN_MASTER(myThid)
 C     Write suffix for stdout information
       IF ( permCheckPoint ) THEN
         WRITE(fn,'(I10.10)') myIter
       ELSE
         WRITE(fn,'(A)') checkPtSuff(nCheckLev)
       ENDIF
-      
-      IF ( .NOT. permCheckPoint ) THEN
-        nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
-      ENDIF
-      
-C     _END_MASTER(myThid)
-      _BARRIER
-      
+
 C     Write information to stdout so there is a record that the
 C     checkpoint was completed
-      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A11,I10,1X,A10)')
      &     "%CHECKPOINT ",myIter,fn
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       _END_MASTER(myThid)
-      
+
+C     _END_MASTER(myThid)
+C--   Every one else must wait until writing is done.
+      _BARRIER
+
+C     Update checkpoint level for the next time we write pickup
+      IF ( .NOT. permCheckPoint ) THEN
+        _BEGIN_MASTER(myThid)
+        nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
+        _END_MASTER(myThid)
+      ENDIF
+
       RETURN
       END
