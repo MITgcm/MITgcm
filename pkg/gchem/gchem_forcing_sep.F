@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.13 2005/12/13 21:06:42 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.14 2006/08/09 01:25:40 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -46,9 +46,6 @@ CEOP
 #ifdef ALLOW_GCHEM
 #ifdef GCHEM_SEPARATE_FORCING
 
-       _BARRIER
-       _BEGIN_MASTER( mythid )
-
 ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
@@ -65,9 +62,6 @@ c find global surface averages
      &               ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk)
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
-
-      _END_MASTER( mythid )
-      _BARRIER
 
 
 ccccccccccccccccccccccccc
