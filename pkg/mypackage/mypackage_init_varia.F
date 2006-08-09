@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.3 2006/08/09 02:37:26 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -64,53 +64,47 @@ C- end bi,bj loops
        ENDDO
       ENDDO
 
+C     Prevent loading of new data before everyone has finished initialisation
+      _BARRIER
+
       IF ( mypaStatScal1File .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XYZ_RL(mypaStatScal1File,' ',
      &   mypaStatScal1,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XYZ_R8(mypaStatScal1,myThid)
       ENDIF
 
       IF ( mypaStatScal2File .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XYZ_RL(mypaStatScal2File,' ',
      &   mypaStatScal2,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XYZ_R8(mypaStatScal2,myThid)
       ENDIF
 
       IF ( mypaStatUvelFile .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XYZ_RL(mypaStatUvelFile,' ',
      &   mypaStatUvel,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XYZ_R8(mypaStatUvel,myThid)
       ENDIF
 
       IF ( mypaStatVvelFile .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XYZ_RL(mypaStatVvelFile,' ',
      &   mypaStatVvel,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XYZ_R8(mypaStatVvel,myThid)
       ENDIF
 
       IF ( mypaSurf1File .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XY_RL(mypaSurf1File,' ',
      &   mypaSurf1,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XY_R8(mypaSurf1,myThid)
       ENDIF
 
       IF ( mypaSurf2File .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
         CALL READ_FLD_XY_RL(mypaSurf2File,' ',
      &   mypaSurf2,0,myThid)
-       _END_MASTER(myThid)
        _EXCH_XY_R8(mypaSurf2,myThid)
       ENDIF
+
+C     Stop anyone leaving until all data is read
+      _BARRIER
 
 #endif /* ALLOW_MYPACKAGE */
 
