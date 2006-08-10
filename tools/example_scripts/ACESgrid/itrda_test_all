@@ -14,16 +14,17 @@ MPACK="./mpack"
 $QSUB ./itrda_gnu_test_mpi
 $QSUB ./itrda_intel_test_mpi
 $QSUB ./itrda_pgi_test_mpi
+$QSUB ./itrda_intel_test_mth
 
 date_str=`date +%Y%m%d`"_0"
 
 minutes=0
-while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
+while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77"_"$M_mth = x_done_done_done_done ; do
 
     sleep 300
     minutes=$(( $minutes + 5 ))
 
-    for i in g77 ifort pgf77 ; do
+    for i in g77 ifort pgf77 mth ; do
 
 	JOB="eh3_"$i
         comm="echo \$M_$i"
