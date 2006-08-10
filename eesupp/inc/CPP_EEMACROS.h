@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.14 2005/11/09 17:22:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.15 2006/08/10 17:46:55 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -136,6 +136,7 @@ C     performance.
 #define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RL ( a, b )
 
 #define _RL Real*8
+#define RL_IS_REAL8
 #define _EXCH_XY_R8(a,b) CALL EXCH_XY_RL ( a, b )
 #define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
 #define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
