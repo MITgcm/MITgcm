@@ -135,6 +135,8 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
 
     fiter = nc{'iter'}(:);                               % File iterations present
     if isempty(fiter), fiter = nc{'T'}(:); end
+    if isinf(iters); iters = fiter(end); end
+    if isnan(iters); iters = fiter; end
     [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
     dii = dii(find(dii ~= 0));                           % Data interation index
     
