@@ -1,0 +1,24 @@
+% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/README,v 1.1 2006/08/12 19:37:26 jmc Exp $
+% $Name:  $
+
+This set of matlab scripts and functions does some basic diagnostics on the
+global ocean run. By no means are they meant to be universal or exhaustive. 
+Use them as a starting point for your own diagnostics.
+
+After including this directory into your matlab path, 
+change into the directory where the model output is (e.g.: cd build) 
+and type at the matlab prompt:
+matlab>> path('../diags_matlab',path); % <- if not already in your path
+matlab>> mit_loadglobal
+to get a number of plots of meridional overturning stream functions, 
+barotropic streamfunctions, surface fluxes of heat and freshwater, model 
+drift, devations of model hydrography from levitus etc. 
+By default the script will look for time-averaged fields. If there are not 
+any time averaged fields, type 
+matlab>> meanfields = 0;
+at the matlab prompt before runing the scripts so that the latest snapshot
+fields are displayed instead.
+
+Martin Losch, Oct 17, 2002
+mlosch@mit.edu
+
