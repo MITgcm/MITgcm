@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.153 2006/07/14 16:39:39 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.154 2006/08/12 03:47:36 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1352,7 +1352,7 @@ fi
 #  Find the MITgcm ${ROOTDIR}
 if test "x${ROOTDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
-    if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
+    if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesupp -a -d ../pkg ; then
 	ROOTDIR=".."
     else
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
@@ -1818,19 +1818,21 @@ if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
     fi
 fi
 
-#same for exch2
-if test -r $ROOTDIR"/pkg/exch2/Makefile" ; then
-    echo "  Making source files in exch2 from  templates"
-    ( cd $ROOTDIR"/pkg/exch2/" && $MAKE ) > make_exch2.errors 2>&1
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-        rm -f make_exch2.errors
-    else
-        echo "Error: problem encountered while building source files in exch2:"
-        cat make_exch2.errors 1>&2
-        exit 1
+#same for pkg/exch2 and pkg/regrid
+for pdir in exch2 regrid ; do
+    if test -r $ROOTDIR"/pkg/${pdir}/Makefile" ; then
+	echo "  Making source files in pkg/${pdir} from templates"
+	( cd $ROOTDIR"/pkg/"${pdir} && $MAKE ) > make_${pdir}.errors 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    rm -f make_${pdir}.errors
+	else
+	    echo "Error: problem encountered while building source files in pkg/${pdir}:"
+	    cat make_${pdir}.errors 1>&2
+	    exit 1
+	fi
     fi
-fi
+done
 
 printf "\n===  Determining package settings  ===\n"
 if  test "x${PDEPEND}" = x ; then
