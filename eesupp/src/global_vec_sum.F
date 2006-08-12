@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.3 2006/05/23 14:55:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.4 2006/08/12 03:10:26 edhill Exp $
 C $Name:  $
 
 C     Perform a global sum on an array of threaded vectors.
@@ -15,7 +15,7 @@ C     !ROUTINE: GLOBAL_VEC_SUM_R4
 
 C     !INTERFACE:
       SUBROUTINE GLOBAL_VEC_SUM_R4( 
-     I     nval,
+     I     ndim, nval,
      U     sumPhi,
      I     myThid )
 
@@ -35,80 +35,63 @@ C     !USES:
 #include "GLOBAL_SUM.h"
 
 C     !INPUT PARAMETERS:
-C     sumPhi - Result of sum.
-C     myThid - My thread id.
-      INTEGER nval, myThid
-      Real*4 sumPhi(nval)
+C     sumPhi   :: input/output array
+C     myThid   :: thread ID
+      INTEGER ndim, nval, myThid
+      Real*4 sumPhi(ndim,nSx,nSy)
 CEOP
 
 C     !LOCAL VARIABLES:
-C     I      - Loop counters
-C     mpiRC  - MPI return code
-      INTEGER I, j, it, ntot, nloop, ni
-      Real*4  tmp1(MAX_VGS), tmp2(MAX_VGS)
+C     mpiRC    :: MPI return code
+      INTEGER i, bi,bj
+      Real*4  tmp1(nval), tmp2(nval)
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
-
-      nloop = nval/MAX_VGS + 1
-      ntot = 0
-      DO it = 1,nloop
-
-        ni = nval - ntot
-        IF ( ni .GT. MAX_VGS )  ni = MAX_VGS
-        IF ( ni .LT. 1 ) GOTO 999
-
-C       write local sum into array
-        CALL BAR2( myThid )
-        DO j = 1,ni
-          phivGSRS(j,myThid) = sumPhi(ntot + j)
-        ENDDO
-C       Can not start until everyone is ready
-        CALL BAR2( myThid )
-
-C       Sum within the process first
-        _BEGIN_MASTER( myThid )
-
-        DO j = 1,ni
-          tmp1(j) = 0.
-        ENDDO
-        DO I = 1,nThreads
-          DO j = 1,ni
-            tmp1(j) = tmp1(j) + phiGSRS(j,I)
-          ENDDO
-        ENDDO
-
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-        IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_REAL,MPI_SUM,
-     &         MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
-        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
-
-C       Write solution to place where all threads can see it
-        DO j = 1,ni
-          phivGSRS(j,myThid) = tmp2(j)
-        ENDDO
-
-        _END_MASTER( myThid )
-        
-        CALL BAR2( myThid )        
-C       set result for every process
-        DO j = 1,ni
-          sumPhi(ntot + j) = phivGSRS(j,1)
-        ENDDO
-        CALL BAR2( myThid )
-
-        ntot = ntot + ni
-
+C     Empty the temp arrays
+      DO i = 1,nval
+        tmp1(i) = 0. _d 0
+        tmp2(i) = 0. _d 0
       ENDDO
 
- 999  CONTINUE
+      _BEGIN_MASTER( myThid )
+
+C     Sum over all threads
+      DO bj = 1,nSy
+        DO bi = 1,nSx
+          DO i = 1,nval
+            tmp1(i) = tmp1(i) + sumPhi( i, bi,bj ) 
+          ENDDO
+        ENDDO
+      ENDDO
+
+C     Copy to the first temp array to the second temp array to handle
+C     the case where MPI is not used
+      DO i = 1,nval
+        tmp2(i) = tmp1(i)
+      ENDDO
+
+C     Invoke MPI if necessary
+#ifdef  ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+      IF ( usingMPI ) THEN
+#endif
+        CALL MPI_Allreduce(tmp1,tmp2,nval,MPI_REAL,
+     &       MPI_SUM,MPI_COMM_MODEL,mpiRC)
+#ifndef ALWAYS_USE_MPI
+      ENDIF
+#endif
+#endif /*  ALLOW_USE_MPI */
+      
+C     Copy the results to the first location of the input array
+      DO i = 1,nval
+        sumPhi( i, 1,1 ) = tmp2(i)
+      ENDDO
+
+      _END_MASTER( myThid )
+      _BARRIER
+
       RETURN
       END
       
@@ -118,7 +101,7 @@ C     !ROUTINE: GLOBAL_VEC_SUM_R8
 
 C     !INTERFACE:
       SUBROUTINE GLOBAL_VEC_SUM_R8( 
-     I     nval,
+     I     ndim, nval,
      U     sumPhi,
      I     myThid )
 
@@ -138,80 +121,63 @@ C     !USES:
 #include "GLOBAL_SUM.h"
 
 C     !INPUT PARAMETERS:
-C     sumPhi - Result of sum.
-C     myThid - My thread id.
-      INTEGER nval, myThid
-      Real*8 sumPhi(nval)
+C     sumPhi   :: input/output array
+C     myThid   :: thread ID
+      INTEGER ndim, nval, myThid
+      Real*8 sumPhi(ndim,nSx,nSy)
 CEOP
 
 C     !LOCAL VARIABLES:
-C     I      - Loop counters
-C     mpiRC  - MPI return code
-      INTEGER I, j, it, ntot, nloop, ni
-      Real*8  tmp1(MAX_VGS), tmp2(MAX_VGS)
+C     mpiRC    :: MPI return code
+      INTEGER i, bi,bj
+      Real*8  tmp1(nval), tmp2(nval)
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
-
-      nloop = nval/MAX_VGS + 1
-      ntot = 0
-      DO it = 1,nloop
-
-        ni = nval - ntot
-        IF ( ni .GT. MAX_VGS )  ni = MAX_VGS
-        IF ( ni .LT. 1 ) GOTO 999
-
-C       write local sum into array
-        CALL BAR2( myThid )
-        DO j = 1,ni
-          phivGSRL(j,myThid) = sumPhi(ntot + j)
-        ENDDO
-C       Can not start until everyone is ready
-        CALL BAR2( myThid )
-
-C       Sum within the process first
-        _BEGIN_MASTER( myThid )
-
-        DO j = 1,ni
-          tmp1(j) = 0.
-        ENDDO
-        DO I = 1,nThreads
-          DO j = 1,ni
-            tmp1(j) = tmp1(j) + phiGSRS(j,I)
-          ENDDO
-        ENDDO
-
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-        IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_DOUBLE_PRECISION,
-     &         MPI_SUM,MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
-        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
-
-C       Write solution to place where all threads can see it
-        DO j = 1,ni
-          phivGSRL(j,myThid) = tmp2(j)
-        ENDDO
-
-        _END_MASTER( myThid )
-        
-        CALL BAR2( myThid )        
-C       set result for every process
-        DO j = 1,ni
-          sumPhi(ntot + j) = phivGSRL(j,1)
-        ENDDO
-        CALL BAR2( myThid )
-
-        ntot = ntot + ni
-
+C     Empty the temp arrays
+      DO i = 1,nval
+        tmp1(i) = 0. _d 0
+        tmp2(i) = 0. _d 0
       ENDDO
 
- 999  CONTINUE
+      _BEGIN_MASTER( myThid )
+
+C     Sum over all threads
+      DO bj = 1,nSy
+        DO bi = 1,nSx
+          DO i = 1,nval
+            tmp1(i) = tmp1(i) + sumPhi( i, bi,bj ) 
+          ENDDO
+        ENDDO
+      ENDDO
+
+C     Copy to the first temp array to the second temp array to handle
+C     the case where MPI is not used
+      DO i = 1,nval
+        tmp2(i) = tmp1(i)
+      ENDDO
+
+C     Invoke MPI if necessary
+#ifdef  ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+      IF ( usingMPI ) THEN
+#endif
+        CALL MPI_Allreduce(tmp1,tmp2,nval,MPI_DOUBLE_PRECISION,
+     &       MPI_SUM,MPI_COMM_MODEL,mpiRC)
+#ifndef ALWAYS_USE_MPI
+      ENDIF
+#endif
+#endif /*  ALLOW_USE_MPI */
+      
+C     Copy the results to the first location of the input array
+      DO i = 1,nval
+        sumPhi( i, 1,1 ) = tmp2(i)
+      ENDDO
+
+      _END_MASTER( myThid )
+      _BARRIER
+
       RETURN
       END
       
@@ -221,7 +187,7 @@ C     !ROUTINE: GLOBAL_VEC_SUM_INT
 
 C     !INTERFACE:
       SUBROUTINE GLOBAL_VEC_SUM_INT( 
-     I     nval,
+     I     ndim, nval,
      U     sumPhi,
      I     myThid )
 
@@ -241,80 +207,64 @@ C     !USES:
 #include "GLOBAL_SUM.h"
 
 C     !INPUT PARAMETERS:
-C     sumPhi - Result of sum.
-C     myThid - My thread id.
-      INTEGER nval, myThid
-      INTEGER sumPhi(nval)
+C     sumPhi   :: input/output array
+C     myThid   :: thread ID
+      INTEGER ndim, nval, myThid
+      INTEGER sumPhi(ndim,nSx,nSy)
 CEOP
 
 C     !LOCAL VARIABLES:
-C     I      - Loop counters
-C     mpiRC  - MPI return code
-      INTEGER I, j, it, ntot, nloop, ni
-      INTEGER tmp1(MAX_VGS), tmp2(MAX_VGS)
+C     mpiRC    :: MPI return code
+      INTEGER i, bi,bj
+      INTEGER tmp1(nval), tmp2(nval)
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
 
-      nloop = nval/MAX_VGS + 1
-      ntot = 0
-      DO it = 1,nloop
-
-        ni = nval - ntot
-        IF ( ni .GT. MAX_VGS )  ni = MAX_VGS
-        IF ( ni .LT. 1 ) GOTO 999
-
-C       write local sum into array
-        CALL BAR2( myThid )
-        DO j = 1,ni
-          phivGSI(j,myThid) = sumPhi(ntot + j)
-        ENDDO
-C       Can not start until everyone is ready
-        CALL BAR2( myThid )
-
-C       Sum within the process first
-        _BEGIN_MASTER( myThid )
-
-        DO j = 1,ni
-          tmp1(j) = 0.
-        ENDDO
-        DO I = 1,nThreads
-          DO j = 1,ni
-            tmp1(j) = tmp1(j) + phiGSRS(j,I)
-          ENDDO
-        ENDDO
-
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-        IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Allreduce(tmp1,tmp2,ni,MPI_INTEGER,MPI_SUM,
-     &         MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
-        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
-
-C       Write solution to place where all threads can see it
-        DO j = 1,ni
-          phivGSI(j,myThid) = tmp2(j)
-        ENDDO
-
-        _END_MASTER( myThid )
-        
-        CALL BAR2( myThid )        
-C       set result for every process
-        DO j = 1,ni
-          sumPhi(ntot + j) = phivGSI(j,1)
-        ENDDO
-        CALL BAR2( myThid )
-
-        ntot = ntot + ni
-
+C     Empty the temp arrays
+      DO i = 1,nval
+        tmp1(i) = 0. _d 0
+        tmp2(i) = 0. _d 0
       ENDDO
 
- 999  CONTINUE
+      _BEGIN_MASTER( myThid )
+
+C     Sum over all threads
+      DO bj = 1,nSy
+        DO bi = 1,nSx
+          DO i = 1,nval
+            tmp1(i) = tmp1(i) + sumPhi( i, bi,bj ) 
+          ENDDO
+        ENDDO
+      ENDDO
+
+C     Copy to the first temp array to the second temp array to handle
+C     the case where MPI is not used
+      DO i = 1,nval
+        tmp2(i) = tmp1(i)
+      ENDDO
+
+C     Invoke MPI if necessary
+#ifdef  ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+      IF ( usingMPI ) THEN
+#endif
+        CALL MPI_Allreduce(tmp1,tmp2,nval,MPI_INTEGER,
+     &       MPI_SUM,MPI_COMM_MODEL,mpiRC)
+#ifndef ALWAYS_USE_MPI
+      ENDIF
+#endif
+#endif /*  ALLOW_USE_MPI */
+      
+C     Copy the results to the first location of the input array
+      DO i = 1,nval
+        sumPhi( i, 1,1 ) = tmp2(i)
+      ENDDO
+
+      _END_MASTER( myThid )
+      _BARRIER
+
       RETURN
       END
       
