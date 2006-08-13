@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.91 2006/07/13 02:58:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.92 2006/08/13 21:25:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,29 +59,29 @@ C     zcoord ::
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// Model configuration'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
      & '// "Physical" paramters ( PARM01 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,A40)') 'buoyancyRelation = ', buoyancyRelation
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
      & 'fluidIsAir  =', '  /* fluid major constituent is Air */')
       CALL WRITE_0D_L( fluidIsWater, INDEX_NONE,
@@ -96,10 +96,10 @@ C     zcoord ::
      &'   /* Reference salinity profile ( psu ) */')
       CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
-      IF ( viscAhD.NE.viscAh ) 
+      IF ( viscAhD.NE.viscAh )
      & CALL WRITE_0D_R8( viscAhD, INDEX_NONE,'viscAhD =',
      & '  /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
-      IF ( viscAhZ.NE.viscAh ) 
+      IF ( viscAhZ.NE.viscAh )
      & CALL WRITE_0D_R8( viscAhZ, INDEX_NONE,'viscAhZ =',
      & '  /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
       CALL WRITE_0D_R8( viscAhMax, INDEX_NONE,'viscAhMax =',
@@ -123,10 +123,10 @@ C     zcoord ::
      &'   /* Smagorinsky harmonic viscosity factor (non-dim.) */')
       CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
-      IF ( viscA4D.NE.viscA4 ) 
+      IF ( viscA4D.NE.viscA4 )
      & CALL WRITE_0D_R8( viscA4D, INDEX_NONE,'viscA4D =',
      & '  /* Lateral biharmonic viscosity (Divergence)( m^4/s ) */')
-      IF ( viscA4Z.NE.viscA4 ) 
+      IF ( viscA4Z.NE.viscA4 )
      & CALL WRITE_0D_R8( viscA4Z, INDEX_NONE,'viscA4Z =',
      & '  /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
       CALL WRITE_0D_R8( viscA4Max, INDEX_NONE,'viscA4Max =',
@@ -176,20 +176,20 @@ C     zcoord ::
 c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       WRITE(msgBuf,'(4A)') 'Equation of State : ',
      &                     'eosType = ', eosType, ' ;'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
       CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
      &'   /* Linear EOS haline contraction coefficient ( 1/psu ) */')
       IF ( eosType .EQ. 'POLY3' ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
         DO K = 1, Nr
          WRITE(msgBuf,'(I3,13F8.3)')
      &   K,eosRefT(K),eosRefS(K),eosSig0(K), (eosC(I,K),I=1,9)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
       IF ( fluidIsAir ) THEN
@@ -205,7 +205,7 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      & '  /* standard reference pressure ( Pa ) */')
       CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
      & '  /* select how the geopotential is integrated */')
-      CALL WRITE_0D_I( selectFindRoSurf, INDEX_NONE, 
+      CALL WRITE_0D_I( selectFindRoSurf, INDEX_NONE,
      & 'selectFindRoSurf=',
      & '  /* select how Surf.Ref. pressure is defined */')
       ENDIF
@@ -252,8 +252,8 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &'   /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
       WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
      &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_R8( hFacInf, INDEX_NONE,
      &'hFacInf =',
      &'   /* lower threshold for hFac (nonlinFreeSurf only)*/')
@@ -335,7 +335,7 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
-     & 'momPressureForcing =',  
+     & 'momPressureForcing =',
      & '  /* Momentum pressure term on/off flag */')
       CALL WRITE_0D_L( implicitIntGravWave, INDEX_NONE,
      &  'implicitIntGravWave=',
@@ -343,10 +343,10 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
      &                 'staggerTimeStep =',
      &'   /* Stagger time stepping on/off flag */')
-      CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE, 
+      CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE,
      & 'multiDimAdvection =',
      &'   /* enable/disable Multi-Dim Advection */')
-      CALL WRITE_0D_L( useMultiDimAdvec, INDEX_NONE, 
+      CALL WRITE_0D_L( useMultiDimAdvec, INDEX_NONE,
      & 'useMultiDimAdvec =',
      &'   /* Multi-Dim Advection is/is-not used */')
       CALL WRITE_0D_L( implicitDiffusion, INDEX_NONE,
@@ -384,16 +384,16 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL WRITE_0D_I( debugLevel, INDEX_NONE,
      & ' debugLevel =', '  /* select debugging level */')
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
@@ -408,15 +408,15 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &'   /* Freq. for updating cg2d preconditioner */')
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
      & '// Time stepping paramters ( PARM03 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( nIter0, INDEX_NONE,'nIter0 =',
      &'   /* Run starting timestep number  */')
       CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
@@ -507,15 +507,15 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL WRITE_0D_R8( latBandClimRelax, INDEX_NONE,
      &   'latBandClimRelax =', '   /* max. Lat. where relaxation */')
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
      & '// Gridding paramters ( PARM04 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( usingCartesianGrid, INDEX_NONE,
      & 'usingCartesianGrid =',
      &'   /* Cartesian coordinates flag ( True / False ) */')
@@ -581,65 +581,68 @@ c    &'   /* W spacing ( units of r ) */')
 C     Grid along selected grid lines
       coordLine = 1
       tileLine  = 1
-      CALL WRITE_XY_XLINE_RS( dxF, coordLine, tileLine,
-     I 'dxF','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dxF, coordLine, tileLine, 
-     I 'dxF','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dyF, coordLine, tileLine,
-     I 'dyF','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dyF, coordLine, tileLine, 
-     I 'dyF','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dxG, coordLine, tileLine,
-     I 'dxG','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dxG, coordLine, tileLine, 
-     I 'dxG','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dyG, coordLine, tileLine,
-     I 'dyG','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dyG, coordLine, tileLine, 
-     I 'dyG','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dxC, coordLine, tileLine,
-     I 'dxC','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dxC, coordLine, tileLine, 
-     I 'dxC','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dyC, coordLine, tileLine,
-     I 'dyC','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dyC, coordLine, tileLine, 
-     I 'dyC','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dxV, coordLine, tileLine,
-     I 'dxV','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dxV, coordLine, tileLine, 
-     I 'dxV','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( dyU, coordLine, tileLine,
-     I 'dyU','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( dyU, coordLine, tileLine, 
-     I 'dyU','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( rA, coordLine, tileLine,
-     I 'rA','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( rA, coordLine, tileLine, 
-     I 'rA','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( rAw, coordLine, tileLine,
-     I 'rAw','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( rAw, coordLine, tileLine, 
-     I 'rAw','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_XLINE_RS( rAs, coordLine, tileLine,
-     I 'rAs','( m - cartesian, degrees - spherical )')
-      CALL WRITE_XY_YLINE_RS( rAs, coordLine, tileLine, 
-     I 'rAs','( m - cartesian, degrees - spherical )')
+      CALL WRITE_XY_XLINE_RS( dxF, coordLine, tileLine, 'dxF',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dxF, coordLine, tileLine, 'dxF',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dyF, coordLine, tileLine, 'dyF',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dyF, coordLine, tileLine, 'dyF',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dxG, coordLine, tileLine, 'dxG',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dxG, coordLine, tileLine, 'dxG',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dyG, coordLine, tileLine, 'dyG',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dyG, coordLine, tileLine, 'dyG',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dxC, coordLine, tileLine, 'dxC',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dxC, coordLine, tileLine, 'dxC',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dyC, coordLine, tileLine, 'dyC',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dyC, coordLine, tileLine, 'dyC',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dxV, coordLine, tileLine, 'dxV',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dxV, coordLine, tileLine, 'dxV',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( dyU, coordLine, tileLine, 'dyU',
+     I              '( units: m )' )
+      CALL WRITE_XY_YLINE_RS( dyU, coordLine, tileLine, 'dyU',
+     I              '( units: m )' )
+      CALL WRITE_XY_XLINE_RS( rA , coordLine, tileLine, 'rA ',
+     I              '( units: m^2 )' )
+      CALL WRITE_XY_YLINE_RS( rA , coordLine, tileLine, 'rA ',
+     I              '( units: m^2 )' )
+      CALL WRITE_XY_XLINE_RS( rAw, coordLine, tileLine, 'rAw',
+     I              '( units: m^2 )' )
+      CALL WRITE_XY_YLINE_RS( rAw, coordLine, tileLine, 'rAw',
+     I              '( units: m^2 )' )
+      CALL WRITE_XY_XLINE_RS( rAs, coordLine, tileLine, 'rAs',
+     I              '( units: m^2 )' )
+      CALL WRITE_XY_YLINE_RS( rAs, coordLine, tileLine, 'rAs',
+     I              '( units: m^2 )' )
+
+      CALL WRITE_0D_R8( globalArea, INDEX_NONE, 'globalArea =',
+     & ' /* Integrated horizontal Area (m^2) */')
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// End of Model config. summary'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
       _BARRIER
