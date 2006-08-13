@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.7 2006/08/13 22:10:25 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+c#include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
       SUBROUTINE TRACER_MEANAREA(myThid,tracer, kLev,
-     &                    gsm_tracer)
+     O                    gsm_tracer)
 
 C !DESCRIPTION:
 C  Calculate surface means of tracer
@@ -12,7 +15,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
@@ -20,7 +23,7 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
       INTEGER kLev
-      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C !OUTPUT PARAMETERS: ===================================================
 C  gcm_tracer               :: surface mean of tracer
@@ -28,29 +31,28 @@ C  gcm_tracer               :: surface mean of tracer
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,bi,bj
-      _RL sumarea
+      _RL sumArea, sumTracer
 CEOP
 
-       sumarea= 0. _d 0
-       gsm_tracer= 0. _d 0
+       sumArea= 0. _d 0
+       sumTracer= 0. _d 0
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO i=1,sNx
-          DO j=1,sNy
-            sumarea=sumarea+
+         DO j=1,sNy
+          DO i=1,sNx
+            sumArea=sumArea+
      &            rA(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
-            gsm_tracer=gsm_tracer+
+            sumTracer=sumTracer+
      &          tracer(i,j,kLev,bi,bj)*rA(i,j,bi,bj)*
      &                        maskC(i,j,kLev,bi,bj)
           ENDDO
-          ENDDO
          ENDDO
         ENDDO
-        _GLOBAL_SUM_R8(gsm_tracer,myThid)
-        _GLOBAL_SUM_R8(sumarea,myThid)
-        gsm_tracer=gsm_tracer/sumarea
+       ENDDO
+       _GLOBAL_SUM_R8(sumTracer,myThid)
+       _GLOBAL_SUM_R8(sumArea,myThid)
+       gsm_tracer=sumTracer/sumArea
 
        RETURN
        END
-
