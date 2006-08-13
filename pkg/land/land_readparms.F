@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.10 2006/06/23 00:49:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.11 2006/08/13 22:54:48 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -107,6 +107,8 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      _BEGIN_MASTER(myThid)
+
 C-    Set default value:
       land_calc_grT = .TRUE.
       land_calc_grW = .TRUE.
@@ -159,10 +161,9 @@ C-    layer thickness:
        land_rec_dzC(k) = -1.
       ENDDO
 
-      _BEGIN_MASTER(myThid)
-
       WRITE(msgBuf,'(A)') ' LAND_READPARMS: opening data.land'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE( 'data.land', 'LAND_READPARMS',
      O                          iUnit, myThid )
@@ -177,7 +178,8 @@ C-    Physical Constants for Land package
 
       WRITE(msgBuf,'(A)')
      &   ' LAND_READPARMS: finished reading data.land'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
       CLOSE(iUnit)
@@ -269,13 +271,13 @@ C--   Print out parameter values :
 
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// Land package parameters :'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
 C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( land_calc_grT, INDEX_NONE,
@@ -298,31 +300,31 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
       IF ( iL.GE.1 ) THEN
        WRITE(msgBuf,'(A,A)') 'land_grT_iniFile = ',
      &                       '/* Initial ground-Temp Input-File */'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        WRITE(msgBuf,'(16X,A)') land_grT_iniFile(1:iL)
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        msgBuf='    ;'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       iL = ILNBLNK( land_grW_iniFile )
       IF ( iL.GE.1 ) THEN
        WRITE(msgBuf,'(A,A)') 'land_grW_iniFile = ',
      &                       '/* Initial soil-Water Input-File */'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        msgBuf='    ;'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       iL = ILNBLNK( land_snow_iniFile )
       IF ( iL.GE.1 ) THEN
        WRITE(msgBuf,'(A,A)') 'land_snow_iniFile= ',
      &                  '/* Initial snow thickness Input-File */'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
        msgBuf='    ;'
-       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
        CALL WRITE_0D_R8( land_deltaT, INDEX_NONE,'land_deltaT =',
      &  ' /* land model Time-Step (s) */')
