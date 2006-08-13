@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.5 2005/04/06 18:41:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.6 2006/08/13 22:56:17 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -16,7 +16,7 @@ C     *==========================================================*
 C     | for now, used only for a restart
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -31,14 +31,14 @@ C-- size for MITgcm & Land package :
 #include "LAND_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==       
+C     == Routine Arguments ==
 C     myThid -  Number of this instance
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_LAND
 
-C     == Local Variables == 
+C     == Local Variables ==
 C     msgBuf      - Informational/error meesage buffer
 C     i,j,k,bi,bj :: loop indices
 C     grd_HeatCp   :: Heat capacity of the ground (J/m3/K)
@@ -89,10 +89,12 @@ C-     end bi,bj loops
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C-    Need to synchronize here before doing master-thread IO
+      _BARRIER
+
       IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
 
 C--   Define the initial state : read from file
-       _BEGIN_MASTER( myThid )
        IF ( land_grT_iniFile .NE. ' ' ) THEN
         CALL MDSREADFIELD( land_grT_iniFile, readBinaryPrec, 'RL',
      &                     land_nLev, land_groundT, 1, myThid)
@@ -105,7 +107,6 @@ C--   Define the initial state : read from file
         CALL MDSREADFIELD( land_snow_iniFile,readBinaryPrec, 'RL',
      &                     1, land_hSnow, 1, myThid)
        ENDIF
-       _END_MASTER(myThid)
 
       ELSEIF ( land_calc_grT .OR. land_calc_grW ) THEN
 
@@ -116,6 +117,11 @@ c     ELSE
 C-    a trick to allow to start without a land pickup:
 C        load grT & grW from AIM surf. BC in S/R aim_land2aim
       ENDIF
+
+C-    Every one else must wait until loading is done.
+      _BARRIER
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -132,9 +138,9 @@ c          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
              mWater = land_rhoLiqW*land_waterCap
      &               *land_groundW(i,j,k,bi,bj)
              grd_HeatCp = land_heatCs + land_CpWater*mWater
-             land_enthalp(i,j,k,bi,bj) = 
+             land_enthalp(i,j,k,bi,bj) =
      &                     grd_HeatCp*land_groundT(i,j,k,bi,bj)
-             IF (land_groundT(i,j,k,bi,bj).LT. 0. _d 0) 
+             IF (land_groundT(i,j,k,bi,bj).LT. 0. _d 0)
      &       land_enthalp(i,j,k,bi,bj) = land_enthalp(i,j,k,bi,bj)
      &                                 - land_Lfreez*mWater
             ENDDO
@@ -142,7 +148,7 @@ c          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
 c          ENDIF
           ENDDO
          ENDDO
-      ELSE
+        ELSE
          DO j=1,sNy
           DO i=1,sNx
             DO k=1,land_nLev
