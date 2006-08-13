@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.33 2006/07/26 22:01:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.34 2006/08/13 21:43:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,7 +48,7 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       INTEGER I, J, K
       _RL hFacCtmp
       _RL hFacMnSz
-      _RL tileArea
+      _RL tileArea, threadArea
 CEOP
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
@@ -186,7 +186,7 @@ C    &         'Model Depths K Index' , 1, myThid )
      &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
-      globalArea = 0. _d 0
+      threadArea = 0. _d 0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
@@ -209,11 +209,15 @@ C-      Compute the domain Area:
           tileArea = tileArea + rA(i,j,bi,bj)*maskH(i,j,bi,bj)
          ENDDO
         ENDDO
-        globalArea = globalArea + tileArea
+        threadArea = threadArea + tileArea
        ENDDO
       ENDDO
 C     _EXCH_XY_R4(   recip_Rcol, myThid )
-      _GLOBAL_SUM_R8( globalArea, myThid )
+C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
+      _GLOBAL_SUM_R8( threadArea, myThid )
+      _BEGIN_MASTER( myThid )
+      globalArea = threadArea
+      _END_MASTER( myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -247,8 +251,8 @@ C     We should really supply a flag for doing this.
         DO K=1, Nr
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
-           IF (DYG(I,J,bi,bj).EQ.0.) hFacW(I,J,K,bi,bj)=0.
-           IF (DXG(I,J,bi,bj).EQ.0.) hFacS(I,J,K,bi,bj)=0.
+           IF (dyG(I,J,bi,bj).EQ.0.) hFacW(I,J,K,bi,bj)=0.
+           IF (dxG(I,J,bi,bj).EQ.0.) hFacS(I,J,K,bi,bj)=0.
           ENDDO
          ENDDO
         ENDDO
