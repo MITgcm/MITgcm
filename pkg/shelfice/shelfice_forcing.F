@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.1 2006/02/07 11:45:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.2 2006/08/14 16:52:46 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,27 +47,46 @@ C     myThid    :: Thread Id number
 #ifdef ALLOW_SHELFICE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     i,j   :: Loop counters
+C     kp1,km1 :: index of next/previous level
+C     gTloc   :: local tendency in boundary layer
+C     drLoc   :: fractional cell width of boundary layer in (k+/-1)th layer
       INTEGER i, j
-      INTEGER kSurface
+      INTEGER Kp1, Km1
+      _RS     drLoc
+      _RL     gTloc
 CEOP
-
-      IF ( fluidIsAir ) THEN
-       kSurface = 0
-      ELSEIF ( usingPCoords ) THEN
-       kSurface = Nr
-      ELSE
-       kSurface = 1
-      ENDIF
 
 C--   Forcing term
       DO j=1,sNy
        DO i=1,sNx
-        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-         gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &        +shelficeForcingT(i,j,bi,bj)
-     &        *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+        IF ( SHELFICEBoundaryLayer ) THEN
+         IF ( kLev .LT. Nr .AND. kLev .EQ. kTopC(I,J,bi,bj) ) THEN
+          kp1 = MIN(kLev+1,Nr)
+          drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
+          drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
+          gTloc = shelficeForcingT(i,j,bi,bj) 
+     &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj) + gTloc
+         ELSEIF ( kLev .GT. 1 .AND. kLev-1 .EQ. kTopC(I,J,bi,bj) ) THEN
+          km1 = MAX(kLev-1,1)
+          drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
+          drLoc = MIN( drLoc, drF(kLev) * _hFacC(I,J,kLev,bi,bj) ) 
+          gTloc = shelficeForcingT(i,j,bi,bj) 
+     &         /( drF(km1)*_hFacC(I,J,km1,bi,bj)+drLoc )
+C     The following is shorthand for the averaged tendency:
+C     gT(k+1) = gT(k+1) + { gTloc * [drF(k)*(1-hFacC(k))]
+C                       +   0     * [drF(k+1) - drF(k)*(1-hFacC(k))]
+C                         }/[drF(k+1)*hFacC(k+1)]
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj) + gTloc 
+     &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
+        ELSE
+         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+     &         +shelficeForcingT(i,j,bi,bj)
+     &         *recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
         ENDIF
        ENDDO
       ENDDO
@@ -120,27 +139,46 @@ C     myThid    :: Thread Id number
 #ifdef ALLOW_SHELFICE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     i,j   :: Loop counters
+C     kp/m1 :: index of next/previous level
+C     gTloc :: local tendency in boundary layer
+C     drLoc :: fractional cell width of boundary layer
       INTEGER i, j
-      INTEGER kSurface
+      INTEGER Kp1, Km1
+      _RS     drLoc
+      _RL     gSloc   
 CEOP
-
-      IF ( fluidIsAir ) THEN
-       kSurface = 0
-      ELSEIF ( usingPCoords ) THEN
-       kSurface = Nr
-      ELSE
-       kSurface = 1
-      ENDIF
 
 C--   Forcing term
       DO j=1,sNy
        DO i=1,sNx
-        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &        +shelficeForcingS(i,j,bi,bj)
-     &        *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+        IF ( SHELFICEBoundaryLayer ) THEN
+         IF ( kLev .LT. Nr .AND. kLev .EQ. kTopC(I,J,bi,bj) ) THEN
+          kp1 = MIN(kLev+1,Nr)
+          drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
+          drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
+          gSloc = shelficeForcingS(i,j,bi,bj) 
+     &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj) + gSloc
+         ELSEIF ( kLev .GT. 1 .AND. kLev-1 .EQ. kTopC(I,J,bi,bj) ) THEN
+          km1 = MAX(kLev-1,1)
+          drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
+          drLoc = MIN( drLoc, drF(kLev) * _hFacC(I,J,kLev,bi,bj) ) 
+          gSloc = shelficeForcingS(i,j,bi,bj) 
+     &         /( drF(km1)*_hFacC(I,J,km1,bi,bj)+drLoc )
+C     The following is shorthand for the averaged tendency:
+C     gS(k+1) = gS(k+1) + { gSloc * [drF(k)*(1-hFacC(k))]
+C                       +   0     * [drF(k+1) - drF(k)*(1-hFacC(k))]
+C                         }/[drF(k+1)*hFacC(k+1)]
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj) + gSloc 
+     &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
+        ELSE
+         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &         +shelficeForcingS(i,j,bi,bj)
+     &         *recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
         ENDIF
        ENDDO
       ENDDO

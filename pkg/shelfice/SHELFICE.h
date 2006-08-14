@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.3 2006/02/13 13:10:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.4 2006/08/14 16:52:46 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -25,6 +25,8 @@ C     SHELFICEsaltTransCoeff   - salinity transfer coefficient that determines
 C                                salt flux into shelfice (m/s)
 C     SHELFICElatentHeat       - latent heat of fusion (J/kg)
 C     useISOMIPTD              - use simple ISOMIP thermodynamics
+C     SHELFICEboundaryLayer    - turn on vertical merging of cells to for a 
+C                                boundary layer of drF thickness
 C     no_slip_shelfice         - set slip conditions for shelfice separately,
 C                                (by default the same as no_slip_bottom) 
 C     SHELFICEwriteState       - enable output
@@ -86,6 +88,7 @@ CEOP
       
       LOGICAL SHELFICEisOn
       LOGICAL useISOMIPTD
+      LOGICAL SHELFICEboundaryLayer
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
@@ -95,6 +98,7 @@ CEOP
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
+     &     SHELFICEboundaryLayer,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,

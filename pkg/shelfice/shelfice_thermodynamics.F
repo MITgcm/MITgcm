@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.4 2006/02/14 13:09:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.5 2006/08/14 16:52:45 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -42,14 +42,15 @@ C     myThid :: thread number for this instance of the routine.
 CEOP
 
 #ifdef ALLOW_SHELFICE
-C     !LOCAL VARIABLES:
+C     !LOCAL VARIABLES :
 C     === Local variables ===
-      INTEGER I,J,K
+      INTEGER I,J,K,Kp1
       INTEGER bi,bj
       _RL tLoc, sLoc, pLoc
       _RL thetaFreeze, saltFreeze
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps4, aqe, bqe, cqe, discrim, recip_aqe
+      _RL drKp1, recip_drLoc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -75,6 +76,14 @@ C     first a few abbreviations
       
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1-Oly,sNy+Oly
+         DO I = 1-Olx,sNx+Olx
+          shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
+          shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
+          shelficeForcingT      (I,J,bi,bj) = 0. _d 0
+          shelficeForcingS      (I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
 #ifdef ALLOW_ISOMIP_TD
         IF ( useISOMIPTD ) THEN
          DO J = 1, sNy
@@ -84,7 +93,23 @@ C     first a few abbreviations
            IF ( K .NE. 0 .AND. pLoc .GT. 0. _d 0 ) THEN
 C--   Calculate the in-situ temperature 
             tLoc = theta(I,J,K,bi,bj)
-            sLoc = max(salt(I,J,K,bi,bj), 0. _d 0)
+            sLoc = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+            IF ( SHELFICEBoundaryLayer .AND. K .LT. Nr ) THEN
+C--   average over boundary layer width
+             Kp1 = MIN(Nr,K+1)
+C--   overlap into lower cell
+             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
+C--   lower cell may not be as thick as required
+             drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
+             recip_drLoc = 1. _d 0 / 
+     &            ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
+             tloc = ( tloc * drF(K)*_hFacC(I,J,K,bi,bj)
+     &            + theta(I,J,Kp1,bi,bj) *drKp1 )
+     &            * recip_drLoc
+             sloc = ( sloc * drF(K)*_hFacC(I,J,K,bi,bj)
+     &            + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
+     &            * recip_drLoc
+            ENDIF
 C--   Calculate freezing temperature as a function of salinity and pressure
 CML           thetaFreeze=-1.9 _d 0
             thetaFreeze = sLoc * ( a0 + a1*sqrt(sLoc) + a2*sLoc )
@@ -113,9 +138,6 @@ C--   compute surface tendencies
             ENDIF
 C--   stress at the ice/water interface is computed in separate
 C     routines that are called from mom_fluxform/mom_vecinv
-           ELSE
-            shelficeForcingT(i,j,bi,bj) = 0. _d 0
-            shelficeForcingS(i,j,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
@@ -134,7 +156,23 @@ C     (in German).
            IF ( K .NE. 0 .AND. pLoc .GT. 0. _d 0 ) THEN
 C--   Calculate the in-situ temperature 
             tLoc = theta(I,J,K,bi,bj)
-            sLoc = max(salt(I,J,K,bi,bj), 0. _d 0)
+            sLoc = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+            IF ( SHELFICEBoundaryLayer .AND. K .LT. Nr ) THEN
+C--   average over boundary layer width
+             Kp1 = MIN(Nr,K+1)
+C--   overlap into lower cell
+             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
+C--   lower cell may not be as thick as required
+             drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
+             recip_drLoc = 1. _d 0 / 
+     &            ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
+             tloc = ( tloc * drF(K)*_hFacC(I,J,K,bi,bj)
+     &            + theta(I,J,Kp1,bi,bj) *drKp1 )
+     &            * recip_drLoc
+             sloc = ( sloc * drF(K)*_hFacC(I,J,K,bi,bj)
+     &            + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
+     &            * recip_drLoc
+            ENDIF
 C     solve quadratic equation to get salinity at shelfice-ocean interface
             eps3 = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa/ploc
