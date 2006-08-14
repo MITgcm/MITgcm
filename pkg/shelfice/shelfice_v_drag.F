@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.3 2006/08/14 17:16:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.4 2006/08/14 17:29:06 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -40,7 +40,6 @@ C  myThid               :: thread number
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL viscFac
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -52,23 +51,24 @@ C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
       INTEGER I,J,kUp,kUpC,kTop
+      _RL viscFac
       _RL rdrckp1,maskUp
 CEOP
 
 C-  No-slip BCs impose a drag at top
       IF ( usingZCoords ) THEN
        kTop    = 1
-       kUp     = k
-       kUpC    = kUp
+       kUp     = max(k-1,kTop)
+       kUpC    = k
       ELSE
        kTop    = Nr
        kUp     = min(k+1,kTop)
        kUpC    = kUp
       ENDIF	
       rdrckp1=recip_drC(kUpC)
+CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
       IF (no_slip_shelfice) viscFac=1.
-      IF (k.EQ.kUp) rdrckp1=recip_drF(k)
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         maskUp=_maskS(i,j,kUp,bi,bj)

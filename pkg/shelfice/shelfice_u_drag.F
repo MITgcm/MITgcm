@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.3 2006/08/14 17:16:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.4 2006/08/14 17:29:06 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE.h"
@@ -59,15 +59,15 @@ CEOP
 C-  No-slip BCs impose a drag at top
       IF ( usingZCoords ) THEN
        kTop    = 1
-       kUp     = k
-       kUpC    = kUp
+       kUp     = max(k-1,kTop)
+       kUpC    = k
       ELSE
        kTop    = Nr
        kUp     = min(k+1,kTop)
        kUpC    = kUp
       ENDIF	
       rdrckp1=recip_drC(kUpC)
-      IF (k.EQ.kUp) rdrckp1=recip_drF(k)
+CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
       IF (no_slip_shelfice) viscFac=1.
       DO j=1-Oly,sNy+Oly-1
