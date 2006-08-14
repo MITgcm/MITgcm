@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.2 2006/02/13 12:49:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.3 2006/08/14 17:16:10 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE.h"
@@ -47,6 +47,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  uDragTerms           :: drag term
       _RL uDragTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_SHELFICE
 C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
@@ -55,7 +56,7 @@ C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
       _RL rdrckp1,maskUp
 CEOP
 
-C-  No-slip BCs impose a drag at bottom
+C-  No-slip BCs impose a drag at top
       IF ( usingZCoords ) THEN
        kTop    = 1
        kUp     = k
@@ -94,6 +95,7 @@ CML        CALL DIAGNOSTICS_FILL(uDragTerms,'UIceShelfDrag',k,1,2,bi,bj,
 CML     &      myThid)
 CML      ENDIF
 CML#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_SHELFICE */
 
       RETURN
       END
