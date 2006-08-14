@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.714 2006/08/14 01:11:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.715 2006/08/14 16:53:08 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o shelfice: add a simple boundary layer scheme to reduce noise
 
 checkpoint58n_post
 o fix globalArea multi-threaded calculation: need to apply GLOBAL_SUM to 
