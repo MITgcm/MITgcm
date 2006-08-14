@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.713 2006/08/14 00:43:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.714 2006/08/14 01:11:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58n_post
 o fix globalArea multi-threaded calculation: need to apply GLOBAL_SUM to 
    local variable (not in common block).
 o lot of small changes for multi-threaded. Most tests (using OMP & ifort) pass. 
