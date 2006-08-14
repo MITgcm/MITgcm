@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.8 2006/07/14 20:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.9 2006/08/14 20:33:12 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -93,7 +93,7 @@ C     == end of interface ==
        CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
      & 'SEAICEadvSchArea   =', ' /* advection scheme for area */')
        CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
-     & 'SEAICEadvSchArea   =', ' /* advection scheme for thickness */')
+     & 'SEAICEadvSchHeff   =', ' /* advection scheme for thickness */')
        CALL WRITE_0D_I ( SEAICEadvSchEnth,   INDEX_NONE,
      & 'SEAICEadvSchEnth   =', ' /* advection scheme for enthalphy */')
        CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
