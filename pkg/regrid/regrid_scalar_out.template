@@ -1,0 +1,229 @@
+C -*-fortran-*-
+C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_scalar_out.template,v 1.1 2006/08/15 04:05:48 edhill Exp $
+C $Name:  $
+
+#include "REGRID_OPTIONS.h"
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: REGRID_SCALAR_RX_OUT
+
+C     !INTERFACE:
+      SUBROUTINE REGRID_SCALAR_RX_OUT( 
+     I     mnc_bname, igout, var, vname, nz, izlev, 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Perform simple 2D scalar regrid and write the result to the
+C     specified file
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "REGRID_SIZE.h"
+#include "REGRID.h"
+
+C     !INPUT PARAMETERS:
+C     igout    :: index of output grid to use
+C     var      :: variable on "standard" model grid
+C     vname    :: variable name
+C     nz       :: number of z levels
+C     izlev    :: index vector of z levels
+C     myThid   :: my thread Id number
+      INTEGER nz
+      __V var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nz,nSx,nSy)
+      CHARACTER*(*) mnc_bname
+      CHARACTER*(*) vname
+      INTEGER izlev(nz)
+      INTEGER igout, myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+C     msgBuf      - Informational/error meesage buffer
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+C     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iz, bi,bj, ii,ind, nval, nnb
+#ifdef RX_IS_REAL4
+      REAL*4 ptsums(REGRID_NELEM_MAX,nSx,nSy)
+#endif
+#ifdef RX_IS_REAL8
+      REAL*8 ptsums(REGRID_NELEM_MAX,nSx,nSy)
+#endif
+#ifdef ALLOW_MNC
+      INTEGER CW_DIMS, NLEN
+      PARAMETER ( CW_DIMS = 10 )
+      PARAMETER ( NLEN    = 80 )
+      INTEGER offsets(CW_DIMS)
+      INTEGER dim(CW_DIMS), ib(CW_DIMS), ie(CW_DIMS)
+      CHARACTER*(NLEN) dn(CW_DIMS)
+      CHARACTER*(NLEN) regrid_vname
+      CHARACTER*(NLEN) d_cw_name
+      CHARACTER*(NLEN) dn_blnk
+#endif /*  ALLOW_MNC  */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      DO ii = 1,CW_DIMS
+        offsets(ii) = 0
+      ENDDO
+
+C     =============================================
+C     Create the MNC definition for the variable
+#ifdef ALLOW_MNC
+      _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+      IF ( mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
+        
+        bi = myBxLo(myThid)
+        bj = myByLo(myThid)
+        
+        IF (useMNC .AND. regrid_mnc) THEN
+
+          DO ii = 1,NLEN
+            dn_blnk(ii:ii) = ' '
+          ENDDO
+
+          dn(1)(1:NLEN) = dn_blnk(1:NLEN)
+          WRITE(dn(1),'(a,i6.6)') 'Zrgl_', nz
+          dim(1) = nz
+          ib(1)  = 1
+          ie(1)  = nz
+          
+          CALL MNC_CW_ADD_GNAME('regrid_levels', 1,
+     &         dim, dn, ib, ie, myThid)
+          CALL MNC_CW_ADD_VNAME('regrid_levels', 'regrid_levels',
+     &         0,0, myThid)
+          CALL MNC_CW_ADD_VATTR_TEXT('regrid_levels','description',
+     &         'Idicies of vertical levels within the source arrays',
+     &         myThid)
+          
+          CALL MNC_CW_I_W('I',mnc_bname,bi,bj,
+     &         'regrid_levels', izlev, myThid)
+
+          CALL MNC_CW_DEL_VNAME('regrid_levels', myThid)
+          CALL MNC_CW_DEL_GNAME('regrid_levels', myThid)
+
+          d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
+          DO ii = 1,CW_DIMS
+            dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
+          ENDDO
+          
+C         All the horizontal dimensions of the output grid are flattened
+C         into a single total-DoF vector.
+          WRITE(dn(1),'(a,i10.10)') 'regrid_', regrid_nout(igout)
+          dim(1)     = regrid_nout(igout)
+          ib(1)      = 1
+          ie(1)      = regrid_nout(igout)
+
+C         Vertical dimension
+          dn(2)(1:NLEN) = dn_blnk(1:NLEN)
+          WRITE(dn(2),'(a,i6.6)') 'Zrgl_', nz
+          dim(2)     = nz
+          ib(2)      = 1
+          ie(2)      = nz
+
+C         Time dimension
+          dn(3)(1:1) = 'T'
+          dim(3)     = -1
+          ib(3)      = 1
+          ie(3)      = 1
+
+C         Generate unique grid names
+          WRITE(d_cw_name,'(a3,i3.3,a1,i3.3)') 'rg_',igout,'_',nz
+
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 3,
+     &         dim, dn, ib, ie, myThid)
+          regrid_vname(1:NLEN) = dn_blnk(1:NLEN)
+          write(regrid_vname,'(a,a)') 'regrid_', vname
+          CALL MNC_CW_ADD_VNAME(regrid_vname, d_cw_name,
+     &         0,0, myThid)
+C         CALL MNC_CW_ADD_VATTR_TEXT(vname,'units','-',myThid)
+
+        ENDIF
+
+#ifdef ALLOW_USE_MPI
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+      _END_MASTER( myThid )
+      _BARRIER
+#endif /* ALLOW_MNC */
+
+C     =============================================
+C     Empty the per-thread vectors for all possible threads
+      _BEGIN_MASTER( myThid )
+      DO bj = 1,nSy
+        DO bi = 1,nSx
+          DO ind = 1,regrid_nout(igout)
+            ptsums( ind, bi,bj ) = 0. _d 0
+          ENDDO
+        ENDDO
+      ENDDO
+      _END_MASTER( myThid )
+      _BARRIER
+
+C     =============================================
+C     Compute the distributed sparse matrix multiply
+      DO iz = 1,nz
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+
+            DO ind = 1,regrid_nout(igout)
+              ptsums( ind, bi,bj ) = 0. _d 0
+            ENDDO
+
+C           Compute the per-thread partial sums
+            DO ind = regrid_ibeg(igout,bi,bj),regrid_iend(igout,bi,bj)
+              ptsums( regrid_i_out(ind,bi,bj), bi,bj ) =
+     &             ptsums( regrid_i_out(ind,bi,bj), bi,bj ) 
+     &             + regrid_amat(ind,bi,bj)
+     &               * var( regrid_i_loc(ind,bi,bj), 
+     &                      regrid_j_loc(ind,bi,bj), izlev(iz), bi,bj)
+            ENDDO
+            
+C           Sum over all threads and MPI processes
+            nval = regrid_nout(igout)
+            
+          ENDDO
+        ENDDO
+
+        _BARRIER
+
+#ifdef RX_IS_REAL4
+        CALL GLOBAL_VEC_SUM_R4( REGRID_NELEM_MAX,nval,ptsums,myThid )
+#endif
+#ifdef RX_IS_REAL8
+        CALL GLOBAL_VEC_SUM_R8( REGRID_NELEM_MAX,nval,ptsums,myThid )
+#endif
+        
+C       At this point, we have the global sum.  The master thread of the
+C       lead MPI process should now write the output.
+        _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+        IF ( mpiMyId .EQ. 0 ) THEN
+#endif /* ALLOW_USE_MPI */
+
+          bi = myBxLo(myThid)
+          bj = myByLo(myThid)
+          offsets(2) = iz
+          CALL MNC_CW_RL_W_OFFSET('D',mnc_bname,1,1,
+     &         regrid_vname, ptsums(1,bi,bj), offsets, myThid)
+          
+#ifdef ALLOW_USE_MPI
+        ENDIF
+#endif /* ALLOW_USE_MPI */
+        _END_MASTER( myThid )
+        _BARRIER
+
+      ENDDO /*  iz  */
+      
+      CALL MNC_CW_DEL_VNAME(regrid_vname, myThid)
+      CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
