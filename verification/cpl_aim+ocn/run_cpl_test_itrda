@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.7 2006/07/17 01:34:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.8 2006/08/15 19:13:07 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -69,9 +69,9 @@ then
  module list -t >& tmp_compiler
  compiler=`sed -n 's/mpich\///p' tmp_compiler`
  case $compiler in
-  'gnu')   cp -p ../../tools/build_options/linux_ia32_g77+mpi_itrda genmake_optfile ;;
-  'intel') cp -p ../../tools/build_options/linux_ia32_ifc+mpi_itrda genmake_optfile ;;
-  'pgi') cp -p ../../tools/build_options/linux_ia32_pgf77+mpi_itrda genmake_optfile ;;
+  'gnu')   cp -p ../../tools/build_options/linux_ia32_g77+mpi_aces   genmake_optfile ;;
+  'intel') cp -p ../../tools/build_options/linux_ia32_ifort+mpi_aces genmake_optfile ;;
+  'pgi')   cp -p ../../tools/build_options/linux_ia32_pgf77+mpi_aces genmake_optfile ;;
    *) echo 'ERROR: cannot use compiler:' $compiler ; 
       echo ""; cat tmp_compiler ; exit 7 ;;
  esac
