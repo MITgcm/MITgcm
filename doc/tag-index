@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.716 2006/08/14 17:29:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.717 2006/08/15 04:30:53 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o added the regrid package
 o shelfice: 
  - add a simple boundary layer scheme to reduce noise
  - fix the indexing in shelfice_u/v_drag so that there will be actually drag
