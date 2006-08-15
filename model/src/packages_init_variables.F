@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.53 2006/08/15 04:24:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.54 2006/08/15 14:58:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -20,6 +20,8 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_VARIABLES
 C       |
+C       |-- DIAGNOSTICS_INIT_VARIA
+C       |
 C       |-- CD_CODE_INI_VARS
 C       |
 C       |-- GMREDI_INIT
@@ -35,21 +37,27 @@ C       |-- GGL90_INIT
 C       |
 C       |-- SEAICE_INIT
 C       |
-C       |-- OBCS_INIT_VARIABLES
-C       |
 C       |-- PTRACERS_INIT_VARIA
+C       |
+C       |-- GCHEM_INIT_VARI
 C       |
 C       |-- LAND_INI_VARS
 C       |
+C       |-- CTRL_INIT_VARIABLES
+C       |-- CTRL_MAP_INI_ECCO
 C       |-- CTRL_MAP_INI
 C       |
 C       |-- EXF_INIT
 C       |
 C       |-- INI_FORCING
 C       |
-C       |-- ECCO_INIT
+C       |-- EBM_INI_VARS
 C       |
-C       |-- COST_INIT
+C       |-- COST_INIT_VARIA
+C       |
+C       |-- PROFILES_INIT_VARIA
+C       |
+C       |-- OBCS_INIT_VARIABLES
 C       |
 C       |-- BULKF_INIT_VARIA
 C       |
@@ -57,7 +65,15 @@ C       |-- THSICE_INI_VARS
 C       |
 C       |-- CPL_INI_VARS
 C       |
-C       |-- REGRID_INIT_FIXED
+C       |-- FIZHI_INI_VARS
+C       |
+C       |-- MATRIX_INIT
+C       |
+C       |-- RBCS_INIT_VARIA
+C       |
+C       |-- REGRID_INIT_VARIA
+C       |
+C       |-- MYPACKAGE_INIT_VARIA
 
 C     !USES:
       IMPLICIT NONE
@@ -280,6 +296,10 @@ C Initialize FIZHI state variables
       IF ( useRBCS ) CALL RBCS_INIT_VARIA( myThid )
 #endif
 
+#ifdef ALLOW_REGRID
+      IF ( useREGRID ) CALL REGRID_INIT_VARIA( myThid )
+#endif
+
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) CALL MYPACKAGE_INIT_VARIA( myThid )
 #endif
@@ -287,10 +307,6 @@ C Initialize FIZHI state variables
 #ifdef ALLOW_DEBUG
       IF (debugMode)
      &     CALL DEBUG_LEAVE('PACKAGES_INIT_VARIABLES',myThid)
-#endif
-
-#ifdef ALLOW_REGRID
-      IF ( useREGRID ) CALL REGRID_INIT_VARIA( myThid )
 #endif
 
       RETURN
