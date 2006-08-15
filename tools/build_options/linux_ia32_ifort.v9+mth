@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.1 2006/07/14 18:09:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.2 2006/08/15 16:11:19 jmc Exp $
 # $Name:  $
 #
 #  jmc: copied from linux_ia32_ifort+authors_v9
 #       and added openmp stuff to run multi-threaded
+#  ( generally, need to increase the stack-size: > export KMP_STACKSIZE=400m )
 #
 #  tested on hugo (FC.4), eddy (FC.5): 20060713
 #
@@ -17,7 +18,7 @@ F90FIXEDFORMAT='-fixed -Tf'
 DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 LINK='/usr/local/pkg/intel/intel_fc_90/bin/ifort -i-static -no-ipo'
 CPP='cpp  -traditional -P'
-INCLUDES='-I/usr/include/netcdf'
+INCLUDES='-I/usr/local/pkg/netcdf/netcdf-3.5.1/include'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
@@ -32,6 +33,4 @@ else
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -openmp -xN -pc64 -convert big_endian -assume byterecl'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
-
-
 
