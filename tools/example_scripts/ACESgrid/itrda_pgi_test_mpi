@@ -39,5 +39,5 @@ cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_aces"
 # ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE" -a 'edhill@mitgcm.org'
-./testreport -j 2 -mpi -of $OPTFILE -command "$EXE"
+./testreport -mpi -of $OPTFILE -command "$EXE"
 
