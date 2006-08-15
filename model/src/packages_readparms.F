@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.48 2006/08/15 04:24:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.49 2006/08/15 15:11:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -105,6 +105,9 @@ CEOP
 C     Read run-time flags and initialize look-up tables for MNC
       IF (useMNC) THEN
         CALL MNC_READPARMS( myThid )
+      ENDIF
+      _BARRIER
+      IF (useMNC) THEN
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
      &       Nr,myThid)
@@ -164,11 +167,11 @@ C--   Initialize SHELFICE parameters
       IF (useShelfIce) CALL SHELFICE_READPARMS( myThid )
 #endif
 
-#ifdef ALLOW_SHAP_FILT 
+#ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT) CALL SHAP_FILT_READPARMS( myThid )
 #endif
 
-#ifdef ALLOW_ZONAL_FILT 
+#ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT) CALL ZONAL_FILT_READPARMS( myThid )
 #endif
 
