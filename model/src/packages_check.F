@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.35 2006/06/28 21:24:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.36 2006/08/15 04:24:03 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -176,6 +176,12 @@ CEOP
 #else
       IF (useDiagnostics)
      &   CALL PACKAGES_CHECK_ERROR('DIAGNOSTICS', myThid )
+#endif
+
+#ifdef ALLOW_REGRID
+      IF (useREGRID) CALL REGRID_CHECK( myThid )
+#else
+      IF (useREGRID) CALL PACKAGES_CHECK_ERROR('REGRID', myThid)
 #endif
 
 #ifdef ALLOW_MYPACKAGE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.47 2006/06/28 21:24:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.48 2006/08/15 04:24:03 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,7 +87,8 @@ C       |
 C       |-- CPL_READPARMS
 C       |
 C       |-- DIAGNOSTICS_READPARMS
-
+C       |
+C       |-- REGRID_READPARMS
 
 C     !USES:
       IMPLICIT NONE
@@ -269,6 +270,10 @@ C--   set diagnostics choices
 C--    Initialize matrix package parameters
        IF (useMATRIX) CALL MATRIX_READPARMS ( myThid )
 #endif
+
+#ifdef ALLOW_REGRID
+      IF ( useREGRID ) CALL REGRID_READPARMS( myThid )
+#endif /* ALLOW_REGRID */
 
       RETURN
       END

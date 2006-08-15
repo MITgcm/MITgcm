@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.52 2006/07/11 23:58:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.53 2006/08/15 04:24:03 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,6 +56,8 @@ C       |
 C       |-- THSICE_INI_VARS
 C       |
 C       |-- CPL_INI_VARS
+C       |
+C       |-- REGRID_INIT_FIXED
 
 C     !USES:
       IMPLICIT NONE
@@ -286,5 +288,10 @@ C Initialize FIZHI state variables
       IF (debugMode)
      &     CALL DEBUG_LEAVE('PACKAGES_INIT_VARIABLES',myThid)
 #endif
+
+#ifdef ALLOW_REGRID
+      IF ( useREGRID ) CALL REGRID_INIT_VARIA( myThid )
+#endif
+
       RETURN
       END

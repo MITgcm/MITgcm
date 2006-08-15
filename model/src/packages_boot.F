@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.34 2006/06/28 21:24:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.35 2006/08/15 04:24:03 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,7 @@ C     data.pkg namelists
      &          usegridalt,
      &          useDiagnostics,
      &          useMNC,
+     &          useREGRID,
      &          useRunClock,
      &          useMATRIX,
      &          useEMBED_FILES,
@@ -124,6 +125,7 @@ C--   Default package configuration
       useDiagnostics  =.FALSE.
       useMNC          =.FALSE.
       useRunClock     =.FALSE.
+      useREGRID       =.FALSE.
       useMYPACKAGE    =.FALSE.
 
 C--   Read parameters from open data file
