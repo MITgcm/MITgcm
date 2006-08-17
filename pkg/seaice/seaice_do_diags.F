@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.22 2006/08/09 04:33:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.23 2006/08/17 00:18:44 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,6 +46,8 @@ C     == Local variables ==
       IF (SEAICEwriteState) THEN
 
         IF ( DIFFERENT_MULTIPLE(SEAICE_dumpFreq,myTime,deltaTClock)
+     &    .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
+     &                               myTime.EQ.startTime  )
      &       ) THEN
 
           _BARRIER
@@ -78,6 +80,7 @@ C     == Local variables ==
 #endif
           IF (SEAICE_dump_mdsio) THEN
             WRITE(suff,'(I10.10)') myIter
+            IF ( myIter.NE.nIter0 ) THEN
             CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
@@ -85,6 +88,8 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
+            ENDIF
+            CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
              CALL WRITE_FLD_XY_RS('SIGMA1.',suff,seaice_sigma1,
