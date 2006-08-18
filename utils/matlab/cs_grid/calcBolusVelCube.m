@@ -28,7 +28,7 @@ function [ub,vb]=calcBolusVelCube(d,g);
 
 nc = size(g.XC,2);
 nr = length(g.drF);
-nt = size(d.Kwx,4);
+nt = size(d.GM_Kwx,4);
 
 dr  = g.drF;
 hw = reshape(g.HFacW(1:6*nc,1:nc,1:nr),[6*nc*nc,nr]);
@@ -38,11 +38,16 @@ dxc = reshape(g.dxC(1:6*nc,1:nc),[6*nc*nc,1]);
 dyc = reshape(g.dyC(1:6*nc,1:nc),[6*nc*nc,1]);
 dxg = reshape(g.dxG(1:6*nc,1:nc),[6*nc*nc,1]);
 dyg = reshape(g.dyG(1:6*nc,1:nc),[6*nc*nc,1]);
-kwx_all = reshape(d.Kwx,[6*nc*nc,nr,nt]);
-kwy_all = reshape(d.Kwy,[6*nc*nc,nr,nt]);
+kwx_all = reshape(d.GM_Kwx,[6*nc*nc,nr,nt]);
+kwy_all = reshape(d.GM_Kwy,[6*nc*nc,nr,nt]);
 
 rAu=dxc.*dyg;
 rAv=dyc.*dxg;
+%--- recip_hFac & mask :
+hw_recip=1./hw; hw_recip(find(hw==0))=0; 
+hs_recip=1./hs; hs_recip(find(hs==0))=0; 
+hw=ceil(hw); hw=min(1,hw);
+hs=ceil(hs); hs=min(1,hs);
 
 for it = 1:nt
     kwx = kwx_all(:,:,it);
@@ -57,12 +62,6 @@ for it = 1:nt
     v6Y = split_C_cub(kwy,1);
     k6x = v6X(:,[2:nc+1],:,:);
     k6y = v6Y([2:nc+1],:,:,:);
-
-    %--- recip_hFac & mask :
-    hw_recip=1./hw; hw_recip(find(hw==0))=0; 
-    hs_recip=1./hs; hs_recip(find(hs==0))=0; 
-    hw=ceil(hw); hw=min(1,hw);
-    hs=ceil(hs); hs=min(1,hs);
 
     %----------------- 
     v6X = zeros(nc,nc,nr,6);
