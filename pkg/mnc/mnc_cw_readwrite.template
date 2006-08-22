@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.39 2006/08/04 15:14:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.40 2006/08/22 03:15:46 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -703,9 +703,50 @@ C !INTERFACE:
      I     var, 
      I     myThid )
 
+C     !DESCRIPTION: 
+C     A simple wrapper for the old version of this routine.  The new
+C     version includes the isvar argument which, for backwards
+C     compatibility, is set to false here.
+      
+C     !USES:
+      implicit none
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj
+      character*(*) stype, fbname, vtype
+      __V var(*)
+CEOP
+
+C     !LOCAL VARIABLES:
+      LOGICAL isvar
+
+      isvar = .FALSE.
+
+      CALL MNC_CW_RX_R_TF(stype,fbname,bi,bj,vtype,var,isvar,myThid)
+
+      RETURN
+      END
+
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MNC_CW_RX_R
+
+C !INTERFACE:
+      SUBROUTINE MNC_CW_RX_R_TF( 
+     I     stype, 
+     I     fbname, bi,bj, 
+     I     vtype, 
+     I     var, 
+     B     isvar, 
+     I     myThid )
+
 C     !DESCRIPTION:
 C     This subroutine reads one variable from a file or a file group,
-C     depending upon the tile indicies.
+C     depending upon the tile indicies.  If isvar is true and the
+C     variable does not exist, then isvar is set to false and the
+C     program continues normally.  This allows one to gracefully handle
+C     the case of reading variables that might or might not exist.
       
 C     !USES:
       implicit none
@@ -721,6 +762,7 @@ C     !INPUT PARAMETERS:
       integer myThid, bi,bj
       character*(*) stype, fbname, vtype
       __V var(*)
+      LOGICAL isvar
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -848,6 +890,11 @@ C           zero sequence number inserted
      &         'MNC_CW_RX_R: cannot get id for variable ''', 
      &         vtype(nvf:nvl), '''in file ''', fname(1:nfname), ''''
           err = NF_INQ_VARID(fid, vtype, idv)
+          IF ( isvar .AND. ( err .NE. NF_NOERR ) ) THEN
+            isvar = .FALSE.
+            RETURN
+          ENDIF
+          isvar = .TRUE.
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
           f_or_t = 0
 
@@ -924,6 +971,11 @@ C           WRITE(*,*) 'trying: "', path_fname, '"'
      &         vtype(nvf:nvl), ''' in file ''', path_fname(1:ntot),
      &         ''''
           err = NF_INQ_VARID(fid, vtype, idv)
+          IF ( isvar .AND. ( err .NE. NF_NOERR ) ) THEN
+            isvar = .FALSE.
+            RETURN
+          ENDIF
+          isvar = .TRUE.
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
           k = ILNBLNK(path_fname)
