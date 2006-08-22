@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.1 2005/08/23 13:21:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.2 2006/08/22 18:57:53 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -29,7 +29,7 @@ C     ------------------------------------------------------------------
 
 C Sweep through a valid range of unit numbers
       iounit=-1
-      do ii=9,99
+      do ii=9,999
         if (iounit.eq.-1) then
           inquire(unit=ii,iostat=ios,opened=op)
           if (ios.ne.0) then
