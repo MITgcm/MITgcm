@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.3 2006/06/15 17:01:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.4 2006/08/22 19:00:01 ce107 Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -78,7 +78,7 @@ cph)
      &     myiter, mytime, mythid )
 cph(
       write(msgbuf,'(a,1P2E18.10)') 
-     &     'ph-cost smrarea ', objf_smrarea(1,1), num_smrarea
+     &     'ph-cost smrarea ', objf_smrarea(1,1), num_smrarea(1,1)
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
 cph)
