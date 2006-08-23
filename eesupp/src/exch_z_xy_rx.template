@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_xy_rx.template,v 1.5 2004/09/22 15:24:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_xy_rx.template,v 1.6 2006/08/23 15:20:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-
 C     !ROUTINE: EXCH_Z_XY_RX
 
 C     !INTERFACE:
@@ -16,8 +15,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_Z_XY_RX                                   
-C     | o Handle exchanges for _RX, 2-dim zeta coord array.       
+C     | SUBROUTINE EXCH_Z_XY_RX
+C     | o Handle exchanges for _RX, 2-dim zeta coord array.
 C     *==========================================================*
 C     | Branch to correct exchange for particular grid operating
 C     | on a zeta coord array.
@@ -48,7 +47,7 @@ C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 CEOP
 
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_Z_XY_RX( phi, myThid )
+      CALL EXCH2_Z_3D_RX( phi, 1, myThid )
       RETURN
 #endif
 

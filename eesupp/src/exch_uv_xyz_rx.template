@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.5 2004/11/16 17:21:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.6 2006/08/23 15:20:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,18 +12,19 @@ C     !INTERFACE:
       SUBROUTINE EXCH_UV_XYZ_RX(
      U                       Uphi, Vphi,
      I                       withSigns, myThid )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_UV_XYZ_RX                                 
-C     | o Handle exchanges for _RX, 3-dimensional vector arrays.    
+C     | SUBROUTINE EXCH_UV_XYZ_RX
+C     | o Handle exchanges for _RX, 3-dimensional vector arrays.
 C     *==========================================================*
-C     | Vector arrays need to be rotated and interchaged for 
+C     | Vector arrays need to be rotated and interchaged for
 C     | exchange operations on some grids. This driver routine
 C     | branches to support this.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -50,9 +51,9 @@ C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 
 CEOP
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_XYZ_RX(
-     U                       Uphi, Vphi,
-     I                       withSigns, myThid )
+      CALL EXCH2_UV_3D_RX(
+     U                     Uphi, Vphi,
+     I                     withSigns, Nr, myThid )
       RETURN
 #endif
 

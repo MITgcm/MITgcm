@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xyz_rx.template,v 1.6 2004/11/19 02:32:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xyz_rx.template,v 1.7 2006/08/23 15:20:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,9 +53,9 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
       _RX negOne
 
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_AGRID_XYZ_RX(
+      CALL EXCH2_UV_AGRID_3D_RX(
      U                           component1, component2,
-     I                           withSigns, myThid )
+     I                           withSigns, Nr, myThid )
       RETURN
 #endif
 
