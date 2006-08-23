@@ -1,22 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_xyz_rx.template,v 1.4 2005/07/27 01:11:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.1 2006/08/23 15:13:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
 CBOP
-
-C     !ROUTINE: EXCH_XYZ_RX
+C     !ROUTINE: EXCH2_3D_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_XYZ_RX(
+      SUBROUTINE EXCH2_3D_RX(
      U                       phi,
-     I                       myThid )
-      IMPLICIT NONE
+     I                       myNz, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_XYZ_RX
+C     | SUBROUTINE EXCH2_3D_RX
 C     | o Handle exchanges for _RX, three-dim scalar arrays.
 C     *==========================================================*
 C     | Invoke appropriate exchange routine depending on type
@@ -24,6 +22,7 @@ C     | of grid (cube or globally indexed) to be operated on.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -34,15 +33,17 @@ C     === Global data ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     phi    :: Array with overlap regions are to be exchanged
+C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
-      _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      INTEGER myNz
+      _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 #ifdef W2_FILL_NULL_REGIONS
       INTEGER bi, bj, myTile, i, j, k
 #endif
@@ -55,11 +56,10 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
 
@@ -79,7 +79,7 @@ C        South-east corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -90,7 +90,7 @@ C        North-east corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -101,7 +101,7 @@ C        South-west corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=1-OLx,0
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -112,7 +112,7 @@ C        North-west corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=1-OLx,0
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -136,7 +136,7 @@ C        South-east corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -147,7 +147,7 @@ C        North-east corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=sNx+1,sNx+OLx
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -158,7 +158,7 @@ C        South-west corner
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
           DO j=1-OLy,0
            DO i=1-OLx,0
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO
@@ -169,7 +169,7 @@ C        North-west corner
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO j=sNy+1,sNy+OLy
            DO i=1-OLx,0
-            DO k=1,Nr
+            DO k=1,myNz
              phi(i,j,k,bi,bj)=e2FillValue_RX
             ENDDO
            ENDDO

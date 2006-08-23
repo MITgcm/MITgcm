@@ -1,22 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_z_xy_rx.template,v 1.2 2005/07/24 01:35:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_z_3d_rx.template,v 1.1 2006/08/23 15:13:04 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
 CBOP
-
-C     !ROUTINE: EXCH_Z_XY_RX
+C     !ROUTINE: EXCH_Z_3D_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_Z_XY_RX(
+      SUBROUTINE EXCH2_Z_3D_RX(
      U                       phi,
-     I                       myThid )
+     I                       myNz, myThid )
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_Z_XY_RX
-C     | o Handle exchanges for _RX two-dim zeta-point array.
+C     | SUBROUTINE EXCH_Z_3D_RX
+C     | o Handle exchanges for _RX three-dim zeta-point array.
 C     *==========================================================*
 C     | Invoke appropriate exchange for a zeta-point array
 C     | for either global grid, or cube sphere grid.
@@ -33,8 +32,10 @@ C     === Global data ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     phi    :: Array with overlap regions are to be exchanged
-C     myThid :: My thread id.
-      _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     myNz   :: 3rd dimension of input array phi
+C     myThid :: My Thread Id. number
+      INTEGER myNz
+      _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -42,12 +43,17 @@ C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 C     mFace          :: face number
+C     local_maxDim   :: upper limit of 3rd dimension value
 C     phiNW,phiSE    :: temporary array to hold corner value (CS grid)
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
-      INTEGER bi, bj, myTile, i, j
+C     msgBuf         :: Informational/error meesage buffer
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER bi, bj, myTile, i, j, k
       INTEGER mFace
-      _RX phiNW(nSx,nSy)
-      _RX phiSE(nSx,nSy)
+      INTEGER local_maxDim
+      PARAMETER( local_maxDim = 8*Nr )
+      _RX phiNW(local_maxDim,nSx,nSy)
+      _RX phiSE(local_maxDim,nSx,nSy)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 
@@ -57,7 +63,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      myNz       = 1
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface 
@@ -66,12 +71,24 @@ C                that threads are synchronised before exchanges
 C                begine.
 
       IF (useCubedSphereExchange) THEN
+       IF ( myNz.GT.local_maxDim ) THEN
+         WRITE(msgBuf,'(2A,2(I4,A))') 'EXCH_Z_3D_RX :',
+     &     ' 3rd dimension=', myNz,
+     &     ' exceeds local_maxDim (=', local_maxDim, ' )'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         WRITE(msgBuf,'(2A)') 'EXCH_Z_3D_RX :',
+     &     ' Increase "local_maxDim" and recompile'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R EXCH_Z_3D_RX'
+       ENDIF
 
 C-     save 2 corners value (in case we find 1 "missing corner")
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          phiNW(bi,bj) = phi(1,sNy+1,bi,bj)
-          phiSE(bi,bj) = phi(sNx+1,1,bi,bj)
+         DO k=1,myNz
+          phiNW(k,bi,bj) = phi(1,sNy+1,k,bi,bj)
+          phiSE(k,bi,bj) = phi(sNx+1,1,k,bi,bj)
+         ENDDO
         ENDDO
        ENDDO
 
@@ -94,75 +111,87 @@ C---     Face 2,4,6:
 
 C--      East edge : shift j <- j-1
           IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
-           DO j=sNy+OLy,2-Oly,-1
-            DO i=sNx+1,sNx+OLx
-              phi(i,j,bi,bj)=phi(i,j-1,bi,bj)
+           DO k=1,myNz
+            DO j=sNy+OLy,2-Oly,-1
+             DO i=sNx+1,sNx+OLx
+               phi(i,j,k,bi,bj)=phi(i,j-1,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
 C-       North-East corner
            IF ( exch2_isNedge(myTile) .EQ. 1 ) THEN
-            DO j=sNy+2,sNy+OLy
+            DO k=1,myNz
+             DO j=sNy+2,sNy+OLy
               i=sNx-sNy+j
-              phi(sNx+1,j,bi,bj)=phi(i,sNy+1,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=sNy+2,sNy+OLy
-             DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=e2FillValue_RX
+               phi(sNx+1,j,k,bi,bj)=phi(i,sNy+1,k,bi,bj)
              ENDDO
-            ENDDO
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=sNy+2,sNy+OLy
+              DO i=sNx+2,sNx+OLx
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
 #endif
+            ENDDO
            ENDIF
           ENDIF
 C--      South edge : shift i <- i-1
           IF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
-           DO j=1-OLy,0
-            DO i=sNx+OLx,2-Olx,-1
-              phi(i,j,bi,bj)=phi(i-1,j,bi,bj)
+           DO k=1,myNz
+            DO j=1-OLy,0
+             DO i=sNx+OLx,2-Olx,-1
+               phi(i,j,k,bi,bj)=phi(i-1,j,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
 C-       South-East corner
            IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
-            phi(sNx+1,1,bi,bj)=phiSE(bi,bj)
-            DO i=sNx+2,sNx+OLx
-              j=sNx+2-i
-              phi(i,1,bi,bj)=phi(sNx+1,j,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=1-OLy,0
+            DO k=1,myNz
+             phi(sNx+1,1,k,bi,bj)=phiSE(k,bi,bj)
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=e2FillValue_RX
+               j=sNx+2-i
+               phi(i,1,k,bi,bj)=phi(sNx+1,j,k,bi,bj)
              ENDDO
-            ENDDO
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=1-OLy,0
+              DO i=sNx+2,sNx+OLx
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
 #endif
+            ENDDO
            ENDIF
 C-       South-West corner
            IF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
-            DO j=1-OLy,0
-              phi(1,j,bi,bj)=phi(j,1,bi,bj)
+            DO k=1,myNz
+             DO j=1-OLy,0
+               phi(1,j,k,bi,bj)=phi(j,1,k,bi,bj)
 #ifdef W2_FILL_NULL_REGIONS
-             DO i=1-OLx,0
-              phi(i,j,bi,bj)=e2FillValue_RX
-             ENDDO
+              DO i=1-OLx,0
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
 #endif
+             ENDDO
             ENDDO
            ENDIF
           ENDIF
 C--      North-west corner
           IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-            DO i=2-OLx,0
-              j=sNy+2-i
-              phi(i,sNy+1,bi,bj)=phi(1,j,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=sNy+2,sNy+OLy
-             DO i=1-OLx,0
-              phi(i,j,bi,bj)=e2FillValue_RX
+           DO k=1,myNz
+             DO i=2-OLx,0
+               j=sNy+2-i
+               phi(i,sNy+1,k,bi,bj)=phi(1,j,k,bi,bj)
              ENDDO
-            ENDDO
-            phi(1-Olx,sNy+1,bi,bj)=e2FillValue_RX
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=sNy+2,sNy+OLy
+              DO i=1-OLx,0
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
+             phi(1-Olx,sNy+1,k,bi,bj)=e2FillValue_RX
 #endif
+           ENDDO
           ENDIF
 
          ELSE
@@ -170,77 +199,89 @@ C---     Face 1,3,5:
 
 C--      North edge : shift i <- i-1
           IF ( exch2_isNedge(myTile) .EQ. 1 ) THEN
-           DO j=sNy+1,sNy+Oly
-            DO i=sNx+OLx,2-Olx,-1
-              phi(i,j,bi,bj)=phi(i-1,j,bi,bj)
+           DO k=1,myNz
+            DO j=sNy+1,sNy+Oly
+             DO i=sNx+OLx,2-Olx,-1
+               phi(i,j,k,bi,bj)=phi(i-1,j,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
 C-       North-East corner
            IF ( exch2_isEedge(myTile) .EQ. 1 ) THEN
-            DO i=sNx+2,sNx+OLx
-              j=sNy-sNx+i
-              phi(i,sNy+1,bi,bj)=phi(sNx+1,j,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=sNy+2,sNy+OLy
+            DO k=1,myNz
              DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=e2FillValue_RX
+               j=sNy-sNx+i
+               phi(i,sNy+1,k,bi,bj)=phi(sNx+1,j,k,bi,bj)
              ENDDO
-            ENDDO
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=sNy+2,sNy+OLy
+              DO i=sNx+2,sNx+OLx
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
 #endif
+            ENDDO
            ENDIF
           ENDIF
 C--      West edge : shift j <- j-1
           IF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
-           DO j=sNy+OLy,2-Oly,-1
-            DO i=1-Olx,0
-              phi(i,j,bi,bj)=phi(i,j-1,bi,bj)
+           DO k=1,myNz
+            DO j=sNy+OLy,2-Oly,-1
+             DO i=1-Olx,0
+               phi(i,j,k,bi,bj)=phi(i,j-1,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
 C-       North-west corner
            IF ( exch2_isNedge(myTile) .EQ. 1 ) THEN
-            phi(1,sNy+1,bi,bj)=phiNW(bi,bj)
-            DO j=sNy+2,sNy+OLy
-              i=sNy+2-j
-              phi(1,j,bi,bj)=phi(i,sNy+1,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=sNy+2,sNy+OLy
-             DO i=1-OLx,0
-              phi(i,j,bi,bj)=e2FillValue_RX
+            DO k=1,myNz
+             phi(1,sNy+1,k,bi,bj)=phiNW(k,bi,bj)
+             DO j=sNy+2,sNy+OLy
+               i=sNy+2-j
+               phi(1,j,k,bi,bj)=phi(i,sNy+1,k,bi,bj)
              ENDDO
-            ENDDO
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=sNy+2,sNy+OLy
+              DO i=1-OLx,0
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
 #endif
+            ENDDO
            ENDIF
 C-       South-West corner
            IF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
-            DO i=1-OLx,0
-              phi(i,1,bi,bj)=phi(1,i,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=1-OLy,0
+            DO k=1,myNz
              DO i=1-OLx,0
-              phi(i,j,bi,bj)=e2FillValue_RX
+               phi(i,1,k,bi,bj)=phi(1,i,k,bi,bj)
              ENDDO
-            ENDDO
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=1-OLy,0
+              DO i=1-OLx,0
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
 #endif
+            ENDDO
            ENDIF
           ENDIF
 C-       South-East corner
           IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &         exch2_isSedge(myTile) .EQ. 1 ) THEN
-            DO j=2-OLy,0
-              i=sNx+2-j
-              phi(sNx+1,j,bi,bj)=phi(i,1,bi,bj)
-            ENDDO
-#ifdef W2_FILL_NULL_REGIONS
-            DO j=1-OLy,0
-             DO i=sNx+2,sNx+OLx
-              phi(i,j,bi,bj)=e2FillValue_RX
+            DO k=1,myNz
+             DO j=2-OLy,0
+               i=sNx+2-j
+               phi(sNx+1,j,k,bi,bj)=phi(i,1,k,bi,bj)
              ENDDO
-            ENDDO
-            phi(sNx+1,1-Oly,bi,bj)=e2FillValue_RX
+#ifdef W2_FILL_NULL_REGIONS
+             DO j=1-OLy,0
+              DO i=sNx+2,sNx+OLx
+               phi(i,j,k,bi,bj)=e2FillValue_RX
+              ENDDO
+             ENDDO
+             phi(sNx+1,1-Oly,k,bi,bj)=e2FillValue_RX
 #endif
+            ENDDO
           ENDIF
 
 C---     end odd / even face number

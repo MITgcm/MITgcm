@@ -1,21 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xyz_rx.template,v 1.7 2005/11/04 01:31:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.1 2006/08/23 15:13:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
 CBOP
-
-C     !ROUTINE: EXCH2_UV_XYZ_RX
+C     !ROUTINE: EXCH2_UV_3D_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_UV_XYZ_RX(
-     U                       Uphi, Vphi, withSigns,
-     I                       myThid )
-      IMPLICIT NONE
+      SUBROUTINE EXCH2_UV_3D_RX(
+     U                           Uphi, Vphi,
+     I                           withSigns, myNz, myThid )
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_UV_XYZ_RX
+C     | SUBROUTINE EXCH2_UV_3D_RX
 C     | o Handle exchanges for _RX, 3-dimensional vector arrays.
 C     *==========================================================*
 C     | Vector arrays need to be rotated and interchaged for
@@ -24,6 +23,7 @@ C     | branches to support this.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -37,9 +37,11 @@ C     phi    :: Array with overlap regions are to be exchanged
 C               Note - The interface to EXCH_RX assumes that
 C               the standard Fortran 77 sequence association rules
 C               apply.
+C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
-      _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER myNz
+      _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       LOGICAL withSigns
       INTEGER myThid
 
@@ -47,7 +49,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
       INTEGER bi, bj, myTile, k, j
 #ifdef W2_FILL_NULL_REGIONS
       INTEGER i
@@ -60,7 +62,6 @@ CEOP
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface
@@ -89,7 +90,7 @@ C                begine.
 
         IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &       exch2_isSedge(myTile) .EQ. 1 ) THEN
-         DO k=1,Nr
+         DO k=1,myNz
 C         Uphi(snx+1,    0,k,bi,bj)= vPhi(snx+1,    1,k,bi,bj)
           DO j=1-olx,0
            Uphi(snx+1,    j,k,bi,bj)= vPhi(snx+(1-j),    1,k,bi,bj)
@@ -99,7 +100,7 @@ C         Uphi(snx+1,    0,k,bi,bj)= vPhi(snx+1,    1,k,bi,bj)
         IF ( withSigns ) THEN
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
-          DO k=1,Nr
+          DO k=1,myNz
 C          Uphi(snx+1,sny+1,k,bi,bj)=-vPhi(snx+1,sny+1,k,bi,bj)
            DO j=1,olx
             Uphi(snx+1,sny+j,k,bi,bj)=-vPhi(snx+j,sny+1,k,bi,bj)
@@ -109,7 +110,7 @@ C          Uphi(snx+1,sny+1,k,bi,bj)=-vPhi(snx+1,sny+1,k,bi,bj)
         ELSE
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
-          DO k=1,Nr
+          DO k=1,myNz
 C          Uphi(snx+1,sny+1,k,bi,bj)= vPhi(snx+1,sny+1,k,bi,bj)
            DO j=1,olx
             Uphi(snx+1,sny+j,k,bi,bj)= vPhi(snx+j,sny+1,k,bi,bj)
@@ -125,7 +126,7 @@ C        to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
         IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &       exch2_isSedge(myTile) .EQ. 1 ) THEN
 C        Zero SW corner points
-         DO K=1,Nr
+         DO K=1,myNz
 #ifdef W2_FILL_NULL_REGIONS
           DO J=1-OLx,0
            DO I=1-OLx,0
@@ -146,7 +147,7 @@ C        Zero SW corner points
         IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &       exch2_isNedge(myTile) .EQ. 1 ) THEN
 C        Zero NW corner points
-         DO K=1,Nr
+         DO K=1,myNz
 #ifdef W2_FILL_NULL_REGIONS
           DO J=sNy+1,sNy+OLy
            DO I=1-OLx,0
@@ -172,7 +173,7 @@ C        Zero NW corner points
         IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &       exch2_isSedge(myTile) .EQ. 1 ) THEN
 C        Zero SE corner points
-         DO K=1,Nr
+         DO K=1,myNz
 #ifdef W2_FILL_NULL_REGIONS
           DO J=1-OLx,0
            DO I=sNx+2,sNx+OLx
@@ -198,7 +199,7 @@ C        Zero SE corner points
         IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &       exch2_isNedge(myTile) .EQ. 1 ) THEN
 C        Zero NE corner points
-         DO K=1,Nr
+         DO K=1,myNz
 #ifdef W2_FILL_NULL_REGIONS
           DO J=sNy+1,sNy+OLy
            DO I=sNx+2,sNx+OLx

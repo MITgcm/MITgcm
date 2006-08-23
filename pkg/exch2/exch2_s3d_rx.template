@@ -1,18 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.1 2005/11/07 02:15:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.2 2006/08/23 15:13:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
 CBOP
-
 C     !ROUTINE: EXCH2_S3D_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH2_S3D_RX(
      U                       phi,
-     I                       myThid )
-      IMPLICIT NONE
+     I                       myNz, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -25,6 +23,7 @@ C     | of grid (cube or globally indexed) to be operated on.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -35,15 +34,17 @@ C     === Global data ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     phi    :: Array with overlap regions are to be exchanged
+C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
-      _RX phi(0:sNx+1,0:sNy+1,Nr,nSx,nSy)
+      INTEGER myNz
+      _RX phi(0:sNx+1,0:sNy+1,myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
 
 CEOP
 
@@ -53,7 +54,6 @@ CEOP
       OLs        = 1
       exchWidthX = 1
       exchWidthY = 1
-      myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface
