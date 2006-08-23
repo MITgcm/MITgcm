@@ -31,7 +31,7 @@
  deltaTmom=1200.0,
  deltaTtracer=1200.0,
  abEps=0.1,
- pChkptFreq=17000.0,
+ pChkptFreq=2592000.,
  chkptFreq=0.0,
  dumpFreq=2592000.0,
  monitorFreq=1.,
