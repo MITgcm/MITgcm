@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.9 2005/11/07 02:15:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.10 2006/08/23 15:15:17 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -11,13 +11,12 @@ RL_FILES = exch2_recv_rl1.F \
            exch2_send_rl1.F \
            exch2_send_rl2.F \
            exch2_uv_xy_rl.F \
-           exch2_uv_xyz_rl.F \
+           exch2_uv_3d_rl.F \
            exch2_xy_rl.F \
-           exch2_xyz_rl.F \
+           exch2_3d_rl.F \
            exch2_s3d_rl.F \
-           exch2_z_xy_rl.F \
-           exch2_uv_agrid_xy_rl.F \
-           exch2_uv_agrid_xyz_rl.F
+           exch2_z_3d_rl.F \
+           exch2_uv_agrid_3d_rl.F
 
 RS_FILES = exch2_recv_rs1.F \
            exch2_recv_rs2.F \
@@ -26,13 +25,12 @@ RS_FILES = exch2_recv_rs1.F \
            exch2_send_rs1.F \
            exch2_send_rs2.F \
            exch2_uv_xy_rs.F \
-           exch2_uv_xyz_rs.F \
+           exch2_uv_3d_rs.F \
            exch2_xy_rs.F \
-           exch2_xyz_rs.F \
+           exch2_3d_rs.F \
            exch2_s3d_rs.F \
-           exch2_z_xy_rs.F \
-           exch2_uv_agrid_xy_rs.F \
-           exch2_uv_agrid_xyz_rs.F
+           exch2_z_3d_rs.F \
+           exch2_uv_agrid_3d_rs.F
 
 R4_FILES = exch2_recv_r41.F \
            exch2_recv_r42.F \
@@ -41,13 +39,12 @@ R4_FILES = exch2_recv_r41.F \
            exch2_send_r41.F \
            exch2_send_r42.F \
            exch2_uv_xy_r4.F \
-           exch2_uv_xyz_r4.F \
+           exch2_uv_3d_r4.F \
            exch2_xy_r4.F \
-           exch2_xyz_r4.F \
+           exch2_3d_r4.F \
            exch2_s3d_r4.F \
-           exch2_z_xy_r4.F \
-           exch2_uv_agrid_xy_r4.F \
-           exch2_uv_agrid_xyz_r4.F
+           exch2_z_3d_r4.F \
+           exch2_uv_agrid_3d_r4.F
 
 R8_FILES = exch2_recv_r81.F \
            exch2_recv_r82.F \
@@ -56,18 +53,23 @@ R8_FILES = exch2_recv_r81.F \
            exch2_send_r81.F \
            exch2_send_r82.F \
            exch2_uv_xy_r8.F \
-           exch2_uv_xyz_r8.F \
+           exch2_uv_3d_r8.F \
            exch2_xy_r8.F \
-           exch2_xyz_r8.F \
+           exch2_3d_r8.F \
            exch2_s3d_r8.F \
-           exch2_z_xy_r8.F \
-           exch2_uv_agrid_xy_r8.F \
-           exch2_uv_agrid_xyz_r8.F
+           exch2_z_3d_r8.F \
+           exch2_uv_agrid_3d_r8.F
+
+OLD_FILES = exch2_xyz_rl.F exch2_xyz_rs.F exch2_xyz_r4.F exch2_xyz_r8.F \
+ exch2_uv_xyz_rl.F exch2_uv_xyz_rs.F exch2_uv_xyz_r4.F exch2_uv_xyz_r8.F \
+ exch2_z_xy_rl.F exch2_z_xy_rs.F exch2_z_xy_r4.F exch2_z_xy_r8.F \
+ exch2_uv_agrid_xy_rl.F exch2_uv_agrid_xy_rs.F exch2_uv_agrid_xy_r4.F exch2_uv_agrid_xy_r8.F \
+ exch2_uv_agrid_xyz_rl.F exch2_uv_agrid_xyz_rs.F exch2_uv_agrid_xyz_r4.F exch2_uv_agrid_xyz_r8.F
 
 all: $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
 
 clean:
-	-rm -f $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
+	-rm -f $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES) $(OLD_FILES)
 
 # exch2_recv_rx1
 exch2_recv_rl1.F: exch2_recv_rx1.template
@@ -139,6 +141,16 @@ exch2_uv_xy_r4.F: exch2_uv_xy_rx.template
 exch2_uv_xy_r8.F: exch2_uv_xy_rx.template
 	sed 's/RX/R8/g' exch2_uv_xy_rx.template > $@
 
+# exch2_uv_3d_rx
+exch2_uv_3d_rl.F: exch2_uv_3d_rx.template
+	sed 's/RX/RL/g' exch2_uv_3d_rx.template > $@
+exch2_uv_3d_rs.F: exch2_uv_3d_rx.template
+	sed 's/RX/RS/g' exch2_uv_3d_rx.template > $@
+exch2_uv_3d_r4.F: exch2_uv_3d_rx.template
+	sed 's/RX/R4/g' exch2_uv_3d_rx.template > $@
+exch2_uv_3d_r8.F: exch2_uv_3d_rx.template
+	sed 's/RX/R8/g' exch2_uv_3d_rx.template > $@
+
 # exch2_uv_xyz_rx
 exch2_uv_xyz_rl.F: exch2_uv_xyz_rx.template
 	sed 's/RX/RL/g' exch2_uv_xyz_rx.template > $@
@@ -158,6 +170,16 @@ exch2_xy_r4.F: exch2_xy_rx.template
 	sed 's/RX/R4/g' exch2_xy_rx.template > $@
 exch2_xy_r8.F: exch2_xy_rx.template
 	sed 's/RX/R8/g' exch2_xy_rx.template > $@
+
+# exch2_3d_rx
+exch2_3d_rl.F: exch2_3d_rx.template
+	sed 's/RX/RL/g' exch2_3d_rx.template > $@
+exch2_3d_rs.F: exch2_3d_rx.template
+	sed 's/RX/RS/g' exch2_3d_rx.template > $@
+exch2_3d_r4.F: exch2_3d_rx.template
+	sed 's/RX/R4/g' exch2_3d_rx.template > $@
+exch2_3d_r8.F: exch2_3d_rx.template
+	sed 's/RX/R8/g' exch2_3d_rx.template > $@
 
 # exch2_xyz_rx
 exch2_xyz_rl.F: exch2_xyz_rx.template
@@ -179,33 +201,23 @@ exch2_s3d_r4.F: exch2_s3d_rx.template
 exch2_s3d_r8.F: exch2_s3d_rx.template
 	sed 's/RX/R8/g' exch2_s3d_rx.template > $@
 
-# exch2_z_xy_rx
-exch2_z_xy_rl.F: exch2_z_xy_rx.template
-	sed 's/RX/RL/g' exch2_z_xy_rx.template > $@
-exch2_z_xy_rs.F: exch2_z_xy_rx.template
-	sed 's/RX/RS/g' exch2_z_xy_rx.template > $@
-exch2_z_xy_r4.F: exch2_z_xy_rx.template
-	sed 's/RX/R4/g' exch2_z_xy_rx.template > $@
-exch2_z_xy_r8.F: exch2_z_xy_rx.template
-	sed 's/RX/R8/g' exch2_z_xy_rx.template > $@
+# exch2_z_3d_rx
+exch2_z_3d_rl.F: exch2_z_3d_rx.template
+	sed 's/RX/RL/g' exch2_z_3d_rx.template > $@
+exch2_z_3d_rs.F: exch2_z_3d_rx.template
+	sed 's/RX/RS/g' exch2_z_3d_rx.template > $@
+exch2_z_3d_r4.F: exch2_z_3d_rx.template
+	sed 's/RX/R4/g' exch2_z_3d_rx.template > $@
+exch2_z_3d_r8.F: exch2_z_3d_rx.template
+	sed 's/RX/R8/g' exch2_z_3d_rx.template > $@
 
 # exch2_uv_agrid_xy.rx
-exch2_uv_agrid_xy_rl.F: exch2_uv_agrid_xy_rx.template
-	sed 's/RX/RL/g' exch2_uv_agrid_xy_rx.template > $@
-exch2_uv_agrid_xy_rs.F: exch2_uv_agrid_xy_rx.template
-	sed 's/RX/RS/g' exch2_uv_agrid_xy_rx.template > $@
-exch2_uv_agrid_xy_r4.F: exch2_uv_agrid_xy_rx.template
-	sed 's/RX/R4/g' exch2_uv_agrid_xy_rx.template > $@
-exch2_uv_agrid_xy_r8.F: exch2_uv_agrid_xy_rx.template
-	sed 's/RX/R8/g' exch2_uv_agrid_xy_rx.template > $@
-
-# exch2_uv_agrid_xyz.rx
-exch2_uv_agrid_xyz_rl.F: exch2_uv_agrid_xyz_rx.template
-	sed 's/RX/RL/g'  exch2_uv_agrid_xyz_rx.template > $@
-exch2_uv_agrid_xyz_rs.F: exch2_uv_agrid_xyz_rx.template
-	sed 's/RX/RS/g'  exch2_uv_agrid_xyz_rx.template > $@
-exch2_uv_agrid_xyz_r4.F: exch2_uv_agrid_xyz_rx.template
-	sed 's/RX/R4/g'  exch2_uv_agrid_xyz_rx.template > $@
-exch2_uv_agrid_xyz_r8.F: exch2_uv_agrid_xyz_rx.template
-	sed 's/RX/R8/g'  exch2_uv_agrid_xyz_rx.template > $@
+exch2_uv_agrid_3d_rl.F: exch2_uv_agrid_3d_rx.template
+	sed 's/RX/RL/g' exch2_uv_agrid_3d_rx.template > $@
+exch2_uv_agrid_3d_rs.F: exch2_uv_agrid_3d_rx.template
+	sed 's/RX/RS/g' exch2_uv_agrid_3d_rx.template > $@
+exch2_uv_agrid_3d_r4.F: exch2_uv_agrid_3d_rx.template
+	sed 's/RX/R4/g' exch2_uv_agrid_3d_rx.template > $@
+exch2_uv_agrid_3d_r8.F: exch2_uv_agrid_3d_rx.template
+	sed 's/RX/R8/g' exch2_uv_agrid_3d_rx.template > $@
 
