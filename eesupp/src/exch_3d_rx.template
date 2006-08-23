@@ -1,22 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_s3d_rx.template,v 1.2 2006/08/23 15:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_3d_rx.template,v 1.1 2006/08/23 15:18:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-C     !ROUTINE: EXCH_S3D_RX
+C     !ROUTINE: EXCH_3D_RX
 
 C     !INTERFACE:
-      SUBROUTINE EXCH_S3D_RX(
+      SUBROUTINE EXCH_3D_RX(
      U                       phi,
      I                       myNz, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_S3D_RX
-C     | o Handle Simple exchanges (= that ignore corners)
-C     |   for _RX, 3-dim scalar arrays with overlap size = 1
+C     | SUBROUTINE EXCH_3D_RX
+C     | o Handle exchanges for _RX, three-dim scalar arrays.
 C     *==========================================================*
 C     | Invoke appropriate exchange routine depending on type
 C     | of grid (cube or globally indexed) to be operated on.
@@ -36,7 +35,7 @@ C     phi    :: Array with overlap regions are to be exchanged
 C     myNz   :: 3rd dimension of array to exchange
 C     myThid :: My thread id.
       INTEGER myNz
-      _RX phi(0:sNx+1,0:sNy+1,myNz,nSx,nSy)
+      _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:myNz,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -48,16 +47,16 @@ C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 CEOP
 
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_S3D_RX( phi, myNz, myThid )
+      CALL EXCH2_3D_RX( phi, myNz, myThid )
       RETURN
 #endif
 
-      OLw        = 1
-      OLe        = 1
-      OLn        = 1
-      OLs        = 1
-      exchWidthX = 1
-      exchWidthY = 1
+      OLw        = OLx
+      OLe        = OLx
+      OLn        = OLy
+      OLs        = OLy
+      exchWidthX = OLx
+      exchWidthY = OLy
 C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface
@@ -68,12 +67,12 @@ C                begine.
        CALL EXCH_RX_CUBE( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ELSE
        CALL EXCH_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
