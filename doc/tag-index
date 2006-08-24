@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.718 2006/08/23 15:26:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.719 2006/08/24 20:41:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change controling S/R for writing pickup file (new S/R do_write_pickup)
+  and clean-up reading/writing of pickup files.
+o fix local version of read/write pickup (NH part) in rotating_tank/code
 o simplify EXCH interface:
  - change _XYZ_ interface to _3D_ subroutine (with 3rd dim in argument list)
  - not often used EXCH S/R (exch_z, exch_uv_agrid): keep only the _3D_ version
