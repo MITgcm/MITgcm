@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/read_pickup.F,v 1.1 2006/08/24 19:00:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/read_pickup.F,v 1.2 2006/08/24 20:36:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,8 +74,8 @@ C--     Read model fields
         IF ( nonHydrostatic ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
          CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
-c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
+c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
+         CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,2,myThid)
         ENDIF
 #endif
 
@@ -103,8 +103,8 @@ c     _EXCH_XYZ_R8(gvNM1 , myThid )
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          _EXCH_XYZ_R8(phi_nh, myThid )
-         _EXCH_XYZ_R8(gW    , myThid )
-c        _EXCH_XYZ_R8(gWNM1 , myThid )
+c        _EXCH_XYZ_R8(gW    , myThid )
+         _EXCH_XYZ_R8(gWNM1 , myThid )
         ENDIF
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/write_pickup.F,v 1.1 2006/08/24 19:00:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/write_pickup.F,v 1.2 2006/08/24 20:36:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,8 +111,8 @@ C--     Write model fields
          ENDIF
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh,1,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
-c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
+c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,2,myIter,myThid)
         ENDIF
 #endif
        _BARRIER
