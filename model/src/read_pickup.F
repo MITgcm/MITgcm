@@ -1,0 +1,240 @@
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.1 2006/08/24 01:14:19 jmc Exp $
+C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: READ_PICKUP
+C     !INTERFACE:
+      SUBROUTINE READ_PICKUP(
+     I                        myIter, myThid )
+
+C     !DESCRIPTION:
+C     This is the controlling routine for IO to read restart (or
+C     "pickup" or "checkpoint" ) files.  It calls routines from other
+C     packages (\textit{eg.} rw and mnc) to do the per-variable
+C     reads.
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
+#include "SURFACE.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "NH_VARS.h"
+#endif
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     myIter :: Iteration number
+C     myThid :: my Thread number Id.
+      INTEGER myIter
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+C     fp      :: pickup-file precision
+C     fn      :: Temp. for building file name.
+      INTEGER fp
+      INTEGER i, nj
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(10) suff
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER j
+#endif
+
+C     Suffix for pickup files
+      DO i = 1,MAX_LEN_FNAM
+        fn(i:i) = ' '
+      ENDDO
+      IF (pickupSuff .EQ. ' ') THEN
+        WRITE(suff,'(I10.10)') myIter
+      ELSE
+        WRITE(suff,'(A10)') pickupSuff
+      ENDIF
+      WRITE(fn,'(A,A10)') 'pickup.',suff
+
+C     Going to really do some IO. Make everyone except master thread wait.
+      _BARRIER
+
+      IF (pickup_read_mdsio) THEN
+
+        fp = precFloat64
+
+C       Read model fields
+        IF ( usePickupBeforeC54 ) THEN
+#ifndef ALLOW_ADAMSBASHFORTH_3
+          CALL READ_REC_3D_RL( fn, fp, Nr, uVel,  1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gU,    2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm1, 3, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, vVel,  4, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gV,    5, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm1, 6, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, theta, 7, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gT,    8, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm1, 9, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, salt, 10, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gS,   11, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm1,12, myIter,myThid )
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
+          CALL READ_REC_3D_RL( fn, fp,  1, etaN,
+     &                                      12*Nr+1, myIter,myThid )
+#ifdef NONLIN_FRSURF
+          IF (nonlinFreeSurf .GE. 0) THEN
+           CALL READ_REC_3D_RL(fn, fp,  1, etaH,
+     &                                      12*Nr+2, myIter,myThid )
+          ENDIF
+#endif
+        ELSE
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          j = 3
+          IF ( startFromPickupAB2 ) j = 2
+          nj = 0
+          CALL READ_REC_3D_RL( fn, fp, Nr, uVel, nj+1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,1),
+     &                                           nj+2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,2),
+     &                                           nj+j, myIter,myThid )
+          nj = j
+          CALL READ_REC_3D_RL( fn, fp, Nr, vVel, nj+1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,1),
+     &                                           nj+2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,2),
+     &                                           nj+j, myIter,myThid )
+          nj = 2*j
+          CALL READ_REC_3D_RL( fn, fp, Nr, theta,nj+1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,1),
+     &                                           nj+2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,2),
+     &                                           nj+j, myIter,myThid )
+          nj = 3*j
+          CALL READ_REC_3D_RL( fn, fp, Nr, salt, nj+1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,1),
+     &                                           nj+2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,2),
+     &                                           nj+j, myIter,myThid )
+          nj = 4*j
+#else /*  ALLOW_ADAMSBASHFORTH_3 */
+          CALL READ_REC_3D_RL( fn, fp, Nr, uVel,  1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm1, 2, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, vVel,  3, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm1, 4, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, theta, 5, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm1, 6, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, salt,  7, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm1, 8, myIter,myThid )
+          nj = 8
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
+          CALL READ_REC_3D_RL( fn,fp,1, etaN, nj*Nr+1, myIter,myThid )
+#ifdef EXACT_CONSERV
+          IF (exactConserv) THEN
+           CALL READ_REC_3D_RL(fn,fp,1,dEtaHdt,nj*Nr+2,myIter,myThid )
+          ENDIF
+          IF (nonlinFreeSurf .GT. 0) THEN
+           CALL READ_REC_3D_RL(fn,fp,1, etaH, nj*Nr+3, myIter,myThid )
+          ENDIF
+#endif
+        ENDIF
+
+        IF ( useDynP_inEos_Zc ) THEN
+          WRITE(fn,'(A,A10)') 'pickup_ph.',suff
+          CALL READ_REC_3D_RL( fn, fp, Nr, totPhiHyd,1,myIter,myThid )
+        ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( use3Dsolver ) THEN
+          WRITE(fn,'(A,A10)') 'pickup_nh.',suff
+          CALL READ_REC_3D_RL( fn, fp, Nr, phi_nh,  1, myIter,myThid )
+          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm1,   2, myIter,myThid )
+        ENDIF
+#endif
+
+      ENDIF
+
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. pickup_read_mnc) THEN
+        WRITE(fn,'(A)') 'pickup'
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
+#ifndef ALLOW_ADAMSBASHFORTH_3
+        CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',guNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gvNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gtNm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gsNm1, myThid)
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+C#ifdef NONLIN_FRSURF
+C        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
+C     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+C#endif
+#ifdef EXACT_CONSERV
+        IF (exactConserv) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'dEtaHdt',dEtaHdt,myThid)
+        ENDIF
+        IF (nonlinFreeSurf .GT. 0) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+        ENDIF
+#endif
+#ifdef ALLOW_NONHYDROSTATIC
+        IF (use3Dsolver) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
+c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'gWnm1', gwNm1, myThid)
+        ENDIF
+#endif
+        IF ( useDynP_inEos_Zc ) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd',totPhiHyd,myThid)
+        ENDIF
+      ENDIF
+#endif /*  ALLOW_MNC  */
+
+      _BARRIER
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Fill in edge regions
+      CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
+      CALL EXCH_3D_RL( theta, Nr, myThid )
+      CALL EXCH_3D_RL( salt,  Nr, myThid )
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,1),
+     &                    gvNm(1-Olx,1-Oly,1,1,1,1),.TRUE.,Nr,myThid )
+      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
+      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
+      CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,2),
+     &                    gvNm(1-Olx,1-Oly,1,1,1,2),.TRUE.,Nr,myThid )
+      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      CALL EXCH_UV_3D_RL( guNm1, gvNm1, .TRUE., Nr, myThid )
+      CALL EXCH_3D_RL( gtNm1, Nr, myThid )
+      CALL EXCH_3D_RL( gsNm1, Nr, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      CALL EXCH_XY_RL( etaN, myThid )
+      CALL EXCH_XY_RL( etaH, myThid )
+#ifdef EXACT_CONSERV
+      CALL EXCH_XY_RL( detaHdt, myThid )
+#endif
+
+      IF ( useDynP_inEos_Zc )
+     &  CALL EXCH_3D_RL( totPhiHyd, Nr, myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+      IF ( use3Dsolver ) THEN
+        CALL EXCH_3D_RL( phi_nh, Nr, myThid )
+        CALL EXCH_3D_RL( gwNm1,  Nr, myThid )
+      ENDIF
+#endif
+
+      RETURN
+      END
