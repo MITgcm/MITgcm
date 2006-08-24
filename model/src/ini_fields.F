@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.21 2006/03/17 04:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.22 2006/08/24 01:15:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,13 +39,10 @@ C     Set model variables to initial/restart conditions
 #endif
         IF (nonHydrostatic) CALL INI_PNH( myThid )
       ELSEIF ( .NOT.useOffLine ) THEN
-c       IF ( nIter0 .EQ. 0 ) THEN
-c         nIter0 = INT(startTime/deltaTClock )
-c       ENDIF
-        CALL READ_CHECKPOINT( nIter0, myThid )
+        CALL READ_PICKUP( nIter0, myThid )
 
 CEH3        IF (pickup_write_immed) THEN
-CEH3          CALL WRITE_CHECKPOINT( 
+CEH3          CALL WRITE_CHECKPOINT(
 CEH3     &         .TRUE., myCurrentTime, myCurrentIter, myThid)
 CEH3        ENDIF
 
