@@ -1,19 +1,27 @@
 
 C----------------------------------------
-C subroutine  read_checkpoint
+C subroutine  read_pickup
 C----------------------------------------
-CADJ SUBROUTINE read_checkpoint  INPUT  = 1,2
-CADJ SUBROUTINE read_checkpoint  OUTPUT =
-CADJ SUBROUTINE read_checkpoint  DEPEND = 1,2
-CADJ SUBROUTINE read_checkpoint  REQUIRED
+CADJ SUBROUTINE read_pickup  INPUT  = 1,2
+CADJ SUBROUTINE read_pickup  OUTPUT =
+CADJ SUBROUTINE read_pickup  DEPEND = 1,2
+CADJ SUBROUTINE read_pickup  REQUIRED
 
 C----------------------------------------
-C subroutine  write_checkpoint
+C subroutine  do_write_pickup
 C----------------------------------------
-CADJ SUBROUTINE write_checkpoint  INPUT  = 1,2,3,4
-CADJ SUBROUTINE write_checkpoint  OUTPUT =
-CADJ SUBROUTINE write_checkpoint  DEPEND = 1,2,3,4
-CADJ SUBROUTINE write_checkpoint  REQUIRED
+CADJ SUBROUTINE do_write_pickup  INPUT  = 1,2,3,4
+CADJ SUBROUTINE do_write_pickup  OUTPUT =
+CADJ SUBROUTINE do_write_pickup  DEPEND = 1,2,3,4
+CADJ SUBROUTINE do_write_pickup  REQUIRED
+
+C----------------------------------------
+C subroutine  write_pickup
+C----------------------------------------
+CADJ SUBROUTINE write_pickup  INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_pickup  OUTPUT =
+CADJ SUBROUTINE write_pickup  DEPEND = 1,2,3,4
+CADJ SUBROUTINE write_pickup  REQUIRED
 
 C----------------------------------------
 C subroutine  packages_write_pickup
