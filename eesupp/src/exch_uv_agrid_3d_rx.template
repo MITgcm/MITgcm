@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.1 2006/08/23 15:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.2 2006/08/25 23:46:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,7 @@ C     dummy[12]     :: copies of the vector components with haloes filled.
 #ifdef ALLOW_EXCH2
       CALL EXCH2_UV_AGRID_3D_RX(
      U                           Uphi, Vphi,
-     I                           withSigns, Nr, myThid )
+     I                           withSigns, myNz, myThid )
       RETURN
 #endif
 
@@ -98,7 +98,7 @@ C and/or the signs depending on which cube face we are located.
 C--    Loops on tile and level indices:
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k = 1,Nr
+         DO k = 1,myNz
 
 C First we need to copy the component info into dummy arrays
           DO j = 1-OLy,sNy+OLy
