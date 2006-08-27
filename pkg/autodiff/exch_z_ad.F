@@ -1,6 +1,6 @@
 C     /==========================================================\
-C     | SUBROUTINEs  adexch_z_xy_rs adexch_z_xyz_rs              |
-C     |              adexch_z_xy_rl adexch_z_xyz_rl              |
+C     | SUBROUTINEs  adexch_z_xy_rs adexch_z_3d_rs              |
+C     |              adexch_z_xy_rl adexch_z_3d_rl              |
 C     | o adjoint routines to exchange routines                  |
 C     |==========================================================|
 C     | These routines essentially are calling the original      |
@@ -133,12 +133,12 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_z_xyz_rs( 
-     I                         myThid
+      SUBROUTINE adexch_z_3d_rs( 
+     I                         myNz, myThid
      U                       , adphi
      &                       )
 C     /==========================================================\
-C     | SUBROUTINE ADEXCH_Z_XYZ_RS   adjoint of  EXCH_Z_XYZ_RS   |
+C     | SUBROUTINE ADEXCH_Z_3D_RS   adjoint of  EXCH_Z_3D_RS   |
 C     | o Handle exchanges for real*4, two-dimensional arrays.   |
 C     |==========================================================|
 C     === Global data ===
@@ -149,14 +149,14 @@ C     === Global data ===
 C     === Routine arguments ===
 C     phi    - Array who's overlap regions are to be exchanged
 C     myThid - My thread id.
-      _RS     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      INTEGER myNz
+      _RS     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -164,9 +164,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      mysNx      = sNx
-      mysNy      = sNy
-      myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface 
@@ -190,12 +187,12 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_z_xyz_rl( 
-     I                         myThid
+      SUBROUTINE adexch_z_3d_rl( 
+     I                         myNz, myThid
      U                       , adphi
      &                       )
 C     /==========================================================\
-C     | SUBROUTINE ADEXCH_Z_XYZ_RL   adjoint of  EXCH_Z_XYZ_RL   |
+C     | SUBROUTINE ADEXCH_Z_3D_RL   adjoint of  EXCH_Z_3D_RL   |
 C     | o Handle exchanges for real*8, two-dimensional arrays.   |
 C     |==========================================================|
 C     === Global data ===
@@ -206,14 +203,14 @@ C     === Global data ===
 C     === Routine arguments ===
 C     phi    - Array who's overlap regions are to be exchanged
 C     myThid - My thread id.
-      _RL     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      INTEGER myNz
+      _RL     adphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -221,9 +218,6 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-      mysNx      = sNx
-      mysNy      = sNy
-      myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
 C                However, the slow, simple exchange interface 

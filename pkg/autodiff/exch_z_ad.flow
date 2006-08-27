@@ -29,17 +29,17 @@ cadj SUBROUTINE exch_z_xy_rl DEPEND  = 2
 cadj SUBROUTINE exch_z_xy_rl ADNAME  = adexch_z_xy_rl
 cadj SUBROUTINE exch_z_xy_rl FTLNAME  = exch_z_xy_rl
 
-cadj SUBROUTINE exch_z_xyz_rs INPUT   = 1, 2
-cadj SUBROUTINE exch_z_xyz_rs OUTPUT  = 1
-cadj SUBROUTINE exch_z_xyz_rs ACTIVE  = 1
-cadj SUBROUTINE exch_z_xyz_rs DEPEND  = 2
-cadj SUBROUTINE exch_z_xyz_rs ADNAME  = adexch_z_xyz_rs
-cadj SUBROUTINE exch_z_xyz_rs FTLNAME = exch_z_xyz_rs
+cadj SUBROUTINE exch_z_3d_rs INPUT   = 1, 2, 3
+cadj SUBROUTINE exch_z_3d_rs OUTPUT  = 1
+cadj SUBROUTINE exch_z_3d_rs ACTIVE  = 1
+cadj SUBROUTINE exch_z_3d_rs DEPEND  = 2, 3
+cadj SUBROUTINE exch_z_3d_rs ADNAME  = adexch_z_3d_rs
+cadj SUBROUTINE exch_z_3d_rs FTLNAME = exch_z_3d_rs
 
-cadj SUBROUTINE exch_z_xyz_rl INPUT   = 1, 2
-cadj SUBROUTINE exch_z_xyz_rl OUTPUT  = 1
-cadj SUBROUTINE exch_z_xyz_rl ACTIVE  = 1
-cadj SUBROUTINE exch_z_xyz_rl DEPEND  = 2
-cadj SUBROUTINE exch_z_xyz_rl ADNAME  = adexch_z_xyz_rl
-cadj SUBROUTINE exch_z_xyz_rl FTLNAME = exch_z_xyz_rl
+cadj SUBROUTINE exch_z_3d_rl INPUT   = 1, 2, 3
+cadj SUBROUTINE exch_z_3d_rl OUTPUT  = 1
+cadj SUBROUTINE exch_z_3d_rl ACTIVE  = 1
+cadj SUBROUTINE exch_z_3d_rl DEPEND  = 2, 3
+cadj SUBROUTINE exch_z_3d_rl ADNAME  = adexch_z_3d_rl
+cadj SUBROUTINE exch_z_3d_rl FTLNAME = exch_z_3d_rl
 
