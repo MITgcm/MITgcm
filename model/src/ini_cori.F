@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.23 2006/07/13 03:00:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.24 2006/08/27 23:27:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,9 +126,10 @@ C    with 2 polar faces + 4 equatorials:
          ENDDO
         ENDIF
 
-        _EXCH_XY_R4(fCori,myThid)
-        CALL EXCH_Z_XY_RS(fCoriG,myThid)
-        _EXCH_XY_R4(fCoriCos,myThid)
+        CALL EXCH_XY_RS( fCori, myThid )
+        CALL EXCH_XY_RS( fCoriCos, myThid )
+c       CALL EXCH_Z_XY_RS( fCoriG, myThid )
+        CALL EXCH_Z_3D_RS( fCoriG, 1, myThid )
       ENDIF
 
 #ifdef ALLOW_MONITOR
