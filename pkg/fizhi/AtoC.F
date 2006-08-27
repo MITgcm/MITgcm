@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.7 2005/02/24 16:44:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.8 2006/08/27 18:27:36 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -23,11 +23,11 @@ c
 c Output: fieldout1   Field mapped to C-Grid (1st component)
 c         fieldout2   Field mapped to C-Grid (2nd component)
 c
-c Call:   exch_uv_agrid_xyz_RL - exchange on a-grid
+c Call:   exch_uv_agrid_3d_RL - exchange on a-grid
 c-----------------------------------------------------------------------
        implicit none
 #include "EEPARAMS.h"
-                                                                                     
+
        integer myThid, numlevs
        integer Nsx, Nsy
        integer idim1, idim2, jdim1, jdim2, im1, im2, jm1, jm2
@@ -42,7 +42,9 @@ c-----------------------------------------------------------------------
        _RL tmpfld2(idim1:idim2,jdim1:jdim2)
 
 c Call the exchange routine to fill in the halo regions
-       call exch_uv_agrid_xyz_RL (fieldin1,fieldin2,.true.,myThid)
+       CALL EXCH_UV_AGRID_3D_RL(
+     U                           fieldin1, fieldin2,
+     I                           .TRUE., numlevs, myThid )
 
 c Now take average 
        do bj = myByLo(myThid), myByHi(myThid)
