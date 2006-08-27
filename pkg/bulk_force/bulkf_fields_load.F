@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.11 2006/01/22 15:51:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.12 2006/08/27 18:26:17 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -187,13 +187,15 @@ c     aWght=DFLOAT( Iftm-Ifprd*(intime0-1) )/DFLOAT( Ifprd )
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
-       _BEGIN_MASTER(myThid)
+       _BARRIER
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
+       _BEGIN_MASTER(myThid)
        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
      &  'S/R BULKF_FIELDS_LOAD: Reading new data:',
      &  intime0, intime1, myIter, myTime
+       _END_MASTER(myThid)
 
       IF ( AirTempFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( AirTempFile,tair0,intime0,
@@ -286,7 +288,8 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
       ENDIF
 
-       _END_MASTER(myThid)
+C note: no need for extra barrier here since EXCH contains threads synchronization
+c      _BARRIER
 
        _EXCH_XY_R4(tair0 , myThid )
        _EXCH_XY_R4(tair1 , myThid )
@@ -304,8 +307,8 @@ c      _EXCH_XY_R4(uwind0, myThid )
 c      _EXCH_XY_R4(uwind1, myThid )
 c      _EXCH_XY_R4(vwind0, myThid )
 c      _EXCH_XY_R4(vwind1, myThid )
-       CALL EXCH_UV_AGRID_XY_RS( uwind0, vwind0, .TRUE., myThid )
-       CALL EXCH_UV_AGRID_XY_RS( uwind1, vwind1, .TRUE., myThid )
+       CALL EXCH_UV_AGRID_3D_RS( uwind0, vwind0, .TRUE., 1, myThid )
+       CALL EXCH_UV_AGRID_3D_RS( uwind1, vwind1, .TRUE., 1, myThid )
        _EXCH_XY_R4(rain0, myThid )
        _EXCH_XY_R4(rain1, myThid )
        _EXCH_XY_R4(runoff0, myThid )
