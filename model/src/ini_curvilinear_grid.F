@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.30 2006/07/26 23:52:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.31 2006/08/27 18:30:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,7 +119,7 @@ C-    Cell centered quantities
 
       CALL MDSREADFIELD('DXF.bin',readBinaryPrec,'RS',1,dxF,  1,myThid)
       CALL MDSREADFIELD('DYF.bin',readBinaryPrec,'RS',1,dyF,  1,myThid)
-      CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
+      CALL EXCH_UV_AGRID_3D_RS( dxF, dyF, .FALSE., 1, myThid )
 
       CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,rA,  1,myThid)
       _EXCH_XY_R4(rA,myThid )
@@ -145,8 +145,8 @@ cs-   this block needed by cubed sphere until we write more useful I/O routines
       yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
 cs-   end block
       ENDIF
-      CALL EXCH_Z_XY_RS(xG,myThid)
-      CALL EXCH_Z_XY_RS(yG,myThid)
+      CALL EXCH_Z_3D_RS( xG, 1, myThid )
+      CALL EXCH_Z_3D_RS( yG, 1, myThid )
 
       CALL MDSREADFIELD('DXV.bin',readBinaryPrec,'RS',1,dxV,  1,myThid)
       CALL MDSREADFIELD('DYU.bin',readBinaryPrec,'RS',1,dyU,  1,myThid)
@@ -154,8 +154,8 @@ cs-   this block needed by cubed sphere until we write more useful I/O routines
 C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
 cs!   this is not correct <= need paired exchange for dxv,dyu
       IF (.NOT.useCubedSphereExchange) THEN
-      CALL EXCH_Z_XY_RS(dxV,myThid)
-      CALL EXCH_Z_XY_RS(dyU,myThid)
+      CALL EXCH_Z_3D_RS( dxV, 1, myThid )
+      CALL EXCH_Z_3D_RS( dyU, 1, myThid )
       ELSE
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -184,7 +184,7 @@ cs-   end block
       CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,rAz,  1,myThid)
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-      CALL EXCH_Z_XY_RS(rAz , myThid )
+      CALL EXCH_Z_3D_RS( rAz, 1, myThid )
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         rAz(sNx+1,1,bi,bj)=rAz(1,1,bi,bj)
@@ -193,7 +193,7 @@ cs-   this block needed by cubed sphere until we write more useful I/O routines
       ENDDO
 cs-   end block
       ENDIF
-      CALL EXCH_Z_XY_RS(rAz,myThid)
+      CALL EXCH_Z_3D_RS( rAz, 1, myThid )
 
 C-    Staggered (u,v pairs) quantities
       CALL MDSREADFIELD('DXC.bin',readBinaryPrec,'RS',1,dxC,  1,myThid)
@@ -207,7 +207,7 @@ C-    Staggered (u,v pairs) quantities
       CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,dxG,  1,myThid)
       CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,dyG,  1,myThid)
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
-      CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
+      CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
       anglesAreSet = .FALSE.
 
 c     write(10) xC
@@ -374,18 +374,18 @@ C--   read Binary files:
 
       CALL EXCH_XY_RS(xC,myThid)
       CALL EXCH_XY_RS(yC,myThid)
-      CALL EXCH_UV_AGRID_XY_RS( dxF, dyF, .FALSE., myThid )
+      CALL EXCH_UV_AGRID_3D_RS( dxF, dyF, .FALSE., 1, myThid )
       CALL EXCH_XY_RS(rA,myThid )
-      CALL EXCH_Z_XY_RS(xG,myThid)
-      CALL EXCH_Z_XY_RS(yG,myThid)
+      CALL EXCH_Z_3D_RS( xG, 1, myThid )
+      CALL EXCH_Z_3D_RS( yG, 1, myThid )
 C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
-c     CALL EXCH_Z_XY_RS(dxV,myThid)
-c     CALL EXCH_Z_XY_RS(dyU,myThid)
-      CALL EXCH_Z_XY_RS(rAz,myThid)
+c     CALL EXCH_Z_3D_RS( dxV, 1, myThid )
+c     CALL EXCH_Z_3D_RS( dyU, 1, myThid )
+      CALL EXCH_Z_3D_RS( rAz, 1, myThid )
       CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
-      CALL EXCH_UV_AGRID_XY_RS(angleSinC,angleCosC,.TRUE.,myThid)
+      CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
 
 #endif /* OLD_GRID_IO */
 
