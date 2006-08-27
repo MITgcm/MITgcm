@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/write_pickup.F,v 1.2 2006/08/24 20:36:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/write_pickup.F,v 1.3 2006/08/27 23:13:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,10 +38,6 @@ C     == Global variables ===
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
 #endif
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -50,7 +46,7 @@ C                       be written.
 C     myThid :: Thread number for this instance of the routine.
 C     myIter :: Iteration number
 C     myTime :: Current time of simulation ( s )
-      LOGICAL permCheckPoint  
+      LOGICAL permCheckPoint
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
@@ -69,12 +65,11 @@ C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL lgf
 CEOP
 
-      permCheckPoint = .FALSE.
-      permCheckPoint=
-     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
-
 C--    Going to really do some IO. Make everyone except master thread wait.
        _BARRIER
+
+        prec = precFloat64
+        lgf  = globalFile
 
 C--     Write model fields
         IF ( permCheckPoint ) THEN
