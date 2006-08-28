@@ -1,7 +1,7 @@
 C     /==========================================================\
 C     | TAMC flow directives                                     |
-C     | for library subroutines    exch_z_xy_rs  exch_z_xyz_rs   |
-C     |                            exch_z_xy_rl  exch_z_xyz_rl   |
+C     | for library subroutines    exch_z_3d_rs                  |
+C     |                            exch_z_3d_rl                  |
 C     |==========================================================|
 C     | These directives are for standard adjoint code           |
 C     | generation (vector Jacobian product).                    |
@@ -15,19 +15,6 @@ C     | SUBROUTINE EXCH_Z_*_R* is linear                         |
 C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
 C     \==========================================================/
-cadj SUBROUTINE exch_z_xy_rs INPUT   = 1, 2
-cadj SUBROUTINE exch_z_xy_rs OUTPUT  = 1
-cadj SUBROUTINE exch_z_xy_rs ACTIVE  = 1
-cadj SUBROUTINE exch_z_xy_rs DEPEND  = 2
-cadj SUBROUTINE exch_z_xy_rs ADNAME  = adexch_z_xy_rs
-cadj SUBROUTINE exch_z_xy_rs FTLNAME = exch_z_xy_rs
-
-cadj SUBROUTINE exch_z_xy_rl INPUT   = 1, 2
-cadj SUBROUTINE exch_z_xy_rl OUTPUT  = 1
-cadj SUBROUTINE exch_z_xy_rl ACTIVE  = 1
-cadj SUBROUTINE exch_z_xy_rl DEPEND  = 2
-cadj SUBROUTINE exch_z_xy_rl ADNAME  = adexch_z_xy_rl
-cadj SUBROUTINE exch_z_xy_rl FTLNAME  = exch_z_xy_rl
 
 cadj SUBROUTINE exch_z_3d_rs INPUT   = 1, 2, 3
 cadj SUBROUTINE exch_z_3d_rs OUTPUT  = 1
