@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_diagnostics_init.F,v 1.1 2005/02/15 01:51:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_diagnostics_init.F,v 1.2 2006/08/29 17:03:16 dfer Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -76,6 +76,14 @@ C-    Shapiro Filter tendency:
         diagTitle = 'Meridional Wind Tendency due to Shapiro Filter'
         diagUnits = 'm/s^2           '
         WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'SHAP_dKE'
+        diagTitle = 
+     &  'Kinetic Energy Tendency due to Shapiro Filter (Mass Weighted)'
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 

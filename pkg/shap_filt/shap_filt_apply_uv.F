@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.7 2005/09/27 22:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.8 2006/08/29 17:03:16 dfer Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -54,6 +54,12 @@ C     bi,bj,k :: loop index
       INTEGER bi, bj, k
 #endif /* USE_OLD_SHAPIRO_FILTERS */
       CHARACTER*(MAX_LEN_MBUF) suff
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      INTEGER bi, bj, k, i, j
+      _RL  dKE_shap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_DIAGNOSTICS */
 
 CEOP
 
@@ -124,6 +130,33 @@ C               are directly proportional to Delta-U,V due to the Filter
      &                                                  0,1,1,myThid)
             CALL DIAGNOSTICS_FILL(Shap_tmpFld2,'SHAP_dV ',0,Nr,
      &                                                  0,1,1,myThid)
+            IF ( DIAGNOSTICS_IS_ON('SHAP_dKE',myThid) ) THEN
+              DO bj=myByLo(myThid),myByHi(myThid)
+               DO bi=myBxLo(myThid),myBxHi(myThid)
+                DO k=1,Nr
+                 DO j=1,sNy
+                  DO i=1,sNx
+                  dKE_shap(i,j) = 0.25*(
+     &             (
+     &               Shap_tmpFld1(i  ,j,k,bi,bj)*uFld(i  ,j,k,bi,bj)
+     &                *_hFacW(i ,j, k,bi,bj)*rAw(i ,j, bi,bj)
+     &              +Shap_tmpFld1(i+1,j,k,bi,bj)*uFld(i+1,j,k,bi,bj)
+     &                *_hFacW(i+1,j,k,bi,bj)*rAw(i+1,j,bi,bj)
+     &             )
+     &           + (
+     &               Shap_tmpFld2(i,j  ,k,bi,bj)*vFld(i,j  ,k,bi,bj)
+     &                *_hFacS(i,j  ,k,bi,bj)*rAs(i,j  ,bi,bj)
+     &              +Shap_tmpFld2(i,j+1,k,bi,bj)*vFld(i,j+1,k,bi,bj)
+     &                *_hFacS(i,j+1,k,bi,bj)*rAs(i,j+1,bi,bj)
+     &             )                   ) * recip_rA(i,j,bi,bj)
+                 ENDDO
+                ENDDO
+                CALL DIAGNOSTICS_FILL(dKE_shap,'SHAP_dKE',
+     &                                k,1,2,bi,bj,myThid)
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDIF
           ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
