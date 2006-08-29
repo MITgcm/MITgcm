@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.87 2006/07/31 20:48:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.88 2006/08/29 00:18:35 jmc Exp $
 #  $Name:  $
 #
 
@@ -536,28 +536,39 @@ runmodel()
 	printf 'runmodel in %s ...' $1 1>&2
 	# make output.txt
 	echo
-	rm -f run.log
         if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
-	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log
+	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_00
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
-	else
-            touch run.log
 	fi
         if test ! -x $EXECUTABLE ; then
+		rm -f run.log ; touch run.log
+		if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
 		echo " no executable:" $EXECUTABLE >> run.log
 		RETVAL=8
+		ENDVAL=-1
 	else
             if test $OUTPUTFILE -ot $EXECUTABLE ; then
+		rm -f run.log ; touch run.log
+		if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
 		( eval $COMMAND ) >> run.log 2>&1
 		RETVAL=$?
 	    else
-     		echo " $OUTPUTFILE is up to date " >> run.log 2>&1
 		RETVAL=0
+		if test -f run.log ; then
+		    if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
+     		    echo "---------->> $OUTPUTFILE is up to date " >> run.log 2>&1
+		else 
+		    touch run.log
+		    if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
+     		    echo "---------->> $OUTPUTFILE is up to date " >> run.log 2>&1
+     		    echo " no previous run.log: assume NORMAL END" >> run.log 2>&1
+		fi
 	    fi
+	    ENDVAL=`cat run.log | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
 	fi
-	# echo "COMMAND='$COMMAND'"
-	# echo "pwd='"`pwd`"'"
-	if test "x$RETVAL" = x0 ; then
+	rm -f run.log_00
+	#if test "x$RETVAL" = x0 ; then
+	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
 	    tail run.log
 	    echo successful 1>&2
 	    # === Reduce the size of the testing emails!
@@ -566,7 +577,7 @@ runmodel()
 	    return 0
 	else
 	    tail run.log
-	    echo failed 1>&2
+	    echo failed '(run:' $RETVAL ' end:' $ENDVAL ')' 1>&2
 	    cp run.log $CDIR"/run.log"
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 1
