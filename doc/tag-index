@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.720 2006/08/28 15:33:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.721 2006/08/29 18:10:03 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o diagnoctics: modify UVELPHI and VVELPHI to include hfac (i.e. mass-weighted)
 
 checkpoint58o_post
 o replace calls to EXCH_Z & EXCH_UV_AGRID: use the new _3D_ version ;
