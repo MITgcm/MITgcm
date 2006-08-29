@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.7 2004/12/14 04:37:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.8 2006/08/29 16:41:03 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -38,8 +38,9 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables in common block ==
 C     aim_uStress :: surface stress applied to zonal wind 
-      COMMON /LOCAL_AIM_TENDENCY_APPLY_U/ aim_uStress
+      COMMON /LOCAL_AIM_TENDENCY_APPLY_U/ aim_uStress,aim_KEuStr
       _RL aim_uStress(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL aim_KEuStr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     == Local variables ==
 C     i,j  - Loop counters
       INTEGER i, j
@@ -52,6 +53,7 @@ C-    Initialise diagnostic array aim_uStress
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          aim_uStress(i,j,bi,bj) = 0.
+         aim_KEuStr(i,j,bi,bj)  = 0.
         ENDDO
        ENDDO
       ENDIF
@@ -64,6 +66,10 @@ C        is not supposed to be applied in stratosphere
         DO i=iMin,iMax
           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &     -maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)/aim_dragStrato
+          aim_KEuStr(i,j,bi,bj) = aim_KEuStr(i,j,bi,bj)
+     &        -maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
+     &        *uVel(i,j,kLev,bi,bj)*hFacW(i,j,kLev,bi,bj)*drF(kLev)
+     &        /aim_dragStrato/gravity
         ENDDO
        ENDDO
       ELSEIF (kLev.eq.1) THEN
@@ -77,6 +83,7 @@ C        is not supposed to be applied in stratosphere
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
           aim_uStress(i,j,bi,bj) = uStr_tmp
+          aim_KEuStr(i,j,bi,bj)  = uStr_tmp * uVel(i,j,kLev,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -93,6 +100,7 @@ C        is not supposed to be applied in stratosphere
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
           aim_uStress(i,j,bi,bj) = uStr_tmp
+          aim_KEuStr(i,j,bi,bj)  = uStr_tmp * uVel(i,j,kLev,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -108,6 +116,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DIAGNOSTICS
       IF (usediagnostics .AND. kLev.EQ.Nr) THEN
         CALL DIAGNOSTICS_FILL( aim_uStress, 'UFLUX   ',
+     &                         0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL( aim_KEuStr,  'dKE_Ustr',
      &                         0,1,1,bi,bj,myThid)
       ENDIF
 #endif
@@ -151,8 +161,9 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables in common block ==
 C     aim_uStress :: surface stress applied to meridional wind 
-      COMMON /LOCAL_AIM_TENDENCY_APPLY_V/ aim_vStress
+      COMMON /LOCAL_AIM_TENDENCY_APPLY_V/ aim_vStress,aim_KEvStr
       _RL aim_vStress(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL aim_KEvStr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j
@@ -165,6 +176,7 @@ C-    Initialise diagnostic array aim_uStress
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          aim_vStress(i,j,bi,bj) = 0.
+         aim_KEvStr(i,j,bi,bj)  = 0.
         ENDDO
        ENDDO
       ENDIF
@@ -177,6 +189,10 @@ C        is not supposed to be applied in the stratosphere
         DO i=iMin,iMax
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &     -maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)/aim_dragStrato
+          aim_KEvStr(i,j,bi,bj) = aim_KEvStr(i,j,bi,bj) 
+     &        -maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
+     &        *vVel(i,j,kLev,bi,bj)*hFacS(i,j,kLev,bi,bj)*drF(kLev)
+     &        /aim_dragStrato/gravity
         ENDDO
        ENDDO
       ELSEIF (kLev.eq.1) THEN
@@ -190,6 +206,7 @@ C        is not supposed to be applied in the stratosphere
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
           aim_vStress(i,j,bi,bj) = vStr_tmp
+          aim_KEvStr(i,j,bi,bj)  = vStr_tmp * vVel(i,j,kLev,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -206,6 +223,7 @@ C        is not supposed to be applied in the stratosphere
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
           aim_vStress(i,j,bi,bj) = vStr_tmp
+          aim_KEvStr(i,j,bi,bj)  = vStr_tmp * vVel(i,j,kLev,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -221,6 +239,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DIAGNOSTICS
       IF (usediagnostics .AND. kLev.EQ.Nr) THEN
         CALL DIAGNOSTICS_FILL( aim_vStress, 'VFLUX   ',
+     &                         0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL( aim_KEvStr,  'dKE_Vstr',
      &                         0,1,1,bi,bj,myThid)
       ENDIF
 #endif
