@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/SIZE.h,v 1.1 2004/06/24 20:38:17 afe Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/SIZE.h,v 1.2 2006/08/30 19:51:11 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -37,7 +37,7 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  120,
-     &           sNy =  31,
+     &           sNy =  23,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,

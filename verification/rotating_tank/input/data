@@ -19,7 +19,7 @@
  gravity=9.81,
  rhoConst=1000.0,
  rhoNil=1000.0,
-# heatCapacity_Cp=3900.0,
+#heatCapacity_Cp=3900.0,
  rigidLid=.TRUE.,
  implicitFreeSurface=.FALSE.,
  eosType='LINEAR',
@@ -39,30 +39,28 @@
  &PARM03
  nIter0=0,
  nTimeSteps=20,
-# nTimeSteps=36000000,
+#nTimeSteps=36000000,
  deltaT=0.1,
  abEps=0.1,
  pChkptFreq=2.0,
- chkptFreq=2.0,
+#chkptFreq=2.0,
  dumpFreq=2.0,
  monitorFreq=0.1,
-# outputTypesInclusive=.TRUE.,
  &
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingCylindricalGrid=.TRUE.,
- usingCurvilinearGrid=.FALSE.,
- dXspacing=3,
+ dXspacing=3.,
  dYspacing=0.01,
  delZ=29*0.005,
+ phiMin=0.07,
  &
 
 # Input datasets
  &PARM05
- hydrogThetaFile='thetaPol.bin',
- bathyFile='bathyPol.bin',
- tCylIn  = 0
- tCylOut  = 20
+ hydrogThetaFile='thetaPolR.bin',
+ bathyFile='bathyPolR.bin',
+ tCylIn  = 0.,
+ tCylOut = 20.,
  &
