@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.5 2006/08/31 20:57:47 jmc Exp $
+C $Name:  $
+
 #include "EXF_OPTIONS.h"
 
        SUBROUTINE exf_interp_read(
@@ -55,6 +58,7 @@ C local variables
       real*4   global(nx_in,ny_in)
 #endif
 
+      _BARRIER
       _BEGIN_MASTER( myThid )
 
 #ifndef EXF_IREAD_USE_GLOBAL_POINTER
@@ -124,4 +128,5 @@ C broadcast to all processes
        call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
 #endif /* _BYTESWAPIO */
 
+      RETURN
       END
