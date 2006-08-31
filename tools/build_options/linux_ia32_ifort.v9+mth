@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.2 2006/08/15 16:11:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.3 2006/08/31 13:51:19 jmc Exp $
 # $Name:  $
 #
 #  jmc: copied from linux_ia32_ifort+authors_v9
@@ -29,7 +29,7 @@ if test "x$IEEE" = x ; then
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
     F90FLAGS='-r8 -i4 -w95 -W0 -WB -openmp -convert big_endian -assume byterecl'
 else
-    FOPTIM='-O0 -noalign'
+    FOPTIM='-O0 -noalign -check all'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -openmp -xN -pc64 -convert big_endian -assume byterecl'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
