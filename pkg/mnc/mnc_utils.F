@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.16 2006/05/25 15:51:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.17 2006/08/31 17:40:44 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -215,10 +215,11 @@ C     Find the vID
         k = 2 + 3*(i - 1)
         j = mnc_fv_ids(indf,k)
         n = ILNBLNK(mnc_v_names(j))
-        IF ((n .EQ. lenv) 
-     &       .AND. (mnc_v_names(j)(1:n) .EQ. vname(1:n))) THEN
+        IF ( n.EQ.lenv ) THEN
+         IF ( mnc_v_names(j)(1:n).EQ.vname(1:n) ) THEN
           ind_fv_ids = k
           GOTO 10
+         ENDIF
         ENDIF
       ENDDO
       ind_fv_ids = -1
