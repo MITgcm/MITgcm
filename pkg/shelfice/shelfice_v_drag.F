@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.4 2006/08/14 17:29:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.5 2006/09/01 10:17:17 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -76,7 +76,7 @@ CML        IF (k.EQ.kTop) maskUp=0.
         vDragTerms(i,j)=
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &   *( 
-     &      2.*KappaRV(i,j,kUpC)*rdrckp1*viscFac
+     &     - 2.*KappaRV(i,j,kUpC)*rdrckp1*viscFac
      &     + bottomDragLinear
      &    )*(1.-maskUp)*vFld(i,j)
         IF ( (KE(i,j)+KE(i,j-1)) .NE. 0. ) THEN
