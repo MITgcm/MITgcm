@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.2 2006/02/10 10:00:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.3 2006/09/01 10:15:33 mlosch Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -37,27 +37,30 @@ C     So far, SHELFICE works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
       ENDIF
 
-C     SHELFICE doesmay not work with many other packages
-#ifdef ALLOW_NONHYDROSTATIC
-      IF ( nonHydrostatic ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'Currently SHELFICE and nonHydrostatic cannot be turned'
-         CALL PRINT_ERROR( msgBuf , 1)
-         WRITE(msgBuf,'(A)') 'on at the same time'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
-      ENDIF
-#endif /* ALLOW_NONHYDROSTATIC */
+CML#ifdef ALLOW_NONHYDROSTATIC
+CML      IF ( nonHydrostatic ) THEN
+CML         WRITE(msgBuf,'(A)')
+CML     &      'Currently SHELFICE and nonHydrostatic cannot be turned'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         WRITE(msgBuf,'(A)') 'on at the same time'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+CML      ENDIF
+CML#endif /* ALLOW_NONHYDROSTATIC */
 
-#ifdef ALLOW_KPP
-CMLC     SHELFICE may not work with many other packages
+C     SHELFICE may not work with many other packages, 
+C     e.g. vertical mixing schemes, in particular KPP will not work properly,
+C     as KPP requires surface fluxes at the surface, whereas shelfice will
+C     provide interfacial fluxes at some depth. Richardson flux number based 
+C     schemes such as Packanowski-Philander (PP81) should be no problem.
+CML#ifdef ALLOW_KPP
 CML      IF ( useKPP ) THEN
 CML         WRITE(msgBuf,'(A)')
 CML     &      'SHELFICE and KPP cannot be turned on at the same time'
 CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
 CML      ENDIF
-#endif ALLOW_KPP
+CML#endif ALLOW_KPP
 
 #ifndef ALLOW_ISOMIP_TD
       IF ( useISOMIPTD ) THEN
