@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code/SIZE.h_mpi,v 1.1 2006/09/01 16:11:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code/SIZE.h_mpi,v 1.2 2006/09/02 10:03:51 mlosch Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -42,8 +42,8 @@ C     Nr  - No. points in Z for full process domain.
      &           OLy =   3,
      &           nSx =   1,
      &           nSy =   1,
-     &           nPx =   2,
-     &           nPy =   1,
+     &           nPx =   1,
+     &           nPy =   2,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =  30)
