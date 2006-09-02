@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.32 2006/09/02 21:27:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.33 2006/09/02 21:31:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,7 @@ C     myThid -  Number of this instance of INI_CURVILINEAR_GRID
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi,bj, myIter
+      INTEGER bi,bj
       INTEGER I,J
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL anglesAreSet
