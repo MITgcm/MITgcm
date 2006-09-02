@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.24 2006/08/01 23:16:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.25 2006/09/02 22:47:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -861,7 +861,7 @@ C      Data
            IF ( 10*((iBuf-7)/10) .EQ. iBuf-7 ) THEN
             WRITE(plotBuf(iBuf:),'(A)')  '|'
            ELSE
-            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(iDx,10)
+            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(ABS(iDx),10)
            ENDIF
           ENDDO
          ENDDO
