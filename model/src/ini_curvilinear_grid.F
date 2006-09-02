@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.31 2006/08/27 18:30:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.32 2006/09/02 21:27:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -408,45 +408,24 @@ c     CALL WRITE_FULLARRAY_RL('yG',yG,1,0,0,0,myThid)
 
 C--   Now let's look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
-         myIter = 1
-         CALL PLOT_FIELD_XYRL( xC      , 'Current xC      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( yC      , 'Current yC      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dxF     , 'Current dxF     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dyF     , 'Current dyF     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( rA      , 'Current rA      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( xG      , 'Current xG      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( yG      , 'Current yG      ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dxV     , 'Current dxV     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dyU     , 'Current dyU     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( rAz     , 'Current rAz     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dxC     , 'Current dxC     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dyC     , 'Current dyC     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( rAw     , 'Current rAw     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( rAs     , 'Current rAs     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dxG     , 'Current dxG     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL( dyG     , 'Current dyG     ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL(angleCosC, 'Current AngleCS ' ,
-     &        myIter, myThid )
-         CALL PLOT_FIELD_XYRL(angleSinC, 'Current AngleSN ' ,
-     &        myIter, myThid )
+        CALL PLOT_FIELD_XYRS( xC      , 'Current xC      ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( yC      , 'Current yC      ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dxF     , 'Current dxF     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dyF     , 'Current dyF     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( rA      , 'Current rA      ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( xG      , 'Current xG      ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( yG      , 'Current yG      ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dxV     , 'Current dxV     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dyU     , 'Current dyU     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( rAz     , 'Current rAz     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dxC     , 'Current dxC     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dyC     , 'Current dyC     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( rAw     , 'Current rAw     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( rAs     , 'Current rAs     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dxG     , 'Current dxG     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS( dyG     , 'Current dyG     ', 0, myThid )
+        CALL PLOT_FIELD_XYRS(angleCosC, 'Current AngleCS ', 0, myThid )
+        CALL PLOT_FIELD_XYRS(angleSinC, 'Current AngleSN ', 0, myThid )
       ENDIF
 
       RETURN
