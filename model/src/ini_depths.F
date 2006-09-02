@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.36 2006/08/04 01:18:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.37 2006/09/02 23:36:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,8 +121,11 @@ C- end setup R_low in the interior
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_R4(R_low, myThid )
 
+      IF ( debugLevel.GE.debLevB ) THEN
 c      PRINT *, ' Calling plot field', myThid
-      CALL PLOT_FIELD_XYRS(R_low,'Bottom depths (ini_depths)',1,myThid)
+       CALL PLOT_FIELD_XYRS( R_low, 'Bottom depths (ini_depths)',
+     &                       -1, myThid )
+      ENDIF
 c     CALL WRITE_FLD_XY_RS( 'R_low' ,' ', R_low, 0,myThid)
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -210,7 +213,7 @@ C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  Ro_surf(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
-           IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. )
+           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
      &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
           ENDDO
          ENDDO
@@ -227,7 +230,7 @@ C          Test for eastern edge
 c          IF ( iG .EQ. Nx )  R_low(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
-           IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. )
+           IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
      &       R_low(I,J,bi,bj) = Ro_SeaLevel
           ENDDO
          ENDDO
@@ -235,6 +238,11 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
        ENDDO
       ENDIF
 
+      IF ( debugLevel.GE.debLevB ) THEN
+       CALL PLOT_FIELD_XYRS( Ro_surf,
+     &           'Surface reference r-position (ini_depths)',
+     &           -1, myThid )
+      ENDIF
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 
 #ifdef ALLOW_SHELFICE
