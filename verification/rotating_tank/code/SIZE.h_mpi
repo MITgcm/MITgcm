@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/SIZE.h,v 1.3 2006/09/03 23:31:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/SIZE.h_mpi,v 1.1 2006/09/03 23:31:11 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -40,9 +40,9 @@ C     Nr  - No. points in Z for full process domain.
      &           sNy =  23,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   4,
+     &           nSx =   2,
      &           nSy =   1,
-     &           nPx =   1,
+     &           nPx =   2,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
