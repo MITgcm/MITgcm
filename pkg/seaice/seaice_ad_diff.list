@@ -9,6 +9,8 @@ seaice_advection.f
 seaice_advdiff.f
 seaice_check.f
 seaice_do_diags.f
+seaice_exch.f
+seaice_exch_uv.f
 seaice_get_forcing.f
 seaice_init.f
 seaice_model.f
