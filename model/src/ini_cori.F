@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.24 2006/08/27 23:27:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.25 2006/09/06 02:44:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,7 +16,9 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+#ifndef ALLOW_AUTODIFF_TAMC
+# include "EESUPPORT.h"
+#endif
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_MNC
@@ -132,6 +134,7 @@ c       CALL EXCH_Z_XY_RS( fCoriG, myThid )
         CALL EXCH_Z_3D_RS( fCoriG, 1, myThid )
       ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_MONITOR
 #ifdef ALLOW_USE_MPI
       IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
@@ -179,6 +182,7 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
       ENDIF
 #endif /* ALLOW_USE_MPI */
 #endif /* ALLOW_MONITOR */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
       END

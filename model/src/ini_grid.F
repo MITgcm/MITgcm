@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.28 2006/07/25 22:23:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.29 2006/09/06 02:44:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,7 +19,9 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+#ifndef ALLOW_AUTODIFF_TAMC
+# include "EESUPPORT.h"
+#endif
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_MNC
@@ -82,6 +84,7 @@ C     Set up horizontal grid and coordinate system
         _END_MASTER(myThid)
       ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_MONITOR
 #ifdef ALLOW_USE_MPI
       IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
@@ -146,6 +149,7 @@ C     debugging)
       ENDIF
 #endif /* ALLOW_USE_MPI */
 #endif /* ALLOW_MONITOR */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
       END
