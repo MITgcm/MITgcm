@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.77 2006/07/11 23:58:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.78 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -446,9 +446,16 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
+
+#ifdef ALLOW_ATM2D
+        CALL TIMER_START('FORWARD_STEP_ATM2D  [THE_MAIN_LOOP]',mythid)
+        CALL FORWARD_STEP_ATM2D( iloop, mytime, myiter, mythid )
+        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [THE_MAIN_LOOP]',mythid)
+#else
         CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
         CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
         CALL AUTODIFF_INADMODE_SET( myThid )

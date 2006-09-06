@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.35 2006/08/15 04:24:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.36 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,6 +67,7 @@ C     data.pkg namelists
      &          useSEAICE,
      &          useShelfIce,
      &          useThSIce,
+     &          useATM2D,
      &          useBulkForce,
      &          useEBM,
      &          usefizhi,
@@ -119,6 +120,7 @@ C--   Default package configuration
       useSEAICE       =.FALSE.
       useShelfIce     =.FALSE.
       useThSIce       =.FALSE.
+      useATM2D        =.FALSE.
       useBulkForce    =.FALSE.
       usefizhi        =.FALSE.
       usegridalt      =.FALSE.

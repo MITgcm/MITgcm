@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.29 2006/06/15 16:27:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.30 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -162,7 +162,7 @@ CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
       ENDIF
 #endif /* ALLOW_SEAICE */
 
-#ifdef ALLOW_THSICE
+#if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )

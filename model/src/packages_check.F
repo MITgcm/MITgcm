@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.36 2006/08/15 04:24:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.37 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -93,6 +93,10 @@ CEOP
 
 #ifndef ALLOW_THSICE
       IF (useThSIce) CALL PACKAGES_CHECK_ERROR('THSICE', myThid)
+#endif
+
+#ifndef ALLOW_ATM2D
+      IF (useATM2D) CALL PACKAGES_CHECK_ERROR('ATM2D', myThid)
 #endif
 
 #ifndef ALLOW_AIM

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.53 2006/08/15 15:02:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.54 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,8 @@ C       |
 C       |-- MYPACKAGE_INIT_FIXED
 C       |
 C       |-- CPL_INIT_FIXED
+C       |
+C       |-- ATM2D_INIT_FIXED
 C       |
 C       |-- DIAGNOSTICS_INIT_FIXED
 C       |
@@ -277,6 +279,10 @@ C     IF (useDIC)
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )
+#endif
+
+#ifdef ALLOW_ATM2D
+      IF ( useAtm2d ) CALL ATM2D_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS

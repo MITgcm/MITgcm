@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.1 2006/08/24 01:08:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.2 2006/09/06 15:30:25 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,7 +87,7 @@ C-    write a pickup for each package which need it to restart
      I                permPickup, myTime, myIter, myThid )
 
 C-    write main model pickup
-        IF ( .NOT.useOffLine ) THEN
+        IF ( .NOT.useOffLine .AND. .NOT.useATM2D ) THEN
            CALL WRITE_PICKUP(
      I                permPickup, myTime, myIter, myThid )
         ENDIF
