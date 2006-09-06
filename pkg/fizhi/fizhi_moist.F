@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.35 2005/06/17 16:51:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.36 2006/09/06 16:56:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -44,7 +44,7 @@ c Local Variables
 c ---------------
       integer    ncrnd,nsecf
 
-      _RL       fracqq, dum
+      _RL       fracqq, rh, dum
       integer    snowcrit
       parameter (fracqq = 0.1)
       _RL one
@@ -169,14 +169,16 @@ C Minimum Large-Scale Cloud Fraction at rhcrit
       alpha  = 0.80         
 C Difference in fraction between SR and LS Threshold
       offset = 0.10         
-C Large-Scale Relative Humidity Threshold in PBL
-      rhmin  = 0.90         
+C Large-Scale Relative Humidity Threshold above 600 mb
+      rhmin  = 0.95         
 C Maximum Cloud Fraction associated with RAS
       rasmax = 1.00         
 
-          nn = 3*3600.0/tmstp + 1
+cc        nn = 3*3600.0/tmstp + 1
+          nn = 3*1800.0/tmstp + 1
 C Threshold for Cloud Fraction Memory
-      cldmin = rasmax*(1.0-tmstp/3600.)**nn   
+cc    cldmin = rasmax*(1.0-tmstp/3600.)**nn   
+      cldmin = rasmax*(1.0-tmstp/1800.)**nn   
 C Threshold for Cloud Liquid Water Memory
       watmin = 1.0e-8                         
 
@@ -343,7 +345,7 @@ C **********************************************************************
 C **********************************************************************
 C ****        SETUP FOR RAS CUMULUS PARAMETERIZATION                ****
 C **********************************************************************
-
+C RAS works with real theta - convert from model theta
       DO L = 1,lm
       DO I = 1,ISTRIP
              TH(I,L) = TH(I,L) * P0KAPPA
@@ -453,22 +455,22 @@ C Pressure    at top of sub-cloud layer
       tmp2(i,2) = tmp4(i,nsubcl)                          
       enddo
 
-C  CHANGED THIS: no RH requirement for RAS
-c     call vqsat ( tmp2(num,1),tmp2(num,2),tmp2(num,3),
-c    .             dum,.false.,nindeces(nsubcl) )
-c     do i=num,num+nindeces(nsubcl)-1
-c     rh =  SHL(I,NSUBCL) / tmp2(i,3)
-c       if (rh .le. 0.85) then
-c         rhfrac(i) = 0.
-c       else if (rh .ge. 0.95) then
-c         rhfrac(i) = 1.
-c       else
-c         rhfrac(i) = (rh-0.85)*10.
-c       endif
-c     enddo
       do i=num,num+nindeces(nsubcl)-1
-        rhfrac(i) = 1.
+       call qsat (tmp2(i,1),tmp2(i,2),tmp2(i,3),dum,.false.)
+       rh =  SHL(I,NSUBCL) / tmp2(i,3)
+       if (rh .le. 0.85) then
+         rhfrac(i) = 0.
+       else if (rh .ge. 0.95) then
+         rhfrac(i) = 1.
+       else
+         rhfrac(i) = (rh-0.85)*10.
+       endif
       enddo
+CC  Uncomment out the previous code, comment out this to
+CC          activate the RH threshold for convection (trigger)
+CC    do i=num,num+nindeces(nsubcl)-1
+CC      rhfrac(i) = 1.
+CC    enddo
 
 C  Compute RH threshold for Large-scale condensation
 C  Used in Slingo-Ritter clouds as well - define offset between SR and LS
@@ -867,6 +869,32 @@ c -------------------------------
       enddo
       endif
 
+c Moist Processes U-tendency
+c ----------------------------
+      if(diagnostics_is_on('MOISTU  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j)=dumoist(i,j,L)*sday
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'MOISTU  ',L,1,3,bi,bj,myid)
+      enddo
+      endif
+
+c Moist Processes V-tendency
+c ----------------------------
+      if(diagnostics_is_on('MOISTV  ',myid) ) then
+       do L=1,lm
+       do j=1,jm
+       do i=1,im
+        tmpdiag(i,j)=dvmoist(i,j,L)*sday
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'MOISTV  ',L,1,3,bi,bj,myid)
+      enddo
+      endif
+
 c Cloud Mass Flux
 c ---------------
       if(diagnostics_is_on('CLDMAS  ',myid) ) then
@@ -981,8 +1009,10 @@ C **********************************************************************
 
 c Set Moist-Process Memory Coefficient
 c ------------------------------------
-      cldras_mem = 1.0-tmstp/ 3600.0
-      cldlsp_mem = 1.0-tmstp/(3600.0*3)
+C     cldras_mem = 1.0-tmstp/ 3600.0
+      cldras_mem = 1.0-tmstp/ 1800.0
+C     cldlsp_mem = 1.0-tmstp/(3600.0*3)
+      cldlsp_mem = 1.0-tmstp/(1800.0)
 
       do L = 1,lm
       do i = 1,im*jm
@@ -1193,7 +1223,9 @@ CCC   FRAC = 0.5/dt
       KM1    = K  - 1
       KP1    = K  + 1
 C we want the ras adjustment time scale to be one hour (indep of dt)
-      RASBLF = 1./3600.
+C     RASBLF = 1./3600.
+C we want the ras adjustment time scale to be one half hour (indep of dt)
+      RASBLF = 1./1800.
 C
        KPRV  = KM1
 C Removed KRMAX parameter
@@ -2309,7 +2341,7 @@ C Argument List declarations
       _RL rhcrit(irun,nlay)
 C
 C Local Variables
-      _RL zm1p04,zero,two89,zp44,zp01,half,zp578,one,thousand,z3600
+      _RL zm1p04,zero,two89,zp44,zp01,half,zp578,one,z3600,z1800
       _RL zp1,zp001
       PARAMETER (ZM1P04 = -1.04E-4 )
       PARAMETER (ZERO = 0.)
@@ -2321,8 +2353,8 @@ C Local Variables
       PARAMETER ( HALF= 0.5)
       PARAMETER ( ZP578 = 0.578 )
       PARAMETER ( ONE = 1.)
-      PARAMETER ( THOUSAND = 1000.)
       PARAMETER ( Z3600 = 3600.)
+      PARAMETER ( Z1800 = 1800.)
 C
       _RL EVP9(IRUN,NLAY)
       _RL water(irun),crystal(irun)
@@ -2351,7 +2383,8 @@ cfpp$ expand (qsat)
        IRNLAY = IRUN*NLAY
        IRNLM1 = IRUN*(NLAY-1)
  
-       RPHF = Z3600/tmscl
+C      RPHF = Z3600/tmscl
+       RPHF = Z1800/tmscl
  
        ELOCP   = alhl/cp
        CPOG    = cp/gravity
