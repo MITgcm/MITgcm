@@ -1,3 +1,21 @@
+C     /==========================================================\
+C     | TAMC flow directives                                     |
+C     | for library subroutines    exch_*_3d_rs                  |
+C     |                            exch_*_3d_rl                  |
+C     |==========================================================|
+C     | These directives are for standard adjoint code           |
+C     | generation (vector Jacobian product).                    |
+C     |   tamc -reverse  ....                                    |
+C     |                                                          |
+C     | written and tested by Ralf Giering, Jan. 14th 1999       |
+C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
+C     |==========================================================|
+C     | SUBROUTINE EXCH_*_R* is linear                           |
+C     | only the array argument is active                        |
+C     | only myThid is required for the adjoint subroutine       |
+C     \==========================================================/
+
 CADJ SUBROUTINE EXCH_3D_RL INPUT    = 1, 2, 3
 CADJ SUBROUTINE EXCH_3D_RL OUTPUT   = 1
 CADJ SUBROUTINE EXCH_3D_RL ACTIVE   = 1
@@ -25,4 +43,18 @@ CADJ SUBROUTINE EXCH_UV_3D_RS ACTIVE  = 1, 2
 CADJ SUBROUTINE EXCH_UV_3D_RS DEPEND  = 3, 4, 5
 CADJ SUBROUTINE EXCH_UV_3D_RS ADNAME  = ADEXCH_UV_3D_RS
 CADJ SUBROUTINE EXCH_UV_3D_RS FTLNAME = EXCH_UV_3D_RS
+
+cadj SUBROUTINE exch_z_3d_rs INPUT   = 1, 2, 3
+cadj SUBROUTINE exch_z_3d_rs OUTPUT  = 1
+cadj SUBROUTINE exch_z_3d_rs ACTIVE  = 1
+cadj SUBROUTINE exch_z_3d_rs DEPEND  = 2, 3
+cadj SUBROUTINE exch_z_3d_rs ADNAME  = adexch_z_3d_rs
+cadj SUBROUTINE exch_z_3d_rs FTLNAME = exch_z_3d_rs
+
+cadj SUBROUTINE exch_z_3d_rl INPUT   = 1, 2, 3
+cadj SUBROUTINE exch_z_3d_rl OUTPUT  = 1
+cadj SUBROUTINE exch_z_3d_rl ACTIVE  = 1
+cadj SUBROUTINE exch_z_3d_rl DEPEND  = 2, 3
+cadj SUBROUTINE exch_z_3d_rl ADNAME  = adexch_z_3d_rl
+cadj SUBROUTINE exch_z_3d_rl FTLNAME = exch_z_3d_rl
 
