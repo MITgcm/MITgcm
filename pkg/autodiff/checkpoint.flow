@@ -31,3 +31,11 @@ CADJ SUBROUTINE packages_write_pickup  OUTPUT =
 CADJ SUBROUTINE packages_write_pickup  DEPEND = 1,2,3,4
 CADJ SUBROUTINE packages_write_pickup  REQUIRED
 
+C----------------------------------------
+C subroutine  write_checkpoint
+C----------------------------------------
+CADJ SUBROUTINE write_checkpoint  INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_checkpoint  OUTPUT =
+CADJ SUBROUTINE write_checkpoint  DEPEND = 1,2,3,4
+CADJ SUBROUTINE write_checkpoint  REQUIRED
+
