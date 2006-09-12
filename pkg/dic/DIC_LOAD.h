@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.3 2005/10/13 16:25:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.4 2006/09/12 19:58:01 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -12,9 +12,8 @@ C $Name:  $
 #ifdef ALLOW_FE
      &    ,feinput0,feinput1
 #endif
-           _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+              _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
               _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-	      _RS wind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

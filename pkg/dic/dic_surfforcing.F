@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.10 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.11 2006/09/12 19:58:02 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -140,6 +140,7 @@ C first correct pCO2at for surface atmos pressure
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
 c find exchange coefficient
 c  account for schmidt number and and varible piston velocity
+              pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5
               Kwexch(i,j) =
      &             pisvel(i,j,bi,bj)
      &             / sqrt(SchmidtNoDIC(i,j)/660.0)

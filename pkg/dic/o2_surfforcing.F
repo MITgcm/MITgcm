@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.9 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.10 2006/09/12 19:58:02 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -85,6 +85,7 @@ C calculate SCHMIDT NO. for O2
 
 C Determine surface flux of O2 
 C exchange coeff, accounting for ice cover and Schmidt no.
+              pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5
               Kwexch(i,j) = 
      &             pisvel(i,j,bi,bj)
      &             / sqrt(SchmidtNoO2(i,j)/660.0)
