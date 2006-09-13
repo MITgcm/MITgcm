@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.54 2006/08/15 14:58:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.55 2006/09/13 14:11:43 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,6 +64,8 @@ C       |
 C       |-- THSICE_INI_VARS
 C       |
 C       |-- CPL_INI_VARS
+C       |
+C       |-- ATM2D_INIT_VARS
 C       |
 C       |-- FIZHI_INI_VARS
 C       |
@@ -275,6 +277,13 @@ C--   Open boundaries data
       IF (debugMode) CALL DEBUG_CALL('CPL_INI_VARS',myThid)
 #endif
       IF (useCoupler) CALL CPL_INI_VARS( mythid )
+#endif
+
+#ifdef ALLOW_ATM2D
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('ATM2D_INIT_VARS',myThid)
+#endif
+      IF (useAtm2d) CALL ATM2D_INIT_VARS( myThid )
 #endif
 
 #ifdef ALLOW_FIZHI
