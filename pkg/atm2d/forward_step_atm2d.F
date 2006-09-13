@@ -63,6 +63,7 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       idyear= int((iloop-1)*dtcouple/365.0/24.0) + 1
       iyr= idyear + startYear -1
       inyr = mod(iloop*dtcouple, 365*24)
+      IF (inyr .EQ. 0) inyr=jdofmhr(12)
       DO mn=1,12
         IF ((inyr.GT.jdofmhr(mn-1)).AND.(inyr.LE.jdofmhr(mn))) monid=mn
       ENDDO
@@ -205,7 +206,7 @@ C        PRINT *,'***block at end of day'
 #endif
       ENDIF  !end block end-of-day
 
-      IF (inyr.EQ.jdofmhr(monid).OR.(inyr.EQ.0)) THEN !do block if month-end
+      IF (inyr.EQ.jdofmhr(monid)) THEN !do block if month-end
        PRINT *,'***end of month reached'
 #ifdef CLM
 #  ifdef CPL_TEM
@@ -270,7 +271,7 @@ C        CALL emissipcc(tnow,nepmn,ocumn,CO2,xco2ann,nemis)
 #endif
       ENDIF  !end block done at month-end
    
-      IF (inyr.EQ.0) THEN ! do this block at year-end
+      IF (inyr .EQ. jdofmhr(12)) THEN ! do this block at year-end
         PRINT *,'***end of year reached'
 #ifdef CPL_TEM 
         nepan=nepan/1000.

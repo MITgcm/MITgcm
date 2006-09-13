@@ -127,21 +127,22 @@ c note below is different from older code...
      &      qneti_2D(i,j)= qneti_2D(i,j) + 
      &                     (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
 
+C 9/08/06 assume evap is + in file, thus subtract
           IF (useObsEmP) THEN
-            evapo_2D(i,j)= (wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
+            evapo_2D(i,j)= -(wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
             precipo_2D(i,j)= (wght0*precip0(i,j,1,1) + wght1*precip1(i,j,1,1))
             IF (iceMask(i,j,1,1) .NE. 0. _d 0) THEN
-              evapi_2D(i,j)= (wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
+              evapi_2D(i,j)= -(wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
               precipi_2D(i,j)= (wght0*precip0(i,j,1,1) + 
      &                          wght1*precip1(i,j,1,1))
             ENDIF
           ELSE
-            evapo_2D(i,j)= evapo_2D(i,j) +
+            evapo_2D(i,j)= evapo_2D(i,j) -
      &                (wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
             precipo_2D(i,j)= precipo_2D(i,j) +
      &                (wght0*precip0(i,j,1,1) + wght1*precip1(i,j,1,1))
             IF (iceMask(i,j,1,1) .NE. 0. _d 0) THEN
-              evapi_2D(i,j)= evapi_2D(i,j) +
+              evapi_2D(i,j)= evapi_2D(i,j) -
      &                (wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
               precipi_2D(i,j)= precipi_2D(i,j) +
      &                (wght0*precip0(i,j,1,1) + wght1*precip1(i,j,1,1))

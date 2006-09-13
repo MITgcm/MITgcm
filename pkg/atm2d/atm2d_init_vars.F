@@ -17,7 +17,7 @@ C     myThid - thread number for this instance of the routine.
 C     === Local variables ===
       INTEGER j
 
-      CALL atmosphere(0.0,0)   ! initialize the atmospheric model
+      CALL atmosphere(0,0)   ! initialize the atmospheric model
 
 #ifdef CLM 
       CALL clm4mit2d           ! initialize CLM
@@ -25,14 +25,7 @@ C     === Local variables ===
 
 #ifdef ML_2D 
 C    2D mixed layer model  initialization
-      CALL mlogeom
-      CALL read_ocean_clim
-      CALL init_ocean
-      CALL init_seaice
-      CALL zonmeansocean
-      CALL zonmeansice
-      CALL mlocn2atm
-      CALL seaice2atm
+      CALL ocean_ml(dtocn,dtatm*3600.)
 #  ifdef CPL_OCEANCO2
       CALL zerogary
 #  endif
