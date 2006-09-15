@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.6 2005/04/19 14:36:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.7 2006/09/15 15:45:18 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,7 +137,7 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
      &  'CPL_READPARMS: pressure loading code is not compiled.'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING',
+     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
