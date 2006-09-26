@@ -77,7 +77,7 @@ CEOP
 #ifdef ALLOW_PTRACERS
       if (tracernum.gt.2) then
        iTracer=tracernum-2
-       irbc=max(maskLEN,tracernum)
+       irbc=min(maskLEN,tracernum)
        if (useRBCptracers) then
         if (useRBCptrnum(iTracer)) then
          DO j=1,sNy
