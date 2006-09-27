@@ -1,10 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.725 2006/09/08 23:41:17 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.726 2006/09/27 11:32:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 checkpoint58p_post
+o obcs: stop if obcs is used with useCDscheme = .true.
 o shelfice: 
  - fix a sign error so that no slip at shelfice interface works
  - remove stop for combination non-hydrostatic code and shelfice. That does 

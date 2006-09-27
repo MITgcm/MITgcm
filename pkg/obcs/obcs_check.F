@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.9 2005/12/07 19:58:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.10 2006/09/27 11:31:58 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,6 +31,21 @@ C     msgBuf      - Informational/error meesage buffer
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)
+
+#ifdef ALLOW_CD_CODE
+      IF ( useCDscheme ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: useCDscheme = .TRUE.'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: The CD-scheme does not work with OBCS.'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: Sorry, not yet implemented.'
+       CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R OBCS_CHECK'
+      ENDIF
+#endif /* ALLOW_CD_CODE */
 
 #ifdef ALLOW_ORLANSKI
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_ORLANSKI'
