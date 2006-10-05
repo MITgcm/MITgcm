@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.154 2006/08/12 03:47:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.155 2006/10/05 15:02:15 dfer Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -946,7 +946,7 @@ EOF
     RET_CPP=f
     COMM="cat genmake_tnc.F | $CPP $DEFINES $INCLUDES"
     echo "$COMM" >> genmake_tnc.log
-    $COMM > genmake_tnc.$FS 2>/dev/null  &&  RET_CPP=t
+    eval $COMM > genmake_tnc.$FS 2>/dev/null  &&  RET_CPP=t
     if test "x$RET_CPP" = xf ; then
 	echo "  WARNING: CPP failed to pre-process the netcdf test." \
 	    >> genmake_tnc.log
