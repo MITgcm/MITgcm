@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.22 2006/03/16 14:41:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.23 2006/10/05 18:41:32 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,6 +39,12 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 #ifndef SEAICE_CGRID
+
+#ifdef EXPLICIT_SSH_SLOPE
+#include "SURFACE.h"
+      _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#endif
+
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
@@ -142,8 +148,56 @@ C now ice surface stress
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef EXPLICIT_SSH_SLOPE
+C--   Compute surface pressure at z==0:
+C-    use actual sea surface height for tilt computations
+        DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+          ENDDO
+        ENDDO
+#ifdef ATMOSPHERIC_LOADING
+C-    add atmospheric loading and Sea-Ice loading
+        IF ( useRealFreshWaterFlux ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = phiSurf(i,j)
+     &                   + ( pload(i,j,bi,bj)
+     &                      +sIceLoad(i,j,bi,bj)*gravity
+     &                     )*recip_rhoConst
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            phiSurf(i,j) = phiSurf(i,j)
+     &                   + pload(i,j,bi,bj)*recip_rhoConst
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ATMOSPHERIC_LOADING */
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+C--   NOW ADD IN TILT
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+     &      -AMASS(I,J,bi,bj)
+     &         *( (phiSurf(i, j )-phiSurf(i-1, j ))*maskW(i, j ,1,bi,bj)
+     &           +(phiSurf(i,j-1)-phiSurf(i-1,j-1))*maskW(i,j-1,1,bi,bj)
+     &          )*HALF*_recip_dxV(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+     &      -AMASS(I,J,bi,bj)
+     &         *( (phiSurf( i ,j)-phiSurf( i ,j-1))*maskS( i ,j,1,bi,bj)
+     &           +(phiSurf(i-1,j)-phiSurf(i-1,j-1))*maskS(i-1,j,1,bi,bj)
+     &          )*HALF*_recip_dyU(I,J,bi,bj)
+C NOW KEEP FORCEX0
+          FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+          FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+         ENDDO
+        ENDDO
+#endif /* EXPLICIT_SSH_SLOPE */
         DO j=1,sNy
          DO i=1,sNx
+#ifndef EXPLICIT_SSH_SLOPE
 C--   NOW ADD IN TILT
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
@@ -152,6 +206,7 @@ C--   NOW ADD IN TILT
 C NOW KEEP FORCEX0
           FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
           FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+#endif /* EXPLICIT_SSH_SLOPE */
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))

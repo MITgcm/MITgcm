@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.27 2006/02/15 09:26:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.28 2006/10/05 18:41:32 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -370,6 +370,17 @@ c          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
+
+#ifdef ATMOSPHERIC_LOADING
+        IF ( useRealFreshWaterFlux ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           sIceLoad(i,j,bi,bj) = HEFF(I,J,1,bi,bj)*SEAICE_rhoIce
+     &                         + HSNOW(I,J,bi,bj)* 330. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
+#endif
 
        ENDDO
       ENDDO
