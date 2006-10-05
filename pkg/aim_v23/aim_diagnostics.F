@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.20 2006/08/04 23:17:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.21 2006/10/05 15:20:23 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -208,12 +208,11 @@ C-    end if aim_snapshot_mdsio
 C-    using MNC S/R
 
          IF ( bi.EQ.1 .AND. bj.EQ.1 ) THEN
-c         WRITE(suff,'(a)') 'aim_phys'
-          WRITE(suff,'(a)') 'aim_state'
+          WRITE(suff,'(a)') 'aim_phys'
           CALL MNC_CW_SET_UDIM(suff, -1, myThid)
-          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime,myThid)
+          CALL MNC_CW_RL_W_S('D',suff,0,0,'T',myTime+deltaTClock,myThid)
           CALL MNC_CW_SET_UDIM(suff, 0, myThid)
-          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter,myThid)
+          CALL MNC_CW_I_W_S('I',suff,0,0,'iter',myIter+1,myThid)
          ENDIF
 
          CALL MNC_CW_RL_W(pf,suff,bi,bj,
