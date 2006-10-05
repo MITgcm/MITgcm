@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.726 2006/09/27 11:32:31 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.727 2006/10/05 18:44:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: implement sea-ice loading (when using RealFreshWaterFlux)
 
 checkpoint58p_post
 o obcs: stop if obcs is used with useCDscheme = .true.
