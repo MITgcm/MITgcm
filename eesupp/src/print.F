@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.25 2006/09/02 22:47:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.26 2006/10/10 19:18:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,9 +13,9 @@ C--    o print_list_l   Prints one-deimensional list of LOGICAL
 C--                     variables.
 C--    o print_list_r8  Prints one-deimensional list of Real*8
 C--                     numbers.
-C--    o print_mapr4    Formats ABCD... contour map of a Real*4 field
+C--    o print_maprs    Formats ABCD... contour map of a Real(_RS) field
 C--                     Uses print_message for writing
-C--    o print_mapr8    Formats ABCD... contour map of a Real*8 field
+C--    o print_maprl    Formats ABCD... contour map of a Real(_RL) field
 C--                     Uses print_message for writing
 C--    o print_message  Does IO with unhighlighted header
 
@@ -517,14 +517,14 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE PRINT\_MAPR4                                    
+C     | SUBROUTINE PRINT\_MAPRS                                    
 C     | o Does textual mapping printing of a field.               
 C     *==========================================================*
 C     | This routine does the actual formatting of the data       
 C     | and printing to a file. It assumes an array using the     
 C     | MITgcm UV indexing scheme and base index variables.       
 C     | User code should call an interface routine like           
-C     | PLOT\_FIELD\_XYR4( ... ) rather than this code directly.    
+C     | PLOT\_FIELD\_XYRS( ... ) rather than this code directly.    
 C     | Text plots can be oriented XY, YZ, XZ. An orientation     
 C     | is specficied through the "plotMode" argument. All the    
 C     | plots made by a single call to this routine will use the  
@@ -948,7 +948,7 @@ C     | This routine does the actual formatting of the data
 C     | and printing to a file. It assumes an array using the     
 C     | MITgcm UV indexing scheme and base index variables.       
 C     | User code should call an interface routine like           
-C     | PLOT\_FIELD\_XYR8( ... ) rather than this code directly.    
+C     | PLOT\_FIELD\_XYRL( ... ) rather than this code directly.    
 C     | Text plots can be oriented XY, YZ, XZ. An orientation     
 C     | is specficied through the "plotMode" argument. All the    
 C     | plots made by a single call to this routine will use the  
@@ -1285,7 +1285,7 @@ C      Data
            IF ( 10*((iBuf-7)/10) .EQ. iBuf-7 ) THEN
             WRITE(plotBuf(iBuf:),'(A)')  '|'
            ELSE
-            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(iDx,10)
+            WRITE(plotBuf(iBuf:iBuf),'(I1)') MOD(ABS(iDx),10)
            ENDIF
           ENDDO
          ENDDO
