@@ -8,8 +8,8 @@
    static long clktck = 0;
    static double invclktck = 0.0;
 
-   double FC_NAMEMANGLE(user_time) (void);
-   double FC_NAMEMANGLE(system_time) (void);
+   double FC_NAMEMANGLE(cusertime) (void);
+   double FC_NAMEMANGLE(csystemtime) (void);
    double FC_NAMEMANGLE(timenow) ();
    void init_timer();
 
@@ -20,7 +20,7 @@
      return;
    }
 
-  double FC_NAMEMANGLE(user_time) (void)
+  double FC_NAMEMANGLE(cusertime) (void)
    {
      clock_t blabla;
      struct tms timest;
@@ -32,7 +32,7 @@
   
    }
 
-  double FC_NAMEMANGLE(system_time) (void)
+  double FC_NAMEMANGLE(csystemtime) (void)
    {
      clock_t blabla;
      struct tms timest;

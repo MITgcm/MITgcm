@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.22 2006/05/08 22:24:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.23 2006/10/10 00:10:08 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -728,9 +728,9 @@ CBOP
 C     !ROUTINE: TIMER_GET_TIME
 
 C     !INTERFACE:
-      SUBROUTINE TIMER_GET_TIME( 
-     O                           userTime, 
-     O                           systemTime, 
+      SUBROUTINE TIMER_GET_TIME(     
+     O                           userTime,     
+     O                           systemTime,     
      O                           wallClockTime )
       IMPLICIT NONE
 
@@ -749,77 +749,87 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     userTime      :: User time returned
 C     systemTime    :: System time returned
 C     wallClockTime :: Wall clock time returned
+
       Real*8 userTime
       Real*8 systemTime
       Real*8 wallClockTime
 
-C     !USES:
-CEH3 This needs to be further cleaned up using a HAVE_CLOC define
-CEH3 that is diagnosed by genmake
-CEH3 #ifndef HAVE_FDATE
-      Real*8 system_time, user_time, timenow
-      external system_time, user_time, timenow
-CEH3 #else
-#ifdef TARGET_AIX
-      Real*4 ETIME_
-      EXTERNAL ETIME_
-#else
-      Real*4 ETIME
-      EXTERNAL ETIME
-#endif
-CEH3 #endif
+C     The following was seriously hacked around by Mark Hadfield
+C     October 2006
 
-C     !LOCAL VARIABLES:
-C     ACTUAL, TARRAY, :: Temps. to hold times
-C     wTime
-      Real*4 ACTUAL, TARRAY(2)
+#ifdef IGNORE_TIME
+
+      userTime = 0.
+      systemTime = 0.
+      wallClockTime = 0.
+
+#else
+
+C     Declarations follow the same preprocessor structure as the
+C     executable code below.
+
+# ifdef TARGET_AIX
+      Real*4 etime_
+      Real*8 timenow
+      external etime_, timenow
+      Real*4 actual, tarray(2)
+# elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
+C     No declarations necessary
+# else
+#  ifdef HAVE_ETIME
+      Real*4 etime
+      EXTERNAL etime
+      Real*4 actual, tarray(2)
+#  else
+      Real*8 csystemtime, cusertime
+      external csystemtime, cusertime
+#  endif
+#  if defined HAVE_CLOC
       Real*8 wtime
+#  elif (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
+C     No declarations necessary
+#  else      Real*8 timenow
+      external timenow
+#  endif /* HAVE_CLOC */
+# endif
 CEOP
 
-C     Real*8 MPI_Wtime
-C     EXTERNAL MPI_Wtime
+C     Executable code
 
-#ifndef IGNORE_TIME
-
-CCE107 Fixed for AIX and UNICOS
-#ifdef TARGET_AIX
-      ACTUAL = ETIME_(TARRAY)
-      userTime      = TARRAY(1)
-      systemTime    = TARRAY(2)
+# ifdef TARGET_AIX
+      actual = ETIME_(tarray)
+      userTime      = tarray(1)
+      systemTime    = tarray(2)
       wallClockTime = timenow()
-#elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
+# elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
       userTime      = SECOND()
       systemTime    = 0.
       wallClockTime = SECONDR()
-#else
-#ifdef HAVE_ETIME
-      ACTUAL = ETIME(TARRAY)
-#else
-      TARRAY(1) = user_time()
-      TARRAY(2) = system_time()
+# else
+#  ifdef HAVE_ETIME
+      actual = etime(tarray)
+      userTime = tarray(1)
+      systemTime = tarray(2)
+#  else
+      userTime   = cusertime()
+      systemTime = csystemtime()
+#  endif
+#  if defined HAVE_CLOC
+      CALL cloc(wTime)
+      wallClockTime = wtime
+#  elif (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
+      wallClockTime = MPI_Wtime()
+#  else      
+      wallClockTime = timenow()
+#  endif
+# endif
 #endif
-      userTime      = TARRAY(1)
-      systemTime    = TARRAY(2)
-#ifdef HAVE_CLOC
-      CALL CLOC(wTime)
-#else 
-      wtime = timenow()
-#endif /* HAVE_CLOC */
-      wallClockTime = wtime
-#endif /* CRAY defines */
-
-CCE107 Sometimes MPI_Wtime has better resolution...
-#if (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
-      wtime         = MPI_Wtime()
-      wallClockTime = wtime
-#endif /* ALLOW_USE_MPI && USE_MPI_WTIME */
-      
-#else   /* IGNORE_TIME */
-      wtime = 0.0
-#endif  /* IGNORE_TIME */
 
       RETURN
       END
+     
+
+
 
 CBOP
 
