@@ -1,9 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.730 2006/10/11 19:30:01 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.731 2006/10/11 23:26:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
 
 o pkg/seaice: implement sea-ice loading (when using RealFreshWaterFlux)
 
