@@ -732,6 +732,9 @@ c     velerrfile            - representation error
      &                geoid_errfile,
      &                geoid_covariancefile,
      &                ssh_errfile,
+     &                tp_errfile,
+     &                ers_errfile,
+     &                gfo_errfile,
      &                ctdt_errfile,
      &                ctds_errfile, 
      &                drift_errfile,
@@ -764,6 +767,9 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) geoid_errfile
       character*(MAX_LEN_FNAM) geoid_covariancefile
       character*(MAX_LEN_FNAM) ssh_errfile
+      character*(MAX_LEN_FNAM) tp_errfile
+      character*(MAX_LEN_FNAM) ers_errfile
+      character*(MAX_LEN_FNAM) gfo_errfile
       character*(MAX_LEN_FNAM) ctdt_errfile 
       character*(MAX_LEN_FNAM) ctds_errfile 
       character*(MAX_LEN_FNAM) drift_errfile

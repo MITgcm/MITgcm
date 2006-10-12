@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.19 2006/07/09 04:34:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.20 2006/10/12 21:03:22 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -563,31 +563,94 @@ cph-indonesian)
 #endif
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-c--   Read T/P SSH anomaly rms field. Data in units of centimeters.
+c--   Read SSH anomaly rms field. Data in units of centimeters.
       nnz   =   1
       irec  =   1
-      call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wtp, irec, mythid )
+      if ( ssh_errfile .NE. ' ' ) then
+         call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz, 
+     &        wtp, irec, mythid )
 
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           k = 1
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Unit conversion to meters. ERS error is set to
+c--           T/P error + 5cm
+               if (maskC(i,j,k,bi,bj) .eq. 0.) then
+                  wtp (i,j,bi,bj) = 0. _d 0
+                  wers(i,j,bi,bj) = 0. _d 0
+                  wgfo(i,j,bi,bj) = 0. _d 0
+               else
+                  wtp (i,j,bi,bj) = ( wtp(i,j,bi,bj) * 0.01 * 0.5 )
+     &                 *frame(i,j)
+                  wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
+     &                 *frame(i,j)
+                  wgfo(i,j,bi,bj) = wers(i,j,bi,bj)
+               endif
+            enddo
+           enddo
+          enddo
+         enddo
+      endif
+
+c-- overwrite T/P error field, if available:
+      if ( tp_errfile .NE. ' ' ) 
+     &     call mdsreadfield( tp_errfile, cost_iprec, cost_yftype, nnz, 
+     &     wtp, irec, mythid )
+
+c-- overwrite ERS error field, if available:
+      if ( ers_errfile .NE. ' ' ) 
+     &     call mdsreadfield( ers_errfile, cost_iprec, cost_yftype, nnz, 
+     &     wtp, irec, mythid )
+
+c-- overwrite GFO error field, if available:
+      if ( gfo_errfile .NE. ' ' ) 
+     &     call mdsreadfield( gfo_errfile, cost_iprec, cost_yftype, nnz, 
+     &     wtp, irec, mythid )
+
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           k = 1
+           do j = jmin,jmax
+            do i = imin,imax
+             if (maskC(i,j,k,bi,bj) .eq. 0.) then
+              if ( tp_errfile .NE. ' ' ) 
+     &               wtp (i,j,bi,bj) = 0. _d 0
+              if ( ers_errfile .NE. ' ' ) 
+     &             wers(i,j,bi,bj) = 0. _d 0
+              if ( gfo_errfile .NE. ' ' ) 
+     &             wgfo(i,j,bi,bj) = 0. _d 0
+             else
+c-- convert from cm to m and set to 0.1m for missing values.
+              if ( tp_errfile .NE. ' ' ) then
+                 wtp (i,j,bi,bj) = wtp (i,j,bi,bj) * 0.01 * frame(i,j)
+cph should not be necessary for T/P and Jason
+cph                 if ( wtp (i,j,bi,bj) .EQ. 0. )
+cph     &                wtp (i,j,bi,bj) = 0.1 * frame(i,j)
+              endif
+              if ( ers_errfile .NE. ' ' ) then
+                 wers(i,j,bi,bj) = wers(i,j,bi,bj) * 0.01 * frame(i,j)
+                 if ( wers(i,j,bi,bj) .EQ. 0. )
+     &                wers(i,j,bi,bj) = 0.1 * frame(i,j)
+              endif
+              if ( gfo_errfile .NE. ' ' ) then
+                 wgfo(i,j,bi,bj) = wgfo(i,j,bi,bj) * 0.01 * frame(i,j)
+                 if ( wgfo(i,j,bi,bj) .EQ. 0. )
+     &                wgfo(i,j,bi,bj) = 0.1 * frame(i,j)
+              endif
+             endif
+            enddo
+           enddo
+          enddo
+         enddo
+
+cph-indonesian(
       do bj = jtlo,jthi
         do bi = itlo,ithi
           k = 1
           do j = jmin,jmax
             do i = imin,imax
-c--           Unit conversion to meters. ERS error is set to
-c--           T/P error + 5cm
-              if (maskC(i,j,k,bi,bj) .eq. 0.) then
-                wtp (i,j,bi,bj) = 0. _d 0
-                wers(i,j,bi,bj) = 0. _d 0
-                wgfo(i,j,bi,bj) = 0. _d 0
-              else
-                wtp (i,j,bi,bj) = ( wtp(i,j,bi,bj) * 0.01 * 0.5 )
-     &                            *frame(i,j)
-                wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
-     &                            *frame(i,j)
-                wgfo(i,j,bi,bj) = wers(i,j,bi,bj)
-              endif
-cph-indonesian(
               if ( xC(i,j,bi,bj) .GT. 120. .AND.
      &             xC(i,j,bi,bj) .LT. 130. .AND.
      &             yC(i,j,bi,bj) .GT. -10. .AND.
@@ -596,11 +659,12 @@ cph-indonesian(
                  wers(i,j,bi,bj) = wers(i,j,bi,bj)*100.
                  wgfo(i,j,bi,bj) = wgfo(i,j,bi,bj)*100.
               endif
-cph-indonesian)
             enddo
           enddo
         enddo
       enddo
+cph-indonesian)
+
 #endif /* ALLOW_SSH_COST_CONTRIBUTION */
 
 c--   Read zonal wind stress variance.
