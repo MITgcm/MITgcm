@@ -207,7 +207,7 @@ c     Interpolate linearly onto the  time.
 
 
       subroutine exf_init_gen ( 
-     &     genconst, genfld, gen0, gen1, mythid )
+     &     genconst, genfld, gen0, gen1, geninitfile, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_init_gen
@@ -239,6 +239,7 @@ c     == routine arguments ==
       _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      character*(128) geninitfile
       integer mythid
 
 c     == local variables ==
@@ -259,5 +260,10 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+      if ( geninitfile .NE. ' ' ) then
+         call mdsreadfield( geninitfile, exf_iprec, exf_yftype,
+     &        1, genfld, 1, mythid )
+      endif
 
       end
