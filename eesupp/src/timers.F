@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.24 2006/10/12 01:49:52 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.25 2006/10/12 20:27:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -789,7 +789,8 @@ C     executable code below.
       Real*8 wtime
 #  elif (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
 C     No declarations necessary
-#  else      Real*8 timenow
+#  else
+      Real*8 timenow
       external timenow
 #  endif /* HAVE_CLOC */
 # endif
