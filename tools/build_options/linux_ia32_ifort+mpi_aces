@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.4 2006/07/28 15:17:05 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.5 2006/10/13 12:41:51 cnh Exp $
 #
 #  These are the build options used with the Intel 8.x compiler for the
 #  daily testing on ACES (which are initiated by cron jobs on the "ao"
@@ -20,6 +20,7 @@
 
 FC='mpif77'
 CC='mpicc'
+F90C='mpif90 -fixed -c '
 LINK='mpif77'
 INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include -I/usr/local/pkg/mpich/mpich-intel/include/'
 LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
