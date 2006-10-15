@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.5 2006/08/31 20:57:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.6 2006/10/15 14:08:10 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -75,8 +75,11 @@ C check input arguments
 
 C read in input data
 #ifdef ALLOW_USE_MPI
-C      if (useSingleCPUIO) then
+#ifdef EXF_IREAD_USE_GLOBAL_POINTER
        if (.FALSE.) then
+#else
+      if (useSingleCPUIO) then
+#endif
 
 C master thread of process 0, only, opens a global file
         IF( mpiMyId .EQ. 0 ) THEN
