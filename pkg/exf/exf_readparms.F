@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.34 2006/10/12 21:34:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.35 2006/10/16 15:39:36 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -143,37 +143,31 @@ c     Surface flux data.
      &     apressure_exfremo_intercept, apressure_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
      & ,ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
-     & ustress_nlon, ustress_nlat,
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
-     & vstress_nlon, vstress_nlat,
+     & ustress_nlon, ustress_nlat, vstress_nlon, vstress_nlat,
      & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
-     & hflux_nlon, hflux_nlat,
      & sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
-     & sflux_nlon, sflux_nlat,
+     & hflux_nlon, hflux_nlat, sflux_nlon, sflux_nlat,
      & swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
-     & swflux_nlon, swflux_nlat,
-     & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
-     & runoff_nlon, runoff_nlat,
+     & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
+     & swflux_nlon, swflux_nlat, lwflux_nlon, lwflux_nlat,
      & atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
      & atemp_nlon, atemp_nlat,
      & aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc, aqh_nlon, aqh_nlat,
      &evap_lon0,evap_lon_inc,evap_lat0,evap_lat_inc,evap_nlon,evap_nlat,
      & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
-     & precip_nlon, precip_nlat,
+     & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
+     & precip_nlon, precip_nlat, runoff_nlon, runoff_nlat,
      & snowprecip_lon0, snowprecip_lon_inc, snowprecip_nlon,
      & snowprecip_lat0, snowprecip_lat_inc, snowprecip_nlat,
      & uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
-     & uwind_nlon, uwind_nlat,
      & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
-     & vwind_nlon, vwind_nlat,
+     & uwind_nlon, uwind_nlat, vwind_nlon, vwind_nlat,
      & wspeed_lon0, wspeed_lon_inc, wspeed_lat0, wspeed_lat_inc,
      & wspeed_nlon, wspeed_nlat,
-     & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
-     & lwflux_nlon, lwflux_nlat,
      & swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
-     & swdown_nlon, swdown_nlat,
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
-     & lwdown_nlon, lwdown_nlat,
+     & swdown_nlon, swdown_nlat, lwdown_nlon, lwdown_nlat,
      & apressure_lon0,apressure_lon_inc,apressure_nlon,
      & apressure_lat0,apressure_lat_inc,apressure_nlat 
 #endif
