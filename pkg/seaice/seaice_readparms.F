@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.41 2006/07/14 12:56:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.42 2006/10/17 19:00:44 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
 
       SUBROUTINE SEAICE_READPARMS( myThid )
@@ -85,13 +84,13 @@ C--   SEAICE parameters
 
       _BEGIN_MASTER(myThid)
 
-      write(msgbuf,'(A)')
+      WRITE(msgBuf,'(A)')
      &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , myThid)
       WRITE(msgBuf,'(A)') ' SEAICE_READPARMS: opening data.seaice'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , myThid)
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.seaice', 'SEAICE_READPARMS',
@@ -224,16 +223,16 @@ C--   Read settings from model parameter file "data.seaice".
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R SEAICE_READPARMS'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'parameter file "data.seaice"'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist SEAICE_PARM01'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
 C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
@@ -243,16 +242,16 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R SEAICE_READPARMS'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'parameter file "data.seaice"'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist SEAICE_PARM02'
-       CALL PRINT_ERROR( msgBuf , mythid)
+       CALL PRINT_ERROR( msgBuf , myThid)
 C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
@@ -263,12 +262,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       WRITE(msgBuf,'(A)')
      &     ' SEAICE_READPARMS: finished reading data.seaice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait for the parameters to be loaded
-      _BARRIER
+     &                    SQUEEZE_RIGHT , myThid)
 
 C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not
@@ -280,10 +274,10 @@ C     yet been tried nor thought through.
      &     INT(SEAICE_deltaTdyn/SEAICE_deltaTtherm) ) THEN
          WRITE(msgBuf,'(A)')
      &        'Unsupported combination of SEAICE_deltaTtherm,'
-         CALL PRINT_ERROR( msgBuf , mythid)
+         CALL PRINT_ERROR( msgBuf , myThid)
          WRITE(msgBuf,'(A)')
      &        ' SEAICE_deltaTdyn, and dTtracerLev(1)'
-         CALL PRINT_ERROR( msgBuf , mythid)
+         CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 #ifdef SEAICE_ALLOW_EVP
@@ -292,14 +286,14 @@ C     yet been tried nor thought through.
      &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
         WRITE(msgBuf,'(A)')
      &       'SEAICE_deltaTevp must be a factor of SEAICE_deltaTdyn.'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
        ENDIF
        IF ( SEAICE_elasticParm .LE. 0. _d 0 .OR.
      &      SEAICE_elasticParm .GT. 1. _d 0 ) THEN
         WRITE(msgBuf,'(A)')
      &       'SEAICE_elasticParm must greater than 0 and less than 1.'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
        ENDIF
       ENDIF
@@ -323,7 +317,7 @@ C     in data.seaice
      &     FluxForcingEnd    .EQ. -99999. .OR.
      &     FluxForcingPeriod .EQ. -99999.      ) THEN
          WRITE(msgBuf,'(A)') 'Specify FluxForcing* in data.seaice'
-         CALL PRINT_ERROR( msgBuf , mythid)
+         CALL PRINT_ERROR( msgBuf , myThid)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
       IF ( WindForcingStart  .EQ. -99999. )
@@ -363,6 +357,11 @@ C-    Set Output type flags :
      &       .AND. SEAICE_mon_mnc  ) SEAICE_mon_stdio  = .FALSE.
       ENDIF
 #endif
+
+      _END_MASTER(myThid)
+
+C--   Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
 C--   Summarise pkg/seaice cofiguration
       CALL SEAICE_SUMMARY( myThid )

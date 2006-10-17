@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.12 2006/04/04 07:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.13 2006/10/17 19:00:44 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -29,6 +29,13 @@ C     === Routine arguments ===
 
 #ifdef ALLOW_OBCS
 
+C     === Local variables ===
+C     msgBuf      - Informational/error meesage buffer
+C     iUnit       - Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
+      INTEGER I,J,iTracer
+
       NAMELIST /OBCS_PARM01/
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      &          useOrlanskiNorth,useOrlanskiSouth,
@@ -55,18 +62,11 @@ C     === Routine arguments ===
      &          spongeThickness
 #endif
 
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
-      INTEGER I,J,iTracer
+      _BEGIN_MASTER(myThid)
 
 C--   OBCS_READPARMS has been called so we know that
 C     the package is active.
       OBCSIsOn=.TRUE.
-
-      _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -145,10 +145,10 @@ C     Default Orlanski radiation parameters
       IF (useOrlanskiNorth.OR.
      &    useOrlanskiSouth.OR.
      &    useOrlanskiEast.OR.
-     &    useOrlanskiWest) 
+     &    useOrlanskiWest)
      & READ(UNIT=iUnit,NML=OBCS_PARM02)
 #endif
-      
+
 #ifdef ALLOW_OBCS_SPONGE
 C     Default sponge layer parameters:
 C     sponge layer is turned off by default

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_pref.F,v 1.2 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_pref.F,v 1.3 2006/10/17 19:01:49 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -38,6 +38,7 @@ C     Dont change before everyone is ready
       CALL BAR2( myThid )
 
 C     Set monitor I/O unit
+      _BEGIN_MASTER(myThid)
       I0 = IFNBLNK( prefString )
       I1 = ILNBLNK( prefString )
       IL = I1-I0+1
@@ -46,6 +47,7 @@ C     Set monitor I/O unit
        mon_prefL = IL
        mon_pref(1:IL) = prefString(I0:I1)
       ENDIF
+      _END_MASTER(myThid)
 
 C     Make sure everyone sees the change
       CALL BAR2( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.13 2005/07/30 23:53:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.14 2006/10/17 19:00:44 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -26,11 +26,11 @@ C     === Routine arguments ===
 
 C--   GM/Redi parameter
 C     GM_Small_Number :: epsilon used in computing the slope
-C     GM_slopeSqCutoff :: slope^2 cut-off value 
+C     GM_slopeSqCutoff :: slope^2 cut-off value
       NAMELIST /GM_PARM01/
      &          GM_AdvForm, GM_AdvSeparate,
      &          GM_isopycK,
-     &          GM_background_K, 
+     &          GM_background_K,
      &          GM_taper_scheme,
      &          GM_maxSlope,
      &          GM_Kmin_horiz,
@@ -51,11 +51,11 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
+      _BEGIN_MASTER(myThid)
+
 C--   GMREDI_READPARMS has been called so we know that
 C     the package is active.
       GMRediIsOn = .TRUE.
-
-      _BEGIN_MASTER(myThid)
 
 C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
@@ -70,7 +70,7 @@ C--   Default values GM/Redi
       GM_Scrit            = 0.004
       GM_Sd               = 0.001
       GM_MNC              = useMNC
-      
+
 C--   Default values GM/Redi I/O control
 c     GM_dumpFreq         = -1.
 c     GM_taveFreq         = -1.

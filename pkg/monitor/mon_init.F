@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.9 2005/11/04 01:33:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.10 2006/10/17 19:01:48 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -38,7 +38,11 @@ C     and prefix monitor "variables" with mon by default.
 
 C     Internal parameter for continuing when monitor_solution would
 C     otherwise decide to stop the code.
+      _BEGIN_MASTER(myThid)
       mon_overrideStop=.FALSE.
+      _END_MASTER(myThid)
+
+      _BARRIER
 
       RETURN
       END

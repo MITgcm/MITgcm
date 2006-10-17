@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.12 2004/10/17 23:05:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.13 2006/10/17 19:00:44 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -36,6 +36,8 @@ C     zeta        - Stability parameter d/l
       _KPP_RL zeta
       _KPP_RL usta
 
+      _BEGIN_MASTER(myThid)
+
 C-----------------------------------------------------------------------
 C Initialize constants that depend on parameters in data.kpp
 C-----------------------------------------------------------------------
@@ -49,7 +51,7 @@ c-----------------------------------------------------------------------
 
       deltaz = (zmax - zmin)/(nni + 1)
       deltau = (umax - umin)/(nnj + 1)
- 
+
       do i = 0, nni + 1
          zehat = deltaz*i + zmin
          do j = 0, nnj + 1
@@ -74,32 +76,6 @@ c-----------------------------------------------------------------------
       end do
 
 C-----------------------------------------------------------------------
-C     calculate mask pMask for pressure/tracer cells
-C        (0 => land, 1 => water)
-C     compute maximum number of wet levels in each column
-C-----------------------------------------------------------------------
-
-      do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
-             do j = 1-OLy, sNy+OLy
-               do i = 1-OLx, sNx+OLx
-                  nzmax(i,j,bi,bj) = 0
-                  do k = 1, Nr
-c                    if (_hFacC(i,j,k,bi,bj).eq.0.) then
-c                       pMask (i,j,k,bi,bj) = 0.
-c                    else
-c                       pMask (i,j,k,bi,bj) = 1.
-c                    endif
-                     nzmax(i,j,bi,bj) = nzmax(i,j,bi,bj)
-     &                                + INT(maskC(i,j,k,bi,bj))
-c    &                                + INT(pMask(i,j,k,bi,bj))
-                  end do
-               end do
-            end do
-          end do
-      end do
-      
-C-----------------------------------------------------------------------
 C     vertical grid
 C-----------------------------------------------------------------------
 
@@ -121,13 +97,39 @@ C- jmc : use the model vertical grid :
 
       hwide(Nrp1) = phepsi
 
+      _END_MASTER(myThid)
+      _BARRIER
+
+C-----------------------------------------------------------------------
+C     calculate mask pMask for pressure/tracer cells
+C        (0 => land, 1 => water)
+C     compute maximum number of wet levels in each column
+C-----------------------------------------------------------------------
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+             do j = 1-OLy, sNy+OLy
+               do i = 1-OLx, sNx+OLx
+                  nzmax(i,j,bi,bj) = 0
+                  do k = 1, Nr
+c                    if (_hFacC(i,j,k,bi,bj).eq.0.) then
+c                       pMask (i,j,k,bi,bj) = 0.
+c                    else
+c                       pMask (i,j,k,bi,bj) = 1.
+c                    endif
+                     nzmax(i,j,bi,bj) = nzmax(i,j,bi,bj)
+     &                                + INT(maskC(i,j,k,bi,bj))
+c    &                                + INT(pMask(i,j,k,bi,bj))
+                  end do
+               end do
+            end do
+
 C-----------------------------------------------------------------------
 C Initialize KPP variables KPPhbl, KPPghat, KPPviscAz,
 C    KPPdiffKzT, and KPPdiffKzS
 C-----------------------------------------------------------------------
 
-      do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
             do j = 1-OLy, sNy+OLy
                do i = 1-OLx, sNx+OLx
                   KPPhbl(i,j,bi,bj) = 0.
@@ -143,10 +145,11 @@ C-----------------------------------------------------------------------
                   end do
                end do
             end do
-          end do
-      end do
+
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_KPP */
 
-      return
-      end
+      RETURN
+      END

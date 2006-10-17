@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_iounit.F,v 1.2 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_iounit.F,v 1.3 2006/10/17 19:01:48 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -30,7 +30,9 @@ C     Dont change before everyone is ready
       CALL BAR2( myThid )
 
 C     Set monitor I/O unit
-      mon_ioUnit = standardMessageUnit
+      _BEGIN_MASTER(myThid)
+      mon_ioUnit = unit
+      _END_MASTER(myThid)
 
 C     Make sure everyone sees the change
       CALL BAR2( myThid )
