@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.732 2006/10/12 01:14:05 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.733 2006/10/17 19:08:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o clean-up multi-threaded problems (reported by debugger tcheck on ACES);
+  add (in global_with_exf/code) a version of EXF_INTERP_READ without
+  dynamical allocation (seems to work in multi-threaded).
+o new function "MASTER_CPU_IO" (=T if master thread & master CPU, if using
+  single CPU io) so that TAF does not have to see EESUPPORT.h
 o pkg/seaice: implement sea-ice loading (when using RealFreshWaterFlux)
 
 checkpoint58p_post
