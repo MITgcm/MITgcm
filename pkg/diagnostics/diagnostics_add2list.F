@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.4 2005/02/13 23:22:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_add2list.F,v 1.5 2006/10/17 18:56:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -18,9 +18,9 @@ C     routine to add 1 diagnostics to the list of available diagnostics:
 C     set the attributes:
 C     name (=cdiag), parsing code (=gdiag), units (=udiag), and title (=tdiag)
 C     of the new diagnostics and update the total number of available diagnostic
-C     Note: needs to be called after DIAGNOSTICS_INIT_EARLY 
+C     Note: needs to be called after DIAGNOSTICS_INIT_EARLY
 C                         and before DIAGNOSTICS_INIT_FIXED
-      
+
 C     !USES:
        IMPLICIT NONE
 #include "SIZE.h"
@@ -45,13 +45,15 @@ C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER n
 
+C--   Initialise
+      diagNum = 0
+
+      _BEGIN_MASTER( myThid)
 
 C--   Search for "diagName" in the list of available diagnostics:
-      diagNum = 0
       DO n=1,ndiagt
        IF ( cdiag(n).EQ.diagName ) THEN
          diagNum = n
-        _BEGIN_MASTER( myThid)
          IF ( gdiag(n).EQ.diagCode ) THEN
 C-    diagnostics is already defined and has the same characteristics
           WRITE(msgBuf,'(3A,I4,A)') 'DIAGNOSTICS_ADD2LIST: diag=',
@@ -77,17 +79,14 @@ C-    diagnostics is already defined but with different characteristics
           CALL PRINT_ERROR( msgBuf , myThid)
           STOP 'ABNORMAL END: S/R DIAGNOSTICS_ADD2LIST'
          ENDIF
-        _END_MASTER( myThid )
        ENDIF
       ENDDO
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( diagNum.EQ.0 ) THEN
 C--   Add one diagnostic to the list of available diagnostics:
        diagNum = ndiagt + 1
-
-      _BEGIN_MASTER( myThid)
 
        IF ( diagNum .LE. ndiagMax ) THEN
         cdiag(diagNum) = diagName
@@ -97,17 +96,17 @@ C--   Add one diagnostic to the list of available diagnostics:
         ndiagt = diagNum
        ELSE
         WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_ADD2LIST:',
-     &   ' Exceed Max.Number of diagnostics ndiagMax=', ndiagMax 
+     &   ' Exceed Max.Number of diagnostics ndiagMax=', ndiagMax
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(2A)')
      &   'DIAGNOSTICS_ADD2LIST: when setting diagnostic: ',diagName
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R DIAGNOSTICS_ADD2LIST'
        ENDIF
-      
-      _END_MASTER( myThid )
 
       ENDIF
 
-      RETURN 
+      _END_MASTER( myThid )
+
+      RETURN
       END

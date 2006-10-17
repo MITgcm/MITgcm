@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.3 2006/07/31 16:26:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_regions.F,v 1.4 2006/10/17 18:56:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -113,12 +113,14 @@ C       _END_MASTER( myThid )
 C-     end of k loop
        ENDDO
       ENDIF
-      nSetRegMask = nSetRegMskFile
 
 C--   Other way to define regions (e.g., latitude bands):
 C      set corresponding set-index of the region-mask array,
 C      starting from nSetRegMskFile+1 up to nSetRegMask
 C note: for now, empty !
+      _BEGIN_MASTER( myThid )
+      nSetRegMask = nSetRegMskFile
+      _END_MASTER( myThid )
 
 C--   Region Identificator arrays
 C       for now, directly filled when reading data.diagnostics
