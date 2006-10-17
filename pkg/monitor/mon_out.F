@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.16 2006/06/22 14:44:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.17 2006/10/17 18:22:33 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE MON_OUT_I( pref, value, foot, myThid )
 
 C     !DESCRIPTION:
-C     Formatted integer I/O for monitor print out.           
+C     Formatted integer I/O for monitor print out.
 
 C     !INPUT PARAMETERS:
 C     pref   - Field prefix ( ignored if == mon_string_none )
@@ -85,7 +85,7 @@ C     !ROUTINE: MON_OUT_ALL
 
 C     !INTERFACE:
       SUBROUTINE MON_OUT_ALL(
-     I     pref, foot, 
+     I     pref, foot,
      I     itype, ival, dval,
      I     myThid )
 
@@ -97,10 +97,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "EESUPPORT.h"
 #include "MONITOR.h"
-      INTEGER IFNBLNK
-      INTEGER ILNBLNK
 
 C     !INPUT PARAMETERS:
 C     pref   - Field prefix ( ignored if == mon_string_none )
@@ -111,6 +108,12 @@ C     foot   - Field suffix ( ignored if == mon_string_none )
       REAL*8  dval
       INTEGER myThid
 CEOP
+
+C     === Functions ====
+      INTEGER IFNBLNK
+      INTEGER ILNBLNK
+      LOGICAL  MASTER_CPU_IO
+      EXTERNAL MASTER_CPU_IO
 
 C     !LOCAL VARIABLES:
 C     msgBuf - Buffer for building output string
@@ -124,22 +127,18 @@ C     I0     - Temps used in calculating string length
       INTEGER  ivarr(1)
       REAL*8   dvarr(1)
 
-      _BEGIN_MASTER(myThid)
-
-#ifdef ALLOW_USE_MPI
-      IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
-#endif /* ALLOW_USE_MPI */
+      IF ( MASTER_CPU_IO(myThid) ) THEN
 
         ivarr(1) = ival
         dvarr(1) = dval
-        
+
         msgBuf = ' '
         lBuf   = 0
-        
+
         DO i = 1,100
           mon_vname(i:i) = ' '
         ENDDO
-        
+
         I0 = IFNBLNK(mon_head)
         I1 = ILNBLNK(mon_head)
         IL = I1-I0+1
@@ -148,7 +147,7 @@ C     I0     - Temps used in calculating string length
           lBuf = IL+1
           msgBuf(lBuf:lBuf) = ' '
         ENDIF
-        
+
         IF ( mon_pref(1:mon_prefL) .NE. mon_string_none .AND.
      &       lBuf+mon_prefL+1      .LE. MAX_LEN_MBUF ) THEN
           lBuf = lBuf+1
@@ -159,12 +158,12 @@ C     I0     - Temps used in calculating string length
         ELSE
           nvname = 0
         ENDIF
-        
+
         I0 = IFNBLNK(pref)
         I1 = ILNBLNK(pref)
         IL = I1-I0+1
         IF ( IL .GT. 0 ) THEN
-          IF ( pref(I0:I1) .NE. mon_string_none .AND. 
+          IF ( pref(I0:I1) .NE. mon_string_none .AND.
      &         lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
             lBuf = lBuf+1
             msgBuf(lBuf:lBuf+IL-1) = pref(I0:I1)
@@ -173,12 +172,12 @@ C     I0     - Temps used in calculating string length
             nvname = nvname + IL
           ENDIF
         ENDIF
-        
+
         I0 = IFNBLNK(foot)
         I1 = ILNBLNK(foot)
         IL = I1-I0+1
         IF ( IL .GT. 0 ) THEN
-          IF ( foot(I0:I1) .NE. mon_string_none .AND. 
+          IF ( foot(I0:I1) .NE. mon_string_none .AND.
      &         lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
             lBuf = lBuf+1
             msgBuf(lBuf:lBuf+IL-1) = foot(I0:I1)
@@ -191,16 +190,16 @@ C     I0     - Temps used in calculating string length
 C       write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
 C       write(*,*) 'mon_write_mnc = ''', mon_write_mnc, ''''
 C       write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
-        
+
         msgBuf(35:35) = '='
-        
+
         IF (mon_write_stdout) THEN
           IF (itype .EQ. 1)
      &         WRITE(msgBuf(36:57),'(1X,I21)')       ival
           IF (itype .EQ. 2)
      &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
 C       &           WRITE(msgBuf(35:57),'(1X,1P1E22.13E3)') dval
-          
+
 C         Note that the above call fixes problems where there is
 C         insufficient space in the output format to handle variables
 C         such as 1.234500000E107 which, although they are wildly large,
@@ -210,7 +209,7 @@ C         that parse the monitor output for testreport.
 
           CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
         ENDIF
-        
+
 #ifdef ALLOW_MNC
         IF (useMNC .AND. mon_write_mnc) THEN
           CALL MNC_CW_APPEND_VNAME(
@@ -224,11 +223,8 @@ C         that parse the monitor output for testreport.
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-#ifdef ALLOW_USE_MPI
+C--   endif master cpu io
       ENDIF
-#endif /* ALLOW_USE_MPI */
-
-      _END_MASTER(myThid)
 
       RETURN
       END

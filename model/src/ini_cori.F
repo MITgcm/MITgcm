@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.25 2006/09/06 02:44:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.26 2006/10/17 18:20:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,9 +16,6 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#ifndef ALLOW_AUTODIFF_TAMC
-# include "EESUPPORT.h"
-#endif
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_MNC
@@ -31,6 +28,10 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
+
+C     === Functions ====
+      LOGICAL  MASTER_CPU_IO
+      EXTERNAL MASTER_CPU_IO
 
 C     !LOCAL VARIABLES:
 C     bi,bj   :: Tile Indices counters
@@ -103,10 +104,12 @@ C       Special custom form
             ENDDO
           ENDDO
         ENDDO
+        _BARRIER
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
         CALL READ_REC_XY_RS( 'fCoriG.bin', fCoriG,  1, 0, myThid )
         CALL READ_REC_XY_RS( 'fCorCs.bin', fCoriCos,1, 0, myThid )
         IF ( useCubedSphereExchange ) THEN
+         _BARRIER
 C-       deal with the 2 missing corners (for fCoriG):
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -130,16 +133,11 @@ C    with 2 polar faces + 4 equatorials:
 
         CALL EXCH_XY_RS( fCori, myThid )
         CALL EXCH_XY_RS( fCoriCos, myThid )
-c       CALL EXCH_Z_XY_RS( fCoriG, myThid )
         CALL EXCH_Z_3D_RS( fCoriG, 1, myThid )
       ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_MONITOR
-#ifdef ALLOW_USE_MPI
-      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-        _BEGIN_MASTER(myThid)
+      IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
 
@@ -160,29 +158,17 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-        _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
       ENDIF
-#endif /* ALLOW_USE_MPI */
 
       CALL MON_PRINTSTATS_RS(1,fCori,'fCori',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriG,'fCoriG',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriCos,'fCoriCos',myThid)
 
-#ifdef ALLOW_USE_MPI
-      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-        _BEGIN_MASTER(myThid)
-
+      IF ( MASTER_CPU_IO(myThid) ) THEN
         mon_write_stdout = .FALSE.
         mon_write_mnc    = .FALSE.
-
-        _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
       ENDIF
-#endif /* ALLOW_USE_MPI */
 #endif /* ALLOW_MONITOR */
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
       END

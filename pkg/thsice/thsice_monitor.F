@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.12 2006/06/23 00:50:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.13 2006/10/17 18:22:33 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -17,7 +17,6 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "THSICE_PARAMS.h"
@@ -39,9 +38,13 @@ CEOP
 #ifdef ALLOW_THSICE
 #ifdef ALLOW_MONITOR
 
-C     == Local variables ==
+C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  MASTER_CPU_IO
+      EXTERNAL MASTER_CPU_IO
+
+C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 mon_var
       CHARACTER*2 mon_sufx(0:2)
@@ -65,10 +68,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &   DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,deltaTclock)
      &   .OR. myIter.EQ.nIter0 ) THEN
 
-#ifdef ALLOW_USE_MPI
-        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-          _BEGIN_MASTER(myThid)
+        IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
 
@@ -106,10 +106,8 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
           ENDIF
 
-          _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
+C--   endif master cpu io
         ENDIF
-#endif /* ALLOW_USE_MPI */
 
         CALL MON_SET_PREF('thSI_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
@@ -234,10 +232,7 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
-#ifdef ALLOW_USE_MPI
-        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-          _BEGIN_MASTER(myThid)
+        IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
 
@@ -256,10 +251,8 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
           mon_write_stdout = .FALSE.
           mon_write_mnc    = .FALSE.
 
-          _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
+C--   endif master cpu io
         ENDIF
-#endif /* ALLOW_USE_MPI */
 
 C     endif different multiple
       ENDIF

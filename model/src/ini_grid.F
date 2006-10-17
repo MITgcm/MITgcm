@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.29 2006/09/06 02:44:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.30 2006/10/17 18:20:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,9 +19,6 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#ifndef ALLOW_AUTODIFF_TAMC
-# include "EESUPPORT.h"
-#endif
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_MNC
@@ -35,6 +32,10 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
+C     === Functions ====
+      LOGICAL  MASTER_CPU_IO
+      EXTERNAL MASTER_CPU_IO
+
 C     !LOCAL VARIABLES:
 C     msgBuf - Used for informational I/O.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -43,9 +44,7 @@ C     msgBuf - Used for informational I/O.
 #endif
 
 C     load grid spacing (vector) from files
-      _BARRIER
       CALL LOAD_GRID_SPACING( myThid )
-      _BARRIER
 
 C     Set up vertical grid and coordinate system
       CALL INI_VERTICAL_GRID( myThid )
@@ -84,12 +83,8 @@ C     Set up horizontal grid and coordinate system
         _END_MASTER(myThid)
       ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_MONITOR
-#ifdef ALLOW_USE_MPI
-      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-        _BEGIN_MASTER(myThid)
+      IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
 
@@ -110,10 +105,7 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-        _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
       ENDIF
-#endif /* ALLOW_USE_MPI */
 
 C     Print out statistics of each horizontal grid array (helps when
 C     debugging)
@@ -136,20 +128,14 @@ C     debugging)
       CALL MON_PRINTSTATS_RS(1,angleCosC,'AngleCS',myThid)
       CALL MON_PRINTSTATS_RS(1,angleSinC,'AngleSN',myThid)
 
-#ifdef ALLOW_USE_MPI
-      IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
-#endif /* ALLOW_USE_MPI */
-        _BEGIN_MASTER(myThid)
-
+      IF ( MASTER_CPU_IO(myThid) ) THEN
         mon_write_stdout = .FALSE.
         mon_write_mnc    = .FALSE.
-
-        _END_MASTER(myThid)
-#ifdef ALLOW_USE_MPI
       ENDIF
-#endif /* ALLOW_USE_MPI */
 #endif /* ALLOW_MONITOR */
-#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   Everyone else must wait for the grid to be set
+      _BARRIER
 
       RETURN
       END
