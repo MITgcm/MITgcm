@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.46 2006/07/29 21:02:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.47 2006/10/17 18:52:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,7 +98,6 @@ C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
       CALL INI_PARMS( myThid )
-      _BARRIER
 
 C--   Configure packages
       CALL PACKAGES_BOOT( myThid )
@@ -117,29 +116,26 @@ C     to the core dynamical model
 #ifdef ALLOW_MONITOR
 C--   Initialise MONITOR I/O streams so we can report config. info
       CALL MON_INIT( myThid )
-      _BARRIER
 #endif
 
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.
       CALL INI_GRID( myThid )
-      _BARRIER
 
 C--   Set equation of state parameters.
       CALL INI_EOS( myThid )
-      _BARRIER
 
 C--   Set pressure/geopotential reference profile
       CALL INI_PHIREF( myThid )
-      _BARRIER
 
 C--   Initialise map of depths
       CALL INI_DEPTHS( myThid )
-      _BARRIER
 
 C--   Derive masks, lopping factors and recipricols of quantities.
 C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
+
+C--   Synchronize all threads after setting masks and before pkgs init.
       _BARRIER
 
 C--   Call fixed data initialization phase of packages

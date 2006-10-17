@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.43 2005/07/20 22:33:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.44 2006/10/17 18:52:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,7 +136,6 @@ C     aS2d: integral in Z Ay/dY
       ELSE
        myNorm = 1. _d 0
       ENDIF
-       cg2dNorm = myNorm
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
@@ -161,6 +160,9 @@ C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
+      _BEGIN_MASTER(myThid)
+C-- set global parameter in common block:
+      cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg2dNormaliseRHS = cg2dTargetResWunit.LE.0.
       IF (cg2dNormaliseRHS) THEN
@@ -171,6 +173,7 @@ C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / deltaTmom
       ENDIF
+      _END_MASTER(myThid)
 
 CcnhDebugStarts
       _BEGIN_MASTER( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.20 2006/02/23 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.21 2006/10/17 18:52:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -198,8 +198,8 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       ELSE
        myNorm = 1. _d 0
       ENDIF
-       cg3dNorm = myNorm
       _BEGIN_MASTER( myThid )
+       cg3dNorm = myNorm
 CcnhDebugStarts
        WRITE(msgBuf,'(A,E40.25)') '// CG3D normalisation factor = '
      &                , cg3dNorm

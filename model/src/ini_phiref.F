@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.3 2006/02/23 20:51:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.4 2006/10/17 18:52:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -218,6 +218,7 @@ C--   Write to check :
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER( myThid )
+      _BARRIER
 
       RETURN
       END
