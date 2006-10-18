@@ -5,18 +5,10 @@
 # module load modules scsl.1.6.1.0 intel-comp.9.1.039 mpt.1.12.0.nas pd-netcdf.3.6.0-p1
 
 CPP='/lib/cpp  -traditional -P'
-
-FFLAGS='-fp-model precise -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
-
-FOPTIM='-O3 -align'
-NOOPTFLAGS='-O1'
-NOOPTFILES='phy_radiat.F'
-LIBS='-L/opt/sgi/mpt/1.12.0.nas/lib -lmpi -L/opt/pd/netcdf/3.6.0-p1/lib -lnetcdf'
-
 FC=ifort
-
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 
+LIBS='-L/opt/sgi/mpt/1.12.0.nas/lib -lmpi -L/opt/pd/netcdf/3.6.0-p1/lib -lnetcdf'
 INCLUDES='-I/opt/sgi/mpt/1.12.0.nas/include -I/opt/pd/netcdf/3.6.0-p1/include'
 INCLUDEDIRS='/opt/sgi/mpt/1.12.0.nas/include'
 MPIINCLUDEDIR='/opt/sgi/mpt/1.12.0.nas/include'
@@ -24,3 +16,16 @@ MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
 PAPIINC='-I/usr/local/include'
 PAPILIB='-L/usr/local/lib -lpapi'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-fp-model precise -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FOPTIM='-O3 -align'
+    NOOPTFLAGS='-O1'
+    NOOPTFILES='phy_radiat.F'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-fp-model strict -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FOPTIM='-O0 -noalign'
+fi
+
