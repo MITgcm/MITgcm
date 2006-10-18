@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.6 2006/10/17 18:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.7 2006/10/18 16:08:13 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -147,11 +147,7 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_heff',
      &       maskH,maskH,rA ,drF,myThid)
 
-#ifdef ALLOW_USE_MPI
-        IF ( .NOT.useSingleCPUIO .OR. mpiMyId.EQ.0 ) THEN
         IF ( MASTER_CPU_IO(myThid) ) THEN
-#endif /* ALLOW_USE_MPI */
-          _BEGIN_MASTER(myThid)
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
 
