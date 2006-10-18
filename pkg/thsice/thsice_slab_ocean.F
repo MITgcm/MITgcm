@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.5 2006/04/09 14:47:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.6 2006/10/18 21:07:03 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -6,13 +6,14 @@ C $Name:  $
 CBOP
 C     !ROUTINE: THSICE_SLAB_OCEAN
 C     !INTERFACE:
-      SUBROUTINE THSICE_SLAB_OCEAN( 
+      SUBROUTINE THSICE_SLAB_OCEAN(
+     I                      aim_sWght0, aim_sWght1,
      O                      dTsurf,
-     I                      bi, bj, myThid )
+     I                      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_SLAB_OCEAN
-C     | o Slab ocean for atmosphere (and sea-ice) model 
+C     | o Slab ocean for atmosphere (and sea-ice) model
 C     *==========================================================*
 C     | o add ocean-surface fluxes + restoring term
 C     |   and step forward ocean mixed-layer Temp. & Salinity
@@ -40,9 +41,18 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      _RL dTsurf(sNx,sNy)
+C     aim_sWght0 :: weight for time interpolation of surface BC
+C     aim_sWght1 :: 0/1 = time period before/after the current time
+C     dTsurf     :: diagnostics of slab-ocean temperature change [K/iter]
+C     bi,bj      :: tile indices
+C     myTime     :: Current time of simulation ( s )
+C     myIter     :: Current iteration number in simulation
+C     myThid     :: my Thread number Id.
+      _RL     aim_sWght0, aim_sWght1
+      _RL     dTsurf(sNx,sNy)
+      _RL     myTime
       INTEGER bi,bj
-      INTEGER myThid
+      INTEGER myIter, myThid
 CEOP
 
 #ifdef ALLOW_THSICE
@@ -77,27 +87,27 @@ C--    add heat flux and fresh-water + salt flux :
        ENDDO
 
 #ifdef ALLOW_AIM
-      IF ( tauRelax_MxL .GT. 0. _d 0 ) THEN
+       IF ( tauRelax_MxL .GT. 0. _d 0 ) THEN
 C--    add restoring (backward) toward climatological Temp. & fixed Salinity
-       dtFac   = ocean_deltaT/tauRelax_MxL
-       dtFacR  = 1. _d 0 /(1. _d 0 + dtFac)
-       oceTfreez = - 1.9 _d 0
-       DO j=1,sNy
-        DO i=1,sNx
-         IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
-          sOceMxL(i,j,bi,bj) = 
+        dtFac   = ocean_deltaT/tauRelax_MxL
+        dtFacR  = 1. _d 0 /(1. _d 0 + dtFac)
+        oceTfreez = - 1.9 _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+           sOceMxL(i,j,bi,bj) =
      &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
-          oceTfreez = -mu_Tf*sOceMxL(i,j,bi,bj)
-          locTemp = ( aim_sWght0*aim_sst0(i,j,bi,bj)
-     &              + aim_sWght1*aim_sst1(i,j,bi,bj) 
-     &              ) - celsius2K
-          locTemp = MAX( locTemp , oceTfreez )
-          tOceMxL(i,j,bi,bj) = 
+           oceTfreez = -mu_Tf*sOceMxL(i,j,bi,bj)
+           locTemp = ( aim_sWght0*aim_sst0(i,j,bi,bj)
+     &               + aim_sWght1*aim_sst1(i,j,bi,bj)
+     &               ) - celsius2K
+           locTemp = MAX( locTemp , oceTfreez )
+           tOceMxL(i,j,bi,bj) =
      &         (tOceMxL(i,j,bi,bj) + dtFac*locTemp)*dtFacR
-         ENDIF
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 #endif /* ALLOW_AIM */
 
 C-    Diagnose surf. temp. change
