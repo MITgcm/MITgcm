@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# tested on columbia using:
+# module purge
+#
+# module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0 pd-netcdf.3.6.0-p1
+
+CPP='/lib/cpp  -traditional -P'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+
+FOPTIM='-O2 -align'
+#LIBS='-L/opt/sgi/mpt/1.12.0.0/lib -lmpi  -L/u/menemenl/software/netcdf-3.5.0/lib -lnetcdf'
+LIBS='-L/opt/sgi/mpt/1.12.0.0/lib -lmpi -L/opt/pd/netcdf/3.6.0-p1/lib -lnetcdf'
+
+FC=ifort
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+
+# INCLUDES='-I/opt/sgi/mpt/1.12.0.0/include  -I/u/menemenl/software/netcdf-3.5.0/include'
+INCLUDES='-I/opt/sgi/mpt/1.12.0.0/include -I/opt/pd/netcdf/3.6.0-p1/include'
+INCLUDEDIRS='/opt/sgi/mpt/1.12.0.0/include'
+MPIINCLUDEDIR='/opt/sgi/mpt/1.12.0.0/include'
+MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
+PAPIINC='-I/usr/local/include'
+PAPILIB='-L/usr/local/lib -lpapi'
