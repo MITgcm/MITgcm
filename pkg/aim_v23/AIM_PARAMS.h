@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.8 2005/09/11 04:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.9 2006/10/18 20:08:15 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -63,18 +63,25 @@ C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 
 C--   COMMON /AIM_PARM_I/ Integer valued parameters for AIM
 C     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forcing files)
+C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
       COMMON /AIM_PARM_I/
+     &  aim_surfForc_NppCycle,
      &  aim_MMsufxLength
+      INTEGER aim_surfForc_NppCycle
       INTEGER aim_MMsufxLength
 
 C--   COMMON /AIM_PARM_R/ "Real" valued parameters for AIM
+C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)
+C     aim_surfForc_TransRatio :: transition ratio from one month to the next
 C     aim_dragStrato :: stratospheric-drag damping time scale (s)
 C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       COMMON /AIM_PARM_R/ 
+     &  aim_surfForc_TimePeriod, aim_surfForc_TransRatio,
      &  aim_dragStrato,
      &  aim_taveFreq, aim_diagFreq, aim_tendFreq
+      _RL aim_surfForc_TimePeriod, aim_surfForc_TransRatio
       _RL aim_dragStrato
       _RL aim_taveFreq
       _RL aim_diagFreq

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.11 2006/05/25 18:05:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.12 2006/10/18 20:08:15 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,23 +45,24 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj  - Tile index
-C     myTime - Current time of simulation ( s )
-C     myIter - Current iteration number in simulation
-C     myThid - Number of this instance of the routine
+C     bi,bj  ::  Tile indices
+C     myTime ::  Current time of simulation ( s )
+C     myIter ::  Current iteration number in simulation
+C     myThid ::  Number of this instance of the routine
       INTEGER bi, bj, myIter, myThid
       _RL myTime
 CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     i,j,k,I2      - Loop counters
-C     tYear         - Fraction into year
-C     Katm          - Atmospheric K index
-C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
+C     i,j,k,I2   :: Loop counters
+C     tYear      :: Fraction into year
+C     aim_sWght0 :: weight for time interpolation of surface BC
+C     aim_sWght1 :: 0/1 = time period before/after the current time
+C     prcAtm     :: total precip from the atmosphere [kg/m2/s]
       INTEGER i,j,k,I2
-c     INTEGER Katm
       _RL     tYear, yearLength
+      _RL     aim_sWght0, aim_sWght1
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
@@ -82,13 +83,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Physics package needs to know time of year as a fraction
       yearLength = 86400.*360.
       tYear = MOD(myTime/yearLength, 1. _d 0)
-c     tYear = myTime/(86400.*360.) -
-c    &        FLOAT(INT(myTime/(86400.*360.)))
 
 C--   Set surface Boundary Conditions for atmos. physics package:
 C     (Albedo, Soil moisture, Surf Temp, Land sea mask)
 C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
-      CALL AIM_SURF_BC( tYear, myTime, myIter, bi, bj, myThid )
+      CALL AIM_SURF_BC(
+     U                  tYear,
+     O                  aim_sWght0, aim_sWght1,
+     I                  bi, bj, myTime, myIter, myThid )
 
 C--   Set surface geopotential: (g * orographic height)
       DO j=1,sNy
@@ -148,8 +150,9 @@ C-    Step forward sea-ice model
 
 C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
         CALL THSICE_SLAB_OCEAN(
-     O                         dTsurf(1,2,myThid),
-     I                         bi,bj, myThid )
+     I                      aim_sWght0, aim_sWght1,
+     O                      dTsurf(1,2,myThid),
+     I                      bi, bj, myTime, myIter, myThid )
 
         CALL THSICE_AVE(
      I                   bi, bj, myTime, myIter, myThid )

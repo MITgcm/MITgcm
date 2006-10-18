@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.5 2006/08/08 03:16:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.6 2006/10/18 20:08:15 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -46,22 +46,23 @@ C     === Functions ===
 
 #ifdef ALLOW_AIM
 C     === Local variables ===
-C     bi,bj, i,j  - Loop counters
-C     tYear       - Fraction within year of myTime
-C     mnthIndex   - Current time in whole months
+C     bi,bj, i,j  :: Loop counters
+C     tYear       :: Fraction within year of myTime
+C     mnthIndex   :: Current time in whole months
 C     prevMnthIndex
-C     fNam        - Strings used in constructing file names
+C     fNam        :: Strings used in constructing file names
 C     mnthNam
-C     pfact       - used to convert Pot.Temp. to in-situ Temp.
+C     pfact       :: used to convert Pot.Temp. to in-situ Temp.
+C     loadNewData :: true when need to load new data from file
       INTEGER bi,bj, i, j
-c     _RL pfact
+      INTEGER mnthIndex
       INTEGER prevMnthIndex
       COMMON / LOCAL_AIM_FIELDS_LOAD / prevMnthIndex
 c     DATA    prevMnthIndex / 0 /
 c     SAVE    prevMnthIndex
+c     _RL pfact
+      LOGICAL loadNewData
 C--   for use with useMMsurfFc:
-      _RL tYear, yearLength
-      INTEGER mnthIndex
       CHARACTER*(MAX_LEN_FNAM) fNam
       CHARACTER*3 mnthNam(12)
       DATA mnthNam /
@@ -69,31 +70,55 @@ C--   for use with useMMsurfFc:
      & 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' /
       SAVE mnthNam
 C--   for use with useFMsurfBC:
-      INTEGER aim_surfForc_NppCycle, nm0, nm1, nm2, nm3
-      _RL aim_surfForc_TimePeriod, aim_surfForc_TransRatio
-      _RL t0prd, tNcyc, tmprd, dTprd
+      INTEGER nm0, nm1, nm2, nm3
+      _RL t0prd, tNcyc, tmprd
 
-C-    Initialise local common block
-      IF ( myIter.EQ.nIter0 ) prevMnthIndex = 0
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   find which month to use for surface BC
+C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)
+C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
+      t0prd = myTime / aim_surfForc_TimePeriod
+      tNcyc = aim_surfForc_NppCycle
+
+      IF (aim_useMMsurfFc) THEN
+C-     select the current month :
+        tmprd = MOD(t0prd,tNcyc)
+        mnthIndex = 1 + INT(tmprd)
+      ELSEIF (aim_useFMsurfBC) THEN
+        tmprd = t0prd - 0.5 _d 0 + tNcyc
+        tmprd = MOD(tmprd,tNcyc)
+C-     select indices of previous month (nm0) and next month (nm1):
+        nm0 = 1 + INT(tmprd)
+        nm1 = 1 + MOD(nm0,aim_surfForc_NppCycle)
+        mnthIndex = nm0
+      ELSE
+        RETURN
+      ENDIF
+
+C--   decide if it is time to load new data
+      IF ( myIter.EQ.nIter0 ) THEN
+        loadNewData = .TRUE.
+      ELSE
+        IF ( mnthIndex .NE. prevMnthIndex ) THEN
+C-      switch to a new time record
+          loadNewData = .TRUE.
+        ELSE
+          loadNewData = .FALSE.
+        ENDIF
+      ENDIF
 
       IF (aim_useMMsurfFc) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Use Monthly Mean surface forcing fields:
 
-C-    Calculate offset into a year
-c      tYear = myTime/(86400.*360.) -
-c    &  FLOAT(INT(myTime/(86400.*360.)))
-       yearLength = 86400.*360.
-       tYear = MOD(myTime/yearLength, 1. _d 0)
-       mnthIndex = INT(tYear*12.)+1
-
-       IF ( mnthIndex .NE. prevMnthIndex .OR.
-     &      myIter.EQ.nIter0 ) THEN
+       IF ( loadNewData ) THEN
 C-    New month so load in data
 
 C     Prevent loading of new data before everyone has finished with it
          CALL BAR2(myThid)
 
+C-      only one thread updates parameter in common block
          _BEGIN_MASTER( myThid )
          prevMnthIndex = mnthIndex
          _END_MASTER( myThid   )
@@ -106,7 +131,7 @@ C        ( MASTER directives are inside S/R READ to do master-thread I/O)
 C        o Albedo ( convert % to fraction )
          WRITE(fNam,'(A,A,A)' ) 'salb.',
      &         mnthNam(mnthIndex), aim_MMsufx(1:aim_MMsufxLength)
-         CALL READ_REC_XY_RS( fNam, aim_albedo,   1, myIter, myThid )
+         CALL READ_REC_XY_RS( fNam, aim_albedo, 1, myIter, myThid )
 
 C        o Surface temperature ( in kelvin )
          IF (aim_surfPotTemp) THEN
@@ -116,12 +141,12 @@ C        o Surface temperature ( in kelvin )
           WRITE(fNam,'(A,A,A)' )'sTemp.',
      &         mnthNam(mnthIndex), aim_MMsufx(1:aim_MMsufxLength)
          ENDIF
-         CALL READ_REC_XY_RS( fNam, aim_surftemp, 1, myIter, myThid )
+         CALL READ_REC_XY_RS( fNam, aim_sst0, 1, myIter, myThid )
 
 C        o Soil moisture
          WRITE(fNam,'(A,A,A)' ) 'smoist.',
      &         mnthNam(mnthIndex), aim_MMsufx(1:aim_MMsufxLength)
-         CALL READ_REC_XY_RS( fNam, aim_soilWater,1, myIter, myThid )
+         CALL READ_REC_XY_RS( fNam, aim_sw10, 1, myIter, myThid )
 
 C     Stop anyone leaving until all data is read
          CALL BAR2(myThid)
@@ -148,7 +173,7 @@ C     and Franco s package needs a fraction between 0-1
 C-  Converts soil moisture (case input is in cm in bucket of depth 20cm.)
 c          DO j=1,sNy
 c           DO i=1,sNx
-c            aim_soilWater(I,J,bi,bj) = aim_soilWater(I,J,bi,bj)
+c            aim_sw10(I,J,bi,bj) = aim_sw10(I,J,bi,bj)
 c    &                                   /20.
 c           ENDDO
 c          ENDDO
@@ -158,8 +183,8 @@ C      pressure Ro_surf that affects Surf.Temp. :
            DO j=1,sNy
             DO i=1,sNx
 c            pfact = (Ro_surf(i,j,bi,bj)/atm_Po)**atm_kappa
-             aim_surftemp(i,j,bi,bj) = aim_surftemp(i,j,bi,bj)
-     &                               * truncSurfP(i,j,bi,bj)
+             aim_sst0(i,j,bi,bj) = aim_sst0(i,j,bi,bj)
+     &                           * truncSurfP(i,j,bi,bj)
             ENDDO
            ENDDO
 
@@ -169,9 +194,8 @@ C-- end bi,bj loops
 
          IF (myIter.EQ.nIter0) THEN
           CALL BAR2(myThid)
-          CALL WRITE_FLD_XY_RL('aim_Tsurf',' ',aim_surfTemp,0,myThid)
+          CALL WRITE_FLD_XY_RL( 'aim_Tsurf',' ', aim_sst0, 0, myThid )
          ENDIF
-
 
 C-     endif New month - load in data
        ENDIF
@@ -208,39 +232,16 @@ c           aim_landFr(i,j,bi,bj)= 0.
         ENDDO
        ENDIF
 
-C-     Length (s) of one time period:
-       aim_surfForc_TimePeriod = 30.*86400.
-C-     Number of time period per Cycle:
-       aim_surfForc_NppCycle   = 12
-C-     define how fast the (linear) transition is from one month to the next
-C       = 1                 -> linear between 2 midle month
-C       > TimePeriod/deltaT -> jump from one month to the next one
-       aim_surfForc_TransRatio = 1.
-
-       t0prd = myTime / aim_surfForc_TimePeriod
-       tNcyc = aim_surfForc_NppCycle
-       tmprd = t0prd - 0.5 _d 0 + tNcyc
-       tmprd = MOD(tmprd,tNcyc)
-C-     indices of previous month and next month:
-       nm0 = 1 + INT(tmprd)
-       nm1 = 1 + MOD(nm0,aim_surfForc_NppCycle)
-C-     interpolation weight:
-       dTprd = tmprd - (nm0 - 1)
-       aim_sWght1 = 0.5 _d 0+(dTprd-0.5 _d 0)*aim_surfForc_TransRatio
-       aim_sWght1 = MAX( 0. _d 0, MIN(1. _d 0, aim_sWght1) )
-       aim_sWght0 = 1. _d 0 - aim_sWght1
-
-
-       IF (myIter.EQ.nIter0 .OR. nm0.NE.prevMnthIndex) THEN
+       IF ( loadNewData ) THEN
 C-     Load new data:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Prevent loading of new data before everyone has finished with it
         CALL BAR2(myThid)
 
-        _BEGIN_MASTER( myThid )
 C-      only one thread updates parameter in common block
-        prevMnthIndex = nm0
+        _BEGIN_MASTER( myThid )
+        prevMnthIndex = mnthIndex
         _END_MASTER( myThid )
 
 C     Master thread coordinates loading of AIM datasets
@@ -324,9 +325,9 @@ C      pressure Ro_surf that affects Surf.Temp. :
            DO i=1,sNx
 c            pfact = (Ro_surf(i,j,bi,bj)/atm_Po)**atm_kappa
              aim_lst0(i,j,bi,bj) = aim_lst0(i,j,bi,bj)
-     &                               * truncSurfP(i,j,bi,bj)
+     &                           * truncSurfP(i,j,bi,bj)
              aim_lst1(i,j,bi,bj) = aim_lst1(i,j,bi,bj)
-     &                               * truncSurfP(i,j,bi,bj)
+     &                           * truncSurfP(i,j,bi,bj)
            ENDDO
           ENDDO
 

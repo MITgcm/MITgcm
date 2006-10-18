@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.12 2006/08/04 23:38:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.13 2006/10/18 20:08:15 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -26,6 +26,9 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AIM_PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C-   Physical constants + functions of sigma and latitude
 c #include "com_physcon.h"
@@ -56,6 +59,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   AIM interface parameter (common AIM_PARM_?):
 C     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
 C     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
+C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)
+C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
+C     aim_surfForc_TransRatio :: transition ratio from one month to the next
 C     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
 C     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
 C     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
@@ -77,15 +83,17 @@ C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       NAMELIST /AIM_PARAMS/
      &    aim_useFMsurfBC, aim_useMMsurfFc,
-     &    aim_surfPotTemp, aim_energPrecip, aim_splitSIOsFx,
+     &    aim_surfForc_TimePeriod, aim_surfForc_NppCycle,
+     &    aim_surfForc_TransRatio, aim_surfPotTemp,
+     &    aim_energPrecip, aim_splitSIOsFx,
      &    aim_MMsufx, aim_MMsufxLength,
      &    aim_LandFile, aim_albFile, aim_vegFile,
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
      &    aim_swcFile,
      &    aim_dragStrato,
      &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq,
-     &     aim_timeave_mnc, aim_snapshot_mnc,
-     &     aim_pickup_write_mnc, aim_pickup_read_mnc
+     &    aim_timeave_mnc, aim_snapshot_mnc,
+     &    aim_pickup_write_mnc, aim_pickup_read_mnc
 
 C--   Physical constants (common PHYCON) :
 C       P0    = reference pressure                 [Pa=N/m2]
@@ -197,6 +205,49 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
+C--  Set default value for AIM interface code (AIM_PARAMS.h):
+      aim_useFMsurfBC = .TRUE.
+      aim_useMMsurfFc = .FALSE.
+      aim_surfPotTemp = .FALSE.
+      aim_energPrecip = .FALSE.
+      aim_splitSIOsFx = .FALSE.
+      aim_clrSkyDiag  = .FALSE.
+#ifdef ALLOW_MNC
+      aim_timeave_mnc       = timeave_mnc .AND. useMNC
+      aim_snapshot_mnc      = snapshot_mnc .AND. useMNC
+      aim_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
+      aim_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
+#else
+      aim_timeave_mnc       = .FALSE.
+      aim_snapshot_mnc      = .FALSE.
+      aim_pickup_write_mnc  = .FALSE.
+      aim_pickup_read_mnc   = .FALSE.
+#endif
+      aim_MMsufx = '.bin'
+      aim_MMsufxLength = 4
+C-    Length (s) of one time period:
+      aim_surfForc_TimePeriod = 30.*86400.
+C-    Number of time period per Cycle:
+      aim_surfForc_NppCycle   = 12
+C-    define how fast the (linear) transition is from one month to the next
+C      = 1                 -> linear between 2 midle month
+C      > TimePeriod/deltaT -> jump from one month to the next one
+      aim_surfForc_TransRatio = 1.
+      aim_LandFile = ' '
+      aim_albFile  = ' '
+      aim_vegFile  = ' '
+      aim_sstFile  = ' '
+      aim_lstFile  = ' '
+      aim_oiceFile = ' '
+      aim_snowFile = ' '
+      aim_swcFile  = ' '
+      aim_dragStrato = 0.
+      aim_taveFreq = taveFreq
+      aim_diagFreq = dumpFreq
+      aim_tendFreq = 0.
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       WRITE(msgBuf,'(A)') ' AIM_READ_PHYSPARMS: opening data.aimphys'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 
@@ -306,6 +357,15 @@ C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_useMMsurfFc, INDEX_NONE,
      &                 'aim_useMMsurfFc =',
      &'   /* Monthly Mean surf. Forcing on/off flag */')
+       CALL WRITE_0D_R8(aim_surfForc_TimePeriod, INDEX_NONE,
+     &                 'aim_surfForc_TimePeriod =',
+     &  ' /* Length of forcing time period (s) */')
+       CALL WRITE_0D_I( aim_surfForc_NppCycle, INDEX_NONE,
+     &                 'aim_surfForc_NppCycle   =',
+     &  ' /* Number of time period per Cycle */')
+       CALL WRITE_0D_R8(aim_surfForc_TransRatio, INDEX_NONE,
+     &                 'aim_surfForc_TransRatio =',
+     &  ' /* transition ratio from one month to the next */')
        CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
      &                 'aim_surfPotTemp =',
      &'   /* Surf Temp file in Pot.Temp on/off flag */')

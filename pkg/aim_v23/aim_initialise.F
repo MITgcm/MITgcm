@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.12 2006/08/08 03:14:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.13 2006/10/18 20:08:15 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -30,9 +30,6 @@ C     === Global variables ===
 #include "AIM_FFIELDS.h"
 c #include "AIM_GRID.h"
 c #include "AIM_DIAGS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -56,39 +53,6 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid )
-
-C--  Set default value for AIM interface code (AIM_PARAMS.h):
-      aim_useFMsurfBC = .TRUE.
-      aim_useMMsurfFc = .FALSE.
-      aim_surfPotTemp = .FALSE.
-      aim_energPrecip = .FALSE.
-      aim_splitSIOsFx = .FALSE.
-      aim_clrSkyDiag  = .FALSE.
-#ifdef ALLOW_MNC
-      aim_timeave_mnc       = timeave_mnc .AND. useMNC
-      aim_snapshot_mnc      = snapshot_mnc .AND. useMNC
-      aim_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
-      aim_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
-#else
-      aim_timeave_mnc       = .FALSE.
-      aim_snapshot_mnc      = .FALSE.
-      aim_pickup_write_mnc  = .FALSE.
-      aim_pickup_read_mnc   = .FALSE.
-#endif
-      aim_MMsufx = '.bin'
-      aim_MMsufxLength = 4
-      aim_LandFile = ' '
-      aim_albFile  = ' '
-      aim_vegFile  = ' '
-      aim_sstFile  = ' '
-      aim_lstFile  = ' '
-      aim_oiceFile = ' '
-      aim_snowFile = ' '
-      aim_swcFile  = ' '
-      aim_dragStrato = 0.
-      aim_taveFreq = taveFreq
-      aim_diagFreq = dumpFreq
-      aim_tendFreq = 0.
 
 C--  Set default value for atmos. physics parameters:
       pGround = atm_Po
