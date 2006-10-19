@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.7 2005/09/02 23:20:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.8 2006/10/19 16:02:53 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -86,7 +86,8 @@ c--   Sum up all contributions.
       enddo
 
 c--   Do global summation.
-      _GLOBAL_SUM_R8( fc , myThid )
+cph this is done only in ecco_cost_final!
+cph      _GLOBAL_SUM_R8( fc , myThid )
 
 c--   Do global summation for each part of the cost function
             
