@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.6 2005/11/09 19:50:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.7 2006/10/19 06:54:23 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -65,8 +65,10 @@ C--   Process 0 fills-in its local data
 
 C--   Process 0 polls and receives data from each process in turn
          DO npe = 1, numberOfProcs-1
+#ifndef DISABLE_MPI_READY_TO_RECEIVE
             CALL MPI_SEND (ready_to_receive, 1, MPI_INTEGER,
      &           npe, itag, MPI_COMM_MODEL, ierr)
+#endif
             CALL MPI_RECV (temp, lbuff, MPI_DOUBLE_PRECISION,
      &           npe, itag, MPI_COMM_MODEL, istatus, ierr)
 
@@ -87,8 +89,10 @@ C--   Process 0 gathers the local arrays into a global array.
       ELSE
 
 C--   All proceses except 0 wait to be polled then send local array
+#ifndef DISABLE_MPI_READY_TO_RECEIVE
          CALL MPI_RECV (ready_to_receive, 1, MPI_INTEGER,
      &        idest, itag, MPI_COMM_MODEL, istatus, ierr)
+#endif
          CALL MPI_SEND (local, lbuff, MPI_DOUBLE_PRECISION,
      &        idest, itag, MPI_COMM_MODEL, ierr)
 

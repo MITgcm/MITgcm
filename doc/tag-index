@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.733 2006/10/17 19:08:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.734 2006/10/19 06:54:23 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o added CPP_EEOPTIONS.h flag DISABLE_MPI_READY_TO_RECEIVE.  Speeds up
+  1/6-deg Southern Ocean configuration by 8% on IBM Datastar and
+  high_res_cube configuration by 4% on Columbia.
 o clean-up multi-threaded problems (reported by debugger tcheck on ACES);
   add (in global_with_exf/code) a version of EXF_INTERP_READ without
   dynamical allocation (seems to work in multi-threaded).
