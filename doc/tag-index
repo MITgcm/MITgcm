@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.734 2006/10/19 06:54:23 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.735 2006/10/20 19:24:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint58q_post
 o added CPP_EEOPTIONS.h flag DISABLE_MPI_READY_TO_RECEIVE.  Speeds up
   1/6-deg Southern Ocean configuration by 8% on IBM Datastar and
   high_res_cube configuration by 4% on Columbia.
