@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.37 2006/10/05 18:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.1 2006/10/22 01:11:02 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_INIT( myThid )
+      SUBROUTINE SEAICE_INIT_VARIA( myThid )
 C     /==========================================================\
-C     | SUBROUTINE SEAICE_INIT                                   |
+C     | SUBROUTINE SEAICE_INIT_VARIA                             |
 C     | o Initialization of sea ice model.                       |
 C     |==========================================================|
 C     \==========================================================/
@@ -38,26 +38,6 @@ C     i,j,k,bi,bj - Loop counters
       INTEGER i, j, k, bi, bj
       _RS  mask_uice
       INTEGER myIter, myTile
-
-#ifdef ALLOW_TIMEAVE
-C     Initialize averages to zero
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_RESET(FUtave   ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(FVtave   ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(EmPmRtave,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(QNETtave ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(QSWtave  ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(UICEtave ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(VICEtave ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(HEFFtave ,1,bi,bj,myThid)
-        CALL TIMEAVE_RESET(AREAtave ,1,bi,bj,myThid)
-        DO k=1,Nr
-         SEAICE_TimeAve(k,bi,bj)=ZERO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_TIMEAVE */
 
 cph(
 cph   make sure TAF sees proper initialisation
