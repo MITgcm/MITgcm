@@ -1,19 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.9 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.10 2006/10/22 01:08:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_DST3_ADV_X
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST3_ADV_X(
      I           bi,bj,k,deltaTloc,
      I           uTrans, uFld,
      I           maskLocW, tracer,
      O           uT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_DST3_ADV_X                                |
-C     | o Compute Zonal advective Flux of Tracer using           |
-C     |   3rd Order DST Sceheme                                  |
-C     |==========================================================|
+
+C !DESCRIPTION:
+C  Calculates the area integrated zonal flux due to advection of a
+C  tracer using 3rd-order Direct Space and Time (DST-3) Advection Scheme
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -24,21 +29,36 @@ C     == GLobal variables ==
 #include "GAD.h"
 
 C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  deltaTloc         :: local time-step (s)
+C  uTrans            :: zonal volume transport
+C  uFld              :: zonal flow
+C  tracer            :: tracer field
+C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
+C !OUTPUT PARAMETERS: ==================================================
+C  uT                :: zonal advective flux
+      _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
 C     == Local variables ==
-C     uLoc   :: velocity [m/s], zonal component
+C !LOCAL VARIABLES: ====================================================
+C  i,j               :: loop indices
+C  uLoc              :: velocity [m/s], zonal component
+C  cfl               :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL Rjm,Rj,Rjp,cfl,d0,d1
-      _RL psiP,psiM,thetaP,thetaM
       _RL uLoc
+      _RL Rjm,Rj,Rjp,cfl,d0,d1
+#ifdef OLD_DST3_FORMULATION
+      _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
@@ -47,6 +67,7 @@ c     _RL Rjjm,Rjjp
       ELSE
        smallNo = 1.0D-20
       ENDIF
+#endif
 
       DO j=1-Oly,sNy+Oly
        uT(1-Olx,j)=0.
@@ -60,12 +81,10 @@ c     _RL Rjjm,Rjjp
         uLoc = uFld(i,j)
 c       uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
 c    &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-        cfl=abs(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
+        cfl=ABS(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
-#ifdef ALLOW_MATRIX
-        IF (.NOT.useMATRIX) THEN
-#endif /* ALLOW_MATRIX */
+#ifdef OLD_DST3_FORMULATION
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
@@ -83,19 +102,17 @@ c    &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
          psiM=d0+d1*thetaM
         ENDIF
         uT(i,j)=
-     &   0.5*(uTrans(i,j)+abs(uTrans(i,j)))
+     &   0.5*(uTrans(i,j)+ABS(uTrans(i,j)))
      &      *( Tracer(i-1,j) + psiP*Rj )
-     &  +0.5*(uTrans(i,j)-abs(uTrans(i,j)))
+     &  +0.5*(uTrans(i,j)-ABS(uTrans(i,j)))
      &      *( Tracer( i ,j) - psiM*Rj )
-#ifdef ALLOW_MATRIX
-        ELSE
-          uT(i,j)=
-     &     0.5*(uTrans(i,j)+abs(uTrans(i,j)))
-     &        *( Tracer(i-1,j) + (d0*Rj+d1*Rjm) )
-     &    +0.5*(uTrans(i,j)-abs(uTrans(i,j)))
-     &        *( Tracer( i ,j) - (d0*Rj+d1*Rjp) )
-        ENDIF
-#endif /* ALLOW_MATRIX */
+#else /* OLD_DST3_FORMULATION */
+        uT(i,j)=
+     &   0.5*(uTrans(i,j)+ABS(uTrans(i,j)))
+     &      *( Tracer(i-1,j) + (d0*Rj+d1*Rjm) )
+     &  +0.5*(uTrans(i,j)-ABS(uTrans(i,j)))
+     &      *( Tracer( i ,j) - (d0*Rj+d1*Rjp) )
+#endif /* OLD_DST3_FORMULATION */
 
        ENDDO
       ENDDO

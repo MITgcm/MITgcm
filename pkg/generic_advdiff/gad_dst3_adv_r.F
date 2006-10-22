@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.8 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.9 2006/10/22 01:08:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -52,13 +52,13 @@ C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  km1               :: =max( k-1 , 1 )
-C  rLimit            :: centered (vs upwind) fraction
 C  wLoc              :: velocity, vertical component
 C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,kp1,km1,km2
-      _RL Rjm,Rj,Rjp,cfl,d0,d1
-      _RL psiP,psiM,thetaP,thetaM
       _RL wLoc
+      _RL Rjm,Rj,Rjp,cfl,d0,d1
+#ifdef OLD_DST3_FORMULATION
+      _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
 
       IF (inAdMode) THEN
@@ -66,6 +66,7 @@ C  wCFL              :: Courant-Friedrich-Levy number
       ELSE
        smallNo = 1.0D-20
       ENDIF
+#endif
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -82,12 +83,10 @@ C  wCFL              :: Courant-Friedrich-Levy number
 
         wLoc = wFld(i,j)
 c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
-        cfl=abs(wLoc*dTarg*recip_drC(k))
+        cfl=ABS(wLoc*dTarg*recip_drC(k))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
-#ifdef ALLOW_MATRIX
-        IF (.NOT.useMATRIX) THEN
-#endif /* ALLOW_MATRIX */
+#ifdef OLD_DST3_FORMULATION
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
@@ -105,19 +104,17 @@ c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
          psiM=d0+d1*thetaM
         ENDIF
          wT(i,j)=
-     &    0.5*(rTrans(i,j)+abs(rTrans(i,j)))
+     &    0.5*(rTrans(i,j)+ABS(rTrans(i,j)))
      &       *( tracer(i,j, k ) + psiM*Rj )
-     &   +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
+     &   +0.5*(rTrans(i,j)-ABS(rTrans(i,j)))
      &       *( tracer(i,j,km1) - psiP*Rj )
-#ifdef ALLOW_MATRIX
-        ELSE
-          wT(i,j)=
-     &     0.5*(rTrans(i,j)+abs(rTrans(i,j)))
-     &        *( tracer(i,j, k ) + (d0*Rj+d1*Rjp) )
-     &    +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
-     &        *( tracer(i,j,km1) - (d0*Rj+d1*Rjm) )
-        ENDIF
-#endif /* ALLOW_MATRIX */
+#else /* OLD_DST3_FORMULATION */
+        wT(i,j)=
+     &    0.5*(rTrans(i,j)+ABS(rTrans(i,j)))
+     &       *( tracer(i,j, k ) + (d0*Rj+d1*Rjp) )
+     &   +0.5*(rTrans(i,j)-ABS(rTrans(i,j)))
+     &       *( tracer(i,j,km1) - (d0*Rj+d1*Rjm) )
+#endif /* OLD_DST3_FORMULATION */
 
        ENDDO
       ENDDO

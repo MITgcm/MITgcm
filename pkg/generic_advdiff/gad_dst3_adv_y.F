@@ -1,19 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.9 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.10 2006/10/22 01:08:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_DST3_ADV_Y
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST3_ADV_Y(
      I           bi,bj,k,deltaTloc,
      I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_DST3_ADV_Y                                |
-C     | o Compute Meridional advective Flux of Tracer using      |
-C     |   3rd Order DST Sceheme                                  |
-C     |==========================================================|
+C !DESCRIPTION:
+C  Calculates the area integrated Meridional flux due to advection of a
+C  tracer using 3rd-order Direct Space and Time (DST-3) Advection Scheme
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -24,21 +28,36 @@ C     == GLobal variables ==
 #include "GAD.h"
 
 C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  deltaTloc         :: local time-step (s)
+C  vTrans            :: meridional volume transport
+C  vFld              :: meridional flow
+C  tracer            :: tracer field
+C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
+C !OUTPUT PARAMETERS: ==================================================
+C  vT                :: meridional advective flux
+      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
 C     == Local variables ==
-C     vLoc    :: velocity [m/s], meridional component
+C !LOCAL VARIABLES: ====================================================
+C  i,j               :: loop indices
+C  vLoc              :: velocity [m/s], meridional component
+C  cfl               :: Courant-Friedrich-Levy number
       INTEGER i,j
       _RL Rjm,Rj,Rjp,cfl,d0,d1
-      _RL psiP,psiM,thetaP,thetaM
       _RL vLoc
+#ifdef OLD_DST3_FORMULATION
+      _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
@@ -47,6 +66,7 @@ c     _RL Rjjm,Rjjp
       ELSE
        smallNo = 1.0D-20
       ENDIF
+#endif
 
       DO i=1-Olx,sNx+Olx
        vT(i,1-Oly)=0.
@@ -62,12 +82,10 @@ c     _RL Rjjm,Rjjp
         vLoc = vFld(i,j)
 c       vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
 c    &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-        cfl=abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
+        cfl=ABS(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
-#ifdef ALLOW_MATRIX
-        IF (.NOT.useMATRIX) THEN
-#endif /* ALLOW_MATRIX */
+#ifdef OLD_DST3_FORMULATION
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
          thetaP=0.
@@ -85,19 +103,17 @@ c    &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
          psiM=d0+d1*thetaM
         ENDIF
         vT(i,j)=
-     &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
+     &   0.5*(vTrans(i,j)+ABS(vTrans(i,j)))
      &      *( Tracer(i,j-1) + psiP*Rj )
-     &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
+     &  +0.5*(vTrans(i,j)-ABS(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
-#ifdef ALLOW_MATRIX
-        ELSE
-          vT(i,j)=
-     &     0.5*(vTrans(i,j)+abs(vTrans(i,j)))
-     &        *( Tracer(i,j-1) + (d0*Rj+d1*Rjm) )
-     &    +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
-     &        *( Tracer(i, j ) - (d0*Rj+d1*Rjp) )
-        ENDIF
-#endif /* ALLOW_MATRIX */
+#else /* OLD_DST3_FORMULATION */
+        vT(i,j)=
+     &   0.5*(vTrans(i,j)+ABS(vTrans(i,j)))
+     &      *( Tracer(i,j-1) + (d0*Rj+d1*Rjm) )
+     &  +0.5*(vTrans(i,j)-ABS(vTrans(i,j)))
+     &      *( Tracer(i, j ) - (d0*Rj+d1*Rjp) )
+#endif /* OLD_DST3_FORMULATION */
 
        ENDDO
       ENDDO
