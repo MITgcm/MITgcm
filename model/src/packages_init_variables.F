@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.55 2006/09/13 14:11:43 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.56 2006/10/22 01:11:44 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,7 +35,7 @@ C       |-- MY82_INIT
 C       |
 C       |-- GGL90_INIT
 C       |
-C       |-- SEAICE_INIT
+C       |-- SEAICE_INIT_VARIA
 C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
@@ -166,9 +166,9 @@ C--   Initialize GGL90 vertical mixing scheme.
 #ifdef ALLOW_SEAICE
 C--   Initialize SEAICE model.
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT',myThid)
+      IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 #endif
-      IF (useSEAICE) CALL SEAICE_INIT( myThid )
+      IF (useSEAICE) CALL SEAICE_INIT_VARIA( myThid )
 #endif
 
 cph-- moved further down

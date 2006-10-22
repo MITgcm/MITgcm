@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.30 2006/09/06 15:30:25 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.31 2006/10/22 01:11:44 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -91,6 +91,7 @@ C     iMin, iMax    :: Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj        :: tile indices
 C     i,j,k         :: loop indices
+      _RL rhokp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -143,6 +144,7 @@ C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE qnet,qsw            = comlev1, key = ikey_dynamics
 CADJ STORE aqh,precip,swdown   = comlev1, key = ikey_dynamics
 CADJ STORE theta               = comlev1, key = ikey_dynamics
 # ifdef SEAICE_ALLOW_DYNAMICS
@@ -254,6 +256,7 @@ C     uninitialised but inert locations.
          DO i=1-OLx,sNx+OLx
           rhok   (i,j)   = 0. _d 0
           rhoKM1 (i,j)   = 0. _d 0
+          rhoKP1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
 
@@ -359,9 +362,15 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
             IF ( debugLevel .GE. debLevB ) 
      &       CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
+cph Avoid variable aliasing for adjoint !!!
+            DO j=jMin,jMax
+             DO i=iMin,iMax
+              rhoKP1(i,j) = rhoK(i,j)
+             ENDDO
+            ENDDO
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
-     I             rhoK, rhoKm1, rhoK,
+     I             rhoK, rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
           ENDIF

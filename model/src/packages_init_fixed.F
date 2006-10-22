@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.54 2006/09/06 15:30:25 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.55 2006/10/22 01:11:44 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -259,6 +259,10 @@ C     IF (useDIC)
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
+#endif
+
+#ifdef ALLOW_SEAICE
+      IF (useSEAICE) CALL SEAICE_INIT_FIXED(mythid)
 #endif
 
 #ifdef ALLOW_SHELFICE
