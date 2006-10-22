@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.735 2006/10/20 19:24:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.736 2006/10/22 01:26:36 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o Adding some pkg/diagnostics capability to pkg/seaice
+  (will certainly be subject to changes)
 
 checkpoint58q_post
 o added CPP_EEOPTIONS.h flag DISABLE_MPI_READY_TO_RECEIVE.  Speeds up
