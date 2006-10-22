@@ -8,4 +8,6 @@
  useSEAICE    = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
+ useDiagnostics = .TRUE.,
+ useMNC       = .TRUE.,
  &
