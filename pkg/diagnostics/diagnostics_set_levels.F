@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.9 2006/07/30 01:19:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.10 2006/10/22 01:00:51 heimbach Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -89,6 +89,8 @@ c     -----------------
           kdiag(n) = nlevs - 1
         ELSEIF (gdiag(n)(10:10) .EQ. 'G') THEN
           kdiag(n) = nGroundLev
+        ELSEIF (gdiag(n)(10:10) .EQ. 'I') THEN
+          kdiag(n) = 3
         ELSEIF (gdiag(n)(10:10) .NE. ' ') THEN
 C-      others: set 1 level:
           kdiag(n) = 1
