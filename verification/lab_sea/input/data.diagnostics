@@ -13,6 +13,9 @@
 # This example dumps all KPP diagnostics as
 # a snapshot after ten time steps
  &diagnostics_list
+#
+   dumpatlast  = .TRUE.,
+#
   frequency(1) = -36000.,
    fields(1,1) = 'EXFtaux ',
    filename(1) = 'EXFtaux ',
@@ -56,6 +59,14 @@
   frequency(11) = -36000.,
    fields(1,11) = 'EXFatemp',
    filename(11) = 'EXFatemp',
+#
+  frequency(12) = 36000.,
+   fields(1,12) = 'SIarea  ',
+   filename(12) = 'SIarea  ',
+#
+  frequency(13) = 36000.,
+   fields(1,13) = 'SIheff  ',
+   filename(13) = 'SIheff  ',
 #
  &
 

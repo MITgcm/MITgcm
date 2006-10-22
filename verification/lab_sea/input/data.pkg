@@ -4,5 +4,5 @@
   useKPP    = .TRUE.,
   useSEAICE = .TRUE.,
   useDiagnostics = .TRUE.,
-# useMNC    = .TRUE.,
+  useMNC    = .TRUE.,
  &
