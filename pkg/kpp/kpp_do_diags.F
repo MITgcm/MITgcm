@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.23 2006/03/20 15:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.24 2006/10/22 00:19:46 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -127,7 +127,8 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
         ENDIF
 
 #ifdef ALLOW_MNC
-        IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc) THEN
+        IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc .AND.
+     &      .NOT.useDiagnostics ) THEN
           CALL MNC_CW_SET_UDIM('kpp_state', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_state',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
@@ -263,7 +264,8 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
         ENDIF
         
 #ifdef ALLOW_MNC
-        IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
+        IF (KPPwriteState .AND. useMNC .AND. timeave_mnc .AND.
+     &      .NOT.useDiagnostics) THEN
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_timeave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)

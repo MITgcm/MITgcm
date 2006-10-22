@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.13 2004/12/01 20:35:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.14 2006/10/22 00:19:46 heimbach Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -161,7 +161,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       _END_MASTER(myThid)
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
+      IF (useMNC .AND. .NOT.useDiagnostics) THEN
 C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VNAME('KPPviscAz', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
