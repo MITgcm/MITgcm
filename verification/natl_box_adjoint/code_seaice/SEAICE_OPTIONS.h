@@ -16,6 +16,8 @@ C     \==========================================================/
 
 #include "CPP_OPTIONS.h"
 
+#define SEAICE_CGRID.h
+
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
 
@@ -24,7 +26,7 @@ C     This option is provided to allow use of TAMC
 C     on the thermodynamics component of the code only.
 C     Sea-ice dynamics can also be turned off at runtime
 C     using variable SEAICEuseDYNAMICS.
-#undef SEAICE_ALLOW_DYNAMICS
+#define SEAICE_ALLOW_DYNAMICS
 
 C--   By default, pkg/seaice defines forcing variable internally, in
 C     SEAICE_FFIELDS.h, and reads them in from files.  When CPP option
