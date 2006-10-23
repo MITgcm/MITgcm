@@ -14,3 +14,15 @@ CADJ STORE xx_taux_mean_dummy  = onetape
 CADJ STORE xx_tauy_mean_dummy  = onetape
 CADJ STORE xx_hflux_mean_dummy = onetape
 CADJ STORE xx_sflux_mean_dummy = onetape
+CADJ STORE xx_atemp_mean_dummy = onetape
+CADJ STORE xx_aqh_mean_dummy = onetape
+CADJ STORE xx_precip_mean_dummy = onetape
+CADJ STORE xx_swflux_mean_dummy = onetape
+CADJ STORE xx_swdown_mean_dummy = onetape
+CADJ STORE xx_uwind_mean_dummy = onetape
+CADJ STORE xx_vwind_mean_dummy = onetape
+CADJ STORE xx_smrareabar_mean_dummy = onetape
+#ifdef ALLOW_PROFILES
+CADJ STORE profiles_dummy = tapelev_init, key = 1
+#endif
+

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.41 2006/07/21 14:21:00 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.42 2006/10/23 22:43:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,6 +142,9 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_RBCS
 #  include "RBCS.h"
+# endif
+# ifdef ALLOW_PROFILES
+#  include "profiles.h"
 # endif
 # ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #  include "mpif.h"
@@ -504,19 +507,20 @@ c--     Set the model iteration counter and the model time.
 #endif
 
 
-C--   Switch on/off diagnostics for snap-shot output:
+#ifndef ALLOW_DIVIDED_ADJOINT
 #ifdef ALLOW_DIAGNOSTICS
+C--   Switch on/off diagnostics for snap-shot output:
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
       ENDIF
-#endif
-
 C--   State-variables diagnostics
       IF ( usediagnostics ) THEN
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
+#endif
 
 #ifdef ALLOW_PROFILES
 c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
@@ -935,12 +939,16 @@ C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
         CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+#ifndef ALLOW_DIVIDED_ADJOINT
+#ifdef ALLOW_DIAGNOSTICS
 C--   State-variables diagnostics
        IF ( usediagnostics ) THEN
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        ENDIF
+#endif
+#endif
 
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
@@ -1001,6 +1009,7 @@ C--   Calculate float trajectories
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
+#ifndef ALLOW_DIVIDED_ADJOINT
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
@@ -1035,6 +1044,7 @@ C--   Save state for restarts
      I               .FALSE., myTime, myIter, myThid )   
 #endif
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+#endif
 
 #ifdef TIME_PER_TIMESTEP
 CCE107 Time per timestep information
@@ -1114,6 +1124,10 @@ c
       call timer_start('ECCO SPIN-DOWN', mythid)
 
 #ifdef ALLOW_PROFILES
+c
+# ifdef ALLOW_DIVIDED_ADJOINT
+CADJ STORE mytime = onetape
+# endif
 c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
       call timer_start('PROFILES_INLOOP     [ECCO SPIN-DOWN]', mythid)
       call profiles_inloop( mytime, mythid )
@@ -1159,16 +1173,38 @@ c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
       call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
       call cost_forcing( myiter, mytime, mythid )
       call timer_stop ('cost_forcing       [ECCO SPIN-DOWN]', mythid)
+cph(
+c--   Compute cost function contribution of wind stress observations.  
+#ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
+      call cost_mean_heatflux( myiter, mytime, mythid )
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE objf_hfluxmm = tapelev_init, key = 1
+# endif
+#endif
+
+c--   Compute cost function contribution of wind stress observations.
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+      call cost_mean_saltflux( myiter, mytime, mythid )
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE objf_sfluxmm = tapelev_init, key = 1
+# endif
+#endif
+cph)
 
 c--   Compute cost function contribution of SSH.
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
+# ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_ssh',myThid)
-#endif
+# endif
       call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
       call cost_ssh( myiter, mytime, mythid )
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_PROFILES
+CADJ STORE etan = tapelev_init, key = 1
+#  endif
+# endif
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.
