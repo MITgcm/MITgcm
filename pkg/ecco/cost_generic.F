@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.6 2005/09/07 03:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.7 2006/10/23 19:54:55 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -145,7 +145,8 @@ c--   First, read tiled data.
       write(fname1(1:128),'(2a,i10.10)') 
      &     localbarfile(1:il),'.',optimcycle
 
-      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
+cph      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
+      if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
 c--   Loop over records for the second time.
       do irec = 1, nrecloc
