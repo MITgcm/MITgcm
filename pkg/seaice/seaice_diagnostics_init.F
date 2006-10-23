@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.1 2006/10/22 01:11:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.2 2006/10/23 16:29:48 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,28 +47,28 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'SIarea  '
       diagTitle = 'SEAICE fractional ice-covered area [0 to 1]'
       diagUnits = 'm^2/m^2         '
-      diagCode  = 'SM      MI      '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
       
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
       diagUnits = 'm               '
-      diagCode  = 'SM      MI      '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SIuice  '
       diagTitle = 'SEAICE zonal ice velocity, >0 from West to East'
       diagUnits = 'm/s             '
-      diagCode  = 'UU      MI      '
+      diagCode  = 'UU      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
       
       diagName  = 'SIvice  '
       diagTitle = 'SEAICE merid. ice velocity, >0 from South to North'
       diagUnits = 'm/s             '
-      diagCode  = 'VV      MI      '
+      diagCode  = 'VV      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
 

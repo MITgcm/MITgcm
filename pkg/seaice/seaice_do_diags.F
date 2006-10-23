@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.24 2006/10/22 01:11:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.25 2006/10/23 16:29:48 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -370,19 +370,28 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(AREA   ,'SIarea  ',0,3 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(HEFF   ,'SIheff  ',0,3 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(UICE   ,'SIuice  ',0,3 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(VICE   ,'SIvice  ',0,3 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         CALL DIAGNOSTICS_FILL(AREA(1-oLx,1-oLy,1,bi,bj),
+     &          'SIarea  ',0,1 ,0,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HEFF(1-oLx,1-oLy,1,bi,bj),
+     &        'SIheff  ',0,1 ,0,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(UICE(1-oLx,1-oLy,1,bi,bj),
+     &        'SIuice  ',0,1 ,0,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(VICE(1-oLx,1-oLy,1,bi,bj),
+     &        'SIvice  ',0,1 ,0,bi,bj,myThid)
+        ENDDO
+       ENDDO
 c
-        CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
+c
+       CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
