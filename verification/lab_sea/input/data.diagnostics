@@ -68,6 +68,30 @@
    fields(1,13) = 'SIheff  ',
    filename(13) = 'SIheff  ',
 #
+  frequency(14) = 36000.,
+   fields(1,14) = 'SIhsnow ',
+   filename(14) = 'SIhsnow ',
+#
+  frequency(15) = 36000.,
+   fields(1,15) = 'SIuice  ',
+   filename(15) = 'SIuice  ',
+#
+  frequency(16) = 36000.,
+   fields(1,16) = 'SIvice  ',
+   filename(16) = 'SIvice  ',
+#
+  frequency(17) = 36000.,
+   fields(1,17) = 'KPPhbl  ',
+   filename(17) = 'KPPhbl  ',
+#
+  frequency(18) = 36000.,
+   fields(1,18) = 'KPPmld  ',
+   filename(18) = 'KPPmld  ',
+#
+  frequency(19) = 36000.,
+   fields(1,19) = 'KPPghat ',
+   filename(19) = 'KPPghat ',
+#
  &
 
 # Parameter for Diagnostics of per level statistics:
