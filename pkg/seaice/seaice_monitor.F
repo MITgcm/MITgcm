@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.7 2006/10/18 16:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.8 2006/10/23 15:11:40 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,6 +145,17 @@ C       Print some statistics about input forcing fields
            ENDDO
         ENDDO
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_heff',
+     &       maskH,maskH,rA ,drF,myThid)
+        DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+              DO J=1-OLy,sNy+OLy
+                 DO I=1-OLx,sNx+OLx
+                    TMP_DIAG(i,j,bi,bj)=HSNOW(i,j,bi,bj)
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
+        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_hsnow',
      &       maskH,maskH,rA ,drF,myThid)
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
