@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.24 2006/10/22 00:19:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.25 2006/10/23 16:28:35 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -127,8 +127,7 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
         ENDIF
 
 #ifdef ALLOW_MNC
-        IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc .AND.
-     &      .NOT.useDiagnostics ) THEN
+        IF (KPPwriteState .AND. useMNC .AND. snapshot_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_state', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_state',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_state', 0, myThid)
@@ -140,9 +139,9 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
      &         'KPPdiffKzS', KPPdiffKzS, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
-     &         'KPPghat', KPPghat, myThid)
+     &         'KPPGHAT', KPPghat, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_state',0,0,
-     &         'KPPhbl', KPPhbl, myThid)
+     &         'KPPHBL', KPPhbl, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -264,8 +263,7 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
         ENDIF
         
 #ifdef ALLOW_MNC
-        IF (KPPwriteState .AND. useMNC .AND. timeave_mnc .AND.
-     &      .NOT.useDiagnostics) THEN
+        IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','kpp_timeave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('kpp_timeave', 0, myThid)
@@ -277,9 +275,9 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
      &         'KPPdiffKzS', KPPdiffKzSTave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPghat', KPPghatTave, myThid)
+     &         'KPPGHAT', KPPghatTave, myThid)
           CALL MNC_CW_RL_W(pf,'kpp_timeave',0,0,
-     &         'KPPhbl', KPPhblTave, myThid)
+     &         'KPPHBL', KPPhblTave, myThid)
         ENDIF
 #endif /*  ALLOW_MNC  */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.14 2006/10/22 00:19:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.15 2006/10/23 16:28:35 heimbach Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -161,7 +161,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       _END_MASTER(myThid)
 
 #ifdef ALLOW_MNC
-      IF (useMNC .AND. .NOT.useDiagnostics) THEN
+      IF (useMNC) THEN
 C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VNAME('KPPviscAz', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
@@ -191,32 +191,41 @@ C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT',
      &       'coordinates','XC YC RC iter', myThid)
         
-        CALL MNC_CW_ADD_VNAME('KPPghat', 'Cen_xy_Hn__C__t', 
+        CALL MNC_CW_ADD_VNAME('KPPGHAT', 'Cen_xy_Hn__C__t', 
      &       4,5, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat','units','s/m^2', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','units','s/m^2', 
      &       myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat','long_name',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','long_name',
      &       'KPP_nonlocal_transport_coefficient', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT',
      &       'coordinates','XC YC RC iter', myThid)
         
-        CALL MNC_CW_ADD_VNAME('KPPhbl', 'Cen_xy_Hn__-__t', 
+        CALL MNC_CW_ADD_VNAME('KPPHBL', 'Cen_xy_Hn__-__t', 
      &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl','units','m', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','units','m', 
      &       myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl','long_name',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','long_name',
      &       'KPP_boundary_layer_depth', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL',
      &       'coordinates','XC YC iter', myThid)
         
-        CALL MNC_CW_ADD_VNAME('KPPfrac', 'Cen_xy_Hn__-__t', 
+        CALL MNC_CW_ADD_VNAME('KPPMLD', 'Cen_xy_Hn__-__t', 
      &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac','units','dimless', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','units','m', 
      &       myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac','long_name',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','long_name',
+     &       'KPP_mixed_layer_depth', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD',
+     &       'coordinates','XC YC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPFRAC', 'Cen_xy_Hn__-__t', 
+     &       3,4, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','units','dimless', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','long_name',
      &       'KPP_short-wave_fraction_penetrating_mixing_layer', 
      &       myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac',
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC',
      &       'coordinates','XC YC iter', myThid)
       ENDIF
 #endif /* ALLOW_MNC */
