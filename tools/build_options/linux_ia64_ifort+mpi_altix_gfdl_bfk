@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #
 #  Ed Hill
@@ -6,7 +5,9 @@
 #  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
 #
 # adapted to GFDL's Itanium cluster
-# heimbach@mit.edu
+#  heimbach@mit.edu and baylor@mit.edu
+# 
+#  Will need to do module_load ifort.9.1.039 mpt-1.14 first
 
 CPP='/lib/cpp  -traditional -P'
 
@@ -14,21 +15,26 @@ CPP='/lib/cpp  -traditional -P'
 # -D_BYTESWAPIO doesn't work
     FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian'
 
-FOPTIM='-O5 -align'
+FOPTIM='-O3 -align -ip'
 NOOPTFILES='ini_curvilinear_grid.F'
 NOOPTFLAGS='-O3'
 
 #P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
 #P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
-LIBS='-L/opt/ifort/8.1.026/lib -lmpi -L/home/bfk/fortran/netcdf-3.6.0-p1/ic/lib -lnetcdf'
+LIBS='-lmpi -lnetcdf'
 
-FC='/opt/ifort/8.1.026/bin/ifort'
-CC='/opt/icc/8.1.030/bin/icc'
+FC=ifort
+# Using gcc instead of icc since this is how netcdf was compiled
+#CC=icc
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 
+#SKIP_NETCDF_CHECK=t
+#HAVE_NETCDF=t
+
 # These paths will likely change to newer versions of ifort
-INCLUDES='-I/opt/ifort/8.1.026/include -I/opt/mpt/1.12/include -I/home/bfk/fortran/netcdf-3.6.0-p1/ic/include'
-INCLUDEDIRS='/opt/mpt/1.12/include/'
-MPIINCLUDEDIR='/opt/mpt/1.12/include/'
-MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
-MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
+INCLUDES="-I/usr/local/include  -I$CPATH"
+INCLUDEDIRS="/usr/local/include $CPATH"
+#LIBDIRS='/usr/local/lib'
+#MPIINCLUDEDIR='/opt/mpt/1.14/include'
+#MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+#MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
