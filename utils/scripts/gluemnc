@@ -37,6 +37,7 @@ DEBUG=--dbg_lvl=0
 DIRNAME="gluedir.$RANDOM"
 mkdir $DIRNAME
 cp `which xplodemnc` $DIRNAME
+cp xplodemnc $DIRNAME
 cd $DIRNAME
 
 inone=$1
