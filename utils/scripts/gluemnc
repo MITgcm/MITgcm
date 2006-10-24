@@ -34,9 +34,10 @@
 
 DEBUG=--dbg_lvl=0
 
-mkdir gluedir
-ln -s `which xplodemnc` gluedir
-cd gluedir
+DIRNAME="gluedir.$RANDOM"
+mkdir $DIRNAME
+cp `which xplodemnc` $DIRNAME
+cd $DIRNAME
 
 inone=$1
 inone=${1:?"You must input mnc filenames to be glued"}
@@ -274,5 +275,5 @@ done
 
 cp *.glob.nc ..
 cd ..
-rm -rf gluedir
+rm -rf $DIRNAME
 
