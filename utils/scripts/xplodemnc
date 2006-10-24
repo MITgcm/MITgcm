@@ -4,6 +4,8 @@
 # The file should be in one directory, where this script is run.
 # The resulting files will be in the same directory.
 
+DEBUG="-D 0"
+
 inone=$1
 inone=${1:?"You must input an mnc filename to be xploded"}
 
@@ -15,19 +17,22 @@ do
     exit 1
   fi
 
-  varls=$(ncdump -h $somefile | grep double | grep ,)
+# Finding all the multidimensional variables
+  varls=$(ncdump -h $somefile | grep "double\|float" | grep , )
   IFS=';'
   vars=
   for somevar in ${varls}
   do
    somevar1=${somevar%(*}
    somevar1=${somevar1#*double }
+   somevar1=${somevar1#*float }
+   echo $somevar1
    vars=${vars}$somevar1' '
   done
   echo Variables to extract: $vars
   IFS=' '
   for somevar in $vars
   do
-    ncks -v $somevar $somefile $somevar.$somefile
+    ncks $DEBUG -v $somevar $somefile $somevar.$somefile
   done
 done

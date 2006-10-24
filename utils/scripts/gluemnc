@@ -29,14 +29,21 @@
 # e.g., along the time dimension before combining to global files.
 # *****************************
 #
-# Good luck and happy glueing,
+# Good luck and happy gluing,
 # Baylor Fox-Kemper
+
+DEBUG=--dbg_lvl=0
+
+mkdir gluedir
+ln -s `which xplodemnc` gluedir
+cd gluedir
 
 inone=$1
 inone=${1:?"You must input mnc filenames to be glued"}
 
 for somefile in $@
 do
+  ln -s ../$somefile .
   if [ ! -s $somefile ]; then
     echo "Error: $somefile is missing or empty"
     exit 1
@@ -104,7 +111,9 @@ do
       countx=$((countx))+1
     fi
   done
+  echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   echo $((countx)) tiles found in x-direction.
+  echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
   # Determine all the Y locations
   county=0
@@ -122,14 +131,22 @@ do
       county=$((county))+1
     fi
   done
+  echo YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
   echo $((county)) tiles found in y-direction.
+  echo YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
   countyy=1000
   countxx=1000
 
+  cntls=
   for someX in $sXsls
   do
     countxx=$((countxx+1))
+    cntls=$cntls$countxx" "
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    echo  Prepping X tile $((countxx-1000))
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
     for somefile in $@
     do
       if [ "${somefile%.t???.nc}" = "$somepre" ]; then
@@ -145,7 +162,8 @@ do
             withY=$(ncdump -h $somesplit | grep "Y =")
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
-              ncpdq -O -a Y,T $somesplit $somesplit
+              ncpdq $DEBUG -O -a Y,T $somesplit $somesplit
+              mv $somesplit $countxx.$somesplit
             fi
 
             withYp1=$(ncdump -h $somesplit | grep "Yp1 =")
@@ -154,37 +172,69 @@ do
               Yp1len=$((${Yp1len% ;}-1))
               #  Strip off the repeated value in Yp1
               echo Changing Yp1 to record variable in $somesplit
-              ncpdq -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit
+              ncpdq $DEBUG -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit
+              mv $somesplit $countxx.$somesplit
             fi
           done
         fi
       fi
     done
-    varls=$(ls *.$somefile)
-    varls=$(echo $varls | sed s/.$somefile/' '/g)
+  done
+  echo Tile names $cntls
+  for countxx in $cntls
+  do
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    echo  Combining X tile $((countxx-1000))
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    varls=
+    cxfilels=$(ls $countxx.*)
+    oldvar=
+    for somefile in $cxfilels
+    do
+      varname=${somefile%.*}
+      varname=${varname%.*}
+      varname=${varname%.*}
+      varname=${varname%.*}
+      varname=${varname#*.}
+      if [ "$varname" = "$oldvar" ]; then
+        echo $varname repeated
+      else
+        varls=$varls$varname" "
+      fi
+      oldvar=$varname
+    done
+
+    echo Found these variables to combine: $varls
+
     for somevar in $varls
     do
-      echo Combining $somevar files...
-      withY=$(ncdump -h $somevar.$somepre.*.nc | grep "Y =")
-      withYp1=$(ncdump -h $somevar.$somepre.*.nc | grep "Yp1 =")
+      echo YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+      echo Combining $somevar files in Y
+      echo YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
-      ncrcat $somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc
+      withY=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Y =")
+      withYp1=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Yp1 =")
 
-      rm $somevar.$somepre.t???.nc
+      ncrcat $DEBUG $countxx.$somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc
+      echo Just combined $countxx.$somevar
+      rm $countxx.$somevar.$somepre.t???.nc
 
       if [ ${#withY} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
       fi
 
       if [ ${#withYp1} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
       fi
     done
   done
   for somevar in $varls
   do
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    echo Combining $somevar files in X...
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     for somegloy in $(ls $somevar.$somepre.gloy.*.nc)
     do
       withX=$(ncdump -h $somegloy | grep "X =")
@@ -192,34 +242,37 @@ do
  
       if [ ${#withX} -gt 1 ]; then
         echo Changing X to record variable in $somegloy
-        ncpdq -O -a X,T $somegloy $somegloy
+        ncpdq $DEBUG -O -a X,T $somegloy $somegloy
       fi
 
       if [ ${#withXp1} -gt 1 ]; then
         Xp1len=${withXp1#*= }
         Xp1len=$((${Xp1len% ;}-1))
         #  Strip off the repeated value in Xp1
-        echo Changing Xp1 to record variable in $somesplit
-        ncpdq -O -a Xp1,T -F -d Xp1,1,$Xp1len $somesplit $somesplit
+        echo Changing Xp1 to record variable in $somegloy
+echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy
+        ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy
       fi
     done
     echo Combining $somevar.gloy files...
-    ncrcat $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc      
+    ncrcat $DEBUG $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc      
     rm $somevar.$somepre.gloy.*.nc
 
     if [ ${#withX} -gt 1 ]; then
       echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
     fi
 
     if [ ${#withXp1} -gt 1 ]; then
       echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
     fi
-  ncrcat -A $somevar.$somepre.glob.nc $somepre.glob.nc
+  ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc
   rm $somevar.$somepre.glob.nc
   done
 done
 
-
+cp *.glob.nc ..
+cd ..
+rm -rf gluedir
 
