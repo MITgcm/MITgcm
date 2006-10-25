@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.7 2006/02/26 19:51:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.8 2006/10/25 20:40:31 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -13,7 +13,7 @@ C     === Global variables ===
 #include "CD_CODE_VARS.h"
 
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -21,7 +21,7 @@ C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER I, J, K
 CEOP
 
 #ifdef ALLOW_CD_CODE
@@ -53,7 +53,7 @@ C-      2D arrays
       ENDDO
 
       IF ( nIter0.NE.0 ) THEN
-        CALL CD_CODE_READ_CHECKPOINT( nIter0, myThid )
+        CALL CD_CODE_READ_PICKUP( nIter0, myThid )
       ENDIF
 
 #endif /*  ALLOW_CD_CODE  */
