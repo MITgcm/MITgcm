@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.5 2006/10/25 01:15:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.6 2006/10/25 01:47:31 gforget Exp $
 
 #include "PROFILES_OPTIONS.h"
 
@@ -60,21 +60,11 @@ c--   Initialize the tiled cost function contributions.
           do num_file=1,NFILESPROFMAX
            do num_var=1,NVARMAX
             objf_profiles(num_file,num_var,bi,bj)= 0. _d 0
-           enddo
-          enddo
-c
-          do num_file=1,NFILESPROFMAX
-           do num_var=1,NVARMAX
             num_profiles(num_file,num_var,bi,bj) = 0. _d 0
+            profiles_dummy(num_file,num_var,bi,bj)=0. _d 0
            enddo
           enddo
         enddo
-      enddo
-
-      do num_file=1,NFILESPROFMAX
-         do num_var=1,NVARMAX
-            profiles_dummy(num_file,num_var,bi,bj)=0. _d 0
-         enddo
       enddo
 
       _BARRIER
