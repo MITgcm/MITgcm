@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.42 2006/10/23 22:43:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.43 2006/10/25 22:22:27 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1124,14 +1124,12 @@ c
       call timer_start('ECCO SPIN-DOWN', mythid)
 
 #ifdef ALLOW_PROFILES
-c
-# ifdef ALLOW_DIVIDED_ADJOINT
-CADJ STORE mytime = onetape
-# endif
+#ifndef ALLOW_DIVIDED_ADJOINT
 c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
       call timer_start('PROFILES_INLOOP     [ECCO SPIN-DOWN]', mythid)
       call profiles_inloop( mytime, mythid )
       call timer_stop ('PROFILES_INLOOP     [ECCO SPIN-DOWN]', mythid)
+#endif
 #endif
 
 #ifdef ALLOW_COST
