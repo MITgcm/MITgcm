@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.23 2006/08/24 01:10:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.24 2006/10/25 20:42:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,7 +66,7 @@ C     Create suffix to pass on to package pickup routines
 
 #ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN
-        CALL CD_CODE_WRITE_CHECKPOINT(
+        CALL CD_CODE_WRITE_PICKUP(
      &       prec, lgf, permPickup, myIter, myThid)
       ENDIF
 #endif /* ALLOW_CD_CODE */
@@ -142,7 +142,7 @@ C     Write pickup file for diagnostics package
 #ifdef ALLOW_PTRACERS
 C     Write restart file for passive tracers
       IF (usePTRACERS) THEN
-        CALL PTRACERS_WRITE_CHECKPOINT(permPickup,
+        CALL PTRACERS_WRITE_PICKUP(permPickup,
      &       fn,myIter,myTime,myThid)
       ENDIF
 #endif /* ALLOW_PTRACERS */
