@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.4 2006/07/14 22:12:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.5 2006/10/25 01:15:54 gforget Exp $
 
 #include "PROFILES_OPTIONS.h"
 
@@ -52,7 +52,7 @@ c--     Set default values.
         enddo
 
         do num_file=1,NFILESPROFMAX
-         do num_var=1,6
+         do num_var=1,NVARMAX
           mult_profiles(num_file,num_var) = 0. _d 0
          enddo
         enddo
@@ -76,6 +76,14 @@ c--     Set default values.
       prof_namesweight(5)='prof_ptrweight'
       prof_namesweight(6)='prof_sshweight'
       profilesfile_equi_type=2
+
+      if (NVARMAX.GT.6) then
+        WRITE(msgBuf,'(A)') 
+     & 'PROFILES_READPARMS: you need to define variables 7 to NVARMAX'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+        stop
+      endif 
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.profiles'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.6 2006/07/14 22:12:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.7 2006/10/25 01:15:54 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -54,7 +54,7 @@ c--   == end of interface ==
 
       do m=1,NLEVELMAX
       do l=1,1000
-      do k=1,6
+      do k=1,NVARMAX
       profiles_data_buff(m,l,k,bi,bj)=0
       profiles_weight_buff(m,l,k,bi,bj)=0
       enddo
@@ -208,7 +208,7 @@ c      DO bj = myByLo(myThid), myByHi(myThid)
       print*,"fid dimid ProfNo(num_file,bi,bj)",fid, dimid, 
      & num_file, ProfNo(num_file,bi,bj)
 
-      do k=1,6
+      do k=1,NVARMAX
       prof_num_var_cur(num_file,k,bi,bj)=0
       enddo
       prof_num_var_tot(num_file,bi,bj)=0
@@ -344,7 +344,7 @@ c      ENDDO
 C===========================================================
       else
       ProfNo(num_file,bi,bj)=0
-      do k=1,6
+      do k=1,NVARMAX
       prof_num_var_cur(num_file,k,bi,bj)=0
       vec_quantities(num_file,k,bi,bj)=.FALSE.
       enddo

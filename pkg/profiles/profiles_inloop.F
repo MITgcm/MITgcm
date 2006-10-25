@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.6 2006/07/14 22:12:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.7 2006/10/25 01:15:54 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -61,7 +61,7 @@ c     == end of interface ==
      & (prof_time(num_file,prof_num,bi,bj).LT.(mytime+deltaTclock))) 
      & then
 
-      do num_var=1,6
+      do num_var=1,NVARMAX
       do k=1,NLEVELMAX
       prof_traj1D(k)=0
       prof_mask1D(k)=0

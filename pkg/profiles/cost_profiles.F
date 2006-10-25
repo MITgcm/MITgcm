@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.8 2006/10/23 22:43:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.9 2006/10/25 01:15:54 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -55,7 +55,7 @@ c     == end of interface ==
          do prof_num=1,NOBSGLOB
           if (prof_num.LE.ProfNo(num_file,bi,bj)) then
 
-           do num_var=1,6
+           do num_var=1,NVARMAX
 
             do K=1,NLEVELMAX
              prof_traj1D(k)=0.
@@ -114,7 +114,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
          enddo !do prof_num=..
 
          if (ProfNo(num_file,bi,bj).GT.0) then
-          do num_var=1,6
+          do num_var=1,NVARMAX
            print*,'bi,bj,prof_num,num_var ',bi,bj,
      &      ProfNo(num_file,bi,bj),num_var
            print*,prof_names(num_var),
