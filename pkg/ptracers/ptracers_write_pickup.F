@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.9 2005/09/17 03:17:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.1 2006/10/25 20:41:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
-C !ROUTINE: PTRACERS_WRITE_CHECKPOINT
+C !ROUTINE: PTRACERS_WRITE_PICKUP
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_WRITE_CHECKPOINT( permCheckPoint, 
+      SUBROUTINE PTRACERS_WRITE_PICKUP( permCheckPoint, 
      &     suff,myIter,myTime,myThid )
 
 C !DESCRIPTION:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.1 2006/05/24 00:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.2 2006/10/25 20:41:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -105,7 +105,7 @@ C     Suffix for pickup files
        ELSE
         WRITE(suff,'(A10)') pickupSuff
        ENDIF
-       CALL PTRACERS_READ_CHECKPOINT( nIter0,myThid )
+       CALL PTRACERS_READ_PICKUP( nIter0,myThid )
       ENDIF
 
 #endif /* ALLOW_PTRACERS */

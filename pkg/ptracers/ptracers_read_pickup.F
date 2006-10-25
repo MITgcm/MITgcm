@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.12 2006/03/24 11:34:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.1 2006/10/25 20:41:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: PTRACERS_READ_CHECKPOINT
+C     !ROUTINE: PTRACERS_READ_PICKUP
 
 C     !INTERFACE:
-      SUBROUTINE PTRACERS_READ_CHECKPOINT( myIter, myThid )
+      SUBROUTINE PTRACERS_READ_PICKUP( myIter, myThid )
 
 C     !DESCRIPTION:
 C     Reads current state of passive tracers from a pickup file
