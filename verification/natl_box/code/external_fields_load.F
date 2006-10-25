@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.12 2006/01/24 02:14:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.13 2006/10/25 16:05:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,8 +111,9 @@ C Now calculate whether it is time to update the forcing arrays
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-       WRITE(*,*)
-     &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data',myTime,myIter
+       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &  intime0, intime1, myIter, myTime
 
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
@@ -209,10 +210,10 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
      &                       +aWght*SST1(i,j,bi,bj)
           SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
      &                       +aWght*SSS1(i,j,bi,bj)
-          fu(i,j,bi,bj)    = -(bWght*taux0(i,j,bi,bj) 
-     &                         +aWght*taux1(i,j,bi,bj))
-          fv(i,j,bi,bj)    = -(bWght*tauy0(i,j,bi,bj) 
-     &                         +aWght*tauy1(i,j,bi,bj))
+          fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
+     &                       +aWght*taux1(i,j,bi,bj)
+          fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
+     &                       +aWght*tauy1(i,j,bi,bj)
           Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
@@ -227,20 +228,20 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       ENDDO
 
 C-- Diagnostics
-cph      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
-cph        write(*,'(a,1p7e12.4,2i6,2e12.4)')
-cph     &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
-cph     &   myTime,
-cph     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
-cph     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
-cph     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
-cph     &   intime0,intime1,aWght,bWght
-cph        write(*,'(a,1p7e12.4)')
-cph     &   'time,fu0,fu1,fu = ',
-cph     &   myTime,
-cph     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
-cph     &   aWght,bWght
-cph      ENDIF
+      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
+        write(*,'(a,1p7e12.4,2i6,2e12.4)')
+     &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
+     &   myTime,
+     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
+     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
+     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
+     &   intime0,intime1,aWght,bWght
+        write(*,'(a,1p4e12.4,2E23.15)')
+     &   'time,fu0,fu1,fu = ',
+     &   myTime,
+     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
+     &   aWght,bWght
+      ENDIF
 
 C endif for periodicForcing
       ENDIF
