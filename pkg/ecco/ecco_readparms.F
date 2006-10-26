@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.26 2006/10/12 21:03:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.27 2006/10/26 01:22:00 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -299,6 +299,10 @@ c--     Next, read the cost data file.
 #ifdef ALLOW_CAL
 c--     Get the complete dates of the ...
 c--     ... SST data.
+        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: start assigning cost dates'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
+
         call cal_FullDate( sststartdate1,   sststartdate2,
      &                     sststartdate,    mythid )
 c--     ... TMI data.
@@ -321,6 +325,10 @@ c--     ... SCAT data.
      &                     scatxstartdate,    mythid )
         call cal_FullDate( scatstartdate1,   scatstartdate2,   
      &                     scatystartdate,    mythid )
+
+        WRITE(msgBuf,'(A)') 'ECCO_READPARMS: end assigning cost dates'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , 1)
 #endif
 
       _END_MASTER( mythid )
