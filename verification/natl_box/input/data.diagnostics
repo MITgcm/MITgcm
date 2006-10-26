@@ -11,7 +11,7 @@
 #                 for the list of all available diag. in this particular config)
 #-----------------
 # This example dumps all KPP diagnostics as
-# a snapshot after 24 time steps (= 1.day)
+# a snapshot every day, at mid day (t=12.h, baseTime=6.h, deltaT=1.h => iter=6)
  &diagnostics_list
   frequency(1) = -86400.,
    fields(1,1) = 'KPPviscA',
