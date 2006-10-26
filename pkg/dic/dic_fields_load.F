@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.10 2006/09/12 19:58:02 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.11 2006/10/26 00:25:24 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -76,13 +76,16 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
      &    ) THEN
 
 
-        _BEGIN_MASTER(myThid)
+        _BARRIER
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-        WRITE(*,*)
-     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new dic data',
-     &                 myTime,myIter
+        _BEGIN_MASTER(myThid)
+        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &  'S/R DIC_FIELDS_LOAD: Reading new dic data:',
+     &  intime0, intime1, myIter, myTime
+        _END_MASTER(myThid)
+
 
        IF ( WindFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( WindFile,wspeed0,intime0,
@@ -95,7 +98,7 @@ C      data for the period ahead and the period behind myTime.
      &        myIter,myThid )
          CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
      &        myIter,myThid )
-       ENDIF 
+       ENDIF
        IF ( SilicaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
      &        myIter,myThid )
@@ -125,9 +128,6 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 
-
-       _END_MASTER(myThid)
-C
        _EXCH_XY_R4(wspeed0, myThid )
        _EXCH_XY_R4(wspeed1, myThid )
        _EXCH_XY_R4(atmosp0, myThid )
@@ -205,7 +205,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
        ENDDO
 
 C endif for periodicForcing
-       ENDIF
+      ENDIF
 
 #endif
       RETURN

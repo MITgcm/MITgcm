@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.8 2006/03/17 03:22:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.9 2006/10/26 00:25:53 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -51,14 +51,13 @@ C     myIter - Simulation timestep number
       _RL     myTime
       INTEGER myIter
 
+#ifdef ALLOW_OFFLINE
+C     !LOCAL VARIABLES:
 c     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_FNAM) fn2
       INTEGER prec
 
- 
-
-C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     uvel[01]  :: Temp. for u
 C     vvel[01]  :: Temp. for v
@@ -112,7 +111,6 @@ c     _RS  tmp      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER  IFNBLNK, ILNBLNK
       EXTERNAL IFNBLNK, ILNBLNK
 
-#ifdef ALLOW_OFFLINE
       prec = precFloat32
       KGM=1.d0
 
@@ -169,13 +167,15 @@ C Now calculate whether it is time to update the forcing arrays
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
-       _BEGIN_MASTER(myThid)
+       _BARRIER
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-       WRITE(*,*)
-     &  'S/R OFFLINE_FIELDS_LOAD: Reading new data',myTime,myIter
-     &            , nIter0, intime0,intime1
+       _BEGIN_MASTER(myThid)
+       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &  'S/R OFFLINE_FIELDS_LOAD: Reading new data:',
+     &  intime0, intime1, myIter, myTime
+       _END_MASTER(myThid)
 
 #ifdef NOT_MODEL_FILES
 c if reading own files setup reading here
@@ -346,9 +346,6 @@ c
 c
 #endif /* else NOT_MODEL_FILES */
 
-       _END_MASTER(myThid)
-
-C
        _EXCH_XYZ_R4(uvel0 , myThid )
        _EXCH_XYZ_R4(uvel1 , myThid )
        _EXCH_XYZ_R4(vvel0 , myThid )
@@ -376,11 +373,7 @@ C
        _EXCH_XYZ_R4(kght0, myThid )
        _EXCH_XYZ_R4(kght1, myThid ) 
 
-
- 
-c
       ENDIF
-c
     
 C--   Interpolate uvel, vvel, wvel
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -448,8 +441,7 @@ C      ENDIF
 C endif for periodicForcing
       ENDIF
 
-#endif   
-c! ALLOW_OFFLINE
+#endif /* ALLOW_OFFLINE */  
 
       RETURN
       END
