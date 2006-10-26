@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_write_pickup.F,v 1.1 2006/10/25 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_write_pickup.F,v 1.2 2006/10/26 00:24:41 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -8,11 +8,11 @@ CBOP
 C     !ROUTINE: CD_CODE_WRITE_PICKUP
 
 C     !INTERFACE:
-      SUBROUTINE CD_CODE_WRITE_PICKUP( 
-     I     prec, 
-     I     lgf, 
-     I     permCheckPoint, 
-     I     myIter, 
+      SUBROUTINE CD_CODE_WRITE_PICKUP(
+     I     prec,
+     I     lgf,
+     I     permCheckPoint,
+     I     myIter,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -23,15 +23,15 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CD_CODE_VARS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "CD_CODE_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER prec
       LOGICAL lgf
-      LOGICAL permCheckPoint  
+      LOGICAL permCheckPoint
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -71,14 +71,13 @@ C       Read variables from the pickup file
       ELSE
         WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
       ENDIF
-      
+
       IF (pickup_write_mdsio) THEN
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,4*Nr+1,
-     &       myIter,myThid)
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, uVelD, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, vVelD, 2, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, uNM1,  3, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, vNM1,  4, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, 1,etaNm1,4*Nr+1,myIter,myThid)
       ENDIF
 
 #endif /*  ALLOW_CD_CODE  */

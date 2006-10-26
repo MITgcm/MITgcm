@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.1 2006/10/25 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.2 2006/10/26 00:24:40 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -18,10 +18,10 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CD_CODE_VARS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "CD_CODE_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myIter
@@ -41,12 +41,10 @@ C     Suffix for pickup files
       ELSE
          WRITE(suff,'(A10)') pickupSuff
       ENDIF
-         
-      _BARRIER
-      _BEGIN_MASTER( myThid )
-
       prec = precFloat64
-      
+
+      _BARRIER
+
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_read_mnc) THEN
 C       Read variables from the pickup file
@@ -66,25 +64,23 @@ C       Read variables from the pickup file
       WRITE(fn,'(A,A10)') 'pickup_cd.',suff
 
       IF (pickup_read_mdsio) THEN
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
+        CALL READ_REC_3D_RL( fn, prec, Nr, uVelD, 1, myIter, myThid )
+        CALL READ_REC_3D_RL( fn, prec, Nr, vVelD, 2, myIter, myThid )
+        CALL READ_REC_3D_RL( fn, prec, Nr, uNM1,  3, myIter, myThid )
+        CALL READ_REC_3D_RL( fn, prec, Nr, vNM1,  4, myIter, myThid )
         IF ( usePickupBeforeC54 ) THEN
-          CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
+          CALL READ_REC_3D_RL(fn,prec, 1, etaNm1,6*Nr+1,myIter,myThid)
         ELSE
-          CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,4*Nr+1,myThid)
+          CALL READ_REC_3D_RL(fn,prec, 1, etaNm1,4*Nr+1,myIter,myThid)
         ENDIF
       ENDIF
-      
-      _END_MASTER( myThid )
-      _BARRIER
-      
+
+C-    thread synchronisation (barrier) is part of the EXCH S/R calls
       _EXCH_XYZ_R8( uVelD,    myThid )
       _EXCH_XYZ_R8( vVelD,    myThid )
       CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
       _EXCH_XY_R8( etaNm1, myThid )
-      
+
 #endif /*  ALLOW_CD_CODE  */
 
       RETURN
