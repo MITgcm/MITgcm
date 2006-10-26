@@ -12,13 +12,9 @@
 #   diffKzT         - Vertical temperature diffusivity                  (m^2/s)
 #   diffKhS         - Horizontal salt diffusivity                       (m^2/s)
 #   diffKzS         - Vertical salt diffusivity                         (m^2/s)
-#   f0              - Reference coriolis parameter,
-#                     south edge of f on beta plane                       (1/s)
-#   beta            - df/dy                                         (s^-1.m^-1)
 #   tAlpha          - Linear EOS thermal expansion coefficient           (1/oC)
 #   sBeta           - Linear EOS haline contraction coefficient         (1/ppt)
 #   gravity         - Acceleration due to gravity                       (m/s^2)
-#   gBaro           - Accel. due to gravity used in barotropic equation (m/s^2)
 #   rigidLid        - Set to true to use rigid lid
 #   implicitFreeSurface - Set to true to use implicit free surface
 #   eosType         - Flag for linear or polynomial equation of state
@@ -35,12 +31,9 @@
  diffKhT            = 1.0E3,
  diffKhS            = 1.0E3,
  rotationPeriod     = 86400.,
- f0                 = 1.e-4,
- beta               = 1.E-11,
  tAlpha             = 2.E-4,
  sBeta              = 7.4E-4,
  gravity            = 9.81,
- gBaro              = 9.81,
  rigidLid           = .FALSE.,
  implicitFreeSurface= .TRUE.,
  implicitDiffusion  = .TRUE.,
@@ -84,15 +77,16 @@
 #   tauSaltClimRelax  - Relaxation to climatology time scale     (s)
 #
  &PARM03
- startTime  = 0.0,
- endTime    = 72000.0,
+ baseTime   = 21600.,
+ startTime  = 21600.,
+ endTime    = 93600.,
  deltaTmom  = 3600.0,
  TauCD      = 172800.
  cAdjFreq   = 0.,
  abEps      = 0.1,
  pChkptFreq = 0.0,
  chkptFreq  = 0.0,
- dumpFreq   = 39600.0,
+ dumpFreq   = 86400.,
  tauSaltClimRelax = 2592000.0,
  tauThetaClimRelax = 2592000.0,
  periodicExternalForcing = .TRUE.,
@@ -104,14 +98,12 @@
 # Gridding parameters
 #
 #   usingSphericalPolarGrid - On/Off flag for spherical polar coordinates
-#   usingCartesianGrid      - On/Off flag for selecting cartesian coordinates
 #   delX                    - Zonal grid spacing         (degrees)
 #   delY                    - Meridional grid spacing    (degrees)
 #   delZ                    - Vertical grid spacing      (m)
 #   phiMin                  - Southern boundary latitude (degrees)
 #
  &PARM04
- usingCartesianGrid      = .FALSE.,
  usingSphericalPolarGrid = .TRUE.,
  delX   = 20*2.,
  delY   = 16*2.,
