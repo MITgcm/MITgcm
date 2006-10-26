@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.738 2006/10/26 00:50:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.739 2006/10/26 19:11:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o multi-threading and IO: 
+o use standard version of PTRACERS_INI_VARIA in tutorial_tracer_adjsens
+  (identical results) and the standard version of EXTERNAL_FIELDS_LOAD
+  in natl_box (affects results @ truncation level: update output.txt)
+o multi-threading and IO:
   - replace some call to MDSIO S/R by the corresponding READ/WRITE_FLD S/R.
   - remove most of BEGIN_MASTER/ END_MASTER around READ/WRITE_FLD S/R calls
     (needed to work with SingleCpuIO): tested in all verif. exp.
