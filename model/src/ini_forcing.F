@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.41 2006/01/02 21:17:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.42 2006/10/26 00:32:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,8 +11,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_FORCING                                    
-C     | o Set model initial forcing fields.                       
+C     | SUBROUTINE INI_FORCING
+C     | o Set model initial forcing fields.
 C     *==========================================================*
 C     \ev
 
@@ -33,13 +33,12 @@ C     myThid -  Number of this instance of INI_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  - Loop counters
-C     I,J
+C     i, j
       INTEGER bi, bj
-      INTEGER  I, J, K
+      INTEGER  i, j
 CEOP
 
-      _BARRIER
-
+C-    Initialise all arrays in common blocks
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -76,7 +75,7 @@ CEOP
           SST1            (i,j,bi,bj) = 0. _d 0
           SSS0            (i,j,bi,bj) = 0. _d 0
           SSS1            (i,j,bi,bj) = 0. _d 0
-#ifdef SHORTWAVE_HEATING          
+#ifdef SHORTWAVE_HEATING
           Qsw0            (i,j,bi,bj) = 0. _d 0
           Qsw1            (i,j,bi,bj) = 0. _d 0
 #endif
@@ -89,30 +88,31 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
-C
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          IF ( doThetaClimRelax .AND. 
-     &         abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
-           lambdaThetaClimRelax(I,J,bi,bj) = 1./tauThetaClimRelax
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF ( doThetaClimRelax .AND.
+     &         ABS(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
+           lambdaThetaClimRelax(i,j,bi,bj) = 1. _d 0/tauThetaClimRelax
           ELSE
-           lambdaThetaClimRelax(I,J,bi,bj) = 0.D0
+           lambdaThetaClimRelax(i,j,bi,bj) = 0. _d 0
           ENDIF
           IF ( doSaltClimRelax .AND.
-     &         abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
-           lambdaSaltClimRelax(I,J,bi,bj) = 1./tauSaltClimRelax
+     &         ABS(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
+           lambdaSaltClimRelax(i,j,bi,bj) = 1. _d 0/tauSaltClimRelax
           ELSE
-           lambdaSaltClimRelax(I,J,bi,bj) = 0.D0
+           lambdaSaltClimRelax(i,j,bi,bj) = 0. _d 0
           ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C
+
+C-    every-one waits before master thread loads from file
       _BARRIER
-      _BEGIN_MASTER(myThid)
+
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
       ENDIF
@@ -137,11 +137,11 @@ C
        CALL READ_FLD_XY_RS( saltClimFile, ' ', SSS, 0, myThid )
       ENDIF
       IF ( lambdaThetaFile .NE. ' '  ) THEN
-       CALL READ_FLD_XY_RS( lambdaThetaFile, ' ', 
+       CALL READ_FLD_XY_RS( lambdaThetaFile, ' ',
      &  lambdaThetaClimRelax, 0, myThid )
       ENDIF
       IF ( lambdaSaltFile .NE. ' '  ) THEN
-       CALL READ_FLD_XY_RS( lambdaSaltFile, ' ', 
+       CALL READ_FLD_XY_RS( lambdaSaltFile, ' ',
      &  lambdaSaltClimRelax, 0, myThid )
       ENDIF
 #ifdef SHORTWAVE_HEATING
@@ -149,8 +149,9 @@ C
        CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
-        DO bj = 1,nSy
-         DO bi = 1,nSx
+        _BARRIER
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) + Qsw(i,j,bi,bj)
@@ -167,8 +168,6 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
       ENDIF
 #endif
 
-      _END_MASTER(myThid)
-C
       _EXCH_XY_R4(fu   , myThid )
       _EXCH_XY_R4(fv   , myThid )
       _EXCH_XY_R4(Qnet , myThid )

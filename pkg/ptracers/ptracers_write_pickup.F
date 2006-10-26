@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.1 2006/10/25 20:41:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.2 2006/10/26 00:29:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,8 +7,8 @@ CBOP
 C !ROUTINE: PTRACERS_WRITE_PICKUP
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_WRITE_PICKUP( permCheckPoint, 
-     &     suff,myIter,myTime,myThid )
+      SUBROUTINE PTRACERS_WRITE_PICKUP( permCheckPoint,
+     &                    suff, myIter, myTime, myThid )
 
 C !DESCRIPTION:
 C     Writes current state of passive tracers to a pickup file
@@ -38,30 +38,26 @@ C  none
 
 #ifdef ALLOW_PTRACERS
 
+C     === Functions ====
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C !LOCAL VARIABLES: ====================================================
 C  iTracer		:: loop indices
 C  iRec    		:: record number
 C  fn   		:: character buffer for creating filename
 C  prec 		:: precision of pickup files
-C  lgf  		:: flag to write "global" files
-      INTEGER i,iTracer,prec,iRec,iChar,lChar
+      INTEGER iTracer,prec,iRec,lChar
       CHARACTER*(MAX_LEN_FNAM) fn
-      LOGICAL lgf
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 CEOP
-
-      DO i = 1,MAX_LEN_FNAM
-        fn(i:i) = ' '
-      ENDDO
 
 #ifdef ALLOW_MNC
       IF ( PTRACERS_pickup_write_mnc ) THEN
         IF ( permCheckPoint ) THEN
-          WRITE(fn,'(a)') 'pickup_ptracers'
+          WRITE(fn,'(A)') 'pickup_ptracers'
         ELSE
           lChar = ILNBLNK(suff)
-          WRITE(fn,'(2a)') 'pickup_ptracers.', suff(1:lChar)
+          WRITE(fn,'(2A)') 'pickup_ptracers.', suff(1:lChar)
         ENDIF
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
 C       First ***define*** the file group name
@@ -90,16 +86,16 @@ C       step since we're saving the gPtrNm1 variable first
         ENDDO
       ENDIF
 #endif /*  ALLOW_MNC  */
-         
+
       IF ( PTRACERS_pickup_write_mdsio ) THEN
 
-        lChar = 0
-        DO iChar = 1,len(suff)
-          IF ( suff(iChar:iChar) .NE. ' ') lChar=iChar
-        ENDDO
-        WRITE(fn,'(A,A)') 'pickup_ptracers.',suff(1:lChar)
+        lChar = ILNBLNK(suff)
+        IF ( lChar.EQ.0 ) THEN
+          WRITE(fn,'(2A)') 'pickup_ptracers'
+        ELSE
+          WRITE(fn,'(2A)') 'pickup_ptracers.',suff(1:lChar)
+        ENDIF
         prec = precFloat64
-        lgf = globalFiles
 
 C       Write fields & tendancies (needed for AB) as consecutive
 C       records, one tracer after the other, for all available tracers.
@@ -107,14 +103,14 @@ C       note: this allow to restart from a pickup with a different
 C       number of tracers, with read_pickup reading only the tracers
 C       "InUse".
         DO iTracer=1,PTRACERS_num
-          iRec = 2*iTracer - 1 
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+          iRec = 2*iTracer - 1
+          CALL WRITE_REC_3D_RL( fn, prec, Nr,
      &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     &         iRec,myIter,myThid)
+     &         iRec, myIter, myThid )
           iRec = 2*iTracer
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
+          CALL WRITE_REC_3D_RL( fn, prec, Nr,
      &         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     &         iRec,myIter,myThid)
+     &         iRec, myIter, myThid )
         ENDDO
 
       ENDIF

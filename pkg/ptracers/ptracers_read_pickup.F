@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.1 2006/10/25 20:41:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.2 2006/10/26 00:29:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -34,10 +34,11 @@ C     iTracer		:: loop indices
 C     iRec    		:: record number
 C     fn   		:: character buffer for creating filename
 C     prec 		:: precision of pickup files
-C     fn                :: suffix for pickup file (eg. 0000000010)
       INTEGER iTracer,prec,iRec
       CHARACTER*(MAX_LEN_MBUF) fn
 CEOP
+
+      _BARRIER
 
 #ifdef ALLOW_MNC
       IF ( PTRACERS_pickup_read_mnc ) THEN
@@ -59,32 +60,35 @@ C       Read variables from the pickup file
         ENDDO
       ENDIF
 #endif /*  ALLOW_MNC  */
-         
+
       IF ( PTRACERS_pickup_read_mdsio ) THEN
 
       WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
       prec = precFloat64
-      
+
       IF ( usePickupBeforeC54 ) THEN
 C       Read fields as consecutive records
         DO iTracer=1,PTRACERS_num
           iRec = iTracer
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+          CALL READ_REC_3D_RL( fn, prec, Nr,
+     O         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     I         iRec, myIter, myThid )
       _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
 
 C       Read historical tendancies as consecutive records
         DO iTracer=1,PTRACERS_num
           iRec = iTracer + PTRACERS_num
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &         gPtr(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+          CALL READ_REC_3D_RL( fn, prec, Nr,
+     O         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I         iRec, myIter, myThid )
       _EXCH_XYZ_R8(gPtr(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
         DO iTracer=1,PTRACERS_num
           iRec = iTracer + PTRACERS_num*2
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+          CALL READ_REC_3D_RL( fn, prec, Nr,
+     O         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     I         iRec, myIter, myThid )
       _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
 
@@ -94,16 +98,18 @@ C       one tracer after the other, only for tracers "InUse".  Note:
 C       this allow to restart from a pickup with a different number of
 C       tracers, with write_pickup dumping all of them (PTRACERS_num).
         DO iTracer=1,PTRACERS_numInUse
-          iRec = 2*iTracer -1 
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+          iRec = 2*iTracer -1
+          CALL READ_REC_3D_RL( fn, prec, Nr,
+     O         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     I         iRec, myIter, myThid )
           iRec = 2*iTracer
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,
-     &         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myThid)
+          CALL READ_REC_3D_RL( fn, prec, Nr,
+     O         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     I         iRec, myIter, myThid )
       _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
       _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
-        
+
       ENDIF
 
       ENDIF

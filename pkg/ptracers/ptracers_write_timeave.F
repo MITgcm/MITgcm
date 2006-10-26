@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.7 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.8 2006/10/26 00:29:34 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -29,12 +29,12 @@ C     Functions
       EXTERNAL IO_ERRCOUNT
 
 C     !INPUT PARAMETERS:
-C     myThid  ::  Thread number for this instance of the routine.
-C     myIter  ::  Iteration number
 C     myTime  ::  Current time of simulation ( s )
-      INTEGER myThid
-      INTEGER myIter
+C     myIter  ::  Iteration number
+C     myThid  ::  Thread number for this instance of the routine.
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 #if ( defined ALLOW_PTRACERS && defined ALLOW_TIMEAVE )
@@ -42,16 +42,13 @@ CEOP
 C     !LOCAL VARIABLES:
 C     suff    ::  Hold suffix part of a filename
 C     TimeAve ::  total time over average
-      INTEGER prevPrec
       CHARACTER*(MAX_LEN_FNAM) suff
-      _RL DDTT
-      INTEGER bi,bj,k, iTracer
+      INTEGER bi,bj, iTracer
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_MNC
       INTEGER ii,jj, ilnb
-      CHARACTER*(MAX_LEN_FNAM) name
 C     Functions
       INTEGER ILNBLNK
       CHARACTER*(1) pf
@@ -60,7 +57,7 @@ C     Functions
 C     Final Time Averages and Dump Files if needed
       IF ( DIFFERENT_MULTIPLE( PTRACERS_taveFreq, myTime, deltaTClock )
      &   ) THEN
-        
+
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
 C           Normalize by integrated time
@@ -77,7 +74,6 @@ C           Normalize by integrated time
 
 C       Write to files
         _BARRIER
-        _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_MNC
         IF ( PTRACERS_timeave_mnc ) THEN
@@ -102,18 +98,18 @@ C       Write to files
             CALL MNC_CW_RL_W(pf,'ptr_tave',0,0,PTRACERS_names(ii),
      &           ptracertave(1-OLx,1-OLy,1,1,1,ii),myThid)
             DO jj = 1,MAX_LEN_FNAM
-              name(jj:jj) = ' '
+              suff(jj:jj) = ' '
             ENDDO
             ilnb = ILNBLNK(PTRACERS_names(ii))
-            WRITE(name,'(a,a)') 'surf_',PTRACERS_names(ii)(1:ilnb)
-            CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0,name,
+            WRITE(suff,'(a,a)') 'surf_',PTRACERS_names(ii)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0,suff,
      &           ptracerFluxtave(1-OLx,1-OLy,1,1,ii),myThid)
           ENDDO
         ENDIF
 #endif /*  ALLOW_MNC  */
 
         IF ( PTRACERS_timeave_mdsio ) THEN
-        
+
 C         Set IO "context" for writing state
 #ifdef USE_DFILE
           CALL DFILE_SET_RW
@@ -121,10 +117,8 @@ C         Set IO "context" for writing state
 #endif
 C         Read IO error counter
           beginIOErrCount = IO_ERRCOUNT(myThid)
-c         prevPrec = writeBinaryPrec
-c         writeBinaryPrec = precFloat32
-          
-          do iTracer=1,PTRACERS_numInUse
+
+          DO iTracer=1,PTRACERS_numInUse
             WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PtrFluxtave',
      &           iTracer,'.',myIter
             CALL WRITE_FLD_XY_RL (suff,' ',
@@ -135,35 +129,37 @@ c         writeBinaryPrec = precFloat32
             CALL WRITE_FLD_XYZ_RL(suff,' ',
      &           ptracertave    (1-Olx,1-Oly,1,1,1,iTracer),
      &           myIter,myThid)
-          enddo
+          ENDDO
 
-c         writeBinaryPrec = prevPrec
 C         Reread IO error counter
           endIOErrCount = IO_ERRCOUNT(myThid)
-          
+
 C         Check for IO errors
           IF ( endIOErrCount .NE. beginIOErrCount ) THEN
+C-          any thread that detects an error should report
             WRITE(msgBuf,'(A)')  'S/R PTRACERS_WRITE_TIMEAVE'
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')  'Error writing out data'
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-            CALL PRINT_ERROR( msgBuf, 1 )
+            CALL PRINT_ERROR( msgBuf, myThid )
           ELSE
-            WRITE(msgBuf,'(A,I10)')  
+C-          normal case: 1 message is enough
+            _BEGIN_MASTER( myThid )
+            WRITE(msgBuf,'(A,I10)')
      &           '// PTRACER time-average data written, t-step', myIter
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &           SQUEEZE_RIGHT, 1 )
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &           SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(A)')  ' '
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &           SQUEEZE_RIGHT, 1 )
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &           SQUEEZE_RIGHT, myThid )
+            _END_MASTER( myThid )
           ENDIF
-        
+
         ENDIF
 
-        _END_MASTER( myThid )
         _BARRIER
-        
+
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -178,7 +174,7 @@ C           2) Start to cumulate state-variables with Half time step.
         ENDDO
 
       ENDIF
- 
+
 #endif /* ALLOW_PTRACERS and ALLOW_TIMEAVE */
 
       RETURN

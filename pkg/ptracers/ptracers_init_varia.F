@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.2 2006/10/25 20:41:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.3 2006/10/26 00:29:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -70,10 +70,8 @@ C     Now read initial conditions and always exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
-         _BEGIN_MASTER( myThid )
          CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
      &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),0,myThid)
-         _END_MASTER(myThid)
          _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDIF
        ENDDO
@@ -84,8 +82,8 @@ C     Apply mask
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,Nr
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=1-Oly,sNy+OLy
+           DO i=1-Olx,sNx+Olx
             IF (maskC(i,j,k,bi,bj).EQ.0.)
      &           pTracer(i,j,k,bi,bj,iTracer)=0. _d 0
            ENDDO
@@ -95,8 +93,6 @@ C     Apply mask
        ENDDO
       ENDDO
 
-      _BARRIER
-
 C Read from a pickup file if needed
       IF (nIter0.GT.PTRACERS_Iter0) THEN
 C     Suffix for pickup files
@@ -105,7 +101,7 @@ C     Suffix for pickup files
        ELSE
         WRITE(suff,'(A10)') pickupSuff
        ENDIF
-       CALL PTRACERS_READ_PICKUP( nIter0,myThid )
+       CALL PTRACERS_READ_PICKUP( nIter0, myThid )
       ENDIF
 
 #endif /* ALLOW_PTRACERS */

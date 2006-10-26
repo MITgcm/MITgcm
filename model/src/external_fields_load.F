@@ -1,35 +1,35 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.26 2006/06/15 16:24:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.27 2006/10/26 00:32:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: EXTERNAL_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE EXTERNAL_FIELDS_LOAD                           
-C     | o Control reading of fields from external source.         
+C     | SUBROUTINE EXTERNAL_FIELDS_LOAD
+C     | o Control reading of fields from external source.
 C     *==========================================================*
-C     | External source field loading routine.                    
-C     | This routine is called every time we want to              
-C     | load a a set of external fields. The routine decides      
-C     | which fields to load and then reads them in.              
-C     | This routine needs to be customised for particular        
-C     | experiments.                                              
-C     | Notes                                                     
-C     | =====                                                     
-C     | Two-dimensional and three-dimensional I/O are handled in  
-C     | the following way under MITgcmUV. A master thread         
-C     | performs I/O using system calls. This threads reads data  
-C     | into a temporary buffer. At present the buffer is loaded  
-C     | with the entire model domain. This is probably OK for now 
-C     | Each thread then copies data from the buffer to the       
-C     | region of the proper array it is responsible for.         
-C     | =====                                                     
-C     | Conversion of flux fields are described in FFIELDS.h      
+C     | External source field loading routine.
+C     | This routine is called every time we want to
+C     | load a a set of external fields. The routine decides
+C     | which fields to load and then reads them in.
+C     | This routine needs to be customised for particular
+C     | experiments.
+C     | Notes
+C     | =====
+C     | Two-dimensional and three-dimensional I/O are handled in
+C     | the following way under MITgcmUV. A master thread
+C     | performs I/O using system calls. This threads reads data
+C     | into a temporary buffer. At present the buffer is loaded
+C     | with the entire model domain. This is probably OK for now
+C     | Each thread then copies data from the buffer to the
+C     | region of the proper array it is responsible for.
+C     | =====
+C     | Conversion of flux fields are described in FFIELDS.h
 C     *==========================================================*
 C     \ev
 
@@ -42,7 +42,7 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -51,7 +51,7 @@ C     myIter - Simulation timestep number
       INTEGER myThid
       _RL     myTime
       INTEGER myIter
- 
+
 
 #ifndef ALLOW_EXF
 
@@ -68,30 +68,6 @@ CEOP
 
 C First call requires that we initialize everything to zero for safety
 cph    has been shifted to ini_forcing.F
-cph    arrays are now globally visible
-cph
-cph      IF ( myIter .EQ. nIter0 ) THEN
-cph       CALL LEF_ZERO( taux0 ,myThid )
-cph       CALL LEF_ZERO( tauy0 ,myThid )
-cph       CALL LEF_ZERO( Qnet0 ,myThid )
-cph       CALL LEF_ZERO( EmPmR0 ,myThid )
-cph       CALL LEF_ZERO( SST0 ,myThid )
-cph       CALL LEF_ZERO( SSS0 ,myThid )
-cph       CALL LEF_ZERO( taux1 ,myThid )
-cph       CALL LEF_ZERO( tauy1 ,myThid )
-cph       CALL LEF_ZERO( Qnet1 ,myThid )
-cph       CALL LEF_ZERO( EmPmR1 ,myThid )
-cph       CALL LEF_ZERO( SST1 ,myThid )
-cph       CALL LEF_ZERO( SSS1 ,myThid )
-#ifdef ATMOSPHERIC_LOADING
-cph       CALL LEF_ZERO( pload0 ,myThid )
-cph       CALL LEF_ZERO( pload1 ,myThid )
-#endif
-#ifdef SHORTWAVE_HEATING
-cph       CALL LEF_ZERO( Qsw0 ,myThid )
-cph       CALL LEF_ZERO( Qsw1 ,myThid )
-#endif
-cph      ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
       rdt = 1. _d 0 / deltaTclock
@@ -105,10 +81,8 @@ C Now calculate whether it is time to update the forcing arrays
       intime1 = 1 + MOD(intime0,nForcingPeriods)
 C-jmc: with some option of g77, FLOAT results in real*4 evaluation
 C      of aWght; using DFLOAT always force real*8 computation:
-C-ph: however, TAF doesnt recognize DFLOAT, 
-C     so I put it back to FLOAT for now 
-c     aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
 c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+C-ph: however, TAF doesnt recognize DFLOAT,
 C-jmc: so let's try this:
       tmp1Wght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
       tmp2Wght = FLOAT( Ifprd )
@@ -120,72 +94,74 @@ C-jmc: so let's try this:
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
-       _BEGIN_MASTER(myThid)
+       _BARRIER
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
+       _BEGIN_MASTER(myThid)
        WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
      &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
      &  intime0, intime1, myIter, myTime
+       _END_MASTER(myThid)
 
-#ifdef ALLOW_MDSIO
       IF ( zonalWindFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
-     &        'RS', 1, taux0, intime0, myThid )
-       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
-     &        'RS', 1, taux1, intime1, myThid )
+       CALL READ_REC_XY_RS( zonalWindFile, taux0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( zonalWindFile, taux1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( meridWindFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
-     &        'RS', 1, tauy0, intime0, myThid )
-       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
-     &        'RS', 1, tauy1, intime1, myThid )
+       CALL READ_REC_XY_RS( meridWindFile, tauy0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( meridWindFile, tauy1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( surfQFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
-     &        'RS', 1, Qnet0, intime0, myThid )
-       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
-     &        'RS', 1, Qnet1, intime1, myThid )
+       CALL READ_REC_XY_RS( surfQFile, Qnet0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( surfQFile, Qnet1,
+     &                      intime1, myIter, myThid )
       ELSEIF ( surfQnetFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( surfQnetFile, readBinaryPrec,
-     &        'RS', 1, Qnet0, intime0, myThid )
-       CALL MDSREADFIELD ( surfQnetFile, readBinaryPrec,
-     &        'RS', 1, Qnet1, intime1, myThid )
+       CALL READ_REC_XY_RS( surfQnetFile, Qnet0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( surfQnetFile, Qnet1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
-     &        'RS', 1, EmPmR0, intime0, myThid )
-       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
-     &        'RS', 1, EmPmR1, intime1, myThid )
+       CALL READ_REC_XY_RS( EmPmRfile, EmPmR0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( EmPmRfile, EmPmR1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( saltFluxFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( saltFluxFile, readBinaryPrec,
-     &        'RS', 1, saltFlux0, intime0, myThid )
-       CALL MDSREADFIELD ( saltFluxFile, readBinaryPrec,
-     &        'RS', 1, saltFlux1, intime1, myThid )
+       CALL READ_REC_XY_RS( saltFluxFile, saltFlux0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( saltFluxFile, saltFlux1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
-     &        'RS', 1, SST0, intime0, myThid )
-       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
-     &        'RS', 1, SST1, intime1, myThid )
+       CALL READ_REC_XY_RS( thetaClimFile, SST0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( thetaClimFile, SST1,
+     &                      intime1, myIter, myThid )
       ENDIF
       IF ( saltClimFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
-     &        'RS', 1, SSS0, intime0, myThid )
-       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
-     &        'RS', 1, SSS1, intime1, myThid )
+       CALL READ_REC_XY_RS( saltClimFile, SSS0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( saltClimFile, SSS1,
+     &                      intime1, myIter, myThid )
       ENDIF
 #ifdef SHORTWAVE_HEATING
       IF ( surfQswFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
-     &        'RS', 1, Qsw0, intime0, myThid )
-       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
-     &        'RS', 1, Qsw1, intime1, myThid )
+       CALL READ_REC_XY_RS( surfQswFile, Qsw0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( surfQswFile, Qsw1,
+     &                      intime1, myIter, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
-        DO bj=1,nSy
-         DO bi=1,nSx
+        _BARRIER
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
             Qnet0(i,j,bi,bj) = Qnet0(i,j,bi,bj) + Qsw0(i,j,bi,bj)
@@ -199,24 +175,18 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
-       CALL MDSREADFIELD ( pLoadFile, readBinaryPrec,
-     &        'RS', 1, pload0, intime0, myThid )
-       CALL MDSREADFIELD ( pLoadFile, readBinaryPrec,
-     &        'RS', 1, pload1, intime1, myThid )
+       CALL READ_REC_XY_RS( pLoadFile, pload0,
+     &                      intime0, myIter, myThid )
+       CALL READ_REC_XY_RS( pLoadFile, pload1,
+     &                      intime1, myIter, myThid )
       ENDIF
 #endif
-#endif /* ALLOW_MDSIO */
 
-       _END_MASTER(myThid)
-C
+C-    thread synchronisation (barrier) is part of the EXCH S/R calls
        _EXCH_XY_R4(SST0  , myThid )
        _EXCH_XY_R4(SST1  , myThid )
        _EXCH_XY_R4(SSS0  , myThid )
        _EXCH_XY_R4(SSS1  , myThid )
-c      _EXCH_XY_R4(taux0 , myThid )
-c      _EXCH_XY_R4(taux1 , myThid )
-c      _EXCH_XY_R4(tauy0 , myThid )
-c      _EXCH_XY_R4(tauy1 , myThid )
        CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
        CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
        _EXCH_XY_R4(Qnet0, myThid )
@@ -233,7 +203,7 @@ c      _EXCH_XY_R4(tauy1 , myThid )
        _EXCH_XY_R4(pload0, myThid )
        _EXCH_XY_R4(pload1, myThid )
 #endif
-C
+
       ENDIF
 
 C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
@@ -242,7 +212,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( thetaClimFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)  
+            SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)
      &                       + aWght*SST1(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -250,7 +220,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( saltClimFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
+            SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)
      &                       + aWght*SSS1(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -258,7 +228,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( zonalWindFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
+            fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj)
      &                       + aWght*taux1(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -266,7 +236,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( meridWindFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
+            fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj)
      &                       + aWght*tauy1(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -310,23 +280,23 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( pLoadFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
+            pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)
      &                       + aWght*pload1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
 #endif
-C- jmc: leave the old code commented out (with all fields beeing reset, 
+C- jmc: leave the old code commented out (with all fields beeing reset,
 C       even if they are never loaded)
 c       DO j=1-Oly,sNy+Oly
 c        DO i=1-Olx,sNx+Olx
-c         SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)  
+c         SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)
 c    &                       +aWght*SST1(i,j,bi,bj)
-c         SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
+c         SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)
 c    &                       +aWght*SSS1(i,j,bi,bj)
-c         fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
+c         fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj)
 c    &                       +aWght*taux1(i,j,bi,bj)
-c         fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
+c         fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj)
 c    &                       +aWght*tauy1(i,j,bi,bj)
 c         Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
 c    &                       +aWght*Qnet1(i,j,bi,bj)
@@ -339,7 +309,7 @@ c         Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
 c    &                       +aWght*Qsw1(i,j,bi,bj)
 #endif
 #ifdef ATMOSPHERIC_LOADING
-c         pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
+c         pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)
 c    &                      +aWght*pload1(i,j,bi,bj)
 #endif
 c        ENDDO
