@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.737 2006/10/22 02:02:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.738 2006/10/26 00:50:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o multi-threading and IO: 
+  - replace some call to MDSIO S/R by the corresponding READ/WRITE_FLD S/R.
+  - remove most of BEGIN_MASTER/ END_MASTER around READ/WRITE_FLD S/R calls
+    (needed to work with SingleCpuIO): tested in all verif. exp.
 o GAD: use simpler DST3 formulation as default (old version left within #ifdef)
   affects the results (but none of the verification test uses this scheme).
 o Adding some pkg/diagnostics capability to pkg/seaice
