@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.3 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.4 2006/10/26 00:34:05 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -215,7 +215,7 @@ c--       Print cost function for each tile in each thread.
      &                          SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a,d22.15)')
      &        '     cost function (wvel) = ',
-     &        fctilet+fctiles
+     &        fcthread_wdrift
           call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a)') ' '
@@ -228,18 +228,17 @@ c--       Print cost function for each tile in each thread.
 
 #ifdef ECCO_VERBOSE
 c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread_tdrift , myThid )
-        _GLOBAL_SUM_R8( fcthread_tdrifs , myThid )
+        _GLOBAL_SUM_R8( fcthread_wdrift , myThid )
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i8.8)')
-     &    ' cost_Drift: irec = ',irec
+     &    ' cost_Driftw: irec = ',irec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,a,d22.15)')
      &    '  cost function value',
-     &    ' (wvel) = ',fcthread_tdrifw
+     &    ' (wvel) = ',fcthread_wdrift
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a)') ' '
@@ -247,28 +246,6 @@ c--     Print cost function for all tiles.
      &                      SQUEEZE_RIGHT , mythid)
 #endif
 
-#else
-c--   Do not enter the calculation of the drift contribution to
-c--   the final cost function.
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_Driftw: no contribution of drift between the first ',
-     &                 'and the last year to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_Driftw: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return
