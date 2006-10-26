@@ -6,4 +6,5 @@
  PTRACERS_diffKh=1.E3,
  PTRACERS_diffKr=3.E-5,
  PTRACERS_initialFile=' ',
+ PTRACERS_ref=1., 19*0.,
  &
