@@ -334,6 +334,12 @@ c                  function contributions.
      &                objf_precip,
      &                objf_swflux,
      &                objf_swdown,
+     &                objf_snowprecip,
+     &                objf_lwflux,
+     &                objf_lwdown,
+     &                objf_evap,
+     &                objf_apressure,
+     &                objf_runoff,
      &                objf_uwind,
      &                objf_vwind,
      &                objf_atempm,
@@ -341,6 +347,12 @@ c                  function contributions.
      &                objf_precipm,
      &                objf_swfluxm,
      &                objf_swdownm,
+     &                objf_snowprecipm,
+     &                objf_lwfluxm,
+     &                objf_lwdownm,
+     &                objf_evapm,
+     &                objf_apressurem,
+     &                objf_runoffm,
      &                objf_uwindm,
      &                objf_vwindm,
      &                objf_atempsmoo,
@@ -348,6 +360,12 @@ c                  function contributions.
      &                objf_precipsmoo,
      &                objf_swfluxsmoo,
      &                objf_swdownsmoo,
+     &                objf_snowprecipsmoo,
+     &                objf_lwfluxsmoo,
+     &                objf_lwdownsmoo,
+     &                objf_evapsmoo,
+     &                objf_apressuresmoo,
+     &                objf_runoffsmoo,
      &                objf_uwindsmoo,
      &                objf_vwindsmoo,
      &                objf_obcsn,
@@ -410,6 +428,12 @@ c                  function contributions.
       _RL  objf_precip(nsx,nsy)
       _RL  objf_swflux(nsx,nsy)
       _RL  objf_swdown(nsx,nsy)
+      _RL  objf_snowprecip(nsx,nsy)
+      _RL  objf_lwflux(nsx,nsy)
+      _RL  objf_lwdown(nsx,nsy)
+      _RL  objf_evap(nsx,nsy)
+      _RL  objf_apressure(nsx,nsy)
+      _RL  objf_runoff(nsx,nsy)
       _RL  objf_uwind(nsx,nsy)
       _RL  objf_vwind(nsx,nsy)
       _RL  objf_atempm(nsx,nsy)
@@ -417,6 +441,12 @@ c                  function contributions.
       _RL  objf_precipm(nsx,nsy)
       _RL  objf_swfluxm(nsx,nsy)
       _RL  objf_swdownm(nsx,nsy)
+      _RL  objf_snowprecipm(nsx,nsy)
+      _RL  objf_lwfluxm(nsx,nsy)
+      _RL  objf_lwdownm(nsx,nsy)
+      _RL  objf_evapm(nsx,nsy)
+      _RL  objf_apressurem(nsx,nsy)
+      _RL  objf_runoffm(nsx,nsy)
       _RL  objf_uwindm(nsx,nsy)
       _RL  objf_vwindm(nsx,nsy)
       _RL  objf_atempsmoo(nsx,nsy)
@@ -424,6 +454,12 @@ c                  function contributions.
       _RL  objf_precipsmoo(nsx,nsy)
       _RL  objf_swfluxsmoo(nsx,nsy)
       _RL  objf_swdownsmoo(nsx,nsy)
+      _RL  objf_snowprecipsmoo(nsx,nsy)
+      _RL  objf_lwfluxsmoo(nsx,nsy)
+      _RL  objf_lwdownsmoo(nsx,nsy)
+      _RL  objf_evapsmoo(nsx,nsy)
+      _RL  objf_apressuresmoo(nsx,nsy)
+      _RL  objf_runoffsmoo(nsx,nsy)
       _RL  objf_uwindsmoo(nsx,nsy)
       _RL  objf_vwindsmoo(nsx,nsy)
       _RL  objf_obcsn(nsx,nsy)
@@ -482,6 +518,12 @@ c                  function contributions.
      &                num_precip,
      &                num_swflux,
      &                num_swdown,
+     &                num_snowprecip,
+     &                num_lwflux,
+     &                num_lwdown,
+     &                num_evap,
+     &                num_apressure,
+     &                num_runoff,
      &                num_uwind,
      &                num_vwind,
      &                num_atempm,
@@ -489,6 +531,12 @@ c                  function contributions.
      &                num_precipm,
      &                num_swfluxm,
      &                num_swdownm,
+     &                num_snowprecipm,
+     &                num_lwfluxm,
+     &                num_lwdownm,
+     &                num_evapm,
+     &                num_apressurem,
+     &                num_runoffm,
      &                num_uwindm,
      &                num_vwindm,
      &                num_obcsn,
@@ -546,6 +594,12 @@ c                  function contributions.
       _RL  num_precip(nsx,nsy)
       _RL  num_swflux(nsx,nsy)
       _RL  num_swdown(nsx,nsy)
+      _RL  num_snowprecip(nsx,nsy)
+      _RL  num_lwflux(nsx,nsy)
+      _RL  num_lwdown(nsx,nsy)
+      _RL  num_evap(nsx,nsy)
+      _RL  num_apressure(nsx,nsy)
+      _RL  num_runoff(nsx,nsy)
       _RL  num_uwind(nsx,nsy)
       _RL  num_vwind(nsx,nsy)
       _RL  num_atempm(nsx,nsy)
@@ -553,6 +607,12 @@ c                  function contributions.
       _RL  num_precipm(nsx,nsy)
       _RL  num_swfluxm(nsx,nsy)
       _RL  num_swdownm(nsx,nsy)
+      _RL  num_snowprecipm(nsx,nsy)
+      _RL  num_lwfluxm(nsx,nsy)
+      _RL  num_lwdownm(nsx,nsy)
+      _RL  num_evapm(nsx,nsy)
+      _RL  num_apressurem(nsx,nsy)
+      _RL  num_runoffm(nsx,nsy)
       _RL  num_uwindm(nsx,nsy)
       _RL  num_vwindm(nsx,nsy)
       _RL  num_obcsn(nsx,nsy)
@@ -605,6 +665,12 @@ c                  function contributions.
      &                    mult_precip,
      &                    mult_swflux,
      &                    mult_swdown,
+     &                    mult_snowprecip,
+     &                    mult_lwflux,
+     &                    mult_lwdown,
+     &                    mult_evap,
+     &                    mult_apressure,
+     &                    mult_runoff,
      &                    mult_uwind,
      &                    mult_vwind,
      &                    mult_obcsn,
@@ -656,6 +722,12 @@ c                  function contributions.
       _RL  mult_precip
       _RL  mult_swflux
       _RL  mult_swdown
+      _RL  mult_snowprecip
+      _RL  mult_lwflux
+      _RL  mult_lwdown
+      _RL  mult_evap
+      _RL  mult_apressure
+      _RL  mult_runoff
       _RL  mult_uwind
       _RL  mult_vwind
       _RL  mult_obcsn
@@ -751,6 +823,12 @@ c     velerrfile            - representation error
      &                precip_errfile,
      &                swflux_errfile,
      &                swdown_errfile,
+     &                snowprecip_errfile,
+     &                lwflux_errfile,
+     &                lwdown_errfile,
+     &                evap_errfile,
+     &                apressure_errfile,
+     &                runoff_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -786,6 +864,12 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) precip_errfile
       character*(MAX_LEN_FNAM) swflux_errfile
       character*(MAX_LEN_FNAM) swdown_errfile
+      character*(MAX_LEN_FNAM) snowprecip_errfile
+      character*(MAX_LEN_FNAM) lwflux_errfile
+      character*(MAX_LEN_FNAM) lwdown_errfile
+      character*(MAX_LEN_FNAM) evap_errfile
+      character*(MAX_LEN_FNAM) apressure_errfile
+      character*(MAX_LEN_FNAM) runoff_errfile
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -818,7 +902,9 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      frame,
      &                      cosphi,
      &                      whflux,wsflux,wtauu,wtauv,
-     &                      watemp,waqh,wprecip,wswflux,wswdown,
+     &                      watemp,waqh,wprecip,wsnowprecip,
+     &                      wswflux,wswdown,wlwflux,wlwdown,
+     &                      wevap,wapressure,wrunoff,
      &                      wuwind,wvwind,
      &                      wscatx,wscaty,
      &                      wtheta,wtheta2,wthetaLev,
@@ -855,6 +941,12 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wprecip (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wswflux (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wsnowprecip (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wlwflux (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wlwdown (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wevap   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wapressure(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wrunoff (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtheta  (                            nr,nsx,nsy)
@@ -892,7 +984,9 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
 
       common /ecco_cost_weights_0_r/
      &        whflux0, wsflux0, wtau0,
-     &        watemp0, waqh0, wprecip0, wswflux0, wswdown0, wwind0,
+     &        watemp0, waqh0, wprecip0, wsnowprecip0, wwind0,
+     &        wswflux0, wswdown0, wlwflux0, wlwdown0, 
+     &        wevap0, wapressure0, wrunoff0,
      &        wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
       _RL wsflux0
@@ -902,6 +996,12 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wprecip0
       _RL wswflux0
       _RL wswdown0
+      _RL wsnowprecip0
+      _RL wlwflux0
+      _RL wlwdown0
+      _RL wevap0
+      _RL wapressure0
+      _RL wrunoff0
       _RL wwind0
       _RL wdiffkr0
       _RL wkapgm0
@@ -910,7 +1010,9 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       common /ecco_cost_weights_mean_r/
      &        wmean_hflux, wmean_sflux, wmean_tau,
      &        wmean_atemp, wmean_aqh, 
-     &        wmean_precip, wmean_swflux, wmean_swdown, wmean_wind
+     &        wmean_precip, wmean_snowprecip, wmean_wind,
+     &        wmean_swflux, wmean_swdown, wmean_lwflux, wmean_lwdown,
+     &        wmean_evap, wmean_apressure, wmean_runoff
       _RL wmean_hflux
       _RL wmean_sflux
       _RL wmean_tau
@@ -919,6 +1021,12 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wmean_precip
       _RL wmean_swflux
       _RL wmean_swdown
+      _RL wmean_snowprecip
+      _RL wmean_lwflux
+      _RL wmean_lwdown
+      _RL wmean_evap
+      _RL wmean_apressure
+      _RL wmean_runoff
       _RL wmean_wind
 						 
       common /ecco_cost_weights_2_r/

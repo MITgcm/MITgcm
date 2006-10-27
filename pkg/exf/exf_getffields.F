@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.32 2006/05/25 18:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.33 2006/10/27 05:16:54 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -360,6 +360,50 @@ c-- Control variables for atmos. state
      &     mytime, myiter, mythid )
 #endif
 
+#ifdef ALLOW_LWFLUX_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
+     &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
+     &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_LWDOWN_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
+     &     maskc, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
+     &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_EVAP_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_evap_file, xx_evapstartdate, xx_evapperiod,
+     &     maskc, evap, xx_evap0, xx_evap1, xx_evap_dummy,
+     &     xx_evap_remo_intercept, xx_evap_remo_slope,
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_SNOWPRECIP_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_snowprecip_file, xx_snowprecipstartdate, 
+     &     xx_snowprecipperiod,
+     &     maskc, snowprecip, xx_snowprecip0, xx_snowprecip1, 
+     &     xx_snowprecip_dummy,
+     &     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_APRESSURE_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_apressure_file, xx_apressurestartdate, 
+     &     xx_apressureperiod,
+     &     maskc, apressure, xx_apressure0, xx_apressure1, 
+     &     xx_apressure_dummy,
+     &     xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     &     mytime, myiter, mythid )
+#endif
+
 #ifdef ALLOW_UWIND_CONTROL
       call ctrl_get_gen (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
@@ -375,12 +419,5 @@ c-- Control variables for atmos. state
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     mytime, myiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
-
-#ifdef ALLOW_LWFLUX_CONTROL
-      call ctrl_get_gen ( 
-NOT YET IMPLEMENTED
-     &     mytime, myiter, mythid )
-#endif
-
 
       end

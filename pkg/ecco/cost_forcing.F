@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.11 2006/10/23 22:43:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.12 2006/10/27 05:16:54 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -198,8 +198,8 @@ c--   Atmos. swflux. contribution to the cost function.
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) && \
        defined (ALLOW_SWDOWN_CONTROL))
 c--   Atmos. swdown. contribution to the cost function.
-      startrec = ncvarrecstart(33)
-      endrec   = ncvarrecsend(33)
+      startrec = ncvarrecstart(34)
+      endrec   = ncvarrecsend(34)
       call cost_forcing_gen ( 
      &     myiter, mytime, startrec, endrec, 
      &     xx_swdown_file, xx_swdown_dummy, xx_swdownperiod,
@@ -207,6 +207,96 @@ c--   Atmos. swdown. contribution to the cost function.
      &     num_swdown, num_swdownm,
      &     objf_swdown, objf_swdownm, objf_swdownsmoo,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_LWFLUX_COST_CONTRIBUTION) && \
+       defined (ALLOW_LWFLUX_CONTROL))
+c--   Atmos. lwflux. contribution to the cost function.
+      startrec = ncvarrecstart(35)
+      endrec   = ncvarrecsend(35)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_lwflux_file, xx_lwflux_dummy, xx_lwfluxperiod,
+     &     wmean_lwflux, wlwflux,
+     &     num_lwflux, num_lwfluxm,
+     &     objf_lwflux, objf_lwfluxm, objf_lwfluxsmoo,
+     &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_LWDOWN_COST_CONTRIBUTION) && \
+       defined (ALLOW_LWDOWN_CONTROL))
+c--   Atmos. lwdown. contribution to the cost function.
+      startrec = ncvarrecstart(36)
+      endrec   = ncvarrecsend(36)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_lwdown_file, xx_lwdown_dummy, xx_lwdownperiod,
+     &     wmean_lwdown, wlwdown,
+     &     num_lwdown, num_lwdownm,
+     &     objf_lwdown, objf_lwdownm, objf_lwdownsmoo,
+     &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_EVAP_COST_CONTRIBUTION) && \
+       defined (ALLOW_EVAP_CONTROL))
+c--   Atmos. evap. contribution to the cost function.
+      startrec = ncvarrecstart(36)
+      endrec   = ncvarrecsend(36)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_evap_file, xx_evap_dummy, xx_evapperiod,
+     &     wmean_evap, wevap,
+     &     num_evap, num_evapm,
+     &     objf_evap, objf_evapm, objf_evapsmoo,
+     &     xx_evap_remo_intercept, xx_evap_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_SNOWPRECIP_COST_CONTRIBUTION) && \
+       defined (ALLOW_SNOWPRECIP_CONTROL))
+c--   Atmos. snowprecip. contribution to the cost function.
+      startrec = ncvarrecstart(36)
+      endrec   = ncvarrecsend(36)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_snowprecip_file, xx_snowprecip_dummy, xx_snowprecipperiod,
+     &     wmean_snowprecip, wsnowprecip,
+     &     num_snowprecip, num_snowprecipm,
+     &     objf_snowprecip, objf_snowprecipm, objf_snowprecipsmoo,
+     &     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_APRESSURE_COST_CONTRIBUTION) && \
+       defined (ALLOW_APRESSURE_CONTROL))
+c--   Atmos. apressure. contribution to the cost function.
+      startrec = ncvarrecstart(36)
+      endrec   = ncvarrecsend(36)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_apressure_file, xx_apressure_dummy, xx_apressureperiod,
+     &     wmean_apressure, wapressure,
+     &     num_apressure, num_apressurem,
+     &     objf_apressure, objf_apressurem, objf_apressuresmoo,
+     &     xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     &     maskC, mythid )
+#endif
+
+#if (defined (ALLOW_RUNOFF_COST_CONTRIBUTION) && \
+       defined (ALLOW_RUNOFF_CONTROL))
+c--   Atmos. runoff. contribution to the cost function.
+      startrec = ncvarrecstart(36)
+      endrec   = ncvarrecsend(36)
+      call cost_forcing_gen ( 
+     &     myiter, mytime, startrec, endrec, 
+     &     xx_runoff_file, xx_runoff_dummy, xx_runoffperiod,
+     &     wmean_runoff, wrunoff,
+     &     num_runoff, num_runoffm,
+     &     objf_runoff, objf_runoffm, objf_runoffsmoo,
+     &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
      &     maskC, mythid )
 #endif
 

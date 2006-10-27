@@ -215,6 +215,12 @@ c     Define unit weight as a placeholder
      &                      wswdown,
      &                      wuwind,
      &                      wvwind,
+     &                      wlwflux,
+     &                      wlwdown,
+     &                      wevap,
+     &                      wsnowprecip,
+     &                      wapressure,
+     &                      wrunoff,
      &                      wsst,
      &                      wsss
       _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -228,6 +234,12 @@ c     Define unit weight as a placeholder
       _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wlwflux (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wlwdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wevap   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wsnowprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wapressure(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wrunoff  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
@@ -377,6 +389,42 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_swdown1
 #endif
 
+#if (defined  (ALLOW_LWFLUX_CONTROL))
+      common /controlaux_lwflux_r/
+     &                      xx_lwflux0,
+     &                      xx_lwflux1
+#endif
+
+#if (defined  (ALLOW_LWDOWN_CONTROL))
+      common /controlaux_lwdown_r/
+     &                      xx_lwdown0,
+     &                      xx_lwdown1
+#endif
+
+#if (defined  (ALLOW_EVAP_CONTROL))
+      common /controlaux_evap_r/
+     &                      xx_evap0,
+     &                      xx_evap1
+#endif
+
+#if (defined  (ALLOW_SNOWPRECIP_CONTROL))
+      common /controlaux_snowprecip_r/
+     &                      xx_snowprecip0,
+     &                      xx_snowprecip1
+#endif
+
+#if (defined  (ALLOW_APRESSURE_CONTROL))
+      common /controlaux_apressure_r/
+     &                      xx_apressure0,
+     &                      xx_apressure1
+#endif
+
+#if (defined  (ALLOW_RUNOFF_CONTROL))
+      common /controlaux_runoff_r/
+     &                      xx_runoff0,
+     &                      xx_runoff1
+#endif
+
 #if (defined  (ALLOW_SST_CONTROL))
       common /controlaux_sst_r/
      &                      xx_sst0,
@@ -427,6 +475,30 @@ c     xx_tauv1 - meridional wind stress record after  current date.
 #if (defined  (ALLOW_SWDOWN_CONTROL))
       _RL xx_swdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_swdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_LWFLUX_CONTROL))
+      _RL xx_lwflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_lwflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_LWDOWN_CONTROL))
+      _RL xx_lwdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_lwdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_EVAP_CONTROL))
+      _RL xx_evap0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_evap1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_SNOWPRECIP_CONTROL))
+      _RL xx_snowprecip0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_snowprecip1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_APRESSURE_CONTROL))
+      _RL xx_apressure0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_apressure1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#if (defined  (ALLOW_RUNOFF_CONTROL))
+      _RL xx_runoff0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_runoff1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 #if (defined  (ALLOW_SST_CONTROL))
       _RL xx_sst0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -480,6 +552,12 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_precip_file
      &                    , xx_swflux_file
      &                    , xx_swdown_file
+     &                    , xx_lwflux_file
+     &                    , xx_lwdown_file
+     &                    , xx_evap_file
+     &                    , xx_snowprecip_file
+     &                    , xx_apressure_file
+     &                    , xx_runoff_file
      &                    , xx_uwind_file
      &                    , xx_vwind_file
      &                    , xx_obcsn_file
@@ -516,6 +594,12 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_precip_file
       character*(MAX_LEN_FNAM) xx_swflux_file
       character*(MAX_LEN_FNAM) xx_swdown_file
+      character*(MAX_LEN_FNAM) xx_lwflux_file
+      character*(MAX_LEN_FNAM) xx_lwdown_file
+      character*(MAX_LEN_FNAM) xx_evap_file
+      character*(MAX_LEN_FNAM) xx_snowprecip_file
+      character*(MAX_LEN_FNAM) xx_apressure_file
+      character*(MAX_LEN_FNAM) xx_runoff_file
       character*(MAX_LEN_FNAM) xx_uwind_file
       character*(MAX_LEN_FNAM) xx_vwind_file
       character*(MAX_LEN_FNAM) xx_obcsn_file
@@ -585,6 +669,12 @@ c     xx_obcssperiod - sampling interval
      &                      , xx_precipperiod
      &                      , xx_swfluxperiod
      &                      , xx_swdownperiod
+     &                      , xx_lwfluxperiod
+     &                      , xx_lwdownperiod
+     &                      , xx_evapperiod
+     &                      , xx_snowprecipperiod
+     &                      , xx_apressureperiod
+     &                      , xx_runoffperiod
      &                      , xx_uwindperiod
      &                      , xx_vwindperiod
      &                      , xx_sstperiod
@@ -602,6 +692,12 @@ c     xx_obcssperiod - sampling interval
       _RL     xx_precipperiod
       _RL     xx_swfluxperiod
       _RL     xx_swdownperiod
+      _RL     xx_lwfluxperiod
+      _RL     xx_lwdownperiod
+      _RL     xx_evapperiod
+      _RL     xx_snowprecipperiod
+      _RL     xx_apressureperiod
+      _RL     xx_runoffperiod
       _RL     xx_uwindperiod
       _RL     xx_vwindperiod
       _RL     xx_sstperiod
@@ -621,6 +717,12 @@ c     xx_obcssperiod - sampling interval
      &       xx_precip_remo_intercept, xx_precip_remo_slope,
      &       xx_swflux_remo_intercept, xx_swflux_remo_slope,
      &       xx_swdown_remo_intercept, xx_swdown_remo_slope,
+     &       xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     &       xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
+     &       xx_evap_remo_intercept, xx_evap_remo_slope,
+     &       xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
+     &       xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     &       xx_runoff_remo_intercept, xx_runoff_remo_slope,
      &       xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &       xx_vwind_remo_intercept, xx_vwind_remo_slope
 
@@ -633,6 +735,12 @@ c     xx_obcssperiod - sampling interval
       _RL xx_precip_remo_intercept, xx_precip_remo_slope
       _RL xx_swflux_remo_intercept, xx_swflux_remo_slope
       _RL xx_swdown_remo_intercept, xx_swdown_remo_slope
+      _RL xx_lwflux_remo_intercept, xx_lwflux_remo_slope
+      _RL xx_lwdown_remo_intercept, xx_lwdown_remo_slope
+      _RL xx_evap_remo_intercept, xx_evap_remo_slope
+      _RL xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope
+      _RL xx_apressure_remo_intercept, xx_apressure_remo_slope
+      _RL xx_runoff_remo_intercept, xx_runoff_remo_slope
       _RL xx_uwind_remo_intercept, xx_uwind_remo_slope
       _RL xx_vwind_remo_intercept, xx_vwind_remo_slope
 
@@ -663,6 +771,18 @@ c                         control part.
      &                      , xx_swfluxstartdate2
      &                      , xx_swdownstartdate1
      &                      , xx_swdownstartdate2
+     &                      , xx_snowprecipstartdate1
+     &                      , xx_snowprecipstartdate2
+     &                      , xx_lwfluxstartdate1
+     &                      , xx_lwfluxstartdate2
+     &                      , xx_lwdownstartdate1
+     &                      , xx_lwdownstartdate2
+     &                      , xx_evapstartdate1
+     &                      , xx_evapstartdate2
+     &                      , xx_apressurestartdate1
+     &                      , xx_apressurestartdate2
+     &                      , xx_runoffstartdate1
+     &                      , xx_runoffstartdate2
      &                      , xx_uwindstartdate1
      &                      , xx_uwindstartdate2
      &                      , xx_vwindstartdate1
@@ -681,6 +801,12 @@ c                         control part.
      &                      , xx_swfluxstartdate
      &                      , xx_swdownstartdate
      &                      , xx_uwindstartdate
+     &                      , xx_snowprecipstartdate
+     &                      , xx_lwfluxstartdate
+     &                      , xx_lwdownstartdate
+     &                      , xx_evapstartdate
+     &                      , xx_apressurestartdate
+     &                      , xx_runoffstartdate
      &                      , xx_vwindstartdate
      &                      , xx_sststartdate
      &                      , xx_sssstartdate
@@ -714,6 +840,18 @@ c                         control part.
       integer xx_swfluxstartdate2
       integer xx_swdownstartdate1
       integer xx_swdownstartdate2
+      integer xx_snowprecipstartdate1
+      integer xx_snowprecipstartdate2
+      integer xx_lwfluxstartdate1
+      integer xx_lwfluxstartdate2
+      integer xx_lwdownstartdate1
+      integer xx_lwdownstartdate2
+      integer xx_evapstartdate1
+      integer xx_evapstartdate2
+      integer xx_apressurestartdate1
+      integer xx_apressurestartdate2
+      integer xx_runoffstartdate1
+      integer xx_runoffstartdate2
       integer xx_uwindstartdate1
       integer xx_uwindstartdate2
       integer xx_vwindstartdate1
@@ -740,6 +878,12 @@ c                         control part.
       integer xx_precipstartdate(4)
       integer xx_swfluxstartdate(4)
       integer xx_swdownstartdate(4)
+      integer xx_snowprecipstartdate(4)
+      integer xx_lwfluxstartdate(4)
+      integer xx_lwdownstartdate(4)
+      integer xx_evapstartdate(4)
+      integer xx_apressurestartdate(4)
+      integer xx_runoffstartdate(4)
       integer xx_uwindstartdate(4)
       integer xx_vwindstartdate(4)
       integer xx_sststartdate(4)
@@ -760,6 +904,12 @@ c                         control part.
       character*( 80)   fname_precip(2)
       character*( 80)   fname_swflux(2)
       character*( 80)   fname_swdown(2)
+      character*( 80)   fname_snowprecip(2)
+      character*( 80)   fname_lwflux(2)
+      character*( 80)   fname_lwdown(2)
+      character*( 80)   fname_evap(2)
+      character*( 80)   fname_apressure(2)
+      character*( 80)   fname_runoff(2)
       character*( 80)   fname_uwind(2)
       character*( 80)   fname_vwind(2)
       character*( 80)   fname_obcsn(2)

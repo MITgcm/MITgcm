@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.7 2005/08/31 00:03:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.8 2006/10/27 05:16:54 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -100,6 +100,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_hfluxperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_atemp'   ) then
          call cal_CopyDate(
      I        xx_atempstartdate,
@@ -108,6 +109,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_atempperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_sflux'   ) then
          call cal_CopyDate(
      I        xx_sfluxstartdate,
@@ -116,6 +118,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_sfluxperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_aqh'   ) then
          call cal_CopyDate(
      I        xx_aqhstartdate,
@@ -124,6 +127,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_aqhperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_precip'   ) then
          call cal_CopyDate(
      I        xx_precipstartdate,
@@ -132,6 +136,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_precipperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_swflux'   ) then
          call cal_CopyDate(
      I        xx_swfluxstartdate,
@@ -140,6 +145,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_swfluxperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_swdown'   ) then
          call cal_CopyDate(
      I        xx_swdownstartdate,
@@ -148,6 +154,61 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_swdownperiod
          lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_lwflux'   ) then
+         call cal_CopyDate(
+     I        xx_lwfluxstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_lwfluxperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_lwdown'   ) then
+         call cal_CopyDate(
+     I        xx_lwdownstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_lwdownperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_evap'   ) then
+         call cal_CopyDate(
+     I        xx_evapstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_evapperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_snowprecip'   ) then
+         call cal_CopyDate(
+     I        xx_snowprecipstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_snowprecipperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_apressure'   ) then
+         call cal_CopyDate(
+     I        xx_apressurestartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_apressureperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_runoff'   ) then
+         call cal_CopyDate(
+     I        xx_runoffstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_runoffperiod
+         lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_tauu'   ) then
          call cal_CopyDate(
      I        xx_tauustartdate,
@@ -156,6 +217,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_tauuperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_uwind'   ) then
          call cal_CopyDate(
      I        xx_uwindstartdate,
@@ -164,6 +226,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_uwindperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_tauv'   ) then
          call cal_CopyDate(
      I        xx_tauvstartdate,
@@ -172,6 +235,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_tauvperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_vwind'   ) then
          call cal_CopyDate(
      I        xx_vwindstartdate,
@@ -180,6 +244,7 @@ c     Map the field parameters.
      &           )
          fldperiod = xx_vwindperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_obcsn'   ) then
          call cal_CopyDate(
      I        xx_obcsnstartdate,
@@ -188,6 +253,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_obcsnperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_obcss'   ) then
          call cal_CopyDate(
      I        xx_obcssstartdate,
@@ -196,6 +262,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_obcssperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_obcsw'   ) then
          call cal_CopyDate(
      I        xx_obcswstartdate,
@@ -204,6 +271,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_obcswperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_obcse'   ) then
          call cal_CopyDate(
      I        xx_obcsestartdate,
@@ -212,6 +280,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_obcseperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_sst'   ) then
          call cal_CopyDate(
      I        xx_sststartdate,
@@ -220,6 +289,7 @@ c     Map the field parameters.
      &        )
          fldperiod = xx_sstperiod
          lArgErr = .false.
+c
       else if ( thefield .eq. 'xx_sss'   ) then
          call cal_CopyDate(
      I        xx_sssstartdate,

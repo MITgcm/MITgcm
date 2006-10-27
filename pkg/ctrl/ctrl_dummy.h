@@ -20,6 +20,12 @@ c     ==================================================================
      &                  , xx_precip_dummy
      &                  , xx_swflux_dummy
      &                  , xx_swdown_dummy
+     &                  , xx_snowprecip_dummy
+     &                  , xx_lwflux_dummy
+     &                  , xx_lwdown_dummy
+     &                  , xx_evap_dummy
+     &                  , xx_apressure_dummy
+     &                  , xx_runoff_dummy
      &                  , xx_uwind_dummy
      &                  , xx_vwind_dummy
      &                  , xx_obcsn_dummy
@@ -57,6 +63,12 @@ c     ==================================================================
      &                  , xx_precip_mean_dummy
      &                  , xx_swflux_mean_dummy
      &                  , xx_swdown_mean_dummy
+     &                  , xx_snowprecip_mean_dummy
+     &                  , xx_lwflux_mean_dummy
+     &                  , xx_lwdown_mean_dummy
+     &                  , xx_evap_mean_dummy
+     &                  , xx_apressure_mean_dummy
+     &                  , xx_runoff_mean_dummy
      &                  , xx_uwind_mean_dummy
      &                  , xx_vwind_mean_dummy
      &                  , xx_theta_ini_fin_dummy
@@ -73,6 +85,12 @@ c     ==================================================================
       _RL xx_precip_dummy
       _RL xx_swflux_dummy
       _RL xx_swdown_dummy
+      _RL xx_snowprecip_dummy
+      _RL xx_lwflux_dummy
+      _RL xx_lwdown_dummy
+      _RL xx_evap_dummy
+      _RL xx_apressure_dummy
+      _RL xx_runoff_dummy
       _RL xx_uwind_dummy
       _RL xx_vwind_dummy
       _RL xx_obcsn_dummy
@@ -111,6 +129,12 @@ c
       _RL xx_precip_mean_dummy
       _RL xx_swflux_mean_dummy
       _RL xx_swdown_mean_dummy
+      _RL xx_snowprecip_mean_dummy
+      _RL xx_lwflux_mean_dummy
+      _RL xx_lwdown_mean_dummy
+      _RL xx_evap_mean_dummy
+      _RL xx_apressure_mean_dummy
+      _RL xx_runoff_mean_dummy
       _RL xx_uwind_mean_dummy
       _RL xx_vwind_mean_dummy
       _RL xx_theta_ini_fin_dummy

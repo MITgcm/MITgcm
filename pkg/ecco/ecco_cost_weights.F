@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.21 2006/10/18 20:41:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.22 2006/10/27 05:16:54 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -124,6 +124,12 @@ c--   Initialize variance (weight) fields.
               wprecip (i,j,bi,bj) = 0. _d 0
               wswflux (i,j,bi,bj) = 0. _d 0
               wswdown (i,j,bi,bj) = 0. _d 0
+              wsnowprecip (i,j,bi,bj) = 0. _d 0
+              wlwflux (i,j,bi,bj) = 0. _d 0
+              wlwdown (i,j,bi,bj) = 0. _d 0
+              wevap   (i,j,bi,bj) = 0. _d 0
+              wapressure(i,j,bi,bj) = 0. _d 0
+              wrunoff (i,j,bi,bj) = 0. _d 0
               wuwind  (i,j,bi,bj) = 0. _d 0
               wvwind  (i,j,bi,bj) = 0. _d 0
               wsst    (i,j,bi,bj) = 0. _d 0
@@ -530,8 +536,8 @@ c--           Test for missing values.
 c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
       irec  =  1
-      call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype, nnz, 
-     &                   wp, irec, mythid )
+      call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype,
+     &    nnz, wp, irec, mythid )
 c--   Set all tile edges to zero.
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -567,8 +573,8 @@ c--   Read SSH anomaly rms field. Data in units of centimeters.
       nnz   =   1
       irec  =   1
       if ( ssh_errfile .NE. ' ' ) then
-         call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz, 
-     &        wtp, irec, mythid )
+         call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype,
+     &      nnz, wtp, irec, mythid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -743,8 +749,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( tauu_errfile .NE. ' ' ) then
-         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz, 
-     &        wtauu, irec, mythid )
+         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype,
+     &      nnz, wtauu, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -776,8 +782,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( uwind_errfile .NE. ' ' ) then
-         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz,
-     &        wuwind, irec, mythid )
+         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype,
+     &      nnz, wuwind, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -841,8 +847,8 @@ ce(   due to Patrick's processing:
 ce)
 
       if ( vwind_errfile .NE. ' ' ) then
-         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz,
-     &        wvwind, irec, mythid )
+         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype,
+     &      nnz, wvwind, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -873,8 +879,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( hflux_errfile .NE. ' ' ) then
-         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz,
-     &        whflux, irec, mythid )
+         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype,
+     &      nnz, whflux, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -908,8 +914,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( atemp_errfile .NE. ' ' ) then
-         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz,
-     &        watemp, irec, mythid )
+         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype,
+     &      nnz, watemp, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -942,8 +948,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( sflux_errfile .NE. ' ' ) then
-         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz,
-     &        wsflux, irec, mythid )
+         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype,
+     &      nnz, wsflux, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1009,8 +1015,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( precip_errfile .NE. ' ' ) then
-        call mdsreadfield( precip_errfile, cost_iprec, cost_yftype, nnz,
-     &        wprecip, irec, mythid )
+        call mdsreadfield( precip_errfile, cost_iprec, cost_yftype,
+     &      nnz, wprecip, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1041,8 +1047,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( swflux_errfile .NE. ' ' ) then
-        call mdsreadfield( swflux_errfile, cost_iprec, cost_yftype, nnz,
-     &        wswflux, irec, mythid )
+        call mdsreadfield( swflux_errfile, cost_iprec, cost_yftype,
+     &      nnz, wswflux, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1073,8 +1079,8 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( swdown_errfile .NE. ' ' ) then
-        call mdsreadfield( swdown_errfile, cost_iprec, cost_yftype, nnz,
-     &        wswdown, irec, mythid )
+        call mdsreadfield( swdown_errfile, cost_iprec, cost_yftype,
+     &      nnz, wswdown, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1088,6 +1094,200 @@ c--           Test for missing values.
 c--           Data are in units of m/s.
               wswdown(i,j,bi,bj) = wswdown(i,j,bi,bj)
               wswdown(i,j,bi,bj) = max(wswdown(i,j,bi,bj),wswdown0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_LWFLUX_COST_CONTRIBUTION) || defined (ALLOW_LWFLUX_CONTROL))
+c--   Atmos. lwfluxitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( lwflux_errfile .NE. ' ' ) then
+        call mdsreadfield( lwflux_errfile, cost_iprec, cost_yftype,
+     &      nnz, wlwflux, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wlwflux(i,j,bi,bj) .lt. -9900.) then
+                wlwflux(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wlwflux(i,j,bi,bj) = wlwflux(i,j,bi,bj)
+              wlwflux(i,j,bi,bj) = max(wlwflux(i,j,bi,bj),wlwflux0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_LWDOWN_COST_CONTRIBUTION) || defined (ALLOW_LWDOWN_CONTROL))
+c--   Atmos. lwdownitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( lwdown_errfile .NE. ' ' ) then
+        call mdsreadfield( lwdown_errfile, cost_iprec, cost_yftype,
+     &      nnz, wlwdown, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wlwdown(i,j,bi,bj) .lt. -9900.) then
+                wlwdown(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wlwdown(i,j,bi,bj) = wlwdown(i,j,bi,bj)
+              wlwdown(i,j,bi,bj) = max(wlwdown(i,j,bi,bj),wlwdown0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_SNOWPRECIP_COST_CONTRIBUTION) || defined (ALLOW_SNOWPRECIP_CONTROL))
+c--   Atmos. snowprecipitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( snowprecip_errfile .NE. ' ' ) then
+        call mdsreadfield( snowprecip_errfile, cost_iprec, cost_yftype,
+     &      nnz, wsnowprecip, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wsnowprecip(i,j,bi,bj) .lt. -9900.) then
+                wsnowprecip(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wsnowprecip(i,j,bi,bj) = wsnowprecip(i,j,bi,bj)
+              wsnowprecip(i,j,bi,bj) = 
+     &            max(wsnowprecip(i,j,bi,bj),wsnowprecip0)
+     &            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_EVAP_COST_CONTRIBUTION) || defined (ALLOW_EVAP_CONTROL))
+c--   Atmos. evapitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( evap_errfile .NE. ' ' ) then
+        call mdsreadfield( evap_errfile, cost_iprec, cost_yftype,
+     &      nnz, wevap, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wevap(i,j,bi,bj) .lt. -9900.) then
+                wevap(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wevap(i,j,bi,bj) = wevap(i,j,bi,bj)
+              wevap(i,j,bi,bj) = max(wevap(i,j,bi,bj),wevap0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_APRESSURE_COST_CONTRIBUTION) || defined (ALLOW_APRESSURE_CONTROL))
+c--   Atmos. apressureitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( apressure_errfile .NE. ' ' ) then
+        call mdsreadfield( apressure_errfile, cost_iprec, cost_yftype,
+     &      nnz, wapressure, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wapressure(i,j,bi,bj) .lt. -9900.) then
+                wapressure(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wapressure(i,j,bi,bj) = wapressure(i,j,bi,bj)
+              wapressure(i,j,bi,bj) = 
+     &            max(wapressure(i,j,bi,bj),wapressure0)
+     &            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_RUNOFF_COST_CONTRIBUTION) || defined (ALLOW_RUNOFF_CONTROL))
+c--   Atmos. runoffitation variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      if ( runoff_errfile .NE. ' ' ) then
+        call mdsreadfield( runoff_errfile, cost_iprec, cost_yftype,
+     &      nnz, wrunoff, irec, mythid )
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wrunoff(i,j,bi,bj) .lt. -9900.) then
+                wrunoff(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              wrunoff(i,j,bi,bj) = wrunoff(i,j,bi,bj)
+              wrunoff(i,j,bi,bj) = max(wrunoff(i,j,bi,bj),wrunoff0)
      &                            *frame(i,j)
             enddo
           enddo
@@ -1211,6 +1411,42 @@ c--   Units have to be checked!
      &                1./wswdown(i,j,bi,bj)/wswdown(i,j,bi,bj)
               else
                 wswdown(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wlwflux(i,j,bi,bj) .ne. 0.) then
+                wlwflux(i,j,bi,bj) =
+     &                1./wlwflux(i,j,bi,bj)/wlwflux(i,j,bi,bj)
+              else
+                wlwflux(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wlwdown(i,j,bi,bj) .ne. 0.) then
+                wlwdown(i,j,bi,bj) =
+     &                1./wlwdown(i,j,bi,bj)/wlwdown(i,j,bi,bj)
+              else
+                wlwdown(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wevap(i,j,bi,bj) .ne. 0.) then
+                wevap(i,j,bi,bj) =
+     &                1./wevap(i,j,bi,bj)/wevap(i,j,bi,bj)
+              else
+                wevap(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wsnowprecip(i,j,bi,bj) .ne. 0.) then
+                wsnowprecip(i,j,bi,bj) =
+     &                1./wsnowprecip(i,j,bi,bj)/wsnowprecip(i,j,bi,bj)
+              else
+                wsnowprecip(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wapressure(i,j,bi,bj) .ne. 0.) then
+                wapressure(i,j,bi,bj) =
+     &                1./wapressure(i,j,bi,bj)/wapressure(i,j,bi,bj)
+              else
+                wapressure(i,j,bi,bj) = 0.0 _d 0
+              endif
+              if (wrunoff(i,j,bi,bj) .ne. 0.) then
+                wrunoff(i,j,bi,bj) =
+     &                1./wrunoff(i,j,bi,bj)/wrunoff(i,j,bi,bj)
+              else
+                wrunoff(i,j,bi,bj) = 0.0 _d 0
               endif
 
               if (wsfluxmm(bi,bj).ne.0.) 
@@ -1384,6 +1620,32 @@ c
 
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) || defined (ALLOW_SWDOWN_CONTROL))
       call active_write_xy_loc( 'wswdown', wswdown, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_LWFLUX_COST_CONTRIBUTION) || defined (ALLOW_LWFLUX_CONTROL))
+      call active_write_xy_loc( 'wlwflux', wlwflux, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_LWDOWN_COST_CONTRIBUTION) || defined (ALLOW_LWDOWN_CONTROL))
+      call active_write_xy_loc( 'wlwdown', wlwdown, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_EVAP_COST_CONTRIBUTION) || defined (ALLOW_EVAP_CONTROL))
+      call active_write_xy_loc( 'wevap', wevap, 1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_SNOWPRECIP_COST_CONTRIBUTION) || defined (ALLOW_SNOWPRECIP_CONTROL))
+      call active_write_xy_loc( 'wsnowprecip', wsnowprecip,
+     &    1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_APRESSURE_COST_CONTRIBUTION) || defined (ALLOW_APRESSURE_CONTROL))
+      call active_write_xy_loc( 'wapressure', wapressure,
+     &    1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_RUNOFF_COST_CONTRIBUTION) || defined (ALLOW_RUNOFF_CONTROL))
+      call active_write_xy_loc( 'wrunoff', wrunoff, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))

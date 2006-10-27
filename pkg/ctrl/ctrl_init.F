@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.23 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.24 2006/10/27 05:16:54 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -152,6 +152,12 @@ cph    index 30-31          for relax. SST, SSS
 cph    index 32    reserved for precip (atmos. state)
 cph    index 33    reserved for swflux (atmos. state)
 cph    index 34    reserved for swdown (atmos. state)
+cph          35                 lwflux
+cph          36                 lwdown
+cph          37                 evap
+cph          38                 snowprecip
+cph          39                 apressure
+cph          40                 runoff
 cph)
 
 c----------------------------------------------------------------------
@@ -819,6 +825,173 @@ c--   Atmos. swdown
 #endif /* ALLOW_SWDOWN_CONTROL */
 
 c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_LWFLUX_CONTROL
+c--   Atmos. lwflux
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_lwfluxstartdate1, xx_lwfluxstartdate2,
+     &                     xx_lwfluxstartdate , mythid )
+        call cal_TimePassed( xx_lwfluxstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_lwfluxperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_lwfluxperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_lwfluxperiod) + 2
+        endif
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_lwflux_file, 35, 135, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_LWFLUX_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_LWDOWN_CONTROL
+c--   Atmos. lwdown
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_lwdownstartdate1, xx_lwdownstartdate2,
+     &                     xx_lwdownstartdate , mythid )
+        call cal_TimePassed( xx_lwdownstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_lwdownperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_lwdownperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_lwdownperiod) + 2
+        endif
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_lwdown_file, 36, 136, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_LWDOWN_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_EVAP_CONTROL
+c--   Atmos. evap
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_evapstartdate1, xx_evapstartdate2,
+     &                     xx_evapstartdate , mythid )
+        call cal_TimePassed( xx_evapstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_evapperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_evapperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_evapperiod) + 2
+        endif
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_evap_file, 37, 137, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_EVAP_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_SNOWPRECIP_CONTROL
+c--   Atmos. snowprecip
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_snowprecipstartdate1, 
+     &      xx_snowprecipstartdate2, xx_snowprecipstartdate , mythid )
+        call cal_TimePassed( xx_snowprecipstartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_snowprecipperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_snowprecipperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_snowprecipperiod) + 2
+        endif
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_snowprecip_file, 38, 138, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_SNOWPRECIP_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_APRESSURE_CONTROL
+c--   Atmos. apressure
+
+# ifdef ALLOW_CAL
+        call cal_FullDate( xx_apressurestartdate1, 
+     &      xx_apressurestartdate2, xx_apressurestartdate , mythid )
+        call cal_TimePassed( xx_apressurestartdate, modelstartdate,
+     &                       difftime, mythid )
+        call cal_ToSeconds ( difftime, diffsecs, mythid )
+        if ( xx_apressureperiod .EQ. 0 ) then
+        startrec=1
+        endrec=12
+        else
+        startrec = int((modelstart + startTime - diffsecs)/
+     &                 xx_apressureperiod) + 1
+        endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
+     &                 xx_apressureperiod) + 2
+        endif
+# else
+        startrec = 1
+        endrec   = 1
+# endif
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_apressure_file, 39, 139, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+
+#endif /* ALLOW_APRESSURE_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_RUNOFF_CONTROL
+c--   Atmos. runoff
+        startrec = 1
+        endrec   = 1
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_runoff_file, 40, 140, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_RUNOFF_CONTROL */
+
+c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
         call ctrl_init_wet( mythid )
@@ -843,6 +1016,12 @@ c----------------------------------------------------------------------
               wswdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
               wuwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
               wvwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wlwflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wlwdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wevap     (i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wsnowprecip(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wapressure(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+              wrunoff   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
               wsst      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
               wsss      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
 #endif

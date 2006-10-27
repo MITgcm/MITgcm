@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.739 2006/10/26 19:11:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.740 2006/10/27 05:19:42 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -15,6 +15,8 @@ o GAD: use simpler DST3 formulation as default (old version left within #ifdef)
   affects the results (but none of the verification test uses this scheme).
 o Adding some pkg/diagnostics capability to pkg/seaice
   (will certainly be subject to changes)
+o ctrl: adding new control variables:
+  lwflux, lwdown, evap, snowprecip, apressure, runoff
 
 checkpoint58q_post
 o added CPP_EEOPTIONS.h flag DISABLE_MPI_READY_TO_RECEIVE.  Speeds up

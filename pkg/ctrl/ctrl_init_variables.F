@@ -195,6 +195,84 @@ c     == end of interface ==
       enddo
 #endif
 
+#ifdef ALLOW_LWFLUX_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_lwflux0(i,j,bi,bj) = 0. _d 0
+              xx_lwflux1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_LWDOWN_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_lwdown0(i,j,bi,bj) = 0. _d 0
+              xx_lwdown1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_EVAP_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_evap0(i,j,bi,bj) = 0. _d 0
+              xx_evap1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_SNOWPRECIP_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_snowprecip0(i,j,bi,bj) = 0. _d 0
+              xx_snowprecip1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_APRESSURE_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_apressure0(i,j,bi,bj) = 0. _d 0
+              xx_apressure1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_RUNOFF_CONTROL
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              xx_runoff0(i,j,bi,bj) = 0. _d 0
+              xx_runoff1(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 #ifdef ALLOW_SST_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi

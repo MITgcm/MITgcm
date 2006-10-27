@@ -123,5 +123,38 @@ CADJ STORE xx_swflux1    = tapelev4, key = ilev_4
 CADJ STORE xx_swdown0    = tapelev4, key = ilev_4
 CADJ STORE xx_swdown1    = tapelev4, key = ilev_4
 # endif
+# ifdef ALLOW_SNOWPRECIP_CONTROL
+CADJ STORE xx_snowprecip0   = tapelev4, key = ilev_4
+CADJ STORE xx_snowprecip1   = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_LWFLUX_CONTROL
+CADJ STORE xx_lwflux0       = tapelev4, key = ilev_4
+CADJ STORE xx_lwflux1       = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_LWDOWN_CONTROL
+CADJ STORE xx_lwdown0       = tapelev4, key = ilev_4
+CADJ STORE xx_lwdown1       = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_EVAP_CONTROL
+CADJ STORE xx_evap0       = tapelev4, key = ilev_4
+CADJ STORE xx_evap1       = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_APRESSURE_CONTROL
+CADJ STORE xx_apressure0       = tapelev4, key = ilev_4
+CADJ STORE xx_apressure1       = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_RUNOFF_CONTROL
+CADJ STORE xx_runoff0       = tapelev4, key = ilev_4
+CADJ STORE xx_runoff1       = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_SST_CONTROL
+CADJ STORE xx_sst0    = tapelev4, key = ilev_4
+CADJ STORE xx_sst1    = tapelev4, key = ilev_4
+# endif
+# ifdef ALLOW_SSS_CONTROL
+CADJ STORE xx_sss0    = tapelev4, key = ilev_4
+CADJ STORE xx_sss1    = tapelev4, key = ilev_4
+# endif
+
 
 #endif /* ALLOW_EXF */

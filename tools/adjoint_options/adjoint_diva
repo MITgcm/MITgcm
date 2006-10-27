@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.3 2006/10/27 05:16:54 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_diva,v 1.1 2006/10/27 05:16:54 heimbach Exp $
 #  $Name:  $
 #
 
@@ -12,15 +12,17 @@
 # TAF=~fastopt/bin/taf
 # STAF=staf
 
+DIVA='true'
 TAF=staf
 TAMC=tamc
 
-AD_TAMC_FLAGS='-f95 -reverse -admark ad -i4 -r4 -l tamc_ad.log'
-AD_TAF_FLAGS='-f95 -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
-FTL_TAMC_FLAGS='-f95 -forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
-FTL_TAF_FLAGS='-f95 -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg'
-SVD_TAMC_FLAGS='-f95 -reverse -forward -pure -i4 -r4 -l tamc_svd.log'
-SVD_TAF_FLAGS='-f95 -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log -nonew_arg'
+
+AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
+AD_TAF_FLAGS="-z -pure -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg"
+FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
+FTL_TAF_FLAGS='-z -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg'
+SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
+SVD_TAF_FLAGS='-z -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log -nonew_arg'
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \
@@ -52,14 +54,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_diffkr_dummy      \
                     xx_kapgm_dummy       \
                     xx_efluxy_dummy      \
-                    xx_efluxp_dummy      \
-                    xx_edtaux_dummy      \
-                    xx_edtauy_dummy      \
-                    xx_uvel_dummy        \
-                    xx_vvel_dummy        \
-                    xx_etan_dummy        \
-                    xx_relaxsst_dummy    \
-                    xx_relaxsss_dummy'   \
+                    xx_efluxp_dummy'     \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"

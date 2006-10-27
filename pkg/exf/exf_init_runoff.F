@@ -27,6 +27,11 @@ c     == global variables ==
 #include "exf_fields.h"
 #include "exf_constants.h"
 
+#ifdef ALLOW_AUTODIFF
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
+
 c     == routine arguments ==
 
       integer mythid
@@ -81,6 +86,14 @@ c--   scale runoff array
           enddo
         enddo
       endif
+
+#ifdef ALLOW_RUNOFF_CONTROL
+      call ctrl_get_gen ( 
+     &     xx_runoff_file, xx_runoffstartdate, xx_runoffperiod,
+     &     maskc, runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
+     &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
+     &     0., 0., mythid )
+#endif
 
       _EXCH_XY_R4(  runoff, mythid )
 

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.27 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.28 2006/10/27 05:16:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,6 +124,12 @@ c--   Assign file names.
       call ctrl_set_fname(xx_precip_file, fname_precip, mythid)
       call ctrl_set_fname(xx_swflux_file, fname_swflux, mythid)
       call ctrl_set_fname(xx_swdown_file, fname_swdown, mythid)
+      call ctrl_set_fname(xx_lwflux_file, fname_lwflux, mythid)
+      call ctrl_set_fname(xx_lwdown_file, fname_lwdown, mythid)
+      call ctrl_set_fname(xx_evap_file, fname_evap, mythid)
+      call ctrl_set_fname(xx_snowprecip_file, fname_snowprecip, mythid)
+      call ctrl_set_fname(xx_apressure_file, fname_apressure, mythid)
+      call ctrl_set_fname(xx_runoff_file, fname_runoff, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
@@ -593,6 +599,60 @@ CML# endif
           write(weighttype(1:80),'(a)') "wswdown"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_swdown(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_LWFLUX_CONTROL
+          ivartype    = 35
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wlwflux"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_lwflux(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_LWDOWN_CONTROL
+          ivartype    = 36
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wlwdown"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_lwdown(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_EVAP_CONTROL
+          ivartype    = 37
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wevap"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_evap(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_SNOWPRECIP_CONTROL
+          ivartype    = 38
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wsnowprecip"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_snowprecip(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_APRESSURE_CONTROL
+          ivartype    = 39
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wapressure"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_apressure(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_RUNOFF_CONTROL
+          ivartype    = 40
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wrunoff"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_runoff(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 

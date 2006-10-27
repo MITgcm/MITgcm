@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.24 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.25 2006/10/27 05:16:54 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -70,41 +70,43 @@ c     == end of interface ==
 
 c--   Read the namelist input.
       namelist /ctrl_nml/
-     &  xx_theta_file,
-     &  xx_salt_file,
-     &  xx_hflux_file,
+     &  xx_theta_file, xx_salt_file,
+     &  xx_hflux_file, xx_hflux_remo_intercept, xx_hflux_remo_slope,
      &  xx_hfluxstartdate1, xx_hfluxstartdate2, xx_hfluxperiod,
-     &  xx_hflux_remo_intercept, xx_hflux_remo_slope,
-     &  xx_sflux_file,
+     &  xx_sflux_file, xx_sflux_remo_intercept, xx_sflux_remo_slope,
      &  xx_sfluxstartdate1, xx_sfluxstartdate2, xx_sfluxperiod,
-     &  xx_sflux_remo_intercept, xx_sflux_remo_slope,
-     &  xx_tauu_file,
+     &  xx_tauu_file, xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &  xx_tauustartdate1,  xx_tauustartdate2,  xx_tauuperiod,
-     &  xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &  xx_tauv_file,
+     &  xx_tauv_file, xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &  xx_tauvstartdate1,  xx_tauvstartdate2,  xx_tauvperiod,
-     &  xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &  xx_atemp_file,
+     &  xx_atemp_file, xx_atemp_remo_intercept, xx_atemp_remo_slope,
      &  xx_atempstartdate1, xx_atempstartdate2, xx_atempperiod,
-     &  xx_atemp_remo_intercept, xx_atemp_remo_slope,
-     &  xx_aqh_file,
+     &  xx_aqh_file, xx_aqh_remo_intercept, xx_aqh_remo_slope,
      &  xx_aqhstartdate1, xx_aqhstartdate2, xx_aqhperiod,
-     &  xx_aqh_remo_intercept, xx_aqh_remo_slope,
-     &  xx_precip_file,
+     &  xx_precip_file, xx_precip_remo_intercept, xx_precip_remo_slope,
      &  xx_precipstartdate1, xx_precipstartdate2, xx_precipperiod,
-     &  xx_precip_remo_intercept, xx_precip_remo_slope,
-     &  xx_swflux_file,
+     &  xx_swflux_file, xx_swflux_remo_intercept, xx_swflux_remo_slope,
      &  xx_swfluxstartdate1, xx_swfluxstartdate2, xx_swfluxperiod,
-     &  xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &  xx_swdown_file,
+     &  xx_swdown_file, xx_swdown_remo_intercept, xx_swdown_remo_slope,
      &  xx_swdownstartdate1, xx_swdownstartdate2, xx_swdownperiod,
-     &  xx_swdown_remo_intercept, xx_swdown_remo_slope,
-     &  xx_uwind_file,
+     &  xx_lwflux_file, xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     &  xx_lwfluxstartdate1, xx_lwfluxstartdate2, xx_lwfluxperiod,
+     &  xx_lwdown_file, xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
+     &  xx_lwdownstartdate1, xx_lwdownstartdate2, xx_lwdownperiod,
+     &  xx_evap_file, xx_evap_remo_intercept, xx_evap_remo_slope,
+     &  xx_evapstartdate1, xx_evapstartdate2, xx_evapperiod,
+     &  xx_snowprecip_file, xx_snowprecip_remo_intercept, 
+     &  xx_snowprecip_remo_slope,  xx_snowprecipperiod,
+     &  xx_snowprecipstartdate1, xx_snowprecipstartdate2,
+     &  xx_apressure_file, xx_apressure_remo_intercept, 
+     &  xx_apressure_remo_slope, xx_apressureperiod,
+     &  xx_apressurestartdate1, xx_apressurestartdate2,
+     &  xx_runoff_file, xx_runoff_remo_intercept, xx_runoff_remo_slope,
+     &  xx_runoffstartdate1, xx_runoffstartdate2, xx_runoffperiod,
+     &  xx_uwind_file, xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &  xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod,
-     &  xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &  xx_vwind_file,
+     &  xx_vwind_file, xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &  xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod,
-     &  xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &  xx_obcsn_file,
      &  xx_obcsnstartdate1,  xx_obcsnstartdate2,  xx_obcsnperiod,
      &  xx_obcss_file,
@@ -113,28 +115,19 @@ c--   Read the namelist input.
      &  xx_obcswstartdate1,  xx_obcswstartdate2,  xx_obcswperiod,
      &  xx_obcse_file,
      &  xx_obcsestartdate1,  xx_obcsestartdate2,  xx_obcseperiod,
-     &  xx_diffkr_file,
-     &  xx_kapgm_file,
-     &  xx_tr1_file,
-     &  xx_sst_file,
+     &  xx_diffkr_file, xx_kapgm_file, xx_tr1_file,
+     &  xx_sst_file, xx_sss_file,
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
-     &  xx_sss_file,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
      &  xx_depth_file,
-     &  xx_efluxy_file,
-     &  xx_efluxp_file,
+     &  xx_efluxy_file, xx_efluxp_file,
      &  xx_bottomdrag_file,
-     &  xx_edtaux_file,
-     &  xx_edtauy_file,
-     &  xx_uvel_file,
-     &  xx_vvel_file,
-     &  xx_etan_file,
+     &  xx_edtaux_file, xx_edtauy_file,
+     &  xx_uvel_file, xx_vvel_file, xx_etan_file,
      &  doInitXX,
      &  doPackDiag,
-     &  doZscaleUnpack,
-     &  doZscalePack,
-     &  doMainUnpack,
-     &  doMainPack,
+     &  doZscaleUnpack, doZscalePack,
+     &  doMainUnpack, doMainPack,
      &  doAdmtlmBypassAD,
      &  delZexp
 
@@ -225,6 +218,48 @@ c
         xx_swdown_file      = 'xx_swdown'
         xx_swdown_remo_intercept =   0. _d 0
         xx_swdown_remo_slope =   0. _d 0
+c
+        xx_lwfluxstartdate1 =   0
+        xx_lwfluxstartdate2 =   0
+        xx_lwfluxperiod     =   0. _d 0
+        xx_lwflux_file      = 'xx_lwflux'
+        xx_lwflux_remo_intercept =   0. _d 0
+        xx_lwflux_remo_slope =   0. _d 0
+c
+        xx_lwdownstartdate1 =   0
+        xx_lwdownstartdate2 =   0
+        xx_lwdownperiod     =   0. _d 0
+        xx_lwdown_file      = 'xx_lwdown'
+        xx_lwdown_remo_intercept =   0. _d 0
+        xx_lwdown_remo_slope =   0. _d 0
+c
+        xx_evapstartdate1 =   0
+        xx_evapstartdate2 =   0
+        xx_evapperiod     =   0. _d 0
+        xx_evap_file      = 'xx_evap'
+        xx_evap_remo_intercept =   0. _d 0
+        xx_evap_remo_slope =   0. _d 0
+c
+        xx_snowprecipstartdate1 =   0
+        xx_snowprecipstartdate2 =   0
+        xx_snowprecipperiod     =   0. _d 0
+        xx_snowprecip_file      = 'xx_snowprecip'
+        xx_snowprecip_remo_intercept =   0. _d 0
+        xx_snowprecip_remo_slope =   0. _d 0
+c
+        xx_apressurestartdate1 =   0
+        xx_apressurestartdate2 =   0
+        xx_apressureperiod     =   0. _d 0
+        xx_apressure_file      = 'xx_apressure'
+        xx_apressure_remo_intercept =   0. _d 0
+        xx_apressure_remo_slope =   0. _d 0
+c
+        xx_runoffstartdate1 =   0
+        xx_runoffstartdate2 =   0
+        xx_runoffperiod     =   0. _d 0
+        xx_runoff_file      = 'xx_runoff'
+        xx_runoff_remo_intercept =   0. _d 0
+        xx_runoff_remo_slope =   0. _d 0
 c
         xx_uwindstartdate1  =   0
         xx_uwindstartdate2  =   0

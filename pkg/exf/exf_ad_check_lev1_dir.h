@@ -129,6 +129,30 @@ CADJ STORE xx_swflux1       = comlev1, key = ikey_dynamics
 CADJ STORE xx_swdown0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_swdown1       = comlev1, key = ikey_dynamics
 # endif
+# ifdef ALLOW_SNOWPRECIP_CONTROL
+CADJ STORE xx_snowprecip0   = comlev1, key = ikey_dynamics
+CADJ STORE xx_snowprecip1   = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_LWFLUX_CONTROL
+CADJ STORE xx_lwflux0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_lwflux1       = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_LWDOWN_CONTROL
+CADJ STORE xx_lwdown0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_lwdown1       = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_EVAP_CONTROL
+CADJ STORE xx_evap0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_evap1       = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_APRESSURE_CONTROL
+CADJ STORE xx_apressure0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_apressure1       = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_RUNOFF_CONTROL
+CADJ STORE xx_runoff0       = comlev1, key = ikey_dynamics
+CADJ STORE xx_runoff1       = comlev1, key = ikey_dynamics
+# endif
 # ifdef ALLOW_SST_CONTROL
 CADJ STORE xx_sst0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_sst1       = comlev1, key = ikey_dynamics
