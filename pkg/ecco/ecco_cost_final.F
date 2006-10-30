@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.27 2006/10/25 22:22:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.28 2006/10/30 17:01:22 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -816,9 +816,11 @@ c--   Each process has calculated the global part for itself.
         fc = fc + mult_hmean*objf_hmean
         no_hmean = num_hmean
 
-        f_hfluxmm2 = mult_hfluxmm
-     &       *(f_hfluxmm+1.0)*(f_hfluxmm+1.0)
-     &       /(wmean_hflux*wmean_hflux)
+        if ( wmean_hflux .NE. 0. ) then
+          f_hfluxmm2 = mult_hfluxmm
+     &        *(f_hfluxmm+1.0)*(f_hfluxmm+1.0)
+     &        /(wmean_hflux*wmean_hflux)
+        endif
 cph(
 cph        f_sfluxmm2 = mult_sfluxmm
 cph     &       *f_sfluxmm*f_sfluxmm

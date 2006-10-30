@@ -138,13 +138,15 @@ c--     Read time averages and the monthly mean data.
        
        if (sumtot.eq.0.) sumtot = 1.
 
-       do bj = jtlo,jthi
-          do bi = itlo,ithi
+       if ( wmean_sflux .NE. 0. ) then
+         do bj = jtlo,jthi
+           do bi = itlo,ithi
              fctilemm(bi,bj) = fctilemm(bi,bj) / sumtot
              objf_sfluxmm(bi,bj) = objf_sfluxmm(bi,bj)
-     &            + (fctilemm(bi,bj)/wmean_sflux/nyearsrec)**2
-          enddo
-       enddo
+     &           + (fctilemm(bi,bj)/wmean_sflux/nyearsrec)**2
+           enddo
+         enddo
+       endif
 
 c-- diagnostic: imbalance per year:
        tmpx2 =  wsfluxmm(1,1) * fctiletot / sumtot

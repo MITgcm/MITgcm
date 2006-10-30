@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.43 2006/10/25 22:22:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.44 2006/10/30 17:01:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -506,8 +506,6 @@ c--     Set the model iteration counter and the model time.
         CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
-
-#ifndef ALLOW_DIVIDED_ADJOINT
 #ifdef ALLOW_DIAGNOSTICS
 C--   Switch on/off diagnostics for snap-shot output:
       IF ( useDiagnostics ) THEN
@@ -519,7 +517,6 @@ C--   State-variables diagnostics
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
-#endif
 #endif
 
 #ifdef ALLOW_PROFILES
@@ -939,7 +936,6 @@ C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
         CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
-#ifndef ALLOW_DIVIDED_ADJOINT
 #ifdef ALLOW_DIAGNOSTICS
 C--   State-variables diagnostics
        IF ( usediagnostics ) THEN
@@ -947,7 +943,6 @@ C--   State-variables diagnostics
         CALL DO_STATEVARS_DIAGS( myTime, 1, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        ENDIF
-#endif
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -1009,7 +1004,6 @@ C--   Calculate float trajectories
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
-#ifndef ALLOW_DIVIDED_ADJOINT
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
@@ -1035,6 +1029,7 @@ C--   Do IO if needed.
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 #endif
 
+#ifndef ALLOW_DIVIDED_ADJOINT
 C--   Save state for restarts
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
       CALL PACKAGES_WRITE_PICKUP(
@@ -1200,7 +1195,7 @@ c--   Compute cost function contribution of SSH.
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_PROFILES
-CADJ STORE etan = tapelev_init, key = 1
+CADJ STORE prof_etan_mean = tapelev_init, key = 1
 #  endif
 # endif
 #endif

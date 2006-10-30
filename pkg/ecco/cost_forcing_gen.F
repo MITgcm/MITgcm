@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.5 2006/03/02 02:53:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.6 2006/10/30 17:01:21 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -168,9 +168,9 @@ c--     Loop over this thread tiles.
 
       enddo
 
-      do bj = jtlo,jthi
+      if ( wmean_gen .NE. 0. ) then
+       do bj = jtlo,jthi
         do bi = itlo,ithi
-
 c--     Determine the weights to be used.
         kk = 1
         fctilem = 0. _d 0
@@ -188,11 +188,10 @@ c--     Determine the weights to be used.
             endif
           enddo
         enddo
-
         objf_gen_mean(bi,bj) = objf_gen_mean(bi,bj) + fctilem
-
         enddo
-      enddo
+       enddo
+      endif
 
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
