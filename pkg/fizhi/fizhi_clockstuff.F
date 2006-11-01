@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.25 2005/10/14 16:55:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.26 2006/11/01 18:17:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -460,7 +460,7 @@ C***********************************************************************
       implicit none
 
       integer nhms,nymd,nhms1,nymd1,nhms2,nymd2
-      _RL fac1,fac2
+      _RL getcon, fac1,fac2
                                                                                 
       INTEGER  YEAR , MONTH , DAY , SEC
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
@@ -469,7 +469,7 @@ C***********************************************************************
       _RL time00, time1, time2
                                                                                 
       INTEGER    DAYSCY                                                         
-      PARAMETER (DAYSCY = 365*4+1)                                   
+      parameter ( dayscy   = 365*4 + 1 )
 
       INTEGER MNDY(12,4)              
                                                                                 
@@ -801,7 +801,7 @@ C***********************************************************************
 C  PURPOSE                                                                      
 C     INCYMD:  NYMD CHANGED BY ONE DAY                                          
 C     MODYMD:  NYMD CONVERTED TO JULIAN DATE                                    
-C  DESCRIPTION OF PARAMETERS                                                    
+C  DESCRIPTION OF INPUT VARIABLES
 C     NYMD     CURRENT DATE IN YYMMDD FORMAT                                    
 C     M        +/- 1 (DAY ADJUSTMENT)                                           
 C                                                                               
@@ -905,7 +905,7 @@ C***********************************************************************
 c Input Variables
 c ---------------
       integer nymd, nhms, irun
-      _RL    cosz(irun), alat(irun), alon(irun), ra
+      _RL getcon, cosz(irun), alat(irun), alon(irun), ra
 
 c Local Variables
 c ---------------
@@ -917,20 +917,10 @@ c ---------------
       _RL pi, zero, one, two, six, dg2rd, yrlen, eqnx, ob, ecc, per
       _RL daylen, fac, thm, thp, thnow, zs, zc, sj, cj
 
-      parameter ( pi    = 3.1415926535898)
-      parameter ( zero  = 0.0 )
       parameter ( one   = 1.0 )
       parameter ( two   = 2.0 )
       parameter ( six   = 6.0 )
-      parameter ( dg2rd = pi/180. )
-
-      parameter ( yrlen  = 365.25  )
-      parameter ( dayscy = 365*4+1 )
-      parameter ( eqnx   =  80.9028)
-      parameter ( ob     =  23.45*dg2rd )
-      parameter ( ecc    =   0.0167 )
-      parameter ( per    = 102.0*dg2rd)
-      parameter ( daylen = 86400.)
+      parameter ( dayscy   = 365*4 + 1 )
 
       _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
 
@@ -941,8 +931,20 @@ c ---------------
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
 
-      FUN(Y) = (TWO*PI/((ONE-ECC**2)**1.5))*(ONE/YRLEN)
+      FUN(Y,PI,ECC,YRLEN,PER) = (TWO*PI/((ONE-ECC**2)**1.5))*(ONE/YRLEN)
      .       * (ONE - ECC*COS(Y-PER)) ** 2
+
+C***********************************************************************
+C*                         SET SOME CONSTANTS                          *
+C***********************************************************************
+      pi = getcon('PI')
+      dg2rd = getcon('DEG2RAD')
+      yrlen = getcon('YRLEN')
+      ob =  getcon('OBLDEG') * dg2rd
+      daylen = getcon('SDAY')
+      eqnx = getcon('VERNAL EQUINOX')
+      ecc = getcon('ECCENTRICITY')
+      per = getcon('PERIHELION') * dg2rd
 
 C***********************************************************************
 C*                          SET CURRENT TIME                           *
@@ -965,17 +967,17 @@ C***********************************************************************
            KM  = INT(EQNX) + 1
            FAC = KM-EQNX
            T0 = ZERO
-           T1 = FUN(T0         )*FAC
-           T2 = FUN(ZERO+T1/TWO)*FAC
-           T3 = FUN(ZERO+T2/TWO)*FAC
-           T4 = FUN(ZERO+T3    )*FAC
+           T1 = FUN(T0,PI,ECC,YRLEN,PER         )*FAC
+           T2 = FUN(ZERO+T1/TWO,PI,ECC,YRLEN,PER)*FAC
+           T3 = FUN(ZERO+T2/TWO,PI,ECC,YRLEN,PER)*FAC
+           T4 = FUN(ZERO+T3,PI,ECC,YRLEN,PER    )*FAC
            TH(KM) = (T1 + TWO*(T2 + T3) + T4) / SIX
 
            DO 200 K=2,DAYSCY
-           T1 = FUN(TH(KM)       )
-           T2 = FUN(TH(KM)+T1/TWO)
-           T3 = FUN(TH(KM)+T2/TWO)
-           T4 = FUN(TH(KM)+T3    )
+           T1 = FUN(TH(KM),PI,ECC,YRLEN,PER       )
+           T2 = FUN(TH(KM)+T1/TWO,PI,ECC,YRLEN,PER)
+           T3 = FUN(TH(KM)+T2/TWO,PI,ECC,YRLEN,PER)
+           T4 = FUN(TH(KM)+T3,PI,ECC,YRLEN,PER    )
            KP = MOD(KM,DAYSCY) + 1
            TH(KP) = TH(KM) + (T1 + TWO*(T2 + T3) + T4) / SIX
            KM = KP
@@ -1131,9 +1133,9 @@ C***********************************************************************
       implicit none
 
       integer mmdd,nymd,nhms,timeleft,daysleft
+      _RL getcon
 
       integer nsday
-      parameter ( nsday  = 86400 )
       integer year, month, day, sec 
       integer yearnext, monthnext, daynext, secnext
       integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
@@ -1151,6 +1153,7 @@ C***********************************************************************
 C***********************************************************************        
 C*                   SET CURRENT TIME ELEMENTS                                 *        
 C***********************************************************************        
+      nsday  = getcon('SDAY')
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
       DAY    = MOD(NYMD,100)
