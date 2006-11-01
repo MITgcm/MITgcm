@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.8 2006/02/21 01:44:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.9 2006/11/01 18:17:56 molod Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -24,15 +24,16 @@ CEOP
 
       integer I
       INTEGER MAXCON
-      PARAMETER (MAXCON=43)
+      PARAMETER (MAXCON=46)
       CHARACTER*16 ANAME(MAXCON)
       _RL  ACON (MAXCON)
       _RL  GETCON
-      _RL  VECMAX, UNDEF, OB, PER, ECC, AE, EQNX, SOLS, S0, GRAV, 
+      _RL  VECMAX, UNDEF, OB, ECC, AE, EQNX, SOLS, S0, GRAV, 
      &     SRFPRS, PIMEAN, PSTD, TSTD, SDAY, SSALB, CO2, 
      &     CFC11, CFC12, CFC22, ATMPOPA, PI, CPD, CPV, ALHL, ALHS, 
      &     STFBOL, AIRMW, H2OMW, RUNIV, RGAS, RVAP, RKAP, HEATW, 
-     &     HEATI, TICE, VKRM, DEG2RAD, CALTOJ, EPS, VIRTCON, EPSFAC
+     &     HEATI, TICE, VKRM, DEG2RAD, CALTOJ, EPS, VIRTCON, EPSFAC,
+     &     YRLEN, DAYSCY, PERHDEG, OBLDEG
 
 C     COMPUTATIONAL CONSTANTS
 C     -----------------------
@@ -42,12 +43,13 @@ C     -----------------------
 C     ASTRONOMICAL CONSTANTS
 C     ----------------------
       PARAMETER ( OB     = 23.45      )
-      PARAMETER ( PER    = 102.       )
-      PARAMETER ( ECC    = .0167      )
       PARAMETER ( AE     = 6371E3     )
-      PARAMETER ( EQNX   = 80.5       )
       PARAMETER ( SOLS   = 176.5      )
       PARAMETER ( S0     = 1365.0     )
+      PARAMETER ( EQNX   = 80.9028    )
+      PARAMETER ( ECC    = 0.0167     )
+      PARAMETER ( PERHDEG= 102.0      )
+      PARAMETER ( OBLDEG = 23.45      )
 
 C     TERRESTRIAL CONSTANTS
 C     ---------------------
@@ -63,7 +65,9 @@ C     ---------------------
       PARAMETER ( CFC12  = 0.5        )
       PARAMETER ( CFC22  = 0.2        )
       PARAMETER ( ATMPOPA= 1.d5       )
-      PARAMETER ( PI     = 3.14159d0  )
+      PARAMETER ( PI     = 3.14159 )
+      PARAMETER ( YRLEN  = 365.25     )
+      PARAMETER ( DAYSCY = 365 *4 +1  )
 
 C     THERMODYNAMIC CONSTANTS
 C     -----------------------
@@ -108,7 +112,7 @@ C     ------------------
        DATA ANAME(8 ),ACON(8 ) / 'EARTH RADIUS    ', AE     /
        DATA ANAME(9 ),ACON(9 ) / 'OBLIQUITY       ', OB     /
        DATA ANAME(10),ACON(10) / 'ECCENTRICITY    ', ECC    /
-       DATA ANAME(11),ACON(11) / 'PERIHELION      ', PER    /
+       DATA ANAME(11),ACON(11) / 'PERIHELION      ', PERHDEG/
        DATA ANAME(12),ACON(12) / 'VERNAL EQUINOX  ', EQNX   /
        DATA ANAME(13),ACON(13) / 'SUMMER SOLSTICE ', SOLS   /
        DATA ANAME(14),ACON(14) / 'MAX VECT LENGTH ', VECMAX /
@@ -140,6 +144,9 @@ C     ------------------
        DATA ANAME(41),ACON(41) / 'DEG2RAD         ', DEG2RAD /
        DATA ANAME(42),ACON(42) / 'ATMPOPA         ', ATMPOPA/
        DATA ANAME(43),ACON(43) / 'PI              ', PI     /
+       DATA ANAME(44),ACON(44) / 'YRLEN           ', YRLEN  /
+       DATA ANAME(45),ACON(45) / 'DAYSCY          ',DAYSCY  /
+       DATA ANAME(46),ACON(46) / 'OBLDEG          ',OBLDEG  /
 
       DO 10 I=1,MAXCON
       IF(NAME.EQ.ANAME(I)) THEN
