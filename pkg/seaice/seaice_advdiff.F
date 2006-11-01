@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.11 2006/11/01 01:56:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.12 2006/11/01 09:49:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,6 +83,7 @@ C     msgBuf    :: Informational/error meesage buffer
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL fld3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -493,6 +494,38 @@ C--   Map HEFF to ice thickness, using the latest area
         ENDIF
 #endif /* ALLOW_THSICE */
 
+C     now do the advection of seaice variable HSNOW in order not to interfere
+C     any of the thsice advection
+        IF ( SEAICEadvSnow .AND. .NOT. useThSice ) THEN
+C--   Effective Snow Thickness (Volume)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          iceFld(i,j) = HSNOW(i,j,bi,bj)
+         ENDDO
+        ENDDO
+        CALL SEAICE_ADVECTION(
+     I       GAD_SNOW, SEAICEadvSchSnow, .TRUE.,
+     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I       uTrans, vTrans, iceFld, recip_heff,
+     O       gFld, afx, afy,
+     I       bi, bj, myTime, myIter, myThid )
+        IF ( diff1 .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I       GAD_SNOW,
+     I       HSNOW(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U       gFld,
+     I       bi, bj, myTime, myIter, myThid )
+        ENDIF
+C     now do the "explicit" time step
+        DO j=1,sNy
+         DO i=1,sNx
+          HSNOW(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &         HSNOW(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &         )
+         ENDDO
+        ENDDO
+        ENDIF
 C---   end bi,bj loops
        ENDDO
       ENDDO
@@ -510,6 +543,32 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics
 
        CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
        CALL ADVECT( uc, vc, AREA, HEFFM, myThid )
+       IF ( SEAICEadvSnow .AND. .NOT. useThSice ) THEN
+C     another fudge: copy 2D field HSNOW to 3D field fld3d to be able to
+C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
+C     with LAD=1 (Leapfrog).
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            fld3d(I,J,3,bi,bj) = 0. _d 0 
+            fld3d(I,J,2,bi,bj) = HSNOW(I,J,bi,bj)
+            fld3d(I,J,1,bi,bj) = HSNOW(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )       
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            HSNOW(I,J,bi,bj) = fld3d(I,J,1,bi,bj) 
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 #ifdef ALLOW_THSICE
        IF ( useThSice ) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_ADVDIFF: ',

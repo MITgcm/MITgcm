@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.32 2006/07/14 12:56:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.33 2006/11/01 09:49:37 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -19,6 +19,9 @@ C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
+C     SEAICEuseFlooding :: turn on scheme to convert submerged snow into ice
+C     SEAICEadvSnow     :: turn on advection of snow (does not work with
+C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -32,14 +35,14 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseEVPpickup,
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow, 
      &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP, 
-     &     SEAICEuseEVPpickup,
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow,
      &     SEAICEuseFluxForm, useHB87stressCoupling, 
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,

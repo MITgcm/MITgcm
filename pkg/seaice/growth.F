@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.28 2006/10/05 18:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.29 2006/11/01 09:49:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,6 +39,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  TBC, salinity_ice, SDF, Q0, QS
+      _RL  hDraft, hFlood
       _RL GAREA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL GHEFF( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL AR   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
@@ -370,6 +371,21 @@ c          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
+
+#ifdef ALLOW_SEAICE_FLOODING
+        IF ( SEAICEuseFlooding ) THEN
+C     convert snow to ice if submerged
+         DO J=1,sNy
+          DO I=1,sNx
+           hDraft = (HSNOW(I,J,bi,bj)*330. _d 0
+     &              +HEFF(I,J,1,bi,bj)*SEAICE_rhoIce)/1000. _d 0
+           hFlood = hDraft - MIN(hDraft,HEFF(I,J,1,bi,bj))
+           HEFF(I,J,1,bi,bj) = HEFF(I,J,1,bi,bj) + hFlood
+           HSNOW(I,J,bi,bj) = MAX(0. _d 0,HSNOW(I,J,bi,bj)-hFlood/SDF)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_SEAICE_FLOODING */
 
 #ifdef ATMOSPHERIC_LOADING
         IF ( useRealFreshWaterFlux ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.9 2006/08/14 20:33:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.10 2006/11/01 09:49:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,6 +79,10 @@ C     == end of interface ==
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
 #endif /* SEAICE_CGRID */
+      CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
+     & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
+      CALL WRITE_0D_L ( SEAICEuseFlooding, INDEX_NONE,
+     & 'SEAICEuseFlooding =', ' /* turn submerged snow into ice */')
       CALL WRITE_0D_I ( LAD,               INDEX_NONE,
      & 'LAD               =', ' /* time stepping scheme */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
