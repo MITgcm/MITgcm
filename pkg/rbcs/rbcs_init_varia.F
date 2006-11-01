@@ -58,8 +58,8 @@ C     Loop over tracers
             DO k=1,Nr
               DO j=1-Oly,sNy+OLy
                 DO i=1-Olx,sNx+Olx
-                  rbcptracer0(i,j,k,bi,bj,iTracer) = 0. _d 0
-                  rbcptracer1(i,j,k,bi,bj,iTracer) = 0. _d 0
+                  rbcptr0(i,j,k,bi,bj,iTracer) = 0. _d 0
+                  rbcptr1(i,j,k,bi,bj,iTracer) = 0. _d 0
                ENDDO
               ENDDO
             ENDDO

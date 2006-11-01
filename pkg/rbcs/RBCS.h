@@ -71,10 +71,10 @@ c number of mask to read
 
 #ifdef ALLOW_PTRACERS
        COMMON /RBCFFTRACER/
-     &               rbcptracer0, rbcptracer1
-       _RS rbcptracer0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+     &               rbcptr0, rbcptr1
+       _RS rbcptr0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
-       _RS rbcptracer1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+       _RS rbcptr1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
 #endif
 

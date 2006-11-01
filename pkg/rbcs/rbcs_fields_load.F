@@ -90,8 +90,8 @@ C First call requires that we initialize everything to zero for safety
          do k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            rbcptracer0(i,j,k,bi,bj,iTracer)=0.d0
-            rbcptracer1(i,j,k,bi,bj,iTracer)=0.d0
+            rbcptr0(i,j,k,bi,bj,iTracer)=0.d0
+            rbcptr1(i,j,k,bi,bj,iTracer)=0.d0
            ENDDO
           ENDDO
          enddo
@@ -159,9 +159,11 @@ c
            if (useRBCptrnum(iTracer)) then
             WRITE(fn,'(A)') relaxPtracerFile(iTracer)
             CALL MDSREADFIELD ( fn, prec,
-     &       'RS', Nr, rbcptracer0(1,1,1,1,1,iTracer), intime0, myThid )
+     &       'RS', Nr, rbcptr0(1-Olx,1-Oly,1,1,1,iTracer), 
+     &                                         intime0, myThid )
             CALL MDSREADFIELD ( fn, prec,
-     &       'RS', Nr, rbcptracer1(1,1,1,1,1,iTracer), intime1, myThid )
+     &       'RS', Nr, rbcptr1(1-Olx,1-Oly,1,1,1,iTracer), 
+     &                                         intime1, myThid )
            endif
          ENDDO
        endif
@@ -179,8 +181,8 @@ C
 #ifdef ALLOW_PTRACERS
        if (useRBCptracers) then
          DO iTracer = 1, PTRACERS_numInUse
-           _EXCH_XYZ_R4(rbcptracer0(1,1,1,1,1,iTracer),myThid)
-           _EXCH_XYZ_R4(rbcptracer1(1,1,1,1,1,iTracer),myThid)
+         _EXCH_XYZ_R4(rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+         _EXCH_XYZ_R4(rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
          ENDDO
        endif
 #endif
@@ -215,8 +217,8 @@ C--   Interpolate
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              RBC_ptracers(i,j,k,bi,bj,iTracer)   = 
-     &                      bWght*rbcptracer0(i,j,k,bi,bj,iTracer)
-     &                     +aWght*rbcptracer1(i,j,k,bi,bj,iTracer)
+     &                      bWght*rbcptr0(i,j,k,bi,bj,iTracer)
+     &                     +aWght*rbcptr1(i,j,k,bi,bj,iTracer)
             ENDDO
            ENDDO
            ENDDO
