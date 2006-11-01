@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.740 2006/10/27 05:19:42 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.741 2006/11/01 02:01:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice advection with pkg/thsice: a step toward the use of non-linear 
+  advection scheme, but #ifdef or commented out for now (requires more EXCH).
 o use standard version of PTRACERS_INI_VARIA in tutorial_tracer_adjsens
   (identical results) and the standard version of EXTERNAL_FIELDS_LOAD
   in natl_box (affects results @ truncation level: update output.txt)
