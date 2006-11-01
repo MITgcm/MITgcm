@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.3 2006/06/19 15:48:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.4 2006/11/01 01:56:23 jmc Exp $
 C $Name:  $
 
-#include "GAD_OPTIONS.h"
+#include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -9,21 +12,23 @@ C !ROUTINE: SEAICE_ADVECTION
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_ADVECTION(
-     I     advectionScheme,
      I     tracerIdentity,
-     I     uVel, vVel, tracer,
-     O     gTracer,
+     I     advectionScheme,
+     I     extensiveFld,
+     I     uFld, vFld, uTrans, vTrans, iceFld, r_hFld,
+     O     gFld, afx, afy,
      I     bi, bj, myTime, myIter, myThid)
 
 C !DESCRIPTION:
-C Calculates the tendency of a tracer due to advection.
+C Calculates the tendency of a sea-ice field due to advection.
 C It uses the multi-dimensional method given in \ref{sect:multiDimAdvection}
 C and can only be used for the non-linear advection schemes such as the
-C direct-space-time method and flux-limiters. 
+C direct-space-time method and flux-limiters.
 C
 C This routine is an adaption of the GAD_ADVECTION for 2D-fields.
-C Seaice velocities are not divergence free; therefore the contribution
-C tracer*div(u) that is present in gad_advection is removed in this routine.
+C for Area, effective thickness or other "extensive" sea-ice field,
+C  the contribution iceFld*div(u) (that is present in gad_advection)
+C  is not included here.
 C
 C The algorithm is as follows:
 C \begin{itemize}
@@ -42,8 +47,10 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GAD.h"
 #include "SEAICE_PARAMS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -54,55 +61,58 @@ C !USES: ===============================================================
 #endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================
-C  implicitAdvection :: implicit vertical advection (later on)
-C  advectionScheme   :: advection scheme to use (Horizontal plane)
-C  tracerIdentity    :: tracer identifier (required only for OBCS)
-C  uVel              :: velocity, zonal component
-C  vVel              :: velocity, meridional component
-C  tracer            :: tracer field
-C  bi,bj             :: tile indices
-C  myTime            :: current time
-C  myIter            :: iteration number
-C  myThid            :: thread number
-      INTEGER advectionScheme
+C  tracerIdentity  :: tracer identifier (required only for OBCS)
+C  advectionScheme :: advection scheme to use (Horizontal plane)
+C  extensiveFld    :: indicates to advect an "extensive" type of ice field
+C  uFld            :: velocity, zonal component
+C  vFld            :: velocity, meridional component
+C  uTrans,vTrans   :: volume transports at U,V points
+C  iceFld          :: sea-ice field
+C  r_hFld          :: reciprol of ice-thickness (only used for "intensive"
+C                     type of sea-ice field)
+C  bi,bj           :: tile indices
+C  myTime          :: current time
+C  myIter          :: iteration number
+C  myThid          :: thread number
       INTEGER tracerIdentity
-      _RL uVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL vVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      INTEGER advectionScheme
+      LOGICAL extensiveFld
+      _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL iceFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL r_hFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj
       _RL myTime
       INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gTracer           :: tendancy array
-      _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C  gFld          :: tendency array
+C  afx           :: horizontal advective flux, x direction
+C  afy           :: horizontal advective flux, y direction
+      _RL gFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL afx   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL afy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
 C  iMin,iMax,    :: loop range for called routines
 C  jMin,jMax     :: loop range for called routines
-C [iMin,iMax]Upd :: loop range to update tracer field
-C [jMin,jMax]Upd :: loop range to update tracer field
+C [iMin,iMax]Upd :: loop range to update sea-ice field
+C [jMin,jMax]Upd :: loop range to update sea-ice field
 C  i,j,k         :: loop indices
-C  kp1           :: =k+1 for k<Nr, =Nr for k=Nr
-C  xA,yA         :: areas of X and Y face of tracer cells
-C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  af            :: 2-D array for horizontal advective flux
-C  afx           :: 2-D array for horizontal advective flux, x direction
-C  afy           :: 2-D array for horizontal advective flux, y direction
-C  fVerT         :: 2 1/2D arrays for vertical advective flux
-C  localTij      :: 2-D array, temporary local copy of tracer fld
-C  localTijk     :: 3-D array, temporary local copy of tracer fld
-C  kp1Msk        :: flag (0,1) for over-riding mask for W levels
+C  localTij      :: 2-D array, temporary local copy of sea-ice fld
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  interiorOnly  :: only update the interior of myTile, but not the edges
 C  overlapOnly   :: only update the edges of myTile, but not the interior
 C  nipass        :: number of passes in multi-dimensional method
 C  ipass         :: number of the current pass being made
-C  myTile        :: variables used to determine which cube face 
+C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
 C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
@@ -111,16 +121,7 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER iMin,iMax,jMin,jMax
       INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k
-      _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       LOGICAL interiorOnly, overlapOnly
@@ -135,6 +136,8 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       CHARACTER*4 GAD_DIAG_SUFX, diagSufx
       EXTERNAL    GAD_DIAG_SUFX
 #endif
+      LOGICAL dBug
+      _RL tmpFac
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -147,7 +150,7 @@ CEOP
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1) 
+          igadkey = (act0 + 1)
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
@@ -159,30 +162,30 @@ CEOP
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 CML#ifdef ALLOW_DIAGNOSTICS
-CMLC--   Set diagnostic suffix for the current tracer 
+CMLC--   Set diagnostic suffix for the current tracer
 CML      IF ( useDiagnostics ) THEN
 CML        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
 CML      ENDIF
 CML#endif
+
+      dBug = debugLevel.GE.debLevB
+     &     .AND. myIter.EQ.nIter0
+     &     .AND. ( tracerIdentity.EQ.GAD_HEFF .OR.
+     &             tracerIdentity.EQ.GAD_QICE2 )
+c    &     .AND. tracerIdentity.EQ.GAD_HEFF
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
+#ifdef ALLOW_AUTODIFF_TAMC
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        xA(i,j)      = 0. _d 0
-        yA(i,j)      = 0. _d 0
-        uTrans(i,j)  = 0. _d 0
-        vTrans(i,j)  = 0. _d 0
-        fVerT(i,j,1) = 0. _d 0
-        fVerT(i,j,2) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
         localTij(i,j) = 0. _d 0
-#endif
        ENDDO
       ENDDO
+#endif
 
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
@@ -218,50 +221,40 @@ C--   Set tile-specific parameters for horizontal fluxes
       jMin = 1-OLy
       jMax = sNy+OLy
 
-C--   Start of k loop for horizontal fluxes
       k = 1
-#ifdef ALLOW_AUTODIFF_TAMC 
+C--   Start of k loop for horizontal fluxes
+#ifdef ALLOW_AUTODIFF_TAMC
       kkey = (igadkey-1)*Nr + k
-CADJ STORE tracer(:,:,bi,bj) = 
+CADJ STORE iceFld =
 CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Content of CALC_COMMON_FACTORS, adapted for 2D fields
 C--   Get temporary terms used by tendency routines
 
-C--   Calculate tracer cell face open areas
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        xA(i,j) = _dyG(i,j,bi,bj) * maskW(i,j,k,bi,bj)
-        yA(i,j) = _dxG(i,j,bi,bj) * maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-C--   Calculate velocity field "volume transports" through
-C--   tracer cell faces.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        uFld(i,j) = uVel(i,j,bi,bj)
-        vFld(i,j) = vVel(i,j,bi,bj)
-        uTrans(i,j) = uVel(i,j,bi,bj)*xA(i,j)
-        vTrans(i,j) = vVel(i,j,bi,bj)*yA(i,j)
-       ENDDO
-      ENDDO
-C     end of CALC_COMMON_FACTORS, adapted for 2D fields
-
-C--   Make local copy of tracer array and mask West & South
+C--   Make local copy of sea-ice field and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        localTij(i,j)=tracer(i,j,bi,bj)
+        localTij(i,j)=iceFld(i,j)
         maskLocW(i,j)=maskW(i,j,k,bi,bj)
         maskLocS(i,j)=maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
-      
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C-     Initialise Advective flux in X & Y
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         afx(i,j) = 0.
+         afy(i,j) = 0.
+        ENDDO
+       ENDDO
+#endif
+
 #ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
        withSigns = .FALSE.
-       CALL FILL_CS_CORNER_UV_RS( 
+       CALL FILL_CS_CORNER_UV_RS(
      &      withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
 #endif
@@ -280,7 +273,7 @@ C--   For cube need one pass for each of red, green and blue axes.
        interiorOnly = .FALSE.
        overlapOnly  = .FALSE.
        IF (useCubedSphereExchange) THEN
-C--   CubedSphere : pass 3 times, with partial update of local tracer field
+C--   CubedSphere : pass 3 times, with partial update of local seaice field
         IF (ipass.EQ.1) THEN
          overlapOnly  = MOD(nCFace,3).EQ.0
          interiorOnly = MOD(nCFace,3).NE.0
@@ -299,31 +292,34 @@ C--   not CubedSphere
         calc_fluxes_X = MOD(ipass,2).EQ.1
         calc_fluxes_Y = .NOT.calc_fluxes_X
        ENDIF
- 
+       IF (dBug.AND.bi.EQ.3 ) WRITE(6,*) 'ICE_adv:',tracerIdentity,
+     &   ipass,calc_fluxes_X,calc_fluxes_Y,overlapOnly,interiorOnly
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
-C-     Advective flux in X
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         af(i,j) = 0.
-        ENDDO
-       ENDDO
-C
+
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE af(:,:)  = 
+CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
        IF (calc_fluxes_X) THEN
-        
+
 C-     Do not compute fluxes if
-C       a) needed in overlap only 
+C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
+
+C-     Advective flux in X
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           af(i,j) = 0.
+          ENDDO
+         ENDDO
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
@@ -339,7 +335,7 @@ C-     Internal exchange for calculations in X
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -349,6 +345,9 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme,
      I         SEAICE_deltaTtherm,uTrans,uFld,localTij,
      O         af, myThid )
+          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
+     &      'ICE_adv: xFx=',af(13,11),localTij(12,11),uTrans(13,11),
+     &       af(13,11)/uTrans(13,11)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, SEAICE_deltaTtherm,
      I         uTrans, uFld, maskLocW, localTij,
@@ -362,13 +361,13 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
      I         uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSE
-          STOP 
+          STOP
      & 'SEAICE_ADVECTION: adv. scheme incompatibale with multi-dim'
          ENDIF
-         
+
 C--   Advective flux in X : done
         ENDIF
-        
+
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
@@ -376,60 +375,110 @@ C--   Internal exchange for next calculations in Y
         ENDIF
 #endif
 
-C-     Update the local tracer field where needed:
+C-     Update the local seaice field where needed:
 
 C     update in overlap-Only
         IF ( overlapOnly ) THEN
-         iMinUpd = 1-Olx+1
-         iMaxUpd = sNx+Olx-1
-C--   notes: these 2 lines below have no real effect (because recip_hFac=0 
+         iMinUpd = 1-OLx+1
+         iMaxUpd = sNx+OLx-1
+C--   notes: these 2 lines below have no real effect (because recip_hFac=0
 C            in corner region) but safer to keep them.
          IF ( W_edge ) iMinUpd = 1
          IF ( E_edge ) iMaxUpd = sNx
-         
-         IF ( S_edge ) THEN
-          DO j=1-Oly,0
+
+         IF ( S_edge .AND. extensiveFld ) THEN
+          DO j=1-OLy,0
            DO i=iMinUpd,iMaxUpd
-            localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
      &           *recip_rA(i,j,bi,bj)
-     &           *( af(i+1,j)-af(i,j)
-     &           )
+     &           *(  af(i+1,j)-af(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ELSEIF ( S_edge ) THEN
+          DO j=1-OLy,0
+           DO i=iMinUpd,iMaxUpd
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i+1,j)-af(i,j))
+     &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( N_edge .AND. extensiveFld ) THEN
+          DO j=sNy+1,sNy+OLy
+           DO i=iMinUpd,iMaxUpd
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)
+     &           *(  af(i+1,j)-af(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ELSEIF ( N_edge ) THEN
+          DO j=sNy+1,sNy+OLy
+           DO i=iMinUpd,iMaxUpd
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i+1,j)-af(i,j))
+     &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
+C--   keep advective flux (for diagnostics)
+         IF ( S_edge ) THEN
+          DO j=1-OLy,0
+           DO i=1-OLx+1,sNx+OLx
+            afx(i,j) = af(i,j)
            ENDDO
           ENDDO
          ENDIF
          IF ( N_edge ) THEN
-          DO j=sNy+1,sNy+Oly
-           DO i=iMinUpd,iMaxUpd
-            localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
-     &           *recip_rA(i,j,bi,bj)
-     &           *( af(i+1,j)-af(i,j)
-     &           )
+          DO j=sNy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            afx(i,j) = af(i,j)
            ENDDO
           ENDDO
          ENDIF
-         
+
         ELSE
 C     do not only update the overlap
-         jMinUpd = 1-Oly 
-         jMaxUpd = sNy+Oly
+         jMinUpd = 1-OLy
+         jMaxUpd = sNy+OLy
          IF ( interiorOnly .AND. S_edge ) jMinUpd = 1
          IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
-         DO j=jMinUpd,jMaxUpd
-          DO i=1-Olx+1,sNx+Olx-1
-           localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
-     &          *recip_rA(i,j,bi,bj)
-     &          *( af(i+1,j)-af(i,j)
-     &          )
+         IF ( extensiveFld ) THEN
+          DO j=jMinUpd,jMaxUpd
+           DO i=1-OLx+1,sNx+OLx-1
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)
+     &           *(  af(i+1,j)-af(i,j)
+     &            )
+           ENDDO
           ENDDO
-         ENDDO
+         ELSE
+          DO j=jMinUpd,jMaxUpd
+           DO i=1-OLx+1,sNx+OLx-1
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i+1,j)-af(i,j))
+     &             -(uTrans(i+1,j)-uTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
 C--   keep advective flux (for diagnostics)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           afx(i,j) = af(i,j)
-          ENDDO
+         DO j=jMinUpd,jMaxUpd
+           DO i=1-OLx+1,sNx+OLx
+            afx(i,j) = af(i,j)
+           ENDDO
          ENDDO
 
 C     This is for later
@@ -446,29 +495,22 @@ CML#endif /* ALLOW_OBCS */
 
 C-     end if/else update overlap-Only
         ENDIF
-        
+
 C--   End of X direction
        ENDIF
-        
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
-cph-test
-C-     Advective flux in Y
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         af(i,j) = 0.
-        ENDDO
-       ENDDO
-C
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
-CADJ STORE af(:,:)  = 
+CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-C
+
        IF (calc_fluxes_Y) THEN
 
 C-     Do not compute fluxes if
@@ -476,11 +518,18 @@ C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
         IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
+C-     Advective flux in Y
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           af(i,j) = 0.
+          ENDDO
+         ENDDO
+
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
 #ifdef MULTIDIM_OLD_VERSION
          IF ( useCubedSphereExchange ) THEN
-#else 
+#else
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
 #endif
@@ -488,16 +537,9 @@ C-     Internal exchange for calculations in Y
          ENDIF
 #endif
 
-C-     Advective flux in Y
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           af(i,j) = 0.
-          ENDDO
-         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -507,6 +549,9 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme,
      I         SEAICE_deltaTtherm,vTrans,vFld,localTij,
      O         af, myThid )
+          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
+     &      'ICE_adv: yFx=',af(12,12),localTij(12,11),vTrans(12,12),
+     &       af(12,12)/vTrans(12,12)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, SEAICE_deltaTtherm,
      I         vTrans, vFld, maskLocS, localTij,
@@ -520,7 +565,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
      I         vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSE
-          STOP 
+          STOP
      &  'SEAICE_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
 
@@ -534,60 +579,110 @@ C-     Internal exchange for next calculations in X
         ENDIF
 #endif
 
-C-     Update the local tracer field where needed:
+C-     Update the local seaice field where needed:
 
 C      update in overlap-Only
         IF ( overlapOnly ) THEN
-         jMinUpd = 1-Oly+1 
-         jMaxUpd = sNy+Oly-1
-C- notes: these 2 lines below have no real effect (because recip_hFac=0 
+         jMinUpd = 1-OLy+1
+         jMaxUpd = sNy+OLy-1
+C- notes: these 2 lines below have no real effect (because recip_hFac=0
 C         in corner region) but safer to keep them.
          IF ( S_edge ) jMinUpd = 1
          IF ( N_edge ) jMaxUpd = sNy
-         
-         IF ( W_edge ) THEN
+
+         IF ( W_edge .AND. extensiveFld ) THEN
           DO j=jMinUpd,jMaxUpd
-           DO i=1-Olx,0
-            localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
+           DO i=1-OLx,0
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
      &           *recip_rA(i,j,bi,bj)
-     &           *( af(i,j+1)-af(i,j)
-     &           )
+     &           *(  af(i,j+1)-af(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ELSEIF ( W_edge ) THEN
+          DO j=jMinUpd,jMaxUpd
+           DO i=1-OLx,0
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i,j+1)-af(i,j))
+     &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( E_edge .AND. extensiveFld ) THEN
+          DO j=jMinUpd,jMaxUpd
+           DO i=sNx+1,sNx+OLx
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)
+     &           *(  af(i,j+1)-af(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ELSEIF ( E_edge ) THEN
+          DO j=jMinUpd,jMaxUpd
+           DO i=sNx+1,sNx+OLx
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i,j+1)-af(i,j))
+     &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
+C--   keep advective flux (for diagnostics)
+         IF ( W_edge ) THEN
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx,0
+            afy(i,j) = af(i,j)
            ENDDO
           ENDDO
          ENDIF
          IF ( E_edge ) THEN
-          DO j=jMinUpd,jMaxUpd
-           DO i=sNx+1,sNx+Olx
-            localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
-     &           *recip_rA(i,j,bi,bj)
-     &           *( af(i,j+1)-af(i,j)
-     &           )
+          DO j=1-OLy+1,sNy+OLy
+           DO i=sNx+1,sNx+OLx
+            afy(i,j) = af(i,j)
            ENDDO
           ENDDO
          ENDIF
-         
+
         ELSE
 C     do not only update the overlap
-         iMinUpd = 1-Olx
-         iMaxUpd = sNx+Olx
+         iMinUpd = 1-OLx
+         iMaxUpd = sNx+OLx
          IF ( interiorOnly .AND. W_edge ) iMinUpd = 1
          IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
-         DO j=1-Oly+1,sNy+Oly-1
-          DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-SEAICE_deltaTtherm*
-     &           maskC(i,j,k,bi,bj)
-     &          *recip_rA(i,j,bi,bj)
-     &          *( af(i,j+1)-af(i,j)
-     &          )
+         IF ( extensiveFld ) THEN
+          DO j=1-OLy+1,sNy+OLy-1
+           DO i=iMinUpd,iMaxUpd
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)
+     &           *(  af(i,j+1)-af(i,j)
+     &            )
+           ENDDO
           ENDDO
-         ENDDO
+         ELSE
+          DO j=1-OLy+1,sNy+OLy-1
+           DO i=iMinUpd,iMaxUpd
+            localTij(i,j)=localTij(i,j)
+     &         -SEAICE_deltaTtherm*maskC(i,j,k,bi,bj)
+     &           *recip_rA(i,j,bi,bj)*r_hFld(i,j)
+     &           *( (af(i,j+1)-af(i,j))
+     &             -(vTrans(i,j+1)-vTrans(i,j))*iceFld(i,j)
+     &            )
+           ENDDO
+          ENDDO
+         ENDIF
 C--   keep advective flux (for diagnostics)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           afy(i,j) = af(i,j)
-          ENDDO
+         DO j=1-OLy+1,sNy+OLy
+           DO i=iMinUpd,iMaxUpd
+            afy(i,j) = af(i,j)
+           ENDDO
          ENDDO
 
 C--   Save this for later
@@ -611,14 +706,21 @@ C--   End of Y direction
 C--   End of ipass loop
       ENDDO
 
-C-    explicit advection is done ; store tendency in gTracer:
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        gTracer(i,j,bi,bj)=
-     &       (localTij(i,j)-tracer(i,j,bi,bj))/SEAICE_deltaTtherm
+C-    explicit advection is done ; store tendency in gFld:
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        gFld(i,j)=
+     &       (localTij(i,j)-iceFld(i,j))/SEAICE_deltaTtherm
+        IF ( dBug
+     &     .AND. i.EQ.12 .AND. j.EQ.11 .AND. bi.EQ.3 ) THEN
+         tmpFac= SEAICE_deltaTtherm*recip_rA(i,j,bi,bj)
+         WRITE(6,'(A,1P4E14.6)') 'ICE_adv:',
+     &    afx(i,j)*tmpFac,afx(i+1,j)*tmpFac,
+     &    afy(i,j)*tmpFac,afy(i,j+1)*tmpFac
+        ENDIF
        ENDDO
       ENDDO
-      
+
 CML#ifdef ALLOW_DIAGNOSTICS
 CML        IF ( useDiagnostics ) THEN
 CML         diagName = 'ADVx'//diagSufx
