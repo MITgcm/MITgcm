@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.26 2006/11/01 18:17:35 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.27 2006/11/01 20:44:31 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1136,6 +1136,7 @@ C***********************************************************************
       _RL getcon
 
       integer nsday
+      PARAMETER ( NSDAY  = 86400 )
       integer year, month, day, sec 
       integer yearnext, monthnext, daynext, secnext
       integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
@@ -1153,7 +1154,6 @@ C***********************************************************************
 C***********************************************************************        
 C*                   SET CURRENT TIME ELEMENTS                                 *        
 C***********************************************************************        
-      nsday  = getcon('SDAY')
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
       DAY    = MOD(NYMD,100)
