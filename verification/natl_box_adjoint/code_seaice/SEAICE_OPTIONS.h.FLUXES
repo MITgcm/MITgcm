@@ -16,6 +16,8 @@ C     \==========================================================/
 
 #include "CPP_OPTIONS.h"
 
+#define SEAICE_CGRID.h
+
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
 

@@ -4,8 +4,8 @@
 # *******************
  &GRDCHK_NML
  grdchk_eps       = 1.d-4,
- nbeg             = 1,
+ nbeg             = 4,
  nstep            = 1,
- nend             = 150,
+ nend             = 8,
  grdchkvarindex   = 7,
  &

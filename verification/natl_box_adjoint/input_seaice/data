@@ -90,7 +90,7 @@
  &PARM03
  tauCD=172800.,
  startTime=0.0,
- nTimeSteps=4,
+ nTimeSteps=24,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
@@ -99,7 +99,7 @@
  pChkptFreq=15552000.0,
  chkptFreq=15552000.0,
  dumpFreq =86400.0,
- monitorFreq=1.,
+ monitorFreq=86400.,
  tauThetaClimRelax=0.,
  tauSaltClimRelax=0.,
  forcing_In_AB = .FALSE.

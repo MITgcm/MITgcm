@@ -52,6 +52,31 @@
  xx_swdownperiod     = 864000.0,
  xx_swdown_file      = 'xx_swdown',
 #
+ xx_lwfluxstartdate1 = 19790101,
+ xx_lwfluxstartdate2 = 000000,
+ xx_lwfluxperiod     = 864000.0,
+ xx_lwflux_file      = 'xx_lwflux',
+#
+ xx_lwdownstartdate1 = 19790101,
+ xx_lwdownstartdate2 = 000000,
+ xx_lwdownperiod     = 864000.0,
+ xx_lwdown_file      = 'xx_lwdown',
+#
+ xx_evapstartdate1 = 19790101,
+ xx_evapstartdate2 = 000000,
+ xx_evapperiod     = 864000.0,
+ xx_evap_file      = 'xx_evap',
+#
+ xx_snowprecipstartdate1 = 19790101,
+ xx_snowprecipstartdate2 = 000000,
+ xx_snowprecipperiod     = 864000.0,
+ xx_snowprecip_file      = 'xx_snowprecip',
+#
+ xx_apressurestartdate1 = 19790101,
+ xx_apressurestartdate2 = 000000,
+ xx_apressureperiod     = 864000.0,
+ xx_apressure_file      = 'xx_apressure',
+#
  xx_uwindstartdate1 = 19790101,
  xx_uwindstartdate2 = 000000,
  xx_uwindperiod     = 864000.0,
