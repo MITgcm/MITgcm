@@ -83,6 +83,7 @@ cphCADJ STORE climtemp1  = comlev1, key = ikey_dynamics
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE apressure0    = comlev1, key = ikey_dynamics
 CADJ STORE apressure1    = comlev1, key = ikey_dynamics
+CADJ STORE siceload      = comlev1, key = ikey_dynamics
 # endif
 
 # ifdef ALLOW_HFLUX_CONTROL

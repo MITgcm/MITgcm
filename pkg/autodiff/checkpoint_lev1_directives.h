@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.25 2006/07/11 23:58:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.26 2006/11/02 05:26:50 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -64,6 +64,7 @@ CADJ STORE Qsw1    = comlev1, key = ikey_dynamics
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0  = comlev1, key = ikey_dynamics
 CADJ STORE pload1  = comlev1, key = ikey_dynamics
+CADJ STORE siceload = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_EXF */
 

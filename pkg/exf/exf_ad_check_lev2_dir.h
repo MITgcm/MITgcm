@@ -77,6 +77,7 @@ cphCADJ STORE climtemp1  = tapelev2, key = ilev_2
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE apressure0    = tapelev2, key = ilev_2
 CADJ STORE apressure1    = tapelev2, key = ilev_2
+CADJ STORE siceload      = tapelev2, key = ilev_2
 # endif
 
 # ifdef ALLOW_HFLUX_CONTROL

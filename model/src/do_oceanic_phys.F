@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.31 2006/10/22 01:11:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.32 2006/11/02 05:26:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -144,12 +144,13 @@ C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fu, fv              = comlev1, key = ikey_dynamics
 CADJ STORE qnet,qsw            = comlev1, key = ikey_dynamics
 CADJ STORE aqh,precip,swdown   = comlev1, key = ikey_dynamics
 CADJ STORE theta               = comlev1, key = ikey_dynamics
-# ifdef SEAICE_ALLOW_DYNAMICS
+cph# ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
-# endif
+cph# endif
 #endif
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
@@ -158,10 +159,10 @@ CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
         CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
+      ENDIF
 #ifdef ALLOW_COST_ICE
         CALL COST_ICE_TEST ( myTime, myIter, myThid )
 #endif
-      ENDIF
 #endif /* ALLOW_SEAICE */
 
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.27 2006/10/26 01:22:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.28 2006/11/02 05:26:50 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -80,12 +80,16 @@ c--   Read the namelist input.
      &                   tauu_errfile, tauv_errfile,
      &                   atemp_errfile, aqh_errfile, 
      &                   precip_errfile, swflux_errfile, swdown_errfile,
+     &                   lwflux_errfile, lwdown_errfile, evap_errfile,
+     &                   snowprecip_errfile, apressure_errfile,
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh, 
      &                   mult_precip, mult_swflux, mult_swdown,
+     &                   mult_lwflux, mult_lwdown, mult_evap,
+     &                   mult_snowprecip, mult_apressure,
      &                   mult_uwind, mult_vwind,
      &                   mult_hmean, mult_h, 
      &                   mult_tp, mult_ers, mult_gfo, 
@@ -106,10 +110,13 @@ c--   Read the namelist input.
      &                   whflux0, wsflux0, wtau0,
      &                   watemp0, waqh0, 
      &                   wprecip0, wswflux0, wswdown0, wwind0,
-     &                   wdiffkr0, wkapgm0, wedtau0,
+     &                   wsnowprecip0, wlwflux0, wlwdown0, wevap0,
+     &                   wapressure0, wdiffkr0, wkapgm0, wedtau0,
      &                   wmean_hflux, wmean_sflux, wmean_tau,
      &                   wmean_atemp, wmean_aqh, wmean_precip, 
      &                   wmean_swflux, wmean_swdown, wmean_wind,
+     &                   wmean_lwflux, wmean_lwdown, wmean_evap,
+     &                   wmean_snowprecip, wmean_apressure,
      &                   cost_iprec, cost_yftype
 
       _BEGIN_MASTER( myThid )
@@ -202,6 +209,11 @@ c--     Set default values.
         precip_errfile        =    ' '
         swflux_errfile        =    ' '
         swdown_errfile        =    ' '
+        lwflux_errfile        =    ' '
+        lwdown_errfile        =    ' '
+        evap_errfile          =    ' '
+        snowprecip_errfile    =    ' '
+        apressure_errfile     =    ' '
         uwind_errfile         =    ' '
         vwind_errfile         =    ' '
         geoid_errfile         =    ' '
@@ -218,6 +230,11 @@ c--     Set default values.
         mult_precip           =      0. _d 0
         mult_swflux           =      0. _d 0
         mult_swdown           =      0. _d 0
+        mult_lwflux           =      0. _d 0
+        mult_lwdown           =      0. _d 0
+        mult_evap             =      0. _d 0
+        mult_snowprecip       =      0. _d 0
+        mult_apressure        =      0. _d 0
         mult_uwind            =      0. _d 0
         mult_vwind            =      0. _d 0
         mult_hmean            =      0. _d 0
@@ -261,6 +278,11 @@ c--     Set default values.
         wprecip0              =      0. _d 0
         wswflux0              =      0. _d 0
         wswdown0              =      0. _d 0
+        wlwflux0              =      0. _d 0
+        wlwdown0              =      0. _d 0
+        wevap0                =      0. _d 0
+        wsnowprecip0          =      0. _d 0
+        wapressure0           =      0. _d 0
         wwind0                =      0. _d 0
         wdiffkr0              =      1. _d 0
         wkapgm0               =      1. _d 0
@@ -273,6 +295,11 @@ c--     Set default values.
         wmean_precip          =      0. _d 0
         wmean_swflux          =      0. _d 0
         wmean_swdown          =      0. _d 0
+        wmean_lwflux          =      0. _d 0
+        wmean_lwdown          =      0. _d 0
+        wmean_evap            =      0. _d 0
+        wmean_snowprecip      =      0. _d 0
+        wmean_apressure       =      0. _d 0
         wmean_wind            =      0. _d 0
         wmean_hflux           =      0. _d 0
         wmean_sflux           =      0. _d 0
