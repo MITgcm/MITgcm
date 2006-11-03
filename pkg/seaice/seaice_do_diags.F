@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.25 2006/10/23 16:29:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.26 2006/11/03 23:02:47 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -373,13 +373,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL DIAGNOSTICS_FILL(AREA(1-oLx,1-oLy,1,bi,bj),
-     &          'SIarea  ',0,1 ,0,bi,bj,myThid)
+     &          'SIarea  ',0,1 ,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(HEFF(1-oLx,1-oLy,1,bi,bj),
-     &        'SIheff  ',0,1 ,0,bi,bj,myThid)
+     &        'SIheff  ',0,1 ,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(UICE(1-oLx,1-oLy,1,bi,bj),
-     &        'SIuice  ',0,1 ,0,bi,bj,myThid)
+     &        'SIuice  ',0,1 ,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(VICE(1-oLx,1-oLy,1,bi,bj),
-     &        'SIvice  ',0,1 ,0,bi,bj,myThid)
+     &        'SIvice  ',0,1 ,2,bi,bj,myThid)
         ENDDO
        ENDDO
 c
