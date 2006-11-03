@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.44 2006/10/30 17:01:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.45 2006/11/03 23:38:51 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -507,12 +507,10 @@ c--     Set the model iteration counter and the model time.
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-C--   Switch on/off diagnostics for snap-shot output:
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-      ENDIF
 C--   State-variables diagnostics
-      IF ( usediagnostics ) THEN
+      IF ( useDiagnostics ) THEN
+C--   Switch on/off diagnostics for snap-shot output:
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
@@ -991,6 +989,14 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+       CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
+       CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
 #ifdef ALLOW_FLT
 C--   Calculate float trajectories
       IF (useFLT) THEN
@@ -1004,10 +1010,12 @@ C--   Calculate float trajectories
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
+#ifdef ALLOW_TIMEAVE
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
+#endif
 
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
