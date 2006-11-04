@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.10 2006/06/05 18:15:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.11 2006/11/04 14:28:09 heimbach Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -62,8 +62,6 @@ C     Zero out the qSdiag array (statistics) which accumulates during integratio
       ENDDO
 
       CALL DIAGNOSTICS_READ_PICKUP( myThid )
-
-      CALL DIAGSTATS_INI_IO( myThid )
 
       CALL DIAGNOSTICS_SUMMARY( startTime, nIter0, myThid )
 

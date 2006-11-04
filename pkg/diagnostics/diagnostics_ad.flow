@@ -18,6 +18,9 @@ C subroutine  diagnostics_init_varia
 C----------------------------------------
 CADJ SUBROUTINE diagnostics_init_varia INPUT  = 1
 CADJ SUBROUTINE diagnostics_init_varia OUTPUT =
+CADJ SUBROUTINE diagnostics_init_varia  DEPEND = 1
+CADJ SUBROUTINE diagnostics_init_varia  REQUIRED
+
 
 C----------------------------------------
 C FUNCTION  diagnostics_is_on

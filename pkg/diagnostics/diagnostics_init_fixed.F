@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.5 2006/01/23 22:28:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.6 2006/11/04 14:28:09 heimbach Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,6 +40,8 @@ C--   Define region-mask for regional statistics diagnostics
 
 C--   Calculate pointers for statistics-diags set to non-zero frequency
       CALL DIAGSTATS_SET_POINTERS( myThid )
+
+      CALL DIAGSTATS_INI_IO( myThid )
 
 #ifdef ALLOW_FIZHI
       if( useFIZHI) then
