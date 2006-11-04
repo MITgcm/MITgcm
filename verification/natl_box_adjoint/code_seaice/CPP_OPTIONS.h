@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/CPP_OPTIONS.h,v 1.2 2003/11/06 22:31:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/CPP_OPTIONS.h,v 1.3 2006/11/04 03:10:50 heimbach Exp $
 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -40,6 +40,9 @@ C o Include/exclude exact volume conservaion
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
+
+C o Include/exclude atmospheric pressure loading
+#define ATMOSPHERIC_LOADING
 
 C o Include/exclude code specific to the ECCO/SEALION version.
 #ifdef ALLOW_ECCO
