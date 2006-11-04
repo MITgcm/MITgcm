@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.156 2006/10/23 19:40:43 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.157 2006/11/04 21:01:37 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2468,7 +2468,9 @@ output.txt: \$(EXECUTABLE)
 	@\$(EXECUTABLE) > \$@
 
 clean:
-	-rm -rf *.o *.$FS *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
+	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
+	-rm -rf *.o
+	-rm -rf *.$FS
 Clean:
 	@make clean
 	@make cleanlinks
