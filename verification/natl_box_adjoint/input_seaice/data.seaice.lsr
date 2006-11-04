@@ -1,6 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      npseudo           = 1
       LSR_ERROR         = 1e-20
       SEAICE_initialHEFF = 1.0
       SEAICEwriteState  = .TRUE.
