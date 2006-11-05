@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.23 2005/11/08 23:01:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.24 2006/11/05 18:36:06 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -63,9 +66,22 @@ C--   Initialise temperature field to the vertical reference profile
       _BARRIER
 
       IF ( hydrogThetaFile .NE. ' ' ) THEN
-C      _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', theta, 0, myThid )
-C      _END_MASTER(myThid)
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. mnc_read_theta) THEN
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogThetaFile, myThid)
+          CALL MNC_CW_SET_UDIM(hydrogThetaFile, 1, myThid)
+          CALL MNC_CW_SET_CITER(hydrogThetaFile, 2, -1, -1, -1, myThid)
+          CALL MNC_CW_SET_UDIM(hydrogThetaFile, 1, myThid)
+          CALL MNC_CW_RL_R('D',hydrogThetaFile,0,0,'Temp',theta,myThid)
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogThetaFile, myThid)
+        ELSE
+#endif /*  ALLOW_MNC  */
+C         _BEGIN_MASTER( myThid )
+          CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', theta, 0, myThid )
+C         _END_MASTER(myThid)
+#ifdef ALLOW_MNC
+        ENDIF
+#endif /*  ALLOW_MNC  */
        _EXCH_XYZ_R8(theta,myThid)
       ENDIF
 

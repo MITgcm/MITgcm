@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.15 2006/02/24 20:39:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.16 2006/11/05 18:36:06 edhill Exp $
 C $Name:  $
 C
 
@@ -41,13 +41,15 @@ C     readgrid_mnc     :: read INI_CURVILINEAR_GRID() info using mnc
      &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
-     &     writegrid_mnc, readgrid_mnc
+     &     writegrid_mnc, readgrid_mnc,
+     &     mnc_read_bathy, mnc_read_salt, mnc_read_theta
       LOGICAL 
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
      &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
-     &     writegrid_mnc, readgrid_mnc
+     &     writegrid_mnc, readgrid_mnc,
+     &     mnc_read_bathy, mnc_read_salt, mnc_read_theta
 
 C     ===  PARM_MNC_I Common Block  ===
 C     mnc_curr_iter    :: current iter for file names

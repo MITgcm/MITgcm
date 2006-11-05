@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.742 2006/11/01 09:50:43 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.743 2006/11/05 18:36:05 edhill Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+o add ability to read bathy, salt, and theta using MNC (off by def)
 o add flooding algorithm and advection of HSNOW for pkg/seaice;
   both are turned off by default and do no change any results
 o seaice advection with pkg/thsice: a step toward the use of non-linear 

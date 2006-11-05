@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.38 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.39 2006/11/05 18:36:05 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,6 +40,9 @@ C     === Global variables ===
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -106,15 +109,34 @@ C-            ocean : R_low = Bottom
         ENDDO
        ENDDO
       ELSE
+
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. mnc_read_bathy) THEN
+          CALL MNC_CW_ADD_VNAME('bathy', 'Cen_xy_Hn__-__-', 3,4, myThid)
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
+          CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
+          CALL MNC_CW_SET_CITER(bathyFile, 2, -1, -1, -1, myThid)
+          CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
+          CALL MNC_CW_RL_R('D',bathyFile,0,0,'bathy',R_low, myThid)
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
+          CALL MNC_CW_DEL_VNAME('bathy', myThid)
+        ELSE
+#endif /*  ALLOW_MNC  */
 C Read the bathymetry using the mid-level I/O package read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
-        CALL READ_REC_XY_RS( bathyFile, R_low, 1, 0, myThid )
+          CALL READ_REC_XY_RS( bathyFile, R_low, 1, 0, myThid )
 C Read the bathymetry using the mid-level I/O package read_write_fld
 C The 0 is the "iteration" argument. The ' ' is an empty suffix
 c       CALL READ_FLD_XY_RS( bathyFile, ' ', R_low, 0, myThid )
 C Read the bathymetry using the low-level I/O package
 c       CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 c    &                     'RS', 1, R_low, 1, myThid )
+
+#ifdef ALLOW_MNC
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
+
       ENDIF
 C- end setup R_low in the interior
 
