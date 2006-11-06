@@ -1,7 +1,7 @@
 % need to be in verification/lab_sea/matlab directory
 % and to specify location of exp1 output
 cd ../../../verification/lab_sea/matlab
-exp_path='../input/';
+exp_path='../build/';
 
 % load monthly-mean SMMR-SSM/I data
 load SSMI

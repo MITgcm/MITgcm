@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.29 2006/11/01 09:49:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.30 2006/11/06 20:37:25 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -236,8 +236,8 @@ C NOW UPDATE AREA
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-          GAREA(I,J)=(ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
-     &    +HALF*HCORR(I,J,bi,bj)*AREA(I,J,2,bi,bj)
+          GAREA(I,J)=(ONE-AR(I,J,bi,bj))*GAREA(I,J)/HO
+     &    +HALF*HCORR(I,J,bi,bj)*AR(I,J,bi,bj)
      &    /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+GAREA(I,J)
          ENDDO
@@ -257,24 +257,24 @@ C NOW CALCULATE QNETI UNDER ICE IF ANY
          ENDDO
         ENDDO
 
-C NOW GET TOTAL QNET AND QSW
-        DO J=1,sNy
-         DO I=1,sNx
-          QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
-     &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
-          QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
-     &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
-c #ifndef SHORTWAVE_HEATING
-c         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
-c #endif
-C Add YNEG contribution to QNET
-          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
-     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
-     &         *maskC(I,J,kSurface,bi,bj)
-     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
-     &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
-         ENDDO
-        ENDDO
+CMLC NOW GET TOTAL QNET AND QSW
+CML        DO J=1,sNy
+CML         DO I=1,sNx
+CML          QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
+CML     &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
+CML          QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
+CML     &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
+CMLc #ifndef SHORTWAVE_HEATING
+CMLc         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
+CMLc #endif
+CMLC Add YNEG contribution to QNET
+CML          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
+CML     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
+CML     &         *maskC(I,J,kSurface,bi,bj)
+CML     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+CML     &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
+CML         ENDDO
+CML        ENDDO
 
 C NOW UPDATE OTHER THINGS
         DO J=1,sNy
@@ -282,22 +282,47 @@ C NOW UPDATE OTHER THINGS
           IF(FICE(I,J,bi,bj).GT.ZERO) THEN
 C FREEZING, PRECIP ADDED AS SNOW
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
-     &            PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
+     &            PRECIP(I,J,bi,bj)*AR(I,J,bi,bj)*SDF
           ELSE
 C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
              SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
+     &            -PRECIP(I,J,bi,bj)*AR(I,J,bi,bj)*
      &            SEAICE_deltaTtherm/0.920 _d 0
           ENDIF
 c Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
+     &         -PRECIP(I,J,bi,bj)*(ONE-AR(I,J,bi,bj))
      &         *SEAICE_deltaTtherm/0.920 _d 0
+Cjz NOW CORRECT SNOW IF ANY LEFT
+          IF(YNEG(I,J,bi,bj).GT.ZERO.AND.HSNOW(I,J,bi,bj).GT.ZERO) THEN
+           GHEFF(I,J)=MIN(HSNOW(I,J,bi,bj)/SDF,YNEG(I,J,bi,bj))
+           YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)-GHEFF(I,J)
+           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF
+           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
+     &                  -GHEFF(I,J)/0.920 _d 0
+          ENDIF
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)= maskC(I,J,kSurface,bi,bj)*(
-     &         EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
+     &         EVAP(I,J,bi,bj)*(ONE-AR(I,J,bi,bj))
+     &         -RUNOFF(I,J,bi,bj)
      &         +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/SEAICE_deltaTtherm
      &         )
+         ENDDO
+        ENDDO
+
+C NOW GET TOTAL QNET AND QSW
+        DO J=1,sNy
+         DO I=1,sNx
+          QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
+     &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
+          QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
+     &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
+C Add YNEG contribution to QNET
+          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
+     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
+     &         *maskC(I,J,kSurface,bi,bj)
+     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+     &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
         ENDDO
 

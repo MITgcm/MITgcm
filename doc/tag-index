@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.743 2006/11/05 18:36:05 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.744 2006/11/06 20:37:25 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+o modifications to pkg/seaice/growth.F, which change results of
+  lab_sea experiment: fixes pertain to melting snow over open water, to
+  masking EVAP under sea ice, and to using the correct AREA variable for
+  computations of EVAP, PRECIP, HSNOW, and GHEFF
 o add ability to read bathy, salt, and theta using MNC (off by def)
 o add flooding algorithm and advection of HSNOW for pkg/seaice;
   both are turned off by default and do no change any results
