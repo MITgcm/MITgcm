@@ -18,6 +18,12 @@ CADJ SUBROUTINE mnc_cw_rs_w_s  INPUT  = 1,2,3,4,5,6,7
 CADJ SUBROUTINE mnc_cw_rs_w_s  OUTPUT =
 
 C----------------------------------------
+C subroutine mnc_cw_rl_r
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rl_r  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rl_r  OUTPUT =
+
+C----------------------------------------
 C subroutine  mnc_cw_rl_w_offset
 C----------------------------------------
 CADJ SUBROUTINE mnc_cw_rl_w_offset  INPUT  = 1,2,3,4,5,6,7,8
@@ -53,3 +59,32 @@ C----------------------------------------
 CADJ SUBROUTINE mnc_cw_citer_setg  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE mnc_cw_citer_setg  OUTPUT =
 
+C----------------------------------------
+C subroutine  mnc_cw_citer_setg
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_citer_setg  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE mnc_cw_citer_setg  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_set_citer
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_set_citer  INPUT  = 1,2,3,4,5,6
+CADJ SUBROUTINE mnc_cw_set_citer  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_del_gname
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_del_gname  INPUT  = 1,2
+CADJ SUBROUTINE mnc_cw_del_gname  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_del_vname
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_del_vname  INPUT  = 1,2
+CADJ SUBROUTINE mnc_cw_del_vname  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_file_close_all_matching
+C----------------------------------------
+CADJ SUBROUTINE mnc_file_close_all_matching  INPUT  = 1,2
+CADJ SUBROUTINE mnc_file_close_all_matching  OUTPUT =
