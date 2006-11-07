@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.2 2006/10/23 16:29:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.3 2006/11/07 11:44:54 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,6 +95,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+C     pkg/diagnostics SIfu and TAUX, dumpfreq FU, and tavefreq FUtave
+C     are identical but they differ from pkg/diagnostics EXFtaux, which
+C     is stress before impact of ice.  Also when using exf bulk 
+C     formulae, EXFtaux is defined on tracer rather than uvel points.
       diagName  = 'SIfu    '
       diagTitle = 'SEAICE zonal surface wind stress, >0 increases uVel '
       diagUnits = 'N/m^2           '
@@ -102,6 +106,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
+C     pkg/diagnostics SIfv and TAUY, dumpfreq FV, and tavefreq FVtave
+C     are identical but they differ from pkg/diagnostics EXFtauy, which
+C     is stress before impact of ice.  Also when using exf bulk 
+C     formulae, EXFtauy is defined on tracer rather than vvel points.
       diagName  = 'SIfv    '
       diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
@@ -109,6 +117,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
+C     pkg/diagnostics SIempmr, dumpfreq EmPmR, and tavefreq EmPmRtave
+C     are identical but they differ from pkg/diagnostics EXFempmr, which
+C     is EmPmR before impact of ice.
+C     pkg/diagnostics SIempmr is also, depending on various options,
+C     approximately equal to (SFLUX-SRELAX)/rhoConstFresh/salt(k=1),
+C     but note that prior to 7 nov 2006, there was a bug whereby
+C     SFLUX was identical to SRELAX for nonlinFreeSurf=.TRUE.
       diagName  = 'SIempmr '
       diagTitle = 'SEAICE upward freshwater flux, > 0 increases salt'
       diagUnits = 'm/s             '
@@ -116,6 +131,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+C     SIqnet, Qnet, and QNETtave are identical.
+C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
+C     Except over land and under sea ice, SIqnet is also identical to
+C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
       diagName  = 'SIqnet  '
       diagTitle = 'SEAICE upward heatflux, turb+rad, >0 decreases theta'
       diagUnits = 'W/m^2           '
@@ -123,15 +142,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
       
+C     SIqsw, Qsw, and QSWtave are identical.
+C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagName  = 'SIqsw   '
       diagTitle = 'SEAICE upward shortwave radiat., >0 decreases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
-
-
 
 #endif /* ALLOW_DIAGNOSTICS */
 
