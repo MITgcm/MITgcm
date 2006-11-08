@@ -1,6 +1,0 @@
-
-C----------------------------------------
-C subroutine  open_copy_data_file
-C----------------------------------------
-CADJ SUBROUTINE open_copy_data_file  INPUT  = 1,2,  4
-CADJ SUBROUTINE open_copy_data_file  OUTPUT =     3

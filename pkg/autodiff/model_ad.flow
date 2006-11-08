@@ -1,0 +1,86 @@
+
+C----------------------------------------
+C subroutine  do_the_model_io
+C----------------------------------------
+CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3
+CADJ SUBROUTINE do_the_model_io  OUTPUT =
+CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3
+CADJ SUBROUTINE do_the_model_io  REQUIRED
+
+C----------------------------------------
+C subroutine  modeldata_example
+C----------------------------------------
+CADJ SUBROUTINE modeldata_example INPUT  = 1
+CADJ SUBROUTINE modeldata_example OUTPUT =
+
+C----------------------------------------
+C subroutine  open_copy_data_file
+C----------------------------------------
+CADJ SUBROUTINE open_copy_data_file  INPUT  = 1,2,  4
+CADJ SUBROUTINE open_copy_data_file  OUTPUT =     3
+
+C----------------------------------------
+C subroutine  print_message
+C----------------------------------------
+CADJ SUBROUTINE print_message INPUT  = 1,2,3,4
+CADJ SUBROUTINE print_message OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyrs INPUT  = 1,2,3,4
+CADJ SUBROUTINE plot_field_xyrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyrl INPUT  = 1,2,3,4
+CADJ SUBROUTINE plot_field_xyrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xyzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xyzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xyzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xyzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_xzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_xzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_xzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_yzrs
+C----------------------------------------
+CADJ SUBROUTINE plot_field_yzrs INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_yzrs OUTPUT =
+
+C----------------------------------------
+C subroutine  plot_field_yzrl
+C----------------------------------------
+CADJ SUBROUTINE plot_field_yzrl INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE plot_field_yzrl OUTPUT =
+
+C----------------------------------------
+C subroutine  write_state
+C----------------------------------------
+CADJ SUBROUTINE write_state  INPUT  = 1,2,3
+CADJ SUBROUTINE write_state  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_myfield
+C----------------------------------------
+CADJ SUBROUTINE write_myfield  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_myfield  OUTPUT =

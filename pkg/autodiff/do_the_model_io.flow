@@ -1,8 +1,0 @@
-
-C----------------------------------------
-C subroutine  do_the_model_io
-C----------------------------------------
-CADJ SUBROUTINE do_the_model_io  INPUT  = 1,2,3
-CADJ SUBROUTINE do_the_model_io  OUTPUT =
-CADJ SUBROUTINE do_the_model_io  DEPEND = 1,2,3
-CADJ SUBROUTINE do_the_model_io  REQUIRED

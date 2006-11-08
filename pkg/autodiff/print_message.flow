@@ -1,6 +1,0 @@
-
-C----------------------------------------
-C subroutine  print_message
-C----------------------------------------
-CADJ SUBROUTINE print_message INPUT  = 1,2,3,4
-CADJ SUBROUTINE print_message OUTPUT =

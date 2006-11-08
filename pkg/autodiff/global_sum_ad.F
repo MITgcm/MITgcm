@@ -48,6 +48,8 @@ C--   broadcast to all processes
 
       tmp = adsumPhi
 
+cph      call global_sum_r4( tmp,mythid )
+
 #ifdef  ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
@@ -118,6 +120,8 @@ C--   broadcast to all processes
       _BEGIN_MASTER( myThid )
 
       tmp = adsumPhi
+
+cph      call global_sum_r8( tmp,mythid )
 
 #ifdef  ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
