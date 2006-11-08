@@ -68,10 +68,8 @@ integrate_for_w.f
 integr_continuity.f
 load_fields_driver.f
 load_grid_spacing.f
-modeldata_example.f
 momentum_correction_step.f
 packages_init_variables.f
-plot_field.f	
 pressure_for_eos.f
 solve_for_pressure.f
 state_summary.f	
