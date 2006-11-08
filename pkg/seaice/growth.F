@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.31 2006/11/08 13:54:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.32 2006/11/08 16:01:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,7 +85,7 @@ CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE atemp(:,:,bi,bj)  = comlev1_bibj, 
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -94,12 +94,6 @@ cph)
           SEAICE_SALT(I,J,bi,bj)=ZERO
          ENDDO
         ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
           AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),
@@ -166,7 +160,12 @@ cph)
 C GROWTH SUBROUTINE CALCULATES TOTAL GROWTH TENDENCIES,
 C INCLUDING SNOWFALL
       CALL GROATB(A22,myThid)
-
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff   = comlev1, key = ikey_dynamics
+CADJ STORE hsnow  = comlev1, key = ikey_dynamics
+#endif
+cph)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 cph(
@@ -184,10 +183,6 @@ cph(
 #endif /* ALLOW_AUTODIFF_TAMC */
 c
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE fo(:,:,bi,bj)     = comlev1_bibj, 
@@ -225,6 +220,21 @@ C     convert all snow to melt water (fresh water flux)
 C NOW GET TOTAL GROWTH RATE
           FHEFF(I,J,bi,bj)=FICE(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*FO(I,J,bi,bj)
+
+         ENDDO
+        ENDDO
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff(:,:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE fice(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
+        DO J=1,sNy
+         DO I=1,sNx
 
 C NOW UPDATE AREA
           GHEFF(I,J)=-SEAICE_deltaTtherm*FHEFF(I,J,bi,bj)*Q0
@@ -342,6 +352,12 @@ c      CALL PLOT_FIELD_XYRS( VWIND,'Current VWIND ', myIter, myThid )
 crg Added by Ralf Giering: do we need DO_WE_NEED_THIS ?
 #define DO_WE_NEED_THIS
 C NOW ZERO OUTSIDE POINTS
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
 C NOW SET AREA(I,J,1,bi,bj)=0 WHERE NO ICE IS
@@ -362,6 +378,8 @@ C NOW TRUNCATE AREA
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
