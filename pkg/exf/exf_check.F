@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.2 2006/01/02 21:17:02 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.3 2006/11/08 18:08:05 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -76,6 +76,15 @@ cph               stop
 cph            endif
 cph         endif
       endif
+
+#ifdef USE_EXF_INTERPOLATION
+      if ( usingCartesianGrid ) then
+       print*,'USE_EXF_INTERPOLATION assumes latitude/longitude'
+       print*,'input and output coordinates.  Trivial to extend to'
+       print*,'cartesian coordinates, but has not yet been done.'
+       stop
+      endif
+#endif
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
       STOP 'ALLOW_CLIMTEMP_RELAXATION no longer supported. Use pkg/rbcs'
