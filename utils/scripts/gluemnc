@@ -15,6 +15,10 @@
 # grid.0000000000.glob.nc grid.0000000100.glob.nc, ...
 # diag.0000000000.glob.nc diag.0000000100.glob.nc, ...
 #
+# A lot of hard drive activity is needed.  If you have a fast drive
+# export TMPDIR=<path of hard drive>.  On some high-performance 
+# systems, this is already done for you.
+#
 # **********WARNINGS**********
 # This will probably not work at all with exch2/cubed sphere.
 # In that case, you probably can assemble all of the tiles on a face,
@@ -27,15 +31,25 @@
 # version of netcdf.  If you do not have large-file support or 64-bit netcdf
 # you will have to be clever in dividing up your tiled files,
 # e.g., along the time dimension before combining to global files.
+# The nco operator ncks is adept at shortening files to fewer snapshots.
 # *****************************
 #
 # Good luck and happy gluing,
 # Baylor Fox-Kemper
 
-DEBUG=--dbg_lvl=0
+DEBUG="--dbg_lvl=0"
+LOGFILE="/dev/null"
 
-DIRNAME="gluedir.$RANDOM"
+DIRORIG=`pwd`
+
+if [ ! ${#TMPDIR} -gt 0 ]; then
+  TMPDIR=$DIRORIG
+fi
+
+export DIRNAME="$TMPDIR/gluedir.$RANDOM"
 mkdir $DIRNAME
+
+echo Using temporary directory $DIRNAME
 
 if [ -f xplodemnc ]; then
  cp xplodemnc $DIRNAME
@@ -50,7 +64,7 @@ inone=${1:?"You must input mnc filenames to be glued"}
 
 for somefile in $@
 do
-  ln -s ../$somefile .
+  ln -s $DIRORIG/$somefile .
   if [ ! -s $somefile ]; then
     echo "Error: $somefile is missing or empty"
     exit 1
@@ -163,24 +177,27 @@ do
         Xs=$(echo $Xs | sed s/' '//g)
 
         if [ "$someX" = $Xs ]; then
-          ./xplodemnc $somefile   
+          ./xplodemnc $somefile 
+          mv iter.$somefile iter.${somefile%t???.nc}glob.nc
           for somesplit in $(ls *.$somefile)
           do
             withY=$(ncdump -h $somesplit | grep "Y =")
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
-              ncpdq $DEBUG -O -a Y,T $somesplit $somesplit
+              ncpdq $DEBUG -O -a Y,T $somesplit $somesplit > $LOGFILE
               mv $somesplit $countxx.$somesplit
             fi
-
-            withYp1=$(ncdump -h $somesplit | grep "Yp1 =")
-            if [ ${#withYp1} -gt 1 ]; then
-              Yp1len=${withYp1#*= }
-              Yp1len=$((${Yp1len% ;}-1))
-              #  Strip off the repeated value in Yp1
-              echo Changing Yp1 to record variable in $somesplit
-              ncpdq $DEBUG -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit
-              mv $somesplit $countxx.$somesplit
+            
+            if [ -f $somesplit ]; then
+              withYp1=$(ncdump -h $somesplit | grep "Yp1 =")
+              if [ ${#withYp1} -gt 1 ]; then
+                Yp1len=${withYp1#*= }
+                Yp1len=$((${Yp1len% ;}-1))
+                #  Strip off the repeated value in Yp1
+                echo Changing Yp1 to record variable in $somesplit
+                ncpdq $DEBUG -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit > $LOGFILE
+                mv $somesplit $countxx.$somesplit
+              fi
             fi
           done
         fi
@@ -222,18 +239,18 @@ do
       withY=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Y =")
       withYp1=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Yp1 =")
 
-      ncrcat $DEBUG $countxx.$somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc
+      ncrcat $DEBUG $countxx.$somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       echo Just combined $countxx.$somevar
       rm $countxx.$somevar.$somepre.t???.nc
 
       if [ ${#withY} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq $DEBUG -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a T,Y $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       fi
 
       if [ ${#withYp1} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
-        ncpdq $DEBUG -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc
+        ncpdq $DEBUG -O -a T,Yp1 $somevar.$somepre.gloy.$countxx.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       fi
     done
   done
@@ -249,7 +266,7 @@ do
  
       if [ ${#withX} -gt 1 ]; then
         echo Changing X to record variable in $somegloy
-        ncpdq $DEBUG -O -a X,T $somegloy $somegloy
+        ncpdq $DEBUG -O -a X,T $somegloy $somegloy > $LOGFILE
       fi
 
       if [ ${#withXp1} -gt 1 ]; then
@@ -257,29 +274,33 @@ do
         Xp1len=$((${Xp1len% ;}-1))
         #  Strip off the repeated value in Xp1
         echo Changing Xp1 to record variable in $somegloy
-echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy
-        ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy
+echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
+        ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFILE
       fi
     done
     echo Combining $somevar.gloy files...
-    ncrcat $DEBUG $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc      
-    rm $somevar.$somepre.gloy.*.nc
+    ncrcat $DEBUG $somevar.$somepre.gloy.*.nc $somevar.$somepre.glob.nc > $LOGFILE
+#    rm $somevar.$somepre.gloy.*.nc
 
     if [ ${#withX} -gt 1 ]; then
       echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq $DEBUG -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a T,X $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
 
     if [ ${#withXp1} -gt 1 ]; then
       echo Changing T to record variable in $somevar.$somepre.glob.nc
-      ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc
+      ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
-  ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc
-  rm $somevar.$somepre.glob.nc
+  ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+#  rm $somevar.$somepre.glob.nc
   done
+  ncrcat $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+#  rm iter.$somepre.glob.nc
+
+  cp $somepre.glob.nc $DIRORIG
 done
 
-cp *.glob.nc ..
-cd ..
+
+cd $DIRORIG
 rm -rf $DIRNAME
 
