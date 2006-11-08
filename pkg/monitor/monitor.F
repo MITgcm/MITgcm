@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.39 2006/10/17 18:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.40 2006/11/08 20:28:13 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -22,6 +22,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "MONITOR.h"
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
@@ -115,6 +116,23 @@ C       Print the basic statistics of model state variables
      &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
      &       maskC,hFacC,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,theta(1-olx,1-oly,1,1,1),'_sst',
+     &       maskC,hFacC,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,salt(1-olx,1-oly,1,1,1),'_sss',
+     &       maskC,hFacC,rA ,drF,myThid)
+
+C       Print the basic statistics of external forcing
+        CALL MON_SET_PREF('extforcing',myThid)
+        CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
+     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,Qsw,'_qsw',
+     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,EmPmR,'_empmr',
+     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,fu,'_fu',
+     &       maskW,hFacW,rAw,drF,myThid)
+        CALL MON_PRINTSTATS_RL(1,fv,'_fv',
+     &       maskS,hFacS,rAs,drF,myThid)
 
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('advcfl',myThid)
