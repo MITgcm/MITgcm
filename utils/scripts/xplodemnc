@@ -4,7 +4,7 @@
 # The file should be in one directory, where this script is run.
 # The resulting files will be in the same directory.
 
-DEBUG="-D 0"
+DEBUG="--dbg_lvl=0"
 
 inone=$1
 inone=${1:?"You must input an mnc filename to be xploded"}
@@ -26,13 +26,14 @@ do
    somevar1=${somevar%(*}
    somevar1=${somevar1#*double }
    somevar1=${somevar1#*float }
-   echo $somevar1
+#   echo $somevar1
    vars=${vars}$somevar1' '
   done
-  echo Variables to extract: $vars
+  echo Variables to extract: $vars iter
   IFS=' '
   for somevar in $vars
   do
     ncks $DEBUG -v $somevar $somefile $somevar.$somefile
   done
+  ncks $DEBUG -v iter $somefile iter.$somefile
 done
