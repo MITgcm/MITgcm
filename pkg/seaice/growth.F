@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.30 2006/11/06 20:37:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.31 2006/11/08 13:54:33 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,11 +38,14 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
-      _RL  TBC, salinity_ice, SDF, Q0, QS
-      _RL  hDraft, hFlood
-      _RL GAREA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
-      _RL GHEFF( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
-      _RL AR   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL TBC, salinity_ice, SDF, ICE_DENS, Q0, QS
+#ifdef ALLOW_SEAICE_FLOODING
+      _RL hDraft, hFlood
+#endif /* ALLOW_SEAICE_FLOODING */
+      _RL GAREA      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
+      _RL GHEFF      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
+      _RL AR         ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL RESID_HEAT ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
 
 C     number of surface interface layer
       INTEGER kSurface
@@ -55,7 +58,8 @@ C     number of surface interface layer
 
       salinity_ice=4.0 _d 0      ! ICE SALINITY
       TBC=SEAICE_freeze          ! FREEZING TEMP. OF SEA WATER
-      SDF=1000.0 _d 0/330.0 _d 0 ! RATIO OF WATER DESITY AND SNOW DENSITY
+      SDF=1000.0 _d 0/330.0 _d 0 ! RATIO OF WATER DESITY TO SNOW DENSITY
+      ICE_DENS=0.920 _d 0        ! RATIO OF SEA ICE DESITY TO WATER DENSITY
       Q0=1.0D-06/302.0 _d +00    ! INVERSE HEAT OF FUSION OF ICE
       QS=1.1 _d +08              ! HEAT OF FUSION OF SNOW
 
@@ -129,14 +133,18 @@ C     Positive YNEG leads to ice melting.
           YNEG(I,J,bi,bj)= 0.
           endif
           GHEFF(I,J)=HEFF(I,J,1,bi,bj)
+C     Melt (YNEG>0) or create (YNEG<0) sea ice
           HEFF(I,J,1,bi,bj)=MAX(ZERO,HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj))
+          RESID_HEAT(I,J,bi,bj)=YNEG(I,J,bi,bj)
           YNEG(I,J,bi,bj)=GHEFF(I,J)-HEFF(I,J,1,bi,bj)
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)-YNEG(I,J,bi,bj)
-C--   Now convert YNEG back to deg K.
-          YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)*recip_dRf(1)*72.0764 _d 0
+          RESID_HEAT(I,J,bi,bj)=RESID_HEAT(I,J,bi,bj)-YNEG(I,J,bi,bj)
+C     YNEG now contains m of ice melted (>0) or created (<0)
+C     SEAICE_SALT contains m of ice melted (<0) or created (>0)
+C     RESID_HEAT is residual heat above freezing in equivalent m of ice
          ENDDO
         ENDDO
-c
+
        ENDDO
       ENDDO
 
@@ -188,9 +196,11 @@ CADJ STORE fice(:,:,bi,bj)   = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
-C NOW CALCULATE CORRECTED GROWTH
+
         DO J=1,sNy
          DO I=1,sNx
+
+C NOW CALCULATE CORRECTED GROWTH
           GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J,bi,bj)
           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
           IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
@@ -198,9 +208,9 @@ C     not enough heat to melt all snow:
 C     use up all heat flux FICE
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
 C SNOW CONVERTED INTO WATER AND THEN INTO ICE
-C The factor 0.920 is used to convert m of sea-ice to m of freshwater
+C The factor 1/SDF/ICE_DENS converts m of snow to m of sea-ice
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
+     &                  -(GHEFF(I,J)/QS)/SDF/ICE_DENS*AR(I,J,bi,bj)
            FICE(I,J,bi,bj)=ZERO
           ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
 C     enought heat to melt snow completely:
@@ -208,121 +218,92 @@ C     compute remaining heat flux that will melt ice
            FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/SEAICE_deltaTtherm
 C     convert all snow to melt water (fresh water flux)
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &               -HSNOW(I,J,bi,bj)/SDF/0.920 _d 0*AR(I,J,bi,bj)
+     &               -HSNOW(I,J,bi,bj)/SDF/ICE_DENS*AR(I,J,bi,bj)
            HSNOW(I,J,bi,bj)=0.0
           END IF
 
-         ENDDO
-        ENDDO
-
 C NOW GET TOTAL GROWTH RATE
-        DO J=1,sNy
-         DO I=1,sNx
           FHEFF(I,J,bi,bj)=FICE(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*FO(I,J,bi,bj)
-         ENDDO
-        ENDDO
-
 
 C NOW UPDATE AREA
-        DO J=1,sNy
-         DO I=1,sNx
           GHEFF(I,J)=-SEAICE_deltaTtherm*FHEFF(I,J,bi,bj)*Q0
           GAREA(I,J)=SEAICE_deltaTtherm*FO(I,J,bi,bj)*Q0
           GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           GAREA(I,J)=MAX(ZERO,GAREA(I,J))
           HCORR(I,J,bi,bj)=MIN(ZERO,GHEFF(I,J))
-         ENDDO
-        ENDDO
-        DO J=1,sNy
-         DO I=1,sNx
+
           GAREA(I,J)=(ONE-AR(I,J,bi,bj))*GAREA(I,J)/HO
      &    +HALF*HCORR(I,J,bi,bj)*AR(I,J,bi,bj)
      &    /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+GAREA(I,J)
-         ENDDO
-        ENDDO
 
 C NOW UPDATE HEFF
-        DO J=1,sNy
-         DO I=1,sNx
           GHEFF(I,J)=-SEAICE_deltaTtherm*
      &               FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj)
           GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)+GHEFF(I,J)
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)+GHEFF(I,J)
+
 C NOW CALCULATE QNETI UNDER ICE IF ANY
           QNETI(I,J,bi,bj)=(GHEFF(I,J)-SEAICE_deltaTtherm*
      &         FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj))/Q0/SEAICE_deltaTtherm
-         ENDDO
-        ENDDO
-
-CMLC NOW GET TOTAL QNET AND QSW
-CML        DO J=1,sNy
-CML         DO I=1,sNx
-CML          QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
-CML     &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
-CML          QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
-CML     &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
-CMLc #ifndef SHORTWAVE_HEATING
-CMLc         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
-CMLc #endif
-CMLC Add YNEG contribution to QNET
-CML          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
-CML     &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
-CML     &         *maskC(I,J,kSurface,bi,bj)
-CML     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
-CML     &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
-CML         ENDDO
-CML        ENDDO
 
 C NOW UPDATE OTHER THINGS
-        DO J=1,sNy
-         DO I=1,sNx
+
           IF(FICE(I,J,bi,bj).GT.ZERO) THEN
 C FREEZING, PRECIP ADDED AS SNOW
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
      &            PRECIP(I,J,bi,bj)*AR(I,J,bi,bj)*SDF
           ELSE
-C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
+C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY 1/ICE_DENS
              SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &            -PRECIP(I,J,bi,bj)*AR(I,J,bi,bj)*
-     &            SEAICE_deltaTtherm/0.920 _d 0
+     &            SEAICE_deltaTtherm/ICE_DENS
           ENDIF
-c Now add in precip over open water directly into ocean as negative salt
+
+C Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &         -PRECIP(I,J,bi,bj)*(ONE-AR(I,J,bi,bj))
-     &         *SEAICE_deltaTtherm/0.920 _d 0
-Cjz NOW CORRECT SNOW IF ANY LEFT
-          IF(YNEG(I,J,bi,bj).GT.ZERO.AND.HSNOW(I,J,bi,bj).GT.ZERO) THEN
-           GHEFF(I,J)=MIN(HSNOW(I,J,bi,bj)/SDF,YNEG(I,J,bi,bj))
-           YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)-GHEFF(I,J)
-           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &                  -GHEFF(I,J)/0.920 _d 0
+     &         *SEAICE_deltaTtherm/ICE_DENS
+
+C Now melt snow if there is residual heat left in surface level
+C Note that units of YNEG and SEAICE_SALT are m of ice
+          IF(RESID_HEAT(I,J,bi,bj).GT.ZERO.AND.
+     &         HSNOW(I,J,bi,bj).GT.ZERO) THEN
+           GHEFF(I,J)=MIN(HSNOW(I,J,bi,bj)/SDF/ICE_DENS,
+     &         RESID_HEAT(I,J,bi,bj))
+           YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)+GHEFF(I,J)
+           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF*ICE_DENS
+           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)-GHEFF(I,J)
           ENDIF
+
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)= maskC(I,J,kSurface,bi,bj)*(
      &         EVAP(I,J,bi,bj)*(ONE-AR(I,J,bi,bj))
      &         -RUNOFF(I,J,bi,bj)
-     &         +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/SEAICE_deltaTtherm
+     &         +SEAICE_SALT(I,J,bi,bj)*ICE_DENS/SEAICE_deltaTtherm
      &         )
-         ENDDO
-        ENDDO
 
 C NOW GET TOTAL QNET AND QSW
-        DO J=1,sNy
-         DO I=1,sNx
           QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
           QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
+c #ifndef SHORTWAVE_HEATING
+c         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
+c #endif
+
+C Now convert YNEG back to deg K.
+          YNEG(I,J,bi,bj)=YNEG(I,J,bi,bj)*recip_dRf(1)*72.0764 _d 0
+
 C Add YNEG contribution to QNET
           QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
      &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
      &         *maskC(I,J,kSurface,bi,bj)
      &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
+
          ENDDO
         ENDDO
 
