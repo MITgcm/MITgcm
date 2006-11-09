@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.5 2005/04/07 23:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.6 2006/11/09 20:58:41 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -37,10 +37,13 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer ntmp
+      integer ntmp2(4)
       integer iobcs
       integer nwetc3d
       integer nwettmp
-
+#ifdef ALLOW_OBCS_CONTROL
+      integer ntmpob(nobcs)
+#endif
       _RL     dummy
 
       character*(80) ymaskobcs
@@ -314,120 +317,203 @@ cph(
 #endif
 cph)
       
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+
       CALL GLOBAL_SUM_INT( nvarlength,  myThid )
 
       write(msgbuf,'(a,2x,I3,2x,I10)')
-     &     'ctrl-wet 13: global nvarlength vor k=', k, nvarlength
+     &     'ctrl-wet 13: global nvarlength for Nr =', nr, nvarlength
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
+
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
 
 c
 c     Summation of wet point counters 
 c
       do k = 1, nr
 
-         ntmp=0
+         ntmp2(1)=0
          do bj=1,nSy
             do bi=1,nSx
-               ntmp=ntmp+nWetcTile(bi,bj,k)
+               ntmp2(1)=ntmp2(1)+nWetcTile(bi,bj,k)
             enddo
          enddo
-         CALL GLOBAL_SUM_INT( ntmp,  myThid )
-         nWetcGlobal(k)=ntmp
-         write(msgbuf,'(a,2x,I3,2x,I10)')
-     &        'ctrl-wet 14a: global nWet... k=', k, ntmp
+         CALL GLOBAL_SUM_INT( ntmp2(1),  myThid )
+         nWetcGlobal(k)=ntmp2(1)
 
-         ntmp=0
+         ntmp2(2)=0
          do bj=1,nSy
             do bi=1,nSx
-               ntmp=ntmp+nWetsTile(bi,bj,k)
+               ntmp2(2)=ntmp2(2)+nWetsTile(bi,bj,k)
             enddo
          enddo
-         CALL GLOBAL_SUM_INT( ntmp,  myThid )
-         nWetsGlobal(k)=ntmp
-         write(msgbuf,'(a,2x,I3,2x,I10)')
-     &        'ctrl-wet 14b: global nWet... k=', k, ntmp
+         CALL GLOBAL_SUM_INT( ntmp2(2),  myThid )
+         nWetsGlobal(k)=ntmp2(2)
 
-         ntmp=0
+         ntmp2(3)=0
          do bj=1,nSy
             do bi=1,nSx
-               ntmp=ntmp+nWetwTile(bi,bj,k)
+               ntmp2(3)=ntmp2(3)+nWetwTile(bi,bj,k)
             enddo
          enddo
-         CALL GLOBAL_SUM_INT( ntmp,  myThid )
-         nWetwGlobal(k)=ntmp
-         write(msgbuf,'(a,2x,I3,2x,I10)')
-     &        'ctrl-wet 14c: global nWet... k=', k, ntmp
+         CALL GLOBAL_SUM_INT( ntmp2(3),  myThid )
+         nWetwGlobal(k)=ntmp2(3)
 
-         ntmp=0
+         ntmp2(4)=0
          do bj=1,nSy
             do bi=1,nSx
-               ntmp=ntmp+nWetvTile(bi,bj,k)
+               ntmp2(4)=ntmp2(4)+nWetvTile(bi,bj,k)
             enddo
          enddo
-         CALL GLOBAL_SUM_INT( ntmp,  myThid )
-         nWetvGlobal(k)=ntmp
-         write(msgbuf,'(a,2x,I3,2x,I10)')
-     &        'ctrl-wet 14d: global nWet... k=', k, ntmp
+         CALL GLOBAL_SUM_INT( ntmp2(4),  myThid )
+         nWetvGlobal(k)=ntmp2(4)
+
+         write(msgbuf,'(a,2x,I3,4(2x,I10))')
+     &        'ctrl-wet 14: global nWet C/S/W/V k=', k, ntmp2
+         call print_message( msgbuf, standardmessageunit,
+     &       SQUEEZE_RIGHT , mythid)
+
+      enddo
+
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+
+      do k = 1, nr
 
 #ifdef ALLOW_OBCSN_CONTROL
          do iobcs = 1, nobcs
-            ntmp=0
+            ntmpob(iobcs)=0
             do bj=1,nSy
                do bi=1,nSx
-                  ntmp=ntmp+nwetobcsn(bi,bj,k,iobcs)
+                  ntmpob(iobcs)=ntmpob(iobcs)+nwetobcsn(bi,bj,k,iobcs)
                enddo
             enddo
-            CALL GLOBAL_SUM_INT( ntmp,  myThid )
-            nwetobcsnglo(k,iobcs)=ntmp
-            write(msgbuf,'(a,2(2x,I3),2x,I10)')
-     &        'ctrl-wet 15a: global nWet... k=', k, iobcs, ntmp
+            CALL GLOBAL_SUM_INT( ntmpob(iobcs),  myThid )
+            nwetobcsnglo(k,iobcs)=ntmpob(iobcs)
          enddo
+         write(msgbuf,'(a,2x,I3,4(2x,I10))')
+     &       'ctrl-wet 15a: global obcsN T,S,U,V k=', k, ntmpob
+         call print_message( msgbuf, standardmessageunit,
+     &       SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
          do iobcs = 1, nobcs
-            ntmp=0
+            ntmpob(iobcs)=0
             do bj=1,nSy
                do bi=1,nSx
-                  ntmp=ntmp+nwetobcss(bi,bj,k,iobcs)
+                  ntmpob(iobcs)=ntmpob(iobcs)+nwetobcss(bi,bj,k,iobcs)
                enddo
             enddo
-            CALL GLOBAL_SUM_INT( ntmp,  myThid )
-            nwetobcssglo(k,iobcs)=ntmp
-            write(msgbuf,'(a,2(2x,I3),2x,I10)')
-     &        'ctrl-wet 15b: global nWet... k=', k, iobcs, ntmp
+            CALL GLOBAL_SUM_INT( ntmpob(iobcs),  myThid )
+            nwetobcssglo(k,iobcs)=ntmpob(iobcs)
          enddo
+         write(msgbuf,'(a,2x,I3,4(2x,I10))')
+     &       'ctrl-wet 15b: global obcsS T,S,U,V k=', k, ntmpob
+         call print_message( msgbuf, standardmessageunit,
+     &       SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
          do iobcs = 1, nobcs
-            ntmp=0
+            ntmpob(iobcs)=0
             do bj=1,nSy
                do bi=1,nSx
-                  ntmp=ntmp+nwetobcsw(bi,bj,k,iobcs)
+                  ntmpob(iobcs)=ntmpob(iobcs)+nwetobcsw(bi,bj,k,iobcs)
                enddo
             enddo
-            CALL GLOBAL_SUM_INT( ntmp,  myThid )
-            nwetobcswglo(k,iobcs)=ntmp
-            write(msgbuf,'(a,2(2x,I3),2x,I10)')
-     &        'ctrl-wet 15c: global nWet... k=', k, iobcs, ntmp
+            CALL GLOBAL_SUM_INT( ntmpob(iobcs),  myThid )
+            nwetobcswglo(k,iobcs)=ntmpob(iobcs)
          enddo
+         write(msgbuf,'(a,2x,I3,4(2x,I10))')
+     &       'ctrl-wet 15c: global obcsW T,S,U,V k=', k, ntmpob
+         call print_message( msgbuf, standardmessageunit,
+     &       SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
          do iobcs = 1, nobcs
-            ntmp=0
+            ntmpob(iobcs)=0
             do bj=1,nSy
                do bi=1,nSx
-                  ntmp=ntmp+nwetobcse(bi,bj,k,iobcs)
+                  ntmpob(iobcs)=ntmpob(iobcs)+nwetobcse(bi,bj,k,iobcs)
                enddo
             enddo
-            CALL GLOBAL_SUM_INT( ntmp,  myThid )
-            nwetobcseglo(k,iobcs)=ntmp
-            write(msgbuf,'(a,2(2x,I3),2x,I10)')
-     &        'ctrl-wet 15d: global nWet... k=', k, iobcs, ntmp
+            CALL GLOBAL_SUM_INT( ntmpob(iobcs),  myThid )
+            nwetobcseglo(k,iobcs)=ntmpob(iobcs)
          enddo
+         write(msgbuf,'(a,2x,I3,4(2x,I10))')
+     &       'ctrl-wet 15d: global obcsE T,S,U,V k=', k, ntmpob
+         call print_message( msgbuf, standardmessageunit,
+     &       SQUEEZE_RIGHT , mythid)
 #endif
 
       enddo
+
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+
+#ifdef ALLOW_OBCSN_CONTROL
+      do iobcs = 1, nobcs
+        ntmpob(iobcs)=0
+        do k = 1, nr
+          ntmpob(iobcs)=ntmpob(iobcs)+nwetobcsnglo(k,iobcs)
+        enddo
+      enddo
+      write(msgbuf,'(a,4(2x,I10))')
+     &    'ctrl-wet 16a: global SUM(K) obcsN T,S,U,V ', ntmpob
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef ALLOW_OBCSS_CONTROL
+      do iobcs = 1, nobcs
+        ntmpob(iobcs)=0
+        do k = 1, nr
+          ntmpob(iobcs)=ntmpob(iobcs)+nwetobcssglo(k,iobcs)
+        enddo
+      enddo
+      write(msgbuf,'(a,4(2x,I10))')
+     &    'ctrl-wet 16b: global SUM(K) obcsS T,S,U,V ', ntmpob
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+      do iobcs = 1, nobcs
+        ntmpob(iobcs)=0
+        do k = 1, nr
+          ntmpob(iobcs)=ntmpob(iobcs)+nwetobcswglo(k,iobcs)
+        enddo
+      enddo
+      write(msgbuf,'(a,4(2x,I10))')
+     &    'ctrl-wet 16c: global SUM(K) obcsW T,S,U,V ', ntmpob
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef ALLOW_OBCSE_CONTROL
+      do iobcs = 1, nobcs
+        ntmpob(iobcs)=0
+        do k = 1, nr
+          ntmpob(iobcs)=ntmpob(iobcs)+nwetobcseglo(k,iobcs)
+        enddo
+      enddo
+      write(msgbuf,'(a,4(2x,I10))')
+     &    'ctrl-wet 16d: global SUM(K) obcsE T,S,U,V ', ntmpob
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
+#endif
+
+      write(msgbuf,'(a)')
+     &    'ctrl-wet -------------------------------------------------'
+      call print_message( msgbuf, standardmessageunit,
+     &    SQUEEZE_RIGHT , mythid)
 
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init: no. of control variables: ', nvartype
