@@ -1,9 +1,10 @@
-
-CADJ STORE uvel           = comlev1, key = ikey_dynamics
+#ifdef EXACT_CONSERV
+CADJ STORE pmepr         = comlev1, key = ikey_dynamics
+#endif
+CADJ STORE uvel          = comlev1, key = ikey_dynamics
 CADJ STORE vvel          = comlev1, key = ikey_dynamics
 CADJ STORE salt          = comlev1, key = ikey_dynamics
 CADJ STORE totphihyd     = comlev1, key = ikey_dynamics
-CADJ STORE pmepr         = comlev1, key = ikey_dynamics
 CADJ STORE runoff        = comlev1, key = ikey_dynamics
 CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics
 

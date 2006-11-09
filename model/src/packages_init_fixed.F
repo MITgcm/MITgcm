@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.55 2006/10/22 01:11:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.56 2006/11/09 16:38:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,7 +220,7 @@ C--   Initialise & Read Land package parameters
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
-      CALL SEAICE_COST_INIT_FIXED( myThid )
+      IF (useSEAICE) CALL SEAICE_COST_INIT_FIXED( myThid )
 #endif
 
 #if (defined (ALLOW_ECCO) && defined (ALLOW_COST))

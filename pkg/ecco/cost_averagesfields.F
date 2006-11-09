@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.12 2006/07/07 22:53:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.13 2006/11/09 16:37:36 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -350,7 +350,7 @@ cph: these are annual means
 
 
 #ifdef ALLOW_SEAICE
-
+      if (useSEAICE) then
 # ifdef ALLOW_SEAICE_COST_SMR_AREA
       call cost_averagesgeneric(
      &     smrareabarfile, 
@@ -358,7 +358,7 @@ cph: these are annual means
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
 # endif
-
+      endif
 #endif /* ALLOW_SEAICE */
 
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
