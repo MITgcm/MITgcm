@@ -54,16 +54,39 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL g_vnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
-      common /g_ffields/
-     &                   g_fu, g_fv
-     &                 , g_qnet, g_empmr
-cph     &                 , g_sst, g_sss
-      _RL g_fu(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL g_fv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL g_qnet(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL g_empmr(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-cph      _RL g_sst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      COMMON /g_ffields_fu/ g_fu
+      COMMON /g_ffields_fv/ g_fv
+      COMMON /g_ffields_Qnet/ g_Qnet
+      COMMON /g_ffields_Qsw/ g_Qsw
+      COMMON /g_ffields_dQdT/ g_dQdT
+      COMMON /g_ffields_EmPmR/ g_EmPmR
+      COMMON /g_ffields_saltFlux/ g_saltFlux
+      COMMON /g_ffields_SST/ g_SST
+      COMMON /g_ffields_SSS/ g_SSS
+      COMMON /g_ffields_lambdaThetaClimRelax/ g_lambdaThetaClimRelax
+      COMMON /g_ffields_lambdaSaltClimRelax/ g_lambdaSaltClimRelax
+#ifdef ATMOSPHERIC_LOADING
+      COMMON /g_ffields_pload/ g_pload
+      COMMON /g_ffields_sIceLoad/ g_sIceLoad
+#endif
+
+      _RS  g_fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_Qsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_lambdaThetaClimRelax
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_lambdaSaltClimRelax
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ATMOSPHERIC_LOADING
+      _RS  g_pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  g_sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
       COMMON /G_DYNVARS_DIFFKR/

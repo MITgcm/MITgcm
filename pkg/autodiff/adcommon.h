@@ -55,16 +55,39 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL advnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
-      common /adffields/
-     &                   adfu, adfv
-     &                 , adqnet, adempmr
-cph     &                 , adsst, adsss
-      _RL adfu(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adfv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adqnet(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adempmr(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-cph      _RL adsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      COMMON /adffields_fu/ adfu
+      COMMON /adffields_fv/ adfv
+      COMMON /adffields_Qnet/ adQnet
+      COMMON /adffields_Qsw/ adQsw
+      COMMON /adffields_dQdT/ addQdT
+      COMMON /adffields_EmPmR/ adEmPmR
+      COMMON /adffields_saltFlux/ adsaltFlux
+      COMMON /adffields_SST/ adSST
+      COMMON /adffields_SSS/ adSSS
+      COMMON /adffields_lambdaThetaClimRelax/ adlambdaThetaClimRelax
+      COMMON /adffields_lambdaSaltClimRelax/ adlambdaSaltClimRelax
+#ifdef ATMOSPHERIC_LOADING
+      COMMON /adffields_pload/ adpload
+      COMMON /adffields_sIceLoad/ adsIceLoad
+#endif
+
+      _RS  adfu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adfv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adQnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adQsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  addQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adEmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adsaltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adSST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adSSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adlambdaThetaClimRelax
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adlambdaSaltClimRelax
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ATMOSPHERIC_LOADING
+      _RS  adpload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  adsIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
       COMMON /ADDYNVARS_DIFFKR/

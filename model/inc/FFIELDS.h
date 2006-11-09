@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.31 2006/01/02 21:17:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.32 2006/11/09 03:54:10 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -79,21 +79,20 @@ C     Eddytauy -Meridional Eddy stress  in N/m^2 used in external_forcing.F
 C     EfluxY - y-component of Eliassen-Palm flux vector
 C     EfluxP - p-component of Eliassen-Palm flux vector
 
-      COMMON /FFIELDS/
-     &                 fu
-     &               , fv
-     &               , Qnet
-     &               , Qsw
-     &               , dQdT
-     &               , EmPmR
-     &               , saltFlux
-     &               , SST
-     &               , SSS
-     &               , lambdaThetaClimRelax
-     &               , lambdaSaltClimRelax
+      COMMON /FFIELDS_fu/ fu
+      COMMON /FFIELDS_fv/ fv
+      COMMON /FFIELDS_Qnet/ Qnet
+      COMMON /FFIELDS_Qsw/ Qsw
+      COMMON /FFIELDS_dQdT/ dQdT
+      COMMON /FFIELDS_EmPmR/ EmPmR
+      COMMON /FFIELDS_saltFlux/ saltFlux
+      COMMON /FFIELDS_SST/ SST
+      COMMON /FFIELDS_SSS/ SSS
+      COMMON /FFIELDS_lambdaThetaClimRelax/ lambdaThetaClimRelax
+      COMMON /FFIELDS_lambdaSaltClimRelax/ lambdaSaltClimRelax
 #ifdef ATMOSPHERIC_LOADING
-     &               , pload
-     &               , sIceLoad
+      COMMON /FFIELDS_pload/ pload
+      COMMON /FFIELDS_sIceLoad/ sIceLoad
 #endif
 
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -105,8 +104,8 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
