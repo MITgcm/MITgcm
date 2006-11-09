@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.1 2006/11/08 21:52:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.2 2006/11/09 16:26:14 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 #include "PACKAGES_CONFIG.h"
-#include "AUTODIFF_OPTIONS.h"
+#include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
