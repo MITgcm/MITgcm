@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.17 2006/05/12 02:17:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.18 2006/11/10 04:57:10 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -184,16 +184,16 @@ cphadmtlm)
 
       print *, 'grad-res -------------------------------'
       print ('(2a)'), 
-     &     ' grad-res  proc    #    i    j    k            fc ref',
-     &     '        fc + eps        fc - eps'
+     &    ' grad-res  proc    #    i    j    k iobc',
+     &    '               fc ref           fc + eps           fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
       print ('(2a)'), 
-     &     ' grad-res  proc    #    i    j    k          tlm grad',
-     &     '         fd grad      1 - fd/tlm'
+     &    ' grad-res  proc    #    i    j    k iobc',
+     &    '             tlm grad            fd grad         1 - fd/tlm'
 #else
       print ('(2a)'), 
-     &     ' grad-res  proc    #    i    j    k          adj grad',
-     &     '         fd grad      1 - fd/adj'
+     &    ' grad-res  proc    #    i    j    k iobc',
+     &    '             adj grad            fd grad         1 - fd/adj'
 #endif
 
 c--   Compute the finite difference approximations.
@@ -215,6 +215,10 @@ c--         Determine the location of icomp on the grid.
      &              icvrec, itile, jtile, layer, obcspos,
      &              itilepos, jtilepos, itest, ierr,
      &              mythid )
+cph(
+               print *, 'ph-grd ----- back from loc -----',
+     &             icvrec, itilepos, jtilepos, layer, obcspos
+cph)
             endif
             _BARRIER
               
@@ -418,22 +422,22 @@ c******************************************************
                ierrmem   ( ichknum ) = ierr
                   
                print *, 'grad-res -------------------------------'
-               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
-     &              myprocid,ichknum,itilepos,jtilepos,layer,
+               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
+     &              myprocid,ichknum,itilepos,jtilepos,layer,obcspos,
      &              fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
+               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
-     &              icompmem(ichknum),itestmem(ichknum),
+     &              icompmem(ichknum),itestmem(ichknum),obcspos,
      &              ftlxxmemo, gfd, ratio_ftl
                WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
      &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
-               print '(a,5I5,2x,3(1x,E15.9))', ' grad-res ',
+               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
-     &              icompmem(ichknum),itestmem(ichknum),
+     &              icompmem(ichknum),itestmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
                WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
      &              'precision_grdchk_result ADM ', fcref, adxxmemo
