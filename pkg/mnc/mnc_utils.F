@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.17 2006/08/31 17:40:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.18 2006/11/13 23:17:35 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -39,10 +39,13 @@ C     Functions
       ENDDO
 
       IF ( status .NE. NF_NOERR ) THEN
-        write(msgbuf,'(2a)') 'NetCDF ERROR: ', NF_STRERROR(status)
+        write(msgbuf,'(2a)') 'NetCDF ERROR: '
         lenm = ILNBLNK(msgbuf)
         print *, msgbuf(1:lenm)
         CALL print_error(msgbuf(1:lenm), mythid)
+        print *, '==='
+        print *, NF_STRERROR(status)
+        print *, '==='
         write(msgbuf,'(2a)') 'MNC ERROR: ', msg
         lenm = ILNBLNK(msgbuf)
         print *, msgbuf(1:lenm)
