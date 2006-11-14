@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.9 2006/11/01 18:17:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.10 2006/11/14 22:41:59 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -65,7 +65,7 @@ C     ---------------------
       PARAMETER ( CFC12  = 0.5        )
       PARAMETER ( CFC22  = 0.2        )
       PARAMETER ( ATMPOPA= 1.d5       )
-      PARAMETER ( PI     = 3.14159 )
+      PARAMETER ( PI     = 3.14159d0  )
       PARAMETER ( YRLEN  = 365.25     )
       PARAMETER ( DAYSCY = 365 *4 +1  )
 
