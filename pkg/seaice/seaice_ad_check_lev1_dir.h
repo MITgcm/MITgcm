@@ -6,7 +6,6 @@ CADJ STORE vvel          = comlev1, key = ikey_dynamics
 CADJ STORE salt          = comlev1, key = ikey_dynamics
 CADJ STORE totphihyd     = comlev1, key = ikey_dynamics
 CADJ STORE runoff        = comlev1, key = ikey_dynamics
-CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics
 
 CADJ STORE area          = comlev1, key = ikey_dynamics
 CADJ STORE heff          = comlev1, key = ikey_dynamics
