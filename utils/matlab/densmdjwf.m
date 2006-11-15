@@ -7,8 +7,8 @@ function rho = densmdjwf(s,t,p);
 % USAGE:  dens = densmdjwf(S,Theta,P)
 %
 % DESCRIPTION:
-%    Density of Sea Water using Jackett and McDougall 1995 (JAOT 12) 
-%    polynomial (modified UNESCO polynomial).
+%    Density of Sea Water using the McDougall et al. 2003 (JAOT 20)
+%    polynomial.
 %
 % INPUT:  (all must have same dimensions)
 %   S     = salinity    [psu      (PSS-78)]
@@ -28,7 +28,7 @@ function rho = densmdjwf(s,t,p);
 % rho   = 1041.83267 kg/m^3
 %
 
-% Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
+% McDougall et al., 2003, JAOT 20(5), pp. 730-741
 
 % created by mlosch on 2002-08-09
   
