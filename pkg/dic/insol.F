@@ -43,6 +43,15 @@ c
       solar = 1360.   !solar constant
       albedo = 0.6    !planetary albedo
       par = 0.4       !photosynthetically reactive frac
+
+#ifndef READ_PAR
+C     latitute in radians, backed out from coriolis parameter
+C     (makes latitude independent of grid)
+      IF ( usingCurvilinearGrid ) THEN
+       STOP 'S/R INSOL: use #define READ_PAR with usingCurvilinearGrid'
+      ENDIF
+#endif /* READ_PAR */
+
 c
 c find day (****NOTE for year starting in winter*****)
         dayfrac=mod(Time,360. _d 0 *86400. _d 0)
@@ -57,6 +66,12 @@ c find day (****NOTE for year starting in winter*****)
        do j=1-OLy,sNy+OLy
 c latitude in radians
           lat=YC(1,j,1,bj)/180.d0*3.1416
+#ifndef READ_PAR
+C     latitute in radians, backed out from coriolis parameter
+C     (makes latitude independent of grid)
+          IF ( .NOT. usingSphericalPolarGrid )
+     &         lat = asin( fCori(1,j,1,bj)/(2. _d 0 *omega) )*deg2rad
+#endif /* READ_PAR */
           sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
           if (sun1.le.-0.999) sun1=-0.999
           if (sun1.ge. 0.999) sun1= 0.999
