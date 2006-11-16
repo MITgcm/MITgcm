@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.12 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.13 2006/11/16 03:25:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,7 +81,7 @@ cph)
 C DETERMINE AMOUNT OF OPEN WATER AND ICE THICKNESS
         DO J=1,sNy
          DO I=1,sNx
-          AREA(I,J,2,bi,bj)=MAX(A22,AREA(I,J,2,bi,bj))
+          AREA(I,J,3,bi,bj)=MAX(A22,AREA(I,J,2,bi,bj))
           FHEFF(I,J,bi,bj)=0.0 _d 0
 #ifdef SEAICE_MULTILEVEL
           FICEP(I,J)=0.0 _d 0
@@ -94,7 +94,7 @@ CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          HICE(I,J)=HEFF(I,J,2,bi,bj)/AREA(I,J,2,bi,bj)
+          HICE(I,J)=HEFF(I,J,2,bi,bj)/AREA(I,J,3,bi,bj)
          ENDDO
         ENDDO
 
