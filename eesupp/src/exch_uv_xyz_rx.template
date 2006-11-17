@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.6 2006/08/23 15:20:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.7 2006/11/17 22:35:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ CEOP
      U                     Uphi, Vphi,
      I                     withSigns, Nr, myThid )
       RETURN
-#endif
+#else
 
       OLw        = OLx
       OLe        = OLx
@@ -90,6 +90,7 @@ c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
       ENDIF
 
       RETURN
+#endif
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

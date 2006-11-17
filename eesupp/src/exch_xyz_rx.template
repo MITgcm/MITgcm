@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_xyz_rx.template,v 1.6 2006/08/23 15:20:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_xyz_rx.template,v 1.7 2006/11/17 22:35:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,7 +47,7 @@ CEOP
 #ifdef ALLOW_EXCH2
       CALL EXCH2_3D_RX( phi, Nr, myThid )
       RETURN
-#endif
+#else
 
       OLw        = OLx
       OLe        = OLx
@@ -75,4 +75,5 @@ C                begine.
       ENDIF
 
       RETURN
+#endif
       END
