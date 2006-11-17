@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.744 2006/11/06 20:37:25 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.745 2006/11/17 20:01:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint58r_post
 o modifications to pkg/seaice/growth.F, which change results of
   lab_sea experiment: fixes pertain to melting snow over open water, to
   masking EVAP under sea ice, and to using the correct AREA variable for
