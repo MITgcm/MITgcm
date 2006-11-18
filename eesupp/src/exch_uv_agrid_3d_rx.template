@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.2 2006/08/25 23:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.3 2006/11/18 01:08:38 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,6 +83,7 @@ C---  using CubedSphereExchange:
 
 C First call the exchanges for the two components
 
+#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX_CUBE( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -91,6 +92,7 @@ C First call the exchanges for the two components
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+#endif
 
 C Then if we are on the sphere we may need to switch u and v components
 C and/or the signs depending on which cube face we are located.
@@ -170,6 +172,7 @@ C--    end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
+#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -178,6 +181,7 @@ C---  not using CubedSphereExchange:
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF

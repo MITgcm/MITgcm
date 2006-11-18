@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.1 2006/08/23 15:13:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.2 2006/11/18 01:09:00 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -209,6 +209,7 @@ C--    end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
+#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -217,6 +218,7 @@ C---  not using CubedSphereExchange:
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF

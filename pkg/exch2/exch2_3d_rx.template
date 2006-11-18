@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.1 2006/08/23 15:13:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.2 2006/11/18 01:09:00 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -181,10 +181,12 @@ C        North-west corner
 
       ELSE
 
+#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+#endif
 
       ENDIF
 
