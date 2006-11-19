@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.2 2006/06/05 17:17:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.3 2006/11/19 22:04:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -81,12 +81,12 @@ C-     Diffusive flux:
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFx'//diagSufx
+       diagName  = 'DFxE'//diagSufx
        diagTitle = 'Zonal      Diffusive Flux of Pot.Temperature'
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFy'//diagSufx
+       diagName  = 'DFyE'//diagSufx
        diagTitle = 'Meridional Diffusive Flux of Pot.Temperature'
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -139,12 +139,12 @@ C-     Diffusive flux:
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFx'//diagSufx
+       diagName  = 'DFxE'//diagSufx
        diagTitle = 'Zonal      Diffusive Flux of'//locName
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFy'//diagSufx
+       diagName  = 'DFyE'//diagSufx
        diagTitle = 'Meridional Diffusive Flux of'//locName
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,

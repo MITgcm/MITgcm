@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.1 2004/12/19 00:02:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.2 2006/11/19 22:04:44 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -149,13 +149,13 @@ C-     Diffusive flux:
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFx'//diagSufx
+       diagName  = 'DFxE'//diagSufx
        WRITE(diagTitle,'(2A)') 'Zonal      Diffusive Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
-       diagName  = 'DIFy'//diagSufx
+       diagName  = 'DFyE'//diagSufx
        WRITE(diagTitle,'(2A)') 'Meridional Diffusive Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.41 2006/06/18 23:27:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.42 2006/11/19 22:04:09 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -300,7 +300,7 @@ C-    Diagnostics of Tracer flux in X dir (mainly Diffusive term),
 C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
-          diagName = 'DIFx'//diagSufx
+          diagName = 'DFxE'//diagSufx
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
 #endif
@@ -408,7 +408,7 @@ C-    Diagnostics of Tracer flux in Y dir (mainly Diffusive terms),
 C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
-          diagName = 'DIFy'//diagSufx
+          diagName = 'DFyE'//diagSufx
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
 #endif
