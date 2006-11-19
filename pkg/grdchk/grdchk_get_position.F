@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.2 2006/05/12 02:17:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.3 2006/11/19 23:17:17 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -46,9 +46,11 @@ c     == local variables ==
 
       integer iG,jG
       integer bi,bj
+      integer pi,pj
       integer i,j,k
       integer iobcs
       integer biwrk,bjwrk
+      integer iproc, jproc
       integer iwrk, jwrk, kwrk
       integer iobcswrk
       integer irec, irecwrk
@@ -62,6 +64,7 @@ c     == local variables ==
 
       _RL wetlocal
 
+      logical ltmp
 c     == end of interface ==
 
       jtlo = 1
@@ -73,20 +76,18 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      _BEGIN_MASTER( mythid )
-
-c--   determine proc. number from following assumptions
-
-      iG = INT(iGloPos/sNx) + 1
-      jG = INT(jGloPos/sNy) + 1
-      grdchkwhichproc = iG-1 + (jG-1)*nPx
-
-      itilepos = iGloPos - (iG-1)*sNx
-      jtilepos = jGloPos - (jG-1)*sNy
+      itile = iGloTile
+      jtile = jGloTile
+      itilepos = iGloPos
+      jtilepos = jGloPos
       layer    = kGloPos
       obcspos  = obcsglo
       icvrec   = recglo
 
+      _BEGIN_MASTER( mythid )
+
+c--   determine proc. number from following assumptions
+               
       if ( myProcId .EQ. grdchkwhichproc ) then
 
 c     initialise parameters
@@ -118,10 +119,12 @@ c--   Start to loop over records.
            do bi = biwrk, ithi
             do k = kwrk, ncvarnrmax(grdchkvarindex)
 
+cph(
+cph-print               print *, 'ph-grd get_pos irec, bj, bi, k ',
+cph-print     &              irec, bj, bi, k 
+cph)
              if ( ierr .ne. 0 ) then
                icvrec = irec
-               itile  = bi
-               jtile  = bj
 
                do j = jwrk, ncvarymax(grdchkvarindex)
                 do i = iwrk, ncvarxmax(grdchkvarindex)
@@ -176,6 +179,8 @@ c
                   if ( i     .EQ. itilepos .AND.
      &                 j     .EQ. jtilepos .AND.
      &                 k     .EQ. layer .AND.
+     &                 bi    .EQ. itile .AND.
+     &                 bj    .EQ. jtile .AND.
      &                 iobcs .EQ. obcspos .AND.
      &                 irec  .EQ. icvrec ) then
                      pastit = 0
@@ -189,6 +194,7 @@ c
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
      &                       itile, jtile
+                        goto 1234
                      endif
                   else if ( pastit .EQ. 0 .AND. 
      &                    wetlocal .NE.0 ) then
@@ -201,6 +207,7 @@ c
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
      &                       itile, jtile
+                        goto 1234
                   endif
 c
                  endif
@@ -230,6 +237,8 @@ c--   End of loop over irec records.
 
 c--   End of if myProcId statement
       endif
+
+ 1234 continue
 
       _END_MASTER( mythid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.9 2005/05/23 19:28:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.10 2006/11/19 23:17:17 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -68,6 +68,8 @@ c--   Optimization parameters.
      &                  iGloPos,
      &                  jGloPos,
      &                  kGloPos,
+     &                  iGloTile,
+     &                  jGloTile,
      &                  obcsglo,
      &                  recglo
 
@@ -92,6 +94,8 @@ c--     Set default values.
         iGloPos         = 0
         jGloPos         = 0
         kGloPos         = 1
+        iGloTile        = 1
+        jGloTile        = 1
         obcsglo         = 1
         recglo          = 1
 
@@ -114,6 +118,18 @@ c       Next, read the calendar data file.
      &                SQUEEZE_RIGHT , 1)
 
         CLOSE( iUnit )
+
+        IF ( iGloPos .GT. sNx .OR. jGloPos .GT. sNy ) THEN
+           WRITE(msgBuf,'(A)') 'i/j GloPos must be <= sNx/y'
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT , 1)
+           STOP 'S/R grdchk_readparms'
+        ENDIF
+        IF ( jGloTile .GT. 1 .AND. useCubedSphereExchange ) THEN
+           WRITE(msgBuf,'(A)') 
+     &          'jGloTile must be = 1 for useCubedSphereExchange'
+           STOP 'S/R grdchk_readparms'
+        ENDIF
 
 c--     Summarize the gradient check's setup.
         call grdchk_Summary( mythid )

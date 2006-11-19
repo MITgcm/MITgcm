@@ -38,6 +38,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       iGloPos,
      &                       jGloPos,
      &                       kGloPos,
+     &                       iGloTile,
+     &                       jGloTile,
      &                       obcsglo,
      &                       recglo,
      &                       iwetsum
@@ -50,9 +52,11 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer iGloPos
       integer jGloPos
       integer kGloPos
+      integer iGloTile
+      integer jGloTile
       integer obcsglo
       integer recglo
-      integer iwetsum(0:nr)
+      integer iwetsum(nsx,nsy,0:nr)
 
       common /grdchk_r/
      &                  fcrmem, fcppmem, fcpmmem,
@@ -76,7 +80,7 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                  irecmem,
      &                  bimem, bjmem,
      &                  ilocmem,jlocmem,klocmem,iobcsmem,
-     &                  ichkmem, icompmem, itestmem, ierrmem
+     &                  ichkmem, icompmem, itestmem, ierrmem, icglomem
       integer ncvarcomp
       integer maxncvarcomps
       integer nwettile( nsx,nsy,nr,nobcs )
@@ -91,6 +95,7 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer icompmem( maxgrdchecks )
       integer itestmem( maxgrdchecks )
       integer ierrmem ( maxgrdchecks )
+      integer icglomem( maxgrdchecks )
 
 #ifdef ALLOW_OBCS_CONTROL
       common /grdchk_obcs_mask_r/

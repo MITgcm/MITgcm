@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.18 2006/11/10 04:57:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.19 2006/11/19 23:17:17 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -109,6 +109,7 @@ c     == local variables ==
       integer obcspos
       integer itilepos
       integer jtilepos
+      integer icglo
       integer itest
       integer ierr
       integer ierr_grdchk
@@ -184,15 +185,15 @@ cphadmtlm)
 
       print *, 'grad-res -------------------------------'
       print ('(2a)'), 
-     &    ' grad-res  proc    #    i    j    k iobc',
+     &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '               fc ref           fc + eps           fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
       print ('(2a)'), 
-     &    ' grad-res  proc    #    i    j    k iobc',
+     &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             tlm grad            fd grad         1 - fd/tlm'
 #else
       print ('(2a)'), 
-     &    ' grad-res  proc    #    i    j    k iobc',
+     &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             adj grad            fd grad         1 - fd/adj'
 #endif
 
@@ -207,17 +208,21 @@ c--   gradient checks.
 
          ichknum = (icomp - nbeg)/nstep + 1
 
+cph(
+cph-print         print *, 'ph-grd _main: nbeg, icomp, ichknum ', 
+cph-print     &        nbeg, icomp, ichknum
+cph)
          if (ichknum .le. maxgrdchecks ) then
 
 c--         Determine the location of icomp on the grid.
             if ( myProcId .EQ. grdchkwhichproc ) then
                call grdchk_loc( icomp, ichknum, 
      &              icvrec, itile, jtile, layer, obcspos,
-     &              itilepos, jtilepos, itest, ierr,
+     &              itilepos, jtilepos, icglo, itest, ierr,
      &              mythid )
 cph(
-               print *, 'ph-grd ----- back from loc -----',
-     &             icvrec, itilepos, jtilepos, layer, obcspos
+cph-print               print *, 'ph-grd ----- back from loc -----',
+cph-print     &             icvrec, itilepos, jtilepos, layer, obcspos
 cph)
             endif
             _BARRIER
@@ -420,24 +425,28 @@ c******************************************************
                ichkmem   ( ichknum ) = ichknum
                itestmem  ( ichknum ) = itest
                ierrmem   ( ichknum ) = ierr
-                  
+               icglomem  ( ichknum ) = icglo
+
                print *, 'grad-res -------------------------------'
-               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
-     &              myprocid,ichknum,itilepos,jtilepos,layer,obcspos,
+               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
+     &              myprocid,ichknum,itilepos,jtilepos,
+     &              layer,itile,jtile,obcspos,
      &              fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
+               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
-     &              icompmem(ichknum),itestmem(ichknum),obcspos,
+     &              icompmem(ichknum),itestmem(ichknum),
+     &              bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),
      &              ftlxxmemo, gfd, ratio_ftl
                WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
      &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
-               print '(a,6I5,2x,3(1x,E18.12))', ' grad-res ',
+               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
      &              myprocid,ichknum,ichkmem(ichknum),
-     &              icompmem(ichknum),itestmem(ichknum),obcspos,
+     &              icompmem(ichknum),itestmem(ichknum),
+     &              bimem(ichknum),bjmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
                WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
      &              'precision_grdchk_result ADM ', fcref, adxxmemo

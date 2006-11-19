@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.10 2006/11/10 04:57:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.11 2006/11/19 23:17:17 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -17,6 +17,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.10 2006/11/10 04:57:09 
      O                     obcspos,
      O                     itilepos,
      O                     jtilepos,
+     O                     icglom1,
      O                     itest,
      O                     ierr,
      I                     mythid
@@ -76,11 +77,13 @@ c     == local variables ==
       integer iwrk, jwrk, kwrk
       integer iobcswrk
       integer irec, irecwrk
+      integer icglo, icglom1
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
       integer icomptest
+      integer icomploc
       integer nobcsmax
 
 c     == end of interface ==
@@ -97,7 +100,9 @@ c     == end of interface ==
       _BEGIN_MASTER( mythid )
 
 c     initialise parameters
-      ierr = -5
+      ierr    = -5
+      icglom1 = 0
+      icomploc= 0
 
       if ( icomp .gt. 0 ) then
        if ( icomp .le. ncvarcomp ) then
@@ -113,6 +118,7 @@ c--     A valid component of the control variable has been selected.
             jwrk      = 1
             iwrk      = 1
             iwettot   = 0
+            icglo     = 0
          else
             itest     = itestmem (ichknum-1)
             icomptest = icompmem (ichknum-1)
@@ -121,10 +127,11 @@ c--     A valid component of the control variable has been selected.
             biwrk     = bimem    (ichknum-1)
             kwrk      = klocmem  (ichknum-1)
             iobcswrk  = iobcsmem (ichknum-1)
+            icglo     = icglomem (ichknum-1)
             jwrk      = jlocmem  (ichknum-1)
             iwrk      = ilocmem  (ichknum-1)
             iwrk      = iwrk + 1
-            iwettot   = iwetsum(kwrk)
+            iwettot   = iwetsum(biwrk,bjwrk,kwrk)
          end if
 
 c--   set max loop index for obcs multiplicities
@@ -141,6 +148,10 @@ c--   set max loop index for obcs multiplicities
            nobcsmax = 1
         endif
 
+cph(
+cph-print        print *, 'ph-grd _loc: icomp, ichknum ', 
+cph-print     &       icomp, ichknum, ncvarcomp
+cpj)
 c--   Start to loop over records.
         do irec = irecwrk, ncvarrecs(grdchkvarindex)
 cph         do iobcs = iobcswrk, nobcsmax
@@ -148,13 +159,34 @@ cph         do iobcs = iobcswrk, nobcsmax
           do bj = bjwrk, jthi
            do bi = biwrk, ithi
             do k = kwrk, ncvarnrmax(grdchkvarindex)
+             icglo   = icglo + nwettile(bi,bj,k,iobcs)
+             icglom1 = icglo - nwettile(bi,bj,k,iobcs)
+cph(
+cph-print        print *, 'ph-grd _loc: bi, bj, icomptest, ichknum ', 
+cph-print     &       icomptest, ichknum
+cph-print        print *, 'ph-grd _loc: icglo ', 
+cph-print     &       k, icglo, icglom1, iwetsum(bi,bj,k)
+cpj)
              if ( (ierr .ne. 0) .and.
-     &            (icomp .gt. (iobcs-1)*iwetsum(nr)+iwetsum(k-1)) .and.
-     &            (icomp .le. (iobcs-1)*iwetsum(nr)+iwetsum(k))) then
+     &            (icomp .gt. icglom1 .AND. icomp .LE. icglo) ) then
+cph
+cph             if ( (ierr .ne. 0) .and.
+cph     &            (icomp .gt. 
+cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k-1)) 
+cph     &              .and.
+cph     &            (icomp .le. 
+cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k))) then
+cph
+               if ( icomptest .EQ. 0 ) then
+                  icomptest = icglom1
+               endif
+               icomploc = icomp
                icvrec = irec
                itile  = bi
                jtile  = bj
-
+cph(
+cph-print               print *, 'ph-grd irec, bj, bi, k ', irec, bj, bi, k
+cpj)
                do j = jwrk, ncvarymax(grdchkvarindex)
                 do i = iwrk, ncvarxmax(grdchkvarindex)
                  if (ierr .ne. 0) then
@@ -211,13 +243,17 @@ cph         do iobcs = iobcswrk, nobcsmax
 #endif
                      endif
                   endif
-                  if ( icomp .eq. icomptest ) then
+cph(
+cph-print                  print *, 'ph-grd icomp, icomptest, icomploc, i, j ',
+cph-print     &                 icomp, icomptest, icomploc, i, j 
+cpj)
+                  if ( icomploc .eq. icomptest ) then
                      itilepos = itmp
                      jtilepos = jtmp
                      layer    = k
                      obcspos  = iobcs
                      ierr     = 0
-                     itest    = iwetsum(k)
+                     itest    = iwetsum(bi,bj,k)
 cph(
                      print *, 'ph-grd -->hit<-- ', itmp,jtmp,k,iobcs
                      goto 1234
@@ -234,6 +270,10 @@ cph)
                else
                  icomptest = icomptest + nwettile(bi,bj,k,iobcs)
                endif
+cph(
+cph-print               print *, 'ph-grd after loop icomptest, icomploc, k ',
+cph-print     &              icomptest, icomploc, k
+cph)
                 iwrk      = 1
                 jwrk      = 1
              else
