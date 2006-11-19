@@ -16,7 +16,7 @@
 #  filename(1) = 'surfDiag',
    levels(1,1) = 1.,
    fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
-                 'TAUX    ','TAUY    ','TFLUX   ','SFLUX   ','TICE    ',
+                 'oceTAUX ','oceTAUY ','TFLUX   ','SFLUX   ','oceFreez',
                  'TRELAX  ','SRELAX  ',
   frequency(2) = 1728000.,
 #  filename(2) = 'dynDiag',
@@ -33,7 +33,7 @@
   frequency(4) = 1728000.,
 #  filename(4) = 'flxDiag',
    fields(1,4) = 'ADVx_TH ','ADVy_TH ','ADVr_TH ',
-                 'DIFx_TH ','DIFy_TH ','DFrE_TH ',
+                 'DFxE_TH ','DFyE_TH ','DFrE_TH ',
                  'DFrI_TH ',
 #                'ADVx_SLT',
  &

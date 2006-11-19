@@ -35,7 +35,7 @@
   frequency(4) = 1728000.,
    filename(4) = 'flxDiag',
    fields(1,4) = 'ADVy_TH ','ADVr_TH ',
-                 'DIFy_TH ','DFrE_TH ',
+                 'DFyE_TH ','DFrE_TH ',
                  'DFrI_TH ',
 #                'ADVx_SLT',
  &

@@ -60,7 +60,7 @@
    filename(11) = 'DTRadvxt',
 #---
   frequency(12) = 2626560.0,
-   fields(1,12) = 'DIFx_TH ',
+   fields(1,12) = 'DFxE_TH ',
    filename(12) = 'DTRdifxt',
 #---
   frequency(13) = 2626560.0,
@@ -68,7 +68,7 @@
    filename(13) = 'DTRadvxs',
 #---
   frequency(14) = 2626560.0,
-   fields(1,14) = 'DIFx_SLT',
+   fields(1,14) = 'DFxE_SLT',
    filename(14) = 'DTRdifxs',
 #---
   frequency(15) = 2626560.0,
@@ -76,7 +76,7 @@
    filename(15) = 'DTRadvyt',
 #---
   frequency(16) = 2626560.0,
-   fields(1,16) = 'DIFy_TH ',
+   fields(1,16) = 'DFyE_TH ',
    filename(16) = 'DTRdifyt',
 #---
   frequency(17) = 2626560.0,
@@ -84,7 +84,7 @@
    filename(17) = 'DTRadvys',
 #---
   frequency(18) = 2626560.0,
-   fields(1,18) = 'DIFy_SLT',
+   fields(1,18) = 'DFyE_SLT',
    filename(18) = 'DTRdifys',
 #---
   frequency(19) = 2626560.0,
@@ -128,11 +128,11 @@
    filename(28) = 'DKPPmld ',
 #---
   frequency(29) = 2626560.0,
-   fields(1,29) = 'TAUX    ',
+   fields(1,29) = 'oceTAUX ',
    filename(29) = 'DFOtaux ',
 #---
   frequency(30) = 2626560.0,
-   fields(1,30) = 'TAUY    ',
+   fields(1,30) = 'oceTAUY ',
    filename(30) = 'DFOtauy ',
 #---
   frequency(31) = 2626560.0,
@@ -144,7 +144,7 @@
    filename(32) = 'DFOsflux',
 #---
   frequency(33) = 2626560.0,
-   fields(1,33) = 'SWFLUX  ',
+   fields(1,33) = 'oceQsw  ',
    filename(33) = 'DFOswrad',
 #---
   frequency(34) = 2626560.0,

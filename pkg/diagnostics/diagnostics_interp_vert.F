@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.5 2005/11/18 20:25:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.6 2006/11/19 22:03:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -113,7 +113,7 @@ c If nonlinear free surf is active, need averaged pressures
           if(select_rStar.GT.0)then
            call diagnostics_get_pointers('RSURF   ',ipoint1,jpoint1,
      .                                                           myThid)
-           call diagnostics_get_pointers('PRESSURE',ipoint2,jpoint2,
+           call diagnostics_get_pointers('RCENTER ',ipoint2,jpoint2,
      .                                                           myThid)
 C if fizhi is being  used, may need to get physics grid pressures
 #ifdef ALLOW_FIZHI

@@ -12,7 +12,7 @@
    filename(1) = 'SHfields',
   frequency(2) = -00.06,
    fields(1,2) = 'UVEL    ','VVEL    ','PHIHYD  ','WVEL    ','SALT    ','RELHUM  ',
-                 'PRESSURE','THETA   ',
+                 'RCENTER ','THETA   ',
    filename(2) = 'MLfields',
   fileflags(2) = ' P3     ',
   frequency(3) = -00.06,

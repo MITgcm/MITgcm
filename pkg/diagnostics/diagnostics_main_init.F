@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.27 2006/08/29 17:00:30 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.28 2006/11/19 22:03:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -498,14 +498,14 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C--   surface fluxes:
-      diagName  = 'TAUX    '
+      diagName  = 'oceTAUX '
       diagTitle = 'zonal surface wind stress, >0 increases uVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'SU      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'TAUY    '
+      diagName  = 'oceTAUY '
       diagTitle = 'meridional surf. wind stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'SV      U1      '
@@ -526,7 +526,7 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'TICE    '
+      diagName  = 'oceFreez'
       diagTitle = 'heat from melt/freeze of sea-ice, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
@@ -547,7 +547,7 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'SWFLUX  '
+      diagName  = 'oceQsw  '
       diagTitle = 'net upward SW radiation, >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
@@ -555,7 +555,7 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      diagName  = 'PRESSURE'
+      diagName  = 'RCENTER '
 C-    will be changed to an isomorphic name, such as:
 c     diagName  = 'RCENTER '
 c     diagTitle = 'Cell-Center r-Position (Pressure, Height) (Pa,m)'
