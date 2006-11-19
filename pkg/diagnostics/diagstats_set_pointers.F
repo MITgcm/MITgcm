@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.4 2006/01/24 02:59:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.5 2006/11/19 21:59:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,7 +33,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER ndiagcount
+      INTEGER ndiagcount, ndCount
       INTEGER md,ld,nd
       INTEGER mm, mate, nActiveMax
       INTEGER j, k, l
@@ -70,9 +70,14 @@ C        Search all possible model diagnostics
           ENDIF
          ENDDO
          IF ( .NOT.found ) THEN
-           WRITE(msgBuf,'(3A)') 'DIAGSTATS_SET_POINTERS: ',
+           CALL DIAGNOSTICS_LIST_CHECK(
+     O                      ndCount,
+     I                      ld,md,diagSt_nbFlds,diagSt_Flds,myThid)
+           IF ( ndCount.EQ.0 ) THEN
+             WRITE(msgBuf,'(3A)') 'DIAGSTATS_SET_POINTERS: ',
      &                     diagSt_Flds(md,ld),' is not a Diagnostic'
-           CALL PRINT_ERROR( msgBuf , myThid )
+             CALL PRINT_ERROR( msgBuf , myThid )
+           ENDIF
            STOP 'ABNORMAL END: S/R DIAGSTATS_SET_POINTERS'
          ENDIF
          IF ( found .AND. mate.LE.-1 ) THEN
