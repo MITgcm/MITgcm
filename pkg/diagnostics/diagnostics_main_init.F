@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.28 2006/11/19 22:03:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.29 2006/11/20 04:25:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -512,8 +512,56 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'TFLUX   '
-      diagTitle = 'net surface heat flux, >0 increases theta       '
+#ifdef ATMOSPHERIC_LOADING
+      diagName  = 'atmPload'
+      diagTitle = 'Atmospheric pressure loading'
+      diagUnits = 'Pa              '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'sIceLoad'
+      diagTitle = 'sea-ice loading (in Mass of ice+snow / area unit)'
+      diagUnits = 'kg/m^2          '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* ATMOSPHERIC_LOADING */
+
+      diagName  = 'oceFWflx'
+      diagTitle = 'net surface Fresh-Water flux into the ocean'
+     &          //' (+=down), >0 decreases salinity'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'oceSflux'
+      diagTitle = 'net surface Salt flux into the ocean (+=down),'
+     &          //' >0 increases salinity'
+      diagUnits = 'g/m^2/s         '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'oceQnet '
+      diagTitle = 'net surface heat flux into the ocean (+=down),'
+     &          //' >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'oceQsw  '
+      diagTitle = 'net Short-Wave radiation (+=down),'
+     &          //' >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'oceFreez'
+      diagTitle = 'heating from freezing of sea-water (allowFreezing=T)'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
@@ -526,20 +574,6 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'oceFreez'
-      diagTitle = 'heat from melt/freeze of sea-ice, >0 increases theta'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-      diagName  = 'SFLUX   '
-      diagTitle = 'net surface salt flux, >0 increases salt'
-      diagUnits = 'g/m^2/s         '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
       diagName  = 'SRELAX  '
       diagTitle = 'surface salinity relaxation, >0 increases salt'
       diagUnits = 'g/m^2/s         '
@@ -547,17 +581,41 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-      diagName  = 'oceQsw  '
-      diagTitle = 'net upward SW radiation, >0 increases theta'
+      diagName  = 'surForcT'
+      diagTitle = 'model surface forcing for Temperature,'
+     &          //' >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'surForcS'
+      diagTitle = 'model surface forcing for Salinity,'
+     &          //' >0 increases salinity'
+      diagUnits = 'g/m^2/s         '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'TFLUX   '
+      diagTitle = 'total heat flux (match heat-content variations),'
+     &          //' >0 increases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SFLUX   '
+      diagTitle = 'total salt flux (match salt-content variations),'
+     &          //' >0 increases salt'
+      diagUnits = 'g/m^2/s         '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       diagName  = 'RCENTER '
-C-    will be changed to an isomorphic name, such as:
-c     diagName  = 'RCENTER '
 c     diagTitle = 'Cell-Center r-Position (Pressure, Height) (Pa,m)'
       diagTitle = DIAGS_MK_TITLE( 'Cell-Center '//rTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
