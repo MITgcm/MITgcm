@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.745 2006/11/17 20:01:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.746 2006/11/20 05:19:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o diagnostics: rename few diags:
+  s/'PRESSURE'/'RCENTER '/g
+  s/'TICE    '/'oceFreez'/g
+  s/'TAUX    '/'oceTAUX '/g
+  s/'TAUY    '/'oceTAUY '/g
+  s/'SWFLUX  '/'oceQsw  '/g
+  s/DIFx/DFxE/g
+  s/DIFy/DFyE/g
+  and add few ocean-forcing diagnostics:
+  atmPload, sIceLoad, oceQnet, oceFWflx, oceSflux, surForcT & surForcS
 
 checkpoint58r_post
 o modifications to pkg/seaice/growth.F, which change results of
