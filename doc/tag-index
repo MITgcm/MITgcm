@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.746 2006/11/20 05:19:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.747 2006/11/20 20:06:43 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,10 @@ o diagnostics: rename few diags:
   s/DIFy/DFyE/g
   and add few ocean-forcing diagnostics:
   atmPload, sIceLoad, oceQnet, oceFWflx, oceSflux, surForcT & surForcS
+o modifications to pkg/seaice/growth.F and budget.F, which change results of
+  lab_sea experiment: HSNOW was sometimes treated as effective and sometimes
+  as actual snow thickness.  It now refers everywhere to effective snow
+  thickness, meaning that for non-zero AREA, actual thickness is HEFF/AREA.
 
 checkpoint58r_post
 o modifications to pkg/seaice/growth.F, which change results of

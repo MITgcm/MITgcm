@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.33 2006/11/16 03:25:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.34 2006/11/20 20:06:43 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,12 +55,12 @@ C     number of surface interface layer
        kSurface        = 1
       endif
 
-      salinity_ice=4.0 _d 0      ! ICE SALINITY
-      TBC=SEAICE_freeze          ! FREEZING TEMP. OF SEA WATER
+      salinity_ice=4.0 _d 0      ! ICE SALINITY (g/kg)
+      TBC=SEAICE_freeze          ! FREEZING TEMP. OF SEA WATER (deg C)
       SDF=1000.0 _d 0/330.0 _d 0 ! RATIO OF WATER DESITY TO SNOW DENSITY
       ICE_DENS=0.920 _d 0        ! RATIO OF SEA ICE DESITY TO WATER DENSITY
-      Q0=1.0D-06/302.0 _d +00    ! INVERSE HEAT OF FUSION OF ICE
-      QS=1.1 _d +08              ! HEAT OF FUSION OF SNOW
+      Q0=1.0D-06/302.0 _d +00    ! INVERSE HEAT OF FUSION OF ICE (m^3/J)
+      QS=1.1 _d +08              ! HEAT OF FUSION OF SNOW (J/m^3)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -81,10 +81,6 @@ cph(
 c
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -112,12 +108,12 @@ C     Negative YNEG leads to ice growth.
 C     Positive YNEG leads to ice melting.
           if ( .NOT. inAdMode ) then
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
-          TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
+           TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
-          YNEG(I,J,bi,bj)=(theta(I,J,kSurface,bi,bj)-TBC)
-     &         *dRf(1)/72.0764 _d 0
+           YNEG(I,J,bi,bj)=(theta(I,J,kSurface,bi,bj)-TBC)
+     &          *dRf(1)/72.0764 _d 0
           else
-          YNEG(I,J,bi,bj)= 0.
+           YNEG(I,J,bi,bj)= 0.
           endif
           GHEFF(I,J)=HEFF(I,J,1,bi,bj)
 C     Melt (YNEG>0) or create (YNEG<0) sea ice
@@ -137,11 +133,8 @@ C     RESID_HEAT is residual heat above freezing in equivalent m of ice
 
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area   = comlev1, key = ikey_dynamics
-CADJ STORE atemp  = comlev1, key = ikey_dynamics
 CADJ STORE heff   = comlev1, key = ikey_dynamics
 CADJ STORE hsnow  = comlev1, key = ikey_dynamics
-CADJ STORE lwdown = comlev1, key = ikey_dynamics
 CADJ STORE tice   = comlev1, key = ikey_dynamics
 CADJ STORE uwind  = comlev1, key = ikey_dynamics
 CADJ STORE vwind  = comlev1, key = ikey_dynamics
@@ -155,8 +148,8 @@ C INCLUDING SNOWFALL
       CALL GROATB(A22,myThid)
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff   = comlev1, key = ikey_dynamics
-CADJ STORE hsnow  = comlev1, key = ikey_dynamics
+cphCADJ STORE heff   = comlev1, key = ikey_dynamics
+cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics
 #endif
 cph)
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -176,6 +169,8 @@ cph(
 #endif /* ALLOW_AUTODIFF_TAMC */
 c
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE fo(:,:,bi,bj)     = comlev1_bibj, 
@@ -187,30 +182,43 @@ cph)
 
         DO J=1,sNy
          DO I=1,sNx
-
 C NOW CALCULATE CORRECTED GROWTH
           GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J,bi,bj)
-          GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
-          IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
-C     not enough heat to melt all snow:
-C     use up all heat flux FICE
-           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
-C SNOW CONVERTED INTO WATER AND THEN INTO ICE
+     &         *AREA(I,J,2,bi,bj)        ! effective growth in J/m^2 (>0=melt)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fice(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+        DO J=1,sNy
+         DO I=1,sNx
+
+          IF(FICE(I,J,bi,bj).LT.ZERO.AND.AREA(I,J,2,bi,bj).GT.ZERO) THEN
+C use FICE to melt snow and CALCULATE CORRECTED GROWTH
+           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS ! effective snow thickness in J/m^2
+           IF(GHEFF(I,J).LE.GAREA(I,J)) THEN
+C not enough heat to melt all snow; use up all heat flux FICE
+            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
+C SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
 C The factor 1/SDF/ICE_DENS converts m of snow to m of sea-ice
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &                  -(GHEFF(I,J)/QS)/SDF/ICE_DENS*AREA(I,J,2,bi,bj)
-           FICE(I,J,bi,bj)=ZERO
-          ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
-C     enought heat to melt snow completely:
-C     compute remaining heat flux that will melt ice
-           FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/SEAICE_deltaTtherm
+            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
+     &           -GHEFF(I,J)/QS/SDF/ICE_DENS
+            FICE(I,J,bi,bj)=ZERO
+           ELSE
+C enought heat to melt snow completely;
+C compute remaining heat flux that will melt ice
+            FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/
+     &           SEAICE_deltaTtherm/AREA(I,J,2,bi,bj)
 C     convert all snow to melt water (fresh water flux)
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &               -HSNOW(I,J,bi,bj)/SDF/ICE_DENS*AREA(I,J,2,bi,bj)
-           HSNOW(I,J,bi,bj)=0.0
+            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
+     &           -HSNOW(I,J,bi,bj)/SDF/ICE_DENS
+            HSNOW(I,J,bi,bj)=0.0
+           END IF
           END IF
 
-C NOW GET TOTAL GROWTH RATE
+C NOW GET TOTAL GROWTH RATE in W/m^2, >0 causes ice growth
           FHEFF(I,J,bi,bj)=FICE(I,J,bi,bj)*AREA(I,J,2,bi,bj)
      &                    +(ONE-AREA(I,J,2,bi,bj))*FO(I,J,bi,bj)
 
@@ -218,28 +226,56 @@ C NOW GET TOTAL GROWTH RATE
         ENDDO
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,:,bi,bj)   = comlev1_bibj, 
+CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE fice(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE fo(:,:,bi,bj)     = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE fheff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE qneto(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE qswi(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE qswo(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
         DO J=1,sNy
          DO I=1,sNx
-
 C NOW UPDATE AREA
           GHEFF(I,J)=-SEAICE_deltaTtherm*FHEFF(I,J,bi,bj)*Q0
           GAREA(I,J)=SEAICE_deltaTtherm*FO(I,J,bi,bj)*Q0
           GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           GAREA(I,J)=MAX(ZERO,GAREA(I,J))
           HCORR(I,J,bi,bj)=MIN(ZERO,GHEFF(I,J))
-
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
           GAREA(I,J)=(ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
      &    +HALF*HCORR(I,J,bi,bj)*AREA(I,J,2,bi,bj)
      &    /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+GAREA(I,J)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE garea(:,:)        = comlev1_bibj, 
+CADJ &                         key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
 
 C NOW UPDATE HEFF
           GHEFF(I,J)=-SEAICE_deltaTtherm*
@@ -259,7 +295,7 @@ C FREEZING, PRECIP ADDED AS SNOW
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
      &            PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
           ELSE
-C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY 1/ICE_DENS
+C ADD PRECIP AS RAIN, WATER CONVERTED INTO equivalent m of ICE BY 1/ICE_DENS
              SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
      &            SEAICE_deltaTtherm/ICE_DENS

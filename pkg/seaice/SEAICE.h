@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.21 2006/05/03 23:32:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.22 2006/11/20 20:06:43 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -28,6 +28,14 @@ C     HEFF  - effective ice thickness in m
 C             at South-West B-grid tracer point
 C             note: for non-zero AREA, actual ice
 C                thickness is HEFF / AREA
+C     HSNOW - effective snow thickness in m
+C             at South-West B-grid tracer point
+C             note: for non-zero AREA, actual snow
+C                thickness is HEFF / AREA
+C     FICE  - thermodynamic ice growth rate over sea ice in W/m^2
+C             >0 causes ice growth, <0 causes snow and sea ice melt
+C     FO    - thermodynamic ice growth rate over open water in W/m^2
+C             >0 causes ice growth, <0 causes snow and sea ice melt
 C \ev
 CEOP
       COMMON/SEAICE_DYNVARS_1/AREA

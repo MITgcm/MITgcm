@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.15 2006/02/15 09:24:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.16 2006/11/20 20:06:43 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,12 +24,14 @@ C     === Global variables ===
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
 
 C     Subset of variables from SEAICE.h
+      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL QNETO      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL QNETI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL QSWO       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL QSWI       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      COMMON/SEAICE_DYNVARS_1/AREA
       COMMON/SEAICE_TRANS/HEFF,HSNOW
       COMMON/QFLUX/QNETO,QNETI,QSWO,QSWI
 
@@ -143,10 +145,15 @@ C NOW DECIDE ON ALBEDO
            IF(TICE(I,J,bi,bj).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb
            ASNOW=SEAICE_drySnowAlb
            IF(TICE(I,J,bi,bj).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
-           IF(HSNOW(I,J,bi,bj).GT.HCUT) THEN
+cdm For albedo computation, actual rather than effective snow thickness
+cdm must be used.  Mininimum AREA(I,J,3,bi,bj) is A22 from groatb.F
+cdm        IF(HSNOW(I,J,bi,bj).GT.HCUT) THEN
+           IF((HSNOW(I,J,bi,bj)/AREA(I,J,3,bi,bj)).GT.HCUT) THEN
             ALB(I,J)=ASNOW
            ELSE
-            ALB(I,J)=ALB(I,J)+(HSNOW(I,J,bi,bj)/HCUT)*(ASNOW-ALB(I,J))
+cdm         ALB(I,J)=ALB(I,J)+(HSNOW(I,J,bi,bj)/HCUT)*(ASNOW-ALB(I,J))
+            ALB(I,J)=ALB(I,J)+(HSNOW(I,J,bi,bj)/AREA(I,J,3,bi,bj)/HCUT)
+     &           *(ASNOW-ALB(I,J))
             IF(ALB(I,J).GT.ASNOW) ALB(I,J)=ASNOW
            END IF
           ENDDO
@@ -190,7 +197,9 @@ cdm          TICE
      &            +C3*TICE(I,J,bi,bj)**2+C4*TICE(I,J,bi,bj)+C5)
             A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1I*UG(I,J)*B(I,J)
      &             -D3*(TICE(I,J,bi,bj)**4)
-            B(I,J)=XKS/(HSNOW(I,J,bi,bj)/HICE(I,J)+XKS/XKI)/HICE(I,J)
+cdm         B(I,J)=XKS/(HSNOW(I,J,bi,bj)/HICE(I,J)+XKS/XKI)/HICE(I,J)
+            B(I,J)=XKS/(HSNOW(I,J,bi,bj)/AREA(I,J,3,bi,bj)/HICE(I,J)
+     &           +XKS/XKI)/HICE(I,J)
             A3(I,J)=4.0 _d +00*D3*(TICE(I,J,bi,bj)**3)+B(I,J)+D1*UG(I,J)
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
             TB = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0 
