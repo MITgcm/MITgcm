@@ -1,0 +1,10 @@
+#
+# ***************
+# package flags
+# ***************
+ &PACKAGES
+ useKPP	        = .TRUE.,
+ useGMRedi      = .TRUE.,
+ useSeaice      = .FALSE.,
+ useDiagnostics = .FALSE.,
+ &
