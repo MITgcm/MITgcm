@@ -1,4 +1,4 @@
  &GCHEM_PARM01
-  iceFile='ice.bin',
+  iceFile='fice.bin',
   windFile='tren_speed.bin',
  &
