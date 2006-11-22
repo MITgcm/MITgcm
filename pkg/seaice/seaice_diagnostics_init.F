@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.3 2006/11/07 11:44:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.4 2006/11/22 07:20:08 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,7 +95,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-C     pkg/diagnostics SIfu and TAUX, dumpfreq FU, and tavefreq FUtave
+C     pkg/diagnostics SIfu and oceTAUX, dumpfreq FU, and tavefreq FUtave
 C     are identical but they differ from pkg/diagnostics EXFtaux, which
 C     is stress before impact of ice.  Also when using exf bulk 
 C     formulae, EXFtaux is defined on tracer rather than uvel points.
@@ -106,7 +106,7 @@ C     formulae, EXFtaux is defined on tracer rather than uvel points.
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
-C     pkg/diagnostics SIfv and TAUY, dumpfreq FV, and tavefreq FVtave
+C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
 C     are identical but they differ from pkg/diagnostics EXFtauy, which
 C     is stress before impact of ice.  Also when using exf bulk 
 C     formulae, EXFtauy is defined on tracer rather than vvel points.
@@ -120,10 +120,6 @@ C     formulae, EXFtauy is defined on tracer rather than vvel points.
 C     pkg/diagnostics SIempmr, dumpfreq EmPmR, and tavefreq EmPmRtave
 C     are identical but they differ from pkg/diagnostics EXFempmr, which
 C     is EmPmR before impact of ice.
-C     pkg/diagnostics SIempmr is also, depending on various options,
-C     approximately equal to (SFLUX-SRELAX)/rhoConstFresh/salt(k=1),
-C     but note that prior to 7 nov 2006, there was a bug whereby
-C     SFLUX was identical to SRELAX for nonlinFreeSurf=.TRUE.
       diagName  = 'SIempmr '
       diagTitle = 'SEAICE upward freshwater flux, > 0 increases salt'
       diagUnits = 'm/s             '
