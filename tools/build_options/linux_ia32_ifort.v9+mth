@@ -1,11 +1,19 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.3 2006/08/31 13:51:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.v9+mth,v 1.4 2006/11/22 22:39:57 jmc Exp $
 # $Name:  $
 #
 #  jmc: copied from linux_ia32_ifort+authors_v9
 #       and added openmp stuff to run multi-threaded
-#  ( generally, need to increase the stack-size: > export KMP_STACKSIZE=400m )
+#  to run, needs to set environment var. OMP_NUM_THREADS 
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#-------
 #
 #  tested on hugo (FC.4), eddy (FC.5): 20060713
 #
