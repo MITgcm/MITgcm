@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.22 2006/11/20 20:06:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.23 2006/11/22 22:20:47 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -11,25 +11,25 @@ C     | o Basic header for sea ice model.                        |
 C     |   Contains most sea ice field declarations.              |
 C     \==========================================================/
 C
-C     UICE  - zonal ice velocity in m/s
-C             at South-West B-grid U point
+C     UICE  - zonal ice velocity in m/s at South-West B-grid 
+C             (or C-grid #ifdef SEAICE_CGRID) U point
 C             >0 from West to East
 C     UICEC - average of UICE(1) between last two time steps
-C     VICE  - meridional ice velocity in m/s
-C             at South-West B-grid U point
+C     VICE  - meridional ice velocity in m/s at South-West B-grid
+C             (or C-grid #ifdef SEAICE_CGRID) V point
 C             >0 from South to North
 C             note: the South-West B-grid U and V points are on
 C                the lower, left-hand corner of each grid cell
 C     VICEC - average of VICE(1) between last two time steps
 C     AREA  - fractional ice-covered area in m^2/m^2
-C             at South-West B-grid tracer point
+C             at center of grid, i.e., tracer point
 C             0 is no cover, 1 is 100% cover
 C     HEFF  - effective ice thickness in m
-C             at South-West B-grid tracer point
+C             at center of grid, i.e., tracer point
 C             note: for non-zero AREA, actual ice
 C                thickness is HEFF / AREA
 C     HSNOW - effective snow thickness in m
-C             at South-West B-grid tracer point
+C             at center of grid, i.e., tracer point
 C             note: for non-zero AREA, actual snow
 C                thickness is HEFF / AREA
 C     FICE  - thermodynamic ice growth rate over sea ice in W/m^2
