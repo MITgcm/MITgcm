@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.26 2006/10/19 06:54:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.27 2006/11/22 09:43:27 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -109,6 +109,10 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+C--   Alternative formulation of BYTESWAP, faster than
+C     compiler flag -byteswapio on the Altix.
+#undef FAST_BYTESWAP
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
