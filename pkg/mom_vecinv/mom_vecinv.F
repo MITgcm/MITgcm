@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.59 2006/07/18 03:23:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.60 2006/11/23 00:45:21 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -176,14 +176,15 @@ C     Initialise intermediate terms
         vort3(i,j) = 0.
         omega3(i,j)= 0.
         KE(i,j)    = 0.
+c       hDiv(i,j)  = 0. 
         viscAh_Z(i,j) = 0.
         viscAh_D(i,j) = 0.
         viscA4_Z(i,j) = 0.
         viscA4_D(i,j) = 0.
 
-#ifdef ALLOW_AUTODIFF_TAMC
         strain(i,j)  = 0. _d 0
         tension(i,j) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
         hFacZ(i,j)   = 0. _d 0
 #endif
        ENDDO
